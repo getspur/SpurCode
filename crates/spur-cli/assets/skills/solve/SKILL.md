@@ -7,6 +7,8 @@ description: >
   competing preferences with Z3 Optimize or MaxSMT using weighted soft
   constraints or minimize/maximize objectives, diagnose conflicting policy
   rules, or find a branch-triggering counterexample with the generic solver.
+  Also use when combining Jev intent interpretation with validated solver
+  requests and Z3 results.
 ---
 
 # solve - Catalog-First Constraint Workbench
@@ -14,6 +16,9 @@ description: >
 Use Z3 as a workbench for evaluating declared rules and producing valid models.
 The solver does not inspect a UI, runtime, or renderer. The agent supplies facts,
 selects rules, and interprets the returned proof status.
+When intent needs interpretation, Jev can propose a catalog request; it does
+not validate that request or prove the encoded property. Keep interpretation,
+validation, and solving as separate stages.
 
 <HARD-GATE>
 Before hand-encoding a domain rule, navigate the catalog with
@@ -32,6 +37,7 @@ Never invent a multi-rule constant or treat `unknown` / `timeout` as `unsat`.
 | Need | Route |
 |---|---|
 | Discover whether a mathematical rule already exists | `solve_rule_spec` |
+| Interpret natural-language intent into a candidate catalog request | `solve_rule_spec` → optional `jev_compile` → inspect bindings → `solve_rules` |
 | Verify a complete domain model or fill bounded domain unknowns | `solve_rules` |
 | Discover the generic request, variant, operator, limit, or example contract | `solve_constraint_spec` |
 | Validate generic arguments without launching Z3 | `solve_constraint_check` |
@@ -60,6 +66,61 @@ decision.
 
 Catalog IDs are versioned data. Never hard-code an exhaustive family or rule
 list into agent policy; discover the current list on each new rule-shaped task.
+
+## Collaborate With Jev
+
+Use `jev_compile` when the user asks for Jev or natural-language intent needs
+help selecting a catalog rule or mode. Otherwise skip it for an already
+explicit, well-bound request. If the tool is unavailable, disclose that and
+continue through the direct solver route when intent and required facts are clear.
+
+The current MCP tool compiles **family requests only**, with one rule binding
+per request. It does not run Z3. Generic compilation and repair helpers in the
+Rust library are not additional MCP capabilities; do not invent a Jev generic
+or repair tool. For an uncatalogued invariant, use the Generic Fallback below.
+
+### Prepare And Inspect The Candidate
+
+1. Navigate `solve_rule_spec` first. Read the matching rule's inputs and
+   semantics; catalog examples may be illustrative projections, not complete
+   executable requests.
+2. Call `jev_compile` with `intent`, explicit `data`, and optionally a catalog
+   `family_hint`. Use the catalog's family ID, not a guessed rule-ID prefix.
+   The hint narrows routing; it does not override the intent.
+   Put bindings at the top level of `data`: `subjects`, optional `parameters`,
+   `scene` or `facts` as required by the family, and `unknowns`. Nested
+   `data.rules[].subjects` is not a substitute for `data.subjects`.
+   Use complete facts and no unknowns for verification, or explicit bounded
+   unknowns plus known facts for synthesis. Jev does not infer missing geometry,
+   normalize arbitrary payloads, or supply missing domain values for you.
+3. Inspect the returned `gate`, ambiguity details, and provenance before using
+   any request. For an open gate, check family, mode, rule ID, subjects,
+   parameters, facts, and unknown bounds against the user's actual intent.
+   One selected rule is not coverage of a multi-rule task: assemble all required
+   bindings from the catalog before solving and record any changes to the
+   candidate. Do not silently weaken rules or invent facts to obtain a pass.
+
+### Confidence Is Not Proof
+
+| Outcome | Next action | What it establishes |
+|---|---|---|
+| Jev gate open | Inspect the candidate, then submit the intended family request to `solve_rules` | Interpretation confidence only; neither request validity nor satisfiability |
+| Jev gate blocked | Inspect the weakest decision and ambiguity; obtain missing evidence or clarify intent | No executable Jev request; not `unsat` or a failed rule |
+| Solver rejects request validation | Correct the reported schema/binding problem from the catalog, then resubmit | No solver verdict yet |
+| Solver returns a result | Interpret status with the selected tool and mode | A result for the exact encoded facts and constraints only |
+
+`solve_rules` owns family validation and execution. Do not send a family
+request to `solve_constraint_check`; that preflight is for the generic typed
+language. An open Jev gate must never skip downstream validation or solving.
+
+A blocked gate is not permission to lower the threshold, fabricate an open
+request, or repeatedly rephrase until it passes. Recompile when new evidence
+resolves the uncertainty. The current completeness question can reject valid
+synthesis data because declared unknowns are not concrete. If intent, bindings,
+and bounded domains are independently unambiguous, author a direct catalog
+request and let `solve_rules` validate and solve it. Report this as a direct
+solver path, not successful Jev compilation or an override of its gate. If
+required facts or intent remain ambiguous, ask for clarification instead.
 
 ## Execute Catalog Rules
 
@@ -205,6 +266,12 @@ For brain-to-worker handoff:
 6. Treat the artifact as authoritative evidence, while still checking that the
    implementation matches the encoded facts.
 
+When Jev participated, also retain its returned provenance (including model
+version), gate/confidence and weakest decision, selected rule/mode, and any
+candidate-to-execution changes. Keep the exact executed request and solver
+status separate from Jev's interpretation; a `solve_id` does not by itself
+preserve the Jev interaction. Never include credentials in the handoff.
+
 ## Proof Discipline
 
 - `sat` is a model, not automatically a pass: interpretation depends on the
@@ -223,7 +290,11 @@ For brain-to-worker handoff:
 ```text
 recognize constraint-shaped work
   -> navigate solve_rule_spec
-  -> catalog match? solve_rules
+  -> catalog match?
+       -> intent interpretation needed or Jev requested? jev_compile
+            -> open: inspect candidate and complete required bindings
+            -> blocked: clarify, or independently author a direct request
+       -> solve_rules validates and executes the intended family request
   -> otherwise solve_constraint_spec
   -> author canonical wrapped constraints
   -> solve_constraint_check until valid
