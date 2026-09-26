@@ -73,7 +73,8 @@ pub fn brain_tool_registry(
     )
 }
 
-pub(crate) fn brain_tool_registry_for_repo_root(
+/// Build the brain tool registry using layered configuration rooted at `repo_root`.
+pub fn brain_tool_registry_for_repo_root(
     delegation_deps: delegation::DelegationMcpDeps,
     plan_deps: plan::PlanMcpDeps,
     signal_deps: signals::SignalMcpDeps,
@@ -128,7 +129,21 @@ fn brain_tool_registry_with_local_projects_and_repo_root(
             shared_solver_service(repo_root),
         ))?
         .with_alias("code_search", "code_symbol_search")?;
-    if std::env::var("SPUR_JEV_ENABLED").as_deref() == Ok("1") {
+    let jev_enabled = std::env::var("SPUR_JEV_ENABLED").as_deref() == Ok("1")
+        || repo_root
+            .map(|repo_root| match spur_acp::config::load_layered(repo_root) {
+                Ok(config) => config.jev.enabled,
+                Err(error) => {
+                    tracing::debug!(
+                        %error,
+                        repo_root = %repo_root.display(),
+                        "failed to load layered config for Jev registry gate; treating config as disabled"
+                    );
+                    false
+                }
+            })
+            .unwrap_or(false);
+    if jev_enabled {
         let catalog = spur_solver::rules::manifest_registry();
         let executable_rule_ids = spur_solver::rules::manifest_executable_rule_ids();
         let rules = catalog

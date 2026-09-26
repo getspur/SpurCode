@@ -45,10 +45,20 @@ feed it to raw `solve_smt`, or treat Jev output as proof.
 
 ## Environment
 
-- `SPUR_JEV_ENABLED=1` adds `jev_compile` to the brain MCP registry. Any other
-  value leaves it absent. The worker registry never exposes this tool.
-- `JEV_API_KEY` enables the live HTTPS transport to TypeSafe System One. When
-  the brain tool is enabled without a non-empty key, calls return a typed
+- `jev_compile` is added to the brain MCP registry when either
+  `SPUR_JEV_ENABLED=1` or the effective layered config enables Jev. In other
+  words, `jev_registered = (SPUR_JEV_ENABLED == "1") OR jev.enabled`. The env
+  var is an explicit per-process override; any other value falls through to
+  config. The worker registry never exposes this tool.
+
+  ```toml
+  [jev]
+  enabled = true
+  ```
+
+- `JEV_API_KEY` enables the live HTTPS transport to TypeSafe System One. It is
+  env-only and must never be stored in layered TOML. When the brain tool is
+  enabled without a non-empty key, calls return a typed
   `solver_unavailable`-style MCP error; there is no network fallback.
 - `SPUR_Z3_BIN` belongs to the downstream solver service, not `spur-jev`. It is
   relevant only after an open-gate request is handed to a solver tool.

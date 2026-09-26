@@ -1,4 +1,6 @@
 use std::collections::BTreeSet;
+use std::fs;
+use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use spur_acp::config::ContextServiceConfig;
@@ -83,6 +85,29 @@ fn brain_tool_names() -> Vec<String> {
         .collect()
 }
 
+fn brain_tool_names_for_repo_root(repo_root: &Path) -> Vec<String> {
+    let registry = spur_core::mcp::brain_tool_registry_for_repo_root(
+        DelegationMcpDeps::catalog_only(),
+        PlanMcpDeps::catalog_only(),
+        SignalMcpDeps {
+            pm_service: None,
+            event_sink: None,
+            feature_gate: feature_gate(),
+        },
+        &ContextServiceConfig {
+            url: String::new(),
+            ..ContextServiceConfig::default()
+        },
+        repo_root,
+    )
+    .expect("brain registry");
+    registry
+        .list_tools()
+        .into_iter()
+        .map(|tool| tool.name)
+        .collect()
+}
+
 fn solver_tool_names(names: &[String]) -> Vec<String> {
     names
         .iter()
@@ -94,15 +119,35 @@ fn solver_tool_names(names: &[String]) -> Vec<String> {
 #[test]
 fn jev_compile_is_flagged_brain_only_solver_tool() {
     let flag = JevFlagGuard::acquire();
+    let repo = tempfile::tempdir().expect("temp repo");
+    let spur_dir = repo.path().join(".spur");
+    fs::create_dir_all(&spur_dir).expect("create .spur directory");
+    let config_path = spur_dir.join("config.toml");
 
     flag.set(None);
     let disabled = solver_tool_names(&brain_tool_names());
     assert_eq!(disabled, SOLVER_TOOLS, "flag-off solver catalog drifted");
 
+    fs::write(&config_path, "[jev]\nenabled = false\n").expect("write disabled config");
+    let config_disabled = solver_tool_names(&brain_tool_names_for_repo_root(repo.path()));
+    assert_eq!(
+        config_disabled, SOLVER_TOOLS,
+        "config-disabled solver catalog drifted"
+    );
+
     flag.set(Some("1"));
-    let enabled = solver_tool_names(&brain_tool_names());
-    assert_eq!(enabled.len(), SOLVER_TOOLS.len() + 1);
-    assert_eq!(enabled.last().map(String::as_str), Some("jev_compile"));
+    let env_enabled = solver_tool_names(&brain_tool_names_for_repo_root(repo.path()));
+    assert_eq!(env_enabled.len(), SOLVER_TOOLS.len() + 1);
+    assert_eq!(env_enabled.last().map(String::as_str), Some("jev_compile"));
+
+    flag.set(None);
+    fs::write(&config_path, "[jev]\nenabled = true\n").expect("write enabled config");
+    let config_enabled = solver_tool_names(&brain_tool_names_for_repo_root(repo.path()));
+    assert_eq!(config_enabled.len(), SOLVER_TOOLS.len() + 1);
+    assert_eq!(
+        config_enabled.last().map(String::as_str),
+        Some("jev_compile")
+    );
 
     let worker_names: Vec<String> = spur_core::mcp::worker_tools_list()
         .into_iter()
@@ -111,5 +156,12 @@ fn jev_compile_is_flagged_brain_only_solver_tool() {
     assert!(
         worker_names.iter().all(|name| name != "jev_compile"),
         "jev_compile must never be exposed to workers"
+    );
+
+    fs::write(&config_path, "[jev\n").expect("write malformed config");
+    let malformed_config = solver_tool_names(&brain_tool_names_for_repo_root(repo.path()));
+    assert_eq!(
+        malformed_config, SOLVER_TOOLS,
+        "config load failure should leave Jev disabled"
     );
 }

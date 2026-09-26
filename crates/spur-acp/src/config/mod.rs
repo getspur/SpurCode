@@ -786,6 +786,15 @@ impl SkillsConfig {
     }
 }
 
+/// Jev pre-compiler configuration.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct JevConfig {
+    /// Whether to register `jev_compile` in the brain MCP tool registry.
+    #[serde(default)]
+    pub enabled: bool,
+}
+
 /// Names users may not assign to configured MCP servers. Colliding with a
 /// SPUR-managed entry would shadow the fixed injection set.
 pub const RESERVED_MCP_SERVER_NAMES: &[&str] = &["spur-mcp", "notebook", "spur-worker-mcp"];
@@ -950,6 +959,9 @@ pub struct SpurConfig {
     /// Bundled skill asset resolution.
     #[serde(default, skip_serializing_if = "SkillsConfig::is_default")]
     pub skills: SkillsConfig,
+    /// Jev pre-compiler registration policy.
+    #[serde(default)]
+    pub jev: JevConfig,
     /// TUI presentation preferences (edit mode today; mouse/density/keymap
     /// in the future). Skipped on serialize when default to keep existing
     /// configs visually unchanged.
@@ -2205,6 +2217,31 @@ level = "warn,spur_core::orchestrator=info"
             SpurConfig::default().skills.projection_mode,
             SkillsProjectionMode::CatalogOnly
         );
+    }
+
+    #[test]
+    fn jev_section_round_trips() {
+        let config: SpurConfig =
+            toml::from_str("[jev]\nenabled = true\n").expect("jev section should parse");
+        assert!(config.jev.enabled);
+
+        let serialized = toml::to_string(&config).expect("config should serialize");
+        let round_trip: SpurConfig =
+            toml::from_str(&serialized).expect("serialized config should parse");
+        assert!(round_trip.jev.enabled);
+    }
+
+    #[test]
+    fn jev_defaults_to_disabled_when_absent() {
+        let empty: SpurConfig = toml::from_str("").expect("empty config should parse");
+        assert!(!empty.jev.enabled);
+
+        let skills_only: SpurConfig =
+            toml::from_str("[skills]\nprojection_mode = \"catalog_only\"\n")
+                .expect("skills-only config should parse");
+        assert!(!skills_only.jev.enabled);
+
+        assert!(!SpurConfig::default().jev.enabled);
     }
 
     #[test]
