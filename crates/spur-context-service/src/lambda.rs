@@ -1269,25 +1269,21 @@ mod code {
             )));
         }
 
-        if let Err(error) = authorize_request(&api_gateway_request, route, &request.tool) {
-            return authorization_error_response(error);
-        }
+        let authenticated_caller =
+            match authorize_request(&api_gateway_request, route, &request.tool) {
+                Ok(caller) => caller,
+                Err(error) => return authorization_error_response(error),
+            };
 
         let result = match request.tool.as_str() {
             "external_index" => {
-                let caller_id = match authenticated_caller_id(
-                    &api_gateway_request,
-                    anonymous_mutations_allowed(),
-                ) {
-                    Ok(caller_id) => caller_id,
-                    Err(error) => {
-                        return code_error_response(CodeToolError::invalid(error.to_string()))
-                    }
+                let Some(caller_id) = authenticated_caller.as_deref() else {
+                    return authorization_error_response(AuthFailure::MissingContext);
                 };
                 let jobs = job_store().await;
                 let backend = code_backend().await.ok();
                 let result =
-                    code_control::route_index(&request.args, &jobs, backend.as_deref(), &caller_id)
+                    code_control::route_index(&request.args, &jobs, backend.as_deref(), caller_id)
                         .await;
                 if result
                     .as_ref()
@@ -1298,14 +1294,8 @@ mod code {
                 result.map_err(code_control_error)
             }
             "external_index_status" => {
-                let caller_id = match authenticated_caller_id(
-                    &api_gateway_request,
-                    anonymous_mutations_allowed(),
-                ) {
-                    Ok(caller_id) => caller_id,
-                    Err(error) => {
-                        return code_error_response(CodeToolError::invalid(error.to_string()))
-                    }
+                let Some(caller_id) = authenticated_caller.as_deref() else {
+                    return authorization_error_response(AuthFailure::MissingContext);
                 };
                 let jobs = job_store().await;
                 let checker = status_checker().await;
@@ -1313,7 +1303,7 @@ mod code {
                     &request.args,
                     &jobs,
                     Some(&checker),
-                    &caller_id,
+                    caller_id,
                 )
                 .await
                 .map_err(code_control_error)
@@ -1333,11 +1323,12 @@ mod code {
         request: &ApiGatewayRequest,
         route: RequestRoute,
         tool: &str,
-    ) -> Result<(), AuthFailure> {
+    ) -> Result<Option<String>, AuthFailure> {
         match route {
             RequestRoute::ApiKeyMcp => {
                 let context = api_key_context(request)?;
-                auth::authorize_api_key_tool(tool, Some(&context)).map(|_| ())
+                auth::authorize_api_key_tool(tool, Some(&context))
+                    .map(|decision| Some(decision.identity.caller_id().to_owned()))
             }
             RequestRoute::OAuth => {
                 let config = match AuthConfig::from_environment()? {
@@ -1350,14 +1341,15 @@ mod code {
                     .and_then(|context| context.authorizer.as_ref())
                     .and_then(|authorizer| authorizer.jwt.as_ref())
                     .and_then(|jwt| jwt.claims.as_ref());
-                auth::authorize_oauth_tool_now(&config, tool, claims).map(|_| ())
+                auth::authorize_oauth_tool_now(&config, tool, claims)
+                    .map(|decision| Some(decision.identity.caller_id().to_owned()))
             }
             RequestRoute::Legacy if matches!(tool, "external_index" | "external_index_status") => {
                 authenticated_caller_id(request, anonymous_mutations_allowed())
-                    .map(|_| ())
+                    .map(Some)
                     .map_err(|_| AuthFailure::MissingContext)
             }
-            RequestRoute::Legacy => Ok(()),
+            RequestRoute::Legacy => Ok(None),
             _ => Err(AuthFailure::WrongRoute),
         }
     }
