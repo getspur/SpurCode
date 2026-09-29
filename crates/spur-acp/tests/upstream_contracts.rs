@@ -6,7 +6,7 @@ use std::path::Path;
 use std::time::Duration;
 
 use serde_json::Value;
-use spur_acp::connection::{native::NativeAcpConnection, AgentConnection};
+use spur_acp::connection::{native::NativeAcpConnection, AgentConnection as _};
 use spur_acp::types::AgentHealth;
 use spur_acp::{AgentKind, InitializeRequest, ProtocolVersion, SpurAgentCaps};
 
@@ -90,7 +90,11 @@ async fn set_model_case(config_id: &str, legacy: bool) {
         .await
         .expect("session/new");
     let caps = SpurAgentCaps::new(&init, &session, AgentKind::CodexAcp);
-    assert_eq!(caps.model_option().unwrap().id.0.as_ref(), config_id);
+    assert_eq!(
+        caps.model_option().unwrap().id.0.as_ref(),
+        config_id,
+        "capabilities must select the advertised model option"
+    );
     let result = conn
         .set_session_model(session.session_id, "next".into(), &caps)
         .await;
@@ -105,24 +109,40 @@ async fn set_model_case(config_id: &str, legacy: bool) {
         .collect();
     assert_eq!(requests.len(), 1, "send one configuration update");
     assert_eq!(requests[0]["params"]["configId"], config_id, "{result:?}");
-    assert_eq!(requests[0]["params"]["value"], "next");
+    assert_eq!(
+        requests[0]["params"]["value"], "next",
+        "send the requested model value"
+    );
 
     // Keep the whole new snapshot, including dependent option changes.
     let options = result.expect("advertised model change must succeed");
     let snapshot = serde_json::to_value(options).unwrap();
     let options = snapshot.as_array().unwrap();
-    assert_eq!(options.len(), if legacy { 3 } else { 2 });
+    assert_eq!(
+        options.len(),
+        if legacy { 3 } else { 2 },
+        "preserve every option in the response snapshot"
+    );
     let selected = options
         .iter()
         .find(|option| option["id"] == config_id)
         .unwrap();
-    assert_eq!(selected["currentValue"], "next");
+    assert_eq!(
+        selected["currentValue"], "next",
+        "return the updated model selection"
+    );
     let effort = options
         .iter()
         .find(|option| option["id"] == "reasoning_effort")
         .unwrap();
-    assert_eq!(effort["currentValue"], "high");
-    assert_eq!(effort["options"][0]["value"], "high");
+    assert_eq!(
+        effort["currentValue"], "high",
+        "return the updated dependent option selection"
+    );
+    assert_eq!(
+        effort["options"][0]["value"], "high",
+        "return the refreshed dependent option choices"
+    );
 }
 
 #[tokio::test]
@@ -185,9 +205,12 @@ async fn rejected_version_case(version: u16) {
         session.is_err(),
         "rejected connection must not create sessions"
     );
-    assert!(wire_messages(root.path())
-        .iter()
-        .all(|msg| msg["method"] != "session/new"));
+    assert!(
+        wire_messages(root.path())
+            .iter()
+            .all(|msg| msg["method"] != "session/new"),
+        "do not send session/new after rejecting initialization"
+    );
 }
 
 #[tokio::test]
@@ -220,8 +243,15 @@ async fn supported_v1_becomes_ready_and_creates_sessions() {
             .initialize(InitializeRequest::new(ProtocolVersion::V1))
             .await
             .unwrap();
-        assert_eq!(response.protocol_version, ProtocolVersion::V1);
-        assert!(matches!(conn.health(), AgentHealth::Ready));
+        assert_eq!(
+            response.protocol_version,
+            ProtocolVersion::V1,
+            "accept the implemented protocol version"
+        );
+        assert!(
+            matches!(conn.health(), AgentHealth::Ready),
+            "the supported peer must become ready"
+        );
         conn.new_session(root.path().to_path_buf(), Vec::new())
             .await
             .unwrap();

@@ -62,15 +62,15 @@ use agent_client_protocol::schema::v1::{
     PromptRequest, PromptResponse, ReadTextFileRequest, ReadTextFileResponse,
     ReleaseTerminalRequest, ReleaseTerminalResponse, RequestPermissionOutcome,
     RequestPermissionRequest, RequestPermissionResponse, ResumeSessionRequest,
-    ResumeSessionResponse, SelectedPermissionOutcome, SessionCapabilities, SessionConfigId,
-    SessionConfigOption, SessionConfigValueId, SessionId, SessionModeId, SessionModeState,
-    SessionNotification, SessionUpdate, SetSessionConfigOptionRequest,
-    SetSessionConfigOptionResponse, SetSessionModeRequest, SetSessionModeResponse,
-    TerminalExitStatus, TerminalId, TerminalOutputRequest, TerminalOutputResponse, ToolCall,
-    ToolCallStatus, ToolCallUpdate, ToolCallUpdateFields, ToolKind, Usage, UsageUpdate,
-    WaitForTerminalExitRequest, WaitForTerminalExitResponse, WriteTextFileRequest,
-    WriteTextFileResponse,
+    ResumeSessionResponse, SelectedPermissionOutcome, SessionCapabilities, SessionConfigOption,
+    SessionConfigValueId, SessionId, SessionModeId, SessionModeState, SessionNotification,
+    SessionUpdate, SetSessionConfigOptionRequest, SetSessionConfigOptionResponse,
+    SetSessionModeRequest, SetSessionModeResponse, TerminalExitStatus, TerminalId,
+    TerminalOutputRequest, TerminalOutputResponse, ToolCall, ToolCallStatus, ToolCallUpdate,
+    ToolCallUpdateFields, ToolKind, Usage, UsageUpdate, WaitForTerminalExitRequest,
+    WaitForTerminalExitResponse, WriteTextFileRequest, WriteTextFileResponse,
 };
+use agent_client_protocol::schema::ProtocolVersion;
 use agent_client_protocol::{
     Agent, ByteStreams, Client, ConnectionTo, Handled, JsonRpcMessage, UntypedMessage,
 };
@@ -1110,7 +1110,7 @@ fn build_acp_log_path(repo_root: &std::path::Path, agent_name: &str) -> std::pat
 pub(crate) enum SetSessionModelDispatch {
     /// Send the proven `session/set_model` request directly (Grok / Kiro).
     DirectSetModel,
-    /// Fall back to `set_session_config_option` with `config_id = "model"`.
+    /// Fall back to `set_session_config_option` with the selected model option's ID.
     FallbackConfigOption,
     /// No model surface is advertised → `AcpError::CapabilityMissing`.
     Unsupported,
@@ -2333,6 +2333,18 @@ impl AgentConnection for NativeAcpConnection {
             )
         })??;
 
+        // This connection uses schema::v1; generic SDK response decoding does
+        // not validate that the peer negotiated a version we implement.
+        if result.protocol_version != ProtocolVersion::V1 {
+            let version = result.protocol_version;
+            self.shutdown().await?;
+            anyhow::bail!(
+                "NativeAcpConnection '{}': unsupported ACP protocol version {version}; supported version is {}",
+                self.agent_name,
+                ProtocolVersion::V1,
+            );
+        }
+
         if let Ok(mut guard) = self.session_capabilities.lock() {
             *guard = Some(result.agent_capabilities.session_capabilities.clone());
         }
@@ -2866,9 +2878,14 @@ impl AgentConnection for NativeAcpConnection {
                 Ok(Vec::new())
             }
             SetSessionModelDispatch::FallbackConfigOption => {
+                let config_id = caps
+                    .model_option()
+                    .ok_or(AcpError::CapabilityMissing("set_model"))?
+                    .id
+                    .clone();
                 let request = SetSessionConfigOptionRequest::new(
                     sid,
-                    SessionConfigId::new(Arc::<str>::from("model")),
+                    config_id,
                     SessionConfigValueId::new(model_id),
                 );
                 self.set_session_config_option(request)
@@ -4947,7 +4964,8 @@ mod native_helper_tests {
     use agent_client_protocol::role::UntypedRole;
     use agent_client_protocol::schema::v1::{
         AuthMethodId, CurrentModeUpdate, PermissionOption, PermissionOptionId,
-        PermissionOptionKind, SessionMode, TextContent, ToolCallUpdate, ToolCallUpdateFields,
+        PermissionOptionKind, SessionConfigId, SessionMode, TextContent, ToolCallUpdate,
+        ToolCallUpdateFields,
     };
     use agent_client_protocol::schema::ProtocolVersion;
     use agent_client_protocol::Channel;
