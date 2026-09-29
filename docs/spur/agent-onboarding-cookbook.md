@@ -7,7 +7,7 @@ No Rust required when the agent uses an existing transport + dispatch combinatio
 
 Open `.spur/config.toml`, add a `[[agents.entries]]` block, then run `spur config check` to validate.
 
-If your agent is one spur knows about (kiro, claude-code, claude-code-acp, codex, gemini, opencode, kimi, grok, pi), `spur init` writes a matching block automatically when the binary is on `$PATH`. **`spur init` overwrites `.spur/config.toml`** — if you have customizations, edit by hand instead.
+If your agent is one spur knows about (kiro, claude-code, claude-code-acp, codex, gemini, opencode, kimi, grok, goose, pi), `spur init` writes a matching block automatically when the binary is on `$PATH`. **`spur init` overwrites `.spur/config.toml`** — if you have customizations, edit by hand instead.
 
 ## Decision tree
 

@@ -1812,6 +1812,7 @@ mod tests {
             "codex",
             "gemini",
             "opencode",
+            "goose",
         ];
         assert!(
             seeds.entries.len() >= EXPECTED_SEED_AGENTS.len(),
@@ -1993,6 +1994,31 @@ mod tests {
         assert_eq!(pi.command, "pi-acp");
         assert!(pi.effective_args().is_empty());
         assert_eq!(pi.transport, crate::types::TransportKind::Acp);
+    }
+
+    #[test]
+    fn seed_template_goose_declares_auto_mode_without_static_commands() {
+        // Live probe 2026-09-29 (goose 1.52.0): `goose acp` advertises
+        // provider/mode/model/thinking_effort configOptions (SPUR synthesizes
+        // /model and /effort) plus dynamic available_commands — so the seed
+        // must not carry static model/effort/compact entries. Goose's own
+        // mode ids are auto/approve/smart_approve/chat; `auto` is declared as
+        // the bypass session_mode but stays inert until the user opts in
+        // with [permissions] skip = true.
+        let seeds = load_seed_template();
+        let goose = seeds
+            .entries
+            .iter()
+            .find(|a| a.name == "goose")
+            .expect("goose should be in seed template");
+        assert_eq!(goose.kind, crate::types::AgentKind::Generic);
+        assert_eq!(goose.command, "goose");
+        assert_eq!(goose.effective_args(), vec!["acp".to_string()]);
+        assert_eq!(goose.transport, crate::types::TransportKind::Acp);
+        assert!(goose.commands.static_commands.is_empty());
+        let perms = goose.effective_permissions();
+        assert!(!perms.skip);
+        assert_eq!(perms.session_mode.as_deref(), Some("auto"));
     }
 
     #[test]

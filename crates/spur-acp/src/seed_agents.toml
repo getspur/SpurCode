@@ -219,6 +219,41 @@ handle = "grok"
 [agents.entries.commands]
 dispatch = "prompt_text"
 
+# ── goose ────────────────────────────────────────────────────────
+# Block's goose CLI. `goose acp` speaks ACP natively over stdio.
+# Live probe 2026-09-29 (goose 1.52.0):
+#   python3 scripts/probe_acp_capabilities.py --command goose --args acp \
+#     --label goose
+#   initialize agentInfo name=goose version=1.52.0
+#   session/new advertises configOptions provider/mode/model/thinking_effort
+#     → SPUR synthesizes /model and /effort. Do NOT add static
+#     [[commands.static]] model/effort entries — they would not call
+#     session/set_config_option.
+#   available_commands_update streams dynamic commands (compact, clear,
+#     skills, doctor, …) — no static commands needed.
+#   Modes advertised: auto / approve / smart_approve / chat. `auto`
+#     ("automatically approve tool calls") is declared below as the bypass
+#     session_mode; it only activates when the user opts in with
+#     [permissions] skip = true. Spur's interactive permission channel
+#     remains the fail-open default.
+[[agents.entries]]
+name = "goose"
+command = "goose"
+args = ["acp"]
+transport = "acp"
+kind = "generic"
+role = "both"
+cost_tier = "medium"
+
+[agents.entries.display]
+handle = "goose"
+
+[agents.entries.commands]
+dispatch = "prompt_text"
+
+[agents.entries.permissions]
+session_mode = "auto"
+
 # ── pi ────────────────────────────────────────────────────────────
 # Pi coding agent via svkozak/pi-acp. The adapter speaks ACP over stdio
 # and spawns `pi --mode rpc`, so both binaries must be on $PATH.

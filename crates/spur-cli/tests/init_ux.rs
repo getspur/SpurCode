@@ -22,6 +22,7 @@ fn install_hints_cover_all_seed_agents() {
         "codex",
         "gemini",
         "opencode",
+        "goose",
         "kimi",
         "grok",
         "pi",

@@ -26,6 +26,10 @@ pub const INSTALL_HINTS: &[(&str, &str)] = &[
     ("codex", "npx @agentclientprotocol/codex-acp@1.9.0"),
     ("gemini", "npm install -g @google/gemini-cli"),
     ("opencode", "npm install -g opencode"),
+    (
+        "goose",
+        "curl -fsSL https://github.com/block/goose/raw/main/install.sh | bash   # then `goose configure`",
+    ),
     ("kimi", "see docs/spur/agent-onboarding-cookbook.md"),
     (
         "grok",
