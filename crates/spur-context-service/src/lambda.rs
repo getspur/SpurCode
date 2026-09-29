@@ -2560,6 +2560,92 @@ mod code {
         };
         use crate::serving_registry::SERVING_REGISTRY_SCHEMA_VERSION;
 
+        fn api_key_control_request(scopes: &str) -> ApiGatewayRequest {
+            serde_json::from_value(json!({
+                "rawPath": "/mcp/api-key/code",
+                "requestContext": {
+                    "authorizer": { "lambda": {
+                        "auth_context_version": 1,
+                        "auth_kind": "api_key",
+                        "owner_id": "cognito:user:fixture-human",
+                        "key_id": "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        "scopes": scopes
+                    } },
+                    "http": { "method": "POST" }
+                }
+            }))
+            .expect("API-key control request")
+        }
+
+        #[test]
+        fn code_control_authorization_preserves_api_key_owner() {
+            let request = api_key_control_request("external.index external.status");
+            for tool in ["external_index", "external_index_status"] {
+                let caller = authorize_request(&request, classify_route(&request), tool)
+                    .expect("scoped API key should authorize control tool");
+                assert_eq!(
+                    serde_json::to_value(caller).unwrap(),
+                    json!("cognito:user:fixture-human"),
+                    "{tool} must retain the authorized owner for job ownership"
+                );
+            }
+        }
+
+        #[test]
+        fn code_control_authorization_rejects_missing_api_key_scope_and_context() {
+            let request = api_key_control_request("external.read");
+            for tool in ["external_index", "external_index_status"] {
+                assert_eq!(
+                    authorize_request(&request, classify_route(&request), tool),
+                    Err(AuthFailure::MissingScope)
+                );
+            }
+            let mut fallback = request;
+            fallback
+                .request_context
+                .as_mut()
+                .unwrap()
+                .authorizer
+                .as_mut()
+                .unwrap()
+                .lambda = None;
+            fallback
+                .request_context
+                .as_mut()
+                .unwrap()
+                .authorizer
+                .as_mut()
+                .unwrap()
+                .principal_id = Some("untrusted-fallback".to_owned());
+            assert_eq!(
+                authorize_request(&fallback, classify_route(&fallback), "external_index"),
+                Err(AuthFailure::MissingContext)
+            );
+        }
+
+        #[test]
+        fn code_control_authorization_preserves_iam_owner() {
+            let request: ApiGatewayRequest = serde_json::from_value(json!({
+                "rawPath": "/mcp/code",
+                "requestContext": {
+                    "authorizer": { "iam": {
+                        "accountId": "123456789012",
+                        "userId": "AROAFIXTURE:session",
+                        "userArn": "arn:aws:sts::123456789012:assumed-role/fixture/session"
+                    } },
+                    "http": { "method": "POST" }
+                }
+            }))
+            .unwrap();
+            for tool in ["external_index", "external_index_status"] {
+                let caller = authorize_request(&request, classify_route(&request), tool).unwrap();
+                assert_eq!(
+                    serde_json::to_value(caller).unwrap(),
+                    json!(authenticated_caller_id(&request, false).unwrap())
+                );
+            }
+        }
+
         struct EmptyFetcher;
 
         #[async_trait]
