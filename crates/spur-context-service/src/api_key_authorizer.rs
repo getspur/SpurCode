@@ -14,7 +14,11 @@ use crate::api_keys::{parse_api_key, verify_secret, ApiKeyScopes, ApiKeyStore, K
 
 const PUBLIC_ID_LEN: usize = 26;
 const MAX_OWNER_ID_LEN: usize = 512;
-const API_KEY_ROUTE_KEY: &str = "POST /mcp/api-key";
+const API_KEY_ROUTE_KEYS: &[&str] = &[
+    "POST /mcp/api-key",
+    "POST /mcp/api-key/code",
+    "POST /mcp/api-key/knowledge",
+];
 const API_KEY_HEADER: &str = "x-spur-api-key";
 const AUTHENTICATION_FAILED_BODY: &str = r#"{"error":{"code":"authentication_failed"}}"#;
 const AUTHORIZER_UNAVAILABLE_BODY: &str = r#"{"error":{"code":"authorizer_unavailable"}}"#;
@@ -330,7 +334,11 @@ pub async fn authorize_api_key_with_environment(
 fn credential_for_exact_route(
     request: &ApiKeyAuthorizerRequest,
 ) -> Result<&str, ApiKeyAuthorizerError> {
-    if request.route_key.as_deref() != Some(API_KEY_ROUTE_KEY) {
+    let route_key = request
+        .route_key
+        .as_deref()
+        .ok_or(ApiKeyAuthorizerError::AuthenticationFailed)?;
+    if !API_KEY_ROUTE_KEYS.contains(&route_key) {
         return Err(ApiKeyAuthorizerError::AuthenticationFailed);
     }
     let credentials = request
@@ -349,8 +357,8 @@ fn credential_for_exact_route(
     let [first, second] = identity_source else {
         return Err(ApiKeyAuthorizerError::AuthenticationFailed);
     };
-    if !((first == credential && second == API_KEY_ROUTE_KEY)
-        || (first == API_KEY_ROUTE_KEY && second == credential))
+    if !((first == credential && second == route_key)
+        || (first == route_key && second == credential))
     {
         return Err(ApiKeyAuthorizerError::AuthenticationFailed);
     }
