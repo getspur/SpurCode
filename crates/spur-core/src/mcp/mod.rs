@@ -423,6 +423,74 @@ pub(crate) fn worker_mcp_claude_tool_names_for_registry(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use spur_acp::config::{ContextServiceAuthMode, ContextServiceConfig};
+
+    fn config(mode: ContextServiceAuthMode) -> ContextServiceConfig {
+        ContextServiceConfig {
+            url: "https://context.example.test".to_owned(),
+            auth_mode: mode,
+            profile: "profile-a".to_owned(),
+            public_id_hint: None,
+            token: None,
+        }
+    }
+
+    #[test]
+    fn env_api_key_forces_api_key_auth_even_in_legacy_mode() {
+        let auth = resolve_context_auth(
+            &config(ContextServiceAuthMode::None),
+            Some("spur_live_x_secret".to_owned()),
+            None,
+            None,
+        )
+        .expect("environment API key must force API-key auth");
+        assert!(matches!(auth, ContextServiceAuth::ApiKey(_)));
+    }
+
+    #[test]
+    fn api_key_mode_uses_stored_key() {
+        let auth = resolve_context_auth(
+            &config(ContextServiceAuthMode::ApiKey),
+            None,
+            None,
+            Some(SecretString::from("spur_live_stored_secret")),
+        )
+        .expect("stored API key must produce API-key auth");
+        assert!(matches!(auth, ContextServiceAuth::ApiKey(_)));
+    }
+
+    #[test]
+    fn api_key_mode_without_any_key_skips_client_registration() {
+        assert!(
+            resolve_context_auth(
+                &config(ContextServiceAuthMode::ApiKey),
+                None,
+                Some("legacy-bearer".to_owned()),
+                None,
+            )
+            .is_none(),
+            "explicit API-key mode without a resolvable key must not silently downgrade to bearer or anonymous auth"
+        );
+    }
+
+    #[test]
+    fn legacy_mode_maps_token_to_oauth_bearer() {
+        let auth = resolve_context_auth(
+            &config(ContextServiceAuthMode::None),
+            None,
+            Some("legacy-bearer".to_owned()),
+            None,
+        )
+        .expect("legacy token keeps bearer auth");
+        assert!(matches!(auth, ContextServiceAuth::OAuthBearer(_)));
+    }
+
+    #[test]
+    fn legacy_mode_without_credentials_stays_anonymous() {
+        let auth = resolve_context_auth(&config(ContextServiceAuthMode::None), None, None, None)
+            .expect("anonymous mode keeps registering the unauthenticated client");
+        assert!(matches!(auth, ContextServiceAuth::None));
+    }
     use rmcp::model::ErrorCode;
     use serde_json::{json, Value};
     use spur_mcp::{ServerKind, ToolAuthority, ToolCallContext};
