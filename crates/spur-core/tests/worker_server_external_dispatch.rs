@@ -160,7 +160,10 @@ async fn configured_worker_proxies_external_tools_with_structured_results_and_er
         .expect("bind context stub");
     let stub_addr = listener.local_addr().expect("context stub addr");
     let stub_app = Router::new()
-        .route("/context", post(context_stub))
+        // The proxy treats `ContextServiceConfig::url` as a service origin and
+        // posts context tools directly to `{origin}/mcp/code` (knowledge tools
+        // would hit `{origin}/mcp/knowledge`, unused by this test).
+        .route("/mcp/code", post(context_stub))
         .with_state(stub_state.clone());
     let stub = tokio::spawn(async move {
         axum::serve(listener, stub_app)
@@ -168,7 +171,7 @@ async fn configured_worker_proxies_external_tools_with_structured_results_and_er
             .expect("serve context stub");
     });
     let (_dir, server) = test_server(ContextServiceConfig {
-        url: format!("http://{stub_addr}/context"),
+        url: format!("http://{stub_addr}"),
         ..ContextServiceConfig::default()
     })
     .await;
