@@ -20,7 +20,7 @@ use std::{
 
 pub use context_service::{ContextServiceAuth, ContextServiceClient};
 pub use local_projects::{IndexedLocalProjectValidator, LocalProjectMcpComposition};
-use spur_acp::config::ContextServiceConfig;
+use spur_acp::config::{ContextServiceAuthMode, ContextServiceConfig};
 
 const WORKER_DENIED_TOOL_CALLS: &[&str] = &[
     "delegate_to_worker",
@@ -178,18 +178,105 @@ fn brain_tool_registry_with_local_projects_and_repo_root(
         .build())
 }
 
+const CONTEXT_API_KEY_ENV: &str = "SPUR_CONTEXT_SERVICE_API_KEY";
+const CONTEXT_CREDENTIALS_FILE_ENV: &str = "SPUR_CONTEXT_CREDENTIALS_FILE";
+const CONTEXT_KEYRING_SERVICE: &str = "dev.getspur.spur.context-service";
+
+/// Resolves one context-service auth mode for the composed MCP registries.
+///
+/// Mirrors the precedence of `spur context mcp`'s `resolve_mcp_auth`: an
+/// environment API key forces the API-key route; explicit `api_key` mode
+/// resolves only to a key (failing closed instead of silently downgrading to
+/// anonymous auth, which production API Gateway rejects with 403); other modes
+/// preserve the legacy bearer/anonymous behavior.
+fn resolve_context_auth(
+    config: &ContextServiceConfig,
+    env_api_key: Option<String>,
+    legacy_token: Option<String>,
+    stored_api_key: Option<secrecy::SecretString>,
+) -> Option<ContextServiceAuth> {
+    if let Some(key) = env_api_key.and_then(|value| non_empty_trimmed(value)) {
+        return Some(ContextServiceAuth::ApiKey(secrecy::SecretString::from(key)));
+    }
+    match config.auth_mode {
+        ContextServiceAuthMode::ApiKey => {
+            if stored_api_key.is_none() {
+                tracing::warn!(
+                    "context-service auth_mode=api_key resolved no API key; external_* tools \
+                     disabled. Run `spur context key add --stdin` or export \
+                     SPUR_CONTEXT_SERVICE_API_KEY"
+                );
+            }
+            stored_api_key.map(ContextServiceAuth::ApiKey)
+        }
+        ContextServiceAuthMode::None | ContextServiceAuthMode::OAuthBearer => legacy_token
+            .and_then(|value| non_empty_trimmed(value))
+            .map(|token| ContextServiceAuth::OAuthBearer(secrecy::SecretString::from(token)))
+            .or(Some(ContextServiceAuth::None)),
+    }
+}
+
+/// Loads the stored API key for `profile_name` off-thread.
+///
+/// `resolve_api_key` is async over blocking OS-keyring stores, so it runs on a
+/// dedicated thread with its own executor instead of blocking a tokio worker.
+fn stored_api_key_blocking(profile_name: &str) -> Option<String> {
+    use secrecy::ExposeSecret as _;
+    use spur_context_auth::credentials::{
+        resolve_api_key, CredentialProfile, CredentialPurpose, OsKeyringCredentialStore,
+        RestrictedFileCredentialStore,
+    };
+    let profile = CredentialProfile::new(profile_name, CredentialPurpose::ApiKey).ok()?;
+    std::thread::spawn(move || {
+        let Ok(keyring) = OsKeyringCredentialStore::new(CONTEXT_KEYRING_SERVICE) else {
+            return None;
+        };
+        let file = std::env::var_os(CONTEXT_CREDENTIALS_FILE_ENV)
+            .filter(|value| !value.is_empty())
+            .map(std::path::PathBuf::from)
+            .map(RestrictedFileCredentialStore::new);
+        let file: Option<&dyn spur_context_auth::credentials::CredentialStore> = file
+            .as_ref()
+            .map(|store| store as &dyn spur_context_auth::credentials::CredentialStore);
+        match futures::executor::block_on(resolve_api_key(&profile, None, &keyring, file)) {
+            Ok(Some(credential)) => Some(credential.secret().expose_secret().to_owned()),
+            Ok(None) | Err(_) => None,
+        }
+    })
+    .join()
+    .ok()
+    .flatten()
+}
+
 fn context_service_client(
     config: &ContextServiceConfig,
 ) -> Option<context_service::ContextServiceClient> {
     let base_url = std::env::var("SPUR_CONTEXT_SERVICE_URL")
         .ok()
-        .and_then(non_empty_trimmed)
+        .and_then(|value| non_empty_trimmed(value))
         .or_else(|| non_empty_trimmed(config.url.clone()))?;
-    let bearer_token = std::env::var("SPUR_CONTEXT_SERVICE_TOKEN")
+    let env_api_key = std::env::var(CONTEXT_API_KEY_ENV)
         .ok()
-        .and_then(non_empty_trimmed)
-        .or_else(|| config.token.clone().and_then(non_empty_trimmed));
-    match context_service::ContextServiceClient::with_optional_token(base_url, bearer_token) {
+        .and_then(|value| non_empty_trimmed(value));
+    let legacy_token = std::env::var("SPUR_CONTEXT_SERVICE_TOKEN")
+        .ok()
+        .and_then(|value| non_empty_trimmed(value))
+        .or_else(|| {
+            config
+                .token
+                .clone()
+                .and_then(|value| non_empty_trimmed(value))
+        });
+    let needs_stored_key =
+        env_api_key.is_none() && config.auth_mode == ContextServiceAuthMode::ApiKey;
+    let stored_api_key = if needs_stored_key {
+        stored_api_key_blocking(&config.profile)
+    } else {
+        None
+    }
+    .map(secrecy::SecretString::from);
+    let auth = resolve_context_auth(config, env_api_key, legacy_token, stored_api_key)?;
+    match context_service::ContextServiceClient::new(base_url, auth) {
         Ok(client) => Some(client),
         Err(_error) => {
             tracing::warn!("rejected insecure authenticated context-service endpoint");
@@ -423,7 +510,7 @@ pub(crate) fn worker_mcp_claude_tool_names_for_registry(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use spur_acp::config::{ContextServiceAuthMode, ContextServiceConfig};
+    use spur_acp::config::ContextServiceAuthMode;
 
     fn config(mode: ContextServiceAuthMode) -> ContextServiceConfig {
         ContextServiceConfig {
@@ -453,7 +540,7 @@ mod tests {
             &config(ContextServiceAuthMode::ApiKey),
             None,
             None,
-            Some(SecretString::from("spur_live_stored_secret")),
+            Some(secrecy::SecretString::from("spur_live_stored_secret")),
         )
         .expect("stored API key must produce API-key auth");
         assert!(matches!(auth, ContextServiceAuth::ApiKey(_)));
