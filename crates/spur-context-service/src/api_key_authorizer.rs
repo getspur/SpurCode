@@ -531,6 +531,79 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn split_api_key_routes_authorize_with_exact_cache_identity() {
+        let now = 1_700_000_000;
+        let generated = generated(now);
+        let credential = generated.plaintext.expose_secret().to_owned();
+        let inner = FakeApiKeyStore::new();
+        inner
+            .create_key(CreateKeyRecord::new(generated.record))
+            .await
+            .expect("record should persist");
+        let store = CountingStore::new(inner);
+
+        for route in ["POST /mcp/api-key/code", "POST /mcp/api-key/knowledge"] {
+            for route_first in [false, true] {
+                let mut request = request(Some(&credential));
+                request.route_key = Some(route.to_owned());
+                let mut identity = vec![credential.clone(), route.to_owned()];
+                if route_first {
+                    identity.reverse();
+                }
+                request.identity_source = Some(identity);
+                let response = authorize_api_key(&request, &store, KeyEnvironment::Live, now)
+                    .await
+                    .expect("deployed split route must accept an active key");
+                assert!(response.is_authorized);
+            }
+        }
+        assert_eq!(store.lookup_count(), 4);
+    }
+
+    #[tokio::test]
+    async fn split_api_key_routes_reject_mismatched_identity_and_route_variants() {
+        let now = 1_700_000_000;
+        let generated = generated(now);
+        let credential = generated.plaintext.expose_secret().to_owned();
+        let store = CountingStore::failing();
+
+        for route in ["POST /mcp/api-key/code", "POST /mcp/api-key/knowledge"] {
+            for identity_route in [
+                "POST /mcp/api-key",
+                "POST /mcp/api-key/code",
+                "POST /mcp/api-key/knowledge",
+            ] {
+                if identity_route == route {
+                    continue;
+                }
+                let mut request = request(Some(&credential));
+                request.route_key = Some(route.to_owned());
+                request.identity_source = Some(vec![credential.clone(), identity_route.to_owned()]);
+                assert_eq!(
+                    authorize_api_key(&request, &store, KeyEnvironment::Live, now).await,
+                    Err(ApiKeyAuthorizerError::AuthenticationFailed)
+                );
+            }
+        }
+        for route in [
+            "GET /mcp/api-key/code",
+            "POST /mcp/api-key/code/",
+            "POST /mcp/api-key/knowledge/extra",
+            "POST /mcp/api-key/other",
+            "POST /mcp/oauth/code",
+        ] {
+            let mut request = request(Some(&credential));
+            request.route_key = Some(route.to_owned());
+            request.identity_source = Some(vec![credential.clone(), route.to_owned()]);
+            assert_eq!(
+                authorize_api_key(&request, &store, KeyEnvironment::Live, now).await,
+                Err(ApiKeyAuthorizerError::AuthenticationFailed)
+            );
+        }
+        assert_eq!(store.lookup_count(), 0);
+    }
+
+    #[tokio::test]
     async fn credential_failures_are_indistinguishable_and_secret_safe() {
         let now = 1_700_000_000;
         let active = generated(now);
