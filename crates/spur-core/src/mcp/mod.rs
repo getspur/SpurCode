@@ -21,6 +21,9 @@ use std::{
 pub use context_service::{ContextServiceAuth, ContextServiceClient};
 pub use local_projects::{IndexedLocalProjectValidator, LocalProjectMcpComposition};
 use spur_acp::config::{ContextServiceAuthMode, ContextServiceConfig};
+use spur_context_auth::credentials::{
+    CredentialProfile, CredentialStore, RestrictedFileCredentialStore,
+};
 
 const WORKER_DENIED_TOOL_CALLS: &[&str] = &[
     "delegate_to_worker",
@@ -221,23 +224,27 @@ fn resolve_context_auth(
 /// `resolve_api_key` is async over blocking OS-keyring stores, so it runs on a
 /// dedicated thread with its own executor instead of blocking a tokio worker.
 fn stored_api_key_blocking(profile_name: &str) -> Option<String> {
-    use secrecy::ExposeSecret as _;
-    use spur_context_auth::credentials::{
-        resolve_api_key, CredentialProfile, CredentialPurpose, OsKeyringCredentialStore,
-        RestrictedFileCredentialStore,
-    };
+    use spur_context_auth::credentials::{CredentialPurpose, OsKeyringCredentialStore};
     let profile = CredentialProfile::new(profile_name, CredentialPurpose::ApiKey).ok()?;
+    let keyring = OsKeyringCredentialStore::new(CONTEXT_KEYRING_SERVICE).ok()?;
+    let file = std::env::var_os(CONTEXT_CREDENTIALS_FILE_ENV)
+        .filter(|value| !value.is_empty())
+        .map(std::path::PathBuf::from)
+        .map(RestrictedFileCredentialStore::new);
+    stored_api_key_with_stores_blocking(profile, keyring, file)
+}
+
+fn stored_api_key_with_stores_blocking(
+    profile: CredentialProfile,
+    keyring: impl CredentialStore + 'static,
+    file: Option<RestrictedFileCredentialStore>,
+) -> Option<String> {
+    use secrecy::ExposeSecret as _;
+    use spur_context_auth::credentials::resolve_api_key;
+
     std::thread::spawn(move || {
-        let Ok(keyring) = OsKeyringCredentialStore::new(CONTEXT_KEYRING_SERVICE) else {
-            return None;
-        };
-        let file = std::env::var_os(CONTEXT_CREDENTIALS_FILE_ENV)
-            .filter(|value| !value.is_empty())
-            .map(std::path::PathBuf::from)
-            .map(RestrictedFileCredentialStore::new);
-        let file: Option<&dyn spur_context_auth::credentials::CredentialStore> = file
-            .as_ref()
-            .map(|store| store as &dyn spur_context_auth::credentials::CredentialStore);
+        let file: Option<&dyn CredentialStore> =
+            file.as_ref().map(|store| store as &dyn CredentialStore);
         match futures::executor::block_on(resolve_api_key(&profile, None, &keyring, file)) {
             Ok(Some(credential)) => Some(credential.secret().expose_secret().to_owned()),
             Ok(None) | Err(_) => None,
@@ -511,6 +518,118 @@ pub(crate) fn worker_mcp_claude_tool_names_for_registry(
 mod tests {
     use super::*;
     use spur_acp::config::ContextServiceAuthMode;
+    use spur_context_auth::credentials::{
+        ApiKeyCredential, CredentialError, CredentialPurpose, StoredCredential,
+    };
+
+    struct BlockingCredentialStore(Result<Option<StoredCredential>, CredentialError>);
+
+    #[async_trait::async_trait]
+    impl CredentialStore for BlockingCredentialStore {
+        async fn load(
+            &self,
+            profile: &CredentialProfile,
+        ) -> Result<Option<StoredCredential>, CredentialError> {
+            assert_eq!(profile.purpose(), CredentialPurpose::ApiKey);
+            let result = self.0.clone();
+            // Exercise the same runtime requirement as the OS keyring store,
+            // without accessing a developer's credentials or requiring a DBus session.
+            tokio::task::spawn_blocking(move || result)
+                .await
+                .map_err(|_| CredentialError::Backend)?
+        }
+
+        async fn store(
+            &self,
+            _profile: &CredentialProfile,
+            _value: &StoredCredential,
+        ) -> Result<(), CredentialError> {
+            unreachable!("credential loading must not write to the keyring")
+        }
+
+        async fn delete(&self, _profile: &CredentialProfile) -> Result<(), CredentialError> {
+            unreachable!("credential loading must not delete from the keyring")
+        }
+    }
+
+    fn test_api_key() -> ApiKeyCredential {
+        ApiKeyCredential::parse_stdin(&format!("spur_test_{}_{}", "a".repeat(26), "a".repeat(52)))
+            .expect("canonical test key")
+    }
+
+    fn test_credential_profile() -> CredentialProfile {
+        CredentialProfile::new("profile-a", CredentialPurpose::ApiKey).unwrap()
+    }
+
+    fn assert_stored_api_key_registers_external_tools() {
+        use secrecy::ExposeSecret as _;
+        let key = test_api_key();
+        let stored = stored_api_key_with_stores_blocking(
+            test_credential_profile(),
+            BlockingCredentialStore(Ok(Some(StoredCredential::ApiKey(key.clone())))),
+            None,
+        )
+        .expect("stored key must load even when its store requires a Tokio runtime");
+        assert_eq!(stored, key.secret().expose_secret());
+        let auth = resolve_context_auth(
+            &config(ContextServiceAuthMode::ApiKey),
+            None,
+            None,
+            Some(stored.into()),
+        )
+        .expect("loaded credential must enable API-key authentication");
+        let client = ContextServiceClient::new("https://context.example.test", auth).unwrap();
+        let registry = worker_tool_registry_with_client(Some(client)).unwrap();
+        assert!(registry
+            .list_tools()
+            .iter()
+            .any(|tool| tool.name == "external_code_read"));
+    }
+
+    #[test]
+    fn stored_api_key_loads_without_caller_runtime() {
+        assert_stored_api_key_registers_external_tools();
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn stored_api_key_loads_from_current_thread_runtime() {
+        assert_stored_api_key_registers_external_tools();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn stored_api_key_loads_from_multi_thread_runtime() {
+        assert_stored_api_key_registers_external_tools();
+    }
+
+    #[tokio::test]
+    async fn stored_api_key_loads_restricted_file_when_keyring_unavailable() {
+        use secrecy::ExposeSecret as _;
+        let directory = tempfile::tempdir().unwrap();
+        let file = RestrictedFileCredentialStore::new(directory.path().join("credentials.json"));
+        let profile = test_credential_profile();
+        let key = test_api_key();
+        file.store(&profile, &StoredCredential::ApiKey(key.clone()))
+            .await
+            .unwrap();
+        let stored = stored_api_key_with_stores_blocking(
+            profile,
+            BlockingCredentialStore(Err(CredentialError::Unavailable)),
+            Some(file),
+        );
+        assert_eq!(stored.as_deref(), Some(key.secret().expose_secret()));
+    }
+
+    #[test]
+    fn stored_api_key_missing_or_failed_store_returns_no_key() {
+        for result in [Ok(None), Err(CredentialError::Backend)] {
+            assert!(stored_api_key_with_stores_blocking(
+                test_credential_profile(),
+                BlockingCredentialStore(result),
+                None,
+            )
+            .is_none());
+        }
+    }
 
     fn config(mode: ContextServiceAuthMode) -> ContextServiceConfig {
         ContextServiceConfig {
