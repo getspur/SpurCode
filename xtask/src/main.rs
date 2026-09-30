@@ -1270,6 +1270,8 @@ fn remote_install_build_command(
         "-p",
         "spur-cli",
         "--no-default-features",
+        "--features",
+        "duckdb-bundled",
     ]);
     cmd.arg("--locked").current_dir(workspace_root);
     cmd
@@ -1618,6 +1620,8 @@ mod tests {
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
                 "--no-default-features".to_owned(),
+                "--features".to_owned(),
+                "duckdb-bundled".to_owned(),
                 "--locked".to_owned(),
             ]
         );
@@ -1640,6 +1644,8 @@ mod tests {
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
                 "--no-default-features".to_owned(),
+                "--features".to_owned(),
+                "duckdb-bundled".to_owned(),
                 "--locked".to_owned(),
             ]
         );

@@ -7,7 +7,8 @@ rust-version.workspace = true
 license.workspace = true
 
 [features]
-default = ["embed"]
+default = ["embed", "duckdb-bundled"]
+duckdb-bundled = ["spur-analyst/duckdb-bundled"]
 embed = ["spur-analyst/embed", "spur-graph/embed"]
 test-support = []
 test-helpers = []
@@ -77,7 +78,7 @@ tracing-subscriber = { workspace = true }
 spur-blob-store = { workspace = true, features = ["test-support"] }
 spur-graph = { workspace = true, default-features = false, features = ["embed", "test-support"] }
 spur-license = { workspace = true, features = ["test-support"] }
-spur-core = { path = ".", features = ["test-support"] }
+spur-core = { path = ".", default-features = false, features = ["test-support"] }
 proptest = "1"
 proptest-state-machine = "0.8"
 fs4 = "0.13"

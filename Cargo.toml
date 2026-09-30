@@ -96,8 +96,9 @@ rusqlite = { version = "0.39", features = ["bundled"] }
 # statically. This drops the runtime `libduckdb.dylib` dependency and lets
 # `cargo install --path crates/spur-cli` work without any system package.
 # Cost: a cold release build of duckdb ~4 minutes on macOS.
-# Version pinned here; the `bundled` feature is opted into per-consumer such as
-# spur-context and spur-analyst. `vtab` remains pinned at the workspace baseline
+# Version pinned here; `duckdb-bundled` selects source builds in consumers.
+# Prebuilt builds disable defaults and provide DUCKDB_LIB_DIR/DUCKDB_STATIC.
+# `vtab` remains pinned at the workspace baseline
 # so every remaining workspace consumer resolves duckdb to one feature set.
 #
 # Pinned EXACTLY to =1.4.4 (the workspace standard): this is the newest DuckDB
@@ -149,7 +150,7 @@ spur-license = { path = "crates/spur-license" }
 spur-tui = { path = "crates/spur-tui", default-features = false }
 spur-interactive = { path = "crates/spur-interactive", default-features = false }
 spur-bot = { path = "crates/spur-bot" }
-spur-context = { path = "crates/spur-context" }
+spur-context = { path = "crates/spur-context", default-features = false }
 spur-context-source = { path = "crates/spur-context-source" }
 spur-context-fetcher = { path = "crates/spur-context-fetcher" }
 spur-context-service = { path = "crates/spur-context-service" }

@@ -1363,7 +1363,7 @@ fn worker_image_builds_spur_cli_without_embedding_features() -> Result<()> {
 
     assert!(
         deploy_script.contains(
-            "build -p spur-cli --release --no-default-features --features worker-no-embed"
+            "build -p spur-cli --release --no-default-features --features worker-no-embed,duckdb-bundled"
         ),
         "worker image spur CLI build must disable default embedding features"
     );
