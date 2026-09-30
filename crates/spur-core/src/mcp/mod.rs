@@ -198,7 +198,7 @@ fn resolve_context_auth(
     legacy_token: Option<String>,
     stored_api_key: Option<secrecy::SecretString>,
 ) -> Option<ContextServiceAuth> {
-    if let Some(key) = env_api_key.and_then(|value| non_empty_trimmed(value)) {
+    if let Some(key) = env_api_key.and_then(non_empty_trimmed) {
         return Some(ContextServiceAuth::ApiKey(secrecy::SecretString::from(key)));
     }
     match config.auth_mode {
@@ -213,7 +213,7 @@ fn resolve_context_auth(
             stored_api_key.map(ContextServiceAuth::ApiKey)
         }
         ContextServiceAuthMode::None | ContextServiceAuthMode::OAuthBearer => legacy_token
-            .and_then(|value| non_empty_trimmed(value))
+            .and_then(non_empty_trimmed)
             .map(|token| ContextServiceAuth::OAuthBearer(secrecy::SecretString::from(token)))
             .or(Some(ContextServiceAuth::None)),
     }
@@ -289,20 +289,15 @@ fn context_service_client(
 ) -> Option<context_service::ContextServiceClient> {
     let base_url = std::env::var("SPUR_CONTEXT_SERVICE_URL")
         .ok()
-        .and_then(|value| non_empty_trimmed(value))
+        .and_then(non_empty_trimmed)
         .or_else(|| non_empty_trimmed(config.url.clone()))?;
     let env_api_key = std::env::var(CONTEXT_API_KEY_ENV)
         .ok()
-        .and_then(|value| non_empty_trimmed(value));
+        .and_then(non_empty_trimmed);
     let legacy_token = std::env::var("SPUR_CONTEXT_SERVICE_TOKEN")
         .ok()
-        .and_then(|value| non_empty_trimmed(value))
-        .or_else(|| {
-            config
-                .token
-                .clone()
-                .and_then(|value| non_empty_trimmed(value))
-        });
+        .and_then(non_empty_trimmed)
+        .or_else(|| config.token.clone().and_then(non_empty_trimmed));
     let needs_stored_key =
         env_api_key.is_none() && config.auth_mode == ContextServiceAuthMode::ApiKey;
     let stored_api_key = if needs_stored_key {
