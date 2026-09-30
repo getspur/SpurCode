@@ -221,8 +221,9 @@ fn resolve_context_auth(
 
 /// Loads the stored API key for `profile_name` off-thread.
 ///
-/// `resolve_api_key` is async over blocking OS-keyring stores, so it runs on a
-/// dedicated thread with its own executor instead of blocking a tokio worker.
+/// The stores use Tokio's blocking pool. Run their futures on a dedicated
+/// thread with its own Tokio runtime so synchronous registry construction also
+/// works inside an existing (including current-thread) runtime.
 fn stored_api_key_blocking(profile_name: &str) -> Option<String> {
     use spur_context_auth::credentials::{CredentialPurpose, OsKeyringCredentialStore};
     let profile = CredentialProfile::new(profile_name, CredentialPurpose::ApiKey).ok()?;
@@ -242,17 +243,45 @@ fn stored_api_key_with_stores_blocking(
     use secrecy::ExposeSecret as _;
     use spur_context_auth::credentials::resolve_api_key;
 
-    std::thread::spawn(move || {
-        let file: Option<&dyn CredentialStore> =
-            file.as_ref().map(|store| store as &dyn CredentialStore);
-        match futures::executor::block_on(resolve_api_key(&profile, None, &keyring, file)) {
-            Ok(Some(credential)) => Some(credential.secret().expose_secret().to_owned()),
-            Ok(None) | Err(_) => None,
+    let loader = std::thread::Builder::new()
+        .name("spur-context-credentials".to_owned())
+        .spawn(move || {
+            let runtime = match tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+            {
+                Ok(runtime) => runtime,
+                Err(error) => {
+                    tracing::warn!(%error, "could not start context-service credential runtime");
+                    return None;
+                }
+            };
+            let file: Option<&dyn CredentialStore> =
+                file.as_ref().map(|store| store as &dyn CredentialStore);
+            match runtime.block_on(resolve_api_key(&profile, None, &keyring, file)) {
+                Ok(Some(credential)) => Some(credential.secret().expose_secret().to_owned()),
+                Ok(None) => None,
+                Err(error) => {
+                    // CredentialError contains only secret-free categories.
+                    tracing::warn!(%error, "could not load stored context-service API key");
+                    None
+                }
+            }
+        });
+    match loader {
+        Ok(loader) => match loader.join() {
+            Ok(key) => key,
+            Err(_) => {
+                // Never log the panic payload: a store may include a secret.
+                tracing::warn!("context-service credential loader thread panicked");
+                None
+            }
+        },
+        Err(error) => {
+            tracing::warn!(%error, "could not start context-service credential loader thread");
+            None
         }
-    })
-    .join()
-    .ok()
-    .flatten()
+    }
 }
 
 fn context_service_client(
