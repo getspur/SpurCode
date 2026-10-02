@@ -1125,10 +1125,12 @@ locals {
   # `s3://<bucket>/gold/catalog-snapshot/current.json` — matching the serving
   # `catalog_s3_uri` default. A bare `.../data/` path offsets the entire gold
   # layer one level deep (`.../data/gold/...`) and serving never finds it.
-  context_ducklake_data_path      = coalesce(var.context_ducklake_data_path, "s3://${var.bucket_name}/gold/data/")
-  worker_checkpoint_uri_template  = "s3://${var.bucket_name}/jobs/{}/checkpoint.json"
-  aurora_subnet_ids               = var.aurora_subnets != null ? var.aurora_subnets : local.net_subnet_ids
-  aurora_catalog_dsn              = "postgres:host=${aws_rds_cluster.catalog.endpoint} port=${aws_rds_cluster.catalog.port} dbname=${var.aurora_database_name} user=${var.aurora_master_username} sslmode=require"
+  context_ducklake_data_path     = coalesce(var.context_ducklake_data_path, "s3://${var.bucket_name}/gold/data/")
+  worker_checkpoint_uri_template = "s3://${var.bucket_name}/jobs/{}/checkpoint.json"
+  aurora_subnet_ids              = var.aurora_subnets != null ? var.aurora_subnets : local.net_subnet_ids
+  # A long-idle Aurora resume took 74s in production. Override the client's 30s
+  # default for both Lambda and ECS workers, including Step Functions overrides.
+  aurora_catalog_dsn              = "postgres:host=${aws_rds_cluster.catalog.endpoint} port=${aws_rds_cluster.catalog.port} dbname=${var.aurora_database_name} user=${var.aurora_master_username} sslmode=require connect_timeout=120"
   aurora_master_secret_arn        = aws_rds_cluster.catalog.master_user_secret[0].secret_arn
   aurora_master_password_valuearn = "${local.aurora_master_secret_arn}:password::"
 
