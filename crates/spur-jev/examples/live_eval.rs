@@ -1,18 +1,20 @@
-//! Live in-session evaluation: jev_compile (real Jev transport) -> real Z3.
+//! Live in-session evaluation: `jev_compile` (real Jev transport) -> real Z3.
 //!
 //! Run with a live key and local build:
+//! ```sh
 //!   set -a; source .env; set +a
 //!   SPUR_REMOTE=0 SPUR_JEV_ENABLED=1 scripts/spur-cargo run -p spur-jev --example live_eval
+//! ```
 //!
 //! Two code paths, both production entry points:
-//!   A. MCP tool path: jev_compile -> solve_rules (three family cases + one ambiguity probe)
-//!   B. Library path: typed battery -> gate -> compile_bprime -> check -> solve_constraints
+//!   A. MCP tool path: `jev_compile` -> `solve_rules` (three family cases + one ambiguity probe)
+//!   B. Library path: typed battery -> gate -> `compile_bprime` -> check -> `solve_constraints`
 //! All intents are fresh paraphrases; none reuse the recorded POC fixtures.
 
 use std::sync::Arc;
 
 use serde_json::{json, Value};
-use spur_jev::client::{HttpJevTransport, JevTransport};
+use spur_jev::client::{HttpJevTransport, JevTransport as _};
 use spur_jev::gate::DecisionReview;
 use spur_jev::mcp::JevMcpModule;
 use spur_jev::snapshot::CatalogSnapshot;
@@ -68,13 +70,21 @@ fn result_json(response: &spur_mcp::JsonRpcResponse) -> Value {
 async fn jev_compile(registry: &ToolRegistry, intent: &str, data: Value) -> Value {
     result_json(
         &registry
-            .call_json_tool(context(), "jev_compile", json!({ "intent": intent, "data": data }))
+            .call_json_tool(
+                context(),
+                "jev_compile",
+                json!({ "intent": intent, "data": data }),
+            )
             .await,
     )
 }
 
 async fn solve_rules(registry: &ToolRegistry, request: Value) -> Value {
-    result_json(&registry.call_json_tool(context(), "solve_rules", request).await)
+    result_json(
+        &registry
+            .call_json_tool(context(), "solve_rules", request)
+            .await,
+    )
 }
 
 async fn case_family(
@@ -92,10 +102,11 @@ async fn case_family(
         .as_str()
         .unwrap_or("(none)")
         .to_owned();
-    let mut solved = json!({"status": "not-solved"});
-    if gate == "open" {
-        solved = solve_rules(registry, compiled["request"].clone()).await;
-    }
+    let solved = if gate == "open" {
+        solve_rules(registry, compiled["request"].clone()).await
+    } else {
+        json!({"status": "not-solved"})
+    };
     println!(
         "{}",
         json!({
@@ -104,7 +115,7 @@ async fn case_family(
             "gate": gate,
             "weakest": weakest,
             "ambiguity_present": compiled.get("ambiguity").is_some(),
-            "solve_status": solved.get("status").cloned().unwrap_or(json!("blocked")),
+            "solve_status": solved.get("status").cloned().unwrap_or_else(|| json!("blocked")),
             "outcome": solved.get("outcome").cloned().unwrap_or(json!(null)),
             "diagnostic": solved["rule_results"][0].get("diagnostic").cloned().unwrap_or(json!(null)),
             "expect": expect,
@@ -225,8 +236,8 @@ async fn main() {
     .await;
 
     // --- Path B: library path, generic B-prime with live Jev decisions ------
-    let questions: std::collections::BTreeMap<String, Question> =
-        std::collections::BTreeMap::from([
+    let questions: std::collections::BTreeMap<String, Question> = std::collections::BTreeMap::from(
+        [
             (
                 "cap_is_soft".to_owned(),
                 Question::Noul {
@@ -245,13 +256,20 @@ async fn main() {
                         "question": "Which objective matches the sentence?"
                     })),
                     criteria: std::collections::BTreeMap::from([
-                        ("minimize".to_owned(), json!("Minimize the budget variable.")),
-                        ("maximize".to_owned(), json!("Maximize the budget variable.")),
+                        (
+                            "minimize".to_owned(),
+                            json!("Minimize the budget variable."),
+                        ),
+                        (
+                            "maximize".to_owned(),
+                            json!("Maximize the budget variable."),
+                        ),
                         ("none".to_owned(), json!("No objective needed.")),
                     ]),
                 },
             ),
-        ]);
+        ],
+    );
     let request = JevRequest {
         state: json!({
             "intent": "The retry budget r is an integer from 0 to 7. Hard requirement: doubled r must reach at least 5. Preference when possible: keep r at or below 3. Report the smallest legal budget.",
@@ -274,10 +292,10 @@ async fn main() {
         ],
         "objectives": [{"op": {"$choice": "prefer_minimal"}, "expr": {"kind": "var", "name": "r"}}]
     });
-    let compiled = spur_jev::compile::compile_bprime(&response.answers, &template)
-        .expect("compile B-prime");
-    let validated = spur_solver::constraint_spec::parse_and_validate(compiled)
-        .expect("validate B-prime");
+    let compiled =
+        spur_jev::compile::compile_bprime(&response.answers, &template).expect("compile B-prime");
+    let validated =
+        spur_solver::constraint_spec::parse_and_validate(compiled).expect("validate B-prime");
     let solved = SolverService::new()
         .solve_constraints(validated)
         .await
