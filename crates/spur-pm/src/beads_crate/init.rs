@@ -340,20 +340,13 @@ mod tests {
     }
 }
 
-/// Pattern matching the temp files `beads_rust` creates during atomic JSONL writes.
-/// Per `beads_rust` 0.1.15 `sync::export_temp_path`:
-///
-/// ```ignore
-/// pub(crate) fn export_temp_path(output_path: &Path) -> PathBuf {
-///     output_path.with_extension(format!("jsonl.{}.tmp", std::process::id()))
-/// }
-/// ```
-///
-/// For input `issues.jsonl`, `Path::with_extension` strips `.jsonl` and appends
-/// the new extension, producing `issues.jsonl.<pid>.tmp`. The PID is decimal
-/// digits; there is NO random suffix. We deliberately match strictly so we
-/// never touch `SQLite` sidecars (`-wal`, `-shm`) or the live `issues.jsonl`.
+/// Match the pinned exporter's `issues.jsonl.tmp` and legacy
+/// `issues.jsonl.<pid>.tmp` files. Keep both forms strict so cleanup never
+/// touches SQLite sidecars, unrelated files, or the live `issues.jsonl`.
 fn is_jsonl_temp_file(name: &str) -> bool {
+    if name == "issues.jsonl.tmp" {
+        return true;
+    }
     let Some(rest) = name.strip_prefix("issues.jsonl.") else {
         return false;
     };
@@ -450,7 +443,7 @@ mod sweep_tests {
     #[test]
     fn removes_old_jsonl_tmp_files() {
         let dir = TempDir::new().unwrap();
-        // beads_rust temp scheme: `issues.jsonl.<pid>.tmp` (decimal digits only)
+        // Legacy temp scheme: `issues.jsonl.<pid>.tmp` (decimal digits only)
         let p = dir.path().join("issues.jsonl.12345.tmp");
         std::fs::write(&p, b"orphan").unwrap();
         let removed = sweep_stale_jsonl_temps(dir.path(), Duration::ZERO).unwrap();
@@ -507,7 +500,7 @@ mod sweep_tests {
 /// Returns true (= safe to skip) iff ALL of:
 ///   * `beads.db` exists (otherwise init must run to create it),
 ///   * `issues.jsonl` exists (otherwise we owe an initial export),
-///   * no `issues.jsonl.<pid>.tmp` files are present (no sweep work pending),
+///   * no recognized JSONL temp files are present (no sweep work pending),
 ///   * `issues.jsonl` mtime is at least as recent as `beads.db` and any
 ///     `beads.db-wal` sidecar (no SQLite→JSONL flush is pending).
 ///
