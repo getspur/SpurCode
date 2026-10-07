@@ -46,14 +46,6 @@ mod tests {
         let adapter = BeadsCrateAdapter::open(dir.path(), AdapterConfig::default())
             .await
             .unwrap();
-        adapter
-            .read(|storage| {
-                storage.list_issues(&Default::default())?;
-                Ok(())
-            })
-            .await
-            .unwrap();
-
         let conn = rusqlite::Connection::open(&db_path).unwrap();
         for ordering in [
             "priority ASC, created_at DESC",
@@ -79,6 +71,13 @@ mod tests {
                 "production adapter composite sort index not used ({ordering}): {plan}"
             );
         }
+        adapter
+            .read(|storage| {
+                storage.list_issues(&Default::default())?;
+                Ok(())
+            })
+            .await
+            .unwrap();
     }
 
     /// RED → GREEN: checking out a reader connection must leave the DB with

@@ -89,6 +89,17 @@ impl BeadsDb {
             }
         }
 
+        // The writer has initialized the schema. Ensure this database-wide
+        // index once before starting readers, outside actor readiness deadlines
+        // so an optional index's busy wait cannot make actor startup fail.
+        if let Err(err) = crate::beads_crate::sort_index::ensure_composite_sort_index(&db_path) {
+            tracing::warn!(
+                ?err,
+                ?db_path,
+                "composite sort index ensure failed (best-effort)"
+            );
+        }
+
         for index in 0..reader_threads {
             match spawn_reader(
                 index,
