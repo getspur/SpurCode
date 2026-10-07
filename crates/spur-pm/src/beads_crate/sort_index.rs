@@ -33,7 +33,53 @@ pub(crate) fn ensure_composite_sort_index(db_path: &Path) -> anyhow::Result<()> 
 mod tests {
     use super::*;
     use crate::beads_crate::reader_pool::ReaderPool;
+    use crate::beads_crate::{AdapterConfig, BeadsCrateAdapter};
     use beads_rust::storage::sqlite::SqliteStorage;
+
+    #[tokio::test]
+    async fn adapter_open_ensures_composite_sort_index() {
+        let dir = tempfile::tempdir().unwrap();
+        let db_path = dir.path().join("beads.db");
+        // Model an existing upstream database without Spur's sort index.
+        drop(SqliteStorage::open(&db_path).unwrap());
+
+        let adapter = BeadsCrateAdapter::open(dir.path(), AdapterConfig::default())
+            .await
+            .unwrap();
+        adapter
+            .read(|storage| {
+                storage.list_issues(&Default::default())?;
+                Ok(())
+            })
+            .await
+            .unwrap();
+
+        let conn = rusqlite::Connection::open(&db_path).unwrap();
+        for ordering in [
+            "priority ASC, created_at DESC",
+            "priority DESC, created_at ASC",
+        ] {
+            let mut stmt = conn
+                .prepare(&format!(
+                    "EXPLAIN QUERY PLAN SELECT * FROM issues WHERE 1=1 ORDER BY {ordering}"
+                ))
+                .unwrap();
+            let details: Vec<String> = stmt
+                .query_map([], |row| row.get::<_, String>(3))
+                .unwrap()
+                .collect::<Result<_, _>>()
+                .unwrap();
+            let plan = details.join(" | ");
+            assert!(
+                !plan.to_lowercase().contains("temp b-tree"),
+                "production adapter snapshot sort ({ordering}) still uses a sorter: {plan}"
+            );
+            assert!(
+                plan.contains("idx_issues_priority_created_at"),
+                "production adapter composite sort index not used ({ordering}): {plan}"
+            );
+        }
+    }
 
     /// RED → GREEN: checking out a reader connection must leave the DB with
     /// a composite index that removes the sorter from the default snapshot
