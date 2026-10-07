@@ -405,6 +405,35 @@ mod sweep_tests {
     use tempfile::TempDir;
 
     #[test]
+    fn removes_temp_left_by_pinned_exporter() {
+        let dir = TempDir::new().unwrap();
+        let output = dir.path().join("issues.jsonl");
+        // A directory at the destination makes the final rename fail, leaving
+        // the real dependency's temp file rather than a hand-written fixture.
+        std::fs::create_dir(&output).unwrap();
+        let storage = SqliteStorage::open_memory().unwrap();
+        let config = sync::ExportConfig {
+            force: true,
+            ..Default::default()
+        };
+        assert!(sync::export_to_jsonl(&storage, &output, &config).is_err());
+        let orphan = std::fs::read_dir(dir.path())
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .find(|path| path.is_file())
+            .expect("failed export must leave a temp file");
+
+        let _guard = write_lock::blocking_write_lock_with_timeout(dir.path(), Some(100)).unwrap();
+        let min_age = crate::beads_crate::AdapterConfig::default().stale_tmp_min_age;
+        assert_eq!(sweep_stale_jsonl_temps(dir.path(), min_age).unwrap(), 0);
+        filetime::set_file_mtime(&orphan, filetime::FileTime::from_system_time(UNIX_EPOCH))
+            .unwrap();
+        assert_eq!(sweep_stale_jsonl_temps(dir.path(), min_age).unwrap(), 1);
+        assert!(!orphan.exists());
+        assert!(output.is_dir());
+    }
+
+    #[test]
     fn ignores_wal_and_shm_sidecars_and_live_jsonl() {
         let dir = TempDir::new().unwrap();
         std::fs::write(dir.path().join("issues.jsonl"), b"x").unwrap();
@@ -755,6 +784,22 @@ mod can_skip_init_flush_tests {
         set_mtime(&jsonl, now);
         // A pending sweep target should force the slow path so it gets removed
         touch(&dir.path().join("issues.jsonl.12345.tmp"));
+        assert!(!can_skip_init_flush(dir.path()));
+    }
+
+    #[test]
+    fn returns_false_when_plain_export_tmp_present() {
+        let dir = TempDir::new().unwrap();
+        let db = dir.path().join("beads.db");
+        let jsonl = dir.path().join("issues.jsonl");
+        create_valid_db(&db);
+        touch(&jsonl);
+        let now = SystemTime::now();
+        set_mtime(&db, now);
+        set_mtime(&jsonl, now);
+        assert!(can_skip_init_flush(dir.path()));
+
+        touch(&dir.path().join("issues.jsonl.tmp"));
         assert!(!can_skip_init_flush(dir.path()));
     }
 
