@@ -65,7 +65,24 @@ impl ReaderPool {
         };
         let conn = match cached {
             Some(c) => c,
-            None => SqliteStorage::open(&self.beads_dir.join("beads.db"))?,
+            None => {
+                let db_path = self.beads_dir.join("beads.db");
+                let conn = SqliteStorage::open(&db_path)?;
+                // Schema exists by now (`SqliteStorage::open` creates it), so
+                // the composite sort index can be ensured best-effort. Only
+                // new connections pay this check (once per pool slot, not per
+                // checkout); `IF NOT EXISTS` makes repeats a schema no-op.
+                if let Err(err) =
+                    crate::beads_crate::sort_index::ensure_composite_sort_index(&db_path)
+                {
+                    tracing::warn!(
+                        ?err,
+                        ?db_path,
+                        "composite sort index ensure failed (best-effort)"
+                    );
+                }
+                conn
+            }
         };
         let conn_trace =
             crate::lock_trace::LockTraceGuard::conn("reader_pool.sqlite", "ReaderPool::checkout");
