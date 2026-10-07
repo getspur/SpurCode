@@ -13,6 +13,7 @@ pub mod issue_tracker;
 pub mod metrics;
 pub mod reader_pool;
 pub mod snapshot;
+mod sort_index;
 pub(crate) mod wal_checkpoint;
 pub(crate) mod write_lock;
 
