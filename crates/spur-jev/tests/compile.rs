@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde_json::{json, Map, Value};
 use spur_jev::{
-    compile::{compile_bprime, compile_family},
+    compile::{compile_bprime, compile_family, CompileError},
     snapshot::{CatalogSnapshot, RuleCard},
     wire::Answer,
 };
@@ -115,6 +115,28 @@ fn recorded_family_cases_compile_with_deep_equal_parity() {
 }
 
 #[test]
+fn verification_unknowns_mismatch_is_a_typed_error() {
+    let answers = BTreeMap::from([
+        ("route_rule".to_owned(), choice("layout.containment", 1.0)),
+        ("solve_mode".to_owned(), choice("verify", 1.0)),
+    ]);
+    let snapshot = CatalogSnapshot {
+        language_version: 1,
+        rules: vec![RuleCard {
+            rule_id: "layout.containment".to_owned(),
+            family: "design".to_owned(),
+            summary: "s".to_owned(),
+        }],
+    };
+    let data = json!({"subjects": ["c"], "scene": {"nodes": {}}, "unknowns": [{"kind": "rect", "node": "c"}]});
+
+    let err = compile_family(&answers, &snapshot, &data).expect_err("verify with unknowns");
+    assert!(
+        matches!(err, CompileError::ModeUnknownsMismatch { mode, count: 1, required: 0 } if mode == "verify")
+    );
+}
+
+#[test]
 fn family_is_taken_from_snapshot_metadata_not_rule_prefix() {
     let answers = BTreeMap::from([
         (
@@ -135,7 +157,7 @@ fn family_is_taken_from_snapshot_metadata_not_rule_prefix() {
         "subjects": ["child", "parent"],
         "parameters": {"padding": 4},
         "scene": {"nodes": {}},
-        "unknowns": [{"kind": "rect", "node": "child"}]
+        "unknowns": []
     });
 
     let compiled = compile_family(&answers, &snapshot, &data).expect("compile family");

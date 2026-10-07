@@ -34,6 +34,16 @@ pub enum CompileError {
         /// Rule identifier selected by Jev.
         rule_id: String,
     },
+    /// The routed mode is inconsistent with the declared unknowns.
+    #[error("mode `{mode}` requires {required} unknowns, found {count}")]
+    ModeUnknownsMismatch {
+        /// Routed solve mode.
+        mode: String,
+        /// Number of declared unknowns.
+        count: usize,
+        /// Required count for this mode.
+        required: usize,
+    },
     /// A string choice could not be compiled as a signed integer.
     #[error("choice `{value}` for `{question}` is not a signed integer")]
     InvalidChoiceInteger {
@@ -105,6 +115,14 @@ pub fn compile_family(
         .unwrap_or_else(|| Value::Array(Vec::new()));
     if !unknowns.is_array() {
         return Err(invalid_template("$data.unknowns", "expected an array"));
+    }
+    let count = unknowns.as_array().map_or(0, Vec::len);
+    if mode == "verify" && count != 0 {
+        return Err(CompileError::ModeUnknownsMismatch {
+            mode: mode.to_owned(),
+            count,
+            required: 0,
+        });
     }
 
     Ok(Value::Object(Map::from_iter([
