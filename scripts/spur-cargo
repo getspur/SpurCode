@@ -5,7 +5,7 @@
 # local. Routing (by subcommand):
 #   heavy  — build / check / test / doc / clean: dispatched to the centralized
 #       cloud-build pipeline (scripts/cloud-build/build.sh, owned by the
-#       standalone spur-notebook checkout) with AWS primary, GCP fallback, then
+#       standalone spur-notebook checkout) with AWS Malaysia primary, AWS Tokyo fallback, then
 #       local cargo only if both clouds are unreachable. (clean is here so it
 #       cleans the remote target, not the unused local one.)
 #   cross  — zigbuild (macOS Mach-O, incl. universal2, plus lean static Linux
@@ -62,7 +62,6 @@ SCRIPT_DIR="${SCRIPT_PATH%/*}"
 [[ "$SCRIPT_DIR" == "$SCRIPT_PATH" ]] && SCRIPT_DIR="."
 SCRIPT_DIR=$(cd "$SCRIPT_DIR" && pwd -P)
 WRAPPER="$SCRIPT_DIR/sccache-worktree.sh"
-LEGACY_REMOTE_BUILD_SH="$SCRIPT_DIR/gcp-build/build.sh"
 
 resolve_remote_build_sh() {
     local candidate git_toplevel repo_root notebook_repo
@@ -368,7 +367,7 @@ fi
 # ---- remote dispatch -------------------------------------------------------
 # build.sh exits with INFRA_UNAVAILABLE (200) only when the VM itself is
 # unreachable; cargo's own exit codes (1/100/101 for build/test failures)
-# pass through unchanged. We fall through AWS -> GCP -> local ONLY for 200 — a
+# pass through unchanged. We fall through AWS Malaysia -> AWS Tokyo -> local ONLY for 200 — a
 # genuine test/build failure must propagate so the worker doesn't waste effort
 # re-running elsewhere.
 INFRA_UNAVAILABLE=200
@@ -404,24 +403,9 @@ if [[ $REMOTE_CAPABLE -eq 1 && -x "$REMOTE_BUILD_SH" ]]; then
         exit "$INFRA_UNAVAILABLE"
     fi
     echo "[spur-cargo] all remote clouds unavailable — falling back to local cargo" >&2
-elif [[ $REMOTE_CAPABLE -eq 1 && -x "$LEGACY_REMOTE_BUILD_SH" ]]; then
-    echo "[spur-cargo] centralized cloud-build unavailable; using legacy GCP build helper" >&2
-    set +e
-    "$LEGACY_REMOTE_BUILD_SH" --auto-spin -- "$@"
-    REMOTE_EXIT=$?
-    set -e
-    if [[ $REMOTE_EXIT -eq 0 ]]; then
-        exit 0
-    fi
-    if [[ $REMOTE_EXIT -ne $INFRA_UNAVAILABLE ]]; then
-        echo "[spur-cargo] remote cargo exited $REMOTE_EXIT — propagating (not a VM-availability issue)" >&2
-        exit $REMOTE_EXIT
-    fi
-    if [[ "${SPUR_NO_LOCAL_FALLBACK:-0}" == "1" ]]; then
-        echo "[spur-cargo] legacy GCP VM unavailable — SPUR_NO_LOCAL_FALLBACK=1 forbids local fallback (exit $INFRA_UNAVAILABLE)" >&2
-        exit "$INFRA_UNAVAILABLE"
-    fi
-    echo "[spur-cargo] legacy GCP VM unavailable (exit $REMOTE_EXIT) — falling back to local cargo" >&2
+elif [[ $REMOTE_CAPABLE -eq 1 && "${SPUR_NO_LOCAL_FALLBACK:-0}" == "1" ]]; then
+    echo "[spur-cargo] AWS cloud-build helper unavailable; local fallback is disabled" >&2
+    exit "$INFRA_UNAVAILABLE"
 fi
 
 # ---- local fallback (original behavior) ------------------------------------
@@ -438,7 +422,6 @@ use_spur_s3_sccache() {
         0|false|False|FALSE|no|No|NO|off|Off|OFF)
             return 1 ;;
         __spur_unset__)
-            [[ "${SPUR_SCCACHE_GCS:-0}" == "1" ]] && return 1
             return 0 ;;
         *)
             return 0 ;;
@@ -447,7 +430,7 @@ use_spur_s3_sccache() {
 
 # Restart the sccache server so it picks up the two-level disk,s3 config. The
 # server reads the backend config once at start-server time, so a stale
-# local-only daemon must be bounced. Mirrors the GCS path below.
+# local-only daemon must be bounced.
 ensure_spur_s3_sccache_server() {
     use_spur_s3_sccache || return 0
     [[ -z "${CODEX_SANDBOX:-}" ]] || return 0
@@ -478,31 +461,6 @@ ensure_spur_s3_sccache_server() {
     fi
 }
 
-ensure_spur_gcs_sccache_server() {
-    [[ "${SPUR_SCCACHE_GCS:-0}" == "1" ]] || return 0
-    [[ -z "${CODEX_SANDBOX:-}" ]] || return 0
-    command -v sccache >/dev/null 2>&1 || return 0
-
-    local stats
-    stats=$("$WRAPPER" --show-stats --stats-format json 2>/dev/null || true)
-    if [[ "$stats" == *'"cache_location":"GCS'* || "$stats" == *'"cache_location":"Multi'* || "$stats" == *"GCS"* ]]; then
-        return 0
-    fi
-
-    if pgrep -f '/rustc[^ ]*$|/rustc ' >/dev/null 2>&1; then
-        echo "[spur-cargo] SPUR_SCCACHE_GCS=1 but rustc is running; leaving existing sccache server unchanged" >&2
-        return 0
-    fi
-
-    local error_log="${SCCACHE_ERROR_LOG:-/tmp/spur-sccache-gcs.log}"
-    "$WRAPPER" --stop-server >/dev/null 2>&1 || true
-    if ! SCCACHE_ERROR_LOG="$error_log" "$WRAPPER" --start-server >/dev/null 2>&1; then
-        sccache --start-server >/dev/null 2>&1 || true
-        echo "[spur-cargo] failed to start GCS sccache server for SPUR_SCCACHE_GCS=1" >&2
-        echo "[spur-cargo] see $error_log; run scripts/gcloud_auth auth to refresh gcloud and start local sccache GCS auth" >&2
-        exit 1
-    fi
-}
 
 strip_sccache_compiler_prefix() {
     local value="$1"
@@ -552,16 +510,14 @@ if [[ -z "${RUSTC_WRAPPER+x}" ]]; then
 fi
 sanitize_codex_sandbox_sccache_env
 # Incremental rustc invocations are non-cacheable; disable them so a remote
-# cache layer (GCS or S3) actually gets populated and hit.
+# S3 cache layer actually gets populated and hit.
 if [[ -z "${CARGO_INCREMENTAL+x}" ]]; then
-    if use_spur_s3_sccache || [[ "${SPUR_SCCACHE_GCS:-0}" == "1" ]]; then
+    if use_spur_s3_sccache; then
         export CARGO_INCREMENTAL=0
     fi
 fi
 # S3 takes precedence; only one remote backend is configured per invocation.
 if use_spur_s3_sccache; then
     ensure_spur_s3_sccache_server
-else
-    ensure_spur_gcs_sccache_server
 fi
 exec cargo "$@"

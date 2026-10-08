@@ -32,7 +32,7 @@ S3_REGION="${SCCACHE_S3_REGION:-$AWS_REGION}"
 
 tmp="$(mktemp /tmp/spur-cloud-build-bundle.XXXXXX.tar.gz)"
 trap 'rm -f "$tmp"' EXIT
-tar -czf "$tmp" -C "$(dirname "$SRC")" --exclude='*.local.env' cloud-build
+tar -czf "$tmp" -C "$(dirname "$SRC")" --exclude='*.local.env' --exclude='__pycache__' --exclude='.pytest_cache' cloud-build
 
 if tar -tzf "$tmp" | grep -q 'local\.env'; then
     log "bundle unexpectedly contains a *.local.env file — aborting"

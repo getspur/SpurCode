@@ -1,0 +1,193 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeImages",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeInstanceTypeOfferings",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:DescribeSpotInstanceRequests"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-southeast-5"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Resource": [
+        "arn:aws:ec2:ap-southeast-5::image/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:subnet/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:security-group/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:network-interface/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:volume/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:key-pair/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:spot-instances-request/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Resource": "arn:aws:ec2:ap-southeast-5:591950085580:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/Name": [
+            "spur-builder",
+            "spur-builder-2",
+            "spur-builder-3"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateTags"
+      ],
+      "Resource": [
+        "arn:aws:ec2:ap-southeast-5:591950085580:instance/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:volume/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:network-interface/*",
+        "arn:aws:ec2:ap-southeast-5:591950085580:spot-instances-request/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:CreateAction": "RunInstances"
+        }
+      }
+    },
+    {
+      "Sid": "RestorePersistentSpotBuilderName",
+      "Effect": "Allow",
+      "Action": "ec2:CreateTags",
+      "Resource": "arn:aws:ec2:ap-southeast-5:591950085580:instance/*",
+      "Condition": {
+        "ArnEquals": {
+          "ec2:InstanceProfile": "arn:aws:iam::591950085580:instance-profile/spur-builder"
+        },
+        "StringEquals": {
+          "aws:RequestTag/Name": [
+            "spur-builder",
+            "spur-builder-2",
+            "spur-builder-3"
+          ]
+        },
+        "ForAllValues:StringEquals": {
+          "aws:TagKeys": [
+            "Name"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:StartInstances",
+        "ec2:StopInstances"
+      ],
+      "Resource": "arn:aws:ec2:ap-southeast-5:591950085580:instance/*",
+      "Condition": {
+        "StringLike": {
+          "ec2:ResourceTag/Name": [
+            "spur-builder",
+            "spur-builder-2",
+            "spur-builder-3"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": "arn:aws:iam::591950085580:role/spur-builder",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ec2.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:StartSession",
+        "ssm:SendCommand"
+      ],
+      "Resource": "arn:aws:ec2:ap-southeast-5:591950085580:instance/*",
+      "Condition": {
+        "StringLike": {
+          "ssm:resourceTag/Name": [
+            "spur-builder",
+            "spur-builder-2",
+            "spur-builder-3"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:StartSession"
+      ],
+      "Resource": "arn:aws:ssm:ap-southeast-5::document/AWS-StartSSHSession"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:SendCommand"
+      ],
+      "Resource": "arn:aws:ssm:ap-southeast-5::document/AWS-RunShellScript"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:ResumeSession",
+        "ssm:TerminateSession",
+        "ssmmessages:OpenDataChannel"
+      ],
+      "Resource": "arn:aws:ssm:ap-southeast-5:591950085580:session/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:DescribeInstanceInformation",
+        "ssm:GetCommandInvocation"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-southeast-5"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::spurlab-591950085580-spur-sccache-apse5"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::spurlab-591950085580-spur-sccache-apse5/*"
+    }
+  ]
+}

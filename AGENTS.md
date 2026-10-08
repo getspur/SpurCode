@@ -40,7 +40,7 @@ Do not treat ledes as full instructions or request task-specific materialization
 
 | Rule | Detail |
 |------|--------|
-| Remote default | `build` / `check` / `test` / `doc` / `clean` / `run` → GCP VM |
+| Remote default | `build` / `check` / `test` / `doc` / `clean` / `run` → AWS VM |
 | Force local | `SPUR_REMOTE=0` (interactive TUI, live ports) |
 | Force remote | `SPUR_REMOTE=1` (sandbox `clippy`, etc.) |
 | Failures | Remote red = real failure; do not re-run locally to “make it pass” |

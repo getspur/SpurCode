@@ -113,9 +113,10 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ secrets.CONTEXT_SERVICE_AWS_ROLE_ARN }}
+          role-to-assume: ${{ vars.CONTEXT_SERVICE_AWS_ROLE_ARN }}
+          allowed-account-ids: "591950085580"
           aws-region: ${{ env.AWS_REGION }}
       - name: Build worker image artifacts
         run: infra/spur-context-service/build-and-push-remote.sh --no-push
@@ -154,9 +155,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ secrets.CONTEXT_SERVICE_AWS_ROLE_ARN }}
+          role-to-assume: ${{ vars.CONTEXT_SERVICE_AWS_ROLE_ARN }}
+          allowed-account-ids: "591950085580"
           aws-region: ${{ env.AWS_REGION }}
       - name: Run staging E2E smoke
         run: python3 infra/spur-context-service/smoke-staging-e2e.py
@@ -237,9 +239,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends zip gzip curl
       - name: Configure AWS builder credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ vars.AWS_RELEASE_ROLE_ARN }}
+          allowed-account-ids: "591950085580"
           aws-region: ${{ env.AWS_REGION }}
           # A cold-cache remote build can outlive the default 1 h credentials.
           role-duration-seconds: 7200
@@ -248,7 +251,7 @@ jobs:
         # spur-notebook checkout; restore the published bundle so the tracked
         # symlink resolves exactly like on a workstation.
         run: |
-          aws s3 cp "s3://wiilearn-spur-sccache-apse5/ci/cloud-build/bundle.tar.gz" \
+          aws s3 cp "s3://${{ vars.AWS_SCCACHE_BUCKET }}/ci/cloud-build/bundle.tar.gz" \
             /tmp/cloud-build-bundle.tar.gz --region ap-southeast-5
           mkdir -p "$GITHUB_WORKSPACE/../spur-notebook/scripts"
           tar -xzf /tmp/cloud-build-bundle.tar.gz -C "$GITHUB_WORKSPACE/../spur-notebook/scripts"
@@ -270,9 +273,10 @@ jobs:
       - name: Package serving Lambda artifacts
         run: infra/spur-context-service/deploy.sh --skip-worker --package-only
       - name: Configure AWS deployment credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ vars.CONTEXT_SERVICE_RELEASE_ROLE_ARN }}
+          allowed-account-ids: "591950085580"
           aws-region: ${{ env.AWS_REGION }}
           role-duration-seconds: 7200
       - name: Release Code Lambda

@@ -169,7 +169,6 @@ printf 'args=%s\n' "$*" >> {record}
 def test_remote_build_helpers_run_cargo_from_invocation_directory():
     for relative_path in [
         "scripts/cloud-build/build.sh",
-        "scripts/gcp-build/build.sh",
     ]:
         script = (ROOT / relative_path).read_text()
 

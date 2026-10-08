@@ -370,7 +370,7 @@ done
 PLANT
 chmod +x /mnt/cargo/macsdk/plant-libproc-bindings.sh
 wc -c /mnt/cargo/macsdk/osx_libproc_bindings.*.rs
-# GCP has a different disk lifecycle. AWS records this switch for stop/resume.
+# AWS records this switch for stop/resume.
 SPUR_AWS_EBS_TOOL_ROOT=0
 if [[ -f /etc/default/spur-cargo-cache ]]; then
     source /etc/default/spur-cargo-cache

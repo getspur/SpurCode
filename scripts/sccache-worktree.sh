@@ -24,12 +24,7 @@
 #                         spurlab-591950085580-spur-sccache-apse5 in ap-southeast-5,
 #                         matching the aws-my primary builder.
 #   SPUR_SCCACHE_S3=0  → disable the default S3 backend.
-#   SPUR_SCCACHE_GCS=1 → two-level cache L0=local disk, L1=GCS (macOS-gated)
-#                         when SPUR_SCCACHE_S3 is unset or disabled.
-# Explicit S3 takes precedence when both are set; an ambient SCCACHE_GCS_BUCKET
-# (GCP builder profile.d) defers to the GCS backend. Each remote backend
-# restarts the sccache server via spur-cargo so the daemon picks up the
-# multilevel config.
+# S3 credentials use the standard AWS CLI credential chain.
 #
 # Why (historical, corrected — see the RCA addendum): the original wrapper
 # relied on SCCACHE_BASEDIRS to equalize worktree paths in the Rust cache key.
@@ -60,19 +55,17 @@ fi
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/.." && pwd -P)
 SPUR_ROOT="${SPUR_ROOT:-$REPO_ROOT}"
 
+# Retire inherited Google cache settings so they cannot override AWS selection.
+unset SCCACHE_GCS_BUCKET SCCACHE_GCS_RW_MODE SCCACHE_GCS_KEY_PATH
+case "${SCCACHE_MULTILEVEL_CHAIN:-}" in
+    *gcs*) unset SCCACHE_MULTILEVEL_CHAIN ;;
+esac
+
 use_spur_s3_sccache() {
     case "${SPUR_SCCACHE_S3-__spur_unset__}" in
         0|false|False|FALSE|no|No|NO|off|Off|OFF)
             return 1 ;;
         __spur_unset__)
-            [[ "${SPUR_SCCACHE_GCS:-0}" == "1" ]] && return 1
-            # An environment already configured for the GCS backend (the GCP
-            # fallback builder's profile.d exports SCCACHE_GCS_BUCKET with
-            # SCCACHE_MULTILEVEL_CHAIN=disk,gcs) must not get the S3 default's
-            # bucket/region exports injected on top. Explicit SPUR_SCCACHE_S3
-            # values (the case arms above/below) still win over the ambient
-            # config, so a deliberate local S3 run is unaffected.
-            [[ -n "${SCCACHE_GCS_BUCKET:-}" ]] && return 1
             return 0 ;;
         *)
             return 0 ;;
@@ -81,8 +74,7 @@ use_spur_s3_sccache() {
 
 # Two-level cache: L0=local disk (fast), L1=AWS S3 (shared, durable). sccache
 # 0.15+ implements this natively via SCCACHE_MULTILEVEL_CHAIN; on an L1 hit it
-# backfills L0. Returns 0 when activated, 1 when the caller can fall through to
-# the GCS path.
+# backfills L0. Returns 0 when activated, 1 when S3 is disabled.
 enable_spur_s3_cache() {
     use_spur_s3_sccache || return 1
 
@@ -119,31 +111,6 @@ enable_spur_s3_cache() {
     return 0
 }
 
-enable_spur_gcs_cache() {
-    [[ "${SPUR_SCCACHE_GCS:-0}" == "1" ]] || return 0
-
-    local platform
-    platform=$(uname -s 2>/dev/null || echo "")
-    if [[ "$platform" != "Darwin" && "${SPUR_SCCACHE_GCS_FORCE:-0}" != "1" ]]; then
-        return 0
-    fi
-
-    local project bucket
-    project="${GCP_PROJECT:-wiilearn}"
-    bucket="${SCCACHE_BUCKET:-${project}-spur-sccache-asia}"
-
-    if [[ -z "${SCCACHE_GCS_BUCKET:-}" ]]; then
-        export SCCACHE_GCS_BUCKET="$bucket"
-    fi
-
-    if [[ -n "${SCCACHE_GCS_BUCKET:-}" ]]; then
-        export SCCACHE_GCS_RW_MODE="${SCCACHE_GCS_RW_MODE:-READ_WRITE}"
-        # sccache 0.15+ can use disk,gcs as a real multi-level chain. Older
-        # sccache builds ignore this var and use GCS as the single configured
-        # backend when SCCACHE_GCS_BUCKET is set.
-        export SCCACHE_MULTILEVEL_CHAIN="${SCCACHE_MULTILEVEL_CHAIN:-disk,gcs}"
-    fi
-}
 
 if [[ -n "$GIT_ROOT" && "$GIT_ROOT" != "$SPUR_ROOT" ]]; then
     # Worktree: strip to the worktree root first (longest-prefix wins).
@@ -153,8 +120,8 @@ else
     export SCCACHE_BASEDIRS="${SPUR_ROOT}"
 fi
 
-# S3 takes precedence; fall through to GCS only when S3 is not requested.
-enable_spur_s3_cache || enable_spur_gcs_cache
+# Use S3 unless explicitly disabled.
+enable_spur_s3_cache || true
 
 # ---- per-repo namespace: share the L1 S3 cache with the cloud-build remote --
 # The remote builder (scripts/cloud-build/build.sh) writes objects under an S3

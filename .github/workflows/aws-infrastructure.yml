@@ -1,0 +1,75 @@
+name: AWS infrastructure check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  cache:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_SCCACHE_ROLE_ARN }}
+          aws-region: ap-southeast-5
+          allowed-account-ids: "591950085580"
+      - name: Check cache read and write
+        env:
+          CACHE_BUCKET: ${{ vars.AWS_SCCACHE_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+          key="spur/ci-smoke/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          trap 'aws s3 rm "s3://$CACHE_BUCKET/$key"' EXIT
+          printf '%s\n' "$GITHUB_RUN_ID" > /tmp/cache-input
+          aws s3 cp /tmp/cache-input "s3://$CACHE_BUCKET/$key"
+          aws s3 cp "s3://$CACHE_BUCKET/$key" /tmp/cache-output
+          cmp /tmp/cache-input /tmp/cache-output
+          if aws s3api get-object --bucket "$CACHE_BUCKET" --key "$key/missing" /tmp/cache-missing 2>/tmp/cache-missing-error; then
+            echo "Unexpected object at the cache-miss probe key" >&2
+            exit 1
+          fi
+          grep -q NoSuchKey /tmp/cache-missing-error
+  builder:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_RELEASE_ROLE_ARN }}
+          aws-region: ap-southeast-5
+          allowed-account-ids: "591950085580"
+      - name: Check builder discovery and script bundle
+        env:
+          CACHE_BUCKET: ${{ vars.AWS_SCCACHE_BUCKET }}
+          BUILDER_AMI: ${{ vars.SPUR_BUILDER_AMI_ID }}
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+          aws ec2 describe-instances --filters Name=tag:Name,Values=spur-builder,spur-builder-2,spur-builder-3 --query 'Reservations[].Instances[].{Id:InstanceId,State:State.Name}'
+          aws ssm describe-instance-information --query 'InstanceInformationList[].{Id:InstanceId,Status:PingStatus}'
+          test "$(aws ec2 describe-images --image-ids "$BUILDER_AMI" --query 'Images[0].State' --output text)" = available
+          aws s3 cp "s3://$CACHE_BUCKET/ci/cloud-build/bundle.tar.gz" /tmp/cloud-build.tar.gz
+          mkdir /tmp/cloud-scripts
+          tar -xzf /tmp/cloud-build.tar.gz -C /tmp/cloud-scripts
+          test -x /tmp/cloud-scripts/cloud-build/build.sh
+          test ! -e /tmp/cloud-scripts/cloud-build/provider-gcp.sh
+          test ! -e /tmp/cloud-scripts/cloud-build/config-aws-my.local.env
+  context:
+    runs-on: ubuntu-24.04
+    environment: context-service-staging
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.CONTEXT_SERVICE_RELEASE_ROLE_ARN }}
+          aws-region: ap-southeast-5
+          allowed-account-ids: "591950085580"
+      - name: Check serving function access
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+          for function in spur-context-code spur-context-knowledge; do
+            aws lambda get-function-configuration --function-name "$function" --query '{Name:FunctionName,State:State}'
+          done

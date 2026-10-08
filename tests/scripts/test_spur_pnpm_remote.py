@@ -4,10 +4,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-BUILD_SH = ROOT / "scripts" / "gcp-build" / "build.sh"
 SPUR_PNPM = ROOT / "scripts" / "spur-pnpm"
 LINT_INVARIANTS = ROOT / ".github" / "workflows" / "lint-invariants.yml"
-GCP_BUILD_README = ROOT / "scripts" / "gcp-build" / "README.md"
+BUILD_README = ROOT / "scripts" / "cloud-build" / "README.md"
 
 
 def run_spur_pnpm(args, env=None):
@@ -25,14 +24,6 @@ def run_spur_pnpm(args, env=None):
     )
 
 
-def test_gcp_build_pnpm_mode_is_disabled_after_notebook_split():
-    script = BUILD_SH.read_text()
-
-    assert "REMOTE_PNPM_VIRTUAL_STORE=" not in script
-    assert "SPUR_REMOTE_PNPM_VIRTUAL_STORE" not in script
-    assert "crates/spur-notebook/jute-notebook" not in script
-    assert "--pnpm is disabled in getspur/SpurCode after the notebook repo split." in script
-
 
 def test_lint_invariants_private_notebook_checkout_uses_explicit_secret():
     workflow = LINT_INVARIANTS.read_text()
@@ -42,7 +33,7 @@ def test_lint_invariants_private_notebook_checkout_uses_explicit_secret():
     assert "token: ${{ secrets.SPUR_NOTEBOOK_CHECKOUT_TOKEN }}" in workflow
     assert "Missing SPUR_NOTEBOOK_CHECKOUT_TOKEN" in workflow
 
-    docs = GCP_BUILD_README.read_text()
+    docs = BUILD_README.read_text()
     docs_single_line = " ".join(docs.split())
     assert "SPUR_NOTEBOOK_CHECKOUT_TOKEN" in docs
     assert (

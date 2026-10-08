@@ -1,0 +1,68 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:InvokeFunction"
+      ],
+      "Resource": [
+        "arn:aws:lambda:ap-southeast-5:591950085580:function:spur-context-code",
+        "arn:aws:lambda:ap-southeast-5:591950085580:function:spur-context-knowledge"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:UpdateFunctionCode"
+      ],
+      "Resource": "arn:aws:lambda:ap-southeast-5:591950085580:function:spur-context-code"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::spur-context-591950085580"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::spur-context-591950085580/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::spur-context-591950085580/lambda/spur-context-code-*.zip",
+        "arn:aws:s3:::spur-context-591950085580/ci/context-service-smoke/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "states:DescribeExecution",
+        "states:GetExecutionHistory"
+      ],
+      "Resource": "arn:aws:states:ap-southeast-5:591950085580:execution:spur-context-*:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:FilterLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:ap-southeast-5:591950085580:log-group:/aws/lambda/spur-context-code:*",
+        "arn:aws:logs:ap-southeast-5:591950085580:log-group:/aws/lambda/spur-context-knowledge:*"
+      ]
+    }
+  ]
+}

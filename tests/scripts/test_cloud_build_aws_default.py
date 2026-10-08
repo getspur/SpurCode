@@ -24,10 +24,10 @@ def test_spur_cargo_routes_remote_builds_through_centralized_cloud_build():
     assert "resolve_remote_build_sh()" in script
     assert 'candidate="$SCRIPT_DIR/cloud-build/build.sh"' in script
     assert 'REMOTE_BUILD_SH="$(resolve_remote_build_sh || true)"' in script
-    assert 'LEGACY_REMOTE_BUILD_SH="$SCRIPT_DIR/gcp-build/build.sh"' in script
+    assert "LEGACY_REMOTE_BUILD_SH" not in script
     assert 'PRIMARY_CLOUD="${SPUR_CLOUD:-aws-my}"' in script
     assert 'FALLBACK_CLOUD="${SPUR_CLOUD_FALLBACK-aws}"' in script
-    assert 'SPUR_REMOTE_NAMESPACE=spur SPUR_CLOUD="$cloud" "$REMOTE_BUILD_SH" --auto-spin -- "$@"' in script
+    assert 'SPUR_REMOTE_NAMESPACE="${SPUR_REMOTE_NAMESPACE:-spur}" SPUR_CLOUD="$cloud" "$REMOTE_BUILD_SH" --auto-spin -- "$@"' in script
     assert "remote $cloud VM unavailable" in script
     assert "remote cargo exited $REMOTE_EXIT" in script
 
@@ -35,7 +35,7 @@ def test_spur_cargo_routes_remote_builds_through_centralized_cloud_build():
 def test_centralized_cloud_build_stages_prune_helper_for_symlinked_consumers():
     script = (CLOUD_BUILD / "build.sh").read_text()
 
-    assert 'remote_prune_helper="/tmp/spur-prune-remote.$WORKTREE_FILE_KEY.sh"' in script
+    assert 'remote_prune_helper="/mnt/cargo/cargo-home/spur-prune-remote.$WORKTREE_FILE_KEY.sh"' in script
     assert '"$SCRIPT_DIR/_prune-remote.sh" "$REMOTE_HOST:$remote_prune_helper"' in script
     assert '--command="bash \\"$remote_prune_helper\\"' in script
 
@@ -46,12 +46,3 @@ def test_centralized_cloud_build_defaults_namespace_from_calling_repo():
 
         assert 'DEFAULT_REMOTE_NAMESPACE=$(basename "$GIT_TOPLEVEL")' in script
         assert 'REMOTE_NAMESPACE="${SPUR_REMOTE_NAMESPACE:-$DEFAULT_REMOTE_NAMESPACE}"' in script
-
-
-def test_legacy_gcp_build_notebook_frontend_modes_remain_disabled():
-    script = (ROOT / "scripts" / "gcp-build" / "build.sh").read_text()
-
-    assert "REMOTE_PNPM_VIRTUAL_STORE=" not in script
-    assert "SPUR_REMOTE_PNPM_VIRTUAL_STORE" not in script
-    assert "jute-notebook" not in script
-    assert "--pnpm is disabled in getspur/SpurCode after the notebook repo split." in script

@@ -1422,7 +1422,7 @@ def test_context_service_workflow_releases_serving_lambda_on_main_push():
     )
     code_release = release.index("Release Code Lambda")
     assert builder_auth < package < deploy_auth < code_release
-    assert release.count("aws-actions/configure-aws-credentials@v4") == 2
+    assert release.count("aws-actions/configure-aws-credentials@") == 2
 
     # The runner never cross-compiles or pushes images itself.
     assert "amazon-ecr-login" not in release
