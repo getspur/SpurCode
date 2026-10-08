@@ -537,12 +537,12 @@ sync_workspace() {
 # orchestrator can distinguish a genuine build/test failure from a preemption.
 run_payload() {
     if [[ $PNPM -eq 1 ]]; then
-        log "--pnpm is disabled in getspur/spur after the notebook repo split."
+        log "--pnpm is disabled in getspur/SpurCode after the notebook repo split."
         log "Run pnpm from a getspur/spur-notebook checkout instead."
         return 2
     fi
     if [[ $FRONTEND_TEST -eq 1 ]]; then
-        log "--frontend-test is disabled in getspur/spur after the notebook repo split."
+        log "--frontend-test is disabled in getspur/SpurCode after the notebook repo split."
         log "Run frontend tests from a getspur/spur-notebook checkout instead."
         return 2
     fi

@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/getspur/spur/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/getspur/spur/actions/workflows/ci.yml/badge.svg" /></a>
+  <a href="https://github.com/getspur/SpurCode/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/getspur/SpurCode/actions/workflows/ci.yml/badge.svg" /></a>
   <a href="https://www.npmjs.com/package/@getspur/spur-cli"><img alt="npm" src="https://img.shields.io/npm/v/@getspur/spur-cli?logo=npm" /></a>
   <a href="./Cargo.toml"><img alt="Rust 1.88+" src="https://img.shields.io/badge/rust-1.88%2B-dea584?logo=rust" /></a>
   <a href="./LICENSE"><img alt="GPL-3.0-only" src="https://img.shields.io/badge/license-GPL--3.0--only-2ea44f" /></a>
@@ -248,7 +248,7 @@ Configuration lives in `.spur/config.toml`. Agent entries describe the executabl
 Clone the repository, then use the workspace wrapper for Rust commands:
 
 ```sh
-git clone https://github.com/getspur/spur.git
+git clone https://github.com/getspur/SpurCode.git spur
 cd spur
 
 scripts/spur-cargo build --workspace
@@ -302,6 +302,6 @@ See the [privacy documentation](./docs/PRIVACY.md) for collected fields, retenti
 
 ## Community and license
 
-Issues, feature requests, and pull requests are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md), open a [GitHub issue](https://github.com/getspur/spur/issues), or send product feedback through [getspur.dev/feedback](https://getspur.dev/feedback).
+Issues, feature requests, and pull requests are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md), open a [GitHub issue](https://github.com/getspur/SpurCode/issues), or send product feedback through [getspur.dev/feedback](https://getspur.dev/feedback).
 
 SPUR is licensed under the [GNU General Public License v3.0 only](./LICENSE) (`GPL-3.0-only`). The Community tier requires no license key; paid feature entitlements are separate from the source license.

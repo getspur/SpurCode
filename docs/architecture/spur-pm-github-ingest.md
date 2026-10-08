@@ -97,7 +97,7 @@ pub trait ExternalPmSync: Send + Sync {
     /// Stable provenance tag — "github", "linear", "plane".
     fn source_system(&self) -> &'static str;
 
-    /// Per-instance scope, e.g. "getspur/spur".
+    /// Per-instance scope, e.g. "getspur/SpurCode".
     fn source_repo(&self) -> &str;
 
     /// Bulk pull. `since=None` means full repo state.
@@ -1004,7 +1004,7 @@ Lives in the existing Spur config file (no new file required). Schema:
 ```toml
 [pm.github]
 # Optional explicit repo when running `spur pm ingest github` without an arg.
-default_repo = "getspur/spur"
+default_repo = "getspur/SpurCode"
 
 # Token resolution preference; overrides the default order from §7.1.
 auth_preference = ["env", "gh_cli", "device_flow"]

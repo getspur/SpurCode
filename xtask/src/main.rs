@@ -2715,16 +2715,16 @@ tokio = { version = "1", features = ["full"] }
 
     #[test]
     fn npm_spur_cli_repository_matches_provenance_source_repo() {
-        // npm E422 on v1.22.0: Sigstore provenance is issued for getspur/spur
-        // (the Actions workflow repo). package.json repository.url must match.
+        // npm provenance uses the Actions workflow repo, getspur/SpurCode.
+        // package.json repository.url must match to avoid npm E422.
         let pkg = fs::read_to_string(workspace_root().join("npm/spur-cli/package.json"))
             .expect("npm/spur-cli/package.json");
         assert!(
-            pkg.contains("\"url\": \"git+https://github.com/getspur/spur.git\""),
-            "repository.url must be getspur/spur so npm provenance verifies; got:\n{pkg}"
+            pkg.contains("\"url\": \"git+https://github.com/getspur/SpurCode.git\""),
+            "repository.url must be getspur/SpurCode so npm provenance verifies; got:\n{pkg}"
         );
         assert!(
-            pkg.contains("\"homepage\": \"https://github.com/getspur/spur\""),
+            pkg.contains("\"homepage\": \"https://github.com/getspur/SpurCode\""),
             "homepage must match the provenance source repo; got:\n{pkg}"
         );
         assert!(

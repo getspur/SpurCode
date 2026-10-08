@@ -31,7 +31,7 @@ def test_gcp_build_pnpm_mode_is_disabled_after_notebook_split():
     assert "REMOTE_PNPM_VIRTUAL_STORE=" not in script
     assert "SPUR_REMOTE_PNPM_VIRTUAL_STORE" not in script
     assert "crates/spur-notebook/jute-notebook" not in script
-    assert "--pnpm is disabled in getspur/spur after the notebook repo split." in script
+    assert "--pnpm is disabled in getspur/SpurCode after the notebook repo split." in script
 
 
 def test_lint_invariants_private_notebook_checkout_uses_explicit_secret():

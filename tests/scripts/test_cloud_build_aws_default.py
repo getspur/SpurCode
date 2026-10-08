@@ -54,4 +54,4 @@ def test_legacy_gcp_build_notebook_frontend_modes_remain_disabled():
     assert "REMOTE_PNPM_VIRTUAL_STORE=" not in script
     assert "SPUR_REMOTE_PNPM_VIRTUAL_STORE" not in script
     assert "jute-notebook" not in script
-    assert "--pnpm is disabled in getspur/spur after the notebook repo split." in script
+    assert "--pnpm is disabled in getspur/SpurCode after the notebook repo split." in script

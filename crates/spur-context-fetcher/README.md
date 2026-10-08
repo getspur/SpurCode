@@ -13,10 +13,10 @@ Input JSON:
 ```json
 {
   "job_id": "job-123",
-  "package": "getspur/spur",
+  "package": "getspur/SpurCode",
   "revision": "abc123",
   "source": "github",
-  "source_url": "git+https://github.com/getspur/spur.git",
+  "source_url": "git+https://github.com/getspur/SpurCode.git",
   "source_kind": "git",
   "limits": {
     "max_source_bytes": 2147483648,
@@ -32,7 +32,7 @@ Success output JSON:
   "source_url": "https://presigned-s3-url",
   "source_kind": "tarball",
   "source_archive_s3_uri": "s3://bucket/prefix/job-123/source.tar.gz",
-  "original_source_url": "git+https://github.com/getspur/spur.git",
+  "original_source_url": "git+https://github.com/getspur/SpurCode.git",
   "original_source_kind": "git",
   "content_sha256": "hex-sha256",
   "bytes": 1234
