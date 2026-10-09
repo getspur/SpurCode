@@ -1,0 +1,312 @@
+COMMAND ['scripts/spur-cargo', 'test', '--release', '-p', 'spur-pm', 's7_request_benchmark', '--lib', '--', '--ignored', '--nocapture', '--test-threads=1']
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0  (local=/Volumes/Projects/spur/.spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0)
+[build] Remote:   ~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   target=/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   -j8
+[build] Remote build queue: admitted as ticket 196 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3569 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 ...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test --release -p spur-pm s7_request_benchmark --lib -- --ignored --nocapture --test-threads=1  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=141G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  271G  141G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+    Finished `release` profile [optimized] target(s) in 0.28s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/release/deps/spur_pm-e244fb8f0394228b)
+
+running 1 test
+test beads_crate::issue_reads_tests::acceptance::s7_request_benchmark ... S7_JSON {"kind":"environment","profile":"release","sqlite":"3.51.3","arch":"aarch64","os":"linux","rustc":"rustc 1.94.1 (e408947bf 2026-03-25)\nbinary: rustc\ncommit-hash: e408947bfd200af42db322daf0fadfe7e26d3bd1\ncommit-date: 2026-03-25\nhost: aarch64-unknown-linux-gnu\nrelease: 1.94.1\nLLVM version: 21.1.8\n","machine":"Linux ip-172-31-5-184 6.1.0-53-cloud-arm64 #1 SMP Debian 6.1.187-1 (2026-09-07) aarch64 GNU/Linux\n","warmup":5,"repetitions":31,"boundary":"async reader queue through Vec<IssueSummary> and common JSON output serialization; direct baseline independent of feed"}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":0,"reuse":false,"ns":66494,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":0,"reuse":true,"ns":101056,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":1,"reuse":true,"ns":84621,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":1,"reuse":false,"ns":1280079,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":2,"reuse":false,"ns":61539,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":2,"reuse":true,"ns":66780,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":3,"reuse":true,"ns":66731,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":3,"reuse":false,"ns":133618,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":4,"reuse":false,"ns":58060,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":4,"reuse":true,"ns":64898,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":5,"reuse":true,"ns":51696,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":5,"reuse":false,"ns":73547,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":6,"reuse":false,"ns":55296,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":6,"reuse":true,"ns":53004,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":7,"reuse":true,"ns":50560,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":7,"reuse":false,"ns":64808,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":8,"reuse":false,"ns":55049,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":8,"reuse":true,"ns":60543,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":9,"reuse":true,"ns":50077,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":9,"reuse":false,"ns":78121,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":10,"reuse":false,"ns":55845,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":10,"reuse":true,"ns":56482,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":11,"reuse":true,"ns":67834,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":11,"reuse":false,"ns":60399,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":12,"reuse":false,"ns":55607,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":12,"reuse":true,"ns":52869,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":13,"reuse":true,"ns":55492,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":13,"reuse":false,"ns":56957,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":14,"reuse":false,"ns":58380,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":14,"reuse":true,"ns":53647,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":15,"reuse":true,"ns":56729,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":15,"reuse":false,"ns":59394,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":16,"reuse":false,"ns":54063,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":16,"reuse":true,"ns":51301,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":17,"reuse":true,"ns":52112,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":17,"reuse":false,"ns":63066,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":18,"reuse":false,"ns":54310,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":18,"reuse":true,"ns":58993,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":19,"reuse":true,"ns":58555,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":19,"reuse":false,"ns":55765,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":20,"reuse":false,"ns":53617,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":20,"reuse":true,"ns":61352,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":21,"reuse":true,"ns":59379,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":21,"reuse":false,"ns":54529,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":22,"reuse":false,"ns":56003,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":22,"reuse":true,"ns":52880,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":23,"reuse":true,"ns":52272,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":23,"reuse":false,"ns":63313,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":24,"reuse":false,"ns":55979,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":24,"reuse":true,"ns":51949,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":25,"reuse":true,"ns":59370,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":25,"reuse":false,"ns":56953,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":26,"reuse":false,"ns":62630,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":26,"reuse":true,"ns":50829,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":27,"reuse":true,"ns":51963,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":27,"reuse":false,"ns":55705,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":28,"reuse":false,"ns":59507,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":28,"reuse":true,"ns":52929,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":29,"reuse":true,"ns":81397,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":29,"reuse":false,"ns":55913,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":30,"reuse":false,"ns":55434,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":30,"reuse":true,"ns":62172,"output_bytes":8182}
+S7_JSON {"kind":"work","size":12,"shape":"open_unpaginated","rows":6,"labels":14,"retained_bytes":9026,"budget_bytes":2048000,"subscriptions":1,"full_builds":0,"issue_rows":0,"label_rows":0,"reuses":31,"over_budget_bypasses":0}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":0,"reuse":false,"ns":79752,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":0,"reuse":true,"ns":72744,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":1,"reuse":true,"ns":75854,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":1,"reuse":false,"ns":119562,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":2,"reuse":false,"ns":85329,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":2,"reuse":true,"ns":73642,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":3,"reuse":true,"ns":78549,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":3,"reuse":false,"ns":83973,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":4,"reuse":false,"ns":80912,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":4,"reuse":true,"ns":73392,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":5,"reuse":true,"ns":87908,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":5,"reuse":false,"ns":96939,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":6,"reuse":false,"ns":79625,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":6,"reuse":true,"ns":75154,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":7,"reuse":true,"ns":77642,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":7,"reuse":false,"ns":84125,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":8,"reuse":false,"ns":79990,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":8,"reuse":true,"ns":78396,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":9,"reuse":true,"ns":84821,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":9,"reuse":false,"ns":83886,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":10,"reuse":false,"ns":78256,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":10,"reuse":true,"ns":75502,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":11,"reuse":true,"ns":85569,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":11,"reuse":false,"ns":91713,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":12,"reuse":false,"ns":80117,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":12,"reuse":true,"ns":72622,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":13,"reuse":true,"ns":81375,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":13,"reuse":false,"ns":85681,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":14,"reuse":false,"ns":82392,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":14,"reuse":true,"ns":78470,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":15,"reuse":true,"ns":74967,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":15,"reuse":false,"ns":89590,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":16,"reuse":false,"ns":148663,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":16,"reuse":true,"ns":71550,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":17,"reuse":true,"ns":79683,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":17,"reuse":false,"ns":80232,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":18,"reuse":false,"ns":95563,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":18,"reuse":true,"ns":78424,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":19,"reuse":true,"ns":72721,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":19,"reuse":false,"ns":80930,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":20,"reuse":false,"ns":87455,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":20,"reuse":true,"ns":79095,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":21,"reuse":true,"ns":91419,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":21,"reuse":false,"ns":79183,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":22,"reuse":false,"ns":83777,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":22,"reuse":true,"ns":75677,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":23,"reuse":true,"ns":79339,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":23,"reuse":false,"ns":80115,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":24,"reuse":false,"ns":84666,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":24,"reuse":true,"ns":85472,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":25,"reuse":true,"ns":78310,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":25,"reuse":false,"ns":78391,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":26,"reuse":false,"ns":88678,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":26,"reuse":true,"ns":75437,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":27,"reuse":true,"ns":77397,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":27,"reuse":false,"ns":83600,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":28,"reuse":false,"ns":81065,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":28,"reuse":true,"ns":73360,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":29,"reuse":true,"ns":71875,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":29,"reuse":false,"ns":79117,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":30,"reuse":false,"ns":81047,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":30,"reuse":true,"ns":81218,"output_bytes":19633}
+S7_JSON {"kind":"work","size":12,"shape":"all_non_template","rows":12,"labels":38,"retained_bytes":29972,"budget_bytes":2048000,"subscriptions":2,"full_builds":0,"issue_rows":0,"label_rows":0,"reuses":31,"over_budget_bypasses":0}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":0,"reuse":false,"ns":1592269,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":0,"reuse":true,"ns":1106034,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":1,"reuse":true,"ns":1138785,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":1,"reuse":false,"ns":3258803,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":2,"reuse":false,"ns":1622827,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":2,"reuse":true,"ns":1090811,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":3,"reuse":true,"ns":1109725,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":3,"reuse":false,"ns":1669767,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":4,"reuse":false,"ns":1591961,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":4,"reuse":true,"ns":1097946,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":5,"reuse":true,"ns":1120196,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":5,"reuse":false,"ns":1635884,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":6,"reuse":false,"ns":1602331,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":6,"reuse":true,"ns":1106171,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":7,"reuse":true,"ns":1108747,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":7,"reuse":false,"ns":1618850,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":8,"reuse":false,"ns":1608250,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":8,"reuse":true,"ns":1082009,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":9,"reuse":true,"ns":1120542,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":9,"reuse":false,"ns":1629241,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":10,"reuse":false,"ns":1601309,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":10,"reuse":true,"ns":1108873,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":11,"reuse":true,"ns":1122441,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":11,"reuse":false,"ns":1608431,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":12,"reuse":false,"ns":1598578,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":12,"reuse":true,"ns":1097321,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":13,"reuse":true,"ns":1107385,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":13,"reuse":false,"ns":1604734,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":14,"reuse":false,"ns":1578138,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":14,"reuse":true,"ns":1085794,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":15,"reuse":true,"ns":1112193,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":15,"reuse":false,"ns":1598825,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":16,"reuse":false,"ns":1589757,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":16,"reuse":true,"ns":1109498,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":17,"reuse":true,"ns":1102140,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":17,"reuse":false,"ns":1623104,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":18,"reuse":false,"ns":1601276,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":18,"reuse":true,"ns":1096624,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":19,"reuse":true,"ns":1120497,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":19,"reuse":false,"ns":1621078,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":20,"reuse":false,"ns":1600563,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":20,"reuse":true,"ns":1084907,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":21,"reuse":true,"ns":1113097,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":21,"reuse":false,"ns":1598940,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":22,"reuse":false,"ns":1597980,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":22,"reuse":true,"ns":1100049,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":23,"reuse":true,"ns":1111071,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":23,"reuse":false,"ns":1604071,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":24,"reuse":false,"ns":1587667,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":24,"reuse":true,"ns":1113348,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":25,"reuse":true,"ns":1120830,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":25,"reuse":false,"ns":1613897,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":26,"reuse":false,"ns":1596675,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":26,"reuse":true,"ns":1103704,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":27,"reuse":true,"ns":1104990,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":27,"reuse":false,"ns":1596850,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":28,"reuse":false,"ns":1597226,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":28,"reuse":true,"ns":1103268,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":29,"reuse":true,"ns":1114214,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":29,"reuse":false,"ns":1606126,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":30,"reuse":false,"ns":1596191,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":30,"reuse":true,"ns":1097179,"output_bytes":540013}
+S7_JSON {"kind":"work","size":2331,"shape":"open_unpaginated","rows":396,"labels":943,"retained_bytes":571964,"budget_bytes":2048000,"subscriptions":1,"full_builds":0,"issue_rows":0,"label_rows":0,"reuses":31,"over_budget_bypasses":0}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":0,"reuse":false,"ns":12954347,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":0,"reuse":true,"ns":16934582,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":1,"reuse":true,"ns":17578393,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":1,"reuse":false,"ns":12867243,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":2,"reuse":false,"ns":12654567,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":2,"reuse":true,"ns":17981216,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":3,"reuse":true,"ns":17211399,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":3,"reuse":false,"ns":12398532,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":4,"reuse":false,"ns":12620347,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":4,"reuse":true,"ns":18242823,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":5,"reuse":true,"ns":17230958,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":5,"reuse":false,"ns":12414673,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":6,"reuse":false,"ns":12574313,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":6,"reuse":true,"ns":18046976,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":7,"reuse":true,"ns":17436191,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":7,"reuse":false,"ns":12376456,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":8,"reuse":false,"ns":12519328,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":8,"reuse":true,"ns":18167759,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":9,"reuse":true,"ns":17213353,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":9,"reuse":false,"ns":12405748,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":10,"reuse":false,"ns":12585864,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":10,"reuse":true,"ns":18198317,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":11,"reuse":true,"ns":17405031,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":11,"reuse":false,"ns":12467367,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":12,"reuse":false,"ns":12531470,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":12,"reuse":true,"ns":18067946,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":13,"reuse":true,"ns":17376531,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":13,"reuse":false,"ns":12447178,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":14,"reuse":false,"ns":12595600,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":14,"reuse":true,"ns":18018634,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":15,"reuse":true,"ns":17157671,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":15,"reuse":false,"ns":12372098,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":16,"reuse":false,"ns":12550457,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":16,"reuse":true,"ns":18061988,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":17,"reuse":true,"ns":17410006,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":17,"reuse":false,"ns":12489135,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":18,"reuse":false,"ns":12496520,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":18,"reuse":true,"ns":17944878,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":19,"reuse":true,"ns":17374520,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":19,"reuse":false,"ns":12492708,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":20,"reuse":false,"ns":12464935,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":20,"reuse":true,"ns":18033637,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":21,"reuse":true,"ns":17139741,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":21,"reuse":false,"ns":12514451,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":22,"reuse":false,"ns":12488834,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":22,"reuse":true,"ns":18018148,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":23,"reuse":true,"ns":17158061,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":23,"reuse":false,"ns":12437721,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":24,"reuse":false,"ns":12480034,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":24,"reuse":true,"ns":18029981,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":25,"reuse":true,"ns":17166265,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":25,"reuse":false,"ns":12474900,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":26,"reuse":false,"ns":12611492,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":26,"reuse":true,"ns":18082255,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":27,"reuse":true,"ns":17238453,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":27,"reuse":false,"ns":12421853,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":28,"reuse":false,"ns":12466671,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":28,"reuse":true,"ns":18096147,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":29,"reuse":true,"ns":17171615,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":29,"reuse":false,"ns":12422427,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":30,"reuse":false,"ns":12447061,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":30,"reuse":true,"ns":17990329,"output_bytes":4236152}
+S7_JSON {"kind":"work","size":2331,"shape":"all_non_template","rows":2331,"labels":9674,"retained_bytes":571964,"budget_bytes":2048000,"subscriptions":1,"full_builds":31,"issue_rows":72261,"label_rows":299894,"reuses":0,"over_budget_bypasses":31}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 300 filtered out; finished in 3.25s
+
+
+--- sccache stats (spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0) ---
+Compile requests                    3544
+Compile requests executed           2813
+Cache hits                          1673
+Cache hits (Assembler)                56
+Cache hits (C/C++)                   508
+Cache hits (Rust)                   1109
+Cache misses                        1124
+Cache misses (C/C++)                 242
+Cache misses (Rust)                  882
+Cache hits rate                    59.81 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            67.73 %
+Cache hits rate (Rust)             55.70 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                        1124
+Compilation failures                  16
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000196.
+
+EXIT_STATUS 0
