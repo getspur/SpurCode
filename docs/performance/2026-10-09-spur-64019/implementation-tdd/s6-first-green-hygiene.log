@@ -1,0 +1,89 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873  (local=/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873)
+[build] Remote:   ~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   target=/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   -j8
+[build] Remote build queue: admitted as ticket 178 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3568 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 ...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-core -p spur-pm --lib hygiene -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=143G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  269G  143G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `spur-graph` (lib) generated 1 warning
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-pm)
+   Compiling spur-core v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 09s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/debug/deps/spur_core-3e2e003836cf3367)
+
+running 9 tests
+test plan::reconciler::tests::hygiene_tests::hygiene_membership_reseed_unsupported_and_feed_errors ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_database_still_renews_expired_owner_lease ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_successful_write_does_not_ack_a_concurrent_comment ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_pending_grace_expires_without_db_change_or_comment_reread ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_partial_failure_and_comment_during_label_write_are_retried ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_database_still_runs_due_loop_on_tick ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_closed_parent_changes_expand_to_child_and_direct_audit_wins ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_skips_comments_and_leaf_edit_stays_local ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_overlapping_sweeps_serialize_and_cancelled_sweeps_retry ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1596 filtered out; finished in 1.03s
+
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/debug/deps/spur_pm-6dcd6fa0bdf775e2)
+
+running 5 tests
+test beads_crate::issue_changes::tests::dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed ... ok
+test beads_crate::hygiene::tests::hygiene_snapshot_expands_closed_parent_and_filters_deleted_or_ineligible_children ... ok
+test beads_crate::hygiene::tests::hygiene_history_gap_reseeds_and_parent_lookup_is_indexed ... ok
+test beads_crate::issue_changes::tests::every_summary_filter_order_field_is_tracked_and_other_issue_fields_reach_hygiene ... ok
+test beads_crate::hygiene::tests::hygiene_structural_conflicts_rollback_or_conservatively_invalidate ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 286 filtered out; finished in 0.29s
+
+
+--- sccache stats (spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873) ---
+Compile requests                    3528
+Compile requests executed           2797
+Cache hits                          2054
+Cache hits (Assembler)                56
+Cache hits (C/C++)                   508
+Cache hits (Rust)                   1490
+Cache misses                         727
+Cache misses (C/C++)                 242
+Cache misses (Rust)                  485
+Cache hits rate                    73.86 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            67.73 %
+Cache hits rate (Rust)             75.44 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         727
+Compilation failures                  16
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000178.

@@ -1,0 +1,39 @@
+{
+  "task": "bd-1prez",
+  "stage": "provisional_changes_required",
+  "base": "fe7ac7f2f18dfbb8cc6620be742ee4c7dab676ec",
+  "red_commit": "524d77ce4dba7be82d8286d4010c9945955af0c6",
+  "reviewed_source": "RED HEAD plus current uncommitted implementation; immutable final review still required",
+  "reviewers": [
+    "/root/review_issue_tracing",
+    "/root/review_issue_summaries"
+  ],
+  "findings": [
+    {
+      "id": "S6-R1",
+      "severity": "P2",
+      "file": "crates/spur-pm/src/beads_crate/hygiene.rs",
+      "finding": "Raw parent IDs admit tombstoned/template/dangling endpoints that the prior graph path excludes.",
+      "required": "Join existing parent rows and use COALESCE(LOWER(p.status),'open') <> 'tombstone' AND COALESCE(p.is_template,0)=0. Closed/deferred/custom/NULL-status parents stay eligible; no trim. Test inherited-label removal on parent exclusion."
+    },
+    {
+      "id": "S6-R2",
+      "severity": "P2",
+      "files": [
+        "crates/spur-pm/src/beads_crate/hygiene.rs",
+        "crates/spur-pm/src/beads_crate/issue_changes.rs"
+      ],
+      "finding": "Case-sensitive structural type predicates fail compatibility with graph parsing of raw PARENT-CHILD.",
+      "required": "Normalize type consistently in OLD/NEW/victim triggers and child/parent queries; test mixed-case insert/type transition/removal, retaining indexed child lookup."
+    }
+  ],
+  "reviewed_sound": [
+    "Sweeps serialize and stage local state; old cursor and pending work survive error/cancellation.",
+    "Exact pre-work batch cursor is acknowledged on success; no post-write cursor query.",
+    "Pending empty audits stay cached until grace expiry.",
+    "Dependency BEFORE triggers capture hidden-rowid and composite-key victims; AFTER captures OLD/NEW child IDs; rollback semantics remain.",
+    "Pure edges mark hygiene issue domain only; summary payload isolation remains."
+  ],
+  "additional_S7_check": "Actual warmed S5 work counters after structural edits; existing task body already requires zero plain-summary payloads.",
+  "tests_by_reviewers": "None; worker runtime evidence tracked separately."
+}
