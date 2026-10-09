@@ -1,6 +1,6 @@
 {
   "task": "bd-2ef6y",
-  "stage": "declared_review_fix_policy_runtime_verification_pending",
+  "stage": "approved_source_and_tests_verified",
   "jev_input": {
     "family_hint": "workflow",
     "intent": "Verify every adjacent state-event-state step in this complete supplied issue-list reuse trace against its explicit enabled transition relation. All values are known; do not synthesize. Preserve facts and route to workflow.transition_allowed verify. Supported cache shapes are unpaginated, since=None, text=None, normal SQL order classes, within pager-derived byte budget and reader-derived entry bound. Unsupported queries use direct SQL. Over-budget/unusual-order results return coherent SQL-loaded rows without retention and have explicit bypass counters. Ordinary commit races may return a dirty coherent snapshot retaining its ORIGINAL cursor; they must never be marked current. Validation identity/schema/generation/history resets and validation errors DISCARD the candidate and return an error; subsequent requests safely seed. This is declared finite policy for the S5 review fix, not a claim that Rust, SQLite, all races, or runtime performance are proved.",
@@ -2026,9 +2026,9 @@
       "workflow.safety_invariant"
     ],
     "horizon": 35,
-    "source_match": "Pending final S5 implementation and independent review",
+    "source_match": "Approved S5 implementation1a569e5fc045e2ae81f1cd45ddbf032b5ba584c8 (captured fe7ac7f2f18dfbb8cc6620be742ee4c7dab676ec): independent review passed,18/18 focused GREEN after7behavioral RED failures, strict production-lib clippy/fmt passed. S7 integrated performance measurements remain pending.",
     "semantics": "Ordinary commit race retains original cursor as dirty; validation reset/replacement/gap/error discards and returns error; unsupported/oversize/unusual-order cases do not retain.",
-    "limitations": "Caller-normalized finite traces only. Does not prove Rust, SQLite trigger completeness, all concurrent interleavings, ordering, heap allocation, unbounded liveness, or speedup."
+    "limitations": "Caller-normalized finite traces only. Does not prove Rust, SQLite trigger completeness, all concurrent interleavings, ordering, heap allocation, unbounded liveness, or speedup. Numeric bypass counts and retained-byte values are not encoded by this root trace; runtime counter tests and separate bounded capacity checks provide that evidence."
   },
   "base_request": {
     "family": "workflow",
