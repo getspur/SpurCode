@@ -1,0 +1,102 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/154da366-53a7-434a-a2df-c96612033d78  (local=/Volumes/Projects/spur/.spur/worktrees/154da366-53a7-434a-a2df-c96612033d78)
+[build] Remote:   ~/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78   target=/mnt/cargo/targets/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78   -j8
+[build] Remote build queue: admitted as ticket 162 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3563 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78 ...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib issue_reads_ -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=131G used=69% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  282G  131G  69% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.69s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 11 tests
+test beads_crate::issue_reads_tests::issue_reads_old_and_new_membership_and_order_match_sql ... ok
+
+thread 'beads_crate::issue_reads_tests::issue_reads_relevant_delta_loads_only_affected_payload' (2991542) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:100:9:
+assertion `left == right` failed: delta work must not scale with fixture size 12
+  left: (6, 6)
+ right: (1, 1)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'beads_crate::issue_reads_tests::issue_reads_identical_concurrent_requests_coalesce' (2991538) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:208:5:
+assertion `left == right` failed: one refresh serves all four readers
+  left: (24, 24)
+ right: (1, 1)
+
+thread 'beads_crate::issue_reads_tests::issue_reads_commit_during_load_leaves_snapshot_dirty' (2991535) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:318:5:
+commit during load must be detected and leave the published snapshot dirty
+test beads_crate::issue_reads_tests::issue_reads_relevant_delta_loads_only_affected_payload ... FAILED
+test beads_crate::issue_reads_tests::issue_reads_identical_concurrent_requests_coalesce ... FAILED
+test beads_crate::issue_reads_tests::issue_reads_commit_during_load_leaves_snapshot_dirty ... FAILED
+
+thread 'beads_crate::issue_reads_tests::issue_reads_gap_and_schema_change_reseed' (2991537) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:228:9:
+assertion `left == right` failed
+  left: (6, 6)
+ right: (0, 0)
+
+thread 'beads_crate::issue_reads_tests::issue_reads_ordinary_adapter_comment_is_summary_unrelated' (2991540) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:397:5:
+assertion `left == right` failed
+  left: (6, 6)
+ right: (0, 0)
+test beads_crate::issue_reads_tests::issue_reads_gap_and_schema_change_reseed ... FAILED
+test beads_crate::issue_reads_tests::issue_reads_ordinary_adapter_comment_is_summary_unrelated ... FAILED
+
+thread 'beads_crate::issue_reads_tests::issue_reads_database_replacement_rebinds_cached_and_direct_paths' (2991536) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:260:9:
+assertion `left == right` failed
+  left: 6
+ right: 2
+test beads_crate::issue_reads_tests::issue_reads_database_replacement_rebinds_cached_and_direct_paths ... FAILED
+test beads_crate::issue_reads_tests::issue_reads_pages_and_since_keep_sql_boundaries ... ok
+
+thread 'beads_crate::issue_reads_tests::issue_reads_retention_obeys_database_budget_and_reader_width' (2991609) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:356:14:
+production work counters must expose retention and its derived budget
+test beads_crate::issue_reads_tests::issue_reads_retention_obeys_database_budget_and_reader_width ... FAILED
+
+thread 'beads_crate::issue_reads_tests::issue_reads_unchanged_work_is_zero_at_different_sizes' (2991615) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:80:9:
+assertion `left == right` failed: unchanged hot list must load zero rows at size 12
+  left: (6, 6)
+ right: (0, 0)
+
+thread 'beads_crate::issue_reads_tests::issue_reads_unrelated_edit_and_adapter_comment_load_no_payload' (2991619) panicked at crates/spur-pm/src/beads_crate/issue_reads_tests.rs:119:5:
+assertion `left == right` failed: nonmember edits must not decode payload
+  left: (6, 6)
+ right: (0, 0)
+test beads_crate::issue_reads_tests::issue_reads_unchanged_work_is_zero_at_different_sizes ... FAILED
+test beads_crate::issue_reads_tests::issue_reads_unrelated_edit_and_adapter_comment_load_no_payload ... FAILED
+
+failures:
+
+failures:
+    beads_crate::issue_reads_tests::issue_reads_commit_during_load_leaves_snapshot_dirty
+    beads_crate::issue_reads_tests::issue_reads_database_replacement_rebinds_cached_and_direct_paths
+    beads_crate::issue_reads_tests::issue_reads_gap_and_schema_change_reseed
+    beads_crate::issue_reads_tests::issue_reads_identical_concurrent_requests_coalesce
+    beads_crate::issue_reads_tests::issue_reads_ordinary_adapter_comment_is_summary_unrelated
+    beads_crate::issue_reads_tests::issue_reads_relevant_delta_loads_only_affected_payload
+    beads_crate::issue_reads_tests::issue_reads_retention_obeys_database_budget_and_reader_width
+    beads_crate::issue_reads_tests::issue_reads_unchanged_work_is_zero_at_different_sizes
+    beads_crate::issue_reads_tests::issue_reads_unrelated_edit_and_adapter_comment_load_no_payload
+
+test result: FAILED. 2 passed; 9 failed; 0 ignored; 0 measured; 268 filtered out; finished in 0.57s
+
+error: test failed, to rerun pass `-p spur-pm --lib`
+[build] Remote build queue: released ticket 00000000000000000162.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

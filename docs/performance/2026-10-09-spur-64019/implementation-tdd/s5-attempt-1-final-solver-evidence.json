@@ -1,0 +1,1686 @@
+{
+  "pre_ids": [
+    "sol_68e50056a49749b3",
+    "sol_5d17396943d94ca6",
+    "sol_8860de71762a42b6",
+    "sol_688ea467b79742ff"
+  ],
+  "post": [
+    {
+      "solve_id": "sol_4e049734cdfd43b0",
+      "status": "sat/pass",
+      "request": {
+        "family": "workflow",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "issue_list"
+            ],
+            "parameters": {}
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "issue_list"
+            ]
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "subjects": [
+              "issue_list"
+            ]
+          }
+        ],
+        "facts": {
+          "horizon": 19,
+          "state_domain": [
+            "Cold",
+            "FullLoad",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "NeedsReseed",
+            "DirectSQL",
+            "StaleServed"
+          ],
+          "event_domain": [
+            "read_supported",
+            "validate_same_cursor",
+            "read_unchanged",
+            "unrelated_change",
+            "relevant_change",
+            "read_complete_feed",
+            "commit_during_load",
+            "coverage_gap",
+            "read_unsupported",
+            "return_sql_snapshot",
+            "over_budget",
+            "evict"
+          ],
+          "initial_states": [
+            "Cold"
+          ],
+          "safe_states": [
+            "Cold",
+            "FullLoad",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "NeedsReseed",
+            "DirectSQL"
+          ],
+          "target_states": [
+            "Ready"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "Cold",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 0,
+              "from": "NeedsReseed",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 1,
+              "from": "FullLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 1,
+              "from": "DeltaLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "read_unchanged",
+              "to": "Ready"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "unrelated_change",
+              "to": "Ready"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "relevant_change",
+              "to": "Dirty"
+            },
+            {
+              "step": 5,
+              "from": "Dirty",
+              "event": "read_complete_feed",
+              "to": "DeltaLoad"
+            },
+            {
+              "step": 6,
+              "from": "DeltaLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 6,
+              "from": "FullLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 7,
+              "from": "Dirty",
+              "event": "read_complete_feed",
+              "to": "DeltaLoad"
+            },
+            {
+              "step": 8,
+              "from": "FullLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 8,
+              "from": "DeltaLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 9,
+              "from": "Ready",
+              "event": "coverage_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 9,
+              "from": "Dirty",
+              "event": "coverage_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 10,
+              "from": "Cold",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 10,
+              "from": "NeedsReseed",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 11,
+              "from": "DeltaLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 11,
+              "from": "FullLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 12,
+              "from": "Dirty",
+              "event": "read_complete_feed",
+              "to": "DeltaLoad"
+            },
+            {
+              "step": 13,
+              "from": "FullLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 13,
+              "from": "DeltaLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 14,
+              "from": "Ready",
+              "event": "evict",
+              "to": "Cold"
+            },
+            {
+              "step": 15,
+              "from": "Cold",
+              "event": "read_unsupported",
+              "to": "DirectSQL"
+            },
+            {
+              "step": 16,
+              "from": "DirectSQL",
+              "event": "return_sql_snapshot",
+              "to": "Cold"
+            },
+            {
+              "step": 17,
+              "from": "Cold",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 17,
+              "from": "NeedsReseed",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 18,
+              "from": "FullLoad",
+              "event": "over_budget",
+              "to": "Cold"
+            }
+          ],
+          "traces": {
+            "issue_list": {
+              "states": [
+                "Cold",
+                "FullLoad",
+                "Ready",
+                "Ready",
+                "Ready",
+                "Dirty",
+                "DeltaLoad",
+                "Dirty",
+                "DeltaLoad",
+                "Ready",
+                "NeedsReseed",
+                "FullLoad",
+                "Dirty",
+                "DeltaLoad",
+                "Ready",
+                "Cold",
+                "DirectSQL",
+                "Cold",
+                "FullLoad",
+                "Cold"
+              ],
+              "events": [
+                "read_supported",
+                "validate_same_cursor",
+                "read_unchanged",
+                "unrelated_change",
+                "relevant_change",
+                "read_complete_feed",
+                "commit_during_load",
+                "read_complete_feed",
+                "validate_same_cursor",
+                "coverage_gap",
+                "read_supported",
+                "commit_during_load",
+                "read_complete_feed",
+                "validate_same_cursor",
+                "evict",
+                "read_unsupported",
+                "return_sql_snapshot",
+                "read_supported",
+                "over_budget"
+              ]
+            }
+          }
+        },
+        "unknowns": [],
+        "persist": true,
+        "timeout_ms": 5000
+      }
+    },
+    {
+      "solve_id": "sol_138e983d80464579",
+      "status": "unsat/fail",
+      "request": {
+        "family": "workflow",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "issue_list"
+            ],
+            "parameters": {}
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "issue_list"
+            ]
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "subjects": [
+              "issue_list"
+            ]
+          }
+        ],
+        "facts": {
+          "horizon": 19,
+          "state_domain": [
+            "Cold",
+            "FullLoad",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "NeedsReseed",
+            "DirectSQL",
+            "StaleServed"
+          ],
+          "event_domain": [
+            "read_supported",
+            "validate_same_cursor",
+            "read_unchanged",
+            "unrelated_change",
+            "relevant_change",
+            "read_complete_feed",
+            "commit_during_load",
+            "coverage_gap",
+            "read_unsupported",
+            "return_sql_snapshot",
+            "over_budget",
+            "evict"
+          ],
+          "initial_states": [
+            "Cold"
+          ],
+          "safe_states": [
+            "Cold",
+            "FullLoad",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "NeedsReseed",
+            "DirectSQL"
+          ],
+          "target_states": [
+            "Ready"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "Cold",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 0,
+              "from": "NeedsReseed",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 1,
+              "from": "FullLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 1,
+              "from": "DeltaLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "read_unchanged",
+              "to": "Ready"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "unrelated_change",
+              "to": "Ready"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "relevant_change",
+              "to": "Dirty"
+            },
+            {
+              "step": 5,
+              "from": "Dirty",
+              "event": "read_complete_feed",
+              "to": "DeltaLoad"
+            },
+            {
+              "step": 6,
+              "from": "DeltaLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 6,
+              "from": "FullLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 7,
+              "from": "Dirty",
+              "event": "read_complete_feed",
+              "to": "DeltaLoad"
+            },
+            {
+              "step": 8,
+              "from": "FullLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 8,
+              "from": "DeltaLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 9,
+              "from": "Ready",
+              "event": "coverage_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 9,
+              "from": "Dirty",
+              "event": "coverage_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 10,
+              "from": "Cold",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 10,
+              "from": "NeedsReseed",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 11,
+              "from": "DeltaLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 11,
+              "from": "FullLoad",
+              "event": "commit_during_load",
+              "to": "Dirty"
+            },
+            {
+              "step": 12,
+              "from": "Dirty",
+              "event": "read_complete_feed",
+              "to": "DeltaLoad"
+            },
+            {
+              "step": 13,
+              "from": "FullLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 13,
+              "from": "DeltaLoad",
+              "event": "validate_same_cursor",
+              "to": "Ready"
+            },
+            {
+              "step": 14,
+              "from": "Ready",
+              "event": "evict",
+              "to": "Cold"
+            },
+            {
+              "step": 15,
+              "from": "Cold",
+              "event": "read_unsupported",
+              "to": "DirectSQL"
+            },
+            {
+              "step": 16,
+              "from": "DirectSQL",
+              "event": "return_sql_snapshot",
+              "to": "Cold"
+            },
+            {
+              "step": 17,
+              "from": "Cold",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 17,
+              "from": "NeedsReseed",
+              "event": "read_supported",
+              "to": "FullLoad"
+            },
+            {
+              "step": 18,
+              "from": "FullLoad",
+              "event": "over_budget",
+              "to": "Cold"
+            }
+          ],
+          "traces": {
+            "issue_list": {
+              "states": [
+                "Cold",
+                "FullLoad",
+                "Ready",
+                "Ready",
+                "Ready",
+                "Dirty",
+                "DeltaLoad",
+                "Ready",
+                "DeltaLoad",
+                "Ready",
+                "NeedsReseed",
+                "FullLoad",
+                "Dirty",
+                "DeltaLoad",
+                "Ready",
+                "Cold",
+                "DirectSQL",
+                "Cold",
+                "FullLoad",
+                "Cold"
+              ],
+              "events": [
+                "read_supported",
+                "validate_same_cursor",
+                "read_unchanged",
+                "unrelated_change",
+                "relevant_change",
+                "read_complete_feed",
+                "commit_during_load",
+                "read_complete_feed",
+                "validate_same_cursor",
+                "coverage_gap",
+                "read_supported",
+                "commit_during_load",
+                "read_complete_feed",
+                "validate_same_cursor",
+                "evict",
+                "read_unsupported",
+                "return_sql_snapshot",
+                "read_supported",
+                "over_budget"
+              ]
+            }
+          }
+        },
+        "unknowns": [],
+        "persist": true,
+        "timeout_ms": 5000
+      }
+    },
+    {
+      "solve_id": "sol_e87edd55b69b408f",
+      "status": "unsat",
+      "request": {
+        "vars": [
+          {
+            "type": "bool",
+            "name": "member_before"
+          },
+          {
+            "type": "bool",
+            "name": "member_after"
+          },
+          {
+            "type": "bool",
+            "name": "same_identity_and_filter"
+          },
+          {
+            "type": "bool",
+            "name": "complete_change_coverage"
+          },
+          {
+            "type": "bool",
+            "name": "reuse"
+          },
+          {
+            "type": "int_range",
+            "name": "value_before",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "value_after",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_before",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_after",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "bool",
+            "name": "supported"
+          },
+          {
+            "type": "bool",
+            "name": "summary_changed"
+          },
+          {
+            "type": "bool",
+            "name": "raced"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "supported"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "raced"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "summary_changed"
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "var",
+                                  "name": "member_before"
+                                },
+                                {
+                                  "kind": "var",
+                                  "name": "member_after"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "seek_stale_reuse",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "ne",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "feed_covers_effects_for_supported_projection",
+            "expr": {
+              "kind": "op",
+              "op": "or",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "not",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "supported"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "not",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "summary_changed"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": false,
+        "session_op": "none"
+      }
+    },
+    {
+      "solve_id": "sol_d3c170fa28ac44e3",
+      "status": "sat",
+      "request": {
+        "vars": [
+          {
+            "type": "bool",
+            "name": "member_before"
+          },
+          {
+            "type": "bool",
+            "name": "member_after"
+          },
+          {
+            "type": "bool",
+            "name": "same_identity_and_filter"
+          },
+          {
+            "type": "bool",
+            "name": "complete_change_coverage"
+          },
+          {
+            "type": "bool",
+            "name": "reuse"
+          },
+          {
+            "type": "int_range",
+            "name": "value_before",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "value_after",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_before",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_after",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "bool",
+            "name": "supported"
+          },
+          {
+            "type": "bool",
+            "name": "summary_changed"
+          },
+          {
+            "type": "bool",
+            "name": "raced"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "supported"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "raced"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "summary_changed"
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "var",
+                                  "name": "member_before"
+                                },
+                                {
+                                  "kind": "var",
+                                  "name": "member_after"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "feed_covers_effects_for_supported_projection",
+            "expr": {
+              "kind": "op",
+              "op": "or",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "not",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "supported"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "not",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "summary_changed"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_witness",
+            "expr": {
+              "kind": "var",
+              "name": "reuse"
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": false,
+        "session_op": "none"
+      }
+    },
+    {
+      "solve_id": "sol_7a000dd1c18e46fd",
+      "status": "sat counterexample to old-only",
+      "request": {
+        "vars": [
+          {
+            "type": "bool",
+            "name": "member_before"
+          },
+          {
+            "type": "bool",
+            "name": "member_after"
+          },
+          {
+            "type": "bool",
+            "name": "same_identity_and_filter"
+          },
+          {
+            "type": "bool",
+            "name": "complete_change_coverage"
+          },
+          {
+            "type": "bool",
+            "name": "reuse"
+          },
+          {
+            "type": "int_range",
+            "name": "value_before",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "value_after",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_before",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_after",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "bool",
+            "name": "supported"
+          },
+          {
+            "type": "bool",
+            "name": "summary_changed"
+          },
+          {
+            "type": "bool",
+            "name": "raced"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "supported"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "raced"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "summary_changed"
+                            },
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "seek_stale_reuse",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "ne",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "feed_covers_effects_for_supported_projection",
+            "expr": {
+              "kind": "op",
+              "op": "or",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "summary_changed"
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": false,
+        "session_op": "none"
+      }
+    },
+    {
+      "solve_id": "sol_565b50fdb8c9433c",
+      "status": "sat/pass",
+      "family": "resource",
+      "rule": "resource.quota_capacity",
+      "facts": {
+        "measured_retained_bytes": 149229,
+        "budget_bytes": 2048000,
+        "measured_entries": 1,
+        "reader_derived_entry_budget": 4
+      },
+      "caveat": "Measured fixture snapshot only; no universal heap/liveness claim. Runtime admission and eviction plus tests enforce exact serialized key+snapshot bytes."
+    }
+  ],
+  "caveats": "Finite policy models only, not Rust proofs. Lifecycle19 steps with per-event guards. Membership1 candidate values0..2/absence-1; supported+complete feed coverage assumptions gated to allow unsupported since changes. Jev unavailable. Initial lifecycle request rejected before solve at256 transition cap; per-step event narrowing preserved transition choices."
+}

@@ -1,0 +1,30 @@
+{
+  "task": "bd-2ef6y",
+  "attempt": 1,
+  "status": "changes_required_not_approved",
+  "base": "6cea6bc734eda7f21b67916ce2e7de1064626b52",
+  "red": "a471c94b09f22c778c9dbe28020e017d276d6a25",
+  "implementation": "f3d15e62d9b4b03c82c9c74ba183d235c2c06b6c",
+  "diff_sha256": "3e2fb33fc62da2b481dfa3517a140340be8c52426c14b1ec1e8f0257823bf8be",
+  "reviewer": "review_issue_summaries",
+  "pre_review_tests": {
+    "passed": 278,
+    "failed": 0,
+    "ignored": 1
+  },
+  "findings": [
+    {
+      "priority": "P1",
+      "file": "issue_reads.rs",
+      "line": 205,
+      "finding": "Validation errors and identity/generation reseeds become clean=false; old candidate is still retained/returned. Must distinguish from ordinary revision races, discard/reseed or propagate error, and test deterministically."
+    },
+    {
+      "priority": "P2",
+      "file": "issue_reads.rs",
+      "line": 212,
+      "finding": "Oversized and unusual-order results bypass retention without explicit fallback counter. Add reason counters and assertions."
+    }
+  ],
+  "caveat": "Passing pre-review suite does not cover these findings; no live binary changed."
+}

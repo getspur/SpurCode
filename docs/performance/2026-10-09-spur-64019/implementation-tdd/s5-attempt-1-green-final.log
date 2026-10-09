@@ -1,0 +1,79 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/154da366-53a7-434a-a2df-c96612033d78  (local=/Volumes/Projects/spur/.spur/worktrees/154da366-53a7-434a-a2df-c96612033d78)
+[build] Remote:   ~/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78   target=/mnt/cargo/targets/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78   -j8
+[build] Remote build queue: admitted as ticket 166 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3564 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78 ...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=130G used=69% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  283G  130G  69% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] No source content delta; capturing cargo output on VM (set SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0 to stream).
+[build] ensuring pinned toolchain (serialized)
+test ingest::watermark::tests::parse_rejects_missing_required ... ok
+test ingest::watermark::tests::parse_rejects_wrong_header ... ok
+test ingest::watermark::tests::scan_import_markers_returns_unique_ids ... ok
+test pidfile::tests::acquire_then_second_acquire_fails ... ok
+test pidfile::tests::drop_keeps_pidfile_for_next_holder ... ok
+test pidfile::tests::drop_releases_for_reacquire ... ok
+test pidfile::tests::pidfile_remains_for_next_holder ... ok
+test pidfile::tests::second_acquire_reports_holder_pid ... ok
+test pidfile::tests::stale_file_is_acquirable ... ok
+test service::tests::advanced_returns_none_without_backend ... ok
+test service::tests::closed_status_defaults_to_closed_when_none ... ok
+test service::tests::default_beads_actor_is_reconciler ... ok
+test service::tests::issue_filter_with_offset_flows_through_service_surface ... ok
+test ingest::dep_hints::tests::extract_never_panics_on_arbitrary_utf8 ... ok
+test test_workspace::tests::copy_db_to_preserves_uncheckpointed_wal_data ... ok
+test test_workspace::tests::workspace_init_and_create_round_trip ... ok
+test types::tests::issue_filter_offset_defaults_to_none ... ok
+test service::tests::pmservice_lock_acquire_release_emits_spur_pm_tracing ... ok
+test beads_crate::summary_query::tests::summary_projection_matches_legacy_filter_and_page_matrix ... ok
+test beads_crate::summary_query::tests::summary_projection_preserves_projected_and_query_errors ... ok
+S5 delta size=1200 work=IssueReadWork { full_builds: 1, delta_refreshes: 1, reuses: 0, direct_reads: 0, candidate_ids: 1, issue_rows: 601, label_rows: 601, races: 0, connection_opens: 1, retained_bytes: 149228, budget_bytes: 2048000, subscriptions: 1 }
+test beads_crate::issue_reads_tests::issue_reads_relevant_delta_loads_only_affected_payload ... ok
+S5 unchanged size=1200 work=IssueReadWork { full_builds: 1, delta_refreshes: 0, reuses: 1, direct_reads: 0, candidate_ids: 0, issue_rows: 600, label_rows: 600, races: 0, connection_opens: 1, retained_bytes: 149229, budget_bytes: 2048000, subscriptions: 1 }
+test beads_crate::issue_reads_tests::issue_reads_unchanged_work_is_zero_at_different_sizes ... ok
+watermark/delta work size=3000: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::unchanged_validation_and_delta_work_do_not_scale_with_issue_rows ... ok
+test beads_crate::summary_query::tests::summary_projection_retains_batched_sorted_labels ... ok
+
+test result: ok. 278 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 11.19s
+
+
+--- sccache stats (spur/worktrees/154da366-53a7-434a-a2df-c96612033d78) ---
+Compile requests                    2804
+Compile requests executed           2268
+Cache hits                          1670
+Cache hits (Assembler)                44
+Cache hits (C/C++)                    72
+Cache hits (Rust)                   1554
+Cache misses                         578
+Cache misses (C/C++)                 192
+Cache misses (Rust)                  386
+Cache hits rate                    74.29 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            27.27 %
+Cache hits rate (Rust)             80.10 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         578
+Compilation failures                  20
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/154da366-53a7-434a-a2df-c96612033d78 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000166.
