@@ -1,0 +1,191 @@
+{
+  "task": "bd-a96om",
+  "stage": "approved_integrated_verified",
+  "tested_production_commit": "4cbd4f044d36bb655010c486d06da297f460888a",
+  "passed": 497,
+  "ignored": 5,
+  "checks": [
+    {
+      "check": "final-pm",
+      "passed": 352,
+      "failed": 0,
+      "ignored": 5,
+      "artifact": "s7-final-pm.log",
+      "sha256": "44155c3f7f30c4f21850d8f7b051b5c72ef6f139cb0c54e4506312b396b99dff",
+      "receipt": {
+        "command": [
+          "scripts/spur-cargo",
+          "test",
+          "-p",
+          "spur-pm",
+          "--",
+          "--nocapture"
+        ],
+        "environment": {
+          "SPUR_NO_LOCAL_FALLBACK": "1",
+          "SPUR_RSYNC_IO_TIMEOUT": "300",
+          "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+        },
+        "exit_status": 0,
+        "elapsed_seconds": 85.42505717277527,
+        "log": ".spur/tmp/bd-a96om/final-pm.log"
+      }
+    },
+    {
+      "check": "final-core-unit-retry",
+      "passed": 103,
+      "failed": 0,
+      "ignored": 0,
+      "artifact": "s7-final-core-unit.log",
+      "sha256": "b8d07662410c7a06094db30cc1f8a194361705f18a6f6ca57a6a3418fc37d32c",
+      "receipt": {
+        "command": [
+          "scripts/spur-cargo",
+          "test",
+          "-p",
+          "spur-core",
+          "plan::reconciler",
+          "--lib",
+          "--",
+          "--nocapture"
+        ],
+        "environment": {
+          "SPUR_NO_LOCAL_FALLBACK": "1",
+          "SPUR_RSYNC_IO_TIMEOUT": "300",
+          "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+        },
+        "exit_status": 0,
+        "elapsed_seconds": 93.94139194488525,
+        "log": ".spur/tmp/bd-a96om/final-core-unit-retry.log"
+      }
+    },
+    {
+      "check": "final-core-integration",
+      "passed": 42,
+      "failed": 0,
+      "ignored": 0,
+      "artifact": "s7-final-core-integration.log",
+      "sha256": "39fcae10e2a63ed8000244ba881a3322a98f8a2bf157925835f1c27b5c00ab0d",
+      "receipt": {
+        "command": [
+          "scripts/spur-cargo",
+          "test",
+          "-p",
+          "spur-core",
+          "--test",
+          "reconciler_tick",
+          "--test",
+          "reconciler_shutdown",
+          "--test",
+          "reconciler_late_enable",
+          "--",
+          "--nocapture"
+        ],
+        "environment": {
+          "SPUR_NO_LOCAL_FALLBACK": "1",
+          "SPUR_RSYNC_IO_TIMEOUT": "300",
+          "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+        },
+        "exit_status": 0,
+        "elapsed_seconds": 98.5814950466156,
+        "log": ".spur/tmp/bd-a96om/final-core-integration.log"
+      }
+    },
+    {
+      "check": "final-clippy-no-deps",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "artifact": "s7-final-clippy-no-deps.log",
+      "sha256": "b268c9169e562619078c70e90dacbeff793be27536f666bf7b7650e013bc75fc",
+      "receipt": {
+        "command": [
+          "scripts/spur-cargo",
+          "clippy",
+          "--no-deps",
+          "-p",
+          "spur-pm",
+          "-p",
+          "spur-core",
+          "--lib",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "environment": {
+          "SPUR_NO_LOCAL_FALLBACK": "1",
+          "SPUR_RSYNC_IO_TIMEOUT": "300",
+          "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0",
+          "SPUR_REMOTE": "1"
+        },
+        "exit_status": 0,
+        "elapsed_seconds": 115.31751298904419,
+        "log": ".spur/tmp/bd-a96om/final-clippy-no-deps.log"
+      }
+    },
+    {
+      "check": "final-fmt",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "artifact": "s7-final-fmt.log",
+      "sha256": "089b3767f6e9b317ce90a0c82045a661cb3e138f3da1413ff76bd28f25f57ffc",
+      "receipt": {
+        "command": [
+          "scripts/spur-cargo",
+          "fmt",
+          "-p",
+          "spur-pm",
+          "-p",
+          "spur-core",
+          "--",
+          "--check"
+        ],
+        "environment": {
+          "SPUR_NO_LOCAL_FALLBACK": "1",
+          "SPUR_RSYNC_IO_TIMEOUT": "300",
+          "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+        },
+        "exit_status": 0,
+        "elapsed_seconds": 2.3075010776519775,
+        "log": ".spur/tmp/bd-a96om/final-fmt.log"
+      }
+    }
+  ],
+  "preserved_nonpassing_attempts": [
+    {
+      "artifact": "s7-core-first-exit255.log",
+      "classification": "no compiler or test verdict; successful remote retry after read-only diagnosis"
+    },
+    {
+      "artifact": "s7-clippy-dependency-baseline-failure.log",
+      "classification": "unchanged spur-graph method dead_code; strict changed production libraries passed with --no-deps"
+    },
+    {
+      "artifact": "s7-final-release-truncated.log",
+      "classification": "successful benchmark with incomplete captured samples; excluded from final analysis and rerun with streaming"
+    }
+  ],
+  "limits": [
+    "Whole-request measurements use optimized synthetic fixtures, not the live process.",
+    "Large over-budget results still rebuild and are slower than direct SQL.",
+    "Feed adds measured write cost.",
+    "Solver checks cover supplied finite symbolic models."
+  ],
+  "integration": {
+    "commit": "eabaef8843d1844002163245f6a55884d9a6ca5c",
+    "branch": "main",
+    "plan_id": "2b3b57e1-43d5-456a-8a64-6676e01cf15d",
+    "plan_merge_branch": "spur/plan-merge-2b3b57e1-43d5-456a-8a64-6676e01cf15d-37aac5314707471aa8721d518ef5227c",
+    "plan_merge_tip": "8bd7ea8d5b891ec0fd92e59b4ecdf6ca2402cfed",
+    "approved_tasks": 7,
+    "method": "Applied only snapshot-to-plan delta, preserving independently corrected README and unrelated user files.",
+    "source_matches_tested_commit": true,
+    "compared_paths": [
+      "crates",
+      "Cargo.lock"
+    ],
+    "expected_overlap_signals": "Plan merged without conflicts; all production blobs exactly match the integrated tested worker source.",
+    "live_process_rebuilt_or_restarted": false
+  }
+}

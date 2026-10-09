@@ -1,0 +1,230 @@
+COMMAND ['scripts/spur-cargo', 'test', '-p', 'spur-core', '--test', 'reconciler_tick', '--test', 'reconciler_shutdown', '--test', 'reconciler_late_enable', '--', '--nocapture']
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0  (local=/Volumes/Projects/spur/.spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0)
+[build] Remote:   ~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   target=/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   -j8
+[build] Remote build queue: admitted as ticket 200 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3573 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 ...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-core --test reconciler_tick --test reconciler_shutdown --test reconciler_late_enable -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=141G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  271G  141G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `spur-graph` (lib) generated 1 warning
+   Compiling spur-core v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-core)
+warning: struct `TestWorkerSignalSink` is never constructed
+  --> crates/spur-core/tests/common/mod.rs:29:12
+   |
+29 | pub struct TestWorkerSignalSink {
+   |            ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+  --> crates/spur-core/tests/common/mod.rs:34:12
+   |
+33 | impl TestWorkerSignalSink {
+   | ------------------------- associated function in this implementation
+34 |     pub fn new(funnel: Arc<dyn McpEventSink>) -> Self {
+   |            ^^^
+
+warning: function `pro_feature_gate` is never used
+   --> crates/spur-core/tests/common/mod.rs:110:8
+    |
+110 | pub fn pro_feature_gate() -> Arc<FeatureGate> {
+    |        ^^^^^^^^^^^^^^^^
+
+warning: function `community_feature_gate` is never used
+   --> crates/spur-core/tests/common/mod.rs:117:8
+    |
+117 | pub fn community_feature_gate() -> Arc<FeatureGate> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `install_core_brain_registry` is never used
+   --> crates/spur-core/tests/common/mod.rs:121:8
+    |
+121 | pub fn install_core_brain_registry(server: &mut McpCallbackServer) {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `beads_pm` is never used
+   --> crates/spur-core/tests/common/mod.rs:136:14
+    |
+136 | pub async fn beads_pm(repo: &Path) -> Arc<PmService> {
+    |              ^^^^^^^^
+
+warning: function `temp_beads_pm` is never used
+   --> crates/spur-core/tests/common/mod.rs:150:14
+    |
+150 | pub async fn temp_beads_pm() -> (TempDir, Arc<PmService>) {
+    |              ^^^^^^^^^^^^^
+
+warning: function `create_task` is never used
+   --> crates/spur-core/tests/common/mod.rs:156:14
+    |
+156 | pub async fn create_task(pm: &PmService, title: &str) -> String {
+    |              ^^^^^^^^^^^
+
+warning: function `close_task` is never used
+   --> crates/spur-core/tests/common/mod.rs:166:14
+    |
+166 | pub async fn close_task(pm: &PmService, task_id: &str) {
+    |              ^^^^^^^^^^
+
+warning: function `comment_texts` is never used
+   --> crates/spur-core/tests/common/mod.rs:178:14
+    |
+178 | pub async fn comment_texts(pm: &PmService, issue_id: &str) -> Vec<String> {
+    |              ^^^^^^^^^^^^^
+
+warning: function `issue_labels` is never used
+   --> crates/spur-core/tests/common/mod.rs:189:14
+    |
+189 | pub async fn issue_labels(pm: &PmService, issue_id: &str) -> Vec<String> {
+    |              ^^^^^^^^^^^^
+
+warning: function `scope_drift_signal` is never used
+   --> crates/spur-core/tests/common/mod.rs:193:8
+    |
+193 | pub fn scope_drift_signal(signal_id: Uuid) -> WorkerSignal {
+    |        ^^^^^^^^^^^^^^^^^^
+
+warning: function `init_beads_pm` is never used
+  --> crates/spur-core/tests/common/beads.rs:21:14
+   |
+21 | pub async fn init_beads_pm(repo: &Path) -> (TestBeadsWorkspace, Arc<spur_pm::PmService>) {
+   |              ^^^^^^^^^^^^^
+
+warning: static `LOOPBACK_BINDABLE` is never used
+  --> crates/spur-core/tests/common/mod.rs:27:8
+   |
+27 | static LOOPBACK_BINDABLE: OnceCell<bool> = OnceCell::const_new();
+   |        ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `TestWorkerSignalSink` is never constructed
+  --> crates/spur-core/tests/common/mod.rs:29:12
+   |
+29 | pub struct TestWorkerSignalSink {
+   |            ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `loopback_bindable` is never used
+  --> crates/spur-core/tests/common/mod.rs:75:14
+   |
+75 | pub async fn loopback_bindable() -> bool {
+   |              ^^^^^^^^^^^^^^^^^
+
+warning: `spur-core` (test "reconciler_shutdown") generated 15 warnings (12 duplicates)
+warning: `spur-core` (test "reconciler_late_enable") generated 13 warnings
+warning: `spur-core` (test "reconciler_tick") generated 13 warnings (13 duplicates)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.82s
+     Running tests/reconciler_late_enable.rs (/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/debug/deps/reconciler_late_enable-ff4418af45112423)
+
+running 1 test
+test reconciler_starts_only_after_brain_session_id_is_bound ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+     Running tests/reconciler_shutdown.rs (/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/debug/deps/reconciler_shutdown-dc8b2612fe3daaf6)
+
+running 1 test
+test reconciler_shutdown_on_cancel ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/reconciler_tick.rs (/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/debug/deps/reconciler_tick-883d546c564e6a5c)
+
+running 40 tests
+test all_approved_epic_emits_plan_ready_to_merge ... ok
+test epic_closes_when_scoped_children_terminal ... ok
+test execute_epic_rolls_back_epic_scope_when_task_scope_persist_fails ... ok
+test hybrid_fast_forward_matches_polling_projection ... ok
+test lease_sweep_does_not_report_missing_lease_without_dispatch_marker ... ok
+test execute_epic_rejects_persisted_non_terminal_epic_on_second_call ... ok
+test execute_epic_shutdown_abort_does_not_emit_plan_snapshot ... ok
+test execute_epic_preserves_pre_existing_agent_label_on_child_task ... ok
+execute_epic_response={"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"{\n  \"plan_id\": \"7e903021-1675-4c5e-bc03-96bbfb0c6c4b\",\n  \"status\": \"running\",\n  \"progress\": \"0/2 reviewed, 0 running, 2 pending, 0 blocked, 0 failed\",\n  \"counts\": {\n    \"total\": 2,\n    \"pending\": 2,\n    \"ready\": 0,\n    \"dispatched\": 0,\n    \"awaiting_review\": 0,\n    \"approved\": 0,\n    \"rejected\": 0,\n    \"failed\": 0,\n    \"escalated\": 0,\n    \"blocked_on_setup_conflict\": 0\n  },\n  \"all_workers_done\": false,\n  \"ready_to_merge\": false,\n  \"next_action\": \"Workers still running. Poll get_plan_status to monitor.\",\n  \"merge\": {\n    \"status\": \"not_started\",\n    \"base_snapshot_branch\": null\n  },\n  \"tasks\": [\n    {\n      \"task_id\": \"bd-07d1da43\",\n      \"task_name\": \"\",\n      \"agent\": \"codex\",\n      \"attempt\": 1,\n      \"max_attempts\": 3,\n      \"history_count\": 0,\n      \"status\": \"pending\"\n    },\n    {\n      \"task_id\": \"bd-cd94191c\",\n      \"task_name\": \"\",\n      \"agent\": \"codex\",\n      \"attempt\": 1,\n      \"max_attempts\": 3,\n      \"history_count\": 0,\n      \"status\": \"pending\",\n      \"blocked_by\": [\n        \"bd-07d1da43\"\n      ]\n    }\n  ],\n  \"epic_id\": \"bd-b04c8682\",\n  \"derived\": {\n    \"task_count\": 2,\n    \"edge_count\": 1,\n    \"agents\": {\n      \"codex\": 2\n    },\n    \"warnings\": [\n      \"'bd-07d1da43' has no spur:agent:<name> label — used default_agent\",\n      \"'bd-cd94191c' has no spur:agent:<name> label — used default_agent\"\n    ]\n  }\n}"}]}}
+test index_hygiene_removes_label_only_dispatch_after_grace ... ok
+test execute_epic_persists_execution_scope_labels_on_epic_and_tasks ... ok
+test execute_epic_default_notify_path_dispatches_ready_task ... ok
+test observe_ready_via_br_suppresses_tasks_for_closed_complete_epic ... ok
+test pending_label_on_closed_epic_blocks_dispatch ... ok
+test observe_ready_via_br_returns_ready_tasks ... ok
+test observe_ready_returns_unblocked_task_only ... ok
+test observe_ready_summaries_preserve_plan_labels ... ok
+test reconciler_cancels_during_tick ... ok
+test lease_sweep_skips_when_label_has_no_audit ... ok
+test resolve_dispatch_orphan_emits_breadcrumb_and_clears_label ... ok
+test resolve_dispatch_orphan_prefers_audit_delegation_over_mismatched_label ... ok
+test resolve_dispatch_orphan_preserves_legacy_ready_for_review_marker ... ok
+test lease_sweep_prefers_audit_delegation_over_mismatched_label ... ok
+test tick_once_does_not_dispatch_partial_plan_after_child_create_failure ... ok
+test persisted_overlay_conflict_emits_plan_task_blocked_on_setup_conflict_continuation ... ok
+test submit_plan_default_notify_path_dispatches_ready_task ... ok
+test tick_once_does_not_reclaim_expired_lease_owned_by_another_brain ... ok
+test tick_once_dispatches_ready_task_with_single_approved_dep_branch_base ... ok
+test tick_once_clears_dispatch_label_when_send_fails ... ok
+test tick_once_index_hygiene_converges_completion_without_label_write ... ok
+test tick_once_does_not_reclaim_live_lease ... ok
+test tick_once_index_hygiene_is_idempotent_and_preserves_type_b_labels ... ok
+test tick_once_persists_dispatch_before_queue_send ... ok
+test plan_enumeration_finds_tasks_buried_under_backlog ... ok
+test tick_once_index_hygiene_recovers_plan_membership_from_structural_parent ... ok
+test tick_once_skips_plan_owned_by_another_brain ... ok
+test tick_once_skips_terminal_epic_owned_by_another_brain ... ok
+test tick_once_skips_broken_plan_and_dispatches_other_ready_work ... ok
+test tick_once_persists_failed_completion_when_respond_to_drops ... ok
+test tick_once_reclaims_expired_lease_dispatch ... ok
+test worker_success_after_orphan_clear_is_superseded ... ok
+
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.06s
+
+
+--- sccache stats (spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0) ---
+Compile requests                    4979
+Compile requests executed           3901
+Cache hits                          2469
+Cache hits (Assembler)                79
+Cache hits (C/C++)                   962
+Cache hits (Rust)                   1428
+Cache misses                        1415
+Cache misses (C/C++)                 340
+Cache misses (Rust)                 1075
+Cache hits rate                    63.57 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            73.89 %
+Cache hits rate (Rust)             57.05 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                        1415
+Compilation failures                  17
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000200.
+
+EXIT_STATUS 0

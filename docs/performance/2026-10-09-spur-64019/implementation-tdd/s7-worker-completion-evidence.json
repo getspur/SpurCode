@@ -1,0 +1,134 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "a96a09ca-f613-4f6f-a165-e88ea2831243",
+  "delegation_id": "503f330fc9634be3",
+  "brain_session_id": "2a5560c166c31df5",
+  "message": "S7 completed and ready for brain review at 436b2dfb5; issue remains open. Two authorized TDD fixes remove measured admitted-request validation/serialization/delta overhead. All final 497 default PM and relevant core tests pass, fmt passes, strict selected production libraries pass with --no-deps. Evidence and raw bounded samples are committed; final Jev compilation remains brain-owned.",
+  "evidence": {
+    "artifacts": "docs/performance/2026-10-09-issue-reads-implementation/",
+    "base": "6c41c4e581862d293d94727935abc654b06f28e7",
+    "clean_worktree": true,
+    "durable_logs": "docs/performance/2026-10-09-issue-reads-implementation/logs/",
+    "head": "436b2dfb5",
+    "measurement": {
+      "profile": "release rustc 1.94.1 SQLite 3.51.3 Linux aarch64",
+      "warmup_pairs": 5,
+      "timed_pairs_per_shape": 31,
+      "alternating_order": true,
+      "final_request_samples": 248,
+      "representative_open": {
+        "issues": 396,
+        "labels": 943,
+        "string_bytes": 491643,
+        "retained_bytes": 571964,
+        "budget_bytes": 2048000,
+        "direct_median_us": 1601.309,
+        "reuse_median_us": 1107.385,
+        "payload_rows": 0
+      },
+      "small_open": {
+        "direct_median_us": 56.957,
+        "reuse_median_us": 56.482,
+        "interpretation": "approximately parity"
+      },
+      "large_all": {
+        "issues": 2331,
+        "labels": 9674,
+        "string_bytes": 3939064,
+        "admitted": false,
+        "direct_median_us": 12488.834,
+        "reuse_median_us": 17578.393,
+        "interpretation": "uncached approximately 41 percent slower"
+      },
+      "write": {
+        "batch_rows": 200,
+        "repetitions": 9,
+        "update_samples_per_mode": 27,
+        "insert_samples_per_mode": 9,
+        "index_only_update_median_ms": 1.608808,
+        "with_feed_update_median_ms": 3.602378,
+        "index_only_insert_median_ms": 1.349126,
+        "with_feed_insert_median_ms": 2.804764,
+        "journal_rows": 400,
+        "journal_table_and_indices_bytes": 36864,
+        "status_index_bytes": 114688
+      },
+      "caveats": "Synthetic uniform payload; shared builder; no live PID CPU claim. Batch write times are not single-edit timings. Oversized results remain uncached, journal IDs unpruned, transient/timer memory outside retained-byte counter."
+    },
+    "phase": "completion",
+    "production_head": "4cbd4f044",
+    "public_api_changes": "No S7 public API/schema/dependency/TTL/cap additions. Combined interfaces and internal additions listed in README.",
+    "raw_log_count": 15,
+    "raw_log_origin": "/Volumes/Projects/spur/.spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/.spur/tmp/bd-a96om/",
+    "requirements_matrix": "docs/performance/2026-10-09-issue-reads-implementation/README.md",
+    "solvers": {
+      "pre_reloaded": [
+        "sol_68e50056a49749b3",
+        "sol_5d17396943d94ca6"
+      ],
+      "s7_pre": "sol_4a5b269a2599446f",
+      "summary_post": {
+        "id": "sol_715ec684d377470c",
+        "outcome": "sat/pass",
+        "steps": 35
+      },
+      "hygiene_post": {
+        "id": "sol_83ef1d0138b44ef6",
+        "outcome": "sat/pass",
+        "steps": 26
+      },
+      "membership_post": {
+        "id": "sol_8fe1ea212d5047cd",
+        "outcome": "unsat stale-reuse search",
+        "bounds": "one candidate, values 0..2, absence -1, complete coverage and identity/filter guards"
+      },
+      "feasible_reuse": {
+        "id": "sol_1090da184f144b96",
+        "outcome": "sat both absent witness"
+      },
+      "invalid_variants_rejected": 21,
+      "caveats": "Finite supplied-policy checks, not Rust/runtime/SQL/paging/concurrency/performance proof. Exact catalog and typed requests saved for brain-owned final Jev."
+    },
+    "task_state": "Not closed by worker; ready for brain review.",
+    "tdd": [
+      {
+        "red_commit": "da37a9019",
+        "red_command": "scripts/spur-cargo test -p spur-pm s7_unchanged_requests --lib -- --nocapture",
+        "red_exit": 101,
+        "assertion": "2 exact DDL validations, expected 0",
+        "green_commit": "f787530c0",
+        "green_command": "scripts/spur-cargo test -p spur-pm beads_crate:: --lib -- --nocapture",
+        "green_exit": 0,
+        "passed": 157
+      },
+      {
+        "red_commit": "81d17734f",
+        "red_command": "scripts/spur-cargo test -p spur-pm s7_unchanged_validated_revision --lib -- --nocapture",
+        "red_exit": 101,
+        "assertion": "2 delta SQL queries, expected 0",
+        "green_commit": "4cbd4f044",
+        "green_command": "scripts/spur-cargo test -p spur-pm issue_ --lib -- --nocapture",
+        "green_exit": 0,
+        "passed": 78
+      }
+    ],
+    "verification": {
+      "pm": 352,
+      "core_reconciler": 103,
+      "core_integration": 42,
+      "total_passed": 497,
+      "ignored": 5,
+      "manual_benchmarks_separately_passed": 2,
+      "format_exit": 0,
+      "strict_selected_library_clippy_exit": 0,
+      "strict_selected_library_clippy_command": "SPUR_REMOTE=1 scripts/spur-cargo clippy --no-deps -p spur-pm -p spur-core --lib -- -D warnings",
+      "dependency_inclusive_clippy_exit": 101,
+      "dependency_baseline": "unchanged spur-graph FileOidMatch::as_bool dead_code",
+      "core_first_attempt_exit": 255,
+      "core_identical_remote_retry_exit": 0,
+      "no_local_fallback": true,
+      "no_shared_builder_mutation": true
+    },
+    "verified": "All log hashes/copies match, measurement summary reproduces byte-for-byte, S7 and combined patches match committed diffs. Source whitespace clean; literal patch blank context prefixes excluded from artifact whitespace check."
+  }
+}

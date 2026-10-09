@@ -1,0 +1,80 @@
+COMMAND ['scripts/spur-cargo', 'clippy', '--no-deps', '-p', 'spur-pm', '-p', 'spur-core', '--lib', '--', '-D', 'warnings']
+[spur-cargo] remote (clippy) → aws-my VM
+[build] Worktree: spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0  (local=/Volumes/Projects/spur/.spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0)
+[build] Remote:   ~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   target=/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   -j8
+[build] Remote build queue: admitted as ticket 202 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3573 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 ...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] clippy --no-deps -p spur-pm -p spur-core --lib -- -D warnings  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=130G used=69% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  282G  130G  69% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-telemetry v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-telemetry)
+   Compiling tree-sitter-mermaid v0.0.1 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/tree-sitter-mermaid)
+   Compiling spur-license v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-license)
+    Checking libduckdb-sys v1.4.4
+   Compiling spur-solver v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-solver)
+    Checking spur-context-auth v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-context-auth)
+    Checking spur-acp v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-acp)
+    Checking duckdb v1.4.4
+    Checking spur-mcp v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-mcp)
+    Checking spur-blob-store v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-blob-store)
+    Checking spur-cost v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-cost)
+    Checking spur-graph v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-graph)
+    Checking spur-jev v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-jev)
+    Checking spur-pm v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-pm)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `spur-graph` (lib) generated 1 warning
+    Checking spur-analyst v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-analyst)
+    Checking spur-worktree v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-worktree)
+    Checking spur-core v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-core)
+
+--- sccache stats (spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0) ---
+Compile requests                    6828
+Compile requests executed           5292
+Cache hits                          3551
+Cache hits (Assembler)               102
+Cache hits (C/C++)                  1418
+Cache hits (Rust)                   2031
+Cache misses                        1718
+Cache misses (C/C++)                 438
+Cache misses (Rust)                 1280
+Cache hits rate                    67.39 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            76.40 %
+Cache hits rate (Rust)             61.34 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                        1718
+Compilation failures                  23
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 33.51s
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000202.
+
+EXIT_STATUS 0

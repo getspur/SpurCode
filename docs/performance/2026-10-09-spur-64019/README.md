@@ -38,3 +38,9 @@ All calculations and charts were executed in Python cells through Notebook MCP. 
 ![Comparison](comparison.png)
 
 ![Request latency](request-latency.png)
+
+## Issue-list implementation follow-up
+
+The profile led to the approved seven-task issue-list optimization, now integrated on `main` at `eabaef8843d1844002163245f6a55884d9a6ca5c`. Complete supported reads reuse retained results, relevant changes update affected IDs, and hygiene reconciliation consumes its own incremental feed. The [implementation report](../2026-10-09-issue-reads-implementation/README.md) and notebook preserve TDD, independent review, Jev policy checks, and all measurements. Final validation: 497 tests passed, 5 ignored, formatting and scoped strict production-library clippy passed.
+
+In the optimized synthetic fixture, 396 open issues took 1.601 ms with direct summary SQL versus 1.107 ms with warm reuse (31% lower median); unchanged warm requests loaded no issue or label payload rows. Oversized results still rebuild and were slower; feed writes add measured overhead. This implementation was not installed into the sampled live process, so the historical CPU measurements above are not post-deployment results.

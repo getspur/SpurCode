@@ -1,0 +1,42 @@
+{
+  "task": "bd-a96om",
+  "decision": "approved",
+  "base": "6c41c4e581862d293d94727935abc654b06f28e7",
+  "worker_tip": "436b2dfb555b0356315d131f27e68d813086cb76",
+  "captured_tip": "f3fcc38a732e3b940fc6c4c726b866bc519f0402",
+  "tree_equal": true,
+  "tested_production_commit": "4cbd4f044d36bb655010c486d06da297f460888a",
+  "captured_production_matches_tested": true,
+  "delta_sha256": "ad829725f0251087e66317f0ce18f89a4605ab864da2d9cdab5af54c246d155d",
+  "source_review": {
+    "first_fix": "No findings; root verified doc-wrap-only difference from reviewed source",
+    "second_fix_diff_sha256": "846544ea68eeb008f12c8d873ed8c9b30b36b8b5c81efbf993f0c936a87008f3",
+    "reviewer": "/root/review_issue_summaries"
+  },
+  "evidence_review": {
+    "reviewer": "/root/review_issue_index",
+    "sample_data_log_equality": true,
+    "raw_log_hashes_verified": 15,
+    "summary_reproduced_exactly": true,
+    "report_corrections": "Four report wording corrections independently reviewed before approval and preserved during integration. Final paragraph subsequently updated only to record completed integration.",
+    "corrected_readme_sha256": "e49df91dfa8f57a3b454687093223f628a5fcb687f2a8b6cf6ecf96df651f2c8"
+  },
+  "verification": "s7-final-verification.json",
+  "root_jev": "s7-jev-overhead-policy.json",
+  "integration": {
+    "commit": "eabaef8843d1844002163245f6a55884d9a6ca5c",
+    "branch": "main",
+    "plan_id": "2b3b57e1-43d5-456a-8a64-6676e01cf15d",
+    "plan_merge_branch": "spur/plan-merge-2b3b57e1-43d5-456a-8a64-6676e01cf15d-37aac5314707471aa8721d518ef5227c",
+    "plan_merge_tip": "8bd7ea8d5b891ec0fd92e59b4ecdf6ca2402cfed",
+    "approved_tasks": 7,
+    "method": "Applied only snapshot-to-plan delta, preserving independently corrected README and unrelated user files.",
+    "source_matches_tested_commit": true,
+    "compared_paths": [
+      "crates",
+      "Cargo.lock"
+    ],
+    "expected_overlap_signals": "Plan merged without conflicts; all production blobs exactly match the integrated tested worker source.",
+    "live_process_rebuilt_or_restarted": false
+  }
+}
