@@ -1,0 +1,22 @@
+{
+  "task": "bd-1prez",
+  "decision": "request_changes",
+  "attempt": 1,
+  "actual_implementation": "1e62558603ab42c27d23ab65e145be1203b30c18",
+  "captured_commit": "e3a0a04f720a52885e915a38d1b211a8c49da3b9",
+  "base": "fe7ac7f2f18dfbb8cc6620be742ee4c7dab676ec",
+  "captured_tree_equals_reviewed": true,
+  "completion_audit": 31157,
+  "worker_evidence": 31154,
+  "findings_file": "s6-provisional-review.json",
+  "runtime_evidence_file": "s6-attempt-1-evidence.json",
+  "checks": {
+    "focused_hygiene": "9 core + 5 PM pass",
+    "core_reconciler": "81 pass",
+    "structural": "4 pass",
+    "integration": "1 shutdown + 40 tick + 4 retry pass",
+    "fmt": "exit 0"
+  },
+  "reuse_prior_worktree": true,
+  "note": "S6 remains unapproved. R1 endpoint eligibility and R2 edge type normalization require focused TDD fixes. Abstract solve evidence does not establish these source predicates."
+}
