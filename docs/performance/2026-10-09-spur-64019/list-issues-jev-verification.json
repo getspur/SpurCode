@@ -1,0 +1,82 @@
+{
+  "jev_gate": "open",
+  "facts_preserved": true,
+  "python_catalog_semantics_crosscheck": [
+    {
+      "case": "intended",
+      "status": "sat",
+      "outcome": "pass",
+      "invalid_steps": [],
+      "unsafe_slots": [],
+      "solve_id": "sol_68e50056a49749b3"
+    },
+    {
+      "case": "unchanged_read_full_scan",
+      "status": "unsat",
+      "outcome": "fail",
+      "invalid_steps": [
+        2,
+        3
+      ],
+      "unsafe_slots": [],
+      "solve_id": "sol_e0417cd662a9495f"
+    },
+    {
+      "case": "unrelated_change_full_scan",
+      "status": "unsat",
+      "outcome": "fail",
+      "invalid_steps": [
+        3,
+        4
+      ],
+      "unsafe_slots": [],
+      "solve_id": "sol_25eba4487eae40cd"
+    },
+    {
+      "case": "relevant_change_full_scan",
+      "status": "unsat",
+      "outcome": "fail",
+      "invalid_steps": [
+        5
+      ],
+      "unsafe_slots": [],
+      "solve_id": "sol_83f4bbb1b2d34fae"
+    },
+    {
+      "case": "publish_after_race",
+      "status": "unsat",
+      "outcome": "fail",
+      "invalid_steps": [
+        9,
+        10
+      ],
+      "unsafe_slots": [],
+      "solve_id": "sol_e4c095a449774b22"
+    },
+    {
+      "case": "reuse_after_feed_gap",
+      "status": "unsat",
+      "outcome": "fail",
+      "invalid_steps": [
+        12,
+        13
+      ],
+      "unsafe_slots": [],
+      "solve_id": "sol_1883678157544ef9"
+    },
+    {
+      "case": "serve_stale_result",
+      "status": "unsat",
+      "outcome": "fail",
+      "invalid_steps": [
+        2,
+        3
+      ],
+      "unsafe_slots": [
+        3
+      ],
+      "solve_id": "sol_cba80d382b054968"
+    }
+  ],
+  "scope": "Verification of supplied finite lifecycle traces under caller-declared transitions; not source-code verification, SQL/change-feed completeness, all interleavings, unbounded liveness, or a performance claim."
+}
