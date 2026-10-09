@@ -2031,6 +2031,9 @@ mod virtual_row_tests {
 mod streaming_tests;
 
 #[cfg(test)]
+mod body_cache_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use spur_acp::adapter::ToolFamily;

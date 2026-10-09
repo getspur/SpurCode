@@ -1,0 +1,672 @@
+{
+  "project": "spur",
+  "bead": "bd-3ebxc",
+  "jev": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"gate\": \"open\",\n  \"request\": {\n    \"family\": \"resource\",\n    \"mode\": \"verify\",\n    \"rules\": [\n      {\n        \"rule_id\": \"resource.request_within_limit\",\n        \"subjects\": [\n          \"viewport\",\n          \"dependency_batch\"\n        ],\n        \"parameters\": {\n          \"resources\": [\n            \"rows\",\n            \"selects\"\n          ]\n        }\n      }\n    ],\n    \"facts\": {\n      \"workloads\": {\n        \"viewport\": {\n          \"replicas\": 1,\n          \"requests\": {\n            \"rows\": 24,\n            \"selects\": 0\n          },\n          \"limits\": {\n            \"rows\": 24,\n            \"selects\": 0\n          },\n          \"domain_counts\": {}\n        },\n        \"dependency_batch\": {\n          \"replicas\": 1,\n          \"requests\": {\n            \"rows\": 0,\n            \"selects\": 1\n          },\n          \"limits\": {\n            \"rows\": 0,\n            \"selects\": 1\n          },\n          \"domain_counts\": {}\n        }\n      },\n      \"pools\": {},\n      \"quotas\": {}\n    },\n    \"unknowns\": []\n  },\n  \"provenance\": {\n    \"served_model_version\": \"jev-1.13.0\",\n    \"answers\": {\n      \"data_complete\": {\n        \"type\": \"noul\",\n        \"noul\": 0.94\n      },\n      \"route_rule\": {\n        \"type\": \"choice\",\n        \"choice\": \"resource.request_within_limit\",\n        \"probabilities\": {\n          \"placement.minimize_skew\": 0.0,\n          \"placement.minimum_failure_domains\": 0.0,\n          \"placement.topology_max_skew\": 0.0,\n          \"resource.aggregate_capacity\": 0.0,\n          \"resource.quota_capacity\": 0.0,\n          \"resource.request_within_limit\": 1.0\n        },\n        \"confidence\": 1.0\n      },\n      \"solve_mode\": {\n        \"type\": \"choice\",\n        \"choice\": \"verify\",\n        \"probabilities\": {\n          \"synthesize\": 0.0,\n          \"verify\": 1.0\n        },\n        \"confidence\": 1.0\n      }\n    },\n    \"confidences\": {\n      \"data_complete\": 0.94,\n      \"route_rule\": 1.0,\n      \"solve_mode\": 1.0\n    },\n    \"weakest\": 0.94,\n    \"gate\": {\n      \"status\": \"open\"\n    }\n  }\n}"
+      }
+    ]
+  },
+  "resource_request": {
+    "family": "resource",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "resource.request_within_limit",
+        "subjects": [
+          "viewport",
+          "dependency_batch"
+        ],
+        "parameters": {
+          "resources": [
+            "rows",
+            "selects"
+          ]
+        }
+      }
+    ],
+    "facts": {
+      "workloads": {
+        "viewport": {
+          "replicas": 1,
+          "requests": {
+            "rows": 24,
+            "selects": 0
+          },
+          "limits": {
+            "rows": 24,
+            "selects": 0
+          },
+          "domain_counts": {}
+        },
+        "dependency_batch": {
+          "replicas": 1,
+          "requests": {
+            "rows": 0,
+            "selects": 1
+          },
+          "limits": {
+            "rows": 0,
+            "selects": 1
+          },
+          "domain_counts": {}
+        }
+      },
+      "pools": {},
+      "quotas": {}
+    },
+    "unknowns": []
+  },
+  "resource_pre": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"family\": \"resource\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"resource.request_within_limit\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 287,\n  \"status\": \"sat\",\n  \"model\": {},\n  \"duration_ms\": 127,\n  \"solve_id\": \"sol_47fac730ee694147\",\n  \"reason\": null,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+      }
+    ]
+  },
+  "safety_request": {
+    "vars": [
+      {
+        "name": "total",
+        "type": "int"
+      },
+      {
+        "name": "height",
+        "type": "int"
+      },
+      {
+        "name": "requested",
+        "type": "int"
+      },
+      {
+        "name": "max_offset",
+        "type": "int"
+      },
+      {
+        "name": "start",
+        "type": "int"
+      },
+      {
+        "name": "count",
+        "type": "int"
+      },
+      {
+        "name": "end",
+        "type": "int"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "input_domain",
+        "expr": {
+          "kind": "op",
+          "op": "and",
+          "args": [
+            {
+              "kind": "op",
+              "op": "ge",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "total"
+                },
+                {
+                  "kind": "int",
+                  "value": 0
+                }
+              ]
+            },
+            {
+              "kind": "op",
+              "op": "ge",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "height"
+                },
+                {
+                  "kind": "int",
+                  "value": 0
+                }
+              ]
+            },
+            {
+              "kind": "op",
+              "op": "le",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "height"
+                },
+                {
+                  "kind": "int",
+                  "value": 65535
+                }
+              ]
+            },
+            {
+              "kind": "op",
+              "op": "ge",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "requested"
+                },
+                {
+                  "kind": "int",
+                  "value": 0
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "saturating_sub",
+        "expr": {
+          "kind": "op",
+          "op": "or",
+          "args": [
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "ge",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "total"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "height"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "max_offset"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "sub",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "total"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "height"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "lt",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "total"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "height"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "max_offset"
+                    },
+                    {
+                      "kind": "int",
+                      "value": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "clamp_start",
+        "expr": {
+          "kind": "op",
+          "op": "or",
+          "args": [
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "le",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "requested"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "max_offset"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "start"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "requested"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "gt",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "requested"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "max_offset"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "start"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "max_offset"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "take_visible",
+        "expr": {
+          "kind": "op",
+          "op": "or",
+          "args": [
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "le",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "height"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "sub",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "total"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "count"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "height"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "gt",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "height"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "sub",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "total"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "eq",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "count"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "sub",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "total"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "start"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "range_end",
+        "expr": {
+          "kind": "op",
+          "op": "eq",
+          "args": [
+            {
+              "kind": "var",
+              "name": "end"
+            },
+            {
+              "kind": "op",
+              "op": "add",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "start"
+                },
+                {
+                  "kind": "var",
+                  "name": "count"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "counterexample_to_slice_safety",
+        "expr": {
+          "kind": "op",
+          "op": "not",
+          "args": [
+            {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "ge",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "start"
+                    },
+                    {
+                      "kind": "int",
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "ge",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "end"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "start"
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "le",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "end"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "total"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "persist": true,
+    "use_cache": false,
+    "timeout_ms": 10000
+  },
+  "safety_preflight": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"valid\": true,\n  \"language_schema_version\": 1,\n  \"summary\": {\n    \"variables\": 7,\n    \"constraints\": 6,\n    \"objectives\": 0,\n    \"has_soft_constraints\": false,\n    \"is_optimization\": false\n  },\n  \"next_tools\": [\n    \"solve_constraints\"\n  ]\n}"
+      }
+    ]
+  },
+  "safety_pre": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"status\": \"unsat\",\n  \"duration_ms\": 22,\n  \"solve_id\": \"sol_105757bdeb4b43ad\",\n  \"reason\": null,\n  \"unsat_core\": [\n    \"input_domain\",\n    \"saturating_sub\",\n    \"clamp_start\",\n    \"take_visible\",\n    \"range_end\",\n    \"counterexample_to_slice_safety\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+      }
+    ]
+  },
+  "counterexample_request": {
+    "vars": [
+      {
+        "name": "total",
+        "type": "int_range",
+        "min": 0,
+        "max": 65537
+      },
+      {
+        "name": "height",
+        "type": "int_range",
+        "min": 1,
+        "max": 65535
+      },
+      {
+        "name": "offset",
+        "type": "int_range",
+        "min": 0,
+        "max": 65536
+      },
+      {
+        "name": "old_offset",
+        "type": "int_range",
+        "min": 0,
+        "max": 65535
+      }
+    ],
+    "constraints": [
+      {
+        "id": "valid_scroll",
+        "expr": {
+          "kind": "op",
+          "op": "le",
+          "args": [
+            {
+              "kind": "var",
+              "name": "offset"
+            },
+            {
+              "kind": "op",
+              "op": "sub",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "total"
+                },
+                {
+                  "kind": "var",
+                  "name": "height"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "cast_above_u16",
+        "expr": {
+          "kind": "op",
+          "op": "ge",
+          "args": [
+            {
+              "kind": "var",
+              "name": "offset"
+            },
+            {
+              "kind": "int",
+              "value": 65536
+            }
+          ]
+        }
+      },
+      {
+        "id": "old_cast",
+        "expr": {
+          "kind": "op",
+          "op": "eq",
+          "args": [
+            {
+              "kind": "var",
+              "name": "old_offset"
+            },
+            {
+              "kind": "op",
+              "op": "sub",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "offset"
+                },
+                {
+                  "kind": "int",
+                  "value": 65536
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "wrong_row",
+        "expr": {
+          "kind": "op",
+          "op": "ne",
+          "args": [
+            {
+              "kind": "var",
+              "name": "old_offset"
+            },
+            {
+              "kind": "var",
+              "name": "offset"
+            }
+          ]
+        }
+      }
+    ],
+    "persist": true,
+    "use_cache": false,
+    "timeout_ms": 10000
+  },
+  "counterexample_pre": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"status\": \"sat\",\n  \"model\": {\n    \"height\": 1,\n    \"offset\": 65536,\n    \"old_offset\": 0,\n    \"total\": 65537\n  },\n  \"duration_ms\": 67,\n  \"solve_id\": \"sol_342b9223981340c2\",\n  \"reason\": null,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+      }
+    ]
+  }
+}
