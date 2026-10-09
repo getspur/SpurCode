@@ -69,6 +69,22 @@ mod facade_tests {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn unchanged_graph_requests_reuse_materialization() {
+        use std::sync::atomic::Ordering;
+
+        let (_dir, engine, root, _) = seeded_engine().await;
+        let first = engine.subgraph(&root, Some(2), Some("json")).await.unwrap();
+        let reads = engine.beads.metrics().read_total.load(Ordering::Relaxed);
+        let second = engine.subgraph(&root, Some(2), Some("json")).await.unwrap();
+        assert_eq!(first.data_hash, second.data_hash);
+        assert_eq!(
+            engine.beads.metrics().read_total.load(Ordering::Relaxed),
+            reads,
+            "unchanged graph requests must not reload the graph through the beads adapter"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn facade_methods_populate_raw_passthrough_reports() {
         let (_dir, engine, root, _outside) = seeded_engine().await;
 
