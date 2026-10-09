@@ -64,6 +64,71 @@ mod tests {
     }
 
     #[test]
+    fn dependency_batch_preserves_all_fields_and_requested_sources() {
+        let mut storage = SqliteStorage::open_memory().unwrap();
+        for id in ["bd-a", "bd-b", "bd-c", "bd-unselected"] {
+            seed_issue(&mut storage, id);
+        }
+        storage
+            .add_dependency("bd-a", "bd-b", "blocks", "first-actor")
+            .unwrap();
+        storage
+            .add_dependency("bd-a", "bd-c", "related", "second-actor")
+            .unwrap();
+        storage
+            .add_dependency("bd-unselected", "bd-b", "blocks", "other")
+            .unwrap();
+        let mut records = storage.get_dependencies_full("bd-a").unwrap();
+        records[0].metadata = Some("{\"weight\":2}".into());
+        records[0].thread_id = Some("thread-a".into());
+        records[1].metadata = Some(String::new());
+        records[1].created_by = None;
+        storage
+            .sync_dependencies_for_import("bd-a", &records)
+            .unwrap();
+        let expected = storage.get_dependencies_full("bd-a").unwrap();
+        let ids = vec![
+            "bd-a".into(),
+            "bd-c".into(),
+            "missing".into(),
+            "bd-a".into(),
+        ];
+        let actual = get_dependencies_full_for_issues(&storage, &ids).unwrap();
+        assert_eq!(actual.len(), 1);
+        assert_eq!(actual["bd-a"], expected);
+        assert!(get_dependencies_full_for_issues(&storage, &[])
+            .unwrap()
+            .is_empty());
+    }
+
+    #[test]
+    fn dependency_batch_reports_corrupt_records_instead_of_losing_edges() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("beads.db");
+        let mut storage = SqliteStorage::open(&path).unwrap();
+        seed_issue(&mut storage, "bd-a");
+        seed_issue(&mut storage, "bd-b");
+        storage
+            .add_dependency("bd-a", "bd-b", "blocks", "tester")
+            .unwrap();
+        let connection = rusqlite::Connection::open(&path).unwrap();
+        connection
+            .execute(
+                "UPDATE dependencies SET created_at = 'invalid-date' WHERE issue_id = 'bd-a'",
+                [],
+            )
+            .unwrap();
+        assert!(
+            get_dependencies_full_for_issues(&storage, &["bd-a".into()]).is_err(),
+            "a corrupt edge must fail the snapshot, not silently disappear"
+        );
+        // Empty input must return before accessing even a malformed database.
+        assert!(get_dependencies_full_for_issues(&storage, &[])
+            .unwrap()
+            .is_empty());
+    }
+
+    #[test]
     fn get_dependencies_full_for_issues_groups_full_dependencies_by_source_issue() {
         let mut storage = SqliteStorage::open_memory().unwrap();
         seed_issue(&mut storage, "bd-a");
