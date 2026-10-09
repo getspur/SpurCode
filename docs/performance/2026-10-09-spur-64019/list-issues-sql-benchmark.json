@@ -1,0 +1,241 @@
+{
+  "method": "15 warm rounds per case, deterministic shuffled order per round; SELECT+fetchall, statement caching enabled; consistent in-memory copies; Python SQLite runtime",
+  "version": "3.53.1",
+  "captured_utc": "2026-10-09T06:44:24.996854+00:00",
+  "summary": {
+    "open_all/existing": {
+      "rows": 396,
+      "median_ms": 1.90625,
+      "min_ms": 1.82325,
+      "max_ms": 1.994375,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX idx_issues_status (status=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "open_all/status_order_index": {
+      "rows": 396,
+      "median_ms": 1.671417,
+      "min_ms": 1.628167,
+      "max_ms": 1.745459,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX candidate_status_order (status=?)"
+      ]
+    },
+    "open_all/summary_only": {
+      "rows": 396,
+      "median_ms": 0.693083,
+      "min_ms": 0.653333,
+      "max_ms": 0.740125,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX idx_issues_status (status=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "open_200/existing": {
+      "rows": 200,
+      "median_ms": 1.796333,
+      "min_ms": 1.709166,
+      "max_ms": 1.886084,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX idx_issues_status (status=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "open_200/status_order_index": {
+      "rows": 200,
+      "median_ms": 0.858792,
+      "min_ms": 0.820792,
+      "max_ms": 0.923458,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX candidate_status_order (status=?)"
+      ]
+    },
+    "open_200/summary_only": {
+      "rows": 200,
+      "median_ms": 1.057958,
+      "min_ms": 1.0345,
+      "max_ms": 1.264375,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX idx_issues_status (status=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "plan_label/exists": {
+      "rows": 0,
+      "median_ms": 1.130084,
+      "min_ms": 1.092458,
+      "max_ms": 1.291834,
+      "rounds": 15,
+      "plan": [
+        "SCAN issues USING INDEX idx_issues_priority_created_at",
+        "SEARCH labels EXISTS USING COVERING INDEX sqlite_autoindex_labels_1 (issue_id=? AND label=?)"
+      ]
+    },
+    "plan_label/id_subquery": {
+      "rows": 0,
+      "median_ms": 0.008375,
+      "min_ms": 0.007041,
+      "max_ms": 0.012375,
+      "rounds": 15,
+      "plan": [
+        "SEARCH issues USING INDEX sqlite_autoindex_issues_1 (id=?)",
+        "LIST SUBQUERY 1",
+        "SEARCH labels USING INDEX idx_labels_label (label=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    }
+  },
+  "raw_ms": {
+    "open_all/existing": [
+      1.882209,
+      1.994375,
+      1.920208,
+      1.979625,
+      1.8835,
+      1.942375,
+      1.82325,
+      1.879667,
+      1.90625,
+      1.919958,
+      1.862292,
+      1.883166,
+      1.980542,
+      1.914083,
+      1.8715
+    ],
+    "open_all/status_order_index": [
+      1.7425,
+      1.628167,
+      1.745459,
+      1.661291,
+      1.629,
+      1.648208,
+      1.653583,
+      1.669583,
+      1.673125,
+      1.683375,
+      1.645542,
+      1.688667,
+      1.672084,
+      1.688916,
+      1.671417
+    ],
+    "open_all/summary_only": [
+      0.676625,
+      0.704833,
+      0.675166,
+      0.71175,
+      0.690875,
+      0.679625,
+      0.653333,
+      0.69525,
+      0.740125,
+      0.693083,
+      0.687833,
+      0.688333,
+      0.713917,
+      0.694667,
+      0.704375
+    ],
+    "open_200/existing": [
+      1.796333,
+      1.746875,
+      1.88425,
+      1.886084,
+      1.709166,
+      1.767375,
+      1.728167,
+      1.807584,
+      1.768042,
+      1.780041,
+      1.798208,
+      1.814,
+      1.803791,
+      1.784458,
+      1.809125
+    ],
+    "open_200/status_order_index": [
+      0.86425,
+      0.881708,
+      0.923458,
+      0.84125,
+      0.856875,
+      0.8525,
+      0.820792,
+      0.853916,
+      0.883083,
+      0.858792,
+      0.865916,
+      0.863958,
+      0.863833,
+      0.857417,
+      0.857208
+    ],
+    "open_200/summary_only": [
+      1.264375,
+      1.0745,
+      1.0345,
+      1.048125,
+      1.048208,
+      1.057958,
+      1.040625,
+      1.056667,
+      1.132958,
+      1.10875,
+      1.061166,
+      1.056416,
+      1.042,
+      1.170083,
+      1.073167
+    ],
+    "plan_label/exists": [
+      1.206625,
+      1.134834,
+      1.108,
+      1.291834,
+      1.099042,
+      1.153292,
+      1.139333,
+      1.130084,
+      1.132458,
+      1.093875,
+      1.126917,
+      1.120791,
+      1.095125,
+      1.214833,
+      1.092458
+    ],
+    "plan_label/id_subquery": [
+      0.009209,
+      0.008416,
+      0.012375,
+      0.008375,
+      0.00975,
+      0.007291,
+      0.007083,
+      0.007041,
+      0.007083,
+      0.008791,
+      0.009041,
+      0.007292,
+      0.007583,
+      0.007334,
+      0.010417
+    ]
+  },
+  "equivalence": "Complete-row multisets match for index/rewrite; projected-row multisets match for summary query.",
+  "limitations": [
+    "Not a Rust adapter or live caller benchmark; excludes labels fetch, Rust decoding, queue delay and disk I/O.",
+    "Probe-time database differs from saved sample time.",
+    "Existing ORDER BY has no unique tie-breaker; equality on this dataset does not prove stable pagination on all inputs.",
+    "Narrow summary retains description because the current IssueSummary API includes it.",
+    "No measured end-to-end SPUR CPU reduction is inferred from these timings."
+  ]
+}
