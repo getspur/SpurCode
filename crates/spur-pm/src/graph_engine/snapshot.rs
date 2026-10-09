@@ -584,6 +584,38 @@ mod loader_tests {
     }
 
     #[test]
+    fn filtered_snapshot_ignores_corrupt_dependencies_outside_its_label() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("beads.db");
+        let mut storage = beads_rust::storage::sqlite::SqliteStorage::open(&path).unwrap();
+        for id in ["bd-a", "bd-b", "bd-unselected"] {
+            storage.create_issue(&br_issue(id, id), "test").unwrap();
+        }
+        for id in ["bd-a", "bd-b"] {
+            storage.add_label(id, "selected", "test").unwrap();
+        }
+        for id in ["bd-a", "bd-unselected"] {
+            storage
+                .add_dependency(id, "bd-b", "blocks", "test")
+                .unwrap();
+        }
+        let connection = rusqlite::Connection::open(&path).unwrap();
+        connection
+            .execute(
+                "UPDATE dependencies SET created_at = 'invalid-date' WHERE issue_id = 'bd-unselected'",
+                [],
+            )
+            .unwrap();
+
+        let snap = load_graph_snapshot(&storage, Some("selected")).unwrap();
+        assert_eq!(snap.node_count(), 2);
+        assert_eq!(snap.edge_count(), 1);
+        assert!(!snap.by_id.contains_key("bd-unselected"));
+        // Full snapshots deliberately report corruption instead of losing edges.
+        assert!(load_graph_snapshot(&storage, None).is_err());
+    }
+
+    #[test]
     fn loader_filters_by_label() {
         let rows = FakeBeadsRows {
             issues: vec![

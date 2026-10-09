@@ -1,0 +1,123 @@
+{
+  "jev": {
+    "gate": "open",
+    "request": {
+      "family": "configuration",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "configuration.excludes",
+          "subjects": [
+            "bulk_scan",
+            "label_filter"
+          ]
+        }
+      ],
+      "facts": {
+        "components": {
+          "bulk_scan": {
+            "selected": false,
+            "attributes": {}
+          },
+          "label_filter": {
+            "selected": true,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "unknowns": []
+    },
+    "provenance": {
+      "served_model_version": "jev-1.13.0",
+      "answers": {
+        "data_complete": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "route_rule": {
+          "type": "choice",
+          "choice": "configuration.excludes",
+          "probabilities": {
+            "configuration.attribute_allowed_pair": 0,
+            "configuration.excludes": 1,
+            "configuration.requires_any": 0,
+            "configuration.selection_cardinality": 0,
+            "configuration.version_interval": 0
+          },
+          "confidence": 1
+        },
+        "solve_mode": {
+          "type": "choice",
+          "choice": "verify",
+          "probabilities": {
+            "synthesize": 0,
+            "verify": 1
+          },
+          "confidence": 1
+        }
+      },
+      "confidences": {
+        "data_complete": 0.96,
+        "route_rule": 1,
+        "solve_mode": 1
+      },
+      "weakest": 0.96,
+      "gate": {
+        "status": "open"
+      }
+    }
+  },
+  "request": {
+    "family": "configuration",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "configuration.excludes",
+        "subjects": [
+          "bulk_scan",
+          "label_filter"
+        ]
+      }
+    ],
+    "facts": {
+      "components": {
+        "bulk_scan": {
+          "selected": false,
+          "attributes": {}
+        },
+        "label_filter": {
+          "selected": true,
+          "attributes": {}
+        }
+      },
+      "selection_groups": {},
+      "allowed_attribute_pairs": [],
+      "version_orderings": {}
+    },
+    "unknowns": []
+  },
+  "result": {
+    "family": "configuration",
+    "mode": "verify",
+    "outcome": "pass",
+    "rule_results": [
+      {
+        "rule_id": "configuration.excludes",
+        "binding_index": 0,
+        "status": "sat",
+        "outcome": "pass"
+      }
+    ],
+    "total_duration_ms": 241,
+    "status": "sat",
+    "model": {},
+    "duration_ms": 61,
+    "solve_id": "sol_4e33f6219eb64192",
+    "reason": null,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  },
+  "note": "Bulk query is restricted to unfiltered snapshots; the label-filtered path retains per-ID reads."
+}
