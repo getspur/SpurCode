@@ -1,0 +1,136 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "137c4969-7fba-45e3-8051-a3a44c9a1494",
+  "delegation_id": "23a1fcd72de84429",
+  "brain_session_id": "2a5560c166c31df5",
+  "message": "Attempt 2 complete and ready for brain review. Preserved S6 and fixed R1 graph parent endpoint eligibility plus R2 case-normalized structural tracking/expansion. RED test commit 4900ddad2; GREEN implementation commit f99fe3df5. 13 core + 33 PM tests passed, fmt and diff checks passed; worktree clean. Issue remains unclosed.",
+  "evidence": {
+    "artifacts": {
+      "unified_diff": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/full-s6.diff",
+      "review_fixes_diff": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/review-fixes.diff",
+      "evidence": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/evidence.json"
+    },
+    "commits": [
+      {
+        "commit": "2ce955ed2",
+        "intent": "Preserve exact attempt-1 S6 overlay"
+      },
+      {
+        "commit": "4900ddad2",
+        "intent": "RED: endpoint eligibility, actual child label repair, mixed-case structural mutations and replacement victims"
+      },
+      {
+        "commit": "f99fe3df5",
+        "intent": "GREEN: match graph parent semantics and normalize structural type predicates"
+      }
+    ],
+    "green": [
+      {
+        "command": "SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0 SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm -p spur-core --lib --no-fail-fast -- hygiene beads_crate::issue_changes::tests --nocapture",
+        "exit": 0,
+        "log": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/green-affected.log",
+        "result": "13 core hygiene + 33 PM hygiene/change-feed tests passed"
+      },
+      {
+        "command": "scripts/spur-cargo fmt -p spur-pm -p spur-core -- --check",
+        "exit": 0,
+        "log": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/fmt.log"
+      },
+      {
+        "command": "git diff --check",
+        "exit": 0
+      }
+    ],
+    "interfaces": {
+      "attempt2_public": [],
+      "attempt2_internal_callable": [],
+      "preserved_public": [
+        "HygieneCursor(String)",
+        "HygieneCandidate { issue, parent_ids }",
+        "HygieneBatch { cursor, reseed, affected_ids, candidates }",
+        "BeadsAdvanced::hygiene_changes default returns Ok(None)"
+      ],
+      "preserved_internal": [
+        "IssueChanges v3 independent hygiene revisions",
+        "IssueReads::hygiene",
+        "HygieneState { cursor, pending }",
+        "Serialized sweep publishes staged pre-work cursor only after success"
+      ],
+      "new_internal_constant": "PARENTS: eligible parent SQL"
+    },
+    "limitations": [
+      "No new limitations introduced by rework; prior in-memory cursor/startup reseed, unsupported-backend full sweep and eventual convergence remain.",
+      "Mixed-case edge filtering uses parent-key index then case-normalizes that parent's edge types; no broad graph scans.",
+      "No live install/restart/notebook edits or profiling performed. S7 owns integrated suite and latency measurements.",
+      "Existing spur-graph dead-code warning was emitted; no compiler or transport failures occurred."
+    ],
+    "prior_evidence": "/Volumes/Projects/spur/docs/performance/2026-10-09-spur-64019/implementation-tdd/s6-attempt-1-evidence.json",
+    "raw_solver_receipts": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/solver-receipts.json",
+    "red": [
+      {
+        "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm -p spur-core --lib hygiene_review_ --no-fail-fast -- --nocapture",
+        "exit": 101,
+        "log": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/red.log",
+        "result": "6 expected assertion failures: stale P1 after parent exclusion; absent P2 after mixed-case parent's comment; absent P1 after mixed-case insertion; missing child expansion; missing structural changed IDs; missing REPLACE victim. Endpoint status matrix fixture CHECK failure excluded from behavioral RED."
+      },
+      {
+        "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm -p spur-core --lib hygiene_review_ --no-fail-fast -- --nocapture",
+        "exit": 101,
+        "log": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/red-fixture-corrected.log",
+        "result": "Same 6 expected assertion failures. Endpoint matrix then hit upstream NOT NULL status constraint, excluded from behavioral RED."
+      },
+      {
+        "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib hygiene_review_parent_endpoints -- --nocapture",
+        "exit": 101,
+        "log": "/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/.spur/tmp/bd-1prez-attempt2/red-endpoints.log",
+        "result": "Expected assertion: mixed-case tombstone still returns parent instead of []; preceding closed/deferred/custom/NULL/whitespace-custom cases pass. Private fixture retains columns/values in nullable legacy-shaped issues table."
+      }
+    ],
+    "solvers": {
+      "pre": [
+        {
+          "solve_id": "sol_68e50056a49749b3",
+          "status": "sat",
+          "bound": "15-step declared lifecycle"
+        },
+        {
+          "solve_id": "sol_5d17396943d94ca6",
+          "status": "unsat",
+          "bound": "one changed candidate, fixed query, values 0..2, absence -1"
+        }
+      ],
+      "post": [
+        {
+          "solve_id": "sol_b5cf1dab129c434c",
+          "status": "sat",
+          "outcome": "pass",
+          "cached": true
+        },
+        {
+          "solve_id": "sol_789315fc30b24a77",
+          "status": "unsat",
+          "outcome": "fail",
+          "cached": true
+        },
+        {
+          "solve_id": "sol_b807acda68b94e32",
+          "status": "unsat"
+        }
+      ],
+      "bounds": "Workflow: 20 explicitly declared steps covering staged cursor, retries, concurrent writes, parent/edge changes, pending timers and gaps. Membership: fixed query, one candidate, values 0..2, absence -1; complete coverage and matching identity/filter assumed.",
+      "caveat": "Declared finite models do not prove SQL trigger completeness, Rust behavior, all interleavings, unbounded liveness, memory byte limits or runtime speedup. Final workflow calls reuse the identical implemented-policy solver cache; membership solve reran with use_cache=false."
+    },
+    "source_review": "Exact predicate COALESCE(LOWER(p.status),'open')<>'tombstone' AND COALESCE(p.is_template,0)=0 with JOIN issues. LOWER(type) consistently applied to child expansion, parent lookup, OLD/NEW and REPLACE victim tracking. Indexed parent-key SEARCH regression passes. Existing exact-DDL recovery detects changed triggers and reseeds.",
+    "test_plan": [
+      "Actual inherited plan-label removal for tombstone, mixed-case tombstone, template, and dangling parent; normal closed parent donation asserted in shared fixture.",
+      "Parent endpoint status matrix preserves deferred/custom/NULL/whitespace-custom cases; no trim.",
+      "Mixed-case closed-parent audit edit repairs open child; mixed-case raw insert/blocks transition/re-entry/delete repairs child; no graph reads or unchanged comment rereads.",
+      "Raw old/new child retarget and parent retarget, rollback, mixed-case rowid and true composite-key INSERT/UPDATE OR REPLACE victims; summary/timestamp/comment revisions unaffected by pure edges.",
+      "Full issue_changes suite covers independent revision channels, conflicts/rollback, external writers, schema/identity recovery, coherent snapshots and bounded row work.",
+      "Existing core hygiene timer, unchanged DB due-loop tick, lease expiry, cancellation/serialization, failure retry and concurrent comment tests retained and passing. Prior 81 reconciler unit and 45 integration results remain preserved; S7 owns final broader integrated checks."
+    ]
+  },
+  "_preservation": {
+    "source": "Durable worker-evidence comment 31166, bd-1prez; ephemeral evidence.json was removed during worktree cleanup before copying. Raw test logs preserved independently."
+  }
+}

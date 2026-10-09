@@ -1,0 +1,204 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4  (local=/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4)
+[build] Remote:   ~/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4   target=/mnt/cargo/targets/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4   -j8
+[build] Remote build queue: admitted as ticket 186 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3568 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4 ...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib hygiene_review_parent_endpoints -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=146G used=65% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  266G  146G  65% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling smallvec v1.15.1
+   Compiling byteorder v1.5.0
+   Compiling crypto-common v0.1.7
+   Compiling subtle v2.6.1
+   Compiling num-traits v0.2.19
+   Compiling bytes v1.11.1
+   Compiling cc v1.2.60
+   Compiling parking_lot_core v0.9.12
+   Compiling hash32 v0.3.1
+   Compiling digest v0.10.7
+   Compiling gix-date v0.12.1
+   Compiling heapless v0.8.0
+   Compiling futures-util v0.3.32
+   Compiling parking_lot v0.12.5
+   Compiling sha1 v0.10.6
+   Compiling sha1-checked v0.10.0
+   Compiling dashmap v6.1.0
+   Compiling prodash v30.0.1
+   Compiling faster-hex v0.10.0
+   Compiling tokio v1.51.1
+   Compiling http v1.4.0
+   Compiling gix-features v0.45.2
+   Compiling serde_json v1.0.149
+   Compiling gix-packetline v0.20.0
+   Compiling http-body v1.0.1
+   Compiling chrono v0.4.44
+   Compiling ring v0.17.14
+   Compiling aho-corasick v1.1.4
+   Compiling tokio-util v0.7.18
+   Compiling gix-hash v0.21.2
+   Compiling gix-fs v0.18.2
+   Compiling gix-actor v0.37.1
+   Compiling gix-glob v0.23.0
+   Compiling h2 v0.4.14
+   Compiling gix-hashtable v0.11.0
+   Compiling gix-commitgraph v0.31.0
+   Compiling gix-tempfile v20.0.1
+   Compiling hyper v1.9.0
+   Compiling gix-object v0.54.1
+   Compiling gix-url v0.34.0
+   Compiling gix-attributes v0.29.0
+   Compiling gix-ignore v0.18.0
+   Compiling cargo_metadata v0.23.1
+   Compiling gix-lock v20.0.1
+   Compiling zerocopy v0.8.48
+   Compiling hyper-util v0.1.20
+   Compiling regex-automata v0.4.14
+   Compiling icu_normalizer v2.2.0
+   Compiling http-body-util v0.1.3
+   Compiling num-integer v0.1.46
+   Compiling hmac v0.12.1
+   Compiling gix-shallow v0.7.0
+   Compiling gix-pathspec v0.14.0
+   Compiling sha2 v0.10.9
+   Compiling idna_adapter v1.2.1
+   Compiling gix-transport v0.52.1
+   Compiling tower v0.5.3
+   Compiling rustls v0.23.38
+   Compiling rustls-webpki v0.103.12
+   Compiling gix-revwalk v0.25.0
+   Compiling gix-ref v0.57.0
+   Compiling gix-filter v0.24.1
+   Compiling gix-pack v0.64.1
+   Compiling idna v1.1.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling signature v2.2.0
+   Compiling ff v0.13.1
+   Compiling tower-http v0.6.8
+   Compiling sec1 v0.7.3
+   Compiling group v0.13.0
+   Compiling url v2.5.8
+   Compiling hkdf v0.12.4
+   Compiling gix-traverse v0.51.1
+   Compiling gix-revision v0.39.0
+   Compiling futures-executor v0.3.32
+   Compiling vergen v9.1.0
+   Compiling crypto-bigint v0.5.5
+   Compiling gix-index v0.45.1
+   Compiling futures v0.3.32
+   Compiling schemars v1.2.1
+   Compiling gix-refspec v0.35.0
+   Compiling elliptic-curve v0.13.8
+   Compiling gix-discover v0.45.0
+   Compiling gix-config v0.50.0
+   Compiling gix-protocol v0.55.0
+   Compiling gix-odb v0.74.0
+   Compiling tokio-rustls v0.26.4
+   Compiling num-bigint v0.4.6
+   Compiling matchers v0.2.0
+   Compiling onig_sys v69.9.1
+   Compiling hashbrown v0.16.1
+   Compiling hyper-rustls v0.27.9
+   Compiling rand_chacha v0.3.1
+   Compiling tracing-subscriber v0.3.23
+   Compiling gix-worktree v0.46.0
+   Compiling rfc6979 v0.4.0
+   Compiling libsqlite3-sys v0.37.0
+   Compiling rand v0.8.5
+   Compiling ecdsa v0.16.9
+   Compiling gix-submodule v0.24.0
+   Compiling serde_with v3.21.0
+   Compiling primeorder v0.13.6
+   Compiling num-iter v0.1.45
+   Compiling futures-concurrency v7.7.1
+   Compiling num-bigint-dig v0.8.6
+   Compiling schemars v0.8.22
+   Compiling curve25519-dalek v4.1.3
+   Compiling gix-diff v0.57.1
+   Compiling gix-dir v0.19.0
+   Compiling reqwest v0.12.28
+   Compiling ed25519 v2.2.3
+   Compiling axum-core v0.5.6
+   Compiling ed25519-dalek v2.2.0
+   Compiling tracing-appender v0.2.4
+   Compiling rsa v0.9.10
+   Compiling process-wrap v9.1.0
+   Compiling p256 v0.13.2
+   Compiling agent-client-protocol-schema v1.1.0
+   Compiling p384 v0.13.1
+   Compiling crossterm v0.29.0
+   Compiling fancy-regex v0.17.0
+   Compiling hashlink v0.11.1
+   Compiling lru v0.16.3
+   Compiling num-rational v0.4.2
+   Compiling simple_asn1 v0.6.4
+   Compiling file-rotate v0.8.0
+   Compiling reqwest v0.13.2
+   Compiling gix-status v0.24.0
+   Compiling octocrab v0.50.0
+   Compiling rmcp-macros v1.5.0
+   Compiling sse-stream v0.2.2
+   Compiling spur-telemetry v1.24.0 (/home/admin/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/crates/spur-telemetry)
+   Compiling regex v1.12.3
+   Compiling tokio-stream v0.1.18
+   Compiling either v1.15.0
+   Compiling axum v0.8.9
+   Compiling rayon v1.12.0
+   Compiling gix v0.77.0
+   Compiling rusqlite v0.39.0
+   Compiling jsonwebtoken v10.4.0
+   Compiling crossterm v0.28.1
+   Compiling rand_chacha v0.9.0
+   Compiling rand v0.9.4
+   Compiling hyper-timeout v0.5.2
+   Compiling proptest v1.11.0
+   Compiling sysinfo v0.30.13
+   Compiling rmcp v1.5.0
+   Compiling agent-client-protocol v1.0.1
+   Compiling spur-acp v1.24.0 (/home/admin/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/crates/spur-acp)
+   Compiling vergen-gix v9.1.0
+   Compiling toon_rust v0.1.1 (https://github.com/Dicklesworthstone/toon_rust.git?rev=788589d#788589d7)
+   Compiling beads_rust v0.1.15 (https://github.com/getspur/beads_rust?rev=47b3b39a54b04c7d51d735c032c82e891c2a0db8#47b3b39a)
+   Compiling onig v6.5.1
+   Compiling syntect v5.3.0
+   Compiling rich_rust v0.2.1
+   Compiling spur-mcp v1.24.0 (/home/admin/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/crates/spur-mcp)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 41.62s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 1 test
+
+thread 'beads_crate::hygiene::tests::hygiene_review_parent_endpoints_match_graph_eligibility' (3179183) panicked at crates/spur-pm/src/beads_crate/hygiene_tests.rs:134:9:
+assertion `left == right` failed: status=Some("ToMbStOnE"), template=Some(0)
+  left: ["parent"]
+ right: []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test beads_crate::hygiene::tests::hygiene_review_parent_endpoints_match_graph_eligibility ... FAILED
+
+failures:
+
+failures:
+    beads_crate::hygiene::tests::hygiene_review_parent_endpoints_match_graph_eligibility
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 295 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p spur-pm --lib`
+[build] Remote build queue: released ticket 00000000000000000186.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

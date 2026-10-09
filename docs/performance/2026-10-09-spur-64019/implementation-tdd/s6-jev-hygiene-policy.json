@@ -1,6 +1,6 @@
 {
   "task": "bd-1prez",
-  "stage": "declared_policy_before_source_review",
+  "stage": "approved_source_and_tests_verified",
   "jev_input": {
     "family_hint": "workflow",
     "intent": "Verify each adjacent state-event-state step in the supplied finite hygiene lifecycle against the explicit enabled transition relation. All facts are known, use workflow.transition_allowed with verify, preserve facts. Batch c0 is captured before work. Success publishes exactly c0; failures and cancellation preserve the previous cursor. Self writes or concurrent comments after c0 remain for the next batch. Empty-audit candidates stay pending across unchanged reads until the grace deadline. Closed-parent audit and structural changes expand affected children before eligible filtering. Unsupported feeds use full fallback, gaps reset, unchanged delta does not skip other tick timers. This checks a declared finite abstract trace, not Rust implementation, physical concurrency, numerical clock values, SQL or performance.",
@@ -2523,7 +2523,7 @@
   "candidate_review": {
     "gate_open": true,
     "facts_preserved": true,
-    "source_match": "Pending S6 implementation and independent review.",
+    "source_match": "S6 approved: implementation f99fe3df5697de4fa5f05699032ce7048d5becb7, tree-equivalent captured 6c41c4e581862d293d94727935abc654b06f28e7. Independent reviewers resolved parent eligibility and type-normalization findings. Final affected suites: 13 core + 33 PM passed; formatting passed. S7 integrated latency and broad verification still pending.",
     "limits": "26-step supplied symbolic trace with 116 caller-declared enabled edges. No numeric cursor/clock, Rust execution, SQL isolation, exhaustive interleaving, memory or latency proof. Event names express intended policy; runtime tests must establish that source performs those events."
   },
   "cases": [

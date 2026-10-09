@@ -1,0 +1,36 @@
+{
+  "task": "bd-1prez",
+  "attempt": 2,
+  "decision": "approved",
+  "base": "fe7ac7f2f18dfbb8cc6620be742ee4c7dab676ec",
+  "preserved_baseline": "2ce955ed2e71a2e1bf9beaa4fac6f42af9a21686",
+  "preserved_baseline_tree_equals_attempt1": true,
+  "red": "4900ddad2e4b450135a3b82f848e3234029d2bbc",
+  "implementation": "f99fe3df5697de4fa5f05699032ce7048d5becb7",
+  "captured": "6c41c4e581862d293d94727935abc654b06f28e7",
+  "captured_tree_equals_reviewed": true,
+  "full_diff_sha256": "4270a7ce3cd357ab41088bce6dc71768b4488120db63cb62eb1ac4495055848c",
+  "reviewers": [
+    "/root/review_issue_tracing",
+    "/root/review_issue_summaries"
+  ],
+  "findings_resolved": [
+    "R1 parent endpoint eligibility",
+    "R2 mixed-case structural type compatibility"
+  ],
+  "root_followup": "Inspected final formatting-only changes and query-plan assertion update accepting indexed depends_on_id SEARCH with no dependency table scan.",
+  "checks": {
+    "behavioral_red": "six assertions in initial runs plus corrected endpoint assertion; CHECK and NOT NULL fixture errors excluded",
+    "green_core_hygiene": 13,
+    "green_pm_hygiene_and_feed": 33,
+    "fmt_exit": 0,
+    "diff_check_exit": 0
+  },
+  "worker_evidence_audit": 31166,
+  "completion_audit": 31169,
+  "merge_preview": {
+    "predicted_base_oid": "4ec48c5bf67883c1b9c571f3ecea326387020ebd",
+    "conflict": null
+  },
+  "remaining": "S7 integrated full tests, strict production-library lint, optimized request latency and write overhead; no live binary replacement or live performance claim."
+}
