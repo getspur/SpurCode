@@ -16,7 +16,7 @@
 
 **DAG:** `S1 || S2 -> S3 -> S4 -> S5 -> S6 -> S7`. Only S1/S2 write disjoint files. All subsequent shared-file work is sequential.
 
-**Routing:** codex for S1's single-file mechanical work; claude-code for multi-file modules, interface work and integration, matching live worker descriptors.
+**Routing:** all tasks now use codex. The initial S2 claude-code attempt could not run because of credits; the successful retry and remaining tasks were routed to codex.
 
 **Verification discipline:** Capture a real failing assertion before production changes, commit `test(spur-pm|spur-core): <issue> ...`, implement minimally, run focused checks and commit the fix. No test-only fake counters. Work counters should measure actual production paths. Resolve review findings before approving a task. Build/test only with `scripts/spur-cargo`, formatting local through the wrapper. Do not install/restart the current SPUR process.
 
@@ -51,7 +51,7 @@ codex chosen for one-file mechanical index and regression-test work. Output must
 
 **Issue:** `bd-2zw9b`
 **Depends on:** none
-**Worker:** `claude-code`
+**Worker:** `codex`
 
 **Planned files:**
 
@@ -77,7 +77,7 @@ A RED test proves parent tracing span/caller attribution is lost across submit_r
 
 **Issue:** `bd-22m02`
 **Depends on:** `S1` (`bd-l2xem`), `S2` (`bd-2zw9b`)
-**Worker:** `claude-code`
+**Worker:** `codex`
 
 **Planned files:**
 
@@ -104,7 +104,7 @@ Before implementation add a failing behavioral/work regression showing list_issu
 
 **Issue:** `bd-183xz`
 **Depends on:** `S3` (`bd-22m02`)
-**Worker:** `claude-code`
+**Worker:** `codex`
 
 **Planned files:**
 
@@ -132,7 +132,7 @@ Real RED tests for description-only external SQL edits with unchanged updated_at
 
 **Issue:** `bd-2ef6y`
 **Depends on:** `S4` (`bd-183xz`)
-**Worker:** `claude-code`
+**Worker:** `codex`
 
 **Planned files:**
 
@@ -160,7 +160,7 @@ RED behavior tests and production-usable work counters must show: after warmup u
 
 **Issue:** `bd-1prez`
 **Depends on:** `S5` (`bd-2ef6y`)
-**Worker:** `claude-code`
+**Worker:** `codex`
 
 **Planned files:**
 
@@ -187,7 +187,7 @@ RED tests show second unchanged hygiene pass rereads comments under old behavior
 
 **Issue:** `bd-a96om`
 **Depends on:** `S6` (`bd-1prez`)
-**Worker:** `claude-code`
+**Worker:** `codex`
 
 **Planned files:**
 
