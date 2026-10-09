@@ -4690,3 +4690,6 @@ async fn tick_once_strips_plan_complete_when_plan_submit_audit_is_absent() {
         "spur:plan-complete must be stripped without a PlanSubmit audit"
     );
 }
+
+#[path = "hygiene_tests.rs"]
+mod hygiene_tests;

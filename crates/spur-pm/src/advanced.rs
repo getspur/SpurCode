@@ -62,10 +62,48 @@ pub struct ResolvedDepHint {
     pub resolved_beads_id: Option<String>,
 }
 
+/// Backend-owned change token. Consumers must only clone and return it to the
+/// same backend; its encoding is not a public revision or summary-cache key.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HygieneCursor(pub String);
+
+/// An eligible open issue and its structural parents from the feed snapshot.
+/// Parent IDs include closed parents and exclude ordinary blocking edges.
+#[derive(Debug, Clone)]
+pub struct HygieneCandidate {
+    pub issue: IssueSummary,
+    pub parent_ids: Vec<String>,
+}
+
+/// One coherent hygiene snapshot. A reseed supplies every eligible open issue;
+/// otherwise candidates contain only affected eligible issues. `affected_ids`
+/// also contains removed/ineligible IDs so consumers can evict pending timers.
+/// Parent changes expand to children before eligibility filtering. Empty delta
+/// candidates are distinct from unsupported tracking and from read errors.
+#[derive(Debug, Clone)]
+pub struct HygieneBatch {
+    pub cursor: HygieneCursor,
+    pub reseed: bool,
+    pub affected_ids: Vec<String>,
+    pub candidates: Vec<HygieneCandidate>,
+}
+
 // ─── Trait ────────────────────────────────────────────────────────────
 
 #[async_trait]
 pub trait BeadsAdvanced: Send + Sync {
+    /// Optional complete issue/comment/structural change feed for index hygiene.
+    /// None means unsupported: perform the full sweep. Errors must be retried.
+    /// Publish the returned cursor only after ALL work succeeds; never replace
+    /// it with a newer cursor obtained after hygiene's own writes. Cancellation
+    /// or partial failure must retain the prior cursor. Timers remain independent.
+    async fn hygiene_changes(
+        &self,
+        _since: Option<&HygieneCursor>,
+    ) -> anyhow::Result<Option<HygieneBatch>> {
+        Ok(None)
+    }
+
     async fn list_ready(&self, filter: ReadyFilter) -> anyhow::Result<Vec<IssueSummary>>;
 
     async fn list_comments(&self, issue_id: &str) -> anyhow::Result<Vec<Comment>>;

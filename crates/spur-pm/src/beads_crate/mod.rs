@@ -8,12 +8,16 @@ pub mod backoff;
 mod beads_advanced;
 mod beads_db;
 pub(crate) mod dependency_compat;
+mod hygiene;
 pub mod init;
+pub(crate) mod issue_changes;
+pub mod issue_reads;
 pub mod issue_tracker;
 pub mod metrics;
 pub mod reader_pool;
 pub mod snapshot;
 mod sort_index;
+pub(crate) mod summary_query;
 pub(crate) mod wal_checkpoint;
 pub(crate) mod write_lock;
 
@@ -47,3 +51,6 @@ pub mod test_helpers {
         super::wal_checkpoint::checkpoint_wal_truncate_best_effort(db_path);
     }
 }
+
+#[cfg(test)]
+mod issue_reads_tests;

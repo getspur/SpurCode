@@ -1,0 +1,913 @@
+COMMAND ['scripts/spur-cargo', 'test', '--release', '-p', 'spur-pm', 's7_', '--lib', '--', '--ignored', '--nocapture', '--test-threads=1']
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0  (local=/Volumes/Projects/spur/.spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0)
+[build] Remote:   ~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   target=/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   -j8
+[build] Remote build queue: admitted as ticket 189 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3569 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 ...
+[build] Re-stamping 4060 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no prior manifest for this worktree; seeding baseline (no prune on first run)
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test --release -p spur-pm s7_ --lib -- --ignored --nocapture --test-threads=1  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=145G used=65% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     pruned source worktree 37cfc48c-e6f5-48d7-bd37-5652af8c2dec (107M)
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  267G  145G  65% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.24
+   Compiling libc v0.2.184
+   Compiling cfg-if v1.0.4
+   Compiling parking_lot_core v0.9.12
+   Compiling thiserror v2.0.18
+   Compiling typenum v1.19.0
+   Compiling version_check v0.9.5
+   Compiling memchr v2.8.0
+   Compiling regex-syntax v0.8.10
+   Compiling crc32fast v1.5.0
+   Compiling smallvec v1.15.1
+   Compiling tinyvec_macros v0.1.1
+   Compiling crossbeam-utils v0.8.21
+   Compiling tinyvec v1.11.0
+   Compiling fastrand v2.4.1
+   Compiling aho-corasick v1.1.4
+   Compiling gix-trace v0.1.19
+   Compiling scopeguard v1.2.0
+   Compiling unicode-normalization v0.1.25
+   Compiling lock_api v0.4.14
+   Compiling syn v2.0.117
+   Compiling pin-project-lite v0.2.17
+   Compiling once_cell v1.21.4
+   Compiling same-file v1.0.6
+   Compiling zlib-rs v0.5.5
+   Compiling parking_lot v0.12.5
+   Compiling walkdir v2.5.0
+   Compiling serde_core v1.0.228
+   Compiling regex-automata v0.4.14
+   Compiling itoa v1.0.18
+   Compiling generic-array v0.14.7
+   Compiling prodash v30.0.1
+   Compiling equivalent v1.0.2
+   Compiling zmij v1.0.21
+   Compiling heapless v0.8.0
+   Compiling bitflags v2.11.0
+   Compiling byteorder v1.5.0
+   Compiling log v0.4.29
+   Compiling hash32 v0.3.1
+   Compiling stable_deref_trait v1.2.1
+   Compiling serde v1.0.228
+   Compiling futures-core v0.3.32
+   Compiling hashbrown v0.17.0
+   Compiling cpufeatures v0.2.17
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling faster-hex v0.10.0
+   Compiling autocfg v1.5.0
+   Compiling digest v0.10.7
+   Compiling errno v0.3.14
+   Compiling indexmap v2.14.0
+   Compiling sha1 v0.10.6
+   Compiling signal-hook-registry v1.4.8
+   Compiling futures-io v0.3.32
+   Compiling sha1-checked v0.10.0
+   Compiling foldhash v0.2.0
+   Compiling bstr v1.12.1
+   Compiling subtle v2.6.1
+   Compiling allocator-api2 v0.2.21
+   Compiling thiserror-impl v2.0.18
+   Compiling serde_derive v1.0.228
+   Compiling zeroize_derive v1.4.3
+   Compiling jiff v0.2.24
+   Compiling getrandom v0.2.17
+   Compiling hashbrown v0.16.1
+   Compiling winnow v0.7.15
+   Compiling zeroize v1.8.2
+   Compiling gix-utils v0.3.2
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling gix-validate v0.10.1
+   Compiling tracing-core v0.1.36
+   Compiling const-oid v0.9.6
+   Compiling gix-path v0.10.22
+   Compiling strsim v0.11.1
+   Compiling gix-features v0.45.2
+   Compiling ident_case v1.0.1
+   Compiling gix-hash v0.21.2
+   Compiling mio v1.2.0
+   Compiling memmap2 v0.9.10
+   Compiling gix-hashtable v0.11.0
+   Compiling bytes v1.11.1
+   Compiling shlex v1.3.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling slab v0.4.12
+   Compiling getrandom v0.4.2
+   Compiling rustix v1.1.4
+   Compiling tracing-attributes v0.1.31
+   Compiling cc v1.2.60
+   Compiling linux-raw-sys v0.12.1
+   Compiling gix-date v0.12.1
+   Compiling tracing v0.1.44
+   Compiling synstructure v0.13.2
+   Compiling futures-sink v0.3.32
+   Compiling signal-hook v0.4.4
+   Compiling gix-actor v0.37.1
+   Compiling futures-channel v0.3.32
+   Compiling gix-fs v0.18.2
+   Compiling gix-object v0.54.1
+   Compiling futures-macro v0.3.32
+   Compiling serde_json v1.0.149
+   Compiling hashbrown v0.14.5
+   Compiling rustversion v1.0.22
+   Compiling futures-task v0.3.32
+   Compiling zerofrom-derive v0.1.7
+   Compiling futures-util v0.3.32
+   Compiling gix-chunk v0.4.12
+   Compiling fnv v1.0.7
+   Compiling dashmap v6.1.0
+   Compiling zerofrom v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling gix-quote v0.6.2
+   Compiling tempfile v3.27.0
+   Compiling tokio-macros v2.7.0
+   Compiling socket2 v0.6.3
+   Compiling time-core v0.1.8
+   Compiling num-conv v0.2.1
+   Compiling gix-tempfile v20.0.1
+   Compiling gix-glob v0.23.0
+   Compiling gix-commitgraph v0.31.0
+   Compiling yoke v0.8.2
+   Compiling gix-lock v20.0.1
+   Compiling tokio v1.51.1
+   Compiling http v1.4.0
+   Compiling semver v1.0.28
+   Compiling zerovec-derive v0.11.3
+   Compiling unicode-bom v2.0.3
+   Compiling gix-revwalk v0.25.0
+   Compiling rand_core v0.6.4
+   Compiling displaydoc v0.2.5
+   Compiling zerovec v0.11.6
+   Compiling anyhow v1.0.102
+   Compiling base64 v0.22.1
+   Compiling base64ct v1.8.3
+   Compiling static_assertions v1.1.0
+   Compiling kstring v2.0.2
+   Compiling atomic-waker v1.1.2
+   Compiling pem-rfc7468 v0.7.0
+   Compiling gix-sec v0.12.2
+   Compiling gix-attributes v0.29.0
+   Compiling http-body v1.0.1
+   Compiling tinystr v0.8.3
+   Compiling rustc_version v0.4.1
+   Compiling gix-ref v0.57.0
+   Compiling der v0.7.10
+   Compiling darling_core v0.20.11
+   Compiling gix-config-value v0.16.0
+   Compiling percent-encoding v2.3.2
+   Compiling writeable v0.6.3
+   Compiling heck v0.5.0
+   Compiling tower-service v0.3.3
+   Compiling httparse v1.10.1
+   Compiling litemap v0.8.2
+   Compiling shell-words v1.1.1
+   Compiling camino v1.2.2
+   Compiling iana-time-zone v0.1.65
+   Compiling gix-command v0.6.5
+   Compiling icu_locale_core v2.2.0
+   Compiling potential_utf v0.1.5
+   Compiling spki v0.7.3
+   Compiling chrono v0.4.44
+   Compiling darling_macro v0.20.11
+   Compiling zerotrie v0.2.4
+   Compiling gix-traverse v0.51.1
+   Compiling gix-bitmap v0.2.16
+   Compiling gix-packetline v0.20.0
+   Compiling filetime v0.2.27
+   Compiling utf8_iter v1.0.4
+   Compiling try-lock v0.2.5
+   Compiling icu_properties_data v2.2.0
+   Compiling parking v2.2.1
+   Compiling icu_normalizer_data v2.2.0
+   Compiling want v0.3.1
+   Compiling icu_collections v2.2.0
+   Compiling tokio-util v0.7.18
+   Compiling icu_provider v2.2.0
+   Compiling gix-index v0.45.1
+   Compiling darling v0.20.11
+   Compiling pkcs8 v0.10.2
+   Compiling gix-pathspec v0.14.0
+   Compiling gix-ignore v0.18.0
+   Compiling ring v0.17.14
+   Compiling cargo-platform v0.3.3
+   Compiling httpdate v1.0.3
+   Compiling rand_core v0.10.1
+   Compiling h2 v0.4.14
+   Compiling powerfmt v0.2.0
+   Compiling foldhash v0.1.5
+   Compiling spin v0.9.8
+   Compiling cargo_metadata v0.23.1
+   Compiling gix-worktree v0.46.0
+   Compiling deranged v0.5.8
+   Compiling gix-url v0.34.0
+   Compiling hashbrown v0.15.5
+   Compiling lazy_static v1.5.0
+   Compiling derive_builder_core v0.20.2
+   Compiling concurrent-queue v2.5.0
+   Compiling time-macros v0.2.27
+   Compiling rustls-pki-types v1.14.0
+   Compiling serde_derive_internals v0.29.1
+   Compiling sync_wrapper v1.0.2
+   Compiling encoding_rs v0.8.35
+   Compiling zerocopy v0.8.48
+   Compiling ipnet v2.12.0
+   Compiling num_threads v0.1.7
+   Compiling pkg-config v0.3.32
+   Compiling tower-layer v0.3.3
+   Compiling time v0.3.47
+   Compiling derive_builder_macro v0.20.2
+   Compiling icu_normalizer v2.2.0
+   Compiling imara-diff v0.1.8
+   Compiling icu_properties v2.2.0
+   Compiling gix-filter v0.24.1
+   Compiling gix-discover v0.45.0
+   Compiling form_urlencoded v1.2.2
+   Compiling http-body-util v0.1.3
+   Compiling gix-revision v0.39.0
+   Compiling vergen-lib v9.1.0
+   Compiling hmac v0.12.1
+   Compiling num-integer v0.1.46
+   Compiling darling_core v0.23.0
+   Compiling clru v0.6.3
+   Compiling hyper v1.9.0
+   Compiling untrusted v0.9.0
+   Compiling signal-hook v0.3.18
+   Compiling unicode-segmentation v1.13.2
+   Compiling gix-refspec v0.35.0
+   Compiling gix-pack v0.64.1
+   Compiling convert_case v0.10.0
+   Compiling sha2 v0.10.9
+   Compiling idna_adapter v1.2.1
+   Compiling darling_macro v0.23.0
+   Compiling gix-diff v0.57.1
+   Compiling gix-dir v0.19.0
+   Compiling derive_builder v0.20.2
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling gix-transport v0.52.1
+   Compiling gix-config v0.50.0
+   Compiling gix-shallow v0.7.0
+   Compiling arc-swap v1.9.1
+   Compiling vergen v9.1.0
+   Compiling maybe-async v0.2.10
+   Compiling ref-cast v1.0.25
+   Compiling unicode-xid v0.2.6
+   Compiling simd-adler32 v0.3.9
+   Compiling adler2 v2.0.1
+   Compiling rustls v0.23.38
+   Compiling ryu v1.0.23
+   Compiling dyn-clone v1.0.20
+   Compiling gix-odb v0.74.0
+   Compiling derive_more-impl v2.1.1
+   Compiling gix-submodule v0.24.0
+   Compiling gix-protocol v0.55.0
+   Compiling gix-status v0.24.0
+   Compiling miniz_oxide v0.8.9
+   Compiling rustls-webpki v0.103.12
+   Compiling ppv-lite86 v0.2.21
+   Compiling darling v0.23.0
+   Compiling idna v1.1.0
+   Compiling event-listener v5.4.1
+   Compiling futures-lite v2.6.1
+   Compiling signature v2.2.0
+   Compiling ff v0.13.1
+   Compiling vergen-gix v9.1.0
+   Compiling ref-cast-impl v1.0.25
+   Compiling regex v1.12.3
+   Compiling iri-string v0.7.12
+   Compiling base16ct v0.2.0
+   Compiling group v0.13.0
+   Compiling event-listener-strategy v0.5.4
+   Compiling url v2.5.8
+   Compiling sec1 v0.7.3
+   Compiling gix v0.77.0
+   Compiling derive_more v2.1.1
+   Compiling hkdf v0.12.4
+   Compiling schemars_derive v1.2.1
+   Compiling crypto-bigint v0.5.5
+   Compiling futures-executor v0.3.32
+   Compiling async-io v2.6.0
+   Compiling getrandom v0.3.4
+   Compiling openssl-probe v0.2.1
+   Compiling utf8parse v0.2.2
+   Compiling schemars v1.2.1
+   Compiling futures v0.3.32
+   Compiling tower-http v0.6.8
+   Compiling anstyle-parse v1.0.0
+   Compiling rustls-native-certs v0.8.3
+   Compiling flate2 v1.1.9
+   Compiling elliptic-curve v0.13.8
+   Compiling serde_urlencoded v0.7.1
+   Compiling matchers v0.2.0
+   Compiling num-bigint v0.4.6
+   Compiling onig_sys v69.9.1
+   Compiling webpki-roots v1.0.7
+   Compiling sharded-slab v0.1.7
+   Compiling polling v3.11.0
+   Compiling tracing-serde v0.2.0
+   Compiling tracing-log v0.2.0
+   Compiling pin-project-internal v1.1.11
+   Compiling thread_local v1.1.9
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling anstyle v1.0.14
+   Compiling colorchoice v1.0.5
+   Compiling cfg_aliases v0.2.1
+   Compiling anstyle-query v1.1.5
+   Compiling option-ext v0.2.0
+   Compiling unicode-width v0.2.0
+   Compiling nu-ansi-term v0.50.3
+   Compiling anstream v1.0.0
+   Compiling dirs-sys v0.4.1
+   Compiling nix v0.31.2
+   Compiling tokio-rustls v0.26.4
+   Compiling pin-project v1.1.11
+   Compiling tracing-subscriber v0.3.23
+   Compiling async-channel v2.5.0
+   Compiling hyper-rustls v0.27.9
+   Compiling serde_with_macros v3.21.0
+   Compiling rand_chacha v0.3.1
+   Compiling rfc6979 v0.4.0
+   Compiling uuid v1.23.0
+   Compiling strum_macros v0.28.0
+   Compiling curve25519-dalek v4.1.3
+   Compiling serde_spanned v0.6.9
+   Compiling toml_datetime v0.6.3
+   Compiling clap_lex v1.1.0
+   Compiling num-bigint-dig v0.8.6
+   Compiling bit-vec v0.8.0
+   Compiling schemars v0.8.22
+   Compiling async-task v4.7.1
+   Compiling vcpkg v0.2.15
+   Compiling object v0.37.3
+   Compiling winnow v0.5.40
+   Compiling strum v0.28.0
+   Compiling rand v0.8.5
+   Compiling bit-set v0.8.0
+   Compiling libsqlite3-sys v0.37.0
+   Compiling serde_with v3.21.0
+   Compiling ecdsa v0.16.9
+   Compiling signal-hook-mio v0.2.5
+   Compiling clap_builder v4.6.0
+   Compiling async-signal v0.2.14
+   Compiling rand_core v0.9.5
+   Compiling primeorder v0.13.6
+   Compiling async-lock v3.4.2
+   Compiling num-iter v0.1.45
+   Compiling schemars_derive v0.8.22
+   Compiling piper v0.2.5
+   Compiling clap_derive v4.6.0
+   Compiling crossbeam-epoch v0.9.18
+   Compiling async-trait v0.1.89
+   Compiling quick-xml v0.38.4
+   Compiling toml_edit v0.20.2
+   Compiling pulldown-cmark v0.13.3
+   Compiling portable-atomic v1.13.1
+   Compiling fixedbitset v0.5.7
+   Compiling gimli v0.32.3
+   Compiling spur-telemetry v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-telemetry)
+   Compiling linked-hash-map v0.5.6
+   Compiling rayon-core v1.13.0
+   Compiling rustix v0.38.44
+   Compiling litrs v1.0.0
+   Compiling futures-concurrency v7.7.1
+   Compiling clap v4.6.0
+   Compiling yaml-rust v0.4.5
+   Compiling plist v1.8.0
+   Compiling document-features v0.2.12
+   Compiling agent-client-protocol-schema v1.1.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling addr2line v0.25.1
+   Compiling toml v0.8.2
+   Compiling blocking v1.6.2
+   Compiling async-process v2.5.0
+   Compiling reqwest v0.12.28
+   Compiling dirs v5.0.1
+   Compiling getopts v0.2.24
+   Compiling toon_rust v0.1.1 (https://github.com/Dicklesworthstone/toon_rust.git?rev=788589d#788589d7)
+   Compiling ed25519 v2.2.3
+   Compiling chacha20 v0.10.0
+   Compiling pkcs1 v0.7.5
+   Compiling crossbeam-channel v0.5.15
+   Compiling bincode v1.3.3
+   Compiling agent-client-protocol-derive v1.0.1
+   Compiling serde_path_to_error v0.1.20
+   Compiling rustc-demangle v0.1.27
+   Compiling mime v0.3.17
+   Compiling unicase v2.9.0
+   Compiling is_executable v1.0.5
+   Compiling rmcp v1.5.0
+   Compiling rustc-hash v2.1.2
+   Compiling linux-raw-sys v0.4.15
+   Compiling pulldown-cmark-escape v0.11.0
+   Compiling backtrace v0.3.76
+   Compiling axum-core v0.5.6
+   Compiling clap_complete v4.6.3
+   Compiling agent-client-protocol v1.0.1
+   Compiling tracing-appender v0.2.4
+   Compiling rsa v0.9.10
+   Compiling rand v0.10.1
+   Compiling ed25519-dalek v2.2.0
+   Compiling process-wrap v9.1.0
+   Compiling crossterm v0.29.0
+   Compiling p384 v0.13.1
+   Compiling p256 v0.13.2
+   Compiling fancy-regex v0.17.0
+   Compiling lru v0.16.3
+   Compiling hashlink v0.11.1
+   Compiling directories v5.0.1
+   Compiling console v0.16.3
+   Compiling beads_rust v0.1.15 (https://github.com/getspur/beads_rust?rev=47b3b39a54b04c7d51d735c032c82e891c2a0db8#47b3b39a)
+   Compiling num-rational v0.4.2
+   Compiling simple_asn1 v0.6.4
+   Compiling reqwest v0.13.2
+   Compiling file-rotate v0.8.0
+   Compiling rmcp-macros v1.5.0
+   Compiling sse-stream v0.2.2
+   Compiling octocrab v0.50.0
+   Compiling fs4 v0.13.1
+   Compiling tokio-stream v0.1.18
+   Compiling snafu-derive v0.8.9
+   Compiling pem v3.0.6
+   Compiling stdio-override v0.2.0
+   Compiling os_pipe v1.2.3
+   Compiling wait-timeout v0.2.1
+   Compiling quick-error v1.2.3
+   Compiling unsafe-libyaml v0.2.11
+   Compiling similar v2.7.0
+   Compiling unit-prefix v0.5.2
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling pastey v0.2.1
+   Compiling either v1.15.0
+   Compiling fallible-iterator v0.3.0
+   Compiling matchit v0.8.4
+   Compiling indicatif v0.18.4
+   Compiling rayon v1.12.0
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling spur-acp v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-acp)
+   Compiling rusqlite v0.39.0
+   Compiling axum v0.8.9
+   Compiling onig v6.5.1
+   Compiling rusty-fork v0.3.1
+   Compiling snafu v0.8.9
+   Compiling syntect v5.3.0
+   Compiling jsonwebtoken v10.4.0
+   Compiling crossterm v0.28.1
+   Compiling rand_chacha v0.9.0
+   Compiling rand v0.9.4
+   Compiling rand_xorshift v0.4.0
+   Compiling hyper-timeout v0.5.2
+   Compiling rich_rust v0.2.1
+   Compiling secrecy v0.10.3
+   Compiling fs2 v0.4.3
+   Compiling web-time v1.1.0
+   Compiling unarray v0.1.4
+   Compiling dunce v1.0.5
+   Compiling fixedbitset v0.4.2
+   Compiling proptest v1.11.0
+   Compiling sysinfo v0.30.13
+   Compiling petgraph v0.6.5
+   Compiling spur-mcp v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-mcp)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-pm)
+    Finished `release` profile [optimized] target(s) in 1m 47s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/release/deps/spur_pm-e244fb8f0394228b)
+
+running 2 tests
+test beads_crate::issue_reads_tests::acceptance::s7_request_benchmark ... S7_JSON {"kind":"environment","profile":"release","sqlite":"3.51.3","arch":"aarch64","os":"linux","rustc":"rustc 1.94.1 (e408947bf 2026-03-25)\nbinary: rustc\ncommit-hash: e408947bfd200af42db322daf0fadfe7e26d3bd1\ncommit-date: 2026-03-25\nhost: aarch64-unknown-linux-gnu\nrelease: 1.94.1\nLLVM version: 21.1.8\n","machine":"Linux ip-172-31-5-184 6.1.0-53-cloud-arm64 #1 SMP Debian 6.1.187-1 (2026-09-07) aarch64 GNU/Linux\n","warmup":5,"repetitions":31,"boundary":"async reader queue through Vec<IssueSummary> and common JSON output serialization; direct baseline independent of feed"}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":0,"reuse":false,"ns":66066,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":0,"reuse":true,"ns":462471,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":1,"reuse":true,"ns":633774,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":1,"reuse":false,"ns":1312921,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":2,"reuse":false,"ns":117189,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":2,"reuse":true,"ns":494733,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":3,"reuse":true,"ns":486174,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":3,"reuse":false,"ns":98781,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":4,"reuse":false,"ns":103956,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":4,"reuse":true,"ns":483771,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":5,"reuse":true,"ns":473281,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":5,"reuse":false,"ns":65824,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":6,"reuse":false,"ns":83447,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":6,"reuse":true,"ns":438883,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":7,"reuse":true,"ns":446635,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":7,"reuse":false,"ns":63254,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":8,"reuse":false,"ns":63575,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":8,"reuse":true,"ns":432905,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":9,"reuse":true,"ns":440943,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":9,"reuse":false,"ns":60174,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":10,"reuse":false,"ns":60517,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":10,"reuse":true,"ns":434148,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":11,"reuse":true,"ns":427615,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":11,"reuse":false,"ns":56225,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":12,"reuse":false,"ns":63064,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":12,"reuse":true,"ns":443717,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":13,"reuse":true,"ns":420263,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":13,"reuse":false,"ns":55646,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":14,"reuse":false,"ns":64453,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":14,"reuse":true,"ns":427297,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":15,"reuse":true,"ns":424256,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":15,"reuse":false,"ns":55057,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":16,"reuse":false,"ns":54450,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":16,"reuse":true,"ns":435259,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":17,"reuse":true,"ns":421312,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":17,"reuse":false,"ns":56782,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":18,"reuse":false,"ns":54253,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":18,"reuse":true,"ns":454096,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":19,"reuse":true,"ns":414546,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":19,"reuse":false,"ns":55069,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":20,"reuse":false,"ns":54631,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":20,"reuse":true,"ns":441286,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":21,"reuse":true,"ns":414559,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":21,"reuse":false,"ns":57597,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":22,"reuse":false,"ns":54201,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":22,"reuse":true,"ns":438346,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":23,"reuse":true,"ns":409446,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":23,"reuse":false,"ns":56687,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":24,"reuse":false,"ns":56222,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":24,"reuse":true,"ns":421365,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":25,"reuse":true,"ns":420075,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":25,"reuse":false,"ns":55988,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":26,"reuse":false,"ns":56105,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":26,"reuse":true,"ns":408421,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":27,"reuse":true,"ns":422001,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":27,"reuse":false,"ns":54965,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":28,"reuse":false,"ns":58491,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":28,"reuse":true,"ns":419922,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":29,"reuse":true,"ns":416800,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":29,"reuse":false,"ns":58255,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":30,"reuse":false,"ns":54727,"output_bytes":8182}
+S7_JSON {"kind":"request","size":12,"shape":"open_unpaginated","round":30,"reuse":true,"ns":409586,"output_bytes":8182}
+S7_JSON {"kind":"work","size":12,"shape":"open_unpaginated","rows":6,"labels":14,"retained_bytes":9026,"budget_bytes":2048000,"subscriptions":1,"full_builds":0,"issue_rows":0,"label_rows":0,"reuses":31,"over_budget_bypasses":0}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":0,"reuse":false,"ns":88367,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":0,"reuse":true,"ns":464212,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":1,"reuse":true,"ns":493433,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":1,"reuse":false,"ns":96820,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":2,"reuse":false,"ns":82314,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":2,"reuse":true,"ns":446251,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":3,"reuse":true,"ns":468793,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":3,"reuse":false,"ns":87072,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":4,"reuse":false,"ns":80848,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":4,"reuse":true,"ns":458494,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":5,"reuse":true,"ns":466450,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":5,"reuse":false,"ns":86620,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":6,"reuse":false,"ns":79758,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":6,"reuse":true,"ns":446604,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":7,"reuse":true,"ns":467458,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":7,"reuse":false,"ns":83979,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":8,"reuse":false,"ns":79681,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":8,"reuse":true,"ns":460389,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":9,"reuse":true,"ns":448837,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":9,"reuse":false,"ns":84110,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":10,"reuse":false,"ns":79170,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":10,"reuse":true,"ns":458465,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":11,"reuse":true,"ns":451093,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":11,"reuse":false,"ns":85607,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":12,"reuse":false,"ns":79929,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":12,"reuse":true,"ns":476435,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":13,"reuse":true,"ns":449266,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":13,"reuse":false,"ns":85634,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":14,"reuse":false,"ns":81734,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":14,"reuse":true,"ns":456344,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":15,"reuse":true,"ns":443653,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":15,"reuse":false,"ns":85670,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":16,"reuse":false,"ns":84013,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":16,"reuse":true,"ns":455514,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":17,"reuse":true,"ns":450852,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":17,"reuse":false,"ns":86014,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":18,"reuse":false,"ns":80893,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":18,"reuse":true,"ns":449261,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":19,"reuse":true,"ns":458043,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":19,"reuse":false,"ns":84242,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":20,"reuse":false,"ns":79480,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":20,"reuse":true,"ns":452688,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":21,"reuse":true,"ns":444114,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":21,"reuse":false,"ns":85729,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":22,"reuse":false,"ns":78400,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":22,"reuse":true,"ns":446855,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":23,"reuse":true,"ns":449984,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":23,"reuse":false,"ns":83238,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":24,"reuse":false,"ns":80781,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":24,"reuse":true,"ns":456404,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":25,"reuse":true,"ns":447105,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":25,"reuse":false,"ns":86407,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":26,"reuse":false,"ns":78754,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":26,"reuse":true,"ns":465682,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":27,"reuse":true,"ns":444316,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":27,"reuse":false,"ns":86068,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":28,"reuse":false,"ns":79088,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":28,"reuse":true,"ns":457738,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":29,"reuse":true,"ns":441888,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":29,"reuse":false,"ns":83778,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":30,"reuse":false,"ns":80400,"output_bytes":19633}
+S7_JSON {"kind":"request","size":12,"shape":"all_non_template","round":30,"reuse":true,"ns":442361,"output_bytes":19633}
+S7_JSON {"kind":"work","size":12,"shape":"all_non_template","rows":12,"labels":38,"retained_bytes":29972,"budget_bytes":2048000,"subscriptions":2,"full_builds":0,"issue_rows":0,"label_rows":0,"reuses":31,"over_budget_bypasses":0}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":0,"reuse":false,"ns":1589476,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":0,"reuse":true,"ns":1892221,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":1,"reuse":true,"ns":2173794,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":1,"reuse":false,"ns":3142382,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":2,"reuse":false,"ns":1719585,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":2,"reuse":true,"ns":1934355,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":3,"reuse":true,"ns":1989856,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":3,"reuse":false,"ns":1614762,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":4,"reuse":false,"ns":1676466,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":4,"reuse":true,"ns":1943045,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":5,"reuse":true,"ns":1965983,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":5,"reuse":false,"ns":1588782,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":6,"reuse":false,"ns":1605365,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":6,"reuse":true,"ns":1900336,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":7,"reuse":true,"ns":1958190,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":7,"reuse":false,"ns":1634464,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":8,"reuse":false,"ns":1620431,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":8,"reuse":true,"ns":1943893,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":9,"reuse":true,"ns":1954466,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":9,"reuse":false,"ns":1612428,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":10,"reuse":false,"ns":1594554,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":10,"reuse":true,"ns":1931201,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":11,"reuse":true,"ns":1939153,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":11,"reuse":false,"ns":1607921,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":12,"reuse":false,"ns":1580248,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":12,"reuse":true,"ns":1928591,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":13,"reuse":true,"ns":1933954,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":13,"reuse":false,"ns":1617967,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":14,"reuse":false,"ns":1585833,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":14,"reuse":true,"ns":1920764,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":15,"reuse":true,"ns":1953813,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":15,"reuse":false,"ns":1605154,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":16,"reuse":false,"ns":1590789,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":16,"reuse":true,"ns":1941810,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":17,"reuse":true,"ns":1956811,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":17,"reuse":false,"ns":1592410,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":18,"reuse":false,"ns":1590359,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":18,"reuse":true,"ns":1908009,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":19,"reuse":true,"ns":1947893,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":19,"reuse":false,"ns":1588007,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":20,"reuse":false,"ns":1576871,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":20,"reuse":true,"ns":1926882,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":21,"reuse":true,"ns":1959688,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":21,"reuse":false,"ns":1684254,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":22,"reuse":false,"ns":1574522,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":22,"reuse":true,"ns":1941269,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":23,"reuse":true,"ns":1941094,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":23,"reuse":false,"ns":1606444,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":24,"reuse":false,"ns":1569236,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":24,"reuse":true,"ns":1959497,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":25,"reuse":true,"ns":1965216,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":25,"reuse":false,"ns":1603537,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":26,"reuse":false,"ns":1580237,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":26,"reuse":true,"ns":1941648,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":27,"reuse":true,"ns":1965559,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":27,"reuse":false,"ns":1617246,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":28,"reuse":false,"ns":1573629,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":28,"reuse":true,"ns":1936640,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":29,"reuse":true,"ns":1950309,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":29,"reuse":false,"ns":1659256,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":30,"reuse":false,"ns":1546073,"output_bytes":540013}
+S7_JSON {"kind":"request","size":2331,"shape":"open_unpaginated","round":30,"reuse":true,"ns":1945734,"output_bytes":540013}
+S7_JSON {"kind":"work","size":2331,"shape":"open_unpaginated","rows":396,"labels":943,"retained_bytes":571964,"budget_bytes":2048000,"subscriptions":1,"full_builds":0,"issue_rows":0,"label_rows":0,"reuses":31,"over_budget_bypasses":0}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":0,"reuse":false,"ns":12796323,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":0,"reuse":true,"ns":17258594,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":1,"reuse":true,"ns":17989157,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":1,"reuse":false,"ns":12738851,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":2,"reuse":false,"ns":12753189,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":2,"reuse":true,"ns":18092641,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":3,"reuse":true,"ns":17544160,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":3,"reuse":false,"ns":12389410,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":4,"reuse":false,"ns":12648125,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":4,"reuse":true,"ns":17978340,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":5,"reuse":true,"ns":17388098,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":5,"reuse":false,"ns":12381500,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":6,"reuse":false,"ns":12574568,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":6,"reuse":true,"ns":18071463,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":7,"reuse":true,"ns":17427153,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":7,"reuse":false,"ns":12311526,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":8,"reuse":false,"ns":12495150,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":8,"reuse":true,"ns":18064395,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":9,"reuse":true,"ns":17560790,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":9,"reuse":false,"ns":12247016,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":10,"reuse":false,"ns":12580536,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":10,"reuse":true,"ns":17926510,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":11,"reuse":true,"ns":17432409,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":11,"reuse":false,"ns":12311660,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":12,"reuse":false,"ns":12721596,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":12,"reuse":true,"ns":18055135,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":13,"reuse":true,"ns":17543881,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":13,"reuse":false,"ns":12280494,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":14,"reuse":false,"ns":12746310,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":14,"reuse":true,"ns":17929800,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":15,"reuse":true,"ns":17401768,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":15,"reuse":false,"ns":12271561,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":16,"reuse":false,"ns":12585598,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":16,"reuse":true,"ns":17972148,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":17,"reuse":true,"ns":17292595,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":17,"reuse":false,"ns":12308256,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":18,"reuse":false,"ns":12566888,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":18,"reuse":true,"ns":18072657,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":19,"reuse":true,"ns":17297017,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":19,"reuse":false,"ns":12278691,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":20,"reuse":false,"ns":12781736,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":20,"reuse":true,"ns":18116366,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":21,"reuse":true,"ns":17431327,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":21,"reuse":false,"ns":12461924,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":22,"reuse":false,"ns":12655720,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":22,"reuse":true,"ns":18019327,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":23,"reuse":true,"ns":17343938,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":23,"reuse":false,"ns":12298055,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":24,"reuse":false,"ns":12696811,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":24,"reuse":true,"ns":18031309,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":25,"reuse":true,"ns":17240196,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":25,"reuse":false,"ns":12337970,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":26,"reuse":false,"ns":12613831,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":26,"reuse":true,"ns":17885120,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":27,"reuse":true,"ns":17267292,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":27,"reuse":false,"ns":12286752,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":28,"reuse":false,"ns":12545943,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":28,"reuse":true,"ns":18041985,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":29,"reuse":true,"ns":17180097,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":29,"reuse":false,"ns":12325992,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":30,"reuse":false,"ns":12692273,"output_bytes":4236152}
+S7_JSON {"kind":"request","size":2331,"shape":"all_non_template","round":30,"reuse":true,"ns":18113781,"output_bytes":4236152}
+S7_JSON {"kind":"work","size":2331,"shape":"all_non_template","rows":2331,"labels":9674,"retained_bytes":571964,"budget_bytes":2048000,"subscriptions":1,"full_builds":31,"issue_rows":72261,"label_rows":299894,"reuses":0,"over_budget_bypasses":31}
+ok
+test beads_crate::issue_reads_tests::acceptance::s7_write_benchmark ... S7_JSON {"kind":"write","mode":0,"round":0,"batch":1,"batch_rows":200,"ns":1435775,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":0,"batch":2,"batch_rows":200,"ns":1372847,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":0,"batch":3,"batch_rows":200,"ns":1359667,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":0,"batch_rows":200,"ns":1203270}
+S7_JSON {"kind":"allocation","mode":0,"round":0,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":0,"batch":1,"batch_rows":200,"ns":1646874,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":0,"batch":2,"batch_rows":200,"ns":1598766,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":0,"batch":3,"batch_rows":200,"ns":1589786,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":0,"batch_rows":200,"ns":1342634}
+S7_JSON {"kind":"allocation","mode":1,"round":0,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":0,"batch":1,"batch_rows":200,"ns":3640710,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":0,"batch":2,"batch_rows":200,"ns":3588029,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":0,"batch":3,"batch_rows":200,"ns":3588480,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":0,"batch_rows":200,"ns":2796569}
+S7_JSON {"kind":"allocation","mode":2,"round":0,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":1,"batch":1,"batch_rows":200,"ns":3649269,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":1,"batch":2,"batch_rows":200,"ns":3588848,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":1,"batch":3,"batch_rows":200,"ns":3568836,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":1,"batch_rows":200,"ns":2801176}
+S7_JSON {"kind":"allocation","mode":2,"round":1,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":1,"batch":1,"batch_rows":200,"ns":1652483,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":1,"batch":2,"batch_rows":200,"ns":1608808,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":1,"batch":3,"batch_rows":200,"ns":1599624,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":1,"batch_rows":200,"ns":1339614}
+S7_JSON {"kind":"allocation","mode":1,"round":1,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":1,"batch":1,"batch_rows":200,"ns":1432162,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":1,"batch":2,"batch_rows":200,"ns":1366862,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":1,"batch":3,"batch_rows":200,"ns":1365823,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":1,"batch_rows":200,"ns":1222582}
+S7_JSON {"kind":"allocation","mode":0,"round":1,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":2,"batch":1,"batch_rows":200,"ns":1384868,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":2,"batch":2,"batch_rows":200,"ns":1373641,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":2,"batch":3,"batch_rows":200,"ns":1366677,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":2,"batch_rows":200,"ns":1203894}
+S7_JSON {"kind":"allocation","mode":0,"round":2,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":2,"batch":1,"batch_rows":200,"ns":1637339,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":2,"batch":2,"batch_rows":200,"ns":1598694,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":2,"batch":3,"batch_rows":200,"ns":1574585,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":2,"batch_rows":200,"ns":1349126}
+S7_JSON {"kind":"allocation","mode":1,"round":2,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":2,"batch":1,"batch_rows":200,"ns":3641175,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":2,"batch":2,"batch_rows":200,"ns":3580495,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":2,"batch":3,"batch_rows":200,"ns":3576767,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":2,"batch_rows":200,"ns":2804764}
+S7_JSON {"kind":"allocation","mode":2,"round":2,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":3,"batch":1,"batch_rows":200,"ns":3663582,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":3,"batch":2,"batch_rows":200,"ns":3599032,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":3,"batch":3,"batch_rows":200,"ns":3604021,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":3,"batch_rows":200,"ns":2809252}
+S7_JSON {"kind":"allocation","mode":2,"round":3,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":3,"batch":1,"batch_rows":200,"ns":1648189,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":3,"batch":2,"batch_rows":200,"ns":1597938,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":3,"batch":3,"batch_rows":200,"ns":1569673,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":3,"batch_rows":200,"ns":1342396}
+S7_JSON {"kind":"allocation","mode":1,"round":3,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":3,"batch":1,"batch_rows":200,"ns":1403845,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":3,"batch":2,"batch_rows":200,"ns":1360969,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":3,"batch":3,"batch_rows":200,"ns":1348776,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":3,"batch_rows":200,"ns":1203195}
+S7_JSON {"kind":"allocation","mode":0,"round":3,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":4,"batch":1,"batch_rows":200,"ns":1412418,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":4,"batch":2,"batch_rows":200,"ns":1364732,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":4,"batch":3,"batch_rows":200,"ns":1353334,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":4,"batch_rows":200,"ns":1224395}
+S7_JSON {"kind":"allocation","mode":0,"round":4,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":4,"batch":1,"batch_rows":200,"ns":1634449,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":4,"batch":2,"batch_rows":200,"ns":1591530,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":4,"batch":3,"batch_rows":200,"ns":1579150,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":4,"batch_rows":200,"ns":1327586}
+S7_JSON {"kind":"allocation","mode":1,"round":4,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":4,"batch":1,"batch_rows":200,"ns":3658613,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":4,"batch":2,"batch_rows":200,"ns":3606637,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":4,"batch":3,"batch_rows":200,"ns":3584564,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":4,"batch_rows":200,"ns":2812903}
+S7_JSON {"kind":"allocation","mode":2,"round":4,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":5,"batch":1,"batch_rows":200,"ns":3662167,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":5,"batch":2,"batch_rows":200,"ns":3610667,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":5,"batch":3,"batch_rows":200,"ns":3591085,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":5,"batch_rows":200,"ns":2806904}
+S7_JSON {"kind":"allocation","mode":2,"round":5,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":5,"batch":1,"batch_rows":200,"ns":1667605,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":5,"batch":2,"batch_rows":200,"ns":1610491,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":5,"batch":3,"batch_rows":200,"ns":1589344,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":5,"batch_rows":200,"ns":1376234}
+S7_JSON {"kind":"allocation","mode":1,"round":5,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":5,"batch":1,"batch_rows":200,"ns":1415316,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":5,"batch":2,"batch_rows":200,"ns":1361082,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":5,"batch":3,"batch_rows":200,"ns":1344787,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":5,"batch_rows":200,"ns":1225258}
+S7_JSON {"kind":"allocation","mode":0,"round":5,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":6,"batch":1,"batch_rows":200,"ns":1412882,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":6,"batch":2,"batch_rows":200,"ns":1372657,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":6,"batch":3,"batch_rows":200,"ns":1369249,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":6,"batch_rows":200,"ns":1215237}
+S7_JSON {"kind":"allocation","mode":0,"round":6,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":6,"batch":1,"batch_rows":200,"ns":1641054,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":6,"batch":2,"batch_rows":200,"ns":1612734,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":6,"batch":3,"batch_rows":200,"ns":1583410,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":6,"batch_rows":200,"ns":1366024}
+S7_JSON {"kind":"allocation","mode":1,"round":6,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":6,"batch":1,"batch_rows":200,"ns":3657996,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":6,"batch":2,"batch_rows":200,"ns":3610774,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":6,"batch":3,"batch_rows":200,"ns":3585396,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":6,"batch_rows":200,"ns":2803982}
+S7_JSON {"kind":"allocation","mode":2,"round":6,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":7,"batch":1,"batch_rows":200,"ns":3657874,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":7,"batch":2,"batch_rows":200,"ns":3595536,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":7,"batch":3,"batch_rows":200,"ns":3576505,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":7,"batch_rows":200,"ns":2787887}
+S7_JSON {"kind":"allocation","mode":2,"round":7,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":7,"batch":1,"batch_rows":200,"ns":1643318,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":7,"batch":2,"batch_rows":200,"ns":1618603,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":7,"batch":3,"batch_rows":200,"ns":1586425,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":7,"batch_rows":200,"ns":1350759}
+S7_JSON {"kind":"allocation","mode":1,"round":7,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":7,"batch":1,"batch_rows":200,"ns":1406780,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":7,"batch":2,"batch_rows":200,"ns":1369759,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":7,"batch":3,"batch_rows":200,"ns":1361614,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":7,"batch_rows":200,"ns":1197003}
+S7_JSON {"kind":"allocation","mode":0,"round":7,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":0,"round":8,"batch":1,"batch_rows":200,"ns":1416254,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":8,"batch":2,"batch_rows":200,"ns":1376263,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":0,"round":8,"batch":3,"batch_rows":200,"ns":1341973,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":0,"round":8,"batch_rows":200,"ns":1215516}
+S7_JSON {"kind":"allocation","mode":0,"round":8,"db_bytes":6832128,"wal_bytes":1796352,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":0,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":1,"round":8,"batch":1,"batch_rows":200,"ns":1649077,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":8,"batch":2,"batch_rows":200,"ns":1598408,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":1,"round":8,"batch":3,"batch_rows":200,"ns":1623308,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":1,"round":8,"batch_rows":200,"ns":1352214}
+S7_JSON {"kind":"allocation","mode":1,"round":8,"db_bytes":6946816,"wal_bytes":2068272,"journal_rows":0,"journal_table_and_indices_bytes":0,"status_index_bytes":114688,"page_bytes":4096}
+S7_JSON {"kind":"write","mode":2,"round":8,"batch":1,"batch_rows":200,"ns":3681763,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":8,"batch":2,"batch_rows":200,"ns":3602378,"sqlite":"3.51.3"}
+S7_JSON {"kind":"write","mode":2,"round":8,"batch":3,"batch_rows":200,"ns":3599865,"sqlite":"3.51.3"}
+S7_JSON {"kind":"insert","mode":2,"round":8,"batch_rows":200,"ns":2832611}
+S7_JSON {"kind":"allocation","mode":2,"round":8,"db_bytes":7041024,"wal_bytes":2183632,"journal_rows":400,"journal_table_and_indices_bytes":36864,"status_index_bytes":114688,"page_bytes":4096}
+ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 296 filtered out; finished in 6.39s
+
+
+--- sccache stats (spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0) ---
+Compile requests                    2836
+Compile requests executed           2239
+Cache hits                          1250
+Cache hits (Assembler)                45
+Cache hits (C/C++)                   490
+Cache hits (Rust)                    715
+Cache misses                         978
+Cache misses (C/C++)                 194
+Cache misses (Rust)                  784
+Cache hits rate                    56.10 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            71.64 %
+Cache hits rate (Rust)             47.70 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         978
+Compilation failures                  11
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000189.
+
+EXIT_STATUS 0
