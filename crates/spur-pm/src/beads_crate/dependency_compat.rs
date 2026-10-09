@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use beads_rust::model::Dependency;
 use beads_rust::storage::sqlite::SqliteStorage;
@@ -7,15 +7,18 @@ pub(crate) fn get_dependencies_full_for_issues(
     storage: &SqliteStorage,
     issue_ids: &[String],
 ) -> beads_rust::Result<HashMap<String, Vec<Dependency>>> {
-    let mut deps_by_id = HashMap::new();
-
-    for issue_id in issue_ids {
-        let deps = storage.get_dependencies_full(issue_id)?;
-        if !deps.is_empty() {
-            deps_by_id.insert(issue_id.clone(), deps);
-        }
+    if issue_ids.is_empty() {
+        return Ok(HashMap::new());
     }
 
+    // Unfiltered snapshot loading requests the graph's issue set. Reuse the backend's
+    // full-record batch query instead of executing one read per ID. The batch
+    // scans all sources and propagates malformed-row errors, including rows
+    // outside the requested set (including tombstones), rather than silently
+    // dropping invalid edges. Label-filtered snapshots use scoped per-ID reads.
+    let requested: HashSet<&str> = issue_ids.iter().map(String::as_str).collect();
+    let mut deps_by_id = storage.get_all_dependency_records()?;
+    deps_by_id.retain(|id, _| requested.contains(id.as_str()));
     Ok(deps_by_id)
 }
 

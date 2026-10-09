@@ -237,7 +237,20 @@ pub fn load_graph_snapshot(
     issues.retain(|issue| issue.status != beads_rust::model::Status::Tombstone);
     let ids: Vec<String> = issues.iter().map(|issue| issue.id.clone()).collect();
     let mut labels_by_id = storage.get_labels_for_issues(&ids)?;
-    let mut deps_by_id = get_dependencies_full_for_issues(storage, &ids)?;
+    let mut deps_by_id = if label_filter.is_some() {
+        // Keep small filtered snapshots scoped to their selected sources. A
+        // full-table read would also decode unrelated, potentially corrupt rows.
+        let mut dependencies = HashMap::new();
+        for id in &ids {
+            let records = storage.get_dependencies_full(id)?;
+            if !records.is_empty() {
+                dependencies.insert(id.clone(), records);
+            }
+        }
+        dependencies
+    } else {
+        get_dependencies_full_for_issues(storage, &ids)?
+    };
 
     let mut snap = GraphSnapshot::new(label_filter.map(|s| s.to_string()));
     for issue in &mut issues {

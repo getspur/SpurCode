@@ -126,18 +126,20 @@ pub fn render_stream(
     let body_area = chunks[0];
     let visible_h = body_area.height as usize;
 
-    // 2. Body lines.
-    let body_lines: Vec<Line<'static>> = match trace {
+    // 2. Borrow the already-wrapped cache; wrap the placeholder only when needed.
+    let placeholder_rows;
+    let wrapped = match trace {
         Some(t) => t.build_body_lines(body_area.width),
-        None => vec![Line::from(Span::styled(
-            "(no stream yet)",
-            Style::default().fg(Color::DarkGray),
-        ))],
+        None => {
+            let placeholder = Line::from(Span::styled(
+                "(no stream yet)",
+                Style::default().fg(Color::DarkGray),
+            ));
+            placeholder_rows =
+                crate::components::line_wrap::wrap_line_to_width(&placeholder, body_area.width);
+            &placeholder_rows
+        }
     };
-    let wrapped: Vec<Line<'static>> = body_lines
-        .iter()
-        .flat_map(|l| crate::components::line_wrap::wrap_line_to_width(l, body_area.width))
-        .collect();
     let total = wrapped.len();
 
     // 3. Clamp + re-engage-following.
@@ -165,8 +167,11 @@ pub fn render_stream(
     }
     frame.render_widget(block, area);
 
-    // 5. Body paragraph.
-    let p = Paragraph::new(wrapped).scroll((state.scroll_offset as u16, 0));
+    // 5. Copy only visible rows. Slice with usize so long streams never truncate
+    // the scroll offset to Paragraph's u16 range.
+    let start = state.scroll_offset;
+    let count = visible_h.min(total - start);
+    let p = Paragraph::new(wrapped[start..start + count].to_vec());
     frame.render_widget(p, body_area);
 
     StreamRenderInfo {
