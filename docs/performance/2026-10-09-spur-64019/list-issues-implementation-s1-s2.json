@@ -1,0 +1,228 @@
+{
+  "epic": "bd-3jz28",
+  "plan_id": "2b3b57e1-43d5-456a-8a64-6676e01cf15d",
+  "scope": "First two tasks only; remaining implementation pending",
+  "s1": {
+    "base": "0ea72cf7ec009ae28c46458e1e3c96124445e727",
+    "commits": [
+      {
+        "oid": "a63244b887132332e2e67d964d13d40b4e3c8c37",
+        "intent": "test status-filtered plans and tie-aware result windows"
+      },
+      {
+        "oid": "6e6652bd3f128c859bf7fc40b7d468bf2dcf358f",
+        "intent": "refresh existing SQLite schema before EXPLAIN; also test a fresh connection"
+      },
+      {
+        "oid": "b3f07ee13d301fc9ea8a7b8cf89ba755a8317e7e",
+        "intent": "add status/order index to existing helper"
+      }
+    ],
+    "checks": [
+      {
+        "command": "scripts/spur-cargo fmt -p spur-pm -- --check",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff 0ea72cf7e HEAD --check",
+        "exit_code": 0
+      }
+    ],
+    "cost": {
+      "rows": [
+        {
+          "sqlite": "3.51.3",
+          "round": 0,
+          "indexed": false,
+          "rows": 10000,
+          "insert_us": 50547,
+          "update_us": 49562,
+          "db_bytes": 6443008,
+          "index_bytes": 0
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 0,
+          "indexed": true,
+          "rows": 10000,
+          "insert_us": 57522,
+          "update_us": 60883,
+          "db_bytes": 6930432,
+          "index_bytes": 413696
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 1,
+          "indexed": true,
+          "rows": 10000,
+          "insert_us": 57469,
+          "update_us": 60965,
+          "db_bytes": 6930432,
+          "index_bytes": 413696
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 1,
+          "indexed": false,
+          "rows": 10000,
+          "insert_us": 50836,
+          "update_us": 49627,
+          "db_bytes": 6443008,
+          "index_bytes": 0
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 2,
+          "indexed": false,
+          "rows": 10000,
+          "insert_us": 50630,
+          "update_us": 50623,
+          "db_bytes": 6443008,
+          "index_bytes": 0
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 2,
+          "indexed": true,
+          "rows": 10000,
+          "insert_us": 59230,
+          "update_us": 62709,
+          "db_bytes": 6930432,
+          "index_bytes": 413696
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 3,
+          "indexed": true,
+          "rows": 10000,
+          "insert_us": 58707,
+          "update_us": 61714,
+          "db_bytes": 6930432,
+          "index_bytes": 413696
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 3,
+          "indexed": false,
+          "rows": 10000,
+          "insert_us": 50364,
+          "update_us": 50339,
+          "db_bytes": 6443008,
+          "index_bytes": 0
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 4,
+          "indexed": false,
+          "rows": 10000,
+          "insert_us": 50735,
+          "update_us": 50514,
+          "db_bytes": 6443008,
+          "index_bytes": 0
+        },
+        {
+          "sqlite": "3.51.3",
+          "round": 4,
+          "indexed": true,
+          "rows": 10000,
+          "insert_us": 59448,
+          "update_us": 62670,
+          "db_bytes": 6930432,
+          "index_bytes": 413696
+        }
+      ],
+      "summary": [
+        {
+          "indexed": false,
+          "insert_us": 50630,
+          "update_us": 50339,
+          "db_bytes": 6443008,
+          "index_bytes": 0
+        },
+        {
+          "indexed": true,
+          "insert_us": 58707,
+          "update_us": 61714,
+          "db_bytes": 6930432,
+          "index_bytes": 413696
+        }
+      ],
+      "insert_overhead_pct": 15.95299229705709,
+      "update_overhead_pct": 22.596793738453293,
+      "db_delta": 487424
+    },
+    "green": {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-pm --lib beads_crate::sort_index::tests -- --include-ignored --nocapture --test-threads=1",
+      "exit_code": 0,
+      "summary": "7 passed; 0 failed; 0 ignored; 225 filtered out",
+      "output": "[build] ensuring pinned toolchain (serialized)\n   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/80b2ad96-5cb0-43df-a2d9-5d9043bf3b0e/crates/spur-pm)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.83s\n     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/80b2ad96-5cb0-43df-a2d9-5d9043bf3b0e/debug/deps/spur_pm-4c49b51fc9915668)\n\nrunning 7 tests\ntest beads_crate::sort_index::tests::adapter_open_ensures_composite_sort_index ... ok\ntest beads_crate::sort_index::tests::ensure_composite_sort_index_is_idempotent ... ok\ntest beads_crate::sort_index::tests::reader_checkout_ensures_composite_sort_index ... ok\ntest beads_crate::sort_index::tests::status_sort_index_write_cost ... status-index fixture: sqlite=3.51.3 round=0 indexed=false rows=10000 insert_us=50547 update_us=49562 db_bytes=6443008 index_bytes=0\nstatus-index fixture: sqlite=3.51.3 round=0 indexed=true rows=10000 insert_us=57522 update_us=60883 db_bytes=6930432 index_bytes=413696\nstatus-index fixture: sqlite=3.51.3 round=1 indexed=true rows=10000 insert_us=57469 update_us=60965 db_bytes=6930432 index_bytes=413696\nstatus-index fixture: sqlite=3.51.3 round=1 indexed=false rows=10000 insert_us=50836 update_us=49627 db_bytes=6443008 index_bytes=0\nstatus-index fixture: sqlite=3.51.3 round=2 indexed=false rows=10000 insert_us=50630 update_us=50623 db_bytes=6443008 index_bytes=0\nstatus-index fixture: sqlite=3.51.3 round=2 indexed=true rows=10000 insert_us=59230 update_us=62709 db_bytes=6930432 index_bytes=413696\nstatus-index fixture: sqlite=3.51.3 round=3 indexed=true rows=10000 insert_us=58707 update_us=61714 db_bytes=6930432 index_bytes=413696\nstatus-index fixture: sqlite=3.51.3 round=3 indexed=false rows=10000 insert_us=50364 update_us=50339 db_bytes=6443008 index_bytes=0\nstatus-index fixture: sqlite=3.51.3 round=4 indexed=false rows=10000 insert_us=50735 update_us=50514 db_bytes=6443008 index_bytes=0\nstatus-index fixture: sqlite=3.51.3 round=4 indexed=true rows=10000 insert_us=59448 update_us=62670 db_bytes=6930432 index_bytes=413696\nok\ntest beads_crate::sort_index::tests::status_sort_plan_with_limit ... ok\ntest beads_crate::sort_index::tests::status_sort_plan_without_limit ... ok\ntest beads_crate::sort_index::tests::status_sort_preserves_rows_and_limit_windows_with_ties ... ok\n\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 225 filtered out; finished in 1.53s\n\n\n--- sccache stats (spur/worktrees/80b2ad96-5cb0-43df-a2d9-5d9043bf3b0e) ---\nCompile requests                    2111\nCompile requests executed           1708\nCache hits                          1258\nCache hits (Assembler)                33\nCache hits (C/C++)                    54\nCache hits (Rust)                   1171\nCache misses                         435\nCache misses (C/C++)                 144\nCache misses (Rust)                  291\nCache hits rate                    74.31 %\nCache hits rate (Assembler)       100.00 %\nCache hits rate (C/C++)            27.27 %\nCache hits rate (Rust)             80.10 %\nCache timeouts                         0\nCache read errors                      0\nForced recaches                        0\nCache write errors                     0\nCache errors                           0\nCompilations                         435\nCompilation failures                  15\n[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/80b2ad96-5cb0-43df-a2d9-5d9043bf3b0e \u2014 use scripts/cloud-build/fetch.sh to pull artifacts.\n[build] Remote build queue: released ticket 00000000000000000139.\n"
+    },
+    "red": {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-pm --lib beads_crate::sort_index::tests -- --nocapture",
+      "exit_code": 101,
+      "summary": "1 passed; 5 failed; 1 ignored; 225 filtered out",
+      "output": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.83s\n     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/80b2ad96-5cb0-43df-a2d9-5d9043bf3b0e/debug/deps/spur_pm-4c49b51fc9915668)\n\nrunning 7 tests\ntest beads_crate::sort_index::tests::status_sort_index_write_cost ... ignored, manual synthetic index footprint and write-cost measurement\n\nthread 'beads_crate::sort_index::tests::reader_checkout_ensures_composite_sort_index' (2828885) panicked at crates/spur-pm/src/beads_crate/sort_index.rs:71:9:\nstatus-filtered sort () still uses a sorter: SEARCH issues USING INDEX idx_issues_status (status=?) | USE TEMP B-TREE FOR ORDER BY\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'beads_crate::sort_index::tests::status_sort_plan_without_limit' (2828887) panicked at crates/spur-pm/src/beads_crate/sort_index.rs:71:9:\nstatus-filtered sort () still uses a sorter: SEARCH issues USING INDEX idx_issues_status (status=?) | USE TEMP B-TREE FOR ORDER BY\ntest beads_crate::sort_index::tests::reader_checkout_ensures_composite_sort_index ... FAILED\ntest beads_crate::sort_index::tests::status_sort_plan_without_limit ... FAILED\ntest beads_crate::sort_index::tests::ensure_composite_sort_index_is_idempotent ... FAILED\ntest beads_crate::sort_index::tests::status_sort_plan_with_limit ... FAILED\n\nthread 'beads_crate::sort_index::tests::status_sort_plan_with_limit' (2828886) panicked at crates/spur-pm/src/beads_crate/sort_index.rs:71:9:\nstatus-filtered sort (LIMIT 7) still uses a sorter: SEARCH issues USING INDEX idx_issues_status (status=?) | USE TEMP B-TREE FOR ORDER BY\n\nthread 'beads_crate::sort_index::tests::ensure_composite_sort_index_is_idempotent' (2828884) panicked at crates/spur-pm/src/beads_crate/sort_index.rs:221:13:\nmissing idx_issues_status_priority_created_at\n\nthread 'beads_crate::sort_index::tests::adapter_open_ensures_composite_sort_index' (2828883) panicked at crates/spur-pm/src/beads_crate/sort_index.rs:71:9:\nstatus-filtered sort () still uses a sorter: SEARCH issues USING INDEX idx_issues_status (status=?) | USE TEMP B-TREE FOR ORDER BY\ntest beads_crate::sort_index::tests::adapter_open_ensures_composite_sort_index ... FAILED\ntest beads_crate::sort_index::tests::status_sort_preserves_rows_and_limit_windows_with_ties ... ok\n\nfailures:\n\nfailures:\n    beads_crate::sort_index::tests::adapter_open_ensures_composite_sort_index\n    beads_crate::sort_index::tests::ensure_composite_sort_index_is_idempotent\n    beads_crate::sort_index::tests::reader_checkout_ensures_composite_sort_index\n    beads_crate::sort_index::tests::status_sort_plan_with_limit\n    beads_crate::sort_index::tests::status_sort_plan_without_limit\n\ntest result: FAILED. 1 passed; 5 failed; 1 ignored; 0 measured; 225 filtered out; finished in 0.22s\n\nerror: test failed, to rerun pass `-p spur-pm --lib`\n"
+    },
+    "limitations": [
+      "POST models comparator equivalence for two rows of the same status with statuses 0..3, priorities 0..4, creation-time ranks 0..2; not a SQL engine, Rust lifecycle, pagination, concurrency, or performance proof.",
+      "Subscription lifecycle/membership unchanged and not implemented by S1; PRE receipts are context for later tasks.",
+      "Exact tie order/page membership within tied keys remains unspecified. Multi-status queries may still require sorting.",
+      "Synthetic write and storage costs only; no whole-process speedup or live binary profiling claim.",
+      "Helper retains its existing best-effort initialization and five-second busy timeout. No cache/TTL/cap added."
+    ],
+    "post_solve_id": "sol_e26d4ca343534752"
+  },
+  "s2": {
+    "base": "0ea72cf7ec009ae28c46458e1e3c96124445e727",
+    "commands": [
+      {
+        "phase": "RED",
+        "command": "scripts/spur-cargo test -p spur-pm --lib submit_read_ -- --nocapture",
+        "exit_code": 101,
+        "result": "1 passed; 3 expected assertion failures"
+      },
+      {
+        "phase": "RED",
+        "command": "scripts/spur-cargo test -p spur-pm --lib list_observability_ -- --nocapture",
+        "exit_code": 101,
+        "result": "4 expected assertion failures"
+      },
+      {
+        "phase": "GREEN",
+        "command": "scripts/spur-cargo test -p spur-pm --lib beads_crate:: -- --nocapture",
+        "exit_code": 0,
+        "result": "96 passed; 0 failed; 140 filtered out"
+      },
+      {
+        "phase": "CHECK",
+        "command": "SPUR_REMOTE=1 scripts/spur-cargo clippy -p spur-pm --lib -- -D warnings",
+        "exit_code": 0
+      },
+      {
+        "phase": "CHECK",
+        "command": "scripts/spur-cargo fmt --package spur-pm -- --check",
+        "exit_code": 0
+      }
+    ],
+    "implementation_commit": "1d1a17d93",
+    "test_commit": "aa4706355",
+    "limitations": [
+      "sql_decode_us combines upstream SQL preparation/execution/decoding; summary_us measures adapter filtering/assembly.",
+      "Rows count fully materialized data, not internal SQLite visits or partial failed loads.",
+      "Ancestor attribution requires enabled existing caller spans; absent parent uses stable list operation.",
+      "No performance speedup claim; cache lifecycle/membership remain deferred as specified."
+    ],
+    "test_plan": [
+      "Parent span/dispatcher survives async-to-reader boundary.",
+      "Concurrent distinct parents, parentless followup, read errors and cancelled replies do not leak context.",
+      "Queue full/disconnected/not running and dropped-reply errors retain exact strings.",
+      "List operation/shape and stage timings/counts retain ancestor and exclude private title/body/label/assignee/text values.",
+      "SQL and label errors emit completed stage work and preserve original error.",
+      "Existing actor connection reuse, reads during writer lock, filters, tombstones, pagination and polls remain green."
+    ],
+    "post_solve_ids": [
+      "sol_c6362f17147e49ea",
+      "sol_c7171bd5c853436d"
+    ]
+  }
+}
