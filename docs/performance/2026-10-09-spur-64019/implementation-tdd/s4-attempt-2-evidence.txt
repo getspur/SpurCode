@@ -1,0 +1,133 @@
+S4 / bd-183xz attempt 2
+
+Implemented feed version 2 with separately retained timestamp_revision and
+IssueChange.timestamp. Ordinary adapter.add_comment updates comments/hygiene and
+timestamps without summary-payload relevance when since=None. Since-filtered
+consumers must consider summary || timestamp or use direct SQL. No public API,
+graph semantics, notebook, live binary, configuration, or unrelated-file changes.
+
+Commits
+322c70c56 chore(spur-pm): S4 preserve prior durable feed review baseline
+f2ad281df test(spur-pm): S4 expose comment timestamp summary invalidation
+f7b8456bd fix(spur-pm): S4 retain timestamp changes independently of summaries
+
+The baseline preserves the prior four-file overlay. The RED commit contains only
+the real adapter regression that compiled and failed behaviorally. Prior RED
+commits 2392e12a7 / be5b89bb6 and implementation 009d9d44a remain referenced in
+beads. The previous worktree's .spur/tmp is absent in this environment; existing
+brain evidence is not replaced by invented logs.
+
+Exact commands and results (run in this isolated worktree)
+RED:
+SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib beads_crate::issue_changes::tests::adapter_comment_timestamp_is_unrelated_to_plain_summaries -- --exact --nocapture
+Exit 101; 0 passed, 1 failed, 260 filtered out. Expected assertion:
+"adapter.add_comment only changes comments and updated_at; since=None must not reload summary payloads"
+Raw log: bd-183xz-attempt2-red.log
+
+GREEN:
+SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib beads_crate::issue_changes::tests -- --nocapture
+Exit 0; 23 passed, 0 failed, 245 filtered out; 1.72 s. SQLite 3.51.3.
+Raw log: bd-183xz-attempt2-green3.log
+
+Strict production-lib lint:
+SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo clippy -p spur-pm --lib -- -D warnings
+Final result appended below when complete. Raw log: bd-183xz-attempt2-clippy2.log
+
+Formatting and whitespace:
+scripts/spur-cargo fmt -p spur-pm -- --check
+git diff --check
+Both passed. No broad workspace tests; the previous full spur-pm result remains
+prior evidence, not an assertion that this turn reran that full suite.
+
+Intermediate evidence retained
+- green1.log: compiler rejected unsafe tracing probe; replaced with safe rusqlite
+  statement counters. Not a behavioral RED or GREEN result.
+- green2.log: 20 pass / 2 fail. Empty delta invokes one sort operation, so the
+  probe now checks zero scans and size-independent work. A prepared UPDATE
+  succeeded after repair; the final regression reproduces the original fresh
+  execute_batch path and asserts its rejection explicitly.
+- clippy.log: upload stopped because own commit state changed; no lint verdict.
+No transport/compiler failure is counted as behavioral RED.
+
+Test plan / coverage
+- Real adapter comment isolation, timestamp-only since membership entry/exit,
+  and lagging readers across both summary/timestamp orders followed by comments.
+- Fresh post-repair writer rejection and unchanged source row, then SAME writer
+  narrow sqlite_schema read and tracked retry, in WAL and DELETE modes.
+- Trigger drop, missed description edit, exact trigger restoration => reseed.
+- Serialized cursor retained across feed object restart and a byte-for-byte
+  checkpointed clone replacement retaining UUID/schema cookie => reseed.
+- IGNORE/FAIL conservative victim capture, ABORT/ROLLBACK capture rollback,
+  unchanged source rows, and correct subsequent tracking.
+- 3/300/3000 issue+label+journal rows: watermark query (rows,VM,fullscan,sort)
+  = (1,54,0,0); unchanged delta = (0,16,0,1), unchanged across all sizes.
+  One changed ID also has size-independent work; EXPLAIN confirms revision-index
+  access and no issue/label scan. The SQL constants are used by production and
+  the safe query-work checks, so they are not independent query copies.
+- Existing description-only fixed-timestamp/hash, labels/reparenting, inserts,
+  deletes, tombstones, ID/REPLACE/hidden-rowid victims, comments/audits, rollbacks,
+  graph-only dependency isolation, corruption repair and coherent snapshot tests
+  remain intact and pass in the 23-test focused suite.
+
+Recovery rules
+- Exact owned DDL, source uniqueness metadata, schema cookie, clock integrity,
+  journal head and file identity are validated. Tracking gaps/corruption/drift
+  cause atomic reinstall, a new generation/history floor, and mandatory reseed.
+- Revisions advance within a generation. Loss of the clock starts a new epoch;
+  old cursors are incomparable, not silently treated as an empty delta.
+- No tombstone/history pruning. One row per ever-seen ID retains each domain's
+  latest revision, so a later comment/timestamp cannot erase older relevance.
+- A writer that dropped the journal can reject a fresh statement AFTER another
+  connection repairs it. The failing statement leaves the source row unchanged.
+  On that same writer execute:
+  SELECT name FROM sqlite_schema WHERE type='table' AND name='spur_issue_changes'
+  Then retry the rejected statement. SELECT 1 / PRAGMA schema_version alone do
+  not refresh that stale schema. Reconnecting also works but is not used to hide
+  the failure in the final regression. Prepared statements may recover without
+  this rejection; the feed cannot refresh another connection's schema cache.
+- IGNORE/FAIL may conservatively invalidate captured victims although no source
+  change committed. ABORT/ROLLBACK undo capture. No false-negative reuse results.
+
+Interfaces
+Public: none.
+Crate-local additions relative to attempt 1: IssueChange.timestamp, journal
+ timestamp_revision, VERSION=2. Existing coherent IssueChangeFeed::read callback,
+IssueChanges, serialized IssueCursor and install/install_at_path remain. The
+read API returns cursor and all domain changes in the same transaction supplied
+for consumer SQL; S5 owns result publication and old/new membership.
+
+Solver evidence
+Required PRE reloaded: sol_68e50056a49749b3 (sat/pass, declared 15-step lifecycle)
+and sol_5d17396943d94ca6 (unsat, bounded old/new membership).
+Domain PRE: sol_2f68e82c15694fae (unsat for lost/spurious domain relevance).
+POST:
+- sol_6b6899231f774015: sat/pass, 10 declared S4 feed read-result transitions.
+- sol_36806489fcf943be: unsat/fail, reuse after tracking gap rejected.
+- sol_c56b40bd13ec41da: unsat, independent retained domains preserve relevance.
+- sol_70c119a805dd46a2: sat, domain constraints are feasible.
+- sol_01d2f37c71954aa2: unsat, bounded old/new membership stale reuse.
+Domain bounds: prior revisions/cursor 0..4; next write 1..5; independent summary,
+timestamp/comment flags; since-filter boolean. Membership: one candidate, values
+0..2, absent -1, fixed identity/filter and complete history assumed. These are
+finite models, not source-code/SQLite proofs, pagination guarantees, unbounded
+liveness or measured whole-process speedups. Exact requests/receipts are in
+bd-183xz-attempt2-solver-evidence.json.
+
+Remaining limitations
+S7 must measure metadata/DDL regeneration latency and write overhead; this change
+does not cache that work or claim a runtime speedup. S5/S6 own subscriptions,
+pagination, async dispatch/publication, cursor persistence and hygiene timers.
+Deleted-ID history is retained without arbitrary caps or TTLs. Physical file
+identity currently requires Unix; unsupported platforms fail closed to direct
+SQL. Ordinary DDL/corruption is covered; deliberately forged data plus metadata
+is not. I/O/locking errors propagate without authorizing reuse.
+
+Artifacts in this directory
+bd-183xz-attempt2.patch: rework relative to restored prior implementation.
+bd-183xz-full.patch: complete four-file task diff relative to dispatched base.
+All raw logs above and solver receipts are retained for brain preservation.
+Issue remains in_progress and unclosed; brain owns review and risk disposition.
+
+Final lint result
+Strict production-lib clippy completed with exit 0 and no warnings.
+Raw log: bd-183xz-attempt2-clippy2.log. Final worktree is clean.
