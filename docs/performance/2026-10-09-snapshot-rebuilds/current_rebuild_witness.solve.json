@@ -1,0 +1,159 @@
+{
+  "name": "current_rebuild_witness",
+  "source_head": "3315391e245e4be98b08b31dba0ec7d91dbb5bab",
+  "interpretation": "Source-derived finite abstraction: every successful same-scope GraphEngine request loads and hashes again. A target trace witnesses repeated materialization without a revision change.",
+  "domain": "Exactly two sequential successful requests, one unchanged database revision, one full-snapshot scope; Cold means no materialization counted in this trace. RedundantBuild means at least two materializations in the same revision.",
+  "request": {
+    "family": "workflow",
+    "mode": "synthesize",
+    "persist": true,
+    "timeout_ms": 10000,
+    "rules": [
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.bounded_reachability",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {
+          "bound": 2
+        }
+      }
+    ],
+    "facts": {
+      "horizon": 2,
+      "state_domain": [
+        "Cold",
+        "Materialized",
+        "RedundantBuild"
+      ],
+      "event_domain": [
+        "read_same_revision"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "Materialized"
+      ],
+      "target_states": [
+        "RedundantBuild"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 0,
+          "from": "Materialized",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        },
+        {
+          "step": 0,
+          "from": "RedundantBuild",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        },
+        {
+          "step": 1,
+          "from": "Cold",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 1,
+          "from": "Materialized",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        },
+        {
+          "step": 1,
+          "from": "RedundantBuild",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        }
+      ],
+      "traces": {
+        "same_snapshot_scope": {
+          "states": [
+            "Cold",
+            null,
+            null
+          ],
+          "events": [
+            "read_same_revision",
+            "read_same_revision"
+          ]
+        }
+      }
+    },
+    "unknowns": [
+      {
+        "kind": "trace_state",
+        "trace": "same_snapshot_scope",
+        "index": 1
+      },
+      {
+        "kind": "trace_state",
+        "trace": "same_snapshot_scope",
+        "index": 2
+      }
+    ]
+  },
+  "response": {
+    "family": "workflow",
+    "mode": "synthesize",
+    "outcome": "solution",
+    "assignments": [
+      {
+        "node": "same_snapshot_scope",
+        "field": "traces.same_snapshot_scope.states[1]",
+        "value": "Materialized"
+      },
+      {
+        "node": "same_snapshot_scope",
+        "field": "traces.same_snapshot_scope.states[2]",
+        "value": "RedundantBuild"
+      }
+    ],
+    "evaluation_scope": {
+      "kind": "bounded_trace",
+      "horizon": 2,
+      "reachability": [
+        {
+          "rule_id": "workflow.bounded_reachability",
+          "binding_index": 2,
+          "effective_bound": 2
+        }
+      ]
+    },
+    "total_duration_ms": 78,
+    "status": "sat",
+    "model": {
+      "workflow_u_0": "Materialized",
+      "workflow_u_1": "RedundantBuild"
+    },
+    "duration_ms": 48,
+    "solve_id": "sol_41e3b2a8b3f249e4",
+    "reason": null,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  }
+}
