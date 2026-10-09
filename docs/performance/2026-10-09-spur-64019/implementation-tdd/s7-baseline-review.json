@@ -1,0 +1,26 @@
+{
+  "task": "bd-a96om",
+  "stage": "baseline_regression_confirmed_fix_pending",
+  "base": "6c41c4e581862d293d94727935abc654b06f28e7",
+  "source_log": "s7-baseline-release.log",
+  "log_sha256": "4bbb06ffaf42d8408232b511207189a048442c49c78b99e38a969d2d0db85b25",
+  "exit_status": 0,
+  "notebook_cell": "e15f7d68-67ec-4472-9b8e-f4cb7d65ce93",
+  "notebook_execution": 26,
+  "review": {
+    "benchmark_sha256": "bc6b4a5e60f02855a8f901d858262d87d5a50e77e4b0276d81a2475f8c5991f1",
+    "reviewer": "/root/review_issue_index",
+    "findings": [
+      "Insert workload is 200 small unlabeled rows, not representative issue-plus-label creation.",
+      "Retained memory and subscriptions are adapter-global across sequential query shapes."
+    ],
+    "other_limits": [
+      "Baseline is S3 direct summaries versus subscriptions, not the original full-Issue adapter.",
+      "Exact JSON equality applies to supplied fixtures, not a universal tie-order guarantee.",
+      "WAL value is final file allocation, not cumulative written bytes.",
+      "Journal table/index allocation excludes clock/schema overhead.",
+      "Raw string aggregate match does not recreate the real payload distribution."
+    ]
+  },
+  "decision": "Proceed with already-authorized focused overhead TDD fix; no live process improvement claimed."
+}
