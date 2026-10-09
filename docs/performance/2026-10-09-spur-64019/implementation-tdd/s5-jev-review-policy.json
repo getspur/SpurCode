@@ -1,0 +1,3594 @@
+{
+  "task": "bd-2ef6y",
+  "stage": "declared_review_fix_policy_runtime_verification_pending",
+  "jev_input": {
+    "family_hint": "workflow",
+    "intent": "Verify every adjacent state-event-state step in this complete supplied issue-list reuse trace against its explicit enabled transition relation. All values are known; do not synthesize. Preserve facts and route to workflow.transition_allowed verify. Supported cache shapes are unpaginated, since=None, text=None, normal SQL order classes, within pager-derived byte budget and reader-derived entry bound. Unsupported queries use direct SQL. Over-budget/unusual-order results return coherent SQL-loaded rows without retention and have explicit bypass counters. Ordinary commit races may return a dirty coherent snapshot retaining its ORIGINAL cursor; they must never be marked current. Validation identity/schema/generation/history resets and validation errors DISCARD the candidate and return an error; subsequent requests safely seed. This is declared finite policy for the S5 review fix, not a claim that Rust, SQLite, all races, or runtime performance are proved.",
+    "data": {
+      "subjects": [
+        "issue_list"
+      ],
+      "parameters": {},
+      "facts": {
+        "horizon": 35,
+        "state_domain": [
+          "Cold",
+          "FullLoad",
+          "Ready",
+          "Dirty",
+          "DeltaLoad",
+          "NeedsReseed",
+          "DirectSQL",
+          "StaleServed",
+          "DiscardedError"
+        ],
+        "event_domain": [
+          "read_supported",
+          "validate_same_cursor",
+          "read_unchanged",
+          "unrelated_change",
+          "relevant_change",
+          "read_complete_feed",
+          "commit_during_load",
+          "coverage_gap",
+          "read_unsupported",
+          "return_sql_snapshot",
+          "over_budget",
+          "evict",
+          "unsupported_order",
+          "validation_reset",
+          "retry_supported",
+          "validation_error",
+          "validation_replacement"
+        ],
+        "initial_states": [
+          "Cold"
+        ],
+        "safe_states": [
+          "Cold",
+          "FullLoad",
+          "Ready",
+          "Dirty",
+          "DeltaLoad",
+          "NeedsReseed",
+          "DirectSQL",
+          "DiscardedError"
+        ],
+        "target_states": [
+          "Ready"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 7,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 7,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 10,
+            "from": "NeedsReseed",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 12,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 12,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 15,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 15,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 16,
+            "from": "DirectSQL",
+            "event": "return_sql_snapshot",
+            "to": "Cold"
+          },
+          {
+            "step": 17,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 17,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 19,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 19,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 23,
+            "from": "DiscardedError",
+            "event": "retry_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 26,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 26,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 28,
+            "from": "DiscardedError",
+            "event": "retry_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 31,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 31,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 33,
+            "from": "DiscardedError",
+            "event": "retry_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          }
+        ],
+        "traces": {
+          "issue_list": {
+            "states": [
+              "Cold",
+              "FullLoad",
+              "Ready",
+              "Ready",
+              "Ready",
+              "Dirty",
+              "DeltaLoad",
+              "Dirty",
+              "DeltaLoad",
+              "Ready",
+              "NeedsReseed",
+              "FullLoad",
+              "Dirty",
+              "DeltaLoad",
+              "Ready",
+              "Cold",
+              "DirectSQL",
+              "Cold",
+              "FullLoad",
+              "Cold",
+              "FullLoad",
+              "Cold",
+              "FullLoad",
+              "DiscardedError",
+              "FullLoad",
+              "Ready",
+              "Dirty",
+              "DeltaLoad",
+              "DiscardedError",
+              "FullLoad",
+              "Ready",
+              "Dirty",
+              "DeltaLoad",
+              "DiscardedError",
+              "FullLoad",
+              "Ready"
+            ],
+            "events": [
+              "read_supported",
+              "validate_same_cursor",
+              "read_unchanged",
+              "unrelated_change",
+              "relevant_change",
+              "read_complete_feed",
+              "commit_during_load",
+              "read_complete_feed",
+              "validate_same_cursor",
+              "coverage_gap",
+              "read_supported",
+              "commit_during_load",
+              "read_complete_feed",
+              "validate_same_cursor",
+              "evict",
+              "read_unsupported",
+              "return_sql_snapshot",
+              "read_supported",
+              "over_budget",
+              "read_supported",
+              "unsupported_order",
+              "read_supported",
+              "validation_reset",
+              "retry_supported",
+              "validate_same_cursor",
+              "relevant_change",
+              "read_complete_feed",
+              "validation_error",
+              "retry_supported",
+              "validate_same_cursor",
+              "relevant_change",
+              "read_complete_feed",
+              "validation_replacement",
+              "retry_supported",
+              "validate_same_cursor"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "jev_output": {
+    "gate": "open",
+    "request": {
+      "family": "workflow",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "workflow.transition_allowed",
+          "subjects": [
+            "issue_list"
+          ],
+          "parameters": {}
+        }
+      ],
+      "facts": {
+        "horizon": 35,
+        "state_domain": [
+          "Cold",
+          "FullLoad",
+          "Ready",
+          "Dirty",
+          "DeltaLoad",
+          "NeedsReseed",
+          "DirectSQL",
+          "StaleServed",
+          "DiscardedError"
+        ],
+        "event_domain": [
+          "read_supported",
+          "validate_same_cursor",
+          "read_unchanged",
+          "unrelated_change",
+          "relevant_change",
+          "read_complete_feed",
+          "commit_during_load",
+          "coverage_gap",
+          "read_unsupported",
+          "return_sql_snapshot",
+          "over_budget",
+          "evict",
+          "unsupported_order",
+          "validation_reset",
+          "retry_supported",
+          "validation_error",
+          "validation_replacement"
+        ],
+        "initial_states": [
+          "Cold"
+        ],
+        "safe_states": [
+          "Cold",
+          "FullLoad",
+          "Ready",
+          "Dirty",
+          "DeltaLoad",
+          "NeedsReseed",
+          "DirectSQL",
+          "DiscardedError"
+        ],
+        "target_states": [
+          "Ready"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 1,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 4,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 6,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 7,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 7,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 8,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 10,
+            "from": "NeedsReseed",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 11,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 12,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 12,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 13,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 14,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 15,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 15,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 16,
+            "from": "DirectSQL",
+            "event": "return_sql_snapshot",
+            "to": "Cold"
+          },
+          {
+            "step": 17,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 17,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 18,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 19,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 19,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 20,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "read_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "read_unsupported",
+            "to": "DirectSQL"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 22,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 23,
+            "from": "DiscardedError",
+            "event": "retry_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 24,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 25,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 26,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 26,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 27,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 28,
+            "from": "DiscardedError",
+            "event": "retry_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 29,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "read_unchanged",
+            "to": "Ready"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "unrelated_change",
+            "to": "Ready"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "relevant_change",
+            "to": "Dirty"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 30,
+            "from": "Ready",
+            "event": "evict",
+            "to": "Cold"
+          },
+          {
+            "step": 31,
+            "from": "Dirty",
+            "event": "read_complete_feed",
+            "to": "DeltaLoad"
+          },
+          {
+            "step": 31,
+            "from": "Dirty",
+            "event": "coverage_gap",
+            "to": "NeedsReseed"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 32,
+            "from": "DeltaLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 33,
+            "from": "DiscardedError",
+            "event": "retry_supported",
+            "to": "FullLoad"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validate_same_cursor",
+            "to": "Ready"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "commit_during_load",
+            "to": "Dirty"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "over_budget",
+            "to": "Cold"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "unsupported_order",
+            "to": "Cold"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validation_reset",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validation_replacement",
+            "to": "DiscardedError"
+          },
+          {
+            "step": 34,
+            "from": "FullLoad",
+            "event": "validation_error",
+            "to": "DiscardedError"
+          }
+        ],
+        "traces": {
+          "issue_list": {
+            "states": [
+              "Cold",
+              "FullLoad",
+              "Ready",
+              "Ready",
+              "Ready",
+              "Dirty",
+              "DeltaLoad",
+              "Dirty",
+              "DeltaLoad",
+              "Ready",
+              "NeedsReseed",
+              "FullLoad",
+              "Dirty",
+              "DeltaLoad",
+              "Ready",
+              "Cold",
+              "DirectSQL",
+              "Cold",
+              "FullLoad",
+              "Cold",
+              "FullLoad",
+              "Cold",
+              "FullLoad",
+              "DiscardedError",
+              "FullLoad",
+              "Ready",
+              "Dirty",
+              "DeltaLoad",
+              "DiscardedError",
+              "FullLoad",
+              "Ready",
+              "Dirty",
+              "DeltaLoad",
+              "DiscardedError",
+              "FullLoad",
+              "Ready"
+            ],
+            "events": [
+              "read_supported",
+              "validate_same_cursor",
+              "read_unchanged",
+              "unrelated_change",
+              "relevant_change",
+              "read_complete_feed",
+              "commit_during_load",
+              "read_complete_feed",
+              "validate_same_cursor",
+              "coverage_gap",
+              "read_supported",
+              "commit_during_load",
+              "read_complete_feed",
+              "validate_same_cursor",
+              "evict",
+              "read_unsupported",
+              "return_sql_snapshot",
+              "read_supported",
+              "over_budget",
+              "read_supported",
+              "unsupported_order",
+              "read_supported",
+              "validation_reset",
+              "retry_supported",
+              "validate_same_cursor",
+              "relevant_change",
+              "read_complete_feed",
+              "validation_error",
+              "retry_supported",
+              "validate_same_cursor",
+              "relevant_change",
+              "read_complete_feed",
+              "validation_replacement",
+              "retry_supported",
+              "validate_same_cursor"
+            ]
+          }
+        }
+      },
+      "unknowns": []
+    },
+    "provenance": {
+      "served_model_version": "jev-1.13.0",
+      "answers": {
+        "data_complete": {
+          "type": "noul",
+          "noul": 0.89
+        },
+        "route_rule": {
+          "type": "choice",
+          "choice": "workflow.transition_allowed",
+          "probabilities": {
+            "workflow.bounded_reachability": 0,
+            "workflow.initial_state_allowed": 0,
+            "workflow.safety_invariant": 0,
+            "workflow.transition_allowed": 1
+          },
+          "confidence": 1
+        },
+        "solve_mode": {
+          "type": "choice",
+          "choice": "verify",
+          "probabilities": {
+            "synthesize": 0,
+            "verify": 1
+          },
+          "confidence": 1
+        }
+      },
+      "confidences": {
+        "data_complete": 0.89,
+        "route_rule": 1,
+        "solve_mode": 1
+      },
+      "weakest": 0.89,
+      "gate": {
+        "status": "open"
+      }
+    }
+  },
+  "compile_note": "Initial expanded relation exceeded Jev input token limit (HTTP400 max_tokens_exceeded). Compacted each step to outgoing transitions for that trace's supplied source state; request accepted. This remains finite observed-trace verification, not reachability of arbitrary traces.",
+  "candidate_review": {
+    "facts_preserved": true,
+    "added_rules": [
+      "workflow.initial_state_allowed",
+      "workflow.safety_invariant"
+    ],
+    "horizon": 35,
+    "source_match": "Pending final S5 implementation and independent review",
+    "semantics": "Ordinary commit race retains original cursor as dirty; validation reset/replacement/gap/error discards and returns error; unsupported/oversize/unusual-order cases do not retain.",
+    "limitations": "Caller-normalized finite traces only. Does not prove Rust, SQLite trigger completeness, all concurrent interleavings, ordering, heap allocation, unbounded liveness, or speedup."
+  },
+  "base_request": {
+    "family": "workflow",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "issue_list"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "issue_list"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "issue_list"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "horizon": 35,
+      "state_domain": [
+        "Cold",
+        "FullLoad",
+        "Ready",
+        "Dirty",
+        "DeltaLoad",
+        "NeedsReseed",
+        "DirectSQL",
+        "StaleServed",
+        "DiscardedError"
+      ],
+      "event_domain": [
+        "read_supported",
+        "validate_same_cursor",
+        "read_unchanged",
+        "unrelated_change",
+        "relevant_change",
+        "read_complete_feed",
+        "commit_during_load",
+        "coverage_gap",
+        "read_unsupported",
+        "return_sql_snapshot",
+        "over_budget",
+        "evict",
+        "unsupported_order",
+        "validation_reset",
+        "retry_supported",
+        "validation_error",
+        "validation_replacement"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "FullLoad",
+        "Ready",
+        "Dirty",
+        "DeltaLoad",
+        "NeedsReseed",
+        "DirectSQL",
+        "DiscardedError"
+      ],
+      "target_states": [
+        "Ready"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read_unsupported",
+          "to": "DirectSQL"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 1,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 4,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 4,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 4,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 4,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "read_complete_feed",
+          "to": "DeltaLoad"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 6,
+          "from": "DeltaLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 6,
+          "from": "DeltaLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 6,
+          "from": "DeltaLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 6,
+          "from": "DeltaLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 6,
+          "from": "DeltaLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 7,
+          "from": "Dirty",
+          "event": "read_complete_feed",
+          "to": "DeltaLoad"
+        },
+        {
+          "step": 7,
+          "from": "Dirty",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 8,
+          "from": "DeltaLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 8,
+          "from": "DeltaLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 8,
+          "from": "DeltaLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 8,
+          "from": "DeltaLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 8,
+          "from": "DeltaLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 10,
+          "from": "NeedsReseed",
+          "event": "read_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 11,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 12,
+          "from": "Dirty",
+          "event": "read_complete_feed",
+          "to": "DeltaLoad"
+        },
+        {
+          "step": 12,
+          "from": "Dirty",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 13,
+          "from": "DeltaLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 13,
+          "from": "DeltaLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 13,
+          "from": "DeltaLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 13,
+          "from": "DeltaLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 13,
+          "from": "DeltaLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 14,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 14,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 14,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 14,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 14,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 15,
+          "from": "Cold",
+          "event": "read_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 15,
+          "from": "Cold",
+          "event": "read_unsupported",
+          "to": "DirectSQL"
+        },
+        {
+          "step": 16,
+          "from": "DirectSQL",
+          "event": "return_sql_snapshot",
+          "to": "Cold"
+        },
+        {
+          "step": 17,
+          "from": "Cold",
+          "event": "read_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 17,
+          "from": "Cold",
+          "event": "read_unsupported",
+          "to": "DirectSQL"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 18,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 19,
+          "from": "Cold",
+          "event": "read_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 19,
+          "from": "Cold",
+          "event": "read_unsupported",
+          "to": "DirectSQL"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 20,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 21,
+          "from": "Cold",
+          "event": "read_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 21,
+          "from": "Cold",
+          "event": "read_unsupported",
+          "to": "DirectSQL"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 22,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 23,
+          "from": "DiscardedError",
+          "event": "retry_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 24,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 25,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 25,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 25,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 25,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 25,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 26,
+          "from": "Dirty",
+          "event": "read_complete_feed",
+          "to": "DeltaLoad"
+        },
+        {
+          "step": 26,
+          "from": "Dirty",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 27,
+          "from": "DeltaLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 27,
+          "from": "DeltaLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 27,
+          "from": "DeltaLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 27,
+          "from": "DeltaLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 27,
+          "from": "DeltaLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 28,
+          "from": "DiscardedError",
+          "event": "retry_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 29,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 30,
+          "from": "Ready",
+          "event": "read_unchanged",
+          "to": "Ready"
+        },
+        {
+          "step": 30,
+          "from": "Ready",
+          "event": "unrelated_change",
+          "to": "Ready"
+        },
+        {
+          "step": 30,
+          "from": "Ready",
+          "event": "relevant_change",
+          "to": "Dirty"
+        },
+        {
+          "step": 30,
+          "from": "Ready",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 30,
+          "from": "Ready",
+          "event": "evict",
+          "to": "Cold"
+        },
+        {
+          "step": 31,
+          "from": "Dirty",
+          "event": "read_complete_feed",
+          "to": "DeltaLoad"
+        },
+        {
+          "step": 31,
+          "from": "Dirty",
+          "event": "coverage_gap",
+          "to": "NeedsReseed"
+        },
+        {
+          "step": 32,
+          "from": "DeltaLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 32,
+          "from": "DeltaLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 32,
+          "from": "DeltaLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 32,
+          "from": "DeltaLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 32,
+          "from": "DeltaLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 33,
+          "from": "DiscardedError",
+          "event": "retry_supported",
+          "to": "FullLoad"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "validate_same_cursor",
+          "to": "Ready"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "commit_during_load",
+          "to": "Dirty"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "over_budget",
+          "to": "Cold"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "unsupported_order",
+          "to": "Cold"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "validation_reset",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "validation_replacement",
+          "to": "DiscardedError"
+        },
+        {
+          "step": 34,
+          "from": "FullLoad",
+          "event": "validation_error",
+          "to": "DiscardedError"
+        }
+      ],
+      "traces": {
+        "issue_list": {
+          "states": [
+            "Cold",
+            "FullLoad",
+            "Ready",
+            "Ready",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "Dirty",
+            "DeltaLoad",
+            "Ready",
+            "NeedsReseed",
+            "FullLoad",
+            "Dirty",
+            "DeltaLoad",
+            "Ready",
+            "Cold",
+            "DirectSQL",
+            "Cold",
+            "FullLoad",
+            "Cold",
+            "FullLoad",
+            "Cold",
+            "FullLoad",
+            "DiscardedError",
+            "FullLoad",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "DiscardedError",
+            "FullLoad",
+            "Ready",
+            "Dirty",
+            "DeltaLoad",
+            "DiscardedError",
+            "FullLoad",
+            "Ready"
+          ],
+          "events": [
+            "read_supported",
+            "validate_same_cursor",
+            "read_unchanged",
+            "unrelated_change",
+            "relevant_change",
+            "read_complete_feed",
+            "commit_during_load",
+            "read_complete_feed",
+            "validate_same_cursor",
+            "coverage_gap",
+            "read_supported",
+            "commit_during_load",
+            "read_complete_feed",
+            "validate_same_cursor",
+            "evict",
+            "read_unsupported",
+            "return_sql_snapshot",
+            "read_supported",
+            "over_budget",
+            "read_supported",
+            "unsupported_order",
+            "read_supported",
+            "validation_reset",
+            "retry_supported",
+            "validate_same_cursor",
+            "relevant_change",
+            "read_complete_feed",
+            "validation_error",
+            "retry_supported",
+            "validate_same_cursor",
+            "relevant_change",
+            "read_complete_feed",
+            "validation_replacement",
+            "retry_supported",
+            "validate_same_cursor"
+          ]
+        }
+      }
+    },
+    "unknowns": [],
+    "persist": true,
+    "timeout_ms": 5000
+  },
+  "cases": [
+    {
+      "name": "intended",
+      "request_recipe": {
+        "base": "base_request"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 35,
+          "reachability": []
+        },
+        "total_duration_ms": 73,
+        "status": "sat",
+        "model": {},
+        "duration_ms": 46,
+        "solve_id": "sol_c300d8193d0d450b",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "unchanged_full_load",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 3,
+        "truncate_states_to": 4,
+        "truncate_events_to": 3,
+        "keep_transitions_with_step_less_than": 3,
+        "replace_final_state": "FullLoad"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 3,
+          "reachability": []
+        },
+        "total_duration_ms": 37,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_671a07402275430e",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "unrelated_full_load",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 4,
+        "truncate_states_to": 5,
+        "truncate_events_to": 4,
+        "keep_transitions_with_step_less_than": 4,
+        "replace_final_state": "FullLoad"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 4,
+          "reachability": []
+        },
+        "total_duration_ms": 35,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_6a19e9ee04034011",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "relevant_full_load",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 6,
+        "truncate_states_to": 7,
+        "truncate_events_to": 6,
+        "keep_transitions_with_step_less_than": 6,
+        "replace_final_state": "FullLoad"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 6,
+          "reachability": []
+        },
+        "total_duration_ms": 36,
+        "status": "unsat",
+        "duration_ms": 4,
+        "solve_id": "sol_105d7e3abffe49a4",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "race_published_current",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 7,
+        "truncate_states_to": 8,
+        "truncate_events_to": 7,
+        "keep_transitions_with_step_less_than": 7,
+        "replace_final_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 7,
+          "reachability": []
+        },
+        "total_duration_ms": 33,
+        "status": "unsat",
+        "duration_ms": 4,
+        "solve_id": "sol_bfecd2ad671b4759",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "over_budget_retained",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 19,
+        "truncate_states_to": 20,
+        "truncate_events_to": 19,
+        "keep_transitions_with_step_less_than": 19,
+        "replace_final_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 19,
+          "reachability": []
+        },
+        "total_duration_ms": 36,
+        "status": "unsat",
+        "duration_ms": 4,
+        "solve_id": "sol_2dd99ee53b6148e4",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "unsupported_order_retained",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 21,
+        "truncate_states_to": 22,
+        "truncate_events_to": 21,
+        "keep_transitions_with_step_less_than": 21,
+        "replace_final_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 21,
+          "reachability": []
+        },
+        "total_duration_ms": 32,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_f4467df996a147fd",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "validation_reset_returned_dirty",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 23,
+        "truncate_states_to": 24,
+        "truncate_events_to": 23,
+        "keep_transitions_with_step_less_than": 23,
+        "replace_final_state": "Dirty"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 23,
+          "reachability": []
+        },
+        "total_duration_ms": 37,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_38a1a27d4c534f2b",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "validation_error_swallowed",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 28,
+        "truncate_states_to": 29,
+        "truncate_events_to": 28,
+        "keep_transitions_with_step_less_than": 28,
+        "replace_final_state": "Dirty"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 28,
+          "reachability": []
+        },
+        "total_duration_ms": 34,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_d263a0e4fe9e44f0",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "replacement_returned_dirty",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 33,
+        "truncate_states_to": 34,
+        "truncate_events_to": 33,
+        "keep_transitions_with_step_less_than": 33,
+        "replace_final_state": "Dirty"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 33,
+          "reachability": []
+        },
+        "total_duration_ms": 35,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_52731db219344447",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "unsupported_query_cached",
+      "request_recipe": {
+        "base": "base_request",
+        "horizon": 16,
+        "truncate_states_to": 17,
+        "truncate_events_to": 16,
+        "keep_transitions_with_step_less_than": 16,
+        "replace_final_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 16,
+          "reachability": []
+        },
+        "total_duration_ms": 33,
+        "status": "unsat",
+        "duration_ms": 4,
+        "solve_id": "sol_ff0b330b69e748e8",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    }
+  ]
+}
