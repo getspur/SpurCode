@@ -295,7 +295,9 @@ pub fn load_graph_snapshot(
     Ok(snap)
 }
 
-fn dependency_kind_from_beads(dep_type: &beads_rust::model::DependencyType) -> DependencyKind {
+pub(super) fn dependency_kind_from_beads(
+    dep_type: &beads_rust::model::DependencyType,
+) -> DependencyKind {
     match dep_type {
         beads_rust::model::DependencyType::Blocks => DependencyKind::Blocks,
         beads_rust::model::DependencyType::ParentChild => DependencyKind::ParentChild,

@@ -4,7 +4,7 @@
 > Execution here is direct, sequential work in the isolated bd-potu6 worktree; no worker dispatch is required.
 
 Source spec: docs/superpowers/specs/2026-10-09-incremental-beads-graph-design.md
-Tracking issue: bd-potu6 (implementation in progress).
+Tracking issue: bd-potu6. S1, S2 and S3 implemented and verified; final results in docs/performance/2026-10-09-incremental-graph/README.md.
 Goal: maintain graph scopes from relevant committed deltas without reloading or scanning all graph data on ordinary reads or small edits.
 Architecture: transactional SQLite change records plus one retained graph per queried scope, coherent delta reads, serialized publication, incremental fingerprints.
 Tech stack: existing Rust, rusqlite, petgraph, chrono, sha2, tokio.
@@ -34,3 +34,4 @@ Commands:
 - scripts/spur-cargo test -p spur-pm
 - SPUR_REMOTE=1 scripts/spur-cargo clippy -p spur-pm --all-targets -- -D warnings
 
+Verification outcome: full crate suite 282 passed, two existing ignored; 16 final incremental tests passed; formatting and strict production-library Clippy passed. All-target Clippy exposes existing test lint debt, recorded with a baseline source comparison; its single new-test semicolon finding was corrected. Independent review bd-2z2ht has no remaining findings and accepts the scoped change with the existing lint limitation disclosed. PRE/POST solver receipts and measured graph work are saved alongside the result report.

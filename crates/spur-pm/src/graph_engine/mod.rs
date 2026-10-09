@@ -1,3 +1,5 @@
+mod change_tracking;
+mod incremental;
 pub mod insights;
 pub mod metrics;
 pub mod plan;
@@ -6,6 +8,7 @@ pub mod score;
 pub mod snapshot;
 pub mod triage;
 
+pub use incremental::GraphWorkMetrics;
 pub use insights::compute_insights;
 pub use metrics::hits;
 pub use plan::compute_plan;
@@ -82,6 +85,22 @@ mod facade_tests {
             reads,
             "unchanged graph requests must not reload the graph through the beads adapter"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn concurrent_graph_requests_share_one_initialization() {
+        let (_dir, engine, root, _) = seeded_engine().await;
+        let (one, two, three) = tokio::join!(
+            engine.subgraph(&root, Some(2), Some("json")),
+            engine.subgraph(&root, Some(2), Some("json")),
+            engine.triage(None),
+        );
+        assert_eq!(one.unwrap().data_hash, two.unwrap().data_hash);
+        three.unwrap();
+        let work = engine.work_metrics().await.unwrap();
+        assert_eq!(work.full_builds, 1);
+        assert_eq!(work.nodes_loaded, 3);
+        assert_eq!(work.reuses, 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -544,47 +563,88 @@ pub struct GraphEngineConfig {
 pub struct GraphEngine {
     beads: Arc<BeadsCrateAdapter>,
     cfg: GraphEngineConfig,
+    store: Arc<std::sync::Mutex<incremental::IncrementalGraphStore>>,
 }
 
 impl GraphEngine {
     pub fn new(beads: Arc<BeadsCrateAdapter>, cfg: GraphEngineConfig) -> Self {
-        Self { beads, cfg }
+        let store = incremental::IncrementalGraphStore::new(
+            beads.beads_dir.join("beads.db"),
+            beads.config.lock_timeout_ms,
+        );
+        Self {
+            beads,
+            cfg,
+            store: Arc::new(std::sync::Mutex::new(store)),
+        }
     }
 
-    async fn snapshot(&self, label: Option<String>) -> anyhow::Result<GraphSnapshot> {
-        self.beads
-            .read(move |storage| {
-                let mut snap = snapshot::load_graph_snapshot(storage, label.as_deref())?;
-                snap.data_hash = snap.compute_data_hash();
-                Ok(snap)
-            })
-            .await
+    async fn with_snapshot<T: Send + 'static>(
+        &self,
+        label: Option<String>,
+        compute: impl FnOnce(&GraphSnapshot, &GraphEngineConfig) -> T + Send + 'static,
+    ) -> anyhow::Result<T> {
+        let store = Arc::clone(&self.store);
+        let cfg = self.cfg.clone();
+        // Keep the adapter/connection actors alive through a cancelled caller's
+        // in-flight blocking job, just as for the existing adapter read path.
+        let beads = Arc::clone(&self.beads);
+        tokio::task::spawn_blocking(move || {
+            let _beads = beads;
+            store
+                .lock()
+                .map_err(|_| anyhow::anyhow!("graph store mutex poisoned"))?
+                .query(label.as_deref(), |snap| compute(snap, &cfg))
+        })
+        .await?
+    }
+
+    /// Cumulative graph storage work, excluding report algorithms/serialization.
+    pub async fn work_metrics(&self) -> anyhow::Result<GraphWorkMetrics> {
+        let store = Arc::clone(&self.store);
+        tokio::task::spawn_blocking(move || {
+            Ok(store
+                .lock()
+                .map_err(|_| anyhow::anyhow!("graph store mutex poisoned"))?
+                .metrics)
+        })
+        .await?
     }
 
     pub async fn triage(&self, label: Option<&str>) -> anyhow::Result<TriageReport> {
-        let snap = self.snapshot(label.map(str::to_string)).await?;
-        let mut report = compute_triage(&snap, &self.cfg.score);
+        let mut report = self
+            .with_snapshot(label.map(str::to_owned), |snap, cfg| {
+                compute_triage(snap, &cfg.score)
+            })
+            .await?;
         report.raw = raw::serialize_triage(&report);
         Ok(report)
     }
 
     pub async fn plan(&self, label: Option<&str>) -> anyhow::Result<ExecutionPlan> {
-        let snap = self.snapshot(label.map(str::to_string)).await?;
-        let mut report = compute_plan(&snap, &self.cfg.score);
+        let mut report = self
+            .with_snapshot(label.map(str::to_owned), |snap, cfg| {
+                compute_plan(snap, &cfg.score)
+            })
+            .await?;
         report.raw = raw::serialize_plan(&report);
         Ok(report)
     }
 
     pub async fn insights(&self, label: Option<&str>) -> anyhow::Result<GraphInsights> {
-        let snap = self.snapshot(label.map(str::to_string)).await?;
-        let mut report = compute_insights(&snap, &self.cfg.insight);
+        let mut report = self
+            .with_snapshot(label.map(str::to_owned), |snap, cfg| {
+                compute_insights(snap, &cfg.insight)
+            })
+            .await?;
         report.raw = raw::serialize_insights(&report);
         Ok(report)
     }
 
     pub async fn alerts(&self) -> anyhow::Result<AlertReport> {
-        let snap = self.snapshot(None).await?;
-        let mut report = compute_alerts(&snap, &self.cfg.alert);
+        let mut report = self
+            .with_snapshot(None, |snap, cfg| compute_alerts(snap, &cfg.alert))
+            .await?;
         report.raw = raw::serialize_alerts(&report);
         Ok(report)
     }
@@ -595,13 +655,13 @@ impl GraphEngine {
         depth: Option<u32>,
         format: Option<&str>,
     ) -> anyhow::Result<DependencyGraph> {
-        let snap = self.snapshot(None).await?;
-        let mut report = compute_subgraph(
-            &snap,
-            SubgraphRoot::Issue(root_id),
-            depth,
-            GraphFormat::parse(format),
-        );
+        let root_id = root_id.to_owned();
+        let format = GraphFormat::parse(format);
+        let mut report = self
+            .with_snapshot(None, move |snap, _| {
+                compute_subgraph(snap, SubgraphRoot::Issue(&root_id), depth, format)
+            })
+            .await?;
         report.raw = raw::serialize_subgraph(&report);
         Ok(report)
     }
@@ -611,13 +671,12 @@ impl GraphEngine {
         label: &str,
         format: Option<&str>,
     ) -> anyhow::Result<DependencyGraph> {
-        let snap = self.snapshot(Some(label.to_string())).await?;
-        let mut report = compute_subgraph(
-            &snap,
-            SubgraphRoot::AllIssues,
-            None,
-            GraphFormat::parse(format),
-        );
+        let format = GraphFormat::parse(format);
+        let mut report = self
+            .with_snapshot(Some(label.to_owned()), move |snap, _| {
+                compute_subgraph(snap, SubgraphRoot::AllIssues, None, format)
+            })
+            .await?;
         report.raw = raw::serialize_subgraph(&report);
         Ok(report)
     }

@@ -1,0 +1,53 @@
+{
+  "recorded_at_utc": "2026-10-09T05:55:09.851819+00:00",
+  "base_commit": "c96ea58410be1cfdcaca4aae03dfe636acca20d6",
+  "regression_commit": "b2203a430",
+  "source_sha256": {
+    "crates/spur-pm/src/graph_engine/change_tracking.rs": "2dfe04243b1d27a256dd476ad1d0eef1c690231be067276305b3f7edda4e6cd2",
+    "crates/spur-pm/src/graph_engine/incremental.rs": "41be3d5c8eb14bcbd06cb1a99b019d97995b1a99a01e121b6f0f6854efecf89d",
+    "crates/spur-pm/src/graph_engine/incremental_tests.rs": "4572b17e1e755a36a635dcb669d4e2ef205cc1427240d58bad3f5a6adf27dd8b",
+    "crates/spur-pm/src/graph_engine/mod.rs": "8899ee65922acd1e1c9be0ed1bb2350bfc34329f2ba87bd5380690b682da5598",
+    "crates/spur-pm/src/graph_engine/snapshot.rs": "e9e37c9af4c59aaf4e00ca8a760a598cc4d44a0433c4c6cae072adb9d5ce6f9f"
+  },
+  "full_suite": {
+    "passed": 282,
+    "failed": 0,
+    "ignored": 2,
+    "exit_code": 0,
+    "environment": "remote AWS Linux arm64",
+    "note": "Before final test-only recovery/sample strengthening; production code identical"
+  },
+  "final_incremental_tests": {
+    "passed": 16,
+    "failed": 0,
+    "log": "test-work-sample.log",
+    "note": "Passed remotely and again through automatic local infrastructure fallback; later only a lint-required semicolon was added"
+  },
+  "format_check": {
+    "exit_code": 0
+  },
+  "strict_library_clippy": {
+    "exit_code": 0,
+    "environment": "remote AWS Linux arm64",
+    "log": "clippy-library.log"
+  },
+  "strict_all_targets_clippy": {
+    "exit_code": 101,
+    "log": "clippy.log",
+    "baseline_comparison": "lint-baseline.json",
+    "note": "Existing test lint debt; one new-test semicolon warning subsequently corrected"
+  },
+  "independent_review": {
+    "issue": "bd-2z2ht",
+    "agent": "/root/review_incremental_graph",
+    "remaining_findings": 0,
+    "note": "Baseline test lint debt accepted; production library lint required and passed"
+  },
+  "solver_post": {
+    "valid_solve_id": "sol_39e55e0ab1b84607",
+    "invalid_solve_id": "sol_d7bb274166e844be",
+    "bounded_model_only": true
+  },
+  "live_process_restarted": false,
+  "notebook_followup": "Transport closed; prior committed notebook preserved, new evidence recorded here"
+}
