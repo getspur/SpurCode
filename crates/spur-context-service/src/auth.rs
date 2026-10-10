@@ -522,13 +522,6 @@ pub(crate) fn authorize_oauth_tool(
             .ok_or(AuthFailure::MalformedScope)?,
     )?;
 
-    let required_scope = config
-        .required_scope(tool)
-        .ok_or(AuthFailure::NonExternalTool)?;
-    if !scopes.contains(&required_scope) {
-        return Err(AuthFailure::MissingScope);
-    }
-
     let identity = if client_id == config.human_client_id {
         let subject = claims
             .get("sub")
@@ -547,6 +540,13 @@ pub(crate) fn authorize_oauth_tool(
             PrincipalKind::Machine,
         )
     };
+
+    let required_scope = config
+        .required_scope(tool)
+        .ok_or(AuthFailure::NonExternalTool)?;
+    if !scopes.contains(&required_scope) {
+        return Err(AuthFailure::MissingScope);
+    }
 
     Ok(AuthDecision { identity })
 }
@@ -1171,6 +1171,19 @@ mod tests {
         );
         assert_eq!(AuthFailure::MissingScope.status_code(), 403);
         assert_eq!(AuthFailure::WrongIssuer.status_code(), 401);
+    }
+
+    #[test]
+    fn malformed_human_subject_takes_precedence_over_scope_denial() {
+        let mut claims = access_claims();
+        claims["sub"] = Value::String(" \t ".to_owned());
+        claims["scope"] = Value::String("urn:spur:context-service/external.status".to_owned());
+
+        let failure =
+            authorize_oauth_tool(&config(), "external_catalog", Some(&claims), 1_700_000_000)
+                .expect_err("a malformed human identity must be unauthenticated");
+        assert_eq!(failure, AuthFailure::InvalidSubject);
+        assert_eq!(failure.status_code(), 401);
     }
 
     #[test]
