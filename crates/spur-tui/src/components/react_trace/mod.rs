@@ -1009,27 +1009,33 @@ impl ReactTrace {
     /// Build wrapped display lines for external pane consumption
     /// (DetailPane Stream tab). Uses `build_display_lines` with no lineage
     /// and wraps to `width`. Caches result keyed by `(generation, width)`.
-    pub fn build_body_lines(&mut self, width: u16) -> Vec<ratatui::text::Line<'static>> {
-        if let Some(c) = &self.body_cache {
-            if c.generation == self.generation && c.width == width {
-                return c.lines.clone();
-            }
+    pub fn build_body_lines(&mut self, width: u16) -> &[ratatui::text::Line<'static>] {
+        let cache_valid = self
+            .body_cache
+            .as_ref()
+            .is_some_and(|c| c.generation == self.generation && c.width == width);
+        if !cache_valid {
+            let spinner_frame = crate::components::spinner::frame(
+                crate::components::spinner::BRAILLE,
+                self.tick_counter as u32,
+            );
+            let lines =
+                self.build_display_lines(spinner_frame, None, Some(width.saturating_sub(3)));
+            let wrapped = lines
+                .into_iter()
+                .flat_map(|l| crate::components::line_wrap::wrap_line_to_width(&l, width))
+                .collect();
+            self.body_cache = Some(crate::components::react_trace::render::BodyCacheEntry {
+                lines: wrapped,
+                width,
+                generation: self.generation,
+            });
         }
-        let spinner_frame = crate::components::spinner::frame(
-            crate::components::spinner::BRAILLE,
-            self.tick_counter as u32,
-        );
-        let lines = self.build_display_lines(spinner_frame, None, Some(width.saturating_sub(3)));
-        let wrapped: Vec<ratatui::text::Line<'static>> = lines
-            .into_iter()
-            .flat_map(|l| crate::components::line_wrap::wrap_line_to_width(&l, width))
-            .collect();
-        self.body_cache = Some(crate::components::react_trace::render::BodyCacheEntry {
-            lines: wrapped.clone(),
-            width,
-            generation: self.generation,
-        });
-        wrapped
+        &self
+            .body_cache
+            .as_ref()
+            .expect("body cache initialized")
+            .lines
     }
 
     /// Expose the trace entries as a slice for testing and inspection.
@@ -2029,6 +2035,9 @@ mod virtual_row_tests {
 
 #[cfg(test)]
 mod streaming_tests;
+
+#[cfg(test)]
+mod body_cache_tests;
 
 #[cfg(test)]
 mod tests {

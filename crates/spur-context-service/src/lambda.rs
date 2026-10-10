@@ -6328,6 +6328,47 @@ mod knowledge {
         }
 
         #[test]
+        fn oauth_request_with_malformed_human_subject_returns_401_before_scope_check() {
+            let request = serde_json::from_value::<ApiGatewayRequest>(json!({
+                "rawPath": "/mcp/oauth",
+                "requestContext": {
+                    "authorizer": {
+                        "principalId": "legacy-principal",
+                        "iam": { "accountId": "123456789012", "userId": "AROATEST:session" },
+                        "jwt": { "claims": {
+                            "iss": "https://issuer.example/pool",
+                            "token_use": "access",
+                            "client_id": "human-client",
+                            "sub": " ",
+                            "exp": "2000000000",
+                            "scope": "urn:spur:context-service/external.status"
+                        }}
+                    },
+                    "http": { "method": "POST", "sourceIp": "203.0.113.24" }
+                }
+            }))
+            .expect("OAuth request should deserialize");
+            let config = crate::auth::AuthConfig::new(
+                "https://issuer.example/pool",
+                "human-client",
+                ["m2m-client"],
+                std::iter::empty::<&str>(),
+                "urn:spur:context-service",
+            );
+
+            let failure =
+                authorize_oauth_request(&request, "external_catalog", &config, 1_700_000_000)
+                    .expect_err(
+                        "malformed identity must not reach scope authorization or fallbacks",
+                    );
+            let response = authorization_error_response(failure).expect("bounded error response");
+            assert_eq!(response.status_code, 401);
+            assert!(response.body.contains("malformed_subject"));
+            assert!(!response.body.contains("legacy-principal"));
+            assert!(!response.body.contains("AROATEST"));
+        }
+
+        #[test]
         fn oauth_errors_return_bounded_401_or_403_bodies() {
             let unauthorized = authorization_error_response(crate::auth::AuthFailure::WrongIssuer)
                 .expect("authorization response should serialize");

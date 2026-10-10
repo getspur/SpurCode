@@ -1,0 +1,36 @@
+{
+  "task": "S3",
+  "issue": "bd-22m02",
+  "base": "083241051d59b410c29cabbd84e6617e7a2e3e20",
+  "red_commit": "64f716b603435285d13647b31e7d3241447944d7",
+  "implementation_commit": "9f3eac7d41fd8f789b0c1b27fcfcd83cc6ca507d",
+  "review_diff_sha256": "39c3ce36696afd4f626af904addf00abea46cde8eae629278b659b182a308d5d",
+  "independent_review": "no findings; final immutable commit checked",
+  "red": {
+    "command": "SPUR_RSYNC_IO_TIMEOUT=300 SPUR_RSYNC_MAX_ATTEMPTS=1 SPUR_NO_LOCAL_FALLBACK=1 AWS_MAX_ATTEMPTS=1 scripts/spur-cargo test -p spur-pm --lib summary_projection -- --nocapture",
+    "log": "s3-red.log",
+    "passed": 4,
+    "failed": 1,
+    "expected_failure": "summary_projection_does_not_decode_unneeded_metadata: summary must not decode unneeded due_at"
+  },
+  "green": {
+    "command": "scripts/spur-cargo test -p spur-pm --lib beads_crate -- --nocapture",
+    "log": "s3-green.log",
+    "passed": 104,
+    "failed": 0,
+    "ignored": 1
+  },
+  "clippy": {
+    "command": "SPUR_REMOTE=1 scripts/spur-cargo clippy -p spur-pm --lib -- -D warnings",
+    "log": "s3-clippy.log",
+    "result": "passed after removing one unused import"
+  },
+  "intentional_semantics": "Decode only seven returned issue fields. Other metadata is not validated as Rust values. SQL uses unchanged stored sort/filter values; projected-column, SQL and label failures remain errors.",
+  "limitations": [
+    "Direct reads only; subscription reuse remains S5.",
+    "Caller owns transaction, preserving legacy issue/label query behavior. S5 must provide coherent snapshot.",
+    "No new live binary installed or sampled.",
+    "Bounded POST traces do not prove Rust SQL equivalence or future cache behavior."
+  ],
+  "post_solver_evidence": "s3-post-solves.json"
+}

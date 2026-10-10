@@ -1,0 +1,1296 @@
+{
+  "pre": {
+    "lifecycle": {
+      "solve_id": "sol_68e50056a49749b3",
+      "status": "sat",
+      "horizon": 15
+    },
+    "membership": {
+      "solve_id": "sol_5d17396943d94ca6",
+      "status": "unsat",
+      "bounds": "one candidate, values 0..2; absence -1"
+    },
+    "domain": {
+      "status": "unsat",
+      "duration_ms": 106,
+      "solve_id": "sol_2f68e82c15694fae",
+      "reason": null,
+      "unsat_core": [
+        "monotone_summary",
+        "retained_summary",
+        "monotone_timestamp",
+        "retained_timestamp",
+        "monotone_comment",
+        "retained_comment",
+        "seek_lost_or_spurious_domain"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    }
+  },
+  "post": {
+    "workflowPost": {
+      "family": "workflow",
+      "mode": "verify",
+      "outcome": "pass",
+      "rule_results": [
+        {
+          "rule_id": "workflow.transition_allowed",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "workflow.initial_state_allowed",
+          "binding_index": 1,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "workflow.safety_invariant",
+          "binding_index": 2,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "evaluation_scope": {
+        "kind": "bounded_trace",
+        "horizon": 10,
+        "reachability": []
+      },
+      "total_duration_ms": 73,
+      "status": "sat",
+      "model": {},
+      "duration_ms": 47,
+      "solve_id": "sol_6b6899231f774015",
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "workflowRejected": {
+      "family": "workflow",
+      "mode": "verify",
+      "outcome": "fail",
+      "rule_results": [
+        {
+          "rule_id": "workflow.transition_allowed",
+          "binding_index": 0,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "workflow.transition_allowed.violation"
+        },
+        {
+          "rule_id": "workflow.initial_state_allowed",
+          "binding_index": 1,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "workflow.safety_invariant",
+          "binding_index": 2,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "evaluation_scope": {
+        "kind": "bounded_trace",
+        "horizon": 10,
+        "reachability": []
+      },
+      "total_duration_ms": 34,
+      "status": "unsat",
+      "duration_ms": 5,
+      "solve_id": "sol_36806489fcf943be",
+      "reason": null,
+      "unsat_core": [
+        "workflow_rule_0_workflow_transition_allowed"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "domainPost": {
+      "status": "unsat",
+      "duration_ms": 9,
+      "solve_id": "sol_c56b40bd13ec41da",
+      "reason": null,
+      "unsat_core": [
+        "monotone_summary",
+        "retained_summary",
+        "monotone_timestamp",
+        "retained_timestamp",
+        "monotone_comment",
+        "retained_comment",
+        "seek_lost_or_spurious_domain"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "membershipPost": {
+      "status": "unsat",
+      "duration_ms": 5,
+      "solve_id": "sol_01d2f37c71954aa2",
+      "reason": null,
+      "unsat_core": [
+        "before_result",
+        "after_result",
+        "reuse_policy",
+        "seek_stale_reuse"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "domainFeasiblePost": {
+      "status": "sat",
+      "model": {
+        "comment_event": false,
+        "new_comment": 0,
+        "new_summary": 0,
+        "new_timestamp": 1,
+        "old_comment": 0,
+        "old_summary": 0,
+        "old_timestamp": 0,
+        "since": 0,
+        "summary_event": false,
+        "timestamp_event": true,
+        "uses_since": false,
+        "write_revision": 1
+      },
+      "duration_ms": 11,
+      "solve_id": "sol_70c119a805dd46a2",
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    }
+  },
+  "workflow_request": {
+    "family": "workflow",
+    "mode": "verify",
+    "persist": true,
+    "timeout_ms": 5000,
+    "rules": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "s4_feed"
+        ]
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "s4_feed"
+        ]
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "s4_feed"
+        ]
+      }
+    ],
+    "facts": {
+      "horizon": 10,
+      "state_domain": [
+        "New",
+        "Reseed",
+        "Delta",
+        "Error"
+      ],
+      "event_domain": [
+        "initial_read",
+        "matching_cursor",
+        "unchanged",
+        "comment_timestamp",
+        "summary_edit",
+        "tracking_gap",
+        "database_replacement",
+        "replacement_during_callback"
+      ],
+      "initial_states": [
+        "New"
+      ],
+      "safe_states": [
+        "New",
+        "Reseed",
+        "Delta",
+        "Error"
+      ],
+      "target_states": [
+        "Delta"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 0,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 1,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 1,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 2,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 2,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 3,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 3,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 4,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 4,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 5,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 5,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 6,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 6,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 7,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 7,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 8,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 8,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 9,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 9,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        }
+      ],
+      "traces": {
+        "s4_feed": {
+          "states": [
+            "New",
+            "Reseed",
+            "Delta",
+            "Delta",
+            "Delta",
+            "Delta",
+            "Reseed",
+            "Delta",
+            "Reseed",
+            "Delta",
+            "Error"
+          ],
+          "events": [
+            "initial_read",
+            "matching_cursor",
+            "unchanged",
+            "comment_timestamp",
+            "summary_edit",
+            "tracking_gap",
+            "matching_cursor",
+            "database_replacement",
+            "matching_cursor",
+            "replacement_during_callback"
+          ]
+        }
+      }
+    }
+  },
+  "workflow_rejected_request": {
+    "family": "workflow",
+    "mode": "verify",
+    "persist": true,
+    "timeout_ms": 5000,
+    "rules": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "s4_feed"
+        ]
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "s4_feed"
+        ]
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "s4_feed"
+        ]
+      }
+    ],
+    "facts": {
+      "horizon": 10,
+      "state_domain": [
+        "New",
+        "Reseed",
+        "Delta",
+        "Error"
+      ],
+      "event_domain": [
+        "initial_read",
+        "matching_cursor",
+        "unchanged",
+        "comment_timestamp",
+        "summary_edit",
+        "tracking_gap",
+        "database_replacement",
+        "replacement_during_callback"
+      ],
+      "initial_states": [
+        "New"
+      ],
+      "safe_states": [
+        "New",
+        "Reseed",
+        "Delta",
+        "Error"
+      ],
+      "target_states": [
+        "Delta"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 0,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 0,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 1,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 1,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 1,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 2,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 2,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 2,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 3,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 3,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 3,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 4,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 4,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 4,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 5,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 5,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 5,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 6,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 6,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 6,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 7,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 7,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 7,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 8,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 8,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 8,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        },
+        {
+          "step": 9,
+          "from": "New",
+          "event": "initial_read",
+          "to": "Reseed"
+        },
+        {
+          "step": 9,
+          "from": "Reseed",
+          "event": "matching_cursor",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "unchanged",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "comment_timestamp",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "summary_edit",
+          "to": "Delta"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "tracking_gap",
+          "to": "Reseed"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "database_replacement",
+          "to": "Reseed"
+        },
+        {
+          "step": 9,
+          "from": "Delta",
+          "event": "replacement_during_callback",
+          "to": "Error"
+        }
+      ],
+      "traces": {
+        "s4_feed": {
+          "states": [
+            "New",
+            "Reseed",
+            "Delta",
+            "Delta",
+            "Delta",
+            "Delta",
+            "Delta",
+            "Delta",
+            "Reseed",
+            "Delta",
+            "Error"
+          ],
+          "events": [
+            "initial_read",
+            "matching_cursor",
+            "unchanged",
+            "comment_timestamp",
+            "summary_edit",
+            "tracking_gap",
+            "matching_cursor",
+            "database_replacement",
+            "matching_cursor",
+            "replacement_during_callback"
+          ]
+        }
+      }
+    }
+  },
+  "scope": "Finite declared S4 read-result trace (10 steps), retained revisions 0..5 and old/new membership for one candidate. Not an unbounded proof of Rust/SQLite, SQL equivalence, S5 publication, pagination or runtime speedup."
+}

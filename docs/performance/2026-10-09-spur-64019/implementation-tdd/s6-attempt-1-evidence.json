@@ -1,0 +1,164 @@
+{
+  "task_id": "bd-1prez",
+  "base": "fe7ac7f2f18dfbb8cc6620be742ee4c7dab676ec",
+  "commits": [
+    {
+      "commit": "524d77ce4",
+      "intent": "RED tests: unchanged comments and missing structural tracking"
+    },
+    {
+      "commit": "50a855c8e",
+      "intent": "RED test: both child IDs on combined retarget/type transitions"
+    },
+    {
+      "commit": "1e6255860",
+      "intent": "GREEN independent hygiene cursor, serialized retryable state, timer-pending empty-audit cache and indexed parent propagation"
+    }
+  ],
+  "summary": "Reconciler hygiene consumes an independent S4 cursor, processes only changed eligible open issues, expands parent changes to children in the feed snapshot, and preserves timer work. Pending empty-audit candidates retain grace work without unchanged comment rereads. Sweeps serialize and publish exactly their pre-work cursor only after every candidate succeeds. Unsupported tracking uses the full prior path; startup/history gaps reseed.",
+  "public_interfaces": [
+    "spur_pm::advanced::HygieneCursor(String): backend-owned opaque token",
+    "spur_pm::advanced::HygieneCandidate { issue, parent_ids }",
+    "spur_pm::advanced::HygieneBatch { cursor, reseed, affected_ids, candidates }",
+    "BeadsAdvanced::hygiene_changes(Option<&HygieneCursor>) -> Result<Option<HygieneBatch>>: default returns None; Err remains retryable"
+  ],
+  "internal_interfaces": [
+    "S4 feed version 3: structural OLD/NEW children and replacement victims advance issue_revision only",
+    "IssueReads::hygiene shares the persistent reader connection, with caller-owned independent cursor",
+    "Reconciler::hygiene mutex holds HygieneState { cursor, pending }; staged publication is cancellation-safe",
+    "Indexed parent-to-child expansion precedes open filtering; parent IDs avoid graph snapshots on supported deltas"
+  ],
+  "red": [
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-core --lib hygiene_ -- --nocapture",
+      "exit": 101,
+      "log": ".spur/tmp/s6-red-core.log",
+      "result": "Expected assertions: second unchanged pass read 2 issues instead of []; grace-expiry pass reread comments. Third partial-failure test initially stopped at ordering setup, subsequently tightened with explicit distinct priorities before test commit."
+    },
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib issue_changes::tests -- --nocapture",
+      "exit": 1,
+      "log": ".spur/tmp/s6-red-pm.log",
+      "result": "22 passed, 3 expected failures: missing parent-child/type/replacement victim IDs"
+    },
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib structural_combined_retarget_type_change -- --nocapture",
+      "exit": 101,
+      "log": ".spur/tmp/s6-red-combined-edge.log",
+      "result": "Expected assertion: {\"a\"} != {\"a\",\"b\"}"
+    }
+  ],
+  "green": [
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-core -p spur-pm --lib hygiene -- --nocapture",
+      "exit": 0,
+      "log": ".spur/tmp/s6-green-hygiene.log",
+      "result": "9 core + 5 PM tests passed"
+    },
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-core --lib plan::reconciler:: -- --nocapture",
+      "exit": 0,
+      "log": ".spur/tmp/s6-green-reconciler.log",
+      "result": "81 passed, including the added pending invalidation test, cancellation, backoff and parent ambiguity"
+    },
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib structural -- --nocapture",
+      "exit": 0,
+      "log": ".spur/tmp/s6-green-structural.log",
+      "result": "4 passed after final combined-transition adjustment"
+    },
+    {
+      "command": "SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0 SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-core --test reconciler_tick --test reconciler_shutdown --test retry_loop -- --nocapture",
+      "exit": 0,
+      "log": ".spur/tmp/s6-green-integration-full.log",
+      "result": "1 shutdown + 40 tick + 4 retry tests passed; full streamed output"
+    },
+    {
+      "command": "scripts/spur-cargo fmt -p spur-pm -p spur-core -- --check",
+      "exit": 0,
+      "log": ".spur/tmp/s6-fmt-check.log",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "result": "passed"
+    }
+  ],
+  "other_attempts": [
+    {
+      "log": ".spur/tmp/s6-red-core-compile-error.log",
+      "classification": "test compile error; excluded from behavioral RED"
+    },
+    {
+      "log": ".spur/tmp/s6-red-core-fixture-error.log",
+      "classification": "missing fixture directory; excluded from behavioral RED"
+    },
+    {
+      "log": ".spur/tmp/s6-green-pm.log",
+      "classification": "147 passed, 3 new fixture setup failures, 1 ignored; fixed only fixtures afterward"
+    },
+    {
+      "log": ".spur/tmp/s6-green-pm-hygiene.log",
+      "classification": "2 passed, 1 fixture foreign-key failure; fixed fixture and all 3 passed in s6-green-hygiene.log"
+    },
+    {
+      "log": ".spur/tmp/s6-green-integration.log",
+      "classification": "exit 0; wrapper tail omitted early output, replaced by full-output evidence run"
+    }
+  ],
+  "test_plan": [
+    "Second unchanged pass reads no comments; single issue/comment edits stay local.",
+    "Membership entry/exit/deletion and history reseed; unsupported/error distinction.",
+    "Grace timer caches empty audits; comment changes and eligibility exits invalidate the cache.",
+    "Failure after earlier repairs, cancellation and overlapping sweeps; concurrent comment during successful label write.",
+    "Closed-parent audit changes reach children; direct audit precedence, multiple-parent errors and blocker exclusion remain intact.",
+    "Raw structural insert/delete/retarget/type transitions and rowid/unique conflict victims; rollback safety; summary/timestamp revisions unaffected.",
+    "Unchanged DB due-loop tick and expired owner lease; existing dispatch lease expiry, cancellation, backoff and retry checks."
+  ],
+  "solvers": {
+    "pre": [
+      {
+        "id": "sol_68e50056a49749b3",
+        "outcome": "sat/pass declared 15-step lifecycle"
+      },
+      {
+        "id": "sol_5d17396943d94ca6",
+        "outcome": "unsat stale-reuse counterexample in bounded old/new membership"
+      }
+    ],
+    "post": [
+      {
+        "id": "sol_4ed9a468cf05464c",
+        "outcome": "sat/pass",
+        "bound": "17-step declared staged cursor/failure/retry/pending timer/race/gap trace"
+      },
+      {
+        "id": "sol_4a90d7e201f74b74",
+        "outcome": "unsat/fail",
+        "bound": "same 17-step trace with raced publication losing work; transition and safety reject"
+      },
+      {
+        "id": "sol_62b90ed630c04789",
+        "outcome": "unsat",
+        "bound": "one candidate, fixed query, values 0..2, absence -1; old/new membership stale-reuse counterexample search"
+      }
+    ],
+    "bindings": "Staged snapshot before work; failure preserves old state; success publishes staged cursor; before-grace remains pending; concurrent write leaves later feed work; gap resets. Core conservatively invalidates any reported issue/comment/parent change, a stricter policy than the membership reuse predicate.",
+    "caveats": "Declared finite models assume complete change coverage and correct identity/filter mapping. They do not prove Rust, all SQL triggers/interleavings, unbounded liveness, memory byte bounds or runtime savings.",
+    "validation_note": "Initial post workflow request lacked required target_states and was rejected before solving; corrected to Checked, with unchanged rules and trace."
+  },
+  "limitations": [
+    "Hygiene cursor is in memory; restart reseeds.",
+    "Unsupported backends/non-Unix retain full sweeps.",
+    "Concurrent writes converge on later sweeps; no atomic comments-plus-label-repair transaction was added.",
+    "Partial failures replay the whole unacknowledged batch, including earlier successful repairs.",
+    "Pending state is proportional to eligible grace-pending candidates; no TTL or arbitrary cap.",
+    "No live binary changes or notebook profiling performed; S7 owns final integrated profiling and measured runtime savings."
+  ],
+  "artifacts": {
+    "unified_diff": "/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/.spur/tmp/s6.patch",
+    "evidence": "/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/.spur/tmp/s6-evidence.json"
+  },
+  "issue_status": "left in_progress for brain review; worker did not close issue"
+}

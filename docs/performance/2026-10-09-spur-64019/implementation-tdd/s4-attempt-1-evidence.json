@@ -1,0 +1,1407 @@
+{
+  "task": "bd-183xz",
+  "base": "86b94ffcc3c25520a470b4535079793cedd27b04",
+  "test_commits": [
+    "2392e12a7",
+    "be5b89bb6"
+  ],
+  "commands": [
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib issue_changes::tests -- --nocapture",
+      "log": ".spur/tmp/bd-183xz-red-final.log",
+      "exit": 101,
+      "result": "12 failed assertion tests; 1 passed"
+    },
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib rowid_replace -- --nocapture",
+      "log": ".spur/tmp/bd-183xz-rowid-red.log",
+      "exit": 101,
+      "result": "2 failed expected victim assertions"
+    },
+    {
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib",
+      "log": ".spur/tmp/bd-183xz-green-lib.log",
+      "exit": 0,
+      "result": "259 passed; 0 failed; 1 ignored (all 15 feed tests passed)"
+    },
+    {
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo clippy -p spur-pm --lib -- -D warnings",
+      "log": ".spur/tmp/bd-183xz-clippy.log",
+      "result": "passed with -D warnings",
+      "exit": 0
+    },
+    {
+      "command": "scripts/spur-cargo fmt -p spur-pm -- --check",
+      "exit": 0
+    }
+  ],
+  "pre": [
+    {
+      "solve_id": "sol_68e50056a49749b3",
+      "outcome": "sat/pass",
+      "bounds": "15 supplied lifecycle steps"
+    },
+    {
+      "solve_id": "sol_5d17396943d94ca6",
+      "outcome": "unsat",
+      "bounds": "one candidate; fixed query; values 0..2; absence -1"
+    }
+  ],
+  "post": [
+    {
+      "request": {
+        "family": "workflow",
+        "mode": "verify",
+        "persist": true,
+        "timeout_ms": 5000,
+        "rules": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "issue_feed"
+            ]
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "issue_feed"
+            ]
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "subjects": [
+              "issue_feed"
+            ]
+          }
+        ],
+        "facts": {
+          "horizon": 9,
+          "state_domain": [
+            "Cold",
+            "Reseed",
+            "Ready",
+            "Delta",
+            "NeedsReseed",
+            "Snapshot",
+            "ErrorReturned",
+            "StaleServed"
+          ],
+          "event_domain": [
+            "read",
+            "seed_snapshot",
+            "complete_cursor",
+            "snapshot_return",
+            "tracking_gap",
+            "repair_generation",
+            "begin_read",
+            "replacement",
+            "callback_error"
+          ],
+          "initial_states": [
+            "Cold"
+          ],
+          "safe_states": [
+            "Cold",
+            "Reseed",
+            "Ready",
+            "Delta",
+            "NeedsReseed",
+            "Snapshot",
+            "ErrorReturned"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 0,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 0,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 0,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 0,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 0,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 0,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 0,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 0,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 1,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 1,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 1,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 1,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 1,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 1,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 1,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 1,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 1,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 2,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 2,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 2,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 2,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 2,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 2,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 3,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 3,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 3,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 3,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 3,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 3,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 4,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 4,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 4,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 4,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 4,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 4,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 5,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 5,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 5,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 5,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 5,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 5,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 5,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 5,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 5,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 6,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 6,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 6,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 6,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 6,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 6,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 6,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 6,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 6,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 7,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 7,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 7,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 7,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 7,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 7,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 7,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 7,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 7,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 8,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 8,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 8,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 8,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 8,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 8,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 8,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 8,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 8,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            }
+          ],
+          "traces": {
+            "issue_feed": {
+              "states": [
+                "Cold",
+                "Reseed",
+                "Ready",
+                "Delta",
+                "Ready",
+                "NeedsReseed",
+                "Reseed",
+                "Ready",
+                "Snapshot",
+                "ErrorReturned"
+              ],
+              "events": [
+                "read",
+                "seed_snapshot",
+                "complete_cursor",
+                "snapshot_return",
+                "tracking_gap",
+                "repair_generation",
+                "seed_snapshot",
+                "begin_read",
+                "replacement"
+              ]
+            }
+          },
+          "target_states": [
+            "Ready",
+            "ErrorReturned"
+          ]
+        }
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 9,
+          "reachability": []
+        },
+        "total_duration_ms": 58,
+        "status": "sat",
+        "model": {},
+        "duration_ms": 16,
+        "solve_id": "sol_42e7ba681bf94207",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "request": {
+        "family": "workflow",
+        "mode": "verify",
+        "persist": true,
+        "timeout_ms": 5000,
+        "rules": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "issue_feed"
+            ]
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "issue_feed"
+            ]
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "subjects": [
+              "issue_feed"
+            ]
+          }
+        ],
+        "facts": {
+          "horizon": 9,
+          "state_domain": [
+            "Cold",
+            "Reseed",
+            "Ready",
+            "Delta",
+            "NeedsReseed",
+            "Snapshot",
+            "ErrorReturned",
+            "StaleServed"
+          ],
+          "event_domain": [
+            "read",
+            "seed_snapshot",
+            "complete_cursor",
+            "snapshot_return",
+            "tracking_gap",
+            "repair_generation",
+            "begin_read",
+            "replacement",
+            "callback_error"
+          ],
+          "initial_states": [
+            "Cold"
+          ],
+          "safe_states": [
+            "Cold",
+            "Reseed",
+            "Ready",
+            "Delta",
+            "NeedsReseed",
+            "Snapshot",
+            "ErrorReturned"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 0,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 0,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 0,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 0,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 0,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 0,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 0,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 0,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 1,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 1,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 1,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 1,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 1,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 1,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 1,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 1,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 1,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 2,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 2,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 2,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 2,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 2,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 2,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 2,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 3,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 3,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 3,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 3,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 3,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 3,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 3,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 4,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 4,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 4,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 4,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 4,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 4,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 4,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 5,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 5,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 5,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 5,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 5,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 5,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 5,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 5,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 5,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 6,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 6,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 6,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 6,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 6,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 6,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 6,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 6,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 6,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 7,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 7,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 7,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 7,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 7,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 7,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 7,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 7,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 7,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 8,
+              "from": "Cold",
+              "event": "read",
+              "to": "Reseed"
+            },
+            {
+              "step": 8,
+              "from": "Reseed",
+              "event": "seed_snapshot",
+              "to": "Ready"
+            },
+            {
+              "step": 8,
+              "from": "Ready",
+              "event": "complete_cursor",
+              "to": "Delta"
+            },
+            {
+              "step": 8,
+              "from": "Delta",
+              "event": "snapshot_return",
+              "to": "Ready"
+            },
+            {
+              "step": 8,
+              "from": "Ready",
+              "event": "tracking_gap",
+              "to": "NeedsReseed"
+            },
+            {
+              "step": 8,
+              "from": "NeedsReseed",
+              "event": "repair_generation",
+              "to": "Reseed"
+            },
+            {
+              "step": 8,
+              "from": "Ready",
+              "event": "begin_read",
+              "to": "Snapshot"
+            },
+            {
+              "step": 8,
+              "from": "Snapshot",
+              "event": "replacement",
+              "to": "ErrorReturned"
+            },
+            {
+              "step": 8,
+              "from": "Snapshot",
+              "event": "callback_error",
+              "to": "ErrorReturned"
+            }
+          ],
+          "traces": {
+            "issue_feed": {
+              "states": [
+                "Cold",
+                "Reseed",
+                "Ready",
+                "Delta",
+                "Ready",
+                "Delta",
+                "Reseed",
+                "Ready",
+                "Snapshot",
+                "ErrorReturned"
+              ],
+              "events": [
+                "read",
+                "seed_snapshot",
+                "complete_cursor",
+                "snapshot_return",
+                "tracking_gap",
+                "repair_generation",
+                "seed_snapshot",
+                "begin_read",
+                "replacement"
+              ]
+            }
+          },
+          "target_states": [
+            "Ready",
+            "ErrorReturned"
+          ]
+        }
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 9,
+          "reachability": []
+        },
+        "total_duration_ms": 165,
+        "status": "unsat",
+        "duration_ms": 19,
+        "solve_id": "sol_21acde18462f41c5",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "source": "original 15-step contract compatibility; S5 is not implemented by this change",
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 15,
+          "reachability": []
+        },
+        "total_duration_ms": 30,
+        "status": "sat",
+        "model": {},
+        "duration_ms": 0,
+        "solve_id": "sol_f417fac8a8924ec7",
+        "reason": null,
+        "cached": true,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "source": "same bounded old/new membership safety request",
+      "result": {
+        "status": "unsat",
+        "duration_ms": 131,
+        "solve_id": "sol_bafdf585aab24323",
+        "reason": null,
+        "unsat_core": [
+          "before_result",
+          "after_result",
+          "reuse_policy",
+          "seek_stale_reuse"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "source": "bounded membership policy feasibility witness",
+      "result": {
+        "status": "sat",
+        "model": {
+          "complete_change_coverage": true,
+          "member_after": false,
+          "member_before": false,
+          "result_after": -1,
+          "result_before": -1,
+          "reuse": true,
+          "same_identity_and_filter": true,
+          "value_after": 0,
+          "value_before": 0
+        },
+        "duration_ms": 21,
+        "solve_id": "sol_f2be1f8d22364089",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    }
+  ],
+  "interfaces": [
+    "No public API additions",
+    "crate-local IssueCursor (serde), IssueChange, IssueChanges",
+    "IssueChangeFeed::new(path, timeout_ms); read(cursor, callback(&Transaction, &IssueChanges))",
+    "install(&mut Connection); install_at_path(path, timeout_ms)"
+  ],
+  "recovery": [
+    "Keep all changed IDs including deleted IDs; no pruning/TTL/cap",
+    "Cold cursor or generation/schema/physical identity/version mismatch or cursor outside floor..head => reseed, not empty complete delta",
+    "Missing/altered owned tables/index/triggers, clock invalidity, direct journal edits or schema drift => atomic reinstall new UUID generation",
+    "Retain and advance a valid surviving clock on repair; a lost clock starts a new epoch at zero; compare revisions only within matching epochs",
+    "Each read validates metadata/head and reads changed rows plus caller SQL under the same transaction",
+    "Replacement during callback => error, discard result; later normal commits are handled by next cursor read (S5 owns publish validation)",
+    "Unknown added unique constraints dirty feed on mutation, forcing reseed",
+    "Destructive-DDL writer may need schema-cache read or reconnect after another connection repairs tracking",
+    "Non-Unix feed reads fail closed until equivalent physical identity support; adapter installation still works"
+  ],
+  "limitations": [
+    "Finite solves are not source-code, all-interleavings, SQL-equivalence, pagination, liveness or performance proofs",
+    "Journal grows with historical distinct IDs; no silent prune",
+    "No live profiler/restart/install; S5 subscription work and S6 hygiene remain downstream",
+    "Ordinary SQL drift/corruption handled; hostile forging/restoring tracking and source metadata together is outside the trust boundary"
+  ],
+  "logs": [
+    ".spur/tmp/bd-183xz-red.log",
+    ".spur/tmp/bd-183xz-red-final.log",
+    ".spur/tmp/bd-183xz-rowid-red.log",
+    ".spur/tmp/bd-183xz-green-1.log",
+    ".spur/tmp/bd-183xz-green-2.log",
+    ".spur/tmp/bd-183xz-green-3.log",
+    ".spur/tmp/bd-183xz-green-lib.log",
+    ".spur/tmp/bd-183xz-clippy.log"
+  ],
+  "implementation_commit": "009d9d44a"
+}

@@ -1,0 +1,128 @@
+{
+  "captured_utc": "2026-10-09T06:43:30.046054+00:00",
+  "source": "consistent in-memory SQLite backup opened from mode=ro source",
+  "python_sqlite_version": "3.53.1",
+  "graph_revision": 38,
+  "status_counts": {
+    "blocked": 2,
+    "closed": 1899,
+    "in_progress": 34,
+    "open": 396
+  },
+  "indexes": [
+    {
+      "name": "sqlite_autoindex_issues_1",
+      "sql": null
+    },
+    {
+      "name": "idx_issues_status",
+      "sql": "CREATE INDEX idx_issues_status ON issues(status)"
+    },
+    {
+      "name": "idx_issues_priority",
+      "sql": "CREATE INDEX idx_issues_priority ON issues(priority)"
+    },
+    {
+      "name": "idx_issues_issue_type",
+      "sql": "CREATE INDEX idx_issues_issue_type ON issues(issue_type)"
+    },
+    {
+      "name": "idx_issues_assignee",
+      "sql": "CREATE INDEX idx_issues_assignee ON issues(assignee) WHERE assignee IS NOT NULL"
+    },
+    {
+      "name": "idx_issues_created_at",
+      "sql": "CREATE INDEX idx_issues_created_at ON issues(created_at)"
+    },
+    {
+      "name": "idx_issues_updated_at",
+      "sql": "CREATE INDEX idx_issues_updated_at ON issues(updated_at)"
+    },
+    {
+      "name": "idx_issues_content_hash",
+      "sql": "CREATE INDEX idx_issues_content_hash ON issues(content_hash)"
+    },
+    {
+      "name": "idx_issues_external_ref",
+      "sql": "CREATE INDEX idx_issues_external_ref ON issues(external_ref) WHERE external_ref IS NOT NULL"
+    },
+    {
+      "name": "idx_issues_external_ref_unique",
+      "sql": "CREATE UNIQUE INDEX idx_issues_external_ref_unique ON issues(external_ref) WHERE external_ref IS NOT NULL"
+    },
+    {
+      "name": "idx_issues_ephemeral",
+      "sql": "CREATE INDEX idx_issues_ephemeral ON issues(ephemeral) WHERE ephemeral = 1"
+    },
+    {
+      "name": "idx_issues_pinned",
+      "sql": "CREATE INDEX idx_issues_pinned ON issues(pinned) WHERE pinned = 1"
+    },
+    {
+      "name": "idx_issues_tombstone",
+      "sql": "CREATE INDEX idx_issues_tombstone ON issues(status) WHERE status = 'tombstone'"
+    },
+    {
+      "name": "idx_issues_due_at",
+      "sql": "CREATE INDEX idx_issues_due_at ON issues(due_at) WHERE due_at IS NOT NULL"
+    },
+    {
+      "name": "idx_issues_defer_until",
+      "sql": "CREATE INDEX idx_issues_defer_until ON issues(defer_until) WHERE defer_until IS NOT NULL"
+    },
+    {
+      "name": "idx_issues_ready",
+      "sql": "CREATE INDEX idx_issues_ready\n        ON issues(status, priority, created_at)\n        WHERE status IN ('open', 'in_progress')\n        AND ephemeral = 0\n        AND pinned = 0\n        AND (is_template = 0 OR is_template IS NULL)"
+    },
+    {
+      "name": "sqlite_autoindex_labels_1",
+      "sql": null
+    },
+    {
+      "name": "idx_labels_label",
+      "sql": "CREATE INDEX idx_labels_label ON labels(label)"
+    },
+    {
+      "name": "idx_labels_issue",
+      "sql": "CREATE INDEX idx_labels_issue ON labels(issue_id)"
+    },
+    {
+      "name": "idx_issues_priority_created_at",
+      "sql": "CREATE INDEX idx_issues_priority_created_at ON issues(priority ASC, created_at DESC)"
+    }
+  ],
+  "queries": {
+    "open_all": {
+      "sql": "SELECT id, content_hash, title, description, design, acceptance_criteria, notes,\nstatus, priority, issue_type, assignee, owner, estimated_minutes,\ncreated_at, created_by, updated_at, closed_at, close_reason, closed_by_session,\ndue_at, defer_until, external_ref, source_system, source_repo,\ndeleted_at, deleted_by, delete_reason, original_type,\ncompaction_level, compacted_at, compacted_at_commit, original_size,\nsender, ephemeral, pinned, is_template FROM issues WHERE 1=1 AND status IN (?) AND (is_template = 0 OR is_template IS NULL) ORDER BY priority ASC,created_at DESC",
+      "params": [
+        "open"
+      ],
+      "plan": [
+        "SEARCH issues USING INDEX idx_issues_status (status=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "open_200": {
+      "sql": "SELECT id, content_hash, title, description, design, acceptance_criteria, notes,\nstatus, priority, issue_type, assignee, owner, estimated_minutes,\ncreated_at, created_by, updated_at, closed_at, close_reason, closed_by_session,\ndue_at, defer_until, external_ref, source_system, source_repo,\ndeleted_at, deleted_by, delete_reason, original_type,\ncompaction_level, compacted_at, compacted_at_commit, original_size,\nsender, ephemeral, pinned, is_template FROM issues WHERE 1=1 AND status IN (?) AND (is_template = 0 OR is_template IS NULL) ORDER BY priority ASC,created_at DESC LIMIT ?",
+      "params": [
+        "open",
+        200
+      ],
+      "plan": [
+        "SEARCH issues USING INDEX idx_issues_status (status=?)",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "plan_label": {
+      "sql": "SELECT id, content_hash, title, description, design, acceptance_criteria, notes,\nstatus, priority, issue_type, assignee, owner, estimated_minutes,\ncreated_at, created_by, updated_at, closed_at, close_reason, closed_by_session,\ndue_at, defer_until, external_ref, source_system, source_repo,\ndeleted_at, deleted_by, delete_reason, original_type,\ncompaction_level, compacted_at, compacted_at_commit, original_size,\nsender, ephemeral, pinned, is_template FROM issues WHERE 1=1 AND (is_template = 0 OR is_template IS NULL) AND EXISTS (SELECT 1 FROM labels WHERE labels.issue_id=issues.id AND labels.label=?) ORDER BY priority ASC,created_at DESC",
+      "params": [
+        "delegation_plan"
+      ],
+      "plan": [
+        "SCAN issues USING INDEX idx_issues_priority_created_at",
+        "SEARCH labels EXISTS USING COVERING INDEX sqlite_autoindex_labels_1 (issue_id=? AND label=?)"
+      ]
+    }
+  },
+  "limits": "Representative SQL shapes from pinned beads_rust source; this does not identify which filters the sampled process used."
+}

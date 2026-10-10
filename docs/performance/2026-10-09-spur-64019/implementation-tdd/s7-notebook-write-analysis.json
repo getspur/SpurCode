@@ -1,0 +1,91 @@
+{
+  "source": "s7-baseline-release.log",
+  "source_stage": "S7 baseline; write triggers unchanged by later read optimizations",
+  "batch_statistics": [
+    {
+      "kind": "insert",
+      "mode": 0,
+      "n": 9,
+      "median_ms": 1.215237,
+      "p95_ms": 1.2249128
+    },
+    {
+      "kind": "insert",
+      "mode": 1,
+      "n": 9,
+      "median_ms": 1.349126,
+      "p95_ms": 1.37215
+    },
+    {
+      "kind": "insert",
+      "mode": 2,
+      "n": 9,
+      "median_ms": 2.804764,
+      "p95_ms": 2.8247278
+    },
+    {
+      "kind": "write",
+      "mode": 0,
+      "n": 27,
+      "median_ms": 1.369759,
+      "p95_ms": 1.4273896
+    },
+    {
+      "kind": "write",
+      "mode": 1,
+      "n": 27,
+      "median_ms": 1.608808,
+      "p95_ms": 1.6514612
+    },
+    {
+      "kind": "write",
+      "mode": 2,
+      "n": 27,
+      "median_ms": 3.602378,
+      "p95_ms": 3.6631575
+    }
+  ],
+  "paired_round_ratios": [
+    {
+      "kind": "insert",
+      "median_round_feed_over_index": 2.0828974985
+    },
+    {
+      "kind": "write",
+      "median_round_feed_over_index": 2.2396374791
+    }
+  ],
+  "median_allocations": [
+    {
+      "mode": 0,
+      "db_bytes": 6832128.0,
+      "wal_bytes": 1796352.0,
+      "journal_rows": 0.0,
+      "journal_table_and_indices_bytes": 0.0,
+      "status_index_bytes": 0.0
+    },
+    {
+      "mode": 1,
+      "db_bytes": 6946816.0,
+      "wal_bytes": 2068272.0,
+      "journal_rows": 0.0,
+      "journal_table_and_indices_bytes": 0.0,
+      "status_index_bytes": 114688.0
+    },
+    {
+      "mode": 2,
+      "db_bytes": 7041024.0,
+      "wal_bytes": 2183632.0,
+      "journal_rows": 400.0,
+      "journal_table_and_indices_bytes": 36864.0,
+      "status_index_bytes": 114688.0
+    }
+  ],
+  "limits": [
+    "Synthetic 200-row transactions",
+    "Small unlabeled inserts",
+    "Nested update repetitions",
+    "WAL file allocation is not cumulative I/O",
+    "Journal footprint excludes clock/schema overhead"
+  ]
+}

@@ -1,0 +1,1718 @@
+{
+  "task": "bd-potu6",
+  "purpose": "Post-implementation replay of the declared bounded lifecycle; not a proof of the Rust implementation",
+  "assumptions": [
+    "enabled_transitions is a caller-declared relation over a six-step trace",
+    "Cold/read permits one initialization; FullScan means an ordinary subsequent read scanned the whole graph",
+    "Current/read must reuse storage; Dirty/read must apply only affected records",
+    "SQLite trigger completeness, query plans, scope isolation and concurrency are checked by code review and Rust tests, not this model",
+    "Schema/database replacement recovery is outside this ordinary-operation trace",
+    "Solver responses report cached=true because the exact declared facts match the earlier replay"
+  ],
+  "jev_request": {
+    "intent": "Verify every adjacent state-event-state transition in the supplied incremental graph lifecycle trace is allowed by its enabled transition relation. Initial read builds once; unrelated commits and rollback preserve the current graph; relevant committed changes mark it dirty; a subsequent read applies only the recorded deltas and becomes current without a full scan.",
+    "family_hint": "workflow",
+    "data": {
+      "subjects": [
+        "incremental_graph"
+      ],
+      "parameters": {},
+      "facts": {
+        "horizon": 6,
+        "state_domain": [
+          "Cold",
+          "Current",
+          "Dirty",
+          "FullScan",
+          "StaleRead"
+        ],
+        "event_domain": [
+          "read",
+          "relevant_commit",
+          "unrelated_commit",
+          "rollback"
+        ],
+        "initial_states": [
+          "Cold"
+        ],
+        "safe_states": [
+          "Cold",
+          "Current",
+          "Dirty"
+        ],
+        "target_states": [
+          "FullScan",
+          "StaleRead"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          }
+        ],
+        "traces": {
+          "incremental_graph": {
+            "states": [
+              "Cold",
+              "Current",
+              "Current",
+              "Dirty",
+              "Current",
+              "Current",
+              "Current"
+            ],
+            "events": [
+              "read",
+              "unrelated_commit",
+              "relevant_commit",
+              "read",
+              "rollback",
+              "read"
+            ]
+          }
+        }
+      },
+      "unknowns": []
+    }
+  },
+  "jev_result": {
+    "gate": "open",
+    "request": {
+      "family": "workflow",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "workflow.transition_allowed",
+          "subjects": [
+            "incremental_graph"
+          ],
+          "parameters": {}
+        }
+      ],
+      "facts": {
+        "horizon": 6,
+        "state_domain": [
+          "Cold",
+          "Current",
+          "Dirty",
+          "FullScan",
+          "StaleRead"
+        ],
+        "event_domain": [
+          "read",
+          "relevant_commit",
+          "unrelated_commit",
+          "rollback"
+        ],
+        "initial_states": [
+          "Cold"
+        ],
+        "safe_states": [
+          "Cold",
+          "Current",
+          "Dirty"
+        ],
+        "target_states": [
+          "FullScan",
+          "StaleRead"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 0,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 1,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 2,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 3,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 4,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Cold",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "unrelated_commit",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Current",
+            "event": "rollback",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "read",
+            "to": "Current"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "relevant_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "unrelated_commit",
+            "to": "Dirty"
+          },
+          {
+            "step": 5,
+            "from": "Dirty",
+            "event": "rollback",
+            "to": "Dirty"
+          }
+        ],
+        "traces": {
+          "incremental_graph": {
+            "states": [
+              "Cold",
+              "Current",
+              "Current",
+              "Dirty",
+              "Current",
+              "Current",
+              "Current"
+            ],
+            "events": [
+              "read",
+              "unrelated_commit",
+              "relevant_commit",
+              "read",
+              "rollback",
+              "read"
+            ]
+          }
+        }
+      },
+      "unknowns": []
+    },
+    "provenance": {
+      "served_model_version": "jev-1.13.0",
+      "answers": {
+        "data_complete": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "route_rule": {
+          "type": "choice",
+          "choice": "workflow.transition_allowed",
+          "probabilities": {
+            "workflow.bounded_reachability": 0,
+            "workflow.initial_state_allowed": 0,
+            "workflow.safety_invariant": 0,
+            "workflow.transition_allowed": 1
+          },
+          "confidence": 1
+        },
+        "solve_mode": {
+          "type": "choice",
+          "choice": "verify",
+          "probabilities": {
+            "synthesize": 0,
+            "verify": 1
+          },
+          "confidence": 1
+        }
+      },
+      "confidences": {
+        "data_complete": 0.91,
+        "route_rule": 1,
+        "solve_mode": 1
+      },
+      "weakest": 0.91,
+      "gate": {
+        "status": "open"
+      }
+    }
+  },
+  "valid_request": {
+    "family": "workflow",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "incremental_graph"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "incremental_graph"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "incremental_graph"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "horizon": 6,
+      "state_domain": [
+        "Cold",
+        "Current",
+        "Dirty",
+        "FullScan",
+        "StaleRead"
+      ],
+      "event_domain": [
+        "read",
+        "relevant_commit",
+        "unrelated_commit",
+        "rollback"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "Current",
+        "Dirty"
+      ],
+      "target_states": [
+        "FullScan",
+        "StaleRead"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        }
+      ],
+      "traces": {
+        "incremental_graph": {
+          "states": [
+            "Cold",
+            "Current",
+            "Current",
+            "Dirty",
+            "Current",
+            "Current",
+            "Current"
+          ],
+          "events": [
+            "read",
+            "unrelated_commit",
+            "relevant_commit",
+            "read",
+            "rollback",
+            "read"
+          ]
+        }
+      }
+    },
+    "unknowns": [],
+    "persist": true,
+    "timeout_ms": 10000
+  },
+  "valid_result": {
+    "family": "workflow",
+    "mode": "verify",
+    "outcome": "pass",
+    "rule_results": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "binding_index": 0,
+        "status": "sat",
+        "outcome": "pass"
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "binding_index": 1,
+        "status": "sat",
+        "outcome": "pass"
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "binding_index": 2,
+        "status": "sat",
+        "outcome": "pass"
+      }
+    ],
+    "evaluation_scope": {
+      "kind": "bounded_trace",
+      "horizon": 6,
+      "reachability": []
+    },
+    "total_duration_ms": 102,
+    "status": "sat",
+    "model": {},
+    "duration_ms": 0,
+    "solve_id": "sol_39e55e0ab1b84607",
+    "reason": null,
+    "cached": true,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  },
+  "invalid_request": {
+    "family": "workflow",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "incremental_graph"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "incremental_graph"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "incremental_graph"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "horizon": 6,
+      "state_domain": [
+        "Cold",
+        "Current",
+        "Dirty",
+        "FullScan",
+        "StaleRead"
+      ],
+      "event_domain": [
+        "read",
+        "relevant_commit",
+        "unrelated_commit",
+        "rollback"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "Current",
+        "Dirty"
+      ],
+      "target_states": [
+        "FullScan",
+        "StaleRead"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 0,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 1,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 2,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 3,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 4,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Cold",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "unrelated_commit",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Current",
+          "event": "rollback",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "read",
+          "to": "Current"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "relevant_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "unrelated_commit",
+          "to": "Dirty"
+        },
+        {
+          "step": 5,
+          "from": "Dirty",
+          "event": "rollback",
+          "to": "Dirty"
+        }
+      ],
+      "traces": {
+        "incremental_graph": {
+          "states": [
+            "Cold",
+            "Current",
+            "Current",
+            "Dirty",
+            "Current",
+            "Current",
+            "FullScan"
+          ],
+          "events": [
+            "read",
+            "unrelated_commit",
+            "relevant_commit",
+            "read",
+            "rollback",
+            "read"
+          ]
+        }
+      }
+    },
+    "unknowns": [],
+    "persist": true,
+    "timeout_ms": 10000
+  },
+  "invalid_result": {
+    "family": "workflow",
+    "mode": "verify",
+    "outcome": "fail",
+    "rule_results": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "binding_index": 0,
+        "status": "unsat",
+        "outcome": "fail",
+        "diagnostic": "workflow.transition_allowed.violation"
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "binding_index": 1,
+        "status": "sat",
+        "outcome": "pass"
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "binding_index": 2,
+        "status": "unsat",
+        "outcome": "fail",
+        "diagnostic": "workflow.safety_invariant.violation"
+      }
+    ],
+    "evaluation_scope": {
+      "kind": "bounded_trace",
+      "horizon": 6,
+      "reachability": []
+    },
+    "total_duration_ms": 38,
+    "status": "unsat",
+    "duration_ms": 0,
+    "solve_id": "sol_d7bb274166e844be",
+    "reason": null,
+    "unsat_core": [
+      "workflow_rule_0_workflow_transition_allowed"
+    ],
+    "cached": true,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  }
+}

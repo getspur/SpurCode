@@ -1,0 +1,50 @@
+{
+  "pid": 64019,
+  "mode": "controlled",
+  "started_utc": "2026-10-09T06:25:13.632694+00:00",
+  "process_identity": "64019  7898 Fri Oct  9 13:18:12 2026     spur",
+  "process_image_uuid": "4c4c4429-5555-3144-a1cb-88eb626eaaea",
+  "installed_binary_uuid": "UUID: 4C4C4429-5555-3144-A1CB-88EB626EAAEA (arm64) /Users/kevintruong/.cargo/bin/spur",
+  "installed_binary_sha256": "598c3a15d0bb8e9a1a19c1483f41edc292afb94247d80da6874775c3e7e41d4a",
+  "installed_binary_mtime_utc": "2026-10-09T06:16:58+00:00",
+  "version": "spur 1.24.0",
+  "workspace_head": "90ec0c4d41c566b650120d1ab0ea59499fc3263e",
+  "exact_running_git_commit": null,
+  "build_evidence": "Loaded UUID matches installed image. Binary strings include graph_engine/incremental.rs and indexed label-query SQL. Exact embedded git revision not exposed by --version.",
+  "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.1\nBuildVersion:\t\t25B78",
+  "logical_cpus": 8,
+  "physical_memory_bytes": 17179869184,
+  "method": "proc_pid_rusage RUSAGE_INFO_V2 once per second; CPU counters converted from Mach ticks; preflight conversion agrees with ps cumulative CPU time",
+  "timebase": {
+    "numer": 125,
+    "denom": 3
+  },
+  "scope": "One existing warm process; child CPU excluded; process and caches preserved",
+  "sampling_interval_ms_requested": 5,
+  "sample_duration_s_requested": 10,
+  "db_probe": "One persistent read-only SQLite connection: data_version, graph revision and schema_version; no issue/dependency scans",
+  "workload": "Explicit read-only graph requests recorded separately in requests.json; ambient work may continue",
+  "windows": [
+    {
+      "phase": "sample_1",
+      "command": [
+        "/usr/bin/sample",
+        "64019",
+        "10",
+        "5",
+        "-file",
+        "/Volumes/Projects/spur/docs/performance/2026-10-09-spur-64019/controlled/sample_1.txt"
+      ],
+      "command_start_s": 0.00045037499512545764,
+      "command_end_s": 11.041218957980163,
+      "returncode": 0,
+      "sampler_user_s": 0.262613,
+      "sampler_system_s": 0.159838
+    }
+  ],
+  "graph_tracking_present": true,
+  "ps_cpu_before": "0:25.90",
+  "elapsed_s": 14.043091749976156,
+  "ended_utc": "2026-10-09T06:25:27.897742+00:00",
+  "ps_cpu_after": "0:26.45"
+}

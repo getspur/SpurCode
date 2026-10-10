@@ -1,0 +1,1439 @@
+diff --git a/crates/spur-core/src/plan/reconciler/hygiene.rs b/crates/spur-core/src/plan/reconciler/hygiene.rs
+new file mode 100644
+index 000000000..8e4333be7
+--- /dev/null
++++ b/crates/spur-core/src/plan/reconciler/hygiene.rs
+@@ -0,0 +1,118 @@
++//! Serialize sweeps and acknowledge only their pre-work snapshot. State is
++//! staged locally: errors and dropped futures preserve the old cursor and all
++//! pending work. Repairs are idempotent, so partial batches can safely replay.
++use super::*;
++use spur_pm::advanced::HygieneCursor;
++use std::collections::BTreeMap;
++
++#[derive(Default)]
++pub(super) struct HygieneState {
++    cursor: Option<HygieneCursor>,
++    // Successfully checked empty audits, retained ONLY while dispatch-grace
++    // work is pending. Bound is the eligible open pending set; no TTL/cap.
++    pending: BTreeMap<String, spur_pm::IssueSummary>,
++}
++
++impl Reconciler {
++    pub(super) async fn run_index_hygiene_sweep(&self) -> anyhow::Result<bool> {
++        crate::server::require_feature(
++            spur_license::FeatureKey::PM_PRO_BEADS_ADVANCED,
++            self.feature_gate.as_ref(),
++        )
++        .map_err(|error| anyhow::anyhow!(crate::server::feature_error_message(error)))?;
++        let Some(adv) = self.pm.advanced() else {
++            return Ok(false);
++        };
++        let mut state = self.hygiene.lock().await;
++        let Some(batch) = adv.hygiene_changes(state.cursor.as_ref()).await? else {
++            let open = self
++                .pm
++                .list_issues(spur_pm::IssueFilter {
++                    status: Some("open".into()),
++                    ..Default::default()
++                })
++                .await?;
++            let mut did_work = false;
++            for issue in open {
++                let comments = adv.list_comments(&issue.id).await?;
++                let audits =
++                    crate::plan::projector::collect_sorted_audits_for_issue(&issue.id, comments)?;
++                did_work |= self.index_hygiene_sweep(adv, &issue, &audits, None).await?;
++            }
++            *state = HygieneState::default();
++            return Ok(did_work);
++        };
++        let mut pending = if batch.reseed {
++            BTreeMap::new()
++        } else {
++            state.pending.clone()
++        };
++        for id in &batch.affected_ids {
++            // Includes deletion/eligibility exit, plus issue, comment and parent
++            // changes that invalidate a previously checked empty-audit result.
++            pending.remove(id);
++        }
++        let mut did_work = false;
++        // Only unchanged pending candidates reuse the successful empty result.
++        // Process these before adding this batch's newly checked candidates.
++        for issue in pending.values().cloned().collect::<Vec<_>>() {
++            if self.reconcile_label_only_dispatch(&issue).await? {
++                did_work = true;
++                pending.remove(&issue.id);
++            }
++        }
++        for candidate in batch.candidates {
++            let issue = candidate.issue;
++            pending.remove(&issue.id);
++            let comments = adv.list_comments(&issue.id).await?;
++            let audits =
++                crate::plan::projector::collect_sorted_audits_for_issue(&issue.id, comments)?;
++            let repaired = self
++                .index_hygiene_sweep(adv, &issue, &audits, Some(&candidate.parent_ids))
++                .await?;
++            did_work |= repaired;
++            if audits.is_empty()
++                && !repaired
++                && issue.labels.iter().any(|label| {
++                    delegation_label_value(label).is_some()
++                        || crate::plan::labels::parse_lease_expires_at(label).is_some()
++                })
++            {
++                pending.insert(issue.id.clone(), issue);
++            }
++        }
++        // This EXACT cursor preceded comments and label writes. A newer cursor
++        // could swallow concurrent comments or repairs, even if summaries were
++        // already published elsewhere. Never fetch/ack a post-write cursor here.
++        *state = HygieneState {
++            cursor: Some(batch.cursor),
++            pending,
++        };
++        Ok(did_work)
++    }
++
++    pub(super) async fn expected_plan_id_from_parents(
++        &self,
++        adv: &dyn spur_pm::BeadsAdvanced,
++        issue: &spur_pm::IssueSummary,
++        parents: &[String],
++    ) -> anyhow::Result<Option<String>> {
++        let mut parents = parents.to_vec();
++        parents.sort();
++        parents.dedup();
++        if parents.len() > 1 {
++            anyhow::bail!(
++                "issue '{}' has multiple structural parents: {}",
++                issue.id,
++                parents.join(", ")
++            );
++        }
++        let Some(parent_id) = parents.first() else {
++            return Ok(None);
++        };
++
++        let comments = adv.list_comments(parent_id).await?;
++        let audits = crate::plan::projector::collect_sorted_audits_for_issue(parent_id, comments)?;
++        Ok(expected_plan_id_from_audits(&audits))
++    }
++}
+diff --git a/crates/spur-core/src/plan/reconciler/hygiene_tests.rs b/crates/spur-core/src/plan/reconciler/hygiene_tests.rs
+new file mode 100644
+index 000000000..583636664
+--- /dev/null
++++ b/crates/spur-core/src/plan/reconciler/hygiene_tests.rs
+@@ -0,0 +1,693 @@
++//! Behavioral tests exercise the real adapter and count comment reads at the boundary.
++use super::*;
++use std::sync::Mutex;
++
++struct CountingPm {
++    inner: Arc<spur_pm::PmService>,
++    reads: Mutex<Vec<String>>,
++    graph_reads: AtomicUsize,
++    fail: Mutex<Option<String>>,
++    comment_on_write: Mutex<Option<(String, String)>>,
++    unsupported: std::sync::atomic::AtomicBool,
++    reseed: std::sync::atomic::AtomicBool,
++    feed_error: std::sync::atomic::AtomicBool,
++    pause: Mutex<Option<(Arc<Notify>, Arc<Notify>)>>,
++}
++
++#[async_trait::async_trait]
++impl spur_pm::BeadsAdvanced for CountingPm {
++    async fn hygiene_changes(
++        &self,
++        since: Option<&spur_pm::advanced::HygieneCursor>,
++    ) -> anyhow::Result<Option<spur_pm::advanced::HygieneBatch>> {
++        anyhow::ensure!(
++            !self.feed_error.load(Ordering::SeqCst),
++            "injected feed error"
++        );
++        if self.unsupported.load(Ordering::SeqCst) {
++            return Ok(None);
++        }
++        self.inner
++            .advanced()
++            .unwrap()
++            .hygiene_changes(if self.reseed.swap(false, Ordering::SeqCst) {
++                None
++            } else {
++                since
++            })
++            .await
++    }
++
++    async fn list_ready(
++        &self,
++        f: spur_pm::ReadyFilter,
++    ) -> anyhow::Result<Vec<spur_pm::IssueSummary>> {
++        self.inner.advanced().unwrap().list_ready(f).await
++    }
++    async fn list_comments(&self, id: &str) -> anyhow::Result<Vec<spur_pm::Comment>> {
++        self.reads.lock().unwrap().push(id.into());
++        let pause = self.pause.lock().unwrap().take();
++        if let Some((entered, release)) = pause {
++            entered.notify_one();
++            release.notified().await;
++        }
++        anyhow::ensure!(
++            self.fail.lock().unwrap().as_deref() != Some(id),
++            "injected comment failure"
++        );
++        self.inner.advanced().unwrap().list_comments(id).await
++    }
++    async fn add_comment(&self, id: &str, body: &str) -> anyhow::Result<String> {
++        self.inner.advanced().unwrap().add_comment(id, body).await
++    }
++    async fn remove_dependency(&self, id: &str, parent: &str) -> anyhow::Result<()> {
++        self.inner
++            .advanced()
++            .unwrap()
++            .remove_dependency(id, parent)
++            .await
++    }
++    async fn dep_cycles(&self) -> anyhow::Result<Vec<spur_pm::DependencyCycle>> {
++        Ok(vec![])
++    }
++}
++
++#[async_trait::async_trait]
++impl PmLike for CountingPm {
++    async fn get_issue(&self, id: &str) -> anyhow::Result<spur_pm::Issue> {
++        self.inner.get_issue(id).await
++    }
++    async fn list_issues(
++        &self,
++        f: spur_pm::IssueFilter,
++    ) -> anyhow::Result<Vec<spur_pm::IssueSummary>> {
++        self.inner.list_issues(f).await
++    }
++    async fn update_issue(&self, id: &str, u: spur_pm::IssueUpdate) -> anyhow::Result<()> {
++        let raced = self.comment_on_write.lock().unwrap().take();
++        if let Some((id, body)) = raced {
++            self.inner
++                .advanced()
++                .unwrap()
++                .add_comment(&id, &body)
++                .await?;
++        }
++        self.inner.update_issue(id, u).await
++    }
++    async fn issue_subgraph_json(
++        &self,
++        id: &str,
++    ) -> anyhow::Result<spur_pm::graph::DependencyGraph> {
++        self.graph_reads.fetch_add(1, Ordering::SeqCst);
++        self.inner.issue_subgraph_json(id).await
++    }
++    fn advanced(&self) -> Option<&dyn spur_pm::BeadsAdvanced> {
++        Some(self)
++    }
++    fn closed_status(&self) -> &str {
++        "closed"
++    }
++}
++
++async fn fixture() -> (tempfile::TempDir, Arc<CountingPm>, Reconciler) {
++    let dir = tempfile::tempdir().unwrap();
++    std::fs::create_dir(dir.path().join(".beads")).unwrap();
++    let adapter = spur_pm::beads_crate::BeadsCrateAdapter::open(
++        &dir.path().join(".beads"),
++        Default::default(),
++    )
++    .await
++    .unwrap();
++    drop(adapter);
++    let pm = Arc::new(CountingPm {
++        inner: pm_for_beads_repo(dir.path()).await,
++        reads: Mutex::new(vec![]),
++        graph_reads: AtomicUsize::new(0),
++        fail: Mutex::new(None),
++        comment_on_write: Mutex::new(None),
++        unsupported: Default::default(),
++        reseed: Default::default(),
++        feed_error: Default::default(),
++        pause: Mutex::new(None),
++    });
++    let r = Reconciler::new_with_pm_like(
++        Default::default(),
++        pm.clone(),
++        Arc::new(Notify::new()),
++        None,
++        None,
++        pro_feature_gate(),
++    );
++    (dir, pm, r)
++}
++async fn issue(pm: &CountingPm, title: &str) -> String {
++    pm.inner
++        .create_issue(spur_pm::IssueCreate {
++            title: title.into(),
++            ..Default::default()
++        })
++        .await
++        .unwrap()
++}
++fn take_reads(pm: &CountingPm) -> Vec<String> {
++    std::mem::take(&mut *pm.reads.lock().unwrap())
++}
++
++#[tokio::test]
++async fn hygiene_unchanged_skips_comments_and_leaf_edit_stays_local() {
++    let (_dir, pm, r) = fixture().await;
++    let a = issue(&pm, "A").await;
++    let b = issue(&pm, "B").await;
++    assert!(!r.run_index_hygiene_sweep().await.unwrap());
++    assert_eq!(take_reads(&pm).len(), 2);
++    assert!(!r.run_index_hygiene_sweep().await.unwrap());
++    assert_eq!(
++        take_reads(&pm),
++        Vec::<String>::new(),
++        "unchanged hygiene must not reread comments"
++    );
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&a, "ordinary comment")
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert_eq!(take_reads(&pm), vec![a.clone()]);
++    pm.inner
++        .update_issue(
++            &b,
++            spur_pm::IssueUpdate {
++                priority: Some(1),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert_eq!(take_reads(&pm), vec![b]);
++}
++
++#[tokio::test]
++async fn hygiene_pending_grace_expires_without_db_change_or_comment_reread() {
++    let (_dir, pm, mut r) = fixture().await;
++    let a = issue(&pm, "pending dispatch").await;
++    pm.inner
++        .update_issue(
++            &a,
++            spur_pm::IssueUpdate {
++                add_labels: vec![crate::plan::labels::delegation_id("pending")],
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    let updated = pm.inner.get_issue(&a).await.unwrap().updated_at;
++    r.set_clock(Arc::new(FixedClock {
++        now: updated.into(),
++    }));
++    assert!(!r.run_index_hygiene_sweep().await.unwrap());
++    assert_eq!(take_reads(&pm), vec![a.clone()]);
++    r.set_clock(Arc::new(FixedClock {
++        now: SystemTime::from(updated) + r.config.label_only_dispatch_grace,
++    }));
++    assert!(r.run_index_hygiene_sweep().await.unwrap());
++    assert!(
++        take_reads(&pm).is_empty(),
++        "pending empty audits must survive unchanged timer passes"
++    );
++    assert!(!pm
++        .inner
++        .get_issue(&a)
++        .await
++        .unwrap()
++        .labels
++        .iter()
++        .any(|l| delegation_label_value(l).is_some()));
++}
++
++#[tokio::test]
++async fn hygiene_partial_failure_and_comment_during_label_write_are_retried() {
++    let (_dir, pm, r) = fixture().await;
++    let a = issue(&pm, "A").await;
++    let b = issue(&pm, "B").await;
++    pm.inner
++        .update_issue(
++            &b,
++            spur_pm::IssueUpdate {
++                priority: Some(4),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    // Priority gives the successful repair a deterministic position before failure.
++    pm.inner
++        .update_issue(
++            &a,
++            spur_pm::IssueUpdate {
++                priority: Some(0),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&a, &plan_submit_comment("P1", &a).body)
++        .await
++        .unwrap();
++    *pm.fail.lock().unwrap() = Some(b.clone());
++    *pm.comment_on_write.lock().unwrap() = Some((a.clone(), plan_submit_comment("P2", &a).body));
++    let error = r.run_index_hygiene_sweep().await.unwrap_err();
++    assert!(
++        error.to_string().contains("injected comment failure"),
++        "{error:#}"
++    );
++    assert!(pm
++        .inner
++        .get_issue(&a)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_id("P1")));
++    *pm.fail.lock().unwrap() = None;
++    take_reads(&pm);
++    assert!(r.run_index_hygiene_sweep().await.unwrap());
++    assert!(take_reads(&pm).contains(&b));
++    assert!(pm
++        .inner
++        .get_issue(&a)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_id("P2")));
++    // Drain self writes, then require an unchanged pass to be read-free.
++    r.run_index_hygiene_sweep().await.unwrap();
++    take_reads(&pm);
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert!(take_reads(&pm).is_empty());
++}
++
++#[tokio::test]
++async fn hygiene_membership_reseed_unsupported_and_feed_errors() {
++    let (_dir, pm, r) = fixture().await;
++    let a = issue(&pm, "A").await;
++    let b = issue(&pm, "B").await;
++    r.run_index_hygiene_sweep().await.unwrap();
++    take_reads(&pm);
++    pm.inner
++        .update_issue(
++            &a,
++            spur_pm::IssueUpdate {
++                status: Some("closed".into()),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert!(
++        take_reads(&pm).is_empty(),
++        "exit must evict without reading comments"
++    );
++    pm.inner
++        .update_issue(
++            &a,
++            spur_pm::IssueUpdate {
++                status: Some("open".into()),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    pm.feed_error.store(true, Ordering::SeqCst);
++    assert!(r
++        .run_index_hygiene_sweep()
++        .await
++        .unwrap_err()
++        .to_string()
++        .contains("injected feed error"));
++    pm.feed_error.store(false, Ordering::SeqCst);
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert_eq!(take_reads(&pm), vec![a.clone()]);
++    pm.reseed.store(true, Ordering::SeqCst);
++    r.run_index_hygiene_sweep().await.unwrap();
++    let reads = take_reads(&pm);
++    assert!(reads.contains(&a) && reads.contains(&b));
++    pm.unsupported.store(true, Ordering::SeqCst);
++    for _ in 0..2 {
++        r.run_index_hygiene_sweep().await.unwrap();
++        assert_eq!(
++            take_reads(&pm).len(),
++            2,
++            "unsupported always uses the full path"
++        );
++    }
++}
++
++#[tokio::test]
++async fn hygiene_successful_write_does_not_ack_a_concurrent_comment() {
++    let (_dir, pm, r) = fixture().await;
++    let a = issue(&pm, "A").await;
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&a, &plan_submit_comment("P1", &a).body)
++        .await
++        .unwrap();
++    *pm.comment_on_write.lock().unwrap() = Some((a.clone(), plan_submit_comment("P2", &a).body));
++    assert!(r.run_index_hygiene_sweep().await.unwrap());
++    assert!(pm
++        .inner
++        .get_issue(&a)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_id("P1")));
++    assert!(r.run_index_hygiene_sweep().await.unwrap());
++    assert!(pm
++        .inner
++        .get_issue(&a)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_id("P2")));
++}
++
++#[tokio::test]
++async fn hygiene_overlapping_sweeps_serialize_and_cancelled_sweeps_retry() {
++    for cancel in [false, true] {
++        let (_dir, pm, r) = fixture().await;
++        let a = issue(&pm, "A").await;
++        let r = Arc::new(r);
++        let entered = Arc::new(Notify::new());
++        let release = Arc::new(Notify::new());
++        *pm.pause.lock().unwrap() = Some((entered.clone(), release.clone()));
++        let first = tokio::spawn({
++            let r = r.clone();
++            async move { r.run_index_hygiene_sweep().await }
++        });
++        entered.notified().await;
++        let second = tokio::spawn({
++            let r = r.clone();
++            async move { r.run_index_hygiene_sweep().await }
++        });
++        if cancel {
++            first.abort();
++            assert!(first.await.unwrap_err().is_cancelled());
++        } else {
++            release.notify_one();
++            first.await.unwrap().unwrap();
++        }
++        second.await.unwrap().unwrap();
++        assert_eq!(take_reads(&pm), vec![a; if cancel { 2 } else { 1 }]);
++    }
++}
++
++#[tokio::test]
++async fn hygiene_closed_parent_changes_expand_to_child_and_direct_audit_wins() {
++    let (_dir, pm, r) = fixture().await;
++    let parent = issue(&pm, "parent").await;
++    let child = pm
++        .inner
++        .create_issue(spur_pm::IssueCreate {
++            title: "child".into(),
++            parent: Some(parent.clone()),
++            ..Default::default()
++        })
++        .await
++        .unwrap();
++    let leaf = issue(&pm, "unrelated").await;
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&parent, &plan_submit_comment("P1", &parent).body)
++        .await
++        .unwrap();
++    let dispatch = crate::plan::audit_sentinel::encode_comment(
++        &crate::plan::audit_sentinel::AuditSentinelKind::Dispatch {
++            delegation_id: "d1".into(),
++            worker: "codex".into(),
++            attempt: 1,
++        },
++    );
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&child, &dispatch)
++        .await
++        .unwrap();
++    pm.inner
++        .update_issue(
++            &parent,
++            spur_pm::IssueUpdate {
++                status: Some("closed".into()),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    take_reads(&pm);
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&parent, &plan_submit_comment("P2", &parent).body)
++        .await
++        .unwrap();
++    assert!(r.run_index_hygiene_sweep().await.unwrap());
++    let reads = take_reads(&pm);
++    assert!(reads.contains(&child) && reads.contains(&parent));
++    assert!(!reads.contains(&leaf));
++    assert!(pm
++        .inner
++        .get_issue(&child)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_id("P2")));
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&child, &plan_submit_comment("DIRECT", &child).body)
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    take_reads(&pm);
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&parent, &plan_submit_comment("P3", &parent).body)
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert_eq!(
++        take_reads(&pm),
++        vec![child.clone()],
++        "direct audit avoids parent comment reads"
++    );
++    assert_eq!(
++        pm.graph_reads.load(Ordering::SeqCst),
++        0,
++        "supported deltas use indexed parent IDs, not graph snapshots"
++    );
++    assert!(pm
++        .inner
++        .get_issue(&child)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_id("DIRECT")));
++}
++
++#[tokio::test]
++async fn hygiene_unchanged_database_still_runs_due_loop_on_tick() {
++    let (_dir, pm, mut r) = fixture().await;
++    let spec = crate::plan::loops::spec::LoopSpec {
++        loop_id: "timed".into(),
++        goal: "time driven".into(),
++        pattern: None,
++        cadence_secs: 60,
++        autonomy: crate::plan::loops::spec::AutonomyLevel::L1,
++        template: serde_json::json!({"tasks": []}),
++        governors: Default::default(),
++        escalation: None,
++    };
++    pm.inner
++        .create_issue(spur_pm::IssueCreate {
++            title: "Timed loop".into(),
++            description: Some(spec.to_sentinel_body()),
++            issue_type: Some(crate::plan::loops::LOOP_ISSUE_TYPE.into()),
++            labels: vec![
++                crate::plan::labels::loop_id_label("timed"),
++                crate::plan::labels::loop_next_run_label(200),
++            ],
++            ..Default::default()
++        })
++        .await
++        .unwrap();
++    let (tx, _rx) = tokio::sync::mpsc::channel(1);
++    let brain = spur_acp::BrainSessionId::new(spur_acp::SessionId("timer-brain".into()));
++    let (dispatch, continuations) = test_dispatch_ctx_with_recording(tx, brain, None);
++    r.dispatch = Some(dispatch.into_dispatch());
++    r.set_clock(Arc::new(FixedClock {
++        now: SystemTime::UNIX_EPOCH + Duration::from_secs(100),
++    }));
++    r.tick_once().await.unwrap();
++    assert!(continuations.lock().unwrap().is_empty());
++    let cursor = pm
++        .inner
++        .advanced()
++        .unwrap()
++        .hygiene_changes(None)
++        .await
++        .unwrap()
++        .unwrap()
++        .cursor;
++    r.tick_once().await.unwrap();
++    let unchanged = pm
++        .inner
++        .advanced()
++        .unwrap()
++        .hygiene_changes(Some(&cursor))
++        .await
++        .unwrap()
++        .unwrap();
++    assert_eq!(
++        unchanged.cursor, cursor,
++        "pre-due tick leaves database unchanged"
++    );
++    r.set_clock(Arc::new(FixedClock {
++        now: SystemTime::UNIX_EPOCH + Duration::from_secs(200),
++    }));
++    r.tick_once().await.unwrap();
++    assert_eq!(
++        continuations.lock().unwrap().len(),
++        1,
++        "due loop must run despite unchanged hygiene revision"
++    );
++}
++
++#[tokio::test]
++async fn hygiene_unchanged_database_still_renews_expired_owner_lease() {
++    let (_dir, pm, mut r) = fixture().await;
++    let owner = crate::plan::loops::LOOP_RUNTIME_OWNER_ID;
++    let epic = pm
++        .inner
++        .create_issue(spur_pm::IssueCreate {
++            title: "owned epic".into(),
++            issue_type: Some("epic".into()),
++            labels: vec![
++                crate::plan::labels::PLAN_COMPLETE.into(),
++                crate::plan::labels::plan_owner(owner),
++                format!("{}l3", crate::plan::labels::AUTONOMY_PREFIX),
++                crate::plan::labels::plan_owner_lease_expires_at(200),
++            ],
++            ..Default::default()
++        })
++        .await
++        .unwrap();
++    r.config.plan_scope = PlanScope::SystemL3Only;
++    r.config.dispatch_lease_duration = Duration::from_secs(60);
++    r.set_clock(Arc::new(FixedClock {
++        now: SystemTime::UNIX_EPOCH + Duration::from_secs(100),
++    }));
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert!(!r.reconcile_plan_owner_leases().await.unwrap());
++    let cursor = pm
++        .inner
++        .advanced()
++        .unwrap()
++        .hygiene_changes(None)
++        .await
++        .unwrap()
++        .unwrap()
++        .cursor;
++    r.run_index_hygiene_sweep().await.unwrap();
++    let unchanged = pm
++        .inner
++        .advanced()
++        .unwrap()
++        .hygiene_changes(Some(&cursor))
++        .await
++        .unwrap()
++        .unwrap();
++    assert_eq!(unchanged.cursor, cursor);
++    r.set_clock(Arc::new(FixedClock {
++        now: SystemTime::UNIX_EPOCH + Duration::from_secs(201),
++    }));
++    assert!(r.reconcile_plan_owner_leases().await.unwrap());
++    assert!(pm
++        .inner
++        .get_issue(&epic)
++        .await
++        .unwrap()
++        .labels
++        .contains(&crate::plan::labels::plan_owner_lease_expires_at(261)));
++}
++
++#[tokio::test]
++async fn hygiene_pending_empty_audits_invalidate_on_comments_and_eligibility_exit() {
++    let (_dir, pm, mut r) = fixture().await;
++    let a = issue(&pm, "audit arrives during grace").await;
++    let b = issue(&pm, "closes during grace").await;
++    for id in [&a, &b] {
++        pm.inner
++            .update_issue(
++                id,
++                spur_pm::IssueUpdate {
++                    add_labels: vec![crate::plan::labels::delegation_id("d1")],
++                    ..Default::default()
++                },
++            )
++            .await
++            .unwrap();
++    }
++    let now = SystemTime::now();
++    r.set_clock(Arc::new(FixedClock { now }));
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert_eq!(take_reads(&pm).len(), 2);
++    let dispatch = crate::plan::audit_sentinel::encode_comment(
++        &crate::plan::audit_sentinel::AuditSentinelKind::Dispatch {
++            delegation_id: "d1".into(),
++            worker: "codex".into(),
++            attempt: 1,
++        },
++    );
++    pm.inner
++        .advanced()
++        .unwrap()
++        .add_comment(&a, &dispatch)
++        .await
++        .unwrap();
++    pm.inner
++        .update_issue(
++            &b,
++            spur_pm::IssueUpdate {
++                status: Some("closed".into()),
++                ..Default::default()
++            },
++        )
++        .await
++        .unwrap();
++    r.run_index_hygiene_sweep().await.unwrap();
++    assert_eq!(take_reads(&pm), vec![a.clone()]);
++    r.set_clock(Arc::new(FixedClock {
++        now: now + r.config.label_only_dispatch_grace + Duration::from_secs(1),
++    }));
++    assert!(!r.run_index_hygiene_sweep().await.unwrap());
++    assert!(take_reads(&pm).is_empty());
++    for id in [&a, &b] {
++        assert!(pm
++            .inner
++            .get_issue(id)
++            .await
++            .unwrap()
++            .labels
++            .contains(&crate::plan::labels::delegation_id("d1")));
++    }
++}
+diff --git a/crates/spur-core/src/plan/reconciler/mod.rs b/crates/spur-core/src/plan/reconciler/mod.rs
+index a66de3f2f..69c652c7b 100644
+--- a/crates/spur-core/src/plan/reconciler/mod.rs
++++ b/crates/spur-core/src/plan/reconciler/mod.rs
+@@ -30,6 +30,7 @@
+ //! | `terminal` | Reconcile terminal epics: completion audits, auto-merge, auto-PR. |
+ //! | `tests` | Unit tests, mocks, and shared fixtures for the reconciler. |
+ 
++mod hygiene;
+ mod leases;
+ 
+ mod ownership;
+@@ -906,6 +907,7 @@ pub struct Reconciler {
+     pub(super) feature_gate: Arc<spur_license::FeatureGate>,
+     pub(super) outcomes: Arc<tokio::sync::Mutex<OutcomeStore>>,
+     pub(super) clock: Arc<dyn Clock>,
++    hygiene: tokio::sync::Mutex<hygiene::HygieneState>,
+ }
+ 
+ impl Reconciler {
+@@ -991,6 +993,7 @@ impl Reconciler {
+             feature_gate,
+             outcomes: Arc::new(tokio::sync::Mutex::new(OutcomeStore::default())),
+             clock: Arc::new(SystemClock),
++            hygiene: tokio::sync::Mutex::new(hygiene::HygieneState::default()),
+         }
+     }
+ 
+@@ -1835,37 +1838,12 @@ impl Reconciler {
+         Ok(did_work)
+     }
+ 
+-    async fn run_index_hygiene_sweep(&self) -> anyhow::Result<bool> {
+-        crate::server::require_feature(
+-            spur_license::FeatureKey::PM_PRO_BEADS_ADVANCED,
+-            self.feature_gate.as_ref(),
+-        )
+-        .map_err(|error| anyhow::anyhow!(crate::server::feature_error_message(error)))?;
+-        let Some(adv) = self.pm.advanced() else {
+-            return Ok(false);
+-        };
+-        let open_issues = self
+-            .pm
+-            .list_issues(spur_pm::IssueFilter {
+-                status: Some("open".to_string()),
+-                ..Default::default()
+-            })
+-            .await?;
+-        let mut did_work = false;
+-        for issue in open_issues {
+-            let comments = adv.list_comments(&issue.id).await?;
+-            let audits =
+-                crate::plan::projector::collect_sorted_audits_for_issue(&issue.id, comments)?;
+-            did_work |= self.index_hygiene_sweep(adv, &issue, &audits).await?;
+-        }
+-        Ok(did_work)
+-    }
+-
+     async fn index_hygiene_sweep(
+         &self,
+         adv: &dyn spur_pm::BeadsAdvanced,
+         issue: &spur_pm::IssueSummary,
+         audits: &[crate::plan::audit_sentinel::AuditSentinelKind],
++        parent_ids: Option<&[String]>,
+     ) -> anyhow::Result<bool> {
+         if audits.is_empty() {
+             return self.reconcile_label_only_dispatch(issue).await;
+@@ -1884,7 +1862,13 @@ impl Reconciler {
+         );
+         let expected_plan_id_value = match expected_plan_id_from_audits(audits) {
+             Some(plan_id) => Some(plan_id),
+-            None => self.expected_plan_id_from_parent_epic(adv, issue).await?,
++            None => match parent_ids {
++                Some(parents) => {
++                    self.expected_plan_id_from_parents(adv, issue, parents)
++                        .await?
++                }
++                None => self.expected_plan_id_from_parent_epic(adv, issue).await?,
++            },
+         };
+         let expected_plan_id =
+             expected_plan_id_value.map(|plan_id| crate::plan::labels::plan_id(&plan_id));
+@@ -2107,29 +2091,15 @@ impl Reconciler {
+                 issue.id
+             )
+         })?;
+-        let mut parents = adjacency
++        let parents = adjacency
+             .edges
+             .unwrap_or_default()
+             .into_iter()
+             .filter(|edge| edge.to == issue.id && edge.edge_type.as_deref() == Some("parent-child"))
+             .map(|edge| edge.from)
+             .collect::<Vec<_>>();
+-        parents.sort();
+-        parents.dedup();
+-        if parents.len() > 1 {
+-            anyhow::bail!(
+-                "issue '{}' has multiple structural parents: {}",
+-                issue.id,
+-                parents.join(", ")
+-            );
+-        }
+-        let Some(parent_id) = parents.first() else {
+-            return Ok(None);
+-        };
+-
+-        let comments = adv.list_comments(parent_id).await?;
+-        let audits = crate::plan::projector::collect_sorted_audits_for_issue(parent_id, comments)?;
+-        Ok(expected_plan_id_from_audits(&audits))
++        self.expected_plan_id_from_parents(adv, issue, &parents)
++            .await
+     }
+ }
+ 
+diff --git a/crates/spur-core/src/plan/reconciler/tests.rs b/crates/spur-core/src/plan/reconciler/tests.rs
+index 80824150a..5778a051e 100644
+--- a/crates/spur-core/src/plan/reconciler/tests.rs
++++ b/crates/spur-core/src/plan/reconciler/tests.rs
+@@ -4690,3 +4690,6 @@ async fn tick_once_strips_plan_complete_when_plan_submit_audit_is_absent() {
+         "spur:plan-complete must be stripped without a PlanSubmit audit"
+     );
+ }
++
++#[path = "hygiene_tests.rs"]
++mod hygiene_tests;
+diff --git a/crates/spur-pm/src/advanced.rs b/crates/spur-pm/src/advanced.rs
+index 2ca457c66..1d86065fe 100644
+--- a/crates/spur-pm/src/advanced.rs
++++ b/crates/spur-pm/src/advanced.rs
+@@ -62,10 +62,48 @@ pub struct ResolvedDepHint {
+     pub resolved_beads_id: Option<String>,
+ }
+ 
++/// Backend-owned change token. Consumers must only clone and return it to the
++/// same backend; its encoding is not a public revision or summary-cache key.
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct HygieneCursor(pub String);
++
++/// An eligible open issue and its structural parents from the feed snapshot.
++/// Parent IDs include closed parents and exclude ordinary blocking edges.
++#[derive(Debug, Clone)]
++pub struct HygieneCandidate {
++    pub issue: IssueSummary,
++    pub parent_ids: Vec<String>,
++}
++
++/// One coherent hygiene snapshot. A reseed supplies every eligible open issue;
++/// otherwise candidates contain only affected eligible issues. `affected_ids`
++/// also contains removed/ineligible IDs so consumers can evict pending timers.
++/// Parent changes expand to children before eligibility filtering. Empty delta
++/// candidates are distinct from unsupported tracking and from read errors.
++#[derive(Debug, Clone)]
++pub struct HygieneBatch {
++    pub cursor: HygieneCursor,
++    pub reseed: bool,
++    pub affected_ids: Vec<String>,
++    pub candidates: Vec<HygieneCandidate>,
++}
++
+ // ─── Trait ────────────────────────────────────────────────────────────
+ 
+ #[async_trait]
+ pub trait BeadsAdvanced: Send + Sync {
++    /// Optional complete issue/comment/structural change feed for index hygiene.
++    /// None means unsupported: perform the full sweep. Errors must be retried.
++    /// Publish the returned cursor only after ALL work succeeds; never replace
++    /// it with a newer cursor obtained after hygiene's own writes. Cancellation
++    /// or partial failure must retain the prior cursor. Timers remain independent.
++    async fn hygiene_changes(
++        &self,
++        _since: Option<&HygieneCursor>,
++    ) -> anyhow::Result<Option<HygieneBatch>> {
++        Ok(None)
++    }
++
+     async fn list_ready(&self, filter: ReadyFilter) -> anyhow::Result<Vec<IssueSummary>>;
+ 
+     async fn list_comments(&self, issue_id: &str) -> anyhow::Result<Vec<Comment>>;
+diff --git a/crates/spur-pm/src/beads_crate/adapter.rs b/crates/spur-pm/src/beads_crate/adapter.rs
+index efd209879..79f122786 100644
+--- a/crates/spur-pm/src/beads_crate/adapter.rs
++++ b/crates/spur-pm/src/beads_crate/adapter.rs
+@@ -179,7 +179,7 @@ pub struct BeadsCrateAdapter {
+     pub(crate) config: AdapterConfig,
+     pub(crate) metrics: Arc<ContentionMetrics>,
+     pub(crate) db: BeadsDb,
+-    issue_reads: Arc<std::sync::Mutex<super::issue_reads::IssueReads>>,
++    pub(crate) issue_reads: Arc<std::sync::Mutex<super::issue_reads::IssueReads>>,
+     /// Boundary-safe poll cursor; `None` until the first `poll()` call so a
+     /// fresh adapter emits all open issues as `IssueCreated` on first poll
+     /// (matching `BeadsAdapter` semantics in `beads.rs`).
+diff --git a/crates/spur-pm/src/beads_crate/beads_advanced.rs b/crates/spur-pm/src/beads_crate/beads_advanced.rs
+index 2c0520895..e19767e13 100644
+--- a/crates/spur-pm/src/beads_crate/beads_advanced.rs
++++ b/crates/spur-pm/src/beads_crate/beads_advanced.rs
+@@ -40,6 +40,33 @@ impl BeadsCrateAdapter {
+ 
+ #[async_trait]
+ impl BeadsAdvanced for BeadsCrateAdapter {
++    async fn hygiene_changes(
++        &self,
++        since: Option<&crate::advanced::HygieneCursor>,
++    ) -> anyhow::Result<Option<crate::advanced::HygieneBatch>> {
++        if !cfg!(unix) {
++            return Ok(None);
++        }
++        let since = since.cloned();
++        let reads = std::sync::Arc::clone(&self.issue_reads);
++        let metrics = std::sync::Arc::clone(&self.metrics);
++        self.db
++            .submit_summary_read(move |_| {
++                let mut reads = reads
++                    .lock()
++                    .map_err(|_| anyhow::anyhow!("issue read state poisoned"))?;
++                metrics.incr_read();
++                let opens = reads.work.connection_opens;
++                let result = reads.hygiene(since.as_ref());
++                metrics.sqlite_open_total.fetch_add(
++                    reads.work.connection_opens - opens,
++                    std::sync::atomic::Ordering::Relaxed,
++                );
++                result.map(Some)
++            })
++            .await
++    }
++
+     async fn list_ready(&self, filter: ReadyFilter) -> anyhow::Result<Vec<IssueSummary>> {
+         self.read(move |s| {
+             let issue_types = filter
+diff --git a/crates/spur-pm/src/beads_crate/hygiene.rs b/crates/spur-pm/src/beads_crate/hygiene.rs
+new file mode 100644
+index 000000000..4e0a7c785
+--- /dev/null
++++ b/crates/spur-pm/src/beads_crate/hygiene.rs
+@@ -0,0 +1,59 @@
++//! Hygiene cursors are independent of summary subscriptions. All candidate and
++//! parent expansion SQL belongs to the feed transaction, before any repairs.
++use std::collections::BTreeSet;
++
++use super::issue_changes::{IssueChangeFeed, IssueCursor};
++use super::summary_query::{query_summaries, QueryWork};
++use crate::advanced::{HygieneBatch, HygieneCandidate, HygieneCursor};
++use crate::IssueFilter;
++
++const CHILDREN: &str =
++    "SELECT issue_id FROM dependencies WHERE depends_on_id=?1 AND type='parent-child'";
++
++pub(super) fn read(
++    feed: &mut IssueChangeFeed,
++    since: Option<&HygieneCursor>,
++) -> anyhow::Result<HygieneBatch> {
++    // A token from an incompatible backend/version safely starts a new seed.
++    let since = since.and_then(|c| serde_json::from_str::<IssueCursor>(&c.0).ok());
++    feed.read(since.as_ref(), |tx, batch| {
++        let mut affected = BTreeSet::new();
++        let mut children = tx.prepare(CHILDREN)?;
++        for change in batch.changes.iter().filter(|c| c.issue || c.comments) {
++            affected.insert(change.issue_id.clone());
++            // Indexed by idx_dependencies_depends_on_type, including closed
++            // parents. Expand once (no recursive ownership or broad graph scan).
++            for child in children.query_map([&change.issue_id], |r| r.get::<_, String>(0))? {
++                affected.insert(child?);
++            }
++        }
++        let filter = IssueFilter { status: Some("open".into()), ..Default::default() };
++        let mut work = QueryWork::default();
++        let rows = if batch.reseed {
++            query_summaries(tx, &filter, None, false, &mut work)?
++        } else {
++            let mut rows = Vec::new();
++            for id in &affected {
++                rows.extend(query_summaries(tx, &filter, Some(id), false, &mut work)?);
++            }
++            rows
++        };
++        let mut parents = tx.prepare("SELECT depends_on_id FROM dependencies WHERE issue_id=?1 AND type='parent-child' ORDER BY depends_on_id")?;
++        let mut candidates = Vec::with_capacity(rows.len());
++        for row in rows {
++            let parent_ids = parents.query_map([&row.summary.id], |r| r.get::<_, String>(0))?
++                .collect::<Result<Vec<_>, _>>()?;
++            candidates.push(HygieneCandidate { issue: row.summary, parent_ids });
++        }
++        Ok(HygieneBatch {
++            cursor: HygieneCursor(serde_json::to_string(&batch.cursor)?),
++            reseed: batch.reseed,
++            affected_ids: affected.into_iter().collect(),
++            candidates,
++        })
++    })
++}
++
++#[cfg(test)]
++#[path = "hygiene_tests.rs"]
++mod tests;
+diff --git a/crates/spur-pm/src/beads_crate/hygiene_tests.rs b/crates/spur-pm/src/beads_crate/hygiene_tests.rs
+new file mode 100644
+index 000000000..8bf562904
+--- /dev/null
++++ b/crates/spur-pm/src/beads_crate/hygiene_tests.rs
+@@ -0,0 +1,104 @@
++use super::*;
++use rusqlite::Connection;
++
++fn fixture() -> (tempfile::TempDir, Connection, IssueChangeFeed) {
++    let dir = tempfile::tempdir().unwrap();
++    let path = dir.path().join("beads.db");
++    drop(beads_rust::storage::sqlite::SqliteStorage::open(&path).unwrap());
++    let mut db = Connection::open(&path).unwrap();
++    db.execute_batch("INSERT INTO issues(id,title,status,closed_at) VALUES('a','A','open',NULL),('b','B','open',NULL),('parent','Parent','closed','2000-01-01T00:00:00Z'); INSERT INTO dependencies(issue_id,depends_on_id,type) VALUES('a','parent','parent-child'),('b','parent','blocks')").unwrap();
++    super::super::issue_changes::install(&mut db).unwrap();
++    (dir, db, IssueChangeFeed::new(&path, 5000))
++}
++fn candidates(batch: &HygieneBatch) -> BTreeSet<&str> {
++    batch
++        .candidates
++        .iter()
++        .map(|c| c.issue.id.as_str())
++        .collect()
++}
++
++#[test]
++fn hygiene_snapshot_expands_closed_parent_and_filters_deleted_or_ineligible_children() {
++    let (_dir, db, mut feed) = fixture();
++    let seed = read(&mut feed, None).unwrap();
++    assert!(seed.reseed);
++    assert_eq!(candidates(&seed), BTreeSet::from(["a", "b"]));
++    let unchanged = read(&mut feed, Some(&seed.cursor)).unwrap();
++    assert!(!unchanged.reseed);
++    assert!(unchanged.candidates.is_empty());
++    db.execute_batch("INSERT INTO comments(issue_id,author,text) VALUES('parent','t','new audit')")
++        .unwrap();
++    let delta = read(&mut feed, Some(&seed.cursor)).unwrap();
++    assert_eq!(candidates(&delta), BTreeSet::from(["a"]));
++    assert_eq!(delta.candidates[0].parent_ids, vec!["parent"]);
++    assert_eq!(delta.affected_ids, vec!["a", "parent"]);
++    db.execute_batch(
++        "UPDATE issues SET status='closed',closed_at='2000-01-01T00:00:00Z' WHERE id='a'; DELETE FROM issues WHERE id='b'",
++    )
++    .unwrap();
++    let exit = read(&mut feed, Some(&delta.cursor)).unwrap();
++    assert!(exit.candidates.is_empty());
++    assert_eq!(exit.affected_ids, vec!["a", "b"]);
++    db.execute_batch("UPDATE issues SET status='open',closed_at=NULL WHERE id='a'")
++        .unwrap();
++    let entry = read(&mut feed, Some(&exit.cursor)).unwrap();
++    assert_eq!(candidates(&entry), BTreeSet::from(["a"]));
++    db.execute_batch("UPDATE dependencies SET type='blocks' WHERE issue_id='a'")
++        .unwrap();
++    let structural = read(&mut feed, Some(&entry.cursor)).unwrap();
++    assert_eq!(candidates(&structural), BTreeSet::from(["a"]));
++    assert!(structural.candidates[0].parent_ids.is_empty());
++}
++
++#[test]
++fn hygiene_history_gap_reseeds_and_parent_lookup_is_indexed() {
++    let (_dir, db, mut feed) = fixture();
++    let old = read(&mut feed, None).unwrap();
++    db.execute_batch("DROP TABLE spur_issue_changes").unwrap();
++    let repaired = read(&mut feed, Some(&old.cursor)).unwrap();
++    assert!(repaired.reseed);
++    assert_ne!(repaired.cursor, old.cursor);
++    assert_eq!(candidates(&repaired), BTreeSet::from(["a", "b"]));
++    let mut stmt = db
++        .prepare(&format!("EXPLAIN QUERY PLAN {CHILDREN}"))
++        .unwrap();
++    let plan = stmt
++        .query_map(["parent"], |r| r.get::<_, String>(3))
++        .unwrap()
++        .collect::<Result<Vec<_>, _>>()
++        .unwrap();
++    assert!(
++        plan.iter()
++            .any(|p| p.contains("idx_dependencies_depends_on_type")),
++        "{plan:?}"
++    );
++    assert!(
++        !plan.iter().any(|p| p.contains("SCAN dependencies")),
++        "{plan:?}"
++    );
++}
++
++#[test]
++fn hygiene_structural_conflicts_rollback_or_conservatively_invalidate() {
++    for conflict in ["IGNORE", "FAIL", "ABORT", "ROLLBACK", "REPLACE"] {
++        for insert in [false, true] {
++            let (_dir, db, mut feed) = fixture();
++            let before = read(&mut feed, None).unwrap();
++            let sql = if insert {
++                format!("INSERT OR {conflict} INTO dependencies(issue_id,depends_on_id,type) VALUES('a','parent','blocks')")
++            } else {
++                format!("UPDATE OR {conflict} dependencies SET issue_id='a' WHERE issue_id='b'")
++            };
++            let result = db.execute(&sql, []);
++            assert_eq!(result.is_ok(), matches!(conflict, "IGNORE" | "REPLACE"));
++            let after = read(&mut feed, Some(&before.cursor)).unwrap();
++            assert!(!after.reseed);
++            if matches!(conflict, "ABORT" | "ROLLBACK") {
++                assert_eq!(after.cursor, before.cursor);
++            } else {
++                assert_eq!(candidates(&after), BTreeSet::from(["a"]));
++            }
++        }
++    }
++}
+diff --git a/crates/spur-pm/src/beads_crate/issue_changes.rs b/crates/spur-pm/src/beads_crate/issue_changes.rs
+index 9fb0738e9..74507b295 100644
+--- a/crates/spur-pm/src/beads_crate/issue_changes.rs
++++ b/crates/spur-pm/src/beads_crate/issue_changes.rs
+@@ -16,6 +16,8 @@
+ //! `summary || timestamp` as candidates (or use direct SQL). Without `since`, an
+ //! ordinary adapter comment is unrelated to summaries, even though upstream also
+ //! updates `updated_at`. Hygiene still observes `issue` and `comments`.
++//! Structural parent-child edges mark OLD/NEW child IDs as hygiene-only issue
++//! changes; pure edge edits never change summary or timestamp revisions.
+ //!
+ //! Recovery: validate schema cookies, exact owned DDL, clock integrity and journal
+ //! head before reuse. Direct journal edits set `dirty` via protection triggers.
+@@ -54,7 +56,7 @@ use anyhow::{ensure, Context};
+ use rusqlite::{Connection, OpenFlags, OptionalExtension, Transaction, TransactionBehavior};
+ use serde::{Deserialize, Serialize};
+ 
+-const VERSION: u32 = 2;
++const VERSION: u32 = 3;
+ const CLOCK: &str = "spur_issue_clock";
+ const JOURNAL: &str = "spur_issue_changes";
+ const SUMMARY_FIELDS: &[&str] = &[
+@@ -93,7 +95,7 @@ pub(crate) struct IssueCursor {
+ #[derive(Debug, Clone, PartialEq, Eq)]
+ pub(crate) struct IssueChange {
+     pub(crate) issue_id: String,
+-    /// Any issue-column or label mutation, including non-summary hygiene data.
++    /// Any issue-column, label or structural-parent mutation, including hygiene data.
+     pub(crate) issue: bool,
+     /// Summary payload/order/membership, excluding the `since` timestamp filter.
+     pub(crate) summary: bool,
+@@ -449,6 +451,7 @@ fn supported_uniqueness(conn: &Connection, table: &str) -> anyhow::Result<bool>
+         let supported = match table {
+             "issues" => names == ["id"] || names == ["external_ref"],
+             "labels" => names == ["issue_id", "label"],
++            "dependencies" => names == ["issue_id", "depends_on_id"],
+             _ => names == ["id"],
+         };
+         if !supported {
+@@ -584,9 +587,54 @@ fn objects(conn: &Connection) -> anyhow::Result<BTreeMap<String, String>> {
+             );
+         }
+     }
++    dependency_triggers(conn, &mut out)?;
+     Ok(out)
+ }
+ 
++/// Only structural ownership affects plan donation. Capture BOTH children on
++/// retarget/type transitions, including REPLACE victims when recursive triggers
++/// are disabled. Pure edges never invalidate plain summaries or timestamps.
++fn dependency_triggers(
++    conn: &Connection,
++    out: &mut BTreeMap<String, String>,
++) -> anyhow::Result<()> {
++    columns(conn, "dependencies")?;
++    let known_unique = supported_uniqueness(conn, "dependencies")?;
++    for operation in ["insert", "update", "delete"] {
++        let ids = match operation {
++            "insert" => "SELECT NEW.issue_id AS changed_id WHERE NEW.type='parent-child'",
++            "delete" => "SELECT OLD.issue_id AS changed_id WHERE OLD.type='parent-child'",
++            _ => "SELECT OLD.issue_id AS changed_id WHERE OLD.type='parent-child' OR NEW.type='parent-child' UNION SELECT NEW.issue_id WHERE OLD.type='parent-child' OR NEW.type='parent-child'",
++        };
++        let changed = if operation == "update" {
++            " AND (OLD.issue_id IS NOT NEW.issue_id OR OLD.depends_on_id IS NOT NEW.depends_on_id OR OLD.type IS NOT NEW.type)"
++        } else {
++            ""
++        };
++        let body = mark(ids, "1", "0", "0", "0");
++        let name = format!("spur_issue_dependencies_{operation}");
++        out.insert(name.clone(), format!("CREATE TRIGGER {name} AFTER {operation} ON dependencies WHEN EXISTS({ids}){changed} BEGIN {body} END"));
++    }
++    for operation in ["insert", "update"] {
++        let exclude_self = if operation == "update" {
++            " AND rowid<>OLD.rowid"
++        } else {
++            ""
++        };
++        let victims = format!("SELECT issue_id AS changed_id FROM dependencies WHERE type='parent-child' AND (rowid=NEW.rowid OR (issue_id=NEW.issue_id AND depends_on_id=NEW.depends_on_id)){exclude_self}");
++        let body = mark(&victims, "1", "0", "0", "0");
++        let name = format!("spur_issue_dependencies_replace_{operation}");
++        out.insert(name.clone(), format!("CREATE TRIGGER {name} BEFORE {operation} ON dependencies WHEN EXISTS({victims}) BEGIN {body} END"));
++        if !known_unique {
++            // Unknown constraints can replace a structural victim even when NEW
++            // is a blocker. Dirty the feed for every insert/update in that case.
++            let name = format!("spur_issue_dependencies_unknown_{operation}");
++            out.insert(name.clone(), format!("CREATE TRIGGER {name} BEFORE {operation} ON dependencies BEGIN UPDATE spur_issue_clock SET dirty=1 WHERE id=1; END"));
++        }
++    }
++    Ok(())
++}
++
+ fn mark(ids: &str, issue: &str, summary: &str, timestamp: &str, comments: &str) -> String {
+     let revision = "(SELECT revision FROM spur_issue_clock WHERE id=1)";
+     format!("UPDATE spur_issue_clock SET writing=1,revision=revision+1 WHERE id=1;
+diff --git a/crates/spur-pm/src/beads_crate/issue_changes_tests.rs b/crates/spur-pm/src/beads_crate/issue_changes_tests.rs
+index 980d2b87e..e91f6a53e 100644
+--- a/crates/spur-pm/src/beads_crate/issue_changes_tests.rs
++++ b/crates/spur-pm/src/beads_crate/issue_changes_tests.rs
+@@ -190,13 +190,13 @@ fn every_summary_filter_order_field_is_tracked_and_other_issue_fields_reach_hygi
+ }
+ 
+ #[test]
+-fn dependency_edits_noops_and_rollbacks_do_not_advance_the_feed() {
++fn dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed() {
+     let (_dir, db, mut feed) = fixture();
+     let before = batch(&mut feed, None).cursor;
+     db.execute_batch("INSERT INTO dependencies(issue_id,depends_on_id) VALUES ('a','b'); UPDATE dependencies SET type='parent-child'; UPDATE issues SET description=description WHERE id='a'; BEGIN; UPDATE issues SET title='rolled back'; INSERT INTO comments(issue_id,author,text) VALUES('a','t','rolled back'); ROLLBACK;").unwrap();
+     let changes = batch(&mut feed, Some(&before));
+-    assert_eq!(changes.cursor, before);
+-    expect_ids(&changes, &[], |_| true);
++    expect_ids(&changes, &["a"], |c| c.issue);
++    expect_ids(&changes, &[], |c| c.summary || c.timestamp || c.comments);
+ }
+ 
+ #[test]
+@@ -770,3 +770,63 @@ fn timestamp_only_edits_signal_since_membership_entry_and_exit() {
+         cursor = changes.cursor;
+     }
+ }
++
++#[test]
++fn structural_edges_track_old_new_children_and_ignore_blockers() {
++    let (_dir, db, mut feed) = fixture();
++    for (sql, children) in [
++        (
++            "INSERT INTO dependencies(issue_id,depends_on_id,type) VALUES('a','b','blocks')",
++            vec![],
++        ),
++        ("UPDATE dependencies SET type='parent-child'", vec!["a"]),
++        ("UPDATE dependencies SET depends_on_id='c'", vec!["a"]),
++        ("UPDATE dependencies SET issue_id='b'", vec!["a", "b"]),
++        ("UPDATE dependencies SET type='blocks'", vec!["b"]),
++        ("DELETE FROM dependencies", vec![]),
++        (
++            "INSERT INTO dependencies(issue_id,depends_on_id,type) VALUES('a','c','parent-child')",
++            vec!["a"],
++        ),
++        ("BEGIN; DELETE FROM dependencies; ROLLBACK", vec![]),
++        ("DELETE FROM dependencies", vec!["a"]),
++    ] {
++        let before = batch(&mut feed, None).cursor;
++        db.execute_batch(sql).unwrap();
++        let changes = batch(&mut feed, Some(&before));
++        expect_ids(&changes, &children, |c| c.issue);
++        expect_ids(&changes, &[], |c| c.summary || c.timestamp || c.comments);
++    }
++}
++
++#[test]
++fn structural_replace_captures_rowid_and_key_victims_without_recursive_triggers() {
++    for insert in [true, false] {
++        let (_dir, db, mut feed) = fixture();
++        db.execute_batch("PRAGMA recursive_triggers=OFF; INSERT INTO dependencies(issue_id,depends_on_id,type) VALUES('a','c','parent-child'),('b','c','blocks')").unwrap();
++        let before = batch(&mut feed, None).cursor;
++        db.execute_batch(if insert {
++            "INSERT OR REPLACE INTO dependencies(rowid,issue_id,depends_on_id,type) SELECT rowid,'c','b','blocks' FROM dependencies WHERE issue_id='a'"
++        } else {
++            "UPDATE OR REPLACE dependencies SET rowid=(SELECT rowid FROM dependencies WHERE issue_id='a') WHERE issue_id='b'"
++        }).unwrap();
++        let changes = batch(&mut feed, Some(&before));
++        expect_ids(&changes, &["a"], |c| c.issue);
++        expect_ids(&changes, &[], |c| c.summary || c.timestamp || c.comments);
++    }
++}
++
++#[test]
++fn structural_combined_retarget_type_change_marks_both_children() {
++    let (_dir, db, mut feed) = fixture();
++    db.execute_batch(
++        "INSERT INTO dependencies(issue_id,depends_on_id,type) VALUES('a','c','parent-child')",
++    )
++    .unwrap();
++    let before = batch(&mut feed, None).cursor;
++    db.execute_batch("UPDATE dependencies SET issue_id='b',type='blocks'")
++        .unwrap();
++    let changes = batch(&mut feed, Some(&before));
++    expect_ids(&changes, &["a", "b"], |c| c.issue);
++    expect_ids(&changes, &[], |c| c.summary || c.timestamp || c.comments);
++}
+diff --git a/crates/spur-pm/src/beads_crate/issue_reads.rs b/crates/spur-pm/src/beads_crate/issue_reads.rs
+index c378c060e..b1c339132 100644
+--- a/crates/spur-pm/src/beads_crate/issue_reads.rs
++++ b/crates/spur-pm/src/beads_crate/issue_reads.rs
+@@ -93,6 +93,15 @@ impl IssueReads {
+         }
+     }
+ 
++    pub(crate) fn hygiene(
++        &mut self,
++        since: Option<&crate::advanced::HygieneCursor>,
++    ) -> anyhow::Result<crate::advanced::HygieneBatch> {
++        let result = super::hygiene::read(&mut self.feed, since);
++        self.work.connection_opens = self.feed.connection_opens;
++        result
++    }
++
+     pub(crate) fn list(&mut self, filter: &IssueFilter) -> anyhow::Result<Vec<IssueSummary>> {
+         let mut work = IssueReadWork::default();
+         let mut rows = QueryWork::default();
+diff --git a/crates/spur-pm/src/beads_crate/mod.rs b/crates/spur-pm/src/beads_crate/mod.rs
+index 85fe3ddea..0122b0658 100644
+--- a/crates/spur-pm/src/beads_crate/mod.rs
++++ b/crates/spur-pm/src/beads_crate/mod.rs
+@@ -8,6 +8,7 @@ pub mod backoff;
+ mod beads_advanced;
+ mod beads_db;
+ pub(crate) mod dependency_compat;
++mod hygiene;
+ pub mod init;
+ pub(crate) mod issue_changes;
+ pub mod issue_reads;

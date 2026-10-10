@@ -1,0 +1,145 @@
+{
+  "name": "proposed_cache_valid_trace",
+  "source_head": "3315391e245e4be98b08b31dba0ec7d91dbb5bab",
+  "interpretation": "Proposed sequential per-scope, per-generation cache contract; NOT implemented. A successful first build is reused for the next request. No concurrency, failures, eviction, mutation, or time-dependent report caching is modeled.",
+  "domain": "Exactly two sequential successful requests, one unchanged database revision, one full-snapshot scope; Cold means no materialization counted in this trace. RedundantBuild means at least two materializations in the same revision.",
+  "request": {
+    "family": "workflow",
+    "mode": "verify",
+    "persist": true,
+    "timeout_ms": 10000,
+    "rules": [
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "horizon": 2,
+      "state_domain": [
+        "Cold",
+        "Materialized",
+        "RedundantBuild"
+      ],
+      "event_domain": [
+        "read_same_revision"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "Materialized"
+      ],
+      "target_states": [
+        "RedundantBuild"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 0,
+          "from": "Materialized",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 0,
+          "from": "RedundantBuild",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        },
+        {
+          "step": 1,
+          "from": "Cold",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 1,
+          "from": "Materialized",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 1,
+          "from": "RedundantBuild",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        }
+      ],
+      "traces": {
+        "same_snapshot_scope": {
+          "states": [
+            "Cold",
+            "Materialized",
+            "Materialized"
+          ],
+          "events": [
+            "read_same_revision",
+            "read_same_revision"
+          ]
+        }
+      }
+    },
+    "unknowns": []
+  },
+  "response": {
+    "family": "workflow",
+    "mode": "verify",
+    "outcome": "pass",
+    "rule_results": [
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "binding_index": 0,
+        "status": "sat",
+        "outcome": "pass"
+      },
+      {
+        "rule_id": "workflow.transition_allowed",
+        "binding_index": 1,
+        "status": "sat",
+        "outcome": "pass"
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "binding_index": 2,
+        "status": "sat",
+        "outcome": "pass"
+      }
+    ],
+    "evaluation_scope": {
+      "kind": "bounded_trace",
+      "horizon": 2,
+      "reachability": []
+    },
+    "total_duration_ms": 24,
+    "status": "sat",
+    "model": {},
+    "duration_ms": 5,
+    "solve_id": "sol_516232252ccf410e",
+    "reason": null,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  }
+}

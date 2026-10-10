@@ -179,6 +179,7 @@ pub struct BeadsCrateAdapter {
     pub(crate) config: AdapterConfig,
     pub(crate) metrics: Arc<ContentionMetrics>,
     pub(crate) db: BeadsDb,
+    pub(crate) issue_reads: Arc<std::sync::Mutex<super::issue_reads::IssueReads>>,
     /// Boundary-safe poll cursor; `None` until the first `poll()` call so a
     /// fresh adapter emits all open issues as `IssueCreated` on first poll
     /// (matching `BeadsAdapter` semantics in `beads.rs`).
@@ -200,6 +201,10 @@ impl BeadsCrateAdapter {
                 &dir_for_init,
                 cfg_for_init.lock_timeout_ms,
                 cfg_for_init.stale_tmp_min_age,
+            )?;
+            super::issue_changes::install_at_path(
+                &dir_for_init.join("beads.db"),
+                cfg_for_init.lock_timeout_ms,
             )?;
             Ok(())
         })
@@ -234,7 +239,12 @@ impl BeadsCrateAdapter {
             None => None,
         };
 
+        let issue_reads = Arc::new(std::sync::Mutex::new(super::issue_reads::IssueReads::new(
+            &beads_dir.join("beads.db"),
+            config.lock_timeout_ms,
+        )));
         Ok(Self {
+            issue_reads,
             beads_dir,
             jsonl_path,
             config,
@@ -308,18 +318,75 @@ impl BeadsCrateAdapter {
                 // PROBE: issue_detail_latency — measure actor queue wait and
                 // the read closure body. SQLite open happens only at warmup.
                 let reader_entered = Instant::now();
-                let actor_queue_ms =
-                    reader_entered.duration_since(dispatch_started).as_millis() as u64;
+                let actor_queue = reader_entered.duration_since(dispatch_started);
                 metrics.incr_read();
                 let closure_started = Instant::now();
                 let result = f(storage);
-                let closure_ms = closure_started.elapsed().as_millis() as u64;
+                let closure_elapsed = closure_started.elapsed();
                 tracing::info!(
                     target: "issue_probe",
                     site = "beads_read",
-                    actor_queue_ms = actor_queue_ms,
-                    closure_ms = closure_ms,
+                    actor_queue_ms = actor_queue.as_millis() as u64,
+                    closure_ms = closure_elapsed.as_millis() as u64,
                     total_ms = dispatch_started.elapsed().as_millis() as u64,
+                    actor_queue_us = actor_queue.as_micros() as u64,
+                    closure_us = closure_elapsed.as_micros() as u64,
+                    succeeded = result.is_ok(),
+                    "BeadsCrateAdapter::read timing",
+                );
+                result
+            })
+            .await
+    }
+
+    /// Cumulative issue-list database work and current subscription retention.
+    /// This diagnostic snapshot waits for any active list refresh to finish.
+    pub fn issue_read_work(&self) -> super::issue_reads::IssueReadWork {
+        self.issue_reads
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .work
+    }
+
+    /// Read summaries on the existing actor pool without exposing SQL publicly.
+    pub(crate) async fn read_summaries(
+        &self,
+        filter: crate::types::IssueFilter,
+    ) -> anyhow::Result<Vec<crate::types::IssueSummary>> {
+        let metrics = Arc::clone(&self.metrics);
+        let issue_reads = Arc::clone(&self.issue_reads);
+        // PROBE: issue_detail_latency
+        let dispatch_started = Instant::now();
+        self.db
+            .submit_summary_read(move |_conn| {
+                // PROBE: issue_detail_latency — measure actor queue wait and
+                // the read closure body. SQLite open happens only at warmup.
+                let reader_entered = Instant::now();
+                let actor_queue = reader_entered.duration_since(dispatch_started);
+                metrics.incr_read();
+                let closure_started = Instant::now();
+                let result = {
+                    let mut reads = issue_reads
+                        .lock()
+                        .map_err(|_| anyhow::anyhow!("issue read state poisoned"))?;
+                    let opens_before = reads.work.connection_opens;
+                    let result = reads.list(&filter);
+                    metrics.sqlite_open_total.fetch_add(
+                        reads.work.connection_opens - opens_before,
+                        std::sync::atomic::Ordering::Relaxed,
+                    );
+                    result
+                };
+                let closure_elapsed = closure_started.elapsed();
+                tracing::info!(
+                    target: "issue_probe",
+                    site = "beads_read",
+                    actor_queue_ms = actor_queue.as_millis() as u64,
+                    closure_ms = closure_elapsed.as_millis() as u64,
+                    total_ms = dispatch_started.elapsed().as_millis() as u64,
+                    actor_queue_us = actor_queue.as_micros() as u64,
+                    closure_us = closure_elapsed.as_micros() as u64,
+                    succeeded = result.is_ok(),
                     "BeadsCrateAdapter::read timing",
                 );
                 result

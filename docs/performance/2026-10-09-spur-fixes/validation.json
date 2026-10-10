@@ -1,0 +1,37 @@
+{
+  "project": "spur",
+  "bead": "bd-3ebxc",
+  "source_sha256": {
+    "crates/spur-pm/src/beads_crate/dependency_compat.rs": "6fbc88b44d2ee0e34ee2d85c0713dd66ace7396621c4e09988c38107450d3fe0",
+    "crates/spur-pm/src/graph_engine/snapshot.rs": "b425c4238efa3b87089724117a4077f679b5e19db41c41d3d42647bd621c51b9",
+    "crates/spur-tui/src/components/react_trace/mod.rs": "f7da3dedc526771d74f529d8a457d0aadf5234969d8c251969c085c911b35670",
+    "crates/spur-tui/src/components/react_trace/body_cache_tests.rs": "0824bbf2e09e610d536a4847a91f4971804bc0834713d6d442129bf738469665",
+    "crates/spur-tui/src/components/stream_pane.rs": "371dc81133a7d102606e9e77266e139b145d007fc9aa44fef1a04ff2877718d0"
+  },
+  "runtime_tests": {
+    "tui": {
+      "passed": 1328,
+      "failed": 0,
+      "ignored": 4,
+      "features": "--no-default-features --features markdown",
+      "runner": "remote AWS builder, scripts/spur-cargo"
+    },
+    "pm": {
+      "passed": 210,
+      "failed": 0,
+      "ignored": 0,
+      "runner": "remote AWS builder, scripts/spur-cargo"
+    }
+  },
+  "format_check": "passed",
+  "review": "No blocking findings after fixing filtered-snapshot scope.",
+  "lint": {
+    "strict": "blocked by pre-existing unused FileOidMatch::as_bool in spur-graph/src/mcp/mod.rs:908",
+    "scoped_no_deps": "blocked by pre-existing clippy::unused_async in spur-tui/src/app/analytics.rs:342",
+    "baseline_comparison": "Both files are byte-identical to baseline commit 982464734. No lint diagnostics reported in changed code.",
+    "logs": [
+      "clippy.log",
+      "clippy-scoped.log"
+    ]
+  }
+}

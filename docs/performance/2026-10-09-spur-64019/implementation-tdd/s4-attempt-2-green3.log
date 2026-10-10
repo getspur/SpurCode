@@ -1,0 +1,86 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0  (local=/Volumes/Projects/spur/.spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0)
+[build] Remote:   ~/spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0   target=/mnt/cargo/targets/spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0   -j8
+[build] Remote build queue: admitted as ticket 158 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3562 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0 ...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib beads_crate::issue_changes::tests -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=134G used=68% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  278G  134G  68% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.43s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 23 tests
+test beads_crate::issue_changes::tests::dependency_edits_noops_and_rollbacks_do_not_advance_the_feed ... ok
+test beads_crate::issue_changes::tests::coalescing_retains_older_domain_changes_for_lagging_independent_readers ... ok
+test beads_crate::issue_changes::tests::comment_replace_records_old_owner_even_when_delete_triggers_are_disabled ... ok
+test beads_crate::issue_changes::tests::comment_and_audit_mutations_are_separate_from_summaries ... ok
+test beads_crate::issue_changes::tests::adapter_installs_feed_before_external_mutations ... ok
+test beads_crate::issue_changes::tests::every_summary_filter_order_field_is_tracked_and_other_issue_fields_reach_hygiene ... ok
+test beads_crate::issue_changes::tests::exact_trigger_restoration_cannot_hide_an_untracked_edit ... ok
+test beads_crate::issue_changes::tests::external_description_edit_with_fixed_timestamp_and_hash_is_visible ... ok
+test beads_crate::issue_changes::tests::adapter_comment_timestamp_is_unrelated_to_plain_summaries ... ok
+recovery SQLite 3.51.3
+test beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost ... ok
+test beads_crate::issue_changes::tests::insert_tombstone_delete_and_id_change_retain_deletion_evidence ... ok
+test beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner ... ok
+test beads_crate::issue_changes::tests::label_add_remove_rename_and_reparent_report_both_ids ... ok
+test beads_crate::issue_changes::tests::reconnect_preserves_cursor_and_database_replacement_requires_reseed ... ok
+test beads_crate::issue_changes::tests::timestamp_only_edits_signal_since_membership_entry_and_exit ... ok
+test beads_crate::issue_changes::tests::replace_insert_and_update_include_external_ref_victims_without_recursive_triggers ... ok
+WAL post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::serialized_cursor_after_feed_restart_detects_clone_replacement ... ok
+watermark/delta work size=3: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::watermark_delta_and_loaded_rows_share_one_snapshot ... ok
+test beads_crate::issue_changes::tests::timestamp_summary_and_comment_revisions_survive_compaction_in_both_orders ... ok
+DELETE post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::repaired_journal_rejects_stale_writer_then_schema_read_allows_tracked_retry ... ok
+test beads_crate::issue_changes::tests::ignored_and_failed_conflicts_preserve_rows_and_complete_feed ... ok
+watermark/delta work size=300: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::lost_or_corrupt_tracking_forces_reseed_and_recovers ... ok
+watermark/delta work size=3000: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::unchanged_validation_and_delta_work_do_not_scale_with_issue_rows ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 245 filtered out; finished in 1.72s
+
+
+--- sccache stats (spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0) ---
+Compile requests                     709
+Compile requests executed            574
+Cache hits                           423
+Cache hits (Assembler)                11
+Cache hits (C/C++)                    18
+Cache hits (Rust)                    394
+Cache misses                         146
+Cache misses (C/C++)                  48
+Cache misses (Rust)                   98
+Cache hits rate                    74.34 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            27.27 %
+Cache hits rate (Rust)             80.08 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         146
+Compilation failures                   5
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/026a678b-3005-4fb5-9a1c-bc767f015ba0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000158.

@@ -38,6 +38,7 @@ secrecy = "=0.10.3"
 rustls = { version = "0.23", default-features = false, features = ["ring"] }
 
 [dev-dependencies]
+tracing-subscriber = { workspace = true }
 filetime = "0.2"
 proptest = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "test-util"] }

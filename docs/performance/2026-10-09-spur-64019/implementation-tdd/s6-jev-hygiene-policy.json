@@ -1,0 +1,3103 @@
+{
+  "task": "bd-1prez",
+  "stage": "approved_source_and_tests_verified",
+  "jev_input": {
+    "family_hint": "workflow",
+    "intent": "Verify each adjacent state-event-state step in the supplied finite hygiene lifecycle against the explicit enabled transition relation. All facts are known, use workflow.transition_allowed with verify, preserve facts. Batch c0 is captured before work. Success publishes exactly c0; failures and cancellation preserve the previous cursor. Self writes or concurrent comments after c0 remain for the next batch. Empty-audit candidates stay pending across unchanged reads until the grace deadline. Closed-parent audit and structural changes expand affected children before eligible filtering. Unsupported feeds use full fallback, gaps reset, unchanged delta does not skip other tick timers. This checks a declared finite abstract trace, not Rust implementation, physical concurrency, numerical clock values, SQL or performance.",
+    "data": {
+      "subjects": [
+        "hygiene"
+      ],
+      "parameters": {},
+      "facts": {
+        "horizon": 26,
+        "state_domain": [
+          "Cold",
+          "Staged",
+          "Ready",
+          "Retry",
+          "Pending",
+          "Fallback",
+          "LostWork",
+          "TimersSkipped",
+          "FullRescan"
+        ],
+        "event_domain": [
+          "seed_batch_c0",
+          "all_succeed_publish_c0",
+          "unchanged_no_pending",
+          "changed_issue_or_comment",
+          "partial_failure_keep_old_cursor",
+          "retry_unacknowledged_batch",
+          "cancel_keep_old_cursor",
+          "success_with_self_write_publish_c0",
+          "newer_comment_still_unacknowledged",
+          "pending_grace_not_due",
+          "unchanged_before_deadline",
+          "deadline_due_use_cached_empty_audit",
+          "closed_parent_or_structure_change_expand_children",
+          "eligibility_exit_or_delete_drop_pending",
+          "gap_or_schema_or_file_reset",
+          "unsupported_full_fallback",
+          "next_pass_full_fallback",
+          "support_available",
+          "empty_delta_tick_timers_continue"
+        ],
+        "initial_states": [
+          "Cold"
+        ],
+        "safe_states": [
+          "Cold",
+          "Staged",
+          "Ready",
+          "Retry",
+          "Pending",
+          "Fallback"
+        ],
+        "target_states": [
+          "Ready"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "seed_batch_c0",
+            "to": "Staged"
+          },
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "unsupported_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 5,
+            "from": "Retry",
+            "event": "retry_unacknowledged_batch",
+            "to": "Staged"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 7,
+            "from": "Retry",
+            "event": "retry_unacknowledged_batch",
+            "to": "Staged"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 12,
+            "from": "Pending",
+            "event": "unchanged_before_deadline",
+            "to": "Pending"
+          },
+          {
+            "step": 12,
+            "from": "Pending",
+            "event": "deadline_due_use_cached_empty_audit",
+            "to": "Staged"
+          },
+          {
+            "step": 13,
+            "from": "Pending",
+            "event": "unchanged_before_deadline",
+            "to": "Pending"
+          },
+          {
+            "step": 13,
+            "from": "Pending",
+            "event": "deadline_due_use_cached_empty_audit",
+            "to": "Staged"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "seed_batch_c0",
+            "to": "Staged"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "unsupported_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 22,
+            "from": "Fallback",
+            "event": "next_pass_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 22,
+            "from": "Fallback",
+            "event": "support_available",
+            "to": "Cold"
+          },
+          {
+            "step": 23,
+            "from": "Fallback",
+            "event": "next_pass_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 23,
+            "from": "Fallback",
+            "event": "support_available",
+            "to": "Cold"
+          },
+          {
+            "step": 24,
+            "from": "Cold",
+            "event": "seed_batch_c0",
+            "to": "Staged"
+          },
+          {
+            "step": 24,
+            "from": "Cold",
+            "event": "unsupported_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          }
+        ],
+        "traces": {
+          "hygiene": {
+            "states": [
+              "Cold",
+              "Staged",
+              "Ready",
+              "Ready",
+              "Staged",
+              "Retry",
+              "Staged",
+              "Retry",
+              "Staged",
+              "Ready",
+              "Staged",
+              "Ready",
+              "Pending",
+              "Pending",
+              "Staged",
+              "Ready",
+              "Staged",
+              "Ready",
+              "Staged",
+              "Ready",
+              "Ready",
+              "Cold",
+              "Fallback",
+              "Fallback",
+              "Cold",
+              "Staged",
+              "Ready"
+            ],
+            "events": [
+              "seed_batch_c0",
+              "all_succeed_publish_c0",
+              "unchanged_no_pending",
+              "changed_issue_or_comment",
+              "partial_failure_keep_old_cursor",
+              "retry_unacknowledged_batch",
+              "cancel_keep_old_cursor",
+              "retry_unacknowledged_batch",
+              "success_with_self_write_publish_c0",
+              "newer_comment_still_unacknowledged",
+              "all_succeed_publish_c0",
+              "pending_grace_not_due",
+              "unchanged_before_deadline",
+              "deadline_due_use_cached_empty_audit",
+              "all_succeed_publish_c0",
+              "closed_parent_or_structure_change_expand_children",
+              "all_succeed_publish_c0",
+              "eligibility_exit_or_delete_drop_pending",
+              "all_succeed_publish_c0",
+              "empty_delta_tick_timers_continue",
+              "gap_or_schema_or_file_reset",
+              "unsupported_full_fallback",
+              "next_pass_full_fallback",
+              "support_available",
+              "seed_batch_c0",
+              "all_succeed_publish_c0"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "jev_output": {
+    "gate": "open",
+    "request": {
+      "family": "workflow",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "workflow.transition_allowed",
+          "subjects": [
+            "hygiene"
+          ],
+          "parameters": {}
+        }
+      ],
+      "facts": {
+        "horizon": 26,
+        "state_domain": [
+          "Cold",
+          "Staged",
+          "Ready",
+          "Retry",
+          "Pending",
+          "Fallback",
+          "LostWork",
+          "TimersSkipped",
+          "FullRescan"
+        ],
+        "event_domain": [
+          "seed_batch_c0",
+          "all_succeed_publish_c0",
+          "unchanged_no_pending",
+          "changed_issue_or_comment",
+          "partial_failure_keep_old_cursor",
+          "retry_unacknowledged_batch",
+          "cancel_keep_old_cursor",
+          "success_with_self_write_publish_c0",
+          "newer_comment_still_unacknowledged",
+          "pending_grace_not_due",
+          "unchanged_before_deadline",
+          "deadline_due_use_cached_empty_audit",
+          "closed_parent_or_structure_change_expand_children",
+          "eligibility_exit_or_delete_drop_pending",
+          "gap_or_schema_or_file_reset",
+          "unsupported_full_fallback",
+          "next_pass_full_fallback",
+          "support_available",
+          "empty_delta_tick_timers_continue"
+        ],
+        "initial_states": [
+          "Cold"
+        ],
+        "safe_states": [
+          "Cold",
+          "Staged",
+          "Ready",
+          "Retry",
+          "Pending",
+          "Fallback"
+        ],
+        "target_states": [
+          "Ready"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "seed_batch_c0",
+            "to": "Staged"
+          },
+          {
+            "step": 0,
+            "from": "Cold",
+            "event": "unsupported_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 1,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 2,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 3,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 4,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 5,
+            "from": "Retry",
+            "event": "retry_unacknowledged_batch",
+            "to": "Staged"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 6,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 7,
+            "from": "Retry",
+            "event": "retry_unacknowledged_batch",
+            "to": "Staged"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 8,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 9,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 10,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 11,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 12,
+            "from": "Pending",
+            "event": "unchanged_before_deadline",
+            "to": "Pending"
+          },
+          {
+            "step": 12,
+            "from": "Pending",
+            "event": "deadline_due_use_cached_empty_audit",
+            "to": "Staged"
+          },
+          {
+            "step": 13,
+            "from": "Pending",
+            "event": "unchanged_before_deadline",
+            "to": "Pending"
+          },
+          {
+            "step": 13,
+            "from": "Pending",
+            "event": "deadline_due_use_cached_empty_audit",
+            "to": "Staged"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 14,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 15,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 16,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 17,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 18,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 19,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "unchanged_no_pending",
+            "to": "Ready"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "changed_issue_or_comment",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "newer_comment_still_unacknowledged",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "pending_grace_not_due",
+            "to": "Pending"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "closed_parent_or_structure_change_expand_children",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "eligibility_exit_or_delete_drop_pending",
+            "to": "Staged"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "gap_or_schema_or_file_reset",
+            "to": "Cold"
+          },
+          {
+            "step": 20,
+            "from": "Ready",
+            "event": "empty_delta_tick_timers_continue",
+            "to": "Ready"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "seed_batch_c0",
+            "to": "Staged"
+          },
+          {
+            "step": 21,
+            "from": "Cold",
+            "event": "unsupported_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 22,
+            "from": "Fallback",
+            "event": "next_pass_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 22,
+            "from": "Fallback",
+            "event": "support_available",
+            "to": "Cold"
+          },
+          {
+            "step": 23,
+            "from": "Fallback",
+            "event": "next_pass_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 23,
+            "from": "Fallback",
+            "event": "support_available",
+            "to": "Cold"
+          },
+          {
+            "step": 24,
+            "from": "Cold",
+            "event": "seed_batch_c0",
+            "to": "Staged"
+          },
+          {
+            "step": 24,
+            "from": "Cold",
+            "event": "unsupported_full_fallback",
+            "to": "Fallback"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "all_succeed_publish_c0",
+            "to": "Ready"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "partial_failure_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "cancel_keep_old_cursor",
+            "to": "Retry"
+          },
+          {
+            "step": 25,
+            "from": "Staged",
+            "event": "success_with_self_write_publish_c0",
+            "to": "Ready"
+          }
+        ],
+        "traces": {
+          "hygiene": {
+            "states": [
+              "Cold",
+              "Staged",
+              "Ready",
+              "Ready",
+              "Staged",
+              "Retry",
+              "Staged",
+              "Retry",
+              "Staged",
+              "Ready",
+              "Staged",
+              "Ready",
+              "Pending",
+              "Pending",
+              "Staged",
+              "Ready",
+              "Staged",
+              "Ready",
+              "Staged",
+              "Ready",
+              "Ready",
+              "Cold",
+              "Fallback",
+              "Fallback",
+              "Cold",
+              "Staged",
+              "Ready"
+            ],
+            "events": [
+              "seed_batch_c0",
+              "all_succeed_publish_c0",
+              "unchanged_no_pending",
+              "changed_issue_or_comment",
+              "partial_failure_keep_old_cursor",
+              "retry_unacknowledged_batch",
+              "cancel_keep_old_cursor",
+              "retry_unacknowledged_batch",
+              "success_with_self_write_publish_c0",
+              "newer_comment_still_unacknowledged",
+              "all_succeed_publish_c0",
+              "pending_grace_not_due",
+              "unchanged_before_deadline",
+              "deadline_due_use_cached_empty_audit",
+              "all_succeed_publish_c0",
+              "closed_parent_or_structure_change_expand_children",
+              "all_succeed_publish_c0",
+              "eligibility_exit_or_delete_drop_pending",
+              "all_succeed_publish_c0",
+              "empty_delta_tick_timers_continue",
+              "gap_or_schema_or_file_reset",
+              "unsupported_full_fallback",
+              "next_pass_full_fallback",
+              "support_available",
+              "seed_batch_c0",
+              "all_succeed_publish_c0"
+            ]
+          }
+        }
+      },
+      "unknowns": []
+    },
+    "provenance": {
+      "served_model_version": "jev-1.13.0",
+      "answers": {
+        "data_complete": {
+          "type": "noul",
+          "noul": 0.84
+        },
+        "route_rule": {
+          "type": "choice",
+          "choice": "workflow.transition_allowed",
+          "probabilities": {
+            "workflow.bounded_reachability": 0,
+            "workflow.initial_state_allowed": 0,
+            "workflow.safety_invariant": 0,
+            "workflow.transition_allowed": 1
+          },
+          "confidence": 1
+        },
+        "solve_mode": {
+          "type": "choice",
+          "choice": "verify",
+          "probabilities": {
+            "synthesize": 0,
+            "verify": 1
+          },
+          "confidence": 1
+        }
+      },
+      "confidences": {
+        "data_complete": 0.84,
+        "route_rule": 1,
+        "solve_mode": 1
+      },
+      "weakest": 0.84,
+      "gate": {
+        "status": "open"
+      }
+    }
+  },
+  "base_request": {
+    "family": "workflow",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "hygiene"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "hygiene"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.safety_invariant",
+        "subjects": [
+          "hygiene"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "horizon": 26,
+      "state_domain": [
+        "Cold",
+        "Staged",
+        "Ready",
+        "Retry",
+        "Pending",
+        "Fallback",
+        "LostWork",
+        "TimersSkipped",
+        "FullRescan"
+      ],
+      "event_domain": [
+        "seed_batch_c0",
+        "all_succeed_publish_c0",
+        "unchanged_no_pending",
+        "changed_issue_or_comment",
+        "partial_failure_keep_old_cursor",
+        "retry_unacknowledged_batch",
+        "cancel_keep_old_cursor",
+        "success_with_self_write_publish_c0",
+        "newer_comment_still_unacknowledged",
+        "pending_grace_not_due",
+        "unchanged_before_deadline",
+        "deadline_due_use_cached_empty_audit",
+        "closed_parent_or_structure_change_expand_children",
+        "eligibility_exit_or_delete_drop_pending",
+        "gap_or_schema_or_file_reset",
+        "unsupported_full_fallback",
+        "next_pass_full_fallback",
+        "support_available",
+        "empty_delta_tick_timers_continue"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "Staged",
+        "Ready",
+        "Retry",
+        "Pending",
+        "Fallback"
+      ],
+      "target_states": [
+        "Ready"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "seed_batch_c0",
+          "to": "Staged"
+        },
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "unsupported_full_fallback",
+          "to": "Fallback"
+        },
+        {
+          "step": 1,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 1,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 1,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 1,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 2,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 3,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 4,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 4,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 4,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 4,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 5,
+          "from": "Retry",
+          "event": "retry_unacknowledged_batch",
+          "to": "Staged"
+        },
+        {
+          "step": 6,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 6,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 6,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 6,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 7,
+          "from": "Retry",
+          "event": "retry_unacknowledged_batch",
+          "to": "Staged"
+        },
+        {
+          "step": 8,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 8,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 8,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 8,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 9,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 10,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 10,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 10,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 10,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 11,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 12,
+          "from": "Pending",
+          "event": "unchanged_before_deadline",
+          "to": "Pending"
+        },
+        {
+          "step": 12,
+          "from": "Pending",
+          "event": "deadline_due_use_cached_empty_audit",
+          "to": "Staged"
+        },
+        {
+          "step": 13,
+          "from": "Pending",
+          "event": "unchanged_before_deadline",
+          "to": "Pending"
+        },
+        {
+          "step": 13,
+          "from": "Pending",
+          "event": "deadline_due_use_cached_empty_audit",
+          "to": "Staged"
+        },
+        {
+          "step": 14,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 14,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 14,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 14,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 15,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 16,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 16,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 16,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 16,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 17,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 18,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 18,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 18,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 18,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 19,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "unchanged_no_pending",
+          "to": "Ready"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "changed_issue_or_comment",
+          "to": "Staged"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "newer_comment_still_unacknowledged",
+          "to": "Staged"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "pending_grace_not_due",
+          "to": "Pending"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "closed_parent_or_structure_change_expand_children",
+          "to": "Staged"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "eligibility_exit_or_delete_drop_pending",
+          "to": "Staged"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "gap_or_schema_or_file_reset",
+          "to": "Cold"
+        },
+        {
+          "step": 20,
+          "from": "Ready",
+          "event": "empty_delta_tick_timers_continue",
+          "to": "Ready"
+        },
+        {
+          "step": 21,
+          "from": "Cold",
+          "event": "seed_batch_c0",
+          "to": "Staged"
+        },
+        {
+          "step": 21,
+          "from": "Cold",
+          "event": "unsupported_full_fallback",
+          "to": "Fallback"
+        },
+        {
+          "step": 22,
+          "from": "Fallback",
+          "event": "next_pass_full_fallback",
+          "to": "Fallback"
+        },
+        {
+          "step": 22,
+          "from": "Fallback",
+          "event": "support_available",
+          "to": "Cold"
+        },
+        {
+          "step": 23,
+          "from": "Fallback",
+          "event": "next_pass_full_fallback",
+          "to": "Fallback"
+        },
+        {
+          "step": 23,
+          "from": "Fallback",
+          "event": "support_available",
+          "to": "Cold"
+        },
+        {
+          "step": 24,
+          "from": "Cold",
+          "event": "seed_batch_c0",
+          "to": "Staged"
+        },
+        {
+          "step": 24,
+          "from": "Cold",
+          "event": "unsupported_full_fallback",
+          "to": "Fallback"
+        },
+        {
+          "step": 25,
+          "from": "Staged",
+          "event": "all_succeed_publish_c0",
+          "to": "Ready"
+        },
+        {
+          "step": 25,
+          "from": "Staged",
+          "event": "partial_failure_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 25,
+          "from": "Staged",
+          "event": "cancel_keep_old_cursor",
+          "to": "Retry"
+        },
+        {
+          "step": 25,
+          "from": "Staged",
+          "event": "success_with_self_write_publish_c0",
+          "to": "Ready"
+        }
+      ],
+      "traces": {
+        "hygiene": {
+          "states": [
+            "Cold",
+            "Staged",
+            "Ready",
+            "Ready",
+            "Staged",
+            "Retry",
+            "Staged",
+            "Retry",
+            "Staged",
+            "Ready",
+            "Staged",
+            "Ready",
+            "Pending",
+            "Pending",
+            "Staged",
+            "Ready",
+            "Staged",
+            "Ready",
+            "Staged",
+            "Ready",
+            "Ready",
+            "Cold",
+            "Fallback",
+            "Fallback",
+            "Cold",
+            "Staged",
+            "Ready"
+          ],
+          "events": [
+            "seed_batch_c0",
+            "all_succeed_publish_c0",
+            "unchanged_no_pending",
+            "changed_issue_or_comment",
+            "partial_failure_keep_old_cursor",
+            "retry_unacknowledged_batch",
+            "cancel_keep_old_cursor",
+            "retry_unacknowledged_batch",
+            "success_with_self_write_publish_c0",
+            "newer_comment_still_unacknowledged",
+            "all_succeed_publish_c0",
+            "pending_grace_not_due",
+            "unchanged_before_deadline",
+            "deadline_due_use_cached_empty_audit",
+            "all_succeed_publish_c0",
+            "closed_parent_or_structure_change_expand_children",
+            "all_succeed_publish_c0",
+            "eligibility_exit_or_delete_drop_pending",
+            "all_succeed_publish_c0",
+            "empty_delta_tick_timers_continue",
+            "gap_or_schema_or_file_reset",
+            "unsupported_full_fallback",
+            "next_pass_full_fallback",
+            "support_available",
+            "seed_batch_c0",
+            "all_succeed_publish_c0"
+          ]
+        }
+      }
+    },
+    "unknowns": [],
+    "persist": true,
+    "timeout_ms": 5000
+  },
+  "candidate_review": {
+    "gate_open": true,
+    "facts_preserved": true,
+    "source_match": "S6 approved: implementation f99fe3df5697de4fa5f05699032ce7048d5becb7, tree-equivalent captured 6c41c4e581862d293d94727935abc654b06f28e7. Independent reviewers resolved parent eligibility and type-normalization findings. Final affected suites: 13 core + 33 PM passed; formatting passed. S7 integrated latency and broad verification still pending.",
+    "limits": "26-step supplied symbolic trace with 116 caller-declared enabled edges. No numeric cursor/clock, Rust execution, SQL isolation, exhaustive interleaving, memory or latency proof. Event names express intended policy; runtime tests must establish that source performs those events."
+  },
+  "cases": [
+    {
+      "name": "declared_lifecycle",
+      "expected": "pass",
+      "recipe": null,
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 26,
+          "reachability": []
+        },
+        "total_duration_ms": 39,
+        "status": "sat",
+        "model": {},
+        "duration_ms": 9,
+        "solve_id": "sol_0cb40a3910024041",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "unchanged_full_scan",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "unchanged_no_pending",
+        "replace_last_state": "FullRescan"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.safety_invariant.violation"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 3,
+          "reachability": []
+        },
+        "total_duration_ms": 52,
+        "status": "unsat",
+        "duration_ms": 7,
+        "solve_id": "sol_eb9517722b934ad4",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "partial_failure_acknowledged",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "partial_failure_keep_old_cursor",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 5,
+          "reachability": []
+        },
+        "total_duration_ms": 103,
+        "status": "unsat",
+        "duration_ms": 53,
+        "solve_id": "sol_e62834f19e9f47dc",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "cancellation_acknowledged",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "cancel_keep_old_cursor",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 7,
+          "reachability": []
+        },
+        "total_duration_ms": 44,
+        "status": "unsat",
+        "duration_ms": 7,
+        "solve_id": "sol_be6295add8774fb0",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "concurrent_comment_lost",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "newer_comment_still_unacknowledged",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 10,
+          "reachability": []
+        },
+        "total_duration_ms": 49,
+        "status": "unsat",
+        "duration_ms": 8,
+        "solve_id": "sol_9c38e2cf9895402d",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "pending_candidate_dropped",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "unchanged_before_deadline",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 13,
+          "reachability": []
+        },
+        "total_duration_ms": 74,
+        "status": "unsat",
+        "duration_ms": 12,
+        "solve_id": "sol_42eb26037b2a4cc3",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "deadline_skipped",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "deadline_due_use_cached_empty_audit",
+        "replace_last_state": "Pending"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 14,
+          "reachability": []
+        },
+        "total_duration_ms": 53,
+        "status": "unsat",
+        "duration_ms": 9,
+        "solve_id": "sol_1de77138ff2f4802",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "parent_change_ignored",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "closed_parent_or_structure_change_expand_children",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 16,
+          "reachability": []
+        },
+        "total_duration_ms": 56,
+        "status": "unsat",
+        "duration_ms": 9,
+        "solve_id": "sol_3a67e58e9c3d4912",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "membership_exit_ignored",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "eligibility_exit_or_delete_drop_pending",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 18,
+          "reachability": []
+        },
+        "total_duration_ms": 48,
+        "status": "unsat",
+        "duration_ms": 8,
+        "solve_id": "sol_76e1711e37724afa",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "timers_skipped",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "empty_delta_tick_timers_continue",
+        "replace_last_state": "TimersSkipped"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.safety_invariant.violation"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 20,
+          "reachability": []
+        },
+        "total_duration_ms": 53,
+        "status": "unsat",
+        "duration_ms": 9,
+        "solve_id": "sol_e26709a8e738486e",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "gap_trusted",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "gap_or_schema_or_file_reset",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 21,
+          "reachability": []
+        },
+        "total_duration_ms": 61,
+        "status": "unsat",
+        "duration_ms": 7,
+        "solve_id": "sol_81b80dc5a9fb4e7a",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "unsupported_cached",
+      "expected": "fail",
+      "recipe": {
+        "prefix_through_event": "unsupported_full_fallback",
+        "replace_last_state": "Ready"
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 22,
+          "reachability": []
+        },
+        "total_duration_ms": 60,
+        "status": "unsat",
+        "duration_ms": 8,
+        "solve_id": "sol_c11993bc1b1046b6",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_0_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    }
+  ]
+}

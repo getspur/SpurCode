@@ -40,6 +40,33 @@ impl BeadsCrateAdapter {
 
 #[async_trait]
 impl BeadsAdvanced for BeadsCrateAdapter {
+    async fn hygiene_changes(
+        &self,
+        since: Option<&crate::advanced::HygieneCursor>,
+    ) -> anyhow::Result<Option<crate::advanced::HygieneBatch>> {
+        if !cfg!(unix) {
+            return Ok(None);
+        }
+        let since = since.cloned();
+        let reads = std::sync::Arc::clone(&self.issue_reads);
+        let metrics = std::sync::Arc::clone(&self.metrics);
+        self.db
+            .submit_summary_read(move |_| {
+                let mut reads = reads
+                    .lock()
+                    .map_err(|_| anyhow::anyhow!("issue read state poisoned"))?;
+                metrics.incr_read();
+                let opens = reads.work.connection_opens;
+                let result = reads.hygiene(since.as_ref());
+                metrics.sqlite_open_total.fetch_add(
+                    reads.work.connection_opens - opens,
+                    std::sync::atomic::Ordering::Relaxed,
+                );
+                result.map(Some)
+            })
+            .await
+    }
+
     async fn list_ready(&self, filter: ReadyFilter) -> anyhow::Result<Vec<IssueSummary>> {
         self.read(move |s| {
             let issue_types = filter

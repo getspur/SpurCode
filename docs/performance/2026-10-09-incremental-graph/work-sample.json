@@ -1,0 +1,35 @@
+{
+  "fixture_nodes": 2003,
+  "fixture_edges": 2,
+  "observations": [
+    {
+      "scenario": "cold",
+      "full_builds": 1,
+      "delta_refreshes": 0,
+      "reuses": 0,
+      "changed_ids": 0,
+      "nodes_loaded": 2003,
+      "edges_loaded": 2
+    },
+    {
+      "scenario": "ten_unchanged_reads",
+      "full_builds": 1,
+      "delta_refreshes": 0,
+      "reuses": 10,
+      "changed_ids": 0,
+      "nodes_loaded": 2003,
+      "edges_loaded": 2
+    },
+    {
+      "scenario": "one_node_edit",
+      "full_builds": 1,
+      "delta_refreshes": 1,
+      "reuses": 10,
+      "changed_ids": 1,
+      "nodes_loaded": 2004,
+      "edges_loaded": 2
+    }
+  ],
+  "source": "test-work-sample.log; identical remote and wrapper-fallback local observations",
+  "counters": "Cumulative decoded projected rows; metadata reads and SQL candidate visits are not counted. EXPLAIN regression separately rejects cold label table scans."
+}

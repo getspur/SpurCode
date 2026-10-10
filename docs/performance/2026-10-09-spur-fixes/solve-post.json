@@ -1,0 +1,827 @@
+{
+  "project": "spur",
+  "bead": "bd-3ebxc",
+  "basis": "Post-implementation model checks, not end-to-end performance measurements. Resource counts follow the viewport slice and the pinned backend's one-SELECT get_all_dependency_records implementation. Filtered snapshots retain per-ID reads. Family checks may return cached results for identical normalized constraints; raw receipts preserve this.",
+  "jev_resource": {
+    "gate": "open",
+    "request": {
+      "family": "resource",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "resource.request_within_limit",
+          "subjects": [
+            "viewport",
+            "unfiltered_dependency_batch"
+          ],
+          "parameters": {
+            "resources": [
+              "rows",
+              "selects"
+            ]
+          }
+        }
+      ],
+      "facts": {
+        "workloads": {
+          "viewport": {
+            "replicas": 1,
+            "requests": {
+              "rows": 24,
+              "selects": 0
+            },
+            "limits": {
+              "rows": 24,
+              "selects": 0
+            },
+            "domain_counts": {}
+          },
+          "unfiltered_dependency_batch": {
+            "replicas": 1,
+            "requests": {
+              "rows": 0,
+              "selects": 1
+            },
+            "limits": {
+              "rows": 0,
+              "selects": 1
+            },
+            "domain_counts": {}
+          }
+        },
+        "pools": {},
+        "quotas": {}
+      },
+      "unknowns": []
+    },
+    "provenance": {
+      "served_model_version": "jev-1.13.0",
+      "answers": {
+        "data_complete": {
+          "type": "noul",
+          "noul": 0.97
+        },
+        "route_rule": {
+          "type": "choice",
+          "choice": "resource.request_within_limit",
+          "probabilities": {
+            "placement.minimize_skew": 0,
+            "placement.minimum_failure_domains": 0,
+            "placement.topology_max_skew": 0,
+            "resource.aggregate_capacity": 0,
+            "resource.quota_capacity": 0,
+            "resource.request_within_limit": 1
+          },
+          "confidence": 1
+        },
+        "solve_mode": {
+          "type": "choice",
+          "choice": "verify",
+          "probabilities": {
+            "synthesize": 0,
+            "verify": 1
+          },
+          "confidence": 1
+        }
+      },
+      "confidences": {
+        "data_complete": 0.97,
+        "route_rule": 1,
+        "solve_mode": 1
+      },
+      "weakest": 0.97,
+      "gate": {
+        "status": "open"
+      }
+    }
+  },
+  "jev_scope": {
+    "gate": "open",
+    "request": {
+      "family": "configuration",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "configuration.excludes",
+          "subjects": [
+            "bulk_scan",
+            "label_filter"
+          ]
+        }
+      ],
+      "facts": {
+        "components": {
+          "bulk_scan": {
+            "selected": false,
+            "attributes": {}
+          },
+          "label_filter": {
+            "selected": true,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "unknowns": []
+    },
+    "provenance": {
+      "served_model_version": "jev-1.13.0",
+      "answers": {
+        "data_complete": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "route_rule": {
+          "type": "choice",
+          "choice": "configuration.excludes",
+          "probabilities": {
+            "configuration.attribute_allowed_pair": 0,
+            "configuration.excludes": 1,
+            "configuration.requires_any": 0,
+            "configuration.selection_cardinality": 0,
+            "configuration.version_interval": 0
+          },
+          "confidence": 1
+        },
+        "solve_mode": {
+          "type": "choice",
+          "choice": "verify",
+          "probabilities": {
+            "synthesize": 0,
+            "verify": 1
+          },
+          "confidence": 1
+        }
+      },
+      "confidences": {
+        "data_complete": 0.96,
+        "route_rule": 1,
+        "solve_mode": 1
+      },
+      "weakest": 0.96,
+      "gate": {
+        "status": "open"
+      }
+    }
+  },
+  "safety_preflight": {
+    "valid": true,
+    "language_schema_version": 1,
+    "summary": {
+      "variables": 7,
+      "constraints": 6,
+      "objectives": 0,
+      "has_soft_constraints": false,
+      "is_optimization": false
+    },
+    "next_tools": [
+      "solve_constraints"
+    ]
+  },
+  "requests": {
+    "resource": {
+      "family": "resource",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "resource.request_within_limit",
+          "subjects": [
+            "viewport",
+            "unfiltered_dependency_batch"
+          ],
+          "parameters": {
+            "resources": [
+              "rows",
+              "selects"
+            ]
+          }
+        }
+      ],
+      "facts": {
+        "workloads": {
+          "viewport": {
+            "replicas": 1,
+            "requests": {
+              "rows": 24,
+              "selects": 0
+            },
+            "limits": {
+              "rows": 24,
+              "selects": 0
+            },
+            "domain_counts": {}
+          },
+          "unfiltered_dependency_batch": {
+            "replicas": 1,
+            "requests": {
+              "rows": 0,
+              "selects": 1
+            },
+            "limits": {
+              "rows": 0,
+              "selects": 1
+            },
+            "domain_counts": {}
+          }
+        },
+        "pools": {},
+        "quotas": {}
+      },
+      "unknowns": []
+    },
+    "filtered_scope": {
+      "family": "configuration",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "configuration.excludes",
+          "subjects": [
+            "bulk_scan",
+            "label_filter"
+          ]
+        }
+      ],
+      "facts": {
+        "components": {
+          "bulk_scan": {
+            "selected": false,
+            "attributes": {}
+          },
+          "label_filter": {
+            "selected": true,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "unknowns": []
+    },
+    "safety": {
+      "vars": [
+        {
+          "name": "total",
+          "type": "int"
+        },
+        {
+          "name": "height",
+          "type": "int"
+        },
+        {
+          "name": "requested",
+          "type": "int"
+        },
+        {
+          "name": "max_offset",
+          "type": "int"
+        },
+        {
+          "name": "start",
+          "type": "int"
+        },
+        {
+          "name": "count",
+          "type": "int"
+        },
+        {
+          "name": "end",
+          "type": "int"
+        }
+      ],
+      "constraints": [
+        {
+          "id": "input_domain",
+          "expr": {
+            "kind": "op",
+            "op": "and",
+            "args": [
+              {
+                "kind": "op",
+                "op": "ge",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "total"
+                  },
+                  {
+                    "kind": "int",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "ge",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "height"
+                  },
+                  {
+                    "kind": "int",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "le",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "height"
+                  },
+                  {
+                    "kind": "int",
+                    "value": 65535
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "ge",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "requested"
+                  },
+                  {
+                    "kind": "int",
+                    "value": 0
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "saturating_sub",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "total"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "height"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "max_offset"
+                      },
+                      {
+                        "kind": "op",
+                        "op": "sub",
+                        "args": [
+                          {
+                            "kind": "var",
+                            "name": "total"
+                          },
+                          {
+                            "kind": "var",
+                            "name": "height"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "lt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "total"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "height"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "max_offset"
+                      },
+                      {
+                        "kind": "int",
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "clamp_start",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "le",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "requested"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "max_offset"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "start"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "requested"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "requested"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "max_offset"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "start"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "max_offset"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "take_visible",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "le",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "height"
+                      },
+                      {
+                        "kind": "op",
+                        "op": "sub",
+                        "args": [
+                          {
+                            "kind": "var",
+                            "name": "total"
+                          },
+                          {
+                            "kind": "var",
+                            "name": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "count"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "height"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "height"
+                      },
+                      {
+                        "kind": "op",
+                        "op": "sub",
+                        "args": [
+                          {
+                            "kind": "var",
+                            "name": "total"
+                          },
+                          {
+                            "kind": "var",
+                            "name": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "count"
+                      },
+                      {
+                        "kind": "op",
+                        "op": "sub",
+                        "args": [
+                          {
+                            "kind": "var",
+                            "name": "total"
+                          },
+                          {
+                            "kind": "var",
+                            "name": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "range_end",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "end"
+              },
+              {
+                "kind": "op",
+                "op": "add",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "start"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "count"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "counterexample_to_slice_safety",
+          "expr": {
+            "kind": "op",
+            "op": "not",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "start"
+                      },
+                      {
+                        "kind": "int",
+                        "value": 0
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "end"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "le",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "end"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "total"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "persist": true,
+      "use_cache": false,
+      "timeout_ms": 10000
+    },
+    "unfiltered_scope": {
+      "family": "configuration",
+      "mode": "verify",
+      "rules": [
+        {
+          "rule_id": "configuration.excludes",
+          "subjects": [
+            "bulk_scan",
+            "label_filter"
+          ]
+        }
+      ],
+      "facts": {
+        "components": {
+          "bulk_scan": {
+            "selected": true,
+            "attributes": {}
+          },
+          "label_filter": {
+            "selected": false,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "unknowns": []
+    }
+  },
+  "resource": {
+    "family": "resource",
+    "mode": "verify",
+    "outcome": "pass",
+    "rule_results": [
+      {
+        "rule_id": "resource.request_within_limit",
+        "binding_index": 0,
+        "status": "sat",
+        "outcome": "pass"
+      }
+    ],
+    "total_duration_ms": 161,
+    "status": "sat",
+    "model": {},
+    "duration_ms": 0,
+    "solve_id": "sol_ea6c2451bfa148cf",
+    "reason": null,
+    "cached": true,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  },
+  "filtered_scope": {
+    "family": "configuration",
+    "mode": "verify",
+    "outcome": "pass",
+    "rule_results": [
+      {
+        "rule_id": "configuration.excludes",
+        "binding_index": 0,
+        "status": "sat",
+        "outcome": "pass"
+      }
+    ],
+    "total_duration_ms": 155,
+    "status": "sat",
+    "model": {},
+    "duration_ms": 0,
+    "solve_id": "sol_f02d0780862e4fd2",
+    "reason": null,
+    "cached": true,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  },
+  "unfiltered_scope": {
+    "family": "configuration",
+    "mode": "verify",
+    "outcome": "pass",
+    "rule_results": [
+      {
+        "rule_id": "configuration.excludes",
+        "binding_index": 0,
+        "status": "sat",
+        "outcome": "pass"
+      }
+    ],
+    "total_duration_ms": 224,
+    "status": "sat",
+    "model": {},
+    "duration_ms": 67,
+    "solve_id": "sol_906e878698734d6c",
+    "reason": null,
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  },
+  "safety": {
+    "status": "unsat",
+    "duration_ms": 19,
+    "solve_id": "sol_efb096d27ab74ea6",
+    "reason": null,
+    "unsat_core": [
+      "input_domain",
+      "saturating_sub",
+      "clamp_start",
+      "take_visible",
+      "range_end",
+      "counterexample_to_slice_safety"
+    ],
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  }
+}

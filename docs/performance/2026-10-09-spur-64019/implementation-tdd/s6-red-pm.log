@@ -1,0 +1,246 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873  (local=/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873)
+[build] Remote:   ~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   target=/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   -j8
+[build] Remote build queue: admitted as ticket 175 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3565 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 ...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib issue_changes::tests -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=145G used=65% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  268G  145G  65% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] No source content delta; capturing cargo output on VM (set SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0 to stream).
+[build] ensuring pinned toolchain (serialized)
+   Compiling smallvec v1.15.1
+   Compiling byteorder v1.5.0
+   Compiling crypto-common v0.1.7
+   Compiling subtle v2.6.1
+   Compiling num-traits v0.2.19
+   Compiling bytes v1.11.1
+   Compiling cc v1.2.60
+   Compiling hash32 v0.3.1
+   Compiling parking_lot_core v0.9.12
+   Compiling gix-date v0.12.1
+   Compiling digest v0.10.7
+   Compiling futures-util v0.3.32
+   Compiling heapless v0.8.0
+   Compiling parking_lot v0.12.5
+   Compiling sha1 v0.10.6
+   Compiling dashmap v6.1.0
+   Compiling prodash v30.0.1
+   Compiling faster-hex v0.10.0
+   Compiling sha1-checked v0.10.0
+   Compiling tokio v1.51.1
+   Compiling gix-features v0.45.2
+   Compiling http v1.4.0
+   Compiling serde_json v1.0.149
+   Compiling gix-packetline v0.20.0
+   Compiling chrono v0.4.44
+   Compiling ring v0.17.14
+   Compiling http-body v1.0.1
+   Compiling aho-corasick v1.1.4
+   Compiling gix-hash v0.21.2
+   Compiling gix-fs v0.18.2
+   Compiling gix-glob v0.23.0
+   Compiling tokio-util v0.7.18
+   Compiling gix-actor v0.37.1
+   Compiling h2 v0.4.14
+   Compiling gix-hashtable v0.11.0
+   Compiling gix-commitgraph v0.31.0
+   Compiling gix-tempfile v20.0.1
+   Compiling hyper v1.9.0
+   Compiling gix-attributes v0.29.0
+   Compiling gix-object v0.54.1
+   Compiling gix-ignore v0.18.0
+   Compiling gix-url v0.34.0
+   Compiling cargo_metadata v0.23.1
+   Compiling gix-lock v20.0.1
+   Compiling zerocopy v0.8.48
+   Compiling hyper-util v0.1.20
+   Compiling regex-automata v0.4.14
+   Compiling icu_normalizer v2.2.0
+   Compiling http-body-util v0.1.3
+   Compiling gix-pathspec v0.14.0
+   Compiling num-integer v0.1.46
+   Compiling hmac v0.12.1
+   Compiling sha2 v0.10.9
+   Compiling gix-shallow v0.7.0
+   Compiling idna_adapter v1.2.1
+   Compiling gix-transport v0.52.1
+   Compiling tower v0.5.3
+   Compiling rustls v0.23.38
+   Compiling idna v1.1.0
+   Compiling rustls-webpki v0.103.12
+   Compiling signature v2.2.0
+   Compiling gix-revwalk v0.25.0
+   Compiling gix-ref v0.57.0
+   Compiling gix-filter v0.24.1
+   Compiling gix-pack v0.64.1
+   Compiling ff v0.13.1
+   Compiling ppv-lite86 v0.2.21
+   Compiling sec1 v0.7.3
+   Compiling tower-http v0.6.8
+   Compiling group v0.13.0
+   Compiling url v2.5.8
+   Compiling hkdf v0.12.4
+   Compiling gix-traverse v0.51.1
+   Compiling gix-revision v0.39.0
+   Compiling futures-executor v0.3.32
+   Compiling vergen v9.1.0
+   Compiling crypto-bigint v0.5.5
+   Compiling futures v0.3.32
+   Compiling gix-index v0.45.1
+   Compiling gix-refspec v0.35.0
+   Compiling schemars v1.2.1
+   Compiling elliptic-curve v0.13.8
+   Compiling tokio-rustls v0.26.4
+   Compiling num-bigint v0.4.6
+   Compiling matchers v0.2.0
+   Compiling gix-discover v0.45.0
+   Compiling gix-config v0.50.0
+   Compiling gix-odb v0.74.0
+   Compiling gix-protocol v0.55.0
+   Compiling onig_sys v69.9.1
+   Compiling hashbrown v0.16.1
+   Compiling tracing-subscriber v0.3.23
+   Compiling hyper-rustls v0.27.9
+   Compiling rand_chacha v0.3.1
+   Compiling rfc6979 v0.4.0
+   Compiling gix-worktree v0.46.0
+   Compiling libsqlite3-sys v0.37.0
+   Compiling rand v0.8.5
+   Compiling ecdsa v0.16.9
+   Compiling serde_with v3.21.0
+   Compiling primeorder v0.13.6
+   Compiling num-iter v0.1.45
+   Compiling futures-concurrency v7.7.1
+   Compiling schemars v0.8.22
+   Compiling num-bigint-dig v0.8.6
+   Compiling gix-submodule v0.24.0
+   Compiling gix-dir v0.19.0
+   Compiling gix-diff v0.57.1
+   Compiling curve25519-dalek v4.1.3
+   Compiling reqwest v0.12.28
+   Compiling ed25519 v2.2.3
+   Compiling axum-core v0.5.6
+   Compiling ed25519-dalek v2.2.0
+   Compiling tracing-appender v0.2.4
+   Compiling rsa v0.9.10
+   Compiling agent-client-protocol-schema v1.1.0
+   Compiling process-wrap v9.1.0
+   Compiling p384 v0.13.1
+   Compiling p256 v0.13.2
+   Compiling crossterm v0.29.0
+   Compiling fancy-regex v0.17.0
+   Compiling lru v0.16.3
+   Compiling gix-status v0.24.0
+   Compiling hashlink v0.11.1
+   Compiling simple_asn1 v0.6.4
+   Compiling num-rational v0.4.2
+   Compiling file-rotate v0.8.0
+   Compiling reqwest v0.13.2
+   Compiling octocrab v0.50.0
+   Compiling rmcp-macros v1.5.0
+   Compiling sse-stream v0.2.2
+   Compiling regex v1.12.3
+   Compiling spur-telemetry v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-telemetry)
+   Compiling tokio-stream v0.1.18
+   Compiling gix v0.77.0
+   Compiling either v1.15.0
+   Compiling axum v0.8.9
+   Compiling rayon v1.12.0
+   Compiling rusqlite v0.39.0
+   Compiling jsonwebtoken v10.4.0
+   Compiling crossterm v0.28.1
+   Compiling rand v0.9.4
+   Compiling rand_chacha v0.9.0
+   Compiling hyper-timeout v0.5.2
+   Compiling proptest v1.11.0
+   Compiling sysinfo v0.30.13
+   Compiling rmcp v1.5.0
+   Compiling agent-client-protocol v1.0.1
+   Compiling spur-acp v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-acp)
+   Compiling vergen-gix v9.1.0
+   Compiling toon_rust v0.1.1 (https://github.com/Dicklesworthstone/toon_rust.git?rev=788589d#788589d7)
+   Compiling beads_rust v0.1.15 (https://github.com/getspur/beads_rust?rev=47b3b39a54b04c7d51d735c032c82e891c2a0db8#47b3b39a)
+   Compiling onig v6.5.1
+   Compiling syntect v5.3.0
+   Compiling rich_rust v0.2.1
+   Compiling spur-mcp v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-mcp)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 41.14s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 25 tests
+
+thread 'beads_crate::issue_changes::tests::dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed' (3113748) panicked at crates/spur-pm/src/beads_crate/issue_changes_tests.rs:27:5:
+assertion `left == right` failed
+  left: {}
+ right: {"a"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test beads_crate::issue_changes::tests::comment_replace_records_old_owner_even_when_delete_triggers_are_disabled ... ok
+test beads_crate::issue_changes::tests::dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed ... FAILED
+test beads_crate::issue_changes::tests::coalescing_retains_older_domain_changes_for_lagging_independent_readers ... ok
+test beads_crate::issue_changes::tests::adapter_installs_feed_before_external_mutations ... ok
+test beads_crate::issue_changes::tests::comment_and_audit_mutations_are_separate_from_summaries ... ok
+test beads_crate::issue_changes::tests::every_summary_filter_order_field_is_tracked_and_other_issue_fields_reach_hygiene ... ok
+test beads_crate::issue_changes::tests::exact_trigger_restoration_cannot_hide_an_untracked_edit ... ok
+test beads_crate::issue_changes::tests::external_description_edit_with_fixed_timestamp_and_hash_is_visible ... ok
+test beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost ... ok
+recovery SQLite 3.51.3
+test beads_crate::issue_changes::tests::adapter_comment_timestamp_is_unrelated_to_plain_summaries ... ok
+test beads_crate::issue_changes::tests::insert_tombstone_delete_and_id_change_retain_deletion_evidence ... ok
+test beads_crate::issue_changes::tests::label_add_remove_rename_and_reparent_report_both_ids ... ok
+test beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner ... ok
+
+thread 'beads_crate::issue_changes::tests::structural_edges_track_old_new_children_and_ignore_blockers' (3113796) panicked at crates/spur-pm/src/beads_crate/issue_changes_tests.rs:27:5:
+assertion `left == right` failed
+  left: {}
+ right: {"a"}
+test beads_crate::issue_changes::tests::structural_edges_track_old_new_children_and_ignore_blockers ... FAILED
+
+thread 'beads_crate::issue_changes::tests::structural_replace_captures_rowid_and_key_victims_without_recursive_triggers' (3113797) panicked at crates/spur-pm/src/beads_crate/issue_changes_tests.rs:27:5:
+assertion `left == right` failed
+  left: {}
+ right: {"a"}
+test beads_crate::issue_changes::tests::structural_replace_captures_rowid_and_key_victims_without_recursive_triggers ... FAILED
+test beads_crate::issue_changes::tests::replace_insert_and_update_include_external_ref_victims_without_recursive_triggers ... ok
+test beads_crate::issue_changes::tests::serialized_cursor_after_feed_restart_detects_clone_replacement ... ok
+test beads_crate::issue_changes::tests::reconnect_preserves_cursor_and_database_replacement_requires_reseed ... ok
+WAL post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::timestamp_only_edits_signal_since_membership_entry_and_exit ... ok
+watermark/delta work size=3: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::watermark_delta_and_loaded_rows_share_one_snapshot ... ok
+DELETE post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::repaired_journal_rejects_stale_writer_then_schema_read_allows_tracked_retry ... ok
+test beads_crate::issue_changes::tests::timestamp_summary_and_comment_revisions_survive_compaction_in_both_orders ... ok
+test beads_crate::issue_changes::tests::ignored_and_failed_conflicts_preserve_rows_and_complete_feed ... ok
+watermark/delta work size=300: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::lost_or_corrupt_tracking_forces_reseed_and_recovers ... ok
+watermark/delta work size=3000: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::unchanged_validation_and_delta_work_do_not_scale_with_issue_rows ... ok
+
+failures:
+
+failures:
+    beads_crate::issue_changes::tests::dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed
+    beads_crate::issue_changes::tests::structural_edges_track_old_new_children_and_ignore_blockers
+    beads_crate::issue_changes::tests::structural_replace_captures_rowid_and_key_victims_without_recursive_triggers
+
+test result: FAILED. 22 passed; 3 failed; 0 ignored; 0 measured; 263 filtered out; finished in 1.99s
+
+error: test failed, to rerun pass `-p spur-pm --lib`
+[build] Remote build queue: released ticket 00000000000000000175.
+[spur-cargo] remote cargo exited 1 on aws-my — propagating (not a VM-availability issue)

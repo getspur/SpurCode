@@ -1,0 +1,48 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873  (local=/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873)
+[build] Remote:   ~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   target=/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   -j8
+[build] Remote build queue: admitted as ticket 180 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3568 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 ...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib structural_combined_retarget_type_change -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=143G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  269G  143G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.75s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 1 test
+
+thread 'beads_crate::issue_changes::tests::structural_combined_retarget_type_change_marks_both_children' (3120694) panicked at crates/spur-pm/src/beads_crate/issue_changes_tests.rs:27:5:
+assertion `left == right` failed
+  left: {"a"}
+ right: {"a", "b"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test beads_crate::issue_changes::tests::structural_combined_retarget_type_change_marks_both_children ... FAILED
+
+failures:
+
+failures:
+    beads_crate::issue_changes::tests::structural_combined_retarget_type_change_marks_both_children
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 291 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p spur-pm --lib`
+[build] Remote build queue: released ticket 00000000000000000180.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

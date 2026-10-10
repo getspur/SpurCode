@@ -1,0 +1,79 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/incremental-beads-graph  (local=/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph)
+[build] Remote:   ~/spur/worktrees/incremental-beads-graph   target=/mnt/cargo/targets/spur/worktrees/incremental-beads-graph   -j8
+[build] Remote build queue: admitted as ticket 121 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3512 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/incremental-beads-graph ...
+[build] Re-stamping 4 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] removing 1 file(s) deleted locally since last sync:
+  - docs/performance/2026-10-09-incremental-graph/test.log
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib graph_engine::incremental::tests  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=149G used=64% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  263G  149G  64% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/incremental-beads-graph/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.66s
+
+running 16 tests
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/incremental-beads-graph/debug/deps/spur_pm-4c49b51fc9915668)
+test graph_engine::incremental::tests::empty_label_initialization_uses_indexed_queries ... FAILED
+test graph_engine::incremental::tests::external_single_node_edit_loads_only_that_node ... ok
+test graph_engine::incremental::tests::incremental_projection_matches_the_existing_full_loader ... FAILED
+test graph_engine::incremental::tests::independent_consumers_do_not_steal_changes ... ok
+test graph_engine::incremental::tests::failed_delta_does_not_publish_partial_data_or_advance_cursor ... ok
+test graph_engine::incremental::tests::deleting_a_dense_graph_node_repairs_indices_and_reintroduction_restores_edges ... ok
+test graph_engine::incremental::tests::label_membership_and_outside_changes_are_scoped ... ok
+test graph_engine::incremental::tests::edge_mutations_do_not_reload_nodes_and_cover_type_and_endpoints ... ok
+test graph_engine::incremental::tests::replace_conflict_records_the_deleted_issue_even_without_recursive_triggers ... ok
+test graph_engine::incremental::tests::rollback_does_not_advance_graph_revision ... ok
+test graph_engine::incremental::tests::scoped_refresh_ignores_corrupt_outside_dependency_payloads ... FAILED
+test graph_engine::incremental::tests::schema_recovery_reinstalls_tracking_and_rebuilds_once ... ok
+test graph_engine::incremental::tests::unchanged_and_unrelated_writes_do_not_reload_graph_data ... ok
+test graph_engine::incremental::tests::replacement_database_reopens_and_initializes_the_new_graph ... ok
+test graph_engine::incremental::tests::tombstones_templates_and_label_updates_remove_and_restore_membership ... ok
+test graph_engine::incremental::tests::a_large_graph_still_loads_one_node_for_one_field_change ... ok
+
+failures:
+
+---- graph_engine::incremental::tests::empty_label_initialization_uses_indexed_queries stdout ----
+
+thread 'graph_engine::incremental::tests::empty_label_initialization_uses_indexed_queries' (2724243) panicked at crates/spur-pm/src/graph_engine/incremental_tests.rs:371:9:
+unbounded scan in ["SCAN issues USING INDEX idx_issues_priority", "CORRELATED SCALAR SUBQUERY 1", "SEARCH labels USING COVERING INDEX sqlite_autoindex_labels_1 (issue_id=? AND label=?)", "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- graph_engine::incremental::tests::incremental_projection_matches_the_existing_full_loader stdout ----
+
+thread 'graph_engine::incremental::tests::incremental_projection_matches_the_existing_full_loader' (2724246) panicked at crates/spur-pm/src/graph_engine/incremental_tests.rs:354:13:
+assertion `left == right` failed: after UPDATE issues SET assignee='',issue_type='custom-type' WHERE id='a', scope None
+  left: (["{\"id\":\"a\",\"title\":\"A\",\"status\":\"open\",\"priority\":2,\"type\":\"custom-type\",\"assignee\":\"\",\"created_at\":\"2026-10-09T04:31:17Z\",\"updated_at\":\"2026-10-09T04:31:17Z\",\"due_at\":null,\"labels\":[\"one\"]}", "{\"id\":\"b\",\"title\":\"B\",\"status\":\"open\",\"priority\":2,\"type\":\"task\",\"assignee\":null,\"created_at\":\"2026-10-09T04:31:17Z\",\"updated_at\":\"2026-10-09T04:31:17Z\",\"due_at\":null,\"labels\":[\"one\"]}", "{\"id\":\"c\",\"title\":\"C\",\"status\":\"open\",\"priority\":2,\"type\":\"task\",\"assignee\":null,\"created_at\":\"2026-10-09T04:31:17Z\",\"updated_at\":\"2026-10-09T04:31:17Z\",\"due_at\":null,\"labels\":[\"two\"]}"], ["a|b|Blocks", "b|c|ParentChild"])
+ right: (["{\"id\":\"a\",\"title\":\"A\",\"status\":\"open\",\"priority\":2,\"type\":\"custom-type\",\"assignee\":null,\"created_at\":\"2026-10-09T04:31:17Z\",\"updated_at\":\"2026-10-09T04:31:17Z\",\"due_at\":null,\"labels\":[\"one\"]}", "{\"id\":\"b\",\"title\":\"B\",\"status\":\"open\",\"priority\":2,\"type\":\"task\",\"assignee\":null,\"created_at\":\"2026-10-09T04:31:17Z\",\"updated_at\":\"2026-10-09T04:31:17Z\",\"due_at\":null,\"labels\":[\"one\"]}", "{\"id\":\"c\",\"title\":\"C\",\"status\":\"open\",\"priority\":2,\"type\":\"task\",\"assignee\":null,\"created_at\":\"2026-10-09T04:31:17Z\",\"updated_at\":\"2026-10-09T04:31:17Z\",\"due_at\":null,\"labels\":[\"two\"]}"], ["a|b|Blocks", "b|c|ParentChild"])
+
+---- graph_engine::incremental::tests::scoped_refresh_ignores_corrupt_outside_dependency_payloads stdout ----
+
+thread 'graph_engine::incremental::tests::scoped_refresh_ignores_corrupt_outside_dependency_payloads' (2724253) panicked at crates/spur-pm/src/graph_engine/incremental_tests.rs:61:10:
+called `Result::unwrap()` on an `Err` value: Invalid column type Blob at index: 2, name: type
+
+
+failures:
+    graph_engine::incremental::tests::empty_label_initialization_uses_indexed_queries
+    graph_engine::incremental::tests::incremental_projection_matches_the_existing_full_loader
+    graph_engine::incremental::tests::scoped_refresh_ignores_corrupt_outside_dependency_payloads
+
+test result: FAILED. 13 passed; 3 failed; 0 ignored; 0 measured; 212 filtered out; finished in 0.21s
+
+error: test failed, to rerun pass `-p spur-pm --lib`
+[build] Remote build queue: released ticket 00000000000000000121.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

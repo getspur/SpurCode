@@ -1,0 +1,682 @@
+{
+  "current_ambient": {
+    "pid": 64019,
+    "wall_s": 53.141425916022854,
+    "cpu_s": 2.6809103333333333,
+    "avg_cpu_pct": 5.0448596121034885,
+    "peak_one_second_interval_cpu_pct": 43.1615207233277,
+    "db_data_version": {
+      "values": [
+        2,
+        3
+      ],
+      "transitions": 1
+    },
+    "graph_revision": {
+      "values": [
+        9,
+        15
+      ],
+      "transitions": 1
+    },
+    "schema_version": {
+      "values": [
+        57
+      ],
+      "transitions": 0
+    },
+    "db_probe_errors": [],
+    "rss_start_mib": 149.671875,
+    "rss_end_mib": 151.578125,
+    "footprint_start_mib": 1244.658058166504,
+    "footprint_end_mib": 1244.689308166504,
+    "disk_read_mib": 14.6875,
+    "disk_written_mib": 0.7734375,
+    "phase_metrics": {
+      "baseline": {
+        "wall_s": 10.005026375001762,
+        "cpu_s": 0.2412992916666666,
+        "avg_cpu_pct": 2.411780665262105
+      },
+      "sample_1": {
+        "wall_s": 11.048400416009827,
+        "cpu_s": 1.2233007083333334,
+        "avg_cpu_pct": 11.07219744281438
+      },
+      "sample_2": {
+        "wall_s": 11.043698291992769,
+        "cpu_s": 0.40839320833333326,
+        "avg_cpu_pct": 3.697975058132824
+      },
+      "sample_3": {
+        "wall_s": 11.03887154199765,
+        "cpu_s": 0.5744891666666666,
+        "avg_cpu_pct": 5.204238173086885
+      },
+      "recovery": {
+        "wall_s": 10.005429291020846,
+        "cpu_s": 0.23342795833333332,
+        "avg_cpu_pct": 2.333012922722048
+      }
+    },
+    "samples": [
+      {
+        "sample": "sample_1",
+        "threads": 39,
+        "total_thread_observations": 62166,
+        "known_wait_observations": 61935,
+        "other_observations": 231,
+        "snapshot_inclusive": 0,
+        "whole_graph_hash_inclusive": 0,
+        "incremental_request_inclusive": 5,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 2,
+        "non_wait_categories": {
+          "Other/unresolved": 14,
+          "TUI/session work": 40,
+          "Reconciler": 3,
+          "Incremental graph request": 5,
+          "Other beads/SQLite work": 169
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            145
+          ],
+          [
+            "(no resolved application frame)",
+            40
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_labels_for_issues",
+            6
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_comments",
+            6
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::mutate",
+            4
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            2
+          ],
+          [
+            "spur_core::plan_projection::projection::PlanProjectionStore::current_for_session",
+            2
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::tick",
+            2
+          ],
+          [
+            "spur_pm::graph_engine::incremental::IncrementalGraphStore::query",
+            2
+          ],
+          [
+            "spur_pm::graph_engine::compute_subgraph",
+            2
+          ],
+          [
+            "spur_pm::beads_crate::issue_tracker::apply_label_comment_update_in_transaction",
+            2
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_issue",
+            2
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 18
+      },
+      {
+        "sample": "sample_2",
+        "threads": 37,
+        "total_thread_observations": 63447,
+        "known_wait_observations": 63380,
+        "other_observations": 67,
+        "snapshot_inclusive": 0,
+        "whole_graph_hash_inclusive": 0,
+        "incremental_request_inclusive": 1,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 0,
+        "non_wait_categories": {
+          "TUI/session work": 31,
+          "Other/unresolved": 13,
+          "Incremental graph request": 1,
+          "Other beads/SQLite work": 22
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "(no resolved application frame)",
+            34
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            10
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_comments",
+            7
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::tick",
+            3
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_labels_for_issues",
+            3
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            2
+          ],
+          [
+            "spur_tui::components::react_trace::ReactTrace::set_theme",
+            2
+          ],
+          [
+            "spur_tui::components::status_bar::StatusBar::render",
+            1
+          ],
+          [
+            "spur_tui::views::session_detail::state::_$LT$impl$u20$spur_tui..views..session_detail..SessionDetailView$GT$::build_state_lookup_sets",
+            1
+          ],
+          [
+            "core::ptr::drop_in_place$LT$spur_pm..types..IssueSummary$GT$",
+            1
+          ],
+          [
+            "spur_pm::graph_engine::incremental::IncrementalGraphStore::query",
+            1
+          ],
+          [
+            "spur_pm::beads_crate::beads_db::reader_loop",
+            1
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 11
+      },
+      {
+        "sample": "sample_3",
+        "threads": 36,
+        "total_thread_observations": 63288,
+        "known_wait_observations": 63184,
+        "other_observations": 104,
+        "snapshot_inclusive": 0,
+        "whole_graph_hash_inclusive": 0,
+        "incremental_request_inclusive": 0,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 1,
+        "non_wait_categories": {
+          "TUI/session work": 27,
+          "Other/unresolved": 15,
+          "Reconciler": 2,
+          "Other beads/SQLite work": 60
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            51
+          ],
+          [
+            "(no resolved application frame)",
+            25
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            7
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_labels_for_issues",
+            3
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_comments",
+            3
+          ],
+          [
+            "spur_tui::components::status_bar::StatusBar::render",
+            2
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::tick",
+            2
+          ],
+          [
+            "spur_tui::theme::tokens::TokenMap::resolve",
+            1
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::render",
+            1
+          ],
+          [
+            "spur_tui::app::App::tick",
+            1
+          ],
+          [
+            "spur_core::plan::audit_sentinel::_::_$LT$impl$u20$serde_core..de..Deserialize$u20$for$u20$spur_core..plan..audit_sentinel..AuditSentinelKind$GT$::deserialize",
+            1
+          ],
+          [
+            "spur_pm::graph_engine::raw::serialize_subgraph",
+            1
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 10
+      }
+    ]
+  },
+  "controlled": {
+    "pid": 64019,
+    "wall_s": 14.04238900000928,
+    "cpu_s": 0.5519395416666666,
+    "avg_cpu_pct": 3.930524511650417,
+    "peak_one_second_interval_cpu_pct": 6.746003786940446,
+    "db_data_version": {
+      "values": [
+        2
+      ],
+      "transitions": 0
+    },
+    "graph_revision": {
+      "values": [
+        15
+      ],
+      "transitions": 0
+    },
+    "schema_version": {
+      "values": [
+        57
+      ],
+      "transitions": 0
+    },
+    "db_probe_errors": [],
+    "rss_start_mib": 152.34375,
+    "rss_end_mib": 155.109375,
+    "footprint_start_mib": 1244.704933166504,
+    "footprint_end_mib": 1245.033058166504,
+    "disk_read_mib": 6.48828125,
+    "disk_written_mib": 0.0,
+    "phase_metrics": {
+      "sample_1": {
+        "wall_s": 11.040743666992057,
+        "cpu_s": 0.4459392916666667,
+        "avg_cpu_pct": 4.039033104263334
+      },
+      "recovery": {
+        "wall_s": 3.0016453330172226,
+        "cpu_s": 0.10600024999999999,
+        "avg_cpu_pct": 3.5314048876470574
+      }
+    },
+    "samples": [
+      {
+        "sample": "sample_1",
+        "threads": 36,
+        "total_thread_observations": 63288,
+        "known_wait_observations": 63173,
+        "other_observations": 115,
+        "snapshot_inclusive": 0,
+        "whole_graph_hash_inclusive": 0,
+        "incremental_request_inclusive": 0,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 1,
+        "non_wait_categories": {
+          "TUI/session work": 66,
+          "Other/unresolved": 28,
+          "Reconciler": 1,
+          "Other beads/SQLite work": 20
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "(no resolved application frame)",
+            47
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            15
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            13
+          ],
+          [
+            "spur_tui::components::react_trace::builder::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::build_virtual_rows_with_tail::_$u7b$$u7b$closure$u7d$$u7d$",
+            7
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::tick",
+            7
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_comments",
+            5
+          ],
+          [
+            "spur_tui::components::trace_format::input_display_lines",
+            2
+          ],
+          [
+            "spur_tui::components::trace_format::observe_payload_lines",
+            2
+          ],
+          [
+            "spur_tui::components::react_trace::ReactTrace::drain_fence_dispatches",
+            2
+          ],
+          [
+            "spur_tui::app::App::tick",
+            2
+          ],
+          [
+            "spur_acp::spur_agent_caps::sanitize_field_path_segment",
+            2
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::render",
+            1
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 13
+      }
+    ]
+  },
+  "previous_ambient": {
+    "pid": 71291,
+    "wall_s": 53.16792587499367,
+    "cpu_s": 13.027078416666665,
+    "avg_cpu_pct": 24.501761545664614,
+    "peak_one_second_interval_cpu_pct": 101.86964547672547,
+    "db_data_version": {
+      "values": [
+        2
+      ],
+      "transitions": 0
+    },
+    "graph_revision": {
+      "values": [],
+      "transitions": 0
+    },
+    "schema_version": {
+      "values": [],
+      "transitions": 0
+    },
+    "db_probe_errors": [],
+    "rss_start_mib": 2483.015625,
+    "rss_end_mib": 2209.390625,
+    "footprint_start_mib": 3067.753707885742,
+    "footprint_end_mib": 3067.753707885742,
+    "disk_read_mib": 0.09765625,
+    "disk_written_mib": 0.0,
+    "phase_metrics": {
+      "baseline": {
+        "wall_s": 10.0015604160144,
+        "cpu_s": 0.34370154166666667,
+        "avg_cpu_pct": 3.436479182951644
+      },
+      "sample_1": {
+        "wall_s": 11.053881792002358,
+        "cpu_s": 3.9150413749999995,
+        "avg_cpu_pct": 35.417796649794
+      },
+      "sample_2": {
+        "wall_s": 11.05418291699607,
+        "cpu_s": 4.528019708333333,
+        "avg_cpu_pct": 40.9620479625988
+      },
+      "sample_3": {
+        "wall_s": 11.052909499994712,
+        "cpu_s": 0.3871528333333333,
+        "avg_cpu_pct": 3.502723272397358
+      },
+      "recovery": {
+        "wall_s": 10.005391249986133,
+        "cpu_s": 3.8531629583333333,
+        "avg_cpu_pct": 38.510867411993246
+      }
+    },
+    "samples": [
+      {
+        "sample": "sample_1",
+        "threads": 50,
+        "total_thread_observations": 86000,
+        "known_wait_observations": 85289,
+        "other_observations": 711,
+        "snapshot_inclusive": 535,
+        "whole_graph_hash_inclusive": 91,
+        "incremental_request_inclusive": 0,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 11,
+        "non_wait_categories": {
+          "TUI/session work": 55,
+          "Other/unresolved": 9,
+          "Reconciler": 11,
+          "Other beads/SQLite work": 10,
+          "Legacy snapshot/hash": 626
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            143
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_labels_for_issues",
+            108
+          ],
+          [
+            "spur_pm::graph_engine::snapshot::GraphSnapshot::compute_data_hash",
+            91
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_all_dependency_records",
+            89
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::issue_from_row",
+            77
+          ],
+          [
+            "spur_pm::graph_engine::snapshot::load_graph_snapshot",
+            51
+          ],
+          [
+            "beads_rust::util::hash::HashFieldWriter::field",
+            43
+          ],
+          [
+            "(no resolved application frame)",
+            39
+          ],
+          [
+            "core::ptr::drop_in_place$LT$spur_pm..graph_engine..snapshot..GraphSnapshot$GT$",
+            10
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            9
+          ],
+          [
+            "beads_rust::storage::sqlite::parse_datetime",
+            7
+          ],
+          [
+            "spur_pm::beads_crate::dependency_compat::get_dependencies_full_for_issues",
+            7
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 35
+      },
+      {
+        "sample": "sample_2",
+        "threads": 50,
+        "total_thread_observations": 86500,
+        "known_wait_observations": 85808,
+        "other_observations": 692,
+        "snapshot_inclusive": 516,
+        "whole_graph_hash_inclusive": 69,
+        "incremental_request_inclusive": 0,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 11,
+        "non_wait_categories": {
+          "TUI/session work": 46,
+          "Other/unresolved": 6,
+          "Reconciler": 11,
+          "Other beads/SQLite work": 44,
+          "Legacy snapshot/hash": 585
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            213
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_labels_for_issues",
+            94
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::get_all_dependency_records",
+            85
+          ],
+          [
+            "spur_pm::graph_engine::snapshot::GraphSnapshot::compute_data_hash",
+            69
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::issue_from_row",
+            50
+          ],
+          [
+            "spur_pm::graph_engine::snapshot::load_graph_snapshot",
+            40
+          ],
+          [
+            "beads_rust::util::hash::HashFieldWriter::field",
+            39
+          ],
+          [
+            "(no resolved application frame)",
+            33
+          ],
+          [
+            "core::ptr::drop_in_place$LT$spur_pm..graph_engine..snapshot..GraphSnapshot$GT$",
+            10
+          ],
+          [
+            "beads_rust::storage::sqlite::parse_datetime",
+            9
+          ],
+          [
+            "core::ptr::drop_in_place$LT$beads_rust..model..Dependency$GT$",
+            7
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            6
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 36
+      },
+      {
+        "sample": "sample_3",
+        "threads": 50,
+        "total_thread_observations": 86400,
+        "known_wait_observations": 86340,
+        "other_observations": 60,
+        "snapshot_inclusive": 0,
+        "whole_graph_hash_inclusive": 0,
+        "incremental_request_inclusive": 0,
+        "initial_load_inclusive": 0,
+        "delta_load_inclusive": 0,
+        "hygiene_inclusive": 0,
+        "non_wait_categories": {
+          "TUI/session work": 51,
+          "Other/unresolved": 5,
+          "Other beads/SQLite work": 4
+        },
+        "top_application_frames_excluding_known_waits": [
+          [
+            "(no resolved application frame)",
+            30
+          ],
+          [
+            "spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused",
+            14
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::tick",
+            4
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::issue_from_row",
+            3
+          ],
+          [
+            "spur_tui::components::react_trace::ReactTrace::drain_fence_dispatches",
+            2
+          ],
+          [
+            "spur_tui::components::status_bar::StatusBar::render",
+            1
+          ],
+          [
+            "spur_tui::theme::resolver::resolve_token",
+            1
+          ],
+          [
+            "_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::render",
+            1
+          ],
+          [
+            "spur_tui::components::markdown_stream::MarkdownStream::maybe_flush",
+            1
+          ],
+          [
+            "spur_tui::app::events::_$LT$impl$u20$spur_tui..app..App$GT$::schedule_pending_agent_model_catalog_probes",
+            1
+          ],
+          [
+            "spur_tui::views::session_detail::state::_$LT$impl$u20$spur_tui..views..session_detail..SessionDetailView$GT$::draft_save_action",
+            1
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            1
+          ]
+        ],
+        "collapsed_leaf_checks_passed": 9
+      }
+    ]
+  },
+  "requests": {
+    "count": 40,
+    "p50_roundtrip_ms": 6.0,
+    "p95_roundtrip_ms": 10.849999999999952,
+    "max_roundtrip_ms": 30,
+    "min_roundtrip_ms": 4,
+    "unique_hashes": [
+      "g2:38a9ca3f4304f34f6e8de4ec590b9e90bb67c38dace807f26545f3f660a103fb"
+    ],
+    "identical_responses": true,
+    "nodes_returned": 2,
+    "edges_returned": 1,
+    "timing_scope": "MCP tool round-trip wall time, not isolated GraphEngine CPU or end-user UI latency"
+  },
+  "interpretation_limits": [
+    "Observational before/after captures are not a matched-workload benchmark.",
+    "Native sample observes all threads including sleeping workers; frame counts are not call counts or CPU percentages.",
+    "Absence of a stack frame does not prove zero executions.",
+    "MCP round-trip timing covers transport and dispatch, not only GraphEngine.",
+    "RSS and physical footprint measure different things; neither alone proves a memory leak or its resolution.",
+    "Exact running git revision is not exposed; loaded UUID and incremental-path stack frames provide build/path evidence."
+  ]
+}

@@ -1,0 +1,127 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4  (local=/Volumes/Projects/spur/.spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4)
+[build] Remote:   ~/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4   target=/mnt/cargo/targets/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4   -j8
+[build] Remote build queue: admitted as ticket 188 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3568 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4 ...
+[build] Re-stamping 2 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm -p spur-core --lib --no-fail-fast -- hygiene beads_crate::issue_changes::tests --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=145G used=65% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  267G  145G  65% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `spur-graph` (lib) generated 1 warning
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/crates/spur-pm)
+   Compiling spur-core v1.24.0 (/home/admin/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/crates/spur-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 09s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/debug/deps/spur_core-3e2e003836cf3367)
+
+running 13 tests
+test plan::reconciler::tests::hygiene_tests::hygiene_pending_grace_expires_without_db_change_or_comment_reread ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_pending_empty_audits_invalidate_on_comments_and_eligibility_exit ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_membership_reseed_unsupported_and_feed_errors ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_partial_failure_and_comment_during_label_write_are_retried ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_review_mixed_case_parent_comment_repairs_child ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_closed_parent_changes_expand_to_child_and_direct_audit_wins ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_overlapping_sweeps_serialize_and_cancelled_sweeps_retry ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_successful_write_does_not_ack_a_concurrent_comment ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_database_still_renews_expired_owner_lease ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_database_still_runs_due_loop_on_tick ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_skips_comments_and_leaf_edit_stays_local ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_review_mixed_case_structural_changes_repair_child ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_review_excluded_parent_removes_inherited_plan ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 1596 filtered out; finished in 2.03s
+
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4/debug/deps/spur_pm-6dcd6fa0bdf775e2)
+
+running 33 tests
+test beads_crate::hygiene::tests::hygiene_review_mixed_case_parent_comment_expands_to_child ... ok
+test beads_crate::issue_changes::tests::coalescing_retains_older_domain_changes_for_lagging_independent_readers ... ok
+test beads_crate::hygiene::tests::hygiene_snapshot_expands_closed_parent_and_filters_deleted_or_ineligible_children ... ok
+test beads_crate::hygiene::tests::hygiene_history_gap_reseeds_and_parent_lookup_is_indexed ... ok
+test beads_crate::issue_changes::tests::adapter_installs_feed_before_external_mutations ... ok
+test beads_crate::hygiene::tests::hygiene_review_parent_endpoints_match_graph_eligibility ... ok
+test beads_crate::issue_changes::tests::comment_replace_records_old_owner_even_when_delete_triggers_are_disabled ... ok
+test beads_crate::issue_changes::tests::dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed ... ok
+test beads_crate::issue_changes::tests::comment_and_audit_mutations_are_separate_from_summaries ... ok
+test beads_crate::issue_changes::tests::every_summary_filter_order_field_is_tracked_and_other_issue_fields_reach_hygiene ... ok
+test beads_crate::issue_changes::tests::external_description_edit_with_fixed_timestamp_and_hash_is_visible ... ok
+test beads_crate::issue_changes::tests::adapter_comment_timestamp_is_unrelated_to_plain_summaries ... ok
+test beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost ... ok
+test beads_crate::issue_changes::tests::exact_trigger_restoration_cannot_hide_an_untracked_edit ... ok
+test beads_crate::issue_changes::tests::hygiene_review_mixed_case_structural_changes_track_old_and_new_children ... ok
+test beads_crate::issue_changes::tests::insert_tombstone_delete_and_id_change_retain_deletion_evidence ... ok
+recovery SQLite 3.51.3
+test beads_crate::issue_changes::tests::label_add_remove_rename_and_reparent_report_both_ids ... ok
+test beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner ... ok
+test beads_crate::issue_changes::tests::reconnect_preserves_cursor_and_database_replacement_requires_reseed ... ok
+test beads_crate::issue_changes::tests::replace_insert_and_update_include_external_ref_victims_without_recursive_triggers ... ok
+WAL post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::serialized_cursor_after_feed_restart_detects_clone_replacement ... ok
+test beads_crate::issue_changes::tests::hygiene_review_mixed_case_replace_captures_rowid_and_composite_key_victims ... ok
+test beads_crate::issue_changes::tests::structural_combined_retarget_type_change_marks_both_children ... ok
+test beads_crate::issue_changes::tests::structural_edges_track_old_new_children_and_ignore_blockers ... ok
+DELETE post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::timestamp_only_edits_signal_since_membership_entry_and_exit ... ok
+test beads_crate::issue_changes::tests::structural_replace_captures_rowid_and_key_victims_without_recursive_triggers ... ok
+test beads_crate::issue_changes::tests::repaired_journal_rejects_stale_writer_then_schema_read_allows_tracked_retry ... ok
+watermark/delta work size=3: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::watermark_delta_and_loaded_rows_share_one_snapshot ... ok
+test beads_crate::issue_changes::tests::timestamp_summary_and_comment_revisions_survive_compaction_in_both_orders ... ok
+test beads_crate::hygiene::tests::hygiene_structural_conflicts_rollback_or_conservatively_invalidate ... ok
+test beads_crate::issue_changes::tests::ignored_and_failed_conflicts_preserve_rows_and_complete_feed ... ok
+watermark/delta work size=300: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::lost_or_corrupt_tracking_forces_reseed_and_recovers ... ok
+watermark/delta work size=3000: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::unchanged_validation_and_delta_work_do_not_scale_with_issue_rows ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 263 filtered out; finished in 2.37s
+
+
+--- sccache stats (spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4) ---
+Compile requests                    2133
+Compile requests executed           1665
+Cache hits                          1219
+Cache hits (Assembler)                34
+Cache hits (C/C++)                   472
+Cache hits (Rust)                    713
+Cache misses                         440
+Cache misses (C/C++)                 146
+Cache misses (Rust)                  294
+Cache hits rate                    73.48 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            76.38 %
+Cache hits rate (Rust)             70.80 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         440
+Compilation failures                   6
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/0787c643-2fa6-4849-81fa-fd1fc8a007a4 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000188.

@@ -1,0 +1,424 @@
+{
+  "captures": {
+    "ambient": [
+      {
+        "sample": "sample_1",
+        "total": 62166,
+        "non_wait": 231,
+        "list_inclusive": 146,
+        "list_non_wait": 145,
+        "phases": {
+          "SQL execution / row fetch": 137,
+          "Known wait leaf": 1,
+          "SQL preparation": 8
+        },
+        "top_leaves": [
+          [
+            "pread",
+            56
+          ],
+          [
+            "sqlite3VdbeExec",
+            16
+          ],
+          [
+            "_platform_memcmp",
+            14
+          ],
+          [
+            "sqlite3BtreeIndexMoveto",
+            11
+          ],
+          [
+            "vdbeRecordCompareString",
+            10
+          ],
+          [
+            "pthread_mutex_lock",
+            6
+          ],
+          [
+            "sqlite3BtreeTableMoveto",
+            5
+          ],
+          [
+            "pcache1Fetch",
+            5
+          ],
+          [
+            "getAndInitPage",
+            4
+          ],
+          [
+            "sqlite3VdbeRecordCompareWithSkip",
+            2
+          ],
+          [
+            "__psynch_mutexwait",
+            1
+          ],
+          [
+            "getCellInfo",
+            1
+          ],
+          [
+            "copyPayload",
+            1
+          ],
+          [
+            "sqlite3Malloc",
+            1
+          ],
+          [
+            "exprListDeleteNN",
+            1
+          ]
+        ],
+        "application": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            146
+          ]
+        ],
+        "threads": {
+          "Thread_3433152: beads-db-reader-0": 41,
+          "Thread_3433153: beads-db-reader-1": 33,
+          "Thread_3433154: beads-db-reader-2": 35,
+          "Thread_3433155: beads-db-reader-3": 37
+        },
+        "top_chains": [
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            14
+          ],
+          [
+            "Thread_3433155: beads-db-reader-3 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            14
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            11
+          ],
+          [
+            "Thread_3433153: beads-db-reader-1 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            9
+          ],
+          [
+            "Thread_3433153: beads-db-reader-1 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            9
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            9
+          ],
+          [
+            "Thread_3433155: beads-db-reader-3 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            7
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeMemFromBtree",
+            6
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec",
+            6
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            6
+          ]
+        ]
+      },
+      {
+        "sample": "sample_2",
+        "total": 63447,
+        "non_wait": 67,
+        "list_inclusive": 11,
+        "list_non_wait": 11,
+        "phases": {
+          "SQL execution / row fetch": 9,
+          "Row decoding": 1,
+          "SQL preparation": 1
+        },
+        "top_leaves": [
+          [
+            "_platform_memcmp",
+            3
+          ],
+          [
+            "pread",
+            2
+          ],
+          [
+            "sqlite3GetVarint",
+            1
+          ],
+          [
+            "sqlite3VdbeExec",
+            1
+          ],
+          [
+            "vdbeRecordCompareString",
+            1
+          ],
+          [
+            "btreeParseCellPtrIndex",
+            1
+          ],
+          [
+            "<deduplicated_symbol>",
+            1
+          ],
+          [
+            "_malloc_zone_malloc",
+            1
+          ]
+        ],
+        "application": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            10
+          ],
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::issue_from_row",
+            1
+          ]
+        ],
+        "threads": {
+          "Thread_3433152: beads-db-reader-0": 3,
+          "Thread_3433153: beads-db-reader-1": 2,
+          "Thread_3433154: beads-db-reader-2": 3,
+          "Thread_3433155: beads-db-reader-3": 3
+        },
+        "top_chains": [
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto \u2192 sqlite3GetVarint",
+            1
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec",
+            1
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            1
+          ],
+          [
+            "Thread_3433153: beads-db-reader-1 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            1
+          ],
+          [
+            "Thread_3433153: beads-db-reader-1 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto \u2192 sqlite3BtreeNext",
+            1
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            1
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeIdxRowid",
+            1
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            1
+          ],
+          [
+            "Thread_3433155: beads-db-reader-3 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            1
+          ],
+          [
+            "Thread_3433155: beads-db-reader-3 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 beads_rust::storage::sqlite::SqliteStorage::issue_from_row",
+            1
+          ]
+        ]
+      },
+      {
+        "sample": "sample_3",
+        "total": 63288,
+        "non_wait": 104,
+        "list_inclusive": 52,
+        "list_non_wait": 52,
+        "phases": {
+          "SQL execution / row fetch": 47,
+          "SQL preparation": 4,
+          "Row decoding": 1
+        },
+        "top_leaves": [
+          [
+            "pread",
+            22
+          ],
+          [
+            "sqlite3BtreeTableMoveto",
+            6
+          ],
+          [
+            "_platform_memcmp",
+            5
+          ],
+          [
+            "vdbeRecordCompareString",
+            3
+          ],
+          [
+            "sqlite3BtreeIndexMoveto",
+            2
+          ],
+          [
+            "_platform_memmove",
+            2
+          ],
+          [
+            "sqlite3VdbeExec",
+            2
+          ],
+          [
+            "xzm_malloc_zone_size",
+            1
+          ],
+          [
+            "decodeFlags",
+            1
+          ],
+          [
+            "pcache1Fetch",
+            1
+          ],
+          [
+            "sqlite3VdbeIdxRowid",
+            1
+          ],
+          [
+            "moveToChild",
+            1
+          ],
+          [
+            "getPageNormal",
+            1
+          ],
+          [
+            "sqlite3ResolveExprListNames",
+            1
+          ],
+          [
+            "_xzm_xzone_malloc_small_freelist",
+            1
+          ]
+        ],
+        "application": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            51
+          ],
+          [
+            "_$LT$beads_rust..model..IssueType$u20$as$u20$core..str..traits..FromStr$GT$::from_str",
+            1
+          ]
+        ],
+        "threads": {
+          "Thread_3433152: beads-db-reader-0": 14,
+          "Thread_3433153: beads-db-reader-1": 12,
+          "Thread_3433154: beads-db-reader-2": 12,
+          "Thread_3433155: beads-db-reader-3": 14
+        },
+        "top_chains": [
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            6
+          ],
+          [
+            "Thread_3433153: beads-db-reader-1 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            4
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto \u2192 sqlite3BtreeNext",
+            4
+          ],
+          [
+            "Thread_3433155: beads-db-reader-3 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto \u2192 sqlite3BtreeNext",
+            4
+          ],
+          [
+            "Thread_3433155: beads-db-reader-3 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            4
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            3
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto \u2192 sqlite3BtreeNext",
+            3
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec",
+            3
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            3
+          ],
+          [
+            "Thread_3433153: beads-db-reader-1 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            3
+          ]
+        ]
+      }
+    ],
+    "controlled": [
+      {
+        "sample": "sample_1",
+        "total": 63288,
+        "non_wait": 115,
+        "list_inclusive": 13,
+        "list_non_wait": 13,
+        "phases": {
+          "SQL execution / row fetch": 13
+        },
+        "top_leaves": [
+          [
+            "pread",
+            10
+          ],
+          [
+            "sqlite3VdbeExec",
+            2
+          ],
+          [
+            "_platform_memcmp",
+            1
+          ]
+        ],
+        "application": [
+          [
+            "beads_rust::storage::sqlite::SqliteStorage::list_issues",
+            13
+          ]
+        ],
+        "threads": {
+          "Thread_3433152: beads-db-reader-0": 11,
+          "Thread_3433154: beads-db-reader-2": 2
+        },
+        "top_chains": [
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3VdbeFinishMoveto \u2192 sqlite3BtreeTableMoveto",
+            9
+          ],
+          [
+            "Thread_3433152: beads-db-reader-0 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec \u2192 sqlite3BtreeIndexMoveto",
+            2
+          ],
+          [
+            "Thread_3433154: beads-db-reader-2 \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 spur_pm::beads_crate::beads_db::reader_loop \u2192 core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$ \u2192 beads_rust::storage::sqlite::SqliteStorage::list_issues \u2192 sqlite3_step \u2192 sqlite3VdbeExec",
+            2
+          ]
+        ]
+      }
+    ]
+  },
+  "ambient_list_non_wait": 208,
+  "ambient_non_wait": 402,
+  "ambient_share_non_wait_pct": 51.74129353233831,
+  "caveat": "All-thread native sampling; non-wait classification is not proof of on-CPU execution. Async reader stacks do not identify the submitting caller."
+}

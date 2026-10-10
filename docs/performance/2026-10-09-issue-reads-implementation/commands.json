@@ -1,0 +1,416 @@
+[
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "--release",
+      "-p",
+      "spur-pm",
+      "s7_",
+      "--lib",
+      "--",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 228.98816990852356,
+    "log": ".spur/tmp/bd-a96om/baseline-release.log",
+    "name": "baseline-release",
+    "preserved_log": "logs/baseline-release.log",
+    "log_sha256": "4bbb06ffaf42d8408232b511207189a048442c49c78b99e38a969d2d0db85b25",
+    "test_results": [
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 296 filtered out; finished in 6.39s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "clippy",
+      "--no-deps",
+      "-p",
+      "spur-pm",
+      "-p",
+      "spur-core",
+      "--lib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0",
+      "SPUR_REMOTE": "1"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 115.31751298904419,
+    "log": ".spur/tmp/bd-a96om/final-clippy-no-deps.log",
+    "name": "final-clippy-no-deps",
+    "preserved_log": "logs/final-clippy-no-deps.log",
+    "log_sha256": "b268c9169e562619078c70e90dacbeff793be27536f666bf7b7650e013bc75fc",
+    "test_results": []
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "clippy",
+      "-p",
+      "spur-pm",
+      "-p",
+      "spur-core",
+      "--lib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0",
+      "SPUR_REMOTE": "1"
+    },
+    "exit_status": 101,
+    "elapsed_seconds": 291.31743717193604,
+    "log": ".spur/tmp/bd-a96om/final-clippy.log",
+    "name": "final-clippy",
+    "preserved_log": "logs/final-clippy.log",
+    "log_sha256": "7fade929d8749de2b51534a1e520c6e7683f2f49ceafbe7bc0689c5e6054af4e",
+    "test_results": []
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-core",
+      "--test",
+      "reconciler_tick",
+      "--test",
+      "reconciler_shutdown",
+      "--test",
+      "reconciler_late_enable",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 98.5814950466156,
+    "log": ".spur/tmp/bd-a96om/final-core-integration.log",
+    "name": "final-core-integration",
+    "preserved_log": "logs/final-core-integration.log",
+    "log_sha256": "39fcae10e2a63ed8000244ba881a3322a98f8a2bf157925835f1c27b5c00ab0d",
+    "test_results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s",
+      "test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.06s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-core",
+      "plan::reconciler",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 93.94139194488525,
+    "log": ".spur/tmp/bd-a96om/final-core-unit-retry.log",
+    "name": "final-core-unit-retry",
+    "preserved_log": "logs/final-core-unit-retry.log",
+    "log_sha256": "b8d07662410c7a06094db30cc1f8a194361705f18a6f6ca57a6a3418fc37d32c",
+    "test_results": [
+      "test result: ok. 103 passed; 0 failed; 0 ignored; 0 measured; 1506 filtered out; finished in 3.27s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-core",
+      "plan::reconciler",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+    },
+    "exit_status": 255,
+    "elapsed_seconds": 373.96823501586914,
+    "log": ".spur/tmp/bd-a96om/final-core-unit.log",
+    "name": "final-core-unit",
+    "preserved_log": "logs/final-core-unit.log",
+    "log_sha256": "da59eeda62b311c64c2d6f8742238cb3ed0d440adbc6778a21a63b3b39b58ab5",
+    "test_results": []
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "fmt",
+      "-p",
+      "spur-pm",
+      "-p",
+      "spur-core",
+      "--",
+      "--check"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 2.3075010776519775,
+    "log": ".spur/tmp/bd-a96om/final-fmt.log",
+    "name": "final-fmt",
+    "preserved_log": "logs/final-fmt.log",
+    "log_sha256": "089b3767f6e9b317ce90a0c82045a661cb3e138f3da1413ff76bd28f25f57ffc",
+    "test_results": []
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-pm",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 85.42505717277527,
+    "log": ".spur/tmp/bd-a96om/final-pm.log",
+    "name": "final-pm",
+    "preserved_log": "logs/final-pm.log",
+    "log_sha256": "44155c3f7f30c4f21850d8f7b051b5c72ef6f139cb0c54e4506312b396b99dff",
+    "test_results": [
+      "test result: ok. 298 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 11.94s",
+      "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+      "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s",
+      "test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "--release",
+      "-p",
+      "spur-pm",
+      "s7_request_benchmark",
+      "--lib",
+      "--",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300",
+      "SPUR_CAPTURE_FRESH_CARGO_OUTPUT": "0"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 82.13835597038269,
+    "log": ".spur/tmp/bd-a96om/final-release-stream.log",
+    "name": "final-release-stream",
+    "preserved_log": "logs/final-release-stream.log",
+    "log_sha256": "8f95c441e4349b7435e5ae6c46a28972397f1c938b895992a9abb615f30bec81",
+    "test_results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 300 filtered out; finished in 3.25s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "--release",
+      "-p",
+      "spur-pm",
+      "s7_request_benchmark",
+      "--lib",
+      "--",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 84.31851291656494,
+    "log": ".spur/tmp/bd-a96om/final-release.log",
+    "name": "final-release",
+    "preserved_log": "logs/final-release.log",
+    "log_sha256": "e7959a43fa43ff5b4f4c35764edf50e7dee1ed09f85b98d64d6b80c59eeb8d6d",
+    "test_results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 300 filtered out; finished in 3.25s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-pm",
+      "issue_",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 93.71802973747253,
+    "log": ".spur/tmp/bd-a96om/green-delta-query.log",
+    "name": "green-delta-query",
+    "preserved_log": "logs/green-delta-query.log",
+    "log_sha256": "b881510c46748a8644192a8a6f072bba45444a0ee1da91b341ef8cf5677fac97",
+    "test_results": [
+      "test result: ok. 78 passed; 0 failed; 2 ignored; 0 measured; 221 filtered out; finished in 6.66s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-pm",
+      "beads_crate::",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 102.17720293998718,
+    "log": ".spur/tmp/bd-a96om/green-fixed-work.log",
+    "name": "green-fixed-work",
+    "preserved_log": "logs/green-fixed-work.log",
+    "log_sha256": "321856eef730dd0078c5f1324576d4a245ebfb97e171045f9823fccc8a4e6827",
+    "test_results": [
+      "test result: ok. 157 passed; 0 failed; 3 ignored; 0 measured; 140 filtered out; finished in 11.96s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "--release",
+      "-p",
+      "spur-pm",
+      "s7_request_benchmark",
+      "--lib",
+      "--",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 0,
+    "elapsed_seconds": 85.2879569530487,
+    "log": ".spur/tmp/bd-a96om/optimized-release.log",
+    "name": "optimized-release",
+    "preserved_log": "logs/optimized-release.log",
+    "log_sha256": "64c071ef6e06fd8007f24b4249555a21b2146a9a5e7c2fd642950a7cbbc31af3",
+    "test_results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 299 filtered outS7_JSON {\"kind\":\"work\",\"size\":2331,\"shape\":\"all_non_template\",\"rows\":2331,\"labels\":9674,\"retained_bytes\":571964,\"budget_bytes\":2048000,\"subscriptions\":1,\"full_builds\":31,\"issue_rows\":72261,\"label_rows\":299894,\"reuses\":0,\"over_budget_bypasses\":31}"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-pm",
+      "s7_unchanged_validated_revision",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 101,
+    "elapsed_seconds": 91.42262697219849,
+    "log": ".spur/tmp/bd-a96om/red-delta-query.log",
+    "name": "red-delta-query",
+    "preserved_log": "logs/red-delta-query.log",
+    "log_sha256": "e6fbf792caca291f8c63160ab4918826afe8d952ed66d6eb219d9b01400958be",
+    "test_results": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 300 filtered out; finished in 0.04s"
+    ]
+  },
+  {
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-pm",
+      "s7_unchanged_requests",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "environment": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_RSYNC_IO_TIMEOUT": "300"
+    },
+    "exit_status": 101,
+    "elapsed_seconds": 148.46497511863708,
+    "log": ".spur/tmp/bd-a96om/red-fixed-work.log",
+    "name": "red-fixed-work",
+    "preserved_log": "logs/red-fixed-work.log",
+    "log_sha256": "ee10bb894d0e3533b569eadf6d904d31d35fdd363295cf4a04b691dff4161c92",
+    "test_results": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 299 filtered out; finished in 0.04s"
+    ]
+  }
+]

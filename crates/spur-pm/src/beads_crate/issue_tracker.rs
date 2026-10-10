@@ -522,6 +522,30 @@ pub(crate) fn br_to_pm_summary(br: beads_rust::model::Issue) -> IssueSummary {
     }
 }
 
+/// Version 1 query-shape bits, least significant first: status, type, labels,
+/// assignee, priority min/max, text, since, limit, nonzero offset, include closed.
+/// This classifies query structure, not identity: never hash or log filter values.
+fn list_query_shape(filter: &IssueFilter) -> u16 {
+    [
+        filter.status.is_some(),
+        filter.issue_type.is_some(),
+        !filter.labels.is_empty(),
+        filter.assignee.is_some(),
+        filter.priority_min.is_some(),
+        filter.priority_max.is_some(),
+        filter.text_search.is_some(),
+        filter.since.is_some(),
+        filter.limit.is_some(),
+        filter.offset.unwrap_or(0) != 0,
+        filter.include_closed,
+    ]
+    .into_iter()
+    .enumerate()
+    .fold(0, |shape, (bit, present)| {
+        shape | (u16::from(present) << bit)
+    })
+}
+
 impl BeadsCrateAdapter {
     pub(crate) async fn poll_with_limit(&self, limit: usize) -> anyhow::Result<Vec<PmEvent>> {
         let _cursor_trace = crate::lock_trace::LockTraceGuard::lock(
@@ -657,62 +681,29 @@ impl IssueTracker for BeadsCrateAdapter {
         .await
     }
 
+    #[tracing::instrument(
+        name = "beads_list_issues",
+        target = "issue_probe",
+        level = "info",
+        skip_all,
+        fields(
+            operation = "list_issues",
+            query_shape = %format_args!("list_v1:{:03x}", list_query_shape(&filter)),
+            status_filter = filter.status.is_some(),
+            type_filter = filter.issue_type.is_some(),
+            label_filter_count = filter.labels.len(),
+            assignee_filter = filter.assignee.is_some(),
+            priority_min = ?filter.priority_min,
+            priority_max = ?filter.priority_max,
+            text_filter = filter.text_search.is_some(),
+            since_filter = filter.since.is_some(),
+            limit = ?filter.limit,
+            offset = filter.offset.unwrap_or(0),
+            include_closed = filter.include_closed || filter.status.is_some(),
+        )
+    )]
     async fn list_issues(&self, filter: IssueFilter) -> anyhow::Result<Vec<IssueSummary>> {
-        self.read(move |s| {
-            let mut br_filters = beads_rust::storage::sqlite::ListFilters::default();
-
-            if !filter.labels.is_empty() {
-                br_filters.labels = Some(filter.labels.clone());
-            }
-            if let Some(status) = filter.status.as_deref() {
-                let parsed = beads_rust::model::Status::from_str(status)
-                    .unwrap_or(beads_rust::model::Status::Open);
-                br_filters.statuses = Some(vec![parsed]);
-            }
-            if let Some(itype) = filter.issue_type.as_deref() {
-                let parsed = beads_rust::model::IssueType::from_str(itype)
-                    .unwrap_or(beads_rust::model::IssueType::Task);
-                br_filters.types = Some(vec![parsed]);
-            }
-            br_filters.assignee = filter.assignee.clone();
-            if let Some(min) = filter.priority_min {
-                let max = filter.priority_max.unwrap_or(4);
-                let priorities: Vec<beads_rust::model::Priority> =
-                    (min..=max).map(beads_rust::model::Priority).collect();
-                br_filters.priorities = Some(priorities);
-            } else if let Some(max) = filter.priority_max {
-                let priorities: Vec<beads_rust::model::Priority> =
-                    (0..=max).map(beads_rust::model::Priority).collect();
-                br_filters.priorities = Some(priorities);
-            }
-            br_filters.title_contains = filter.text_search.clone();
-            br_filters.include_closed = filter.include_closed || filter.status.is_some();
-            let offset = filter.offset.unwrap_or(0);
-            br_filters.limit = filter.limit.map(|limit| limit.saturating_add(offset));
-            if let Some(since) = filter.since {
-                br_filters.updated_after = Some(since);
-            }
-
-            let mut issues = s.list_issues(&br_filters)?;
-            let allow_tombstones = br_filters
-                .statuses
-                .as_ref()
-                .is_some_and(|statuses| statuses.contains(&beads_rust::model::Status::Tombstone));
-            if !allow_tombstones {
-                issues.retain(|issue| issue.status != beads_rust::model::Status::Tombstone);
-            }
-            let ids: Vec<String> = issues.iter().map(|issue| issue.id.clone()).collect();
-            let mut labels_by_id = s.get_labels_for_issues(&ids)?;
-            for issue in &mut issues {
-                issue.labels = labels_by_id.remove(&issue.id).unwrap_or_default();
-            }
-            let summaries = issues.into_iter().skip(offset).map(br_to_pm_summary);
-            Ok(match filter.limit {
-                Some(limit) => summaries.take(limit).collect(),
-                None => summaries.collect(),
-            })
-        })
-        .await
+        self.read_summaries(filter).await
     }
 
     async fn create_issue(&self, params: IssueCreate) -> anyhow::Result<String> {
@@ -847,6 +838,234 @@ mod tests {
             dependencies: Vec::new(),
             comments: Vec::new(),
         }
+    }
+
+    #[tokio::test]
+    async fn list_observability_keeps_ancestry_shape_and_stage_work() {
+        use crate::beads_crate::beads_db::trace_tests::Capture;
+        use tracing::instrument::WithSubscriber;
+        use tracing::Instrument;
+
+        let dir = TempDir::new().unwrap();
+        let adapter = BeadsCrateAdapter::open(dir.path(), AdapterConfig::default())
+            .await
+            .unwrap();
+        adapter
+            .batch(|s| {
+                let mut issue = minimal_issue("bd-observe", "private-title");
+                issue.description = Some("private-body".into());
+                s.create_issue(&issue, "test")?;
+                s.add_label(&issue.id, "private-label", "test")?;
+                Ok(())
+            })
+            .await
+            .unwrap();
+        let capture = Capture::default();
+        let dispatch = capture.dispatch();
+        let caller = tracing::dispatcher::with_default(&dispatch, || {
+            tracing::info_span!("hygiene", caller = "reconciler")
+        });
+        let rows = adapter
+            .list_issues(IssueFilter {
+                labels: vec!["private-label".into()],
+                text_search: Some("private-title".into()),
+                limit: Some(1),
+                ..Default::default()
+            })
+            .instrument(caller)
+            .with_subscriber(dispatch)
+            .await
+            .unwrap();
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].description.as_deref(), Some("private-body"));
+        assert_eq!(rows[0].labels, ["private-label"]);
+
+        let events = capture.events();
+        let timing = events
+            .iter()
+            .find(|e| e.fields.0.get("site").map(String::as_str) == Some("\"beads_list_issues\""))
+            .expect("list query must emit its work and timings");
+        assert_eq!(
+            timing
+                .scope
+                .iter()
+                .map(|(name, _)| name.as_str())
+                .collect::<Vec<_>>(),
+            ["hygiene", "beads_list_issues"]
+        );
+        assert_eq!(timing.scope[0].1 .0["caller"], "\"reconciler\"");
+        let shape = &timing.scope[1].1 .0;
+        assert_eq!(shape["operation"], "\"list_issues\"");
+        assert!(shape.contains_key("query_shape"));
+        assert_eq!(shape["label_filter_count"], "1");
+        assert_eq!(shape["text_filter"], "true");
+        for field in ["sql_decode_us", "labels_us", "summary_us"] {
+            assert!(
+                timing.fields.0[field].parse::<u64>().is_ok(),
+                "missing duration: {field}"
+            );
+        }
+        for field in ["sql_rows", "label_rows", "returned_rows"] {
+            assert_eq!(timing.fields.0[field], "1", "wrong work count: {field}");
+        }
+        assert_eq!(timing.fields.0["succeeded"], "true");
+        let read = events
+            .iter()
+            .find(|e| e.fields.0.get("site").map(String::as_str) == Some("\"beads_read\""))
+            .expect("existing adapter read timing remains available");
+        assert_eq!(read.scope[0].0, "hygiene");
+        assert_eq!(read.scope[1].0, "beads_list_issues");
+        assert!(read.fields.0["actor_queue_us"].parse::<u64>().is_ok());
+        assert!(read.fields.0["closure_us"].parse::<u64>().is_ok());
+        let captured = format!("{events:?}");
+        for private in ["private-title", "private-body", "private-label"] {
+            assert!(
+                !captured.contains(private),
+                "private data leaked: {private}"
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn list_observability_without_parent_has_stable_value_free_shape() {
+        use crate::beads_crate::beads_db::trace_tests::Capture;
+        use tracing::instrument::WithSubscriber;
+
+        let dir = TempDir::new().unwrap();
+        let adapter = BeadsCrateAdapter::open(dir.path(), AdapterConfig::default())
+            .await
+            .unwrap();
+        let capture = Capture::default();
+        let dispatch = capture.dispatch();
+        for value in ["private-one", "private-two"] {
+            adapter
+                .list_issues(IssueFilter {
+                    labels: vec![value.into()],
+                    text_search: Some(value.into()),
+                    assignee: Some(value.into()),
+                    ..Default::default()
+                })
+                .with_subscriber(dispatch.clone())
+                .await
+                .unwrap();
+        }
+        adapter
+            .list_issues(IssueFilter::default())
+            .with_subscriber(dispatch)
+            .await
+            .unwrap();
+        let events = capture.events();
+        let lists: Vec<_> = events
+            .iter()
+            .filter(|e| e.fields.0.get("site").map(String::as_str) == Some("\"beads_list_issues\""))
+            .collect();
+        assert_eq!(
+            lists.len(),
+            3,
+            "every list needs a stable operation label without a parent"
+        );
+        for event in &lists {
+            assert_eq!(event.scope.len(), 1);
+            assert_eq!(event.scope[0].0, "beads_list_issues");
+            assert_eq!(event.scope[0].1 .0["operation"], "\"list_issues\"");
+            assert_eq!(event.fields.0["returned_rows"], "0");
+        }
+        assert_eq!(
+            lists[0].scope[0].1 .0["query_shape"],
+            lists[1].scope[0].1 .0["query_shape"]
+        );
+        assert_ne!(
+            lists[0].scope[0].1 .0["query_shape"],
+            lists[2].scope[0].1 .0["query_shape"]
+        );
+        let captured = format!("{events:?}");
+        assert!(!captured.contains("private-one"));
+        assert!(!captured.contains("private-two"));
+    }
+
+    #[tokio::test]
+    async fn list_observability_reports_sql_error_without_exposing_error_text() {
+        use crate::beads_crate::beads_db::trace_tests::Capture;
+        use tracing::instrument::WithSubscriber;
+
+        let dir = TempDir::new().unwrap();
+        let adapter = BeadsCrateAdapter::open(dir.path(), AdapterConfig::default())
+            .await
+            .unwrap();
+        adapter
+            .batch(|s| {
+                s.create_issue(&minimal_issue("bd-bad-row", "private-title"), "test")?;
+                Ok(())
+            })
+            .await
+            .unwrap();
+        let conn = rusqlite::Connection::open(dir.path().join("beads.db")).unwrap();
+        conn.execute("UPDATE issues SET title = x'ff'", []).unwrap();
+        let expected = adapter
+            .read(|s| Ok(s.list_issues(&Default::default())?))
+            .await
+            .unwrap_err();
+        let capture = Capture::default();
+        let error = adapter
+            .list_issues(IssueFilter::default())
+            .with_subscriber(capture.dispatch())
+            .await
+            .unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            expected.to_string(),
+            "instrumentation must preserve the SQLite error"
+        );
+        let events = capture.events();
+        let timing = events
+            .iter()
+            .find(|e| e.fields.0.get("site").map(String::as_str) == Some("\"beads_list_issues\""))
+            .expect("failed list queries must retain timing and operation attribution");
+        assert_eq!(timing.fields.0["succeeded"], "false");
+        assert_eq!(timing.fields.0["stage"], "\"sql\"");
+        assert!(timing.fields.0["sql_decode_us"].parse::<u64>().is_ok());
+        assert!(!format!("{events:?}").contains("private-title"));
+    }
+
+    #[tokio::test]
+    async fn list_observability_reports_label_failure_after_sql_work() {
+        use crate::beads_crate::beads_db::trace_tests::Capture;
+        use tracing::instrument::WithSubscriber;
+
+        let dir = TempDir::new().unwrap();
+        let adapter = BeadsCrateAdapter::open(dir.path(), AdapterConfig::default())
+            .await
+            .unwrap();
+        adapter
+            .batch(|s| {
+                s.create_issue(&minimal_issue("bd-label-error", "private-title"), "test")?;
+                Ok(())
+            })
+            .await
+            .unwrap();
+        let conn = rusqlite::Connection::open(dir.path().join("beads.db")).unwrap();
+        conn.execute("DROP TABLE labels", []).unwrap();
+        let expected = adapter
+            .read(|s| Ok(s.get_labels_for_issues(&["bd-label-error".to_owned()])?))
+            .await
+            .unwrap_err();
+        let capture = Capture::default();
+        let error = adapter
+            .list_issues(IssueFilter::default())
+            .with_subscriber(capture.dispatch())
+            .await
+            .unwrap_err();
+        assert_eq!(error.to_string(), expected.to_string());
+        let events = capture.events();
+        let timing = events
+            .iter()
+            .find(|e| e.fields.0.get("site").map(String::as_str) == Some("\"beads_list_issues\""))
+            .expect("label errors must retain completed SQL work");
+        assert_eq!(timing.fields.0["stage"], "\"labels\"");
+        assert_eq!(timing.fields.0["succeeded"], "false");
+        assert_eq!(timing.fields.0["sql_rows"], "1");
+        assert_eq!(timing.fields.0["returned_rows"], "0");
+        assert!(timing.fields.0["labels_us"].parse::<u64>().is_ok());
     }
 
     fn event_ids(events: &[PmEvent]) -> HashSet<String> {

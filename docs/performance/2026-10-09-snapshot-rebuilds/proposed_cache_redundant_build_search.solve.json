@@ -1,0 +1,147 @@
+{
+  "name": "proposed_cache_redundant_build_search",
+  "source_head": "3315391e245e4be98b08b31dba0ec7d91dbb5bab",
+  "interpretation": "Proposed sequential per-scope, per-generation cache contract; NOT implemented. A successful first build is reused for the next request. No concurrency, failures, eviction, mutation, or time-dependent report caching is modeled.",
+  "domain": "Exactly two sequential successful requests, one unchanged database revision, one full-snapshot scope; Cold means no materialization counted in this trace. RedundantBuild means at least two materializations in the same revision.",
+  "request": {
+    "family": "workflow",
+    "mode": "synthesize",
+    "persist": true,
+    "timeout_ms": 10000,
+    "rules": [
+      {
+        "rule_id": "workflow.initial_state_allowed",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.transition_allowed",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {}
+      },
+      {
+        "rule_id": "workflow.bounded_reachability",
+        "subjects": [
+          "same_snapshot_scope"
+        ],
+        "parameters": {
+          "bound": 2
+        }
+      }
+    ],
+    "facts": {
+      "horizon": 2,
+      "state_domain": [
+        "Cold",
+        "Materialized",
+        "RedundantBuild"
+      ],
+      "event_domain": [
+        "read_same_revision"
+      ],
+      "initial_states": [
+        "Cold"
+      ],
+      "safe_states": [
+        "Cold",
+        "Materialized"
+      ],
+      "target_states": [
+        "RedundantBuild"
+      ],
+      "enabled_transitions": [
+        {
+          "step": 0,
+          "from": "Cold",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 0,
+          "from": "Materialized",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 0,
+          "from": "RedundantBuild",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        },
+        {
+          "step": 1,
+          "from": "Cold",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 1,
+          "from": "Materialized",
+          "event": "read_same_revision",
+          "to": "Materialized"
+        },
+        {
+          "step": 1,
+          "from": "RedundantBuild",
+          "event": "read_same_revision",
+          "to": "RedundantBuild"
+        }
+      ],
+      "traces": {
+        "same_snapshot_scope": {
+          "states": [
+            "Cold",
+            null,
+            null
+          ],
+          "events": [
+            "read_same_revision",
+            "read_same_revision"
+          ]
+        }
+      }
+    },
+    "unknowns": [
+      {
+        "kind": "trace_state",
+        "trace": "same_snapshot_scope",
+        "index": 1
+      },
+      {
+        "kind": "trace_state",
+        "trace": "same_snapshot_scope",
+        "index": 2
+      }
+    ]
+  },
+  "response": {
+    "family": "workflow",
+    "mode": "synthesize",
+    "outcome": "infeasible",
+    "evaluation_scope": {
+      "kind": "bounded_trace",
+      "horizon": 2,
+      "reachability": [
+        {
+          "rule_id": "workflow.bounded_reachability",
+          "binding_index": 2,
+          "effective_bound": 2
+        }
+      ]
+    },
+    "total_duration_ms": 24,
+    "status": "unsat",
+    "duration_ms": 5,
+    "solve_id": "sol_c1919defaffa4a68",
+    "reason": null,
+    "unsat_core": [
+      "workflow_rule_1_workflow_transition_allowed",
+      "workflow_rule_2_workflow_bounded_reachability"
+    ],
+    "solver_version": "Z3 version 4.16.0 - 64 bit"
+  }
+}

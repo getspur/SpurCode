@@ -1,0 +1,71 @@
+{
+  "pid": 71291,
+  "started_utc": "2026-10-09T03:39:05.816016+00:00",
+  "process_identity": "71291 Fri Oct  9 10:15:28 2026     spur",
+  "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.1\nBuildVersion:\t\t25B78",
+  "logical_cpus": 8,
+  "physical_memory_bytes": 17179869184,
+  "method": "proc_pid_rusage RUSAGE_INFO_V2 once per second; CPU counters in Mach absolute-time ticks",
+  "timebase": {
+    "numer": 125,
+    "denom": 3
+  },
+  "scope": "Single warm existing process; child CPU excluded; no injected workload",
+  "sampling_interval_ms_requested": 5,
+  "sample_duration_s_requested": 10,
+  "windows": [
+    {
+      "phase": "sample_1",
+      "command": [
+        "/usr/bin/sample",
+        "71291",
+        "10",
+        "5",
+        "-file",
+        "/Volumes/Projects/spur/docs/performance/2026-10-09-snapshot-rebuilds/sample_1.txt"
+      ],
+      "command_start_s": 10.002166125021176,
+      "command_end_s": 21.056096917018294,
+      "returncode": 0,
+      "sampler_user_s": 0.378235,
+      "sampler_system_s": 0.271974
+    },
+    {
+      "phase": "sample_2",
+      "command": [
+        "/usr/bin/sample",
+        "71291",
+        "10",
+        "5",
+        "-file",
+        "/Volumes/Projects/spur/docs/performance/2026-10-09-snapshot-rebuilds/sample_2.txt"
+      ],
+      "command_start_s": 21.056273000023793,
+      "command_end_s": 32.11024670902407,
+      "returncode": 0,
+      "sampler_user_s": 0.37567399999999995,
+      "sampler_system_s": 0.23145899999999997
+    },
+    {
+      "phase": "sample_3",
+      "command": [
+        "/usr/bin/sample",
+        "71291",
+        "10",
+        "5",
+        "-file",
+        "/Volumes/Projects/spur/docs/performance/2026-10-09-snapshot-rebuilds/sample_3.txt"
+      ],
+      "command_start_s": 32.11038666701643,
+      "command_end_s": 43.163143625017256,
+      "returncode": 0,
+      "sampler_user_s": 0.363247,
+      "sampler_system_s": 0.285134
+    }
+  ],
+  "db_path": "/Volumes/Projects/spur/.beads/beads.db",
+  "db_probe": "PRAGMA data_version on one persistent read-only connection; changes indicate commits from other connections",
+  "workload": "No graph retrieval, issue mutations, or notebook execution initiated by investigator during capture; ordinary session/background work may continue.",
+  "ended_utc": "2026-10-09T03:39:59.001556+00:00",
+  "elapsed_s": 53.168444292008644
+}

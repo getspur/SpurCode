@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use beads_rust::model::Dependency;
 use beads_rust::storage::sqlite::SqliteStorage;
@@ -7,15 +7,18 @@ pub(crate) fn get_dependencies_full_for_issues(
     storage: &SqliteStorage,
     issue_ids: &[String],
 ) -> beads_rust::Result<HashMap<String, Vec<Dependency>>> {
-    let mut deps_by_id = HashMap::new();
-
-    for issue_id in issue_ids {
-        let deps = storage.get_dependencies_full(issue_id)?;
-        if !deps.is_empty() {
-            deps_by_id.insert(issue_id.clone(), deps);
-        }
+    if issue_ids.is_empty() {
+        return Ok(HashMap::new());
     }
 
+    // Unfiltered snapshot loading requests the graph's issue set. Reuse the backend's
+    // full-record batch query instead of executing one read per ID. The batch
+    // scans all sources and propagates malformed-row errors, including rows
+    // outside the requested set (including tombstones), rather than silently
+    // dropping invalid edges. Label-filtered snapshots use scoped per-ID reads.
+    let requested: HashSet<&str> = issue_ids.iter().map(String::as_str).collect();
+    let mut deps_by_id = storage.get_all_dependency_records()?;
+    deps_by_id.retain(|id, _| requested.contains(id.as_str()));
     Ok(deps_by_id)
 }
 
@@ -61,6 +64,71 @@ mod tests {
                 "tester",
             )
             .unwrap();
+    }
+
+    #[test]
+    fn dependency_batch_preserves_all_fields_and_requested_sources() {
+        let mut storage = SqliteStorage::open_memory().unwrap();
+        for id in ["bd-a", "bd-b", "bd-c", "bd-unselected"] {
+            seed_issue(&mut storage, id);
+        }
+        storage
+            .add_dependency("bd-a", "bd-b", "blocks", "first-actor")
+            .unwrap();
+        storage
+            .add_dependency("bd-a", "bd-c", "related", "second-actor")
+            .unwrap();
+        storage
+            .add_dependency("bd-unselected", "bd-b", "blocks", "other")
+            .unwrap();
+        let mut records = storage.get_dependencies_full("bd-a").unwrap();
+        records[0].metadata = Some("{\"weight\":2}".into());
+        records[0].thread_id = Some("thread-a".into());
+        records[1].metadata = Some(String::new());
+        records[1].created_by = None;
+        storage
+            .sync_dependencies_for_import("bd-a", &records)
+            .unwrap();
+        let expected = storage.get_dependencies_full("bd-a").unwrap();
+        let ids = vec![
+            "bd-a".into(),
+            "bd-c".into(),
+            "missing".into(),
+            "bd-a".into(),
+        ];
+        let actual = get_dependencies_full_for_issues(&storage, &ids).unwrap();
+        assert_eq!(actual.len(), 1);
+        assert_eq!(actual["bd-a"], expected);
+        assert!(get_dependencies_full_for_issues(&storage, &[])
+            .unwrap()
+            .is_empty());
+    }
+
+    #[test]
+    fn dependency_batch_reports_corrupt_records_instead_of_losing_edges() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("beads.db");
+        let mut storage = SqliteStorage::open(&path).unwrap();
+        seed_issue(&mut storage, "bd-a");
+        seed_issue(&mut storage, "bd-b");
+        storage
+            .add_dependency("bd-a", "bd-b", "blocks", "tester")
+            .unwrap();
+        let connection = rusqlite::Connection::open(&path).unwrap();
+        connection
+            .execute(
+                "UPDATE dependencies SET created_at = 'invalid-date' WHERE issue_id = 'bd-a'",
+                [],
+            )
+            .unwrap();
+        assert!(
+            get_dependencies_full_for_issues(&storage, &["bd-a".into()]).is_err(),
+            "a corrupt edge must fail the snapshot, not silently disappear"
+        );
+        // Empty input must return before accessing even a malformed database.
+        assert!(get_dependencies_full_for_issues(&storage, &[])
+            .unwrap()
+            .is_empty());
     }
 
     #[test]

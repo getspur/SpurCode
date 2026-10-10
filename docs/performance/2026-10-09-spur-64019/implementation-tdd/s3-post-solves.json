@@ -1,0 +1,71 @@
+{
+  "scope": "Direct uncached summary reads; not a claim that the future subscription lifecycle or bounded membership cache was implemented. Caller-normalized seven-transition trace only; SQL equivalence is covered by Rust differential tests.",
+  "results": [
+    {
+      "solve_id": "sol_1b8ea01f949d43be",
+      "outcome": "pass",
+      "status": "sat",
+      "evaluation_scope": {
+        "kind": "bounded_trace",
+        "horizon": 7,
+        "reachability": []
+      },
+      "trace": {
+        "direct_summary": {
+          "states": [
+            "Ready",
+            "QueryRows",
+            "QueryLabels",
+            "Returned",
+            "Ready",
+            "QueryRows",
+            "QueryLabels",
+            "Returned"
+          ],
+          "events": [
+            "read",
+            "sql_ok",
+            "labels_ok",
+            "external_commit",
+            "read",
+            "sql_ok",
+            "labels_ok"
+          ]
+        }
+      }
+    },
+    {
+      "solve_id": "sol_6c892e01a7b944cc",
+      "outcome": "fail",
+      "status": "unsat",
+      "evaluation_scope": {
+        "kind": "bounded_trace",
+        "horizon": 7,
+        "reachability": []
+      },
+      "trace": {
+        "direct_summary": {
+          "states": [
+            "Ready",
+            "QueryRows",
+            "QueryLabels",
+            "Returned",
+            "Ready",
+            "CachedReuse",
+            "QueryLabels",
+            "Returned"
+          ],
+          "events": [
+            "read",
+            "sql_ok",
+            "labels_ok",
+            "external_commit",
+            "read",
+            "sql_ok",
+            "labels_ok"
+          ]
+        }
+      }
+    }
+  ]
+}

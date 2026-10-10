@@ -1,0 +1,154 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873  (local=/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873)
+[build] Remote:   ~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   target=/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   -j8
+[build] Remote build queue: admitted as ticket 179 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3568 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 ...
+[build] Re-stamping 2 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-core --lib plan::reconciler:: -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=143G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  269G  143G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `spur-graph` (lib) generated 1 warning
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-pm)
+   Compiling spur-core v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 09s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/debug/deps/spur_core-3e2e003836cf3367)
+
+running 81 tests
+test plan::reconciler::reviews::tests::completion_metadata_alone_is_not_independent_review ... ok
+test plan::reconciler::reviews::tests::authenticated_verdict_must_still_bind_the_latest_maker_completion ... ok
+test plan::reconciler::reviews::tests::conflicting_durable_verdicts_fail_closed ... ok
+test plan::reconciler::tests::auto_pr_params_include_plan_id_and_summary ... ok
+test plan::reconciler::tests::build_loop_run_sums_costs_and_derives_partial_outcome ... ok
+test plan::reconciler::tests::cadence_backoff_formula ... ok
+test plan::reconciler::tests::classify_epic_completion_reports_terminal_failures ... ok
+test plan::reconciler::tests::classify_epic_completion_reports_all_approved ... ok
+test plan::reconciler::tests::completion_collector_project_timeout_without_deferred_warns_and_returns ... ok
+
+thread 'plan::reconciler::tests::completion_collector_logs_panic_with_structured_context' (3119209) panicked at crates/spur-core/src/plan/reconciler/tests.rs:167:9:
+H1 simulated completion collector panic
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test plan::reconciler::tests::completion_collector_project_timeout_delivers_via_deferred_push ... ok
+test plan::reconciler::tests::budget_exhausted_plan_suppresses_dispatch ... ok
+test plan::reconciler::tests::epic_with_loop_paused_label_suppresses_dispatch ... ok
+test plan::reconciler::tests::epic_with_pause_all_loops_label_suppresses_dispatch ... ok
+test plan::reconciler::tests::expected_plan_id_from_parent_epic_rejects_ambiguous_structural_parents ... ok
+test plan::reconciler::tests::expected_plan_id_from_parent_epic_uses_structural_parent_not_effective_blocker ... ok
+test plan::reconciler::tests::global_reconciler_records_plan_no_ready_when_list_ready_empty_for_that_plan ... ok
+test plan::reconciler::tests::biased_select_cancel_preempts_pending_tick ... ok
+test plan::reconciler::tests::global_reconciler_skips_other_brain_plan_without_emitting_no_ready ... ok
+test plan::reconciler::tests::global_reconciler_status_reports_plans_enumerated_and_dispatched_per_tick ... ok
+test plan::reconciler::tests::hybrid_journal_probe_disables_itself_when_missing ... ok
+test plan::reconciler::tests::global_reconciler_status_reports_tasks_dispatched_per_tick ... ok
+test plan::reconciler::tests::delegation_id_reconcile_converges_idempotently ... ok
+test plan::reconciler::tests::agent_reconcile_converges_idempotently ... ok
+test plan::reconciler::tests::completion_blocks_observed_write_collision_between_parallel_siblings ... ok
+test plan::reconciler::tests::completion_collector_logs_panic_with_structured_context ... ok
+test plan::reconciler::tests::auto_merge_config_off_produces_zero_actions ... ok
+test plan::reconciler::tests::failed_epic_completion_audit_suppresses_automation ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_membership_reseed_unsupported_and_feed_errors ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_closed_parent_changes_expand_to_child_and_direct_audit_wins ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_pending_empty_audits_invalidate_on_comments_and_eligibility_exit ... ok
+test plan::reconciler::tests::invalid_template_auto_pauses_loop_with_escalation_record ... ok
+test plan::reconciler::tests::journal_monitor_exits_on_abort_without_hang ... ok
+test plan::reconciler::tests::l1_and_l2_still_push_continuations ... ok
+test plan::reconciler::tests::l1_autonomy_suppresses_non_triage_tasks ... ok
+test plan::reconciler::tests::l2_autonomy_dispatches_all_ready_tasks ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_partial_failure_and_comment_during_label_write_are_retried ... ok
+test plan::reconciler::tests::l3_claim_with_exact_generation_repairs_without_false_overlap ... ok
+test plan::reconciler::tests::l3_without_claim_retains_real_older_generation_overlap ... ok
+test plan::reconciler::tests::l3_claim_without_generation_creates_exact_generation_once ... ok
+test plan::reconciler::tests::loop_sweep_scopes_select_only_their_autonomy_levels ... ok
+test plan::reconciler::tests::last_tick_counters_reset_between_ticks ... ok
+test plan::reconciler::tests::plan_complete_reconcile_missing_emits_drift_then_noops ... ok
+test plan::reconciler::tests::plan_id_reconcile_converges_idempotently ... ok
+test plan::reconciler::tests::plan_pending_reconcile_stale_emits_drift_then_noops ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_pending_grace_expires_without_db_change_or_comment_reread ... ok
+test plan::reconciler::tests::plan_task_profile_round_trips_to_dispatch_and_retry ... ok
+test plan::reconciler::tests::plan_task_skills_round_trips_to_dispatch ... ok
+test plan::reconciler::tests::prior_branch_for_reuse_uses_last_attempt_only_when_reuse_requested ... ok
+test plan::reconciler::tests::projected_plan_for_ready_projects_when_unhydrated ... ok
+test plan::reconciler::tests::projected_plan_for_ready_reuses_hydrated_state_without_projecting ... ok
+test plan::reconciler::tests::reconciler_dispatch_ctx_can_be_cloned_for_server_startup ... ok
+test plan::reconciler::tests::system_l3_reconciler_ignores_brain_owned_non_l3_plans ... ok
+test plan::reconciler::tests::system_l3_review_approval_releases_dependent_and_request_changes_reuses_branch ... ok
+test plan::reconciler::tests::plan_task_id_reconcile_converges_idempotently ... ok
+test plan::reconciler::tests::system_l3_review_blocks_signal_label_without_a_durable_fact ... ok
+test plan::reconciler::tests::system_l3_review_blocks_unattributed_legacy_mark_noop ... ok
+test plan::reconciler::tests::system_l3_review_completion_without_verdict_never_approves ... ok
+test plan::reconciler::tests::system_l3_review_dispatch_is_distinct_durable_and_replayed_once ... ok
+test plan::reconciler::tests::system_l3_review_does_not_reuse_mark_noop_from_an_older_maker_attempt ... ok
+test plan::reconciler::tests::system_l3_review_mark_noop_reaches_reviewer_but_blocking_signal_does_not ... ok
+test plan::reconciler::tests::system_l3_review_processed_signal_label_does_not_block_history ... ok
+test plan::reconciler::tests::system_l3_review_retries_companion_cleanup_after_close_failure ... ok
+test plan::reconciler::tests::system_l3_review_sweeps_reopened_companion_after_target_advanced ... ok
+test plan::reconciler::tests::system_l3_runtime_arms_generation_without_brain ... ok
+test plan::reconciler::tests::system_l3_runtime_never_adopts_legacy_owner ... ok
+test plan::reconciler::tests::terminal_loop_epic_appends_one_loop_run_to_loop_issue ... ok
+test plan::reconciler::tests::system_l3_review_three_expired_attempts_park_instead_of_approving ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_database_still_renews_expired_owner_lease ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_successful_write_does_not_ack_a_concurrent_comment ... ok
+test plan::reconciler::tests::monitor_journal_appends_survives_transient_metadata_error ... ok
+test plan::reconciler::topology::tests::compile_topology_marks_tip_flattened_when_cumulative_diff_contains_transitive_deps ... ok
+test plan::reconciler::topology::tests::parse_diff_stat_summary_no_changes ... ok
+test plan::reconciler::topology::tests::parse_diff_stat_summary_parses_all_components ... ok
+test plan::reconciler::topology::tests::parse_diff_stat_summary_single_file ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_overlapping_sweeps_serialize_and_cancelled_sweeps_retry ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_database_still_runs_due_loop_on_tick ... ok
+test plan::reconciler::tests::hygiene_tests::hygiene_unchanged_skips_comments_and_leaf_edit_stays_local ... ok
+test plan::reconciler::tests::tick_once_strips_plan_complete_when_plan_submit_audit_is_absent ... ok
+test plan::reconciler::tests::tick_once_retains_agent_and_plan_task_id_for_empty_context_files_task ... ok
+test plan::reconciler::tests::tick_once_with_clean_preview_dispatches_normally ... ok
+test plan::reconciler::tests::tick_once_predicts_overlay_conflict_and_blocks_without_dispatch ... ok
+
+test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 1525 filtered out; finished in 2.20s
+
+
+--- sccache stats (spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873) ---
+Compile requests                    3531
+Compile requests executed           2799
+Cache hits                          2054
+Cache hits (Assembler)                56
+Cache hits (C/C++)                   508
+Cache hits (Rust)                   1490
+Cache misses                         729
+Cache misses (C/C++)                 242
+Cache misses (Rust)                  487
+Cache hits rate                    73.81 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            67.73 %
+Cache hits rate (Rust)             75.37 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         729
+Compilation failures                  16
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000179.

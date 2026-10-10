@@ -1,0 +1,3017 @@
+{
+  "task": "bd-m6e3r",
+  "catalog_routing": "Catalog workflow rules verify the supplied 7-step protocol trace. Generic fallback checks arithmetic result/membership equivalence not expressed by finite workflow trace rules or relational snapshot integrity.",
+  "proof_scope": "One changed candidate row, one fixed query, complete change coverage and same identity/filter; payload domain 0..2, absent result -1. No proof of SQL, multi-row pagination, concurrency implementation, runtime frequency, liveness, or speedup.",
+  "invocations": [
+    {
+      "case": "protocol",
+      "request": {
+        "family": "workflow",
+        "mode": "verify",
+        "facts": {
+          "horizon": 7,
+          "state_domain": [
+            "empty",
+            "loading",
+            "clean",
+            "dirty",
+            "stale_served"
+          ],
+          "event_domain": [
+            "read",
+            "publish_current",
+            "relevant_change",
+            "unrelated_change",
+            "serve",
+            "race_detected",
+            "reload"
+          ],
+          "initial_states": [
+            "empty"
+          ],
+          "safe_states": [
+            "empty",
+            "loading",
+            "clean",
+            "dirty"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "empty",
+              "event": "read",
+              "to": "loading"
+            },
+            {
+              "step": 1,
+              "from": "loading",
+              "event": "publish_current",
+              "to": "clean"
+            },
+            {
+              "step": 2,
+              "from": "clean",
+              "event": "unrelated_change",
+              "to": "clean"
+            },
+            {
+              "step": 3,
+              "from": "clean",
+              "event": "serve",
+              "to": "clean"
+            },
+            {
+              "step": 4,
+              "from": "clean",
+              "event": "relevant_change",
+              "to": "dirty"
+            },
+            {
+              "step": 5,
+              "from": "dirty",
+              "event": "read",
+              "to": "loading"
+            },
+            {
+              "step": 6,
+              "from": "loading",
+              "event": "race_detected",
+              "to": "dirty"
+            }
+          ],
+          "traces": {
+            "issue_read_model": {
+              "states": [
+                "empty",
+                "loading",
+                "clean",
+                "clean",
+                "clean",
+                "dirty",
+                "loading",
+                "dirty"
+              ],
+              "events": [
+                "read",
+                "publish_current",
+                "unrelated_change",
+                "serve",
+                "relevant_change",
+                "read",
+                "race_detected"
+              ]
+            }
+          },
+          "target_states": [
+            "clean"
+          ]
+        },
+        "rules": [
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "issue_read_model"
+            ]
+          },
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "issue_read_model"
+            ]
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "subjects": [
+              "issue_read_model"
+            ]
+          }
+        ],
+        "persist": true,
+        "timeout_ms": 5000
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 7,
+          "reachability": []
+        },
+        "total_duration_ms": 105,
+        "status": "sat",
+        "model": {},
+        "duration_ms": 49,
+        "solve_id": "sol_cbd5925023324430",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "case": "badprotocol",
+      "request": {
+        "family": "workflow",
+        "mode": "verify",
+        "facts": {
+          "horizon": 7,
+          "state_domain": [
+            "empty",
+            "loading",
+            "clean",
+            "dirty",
+            "stale_served"
+          ],
+          "event_domain": [
+            "read",
+            "publish_current",
+            "relevant_change",
+            "unrelated_change",
+            "serve",
+            "race_detected",
+            "reload"
+          ],
+          "initial_states": [
+            "empty"
+          ],
+          "safe_states": [
+            "empty",
+            "loading",
+            "clean",
+            "dirty"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "empty",
+              "event": "read",
+              "to": "loading"
+            },
+            {
+              "step": 1,
+              "from": "loading",
+              "event": "publish_current",
+              "to": "clean"
+            },
+            {
+              "step": 2,
+              "from": "clean",
+              "event": "unrelated_change",
+              "to": "clean"
+            },
+            {
+              "step": 3,
+              "from": "clean",
+              "event": "serve",
+              "to": "clean"
+            },
+            {
+              "step": 4,
+              "from": "clean",
+              "event": "relevant_change",
+              "to": "dirty"
+            },
+            {
+              "step": 5,
+              "from": "dirty",
+              "event": "read",
+              "to": "loading"
+            },
+            {
+              "step": 6,
+              "from": "loading",
+              "event": "race_detected",
+              "to": "dirty"
+            }
+          ],
+          "traces": {
+            "issue_read_model": {
+              "states": [
+                "empty",
+                "loading",
+                "clean",
+                "clean",
+                "clean",
+                "dirty",
+                "loading",
+                "clean"
+              ],
+              "events": [
+                "read",
+                "publish_current",
+                "unrelated_change",
+                "serve",
+                "relevant_change",
+                "read",
+                "race_detected"
+              ]
+            }
+          },
+          "target_states": [
+            "clean"
+          ]
+        },
+        "rules": [
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "issue_read_model"
+            ]
+          },
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "issue_read_model"
+            ]
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "subjects": [
+              "issue_read_model"
+            ]
+          }
+        ],
+        "persist": true,
+        "timeout_ms": 5000
+      },
+      "result": {
+        "family": "workflow",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "workflow.transition_allowed",
+            "binding_index": 1,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "workflow.transition_allowed.violation"
+          },
+          {
+            "rule_id": "workflow.safety_invariant",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 7,
+          "reachability": []
+        },
+        "total_duration_ms": 41,
+        "status": "unsat",
+        "duration_ms": 5,
+        "solve_id": "sol_52b17749e1d94604",
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_1_workflow_transition_allowed"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "case": "old_members_only",
+      "request": {
+        "vars": [
+          {
+            "name": "member_before",
+            "type": "bool"
+          },
+          {
+            "name": "member_after",
+            "type": "bool"
+          },
+          {
+            "name": "same_identity_and_filter",
+            "type": "bool"
+          },
+          {
+            "name": "complete_change_coverage",
+            "type": "bool"
+          },
+          {
+            "name": "reuse",
+            "type": "bool"
+          },
+          {
+            "name": "value_before",
+            "type": "int_range",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "name": "value_after",
+            "type": "int_range",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "name": "result_before",
+            "type": "int_range",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "name": "result_after",
+            "type": "int_range",
+            "min": -1,
+            "max": 2
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "member_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "member_after"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "value_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "value_after"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "seek_stale_reuse",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "ne",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "persist": true,
+        "timeout_ms": 5000
+      },
+      "result": {
+        "status": "sat",
+        "model": {
+          "complete_change_coverage": true,
+          "member_after": true,
+          "member_before": false,
+          "result_after": 0,
+          "result_before": -1,
+          "reuse": true,
+          "same_identity_and_filter": true,
+          "value_after": 0,
+          "value_before": 1
+        },
+        "duration_ms": 18,
+        "solve_id": "sol_d0022380d8f34cfc",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "case": "old_or_new_members",
+      "request": {
+        "vars": [
+          {
+            "name": "member_before",
+            "type": "bool"
+          },
+          {
+            "name": "member_after",
+            "type": "bool"
+          },
+          {
+            "name": "same_identity_and_filter",
+            "type": "bool"
+          },
+          {
+            "name": "complete_change_coverage",
+            "type": "bool"
+          },
+          {
+            "name": "reuse",
+            "type": "bool"
+          },
+          {
+            "name": "value_before",
+            "type": "int_range",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "name": "value_after",
+            "type": "int_range",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "name": "result_before",
+            "type": "int_range",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "name": "result_after",
+            "type": "int_range",
+            "min": -1,
+            "max": 2
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "var",
+                                  "name": "member_before"
+                                },
+                                {
+                                  "kind": "var",
+                                  "name": "member_after"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "member_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "member_after"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "value_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "value_after"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "seek_stale_reuse",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "ne",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "persist": true,
+        "timeout_ms": 5000
+      },
+      "result": {
+        "status": "unsat",
+        "duration_ms": 6,
+        "solve_id": "sol_5d17396943d94ca6",
+        "reason": null,
+        "unsat_core": [
+          "before_result",
+          "after_result",
+          "reuse_policy",
+          "seek_stale_reuse"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "case": "feasible",
+      "request": {
+        "vars": [
+          {
+            "name": "member_before",
+            "type": "bool"
+          },
+          {
+            "name": "member_after",
+            "type": "bool"
+          },
+          {
+            "name": "same_identity_and_filter",
+            "type": "bool"
+          },
+          {
+            "name": "complete_change_coverage",
+            "type": "bool"
+          },
+          {
+            "name": "reuse",
+            "type": "bool"
+          },
+          {
+            "name": "value_before",
+            "type": "int_range",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "name": "value_after",
+            "type": "int_range",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "name": "result_before",
+            "type": "int_range",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "name": "result_after",
+            "type": "int_range",
+            "min": -1,
+            "max": 2
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "var",
+                                  "name": "member_before"
+                                },
+                                {
+                                  "kind": "var",
+                                  "name": "member_after"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "member_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "member_after"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "value_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "value_after"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "require_reuse",
+            "expr": {
+              "kind": "var",
+              "name": "reuse"
+            }
+          }
+        ],
+        "persist": true,
+        "timeout_ms": 5000
+      },
+      "result": {
+        "status": "sat",
+        "model": {
+          "complete_change_coverage": true,
+          "member_after": false,
+          "member_before": false,
+          "result_after": -1,
+          "result_before": -1,
+          "reuse": true,
+          "same_identity_and_filter": true,
+          "value_after": 0,
+          "value_before": 0
+        },
+        "duration_ms": 6,
+        "solve_id": "sol_a7dd5963a52b462f",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    }
+  ],
+  "reloaded_receipts": [
+    {
+      "solve_id": "sol_cbd5925023324430",
+      "z3_version": "Z3 version 4.16.0 - 64 bit",
+      "request": {
+        "vars": [],
+        "constraints": [
+          {
+            "id": "workflow_rule_0_workflow_initial_state_allowed",
+            "soft": false,
+            "expr": {
+              "kind": "bool",
+              "value": true
+            }
+          },
+          {
+            "id": "workflow_rule_1_workflow_transition_allowed",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "workflow_rule_2_workflow_safety_invariant",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": true,
+        "session_op": "none"
+      },
+      "status": "sat",
+      "model": {},
+      "duration_ms": 49,
+      "reason": null
+    },
+    {
+      "solve_id": "sol_52b17749e1d94604",
+      "z3_version": "Z3 version 4.16.0 - 64 bit",
+      "request": {
+        "vars": [],
+        "constraints": [
+          {
+            "id": "workflow_rule_0_workflow_initial_state_allowed",
+            "soft": false,
+            "expr": {
+              "kind": "bool",
+              "value": true
+            }
+          },
+          {
+            "id": "workflow_rule_1_workflow_transition_allowed",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "workflow_rule_2_workflow_safety_invariant",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    },
+                    {
+                      "kind": "bool",
+                      "value": true
+                    },
+                    {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": true,
+        "session_op": "none"
+      },
+      "status": "unsat",
+      "duration_ms": 5,
+      "reason": null,
+      "unsat_core": [
+        "workflow_rule_1_workflow_transition_allowed"
+      ]
+    },
+    {
+      "solve_id": "sol_d0022380d8f34cfc",
+      "z3_version": "Z3 version 4.16.0 - 64 bit",
+      "request": {
+        "vars": [
+          {
+            "type": "bool",
+            "name": "member_before"
+          },
+          {
+            "type": "bool",
+            "name": "member_after"
+          },
+          {
+            "type": "bool",
+            "name": "same_identity_and_filter"
+          },
+          {
+            "type": "bool",
+            "name": "complete_change_coverage"
+          },
+          {
+            "type": "bool",
+            "name": "reuse"
+          },
+          {
+            "type": "int_range",
+            "name": "value_before",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "value_after",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_before",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_after",
+            "min": -1,
+            "max": 2
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "member_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "member_after"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "value_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "value_after"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "seek_stale_reuse",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "ne",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": true,
+        "session_op": "none"
+      },
+      "status": "sat",
+      "model": {
+        "complete_change_coverage": true,
+        "member_after": true,
+        "member_before": false,
+        "result_after": 0,
+        "result_before": -1,
+        "reuse": true,
+        "same_identity_and_filter": true,
+        "value_after": 0,
+        "value_before": 1
+      },
+      "duration_ms": 18,
+      "reason": null
+    },
+    {
+      "solve_id": "sol_5d17396943d94ca6",
+      "z3_version": "Z3 version 4.16.0 - 64 bit",
+      "request": {
+        "vars": [
+          {
+            "type": "bool",
+            "name": "member_before"
+          },
+          {
+            "type": "bool",
+            "name": "member_after"
+          },
+          {
+            "type": "bool",
+            "name": "same_identity_and_filter"
+          },
+          {
+            "type": "bool",
+            "name": "complete_change_coverage"
+          },
+          {
+            "type": "bool",
+            "name": "reuse"
+          },
+          {
+            "type": "int_range",
+            "name": "value_before",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "value_after",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_before",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_after",
+            "min": -1,
+            "max": 2
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "var",
+                                  "name": "member_before"
+                                },
+                                {
+                                  "kind": "var",
+                                  "name": "member_after"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "member_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "member_after"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "value_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "value_after"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "seek_stale_reuse",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "ne",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "result_before"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "result_after"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": true,
+        "session_op": "none"
+      },
+      "status": "unsat",
+      "duration_ms": 6,
+      "reason": null,
+      "unsat_core": [
+        "before_result",
+        "after_result",
+        "reuse_policy",
+        "seek_stale_reuse"
+      ]
+    },
+    {
+      "solve_id": "sol_a7dd5963a52b462f",
+      "z3_version": "Z3 version 4.16.0 - 64 bit",
+      "request": {
+        "vars": [
+          {
+            "type": "bool",
+            "name": "member_before"
+          },
+          {
+            "type": "bool",
+            "name": "member_after"
+          },
+          {
+            "type": "bool",
+            "name": "same_identity_and_filter"
+          },
+          {
+            "type": "bool",
+            "name": "complete_change_coverage"
+          },
+          {
+            "type": "bool",
+            "name": "reuse"
+          },
+          {
+            "type": "int_range",
+            "name": "value_before",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "value_after",
+            "min": 0,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_before",
+            "min": -1,
+            "max": 2
+          },
+          {
+            "type": "int_range",
+            "name": "result_after",
+            "min": -1,
+            "max": 2
+          }
+        ],
+        "constraints": [
+          {
+            "id": "before_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_before"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_before"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_before"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_before"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "after_result",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "and",
+              "args": [
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "member_after"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "var",
+                          "name": "value_after"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "op",
+                  "op": "or",
+                  "args": [
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "not",
+                          "args": [
+                            {
+                              "kind": "var",
+                              "name": "member_after"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "op",
+                      "op": "eq",
+                      "args": [
+                        {
+                          "kind": "var",
+                          "name": "result_after"
+                        },
+                        {
+                          "kind": "int",
+                          "value": -1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "reuse_policy",
+            "soft": false,
+            "expr": {
+              "kind": "op",
+              "op": "eq",
+              "args": [
+                {
+                  "kind": "var",
+                  "name": "reuse"
+                },
+                {
+                  "kind": "op",
+                  "op": "and",
+                  "args": [
+                    {
+                      "kind": "var",
+                      "name": "same_identity_and_filter"
+                    },
+                    {
+                      "kind": "var",
+                      "name": "complete_change_coverage"
+                    },
+                    {
+                      "kind": "op",
+                      "op": "not",
+                      "args": [
+                        {
+                          "kind": "op",
+                          "op": "and",
+                          "args": [
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "var",
+                                  "name": "member_before"
+                                },
+                                {
+                                  "kind": "var",
+                                  "name": "member_after"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "op",
+                              "op": "or",
+                              "args": [
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "member_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "member_after"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "op",
+                                  "op": "ne",
+                                  "args": [
+                                    {
+                                      "kind": "var",
+                                      "name": "value_before"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "name": "value_after"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "require_reuse",
+            "soft": false,
+            "expr": {
+              "kind": "var",
+              "name": "reuse"
+            }
+          }
+        ],
+        "objectives": [],
+        "objective_priority": "lex",
+        "max_solutions": 16,
+        "timeout_ms": 5000,
+        "persist": true,
+        "include_smt": false,
+        "use_cache": true,
+        "session_op": "none"
+      },
+      "status": "sat",
+      "model": {
+        "complete_change_coverage": true,
+        "member_after": false,
+        "member_before": false,
+        "result_after": -1,
+        "result_before": -1,
+        "reuse": true,
+        "same_identity_and_filter": true,
+        "value_after": 0,
+        "value_before": 0
+      },
+      "duration_ms": 6,
+      "reason": null
+    }
+  ]
+}

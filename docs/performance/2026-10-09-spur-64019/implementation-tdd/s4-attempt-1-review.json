@@ -1,0 +1,26 @@
+{
+  "task": "S4",
+  "issue": "bd-183xz",
+  "attempt": 1,
+  "review": "request_changes",
+  "base": "86b94ffcc3c25520a470b4535079793cedd27b04",
+  "red_commits": [
+    "2392e12a7",
+    "be5b89bb625399a1066e0bf2544b2a9dc674375d"
+  ],
+  "implementation": "009d9d44a291bdd1520a6bc6fa3f705ee9b8bef1",
+  "captured_tip": "0c1486cbff50abf9a10bcb708051dc573d35aa3e",
+  "review_diff_sha256": "e4082ef0781e13c6b7c83ff44f1ca3ddc5825b931d71062e03dce5026cee44e0",
+  "verified_tests": {
+    "passed": 259,
+    "failed": 0,
+    "ignored": 1
+  },
+  "clippy": "passed",
+  "remaining": [
+    "Distinct timestamp-only domain; actual adapter.add_comment and lagging-reader regressions",
+    "Assert existing-writer failure/recovery instead of unconditional reopen",
+    "Unchanged-query work, restarted feed/database replacement, exact trigger restoration gap, ignored/failed conflict tests"
+  ],
+  "note": "Passing tests do not resolve missing acceptance coverage. Plan has not approved this attempt; S5 remains pending."
+}

@@ -1,0 +1,491 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/incremental-beads-graph  (local=/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph)
+[build] Remote:   ~/spur/worktrees/incremental-beads-graph   target=/mnt/cargo/targets/spur/worktrees/incremental-beads-graph   -j8
+[build] Remote build queue: admitted as ticket 123 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3515 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/incremental-beads-graph ...
+[build] Re-stamping 4 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib graph_engine::incremental::tests -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=149G used=64% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  263G  149G  64% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/incremental-beads-graph/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.84s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/incremental-beads-graph/debug/deps/spur_pm-4c49b51fc9915668)
+
+running 16 tests
+test graph_engine::incremental::tests::empty_label_initialization_uses_indexed_queries ... ok
+test graph_engine::incremental::tests::external_single_node_edit_loads_only_that_node ... ok
+test graph_engine::incremental::tests::failed_delta_does_not_publish_partial_data_or_advance_cursor ... ok
+test graph_engine::incremental::tests::independent_consumers_do_not_steal_changes ... ok
+test graph_engine::incremental::tests::deleting_a_dense_graph_node_repairs_indices_and_reintroduction_restores_edges ... ok
+test graph_engine::incremental::tests::edge_mutations_do_not_reload_nodes_and_cover_type_and_endpoints ... ok
+test graph_engine::incremental::tests::label_membership_and_outside_changes_are_scoped ... ok
+test graph_engine::incremental::tests::incremental_projection_matches_the_existing_full_loader ... ok
+test graph_engine::incremental::tests::rollback_does_not_advance_graph_revision ... ok
+test graph_engine::incremental::tests::replace_conflict_records_the_deleted_issue_even_without_recursive_triggers ... ok
+test graph_engine::incremental::tests::schema_recovery_reinstalls_tracking_and_rebuilds_once ... ok
+test graph_engine::incremental::tests::scoped_refresh_ignores_corrupt_outside_dependency_payloads ... ok
+test graph_engine::incremental::tests::unchanged_and_unrelated_writes_do_not_reload_graph_data ... ok
+test graph_engine::incremental::tests::replacement_database_reopens_and_initializes_the_new_graph ... ok
+test graph_engine::incremental::tests::tombstones_templates_and_label_updates_remove_and_restore_membership ... ok
+GRAPH_WORK_SAMPLE {"fixture_nodes":2003,"fixture_edges":2,"observations":[{"scenario":"cold","full_builds":1,"delta_refreshes":0,"reuses":0,"changed_ids":0,"nodes_loaded":2003,"edges_loaded":2},{"scenario":"ten_unchanged_reads","full_builds":1,"delta_refreshes":0,"reuses":10,"changed_ids":0,"nodes_loaded":2003,"edges_loaded":2},{"scenario":"one_node_edit","full_builds":1,"delta_refreshes":1,"reuses":10,"changed_ids":1,"nodes_loaded":2004,"edges_loaded":2}]}
+test graph_engine::incremental::tests::a_large_graph_still_loads_one_node_for_one_field_change ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 212 filtered out; finished in 0.23s
+
+
+--- sccache stats (spur/worktrees/incremental-beads-graph) ---
+Compile requests                     743
+Compile requests executed            576
+Cache hits                           423
+Cache hits (Assembler)                11
+Cache hits (C/C++)                    18
+Cache hits (Rust)                    394
+Cache misses                         148
+Cache misses (C/C++)                  48
+Cache misses (Rust)                  100
+Cache hits rate                    74.08 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            27.27 %
+Cache hits rate (Rust)             79.76 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         148
+Compilation failures                   5
+[build] Remote step exited 255 and VM spur-builder is now MISSING — likely spot preemption mid-build. Re-spinning + re-syncing and retrying (attempt 2/2)...
+[build] VM spur-builder missing — spinning a fresh one...
+upload failed: ../../../../../../var/folders/jg/5bryqtwd787gyt56zsdx3r540000gn/T/tmp.XcsKS7LpIY to s3://spurlab-591950085580-spur-sccache-apse5/bootstrap/16b15f281fabe0bfea0db6591c01585e49482dcfe2e0c913b9ff89716bb3adb4/startup.sh Could not connect to the endpoint URL: "https://spurlab-591950085580-spur-sccache-apse5.s3.ap-southeast-5.amazonaws.com/bootstrap/16b15f281fabe0bfea0db6591c01585e49482dcfe2e0c913b9ff89716bb3adb4/startup.sh"
+[build] create failed and VM is MISSING
+[build] Remote build queue: released ticket 00000000000000000123.
+[spur-cargo] remote aws-my VM unavailable (exit 200) — trying next cloud/local
+[spur-cargo] remote (test) → aws VM
+[build] Worktree: spur/worktrees/incremental-beads-graph  (local=/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph)
+[build] Remote:   ~/spur/worktrees/incremental-beads-graph   target=/mnt/cargo/targets/spur/worktrees/incremental-beads-graph   -j16
+[build] Remote build queue: admitted as ticket 1 (slot 1/3) on spur-builder (3 slot(s)/builder, 1 builder(s)).
+[build] VM spur-builder missing — spinning a fresh one...
+upload failed: ../../../../../../var/folders/jg/5bryqtwd787gyt56zsdx3r540000gn/T/tmp.vYWAxZqj6R to s3://spurlab-591950085580-spur-sccache-apse5/bootstrap/d327d98d983a6a482bea68e499abd1c4f7c85562d1581826f14262e3c0f24561/startup.sh Could not connect to the endpoint URL: "https://spurlab-591950085580-spur-sccache-apse5.s3.ap-northeast-1.amazonaws.com/bootstrap/d327d98d983a6a482bea68e499abd1c4f7c85562d1581826f14262e3c0f24561/startup.sh"
+[build] create failed and VM is MISSING
+[build] Remote build queue: released ticket 00000000000000000001.
+[spur-cargo] remote aws VM unavailable (exit 200) — trying next cloud/local
+[spur-cargo] all remote clouds unavailable — falling back to local cargo
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.184
+   Compiling smallvec v1.15.1
+   Compiling memchr v2.8.0
+   Compiling pin-project-lite v0.2.17
+   Compiling zeroize v1.8.2
+   Compiling itoa v1.0.18
+   Compiling equivalent v1.0.2
+   Compiling serde_core v1.0.228
+   Compiling once_cell v1.21.4
+   Compiling byteorder v1.5.0
+   Compiling log v0.4.29
+   Compiling futures-core v0.3.32
+   Compiling hash32 v0.3.1
+   Compiling crypto-common v0.1.7
+   Compiling errno v0.3.14
+   Compiling hashbrown v0.17.0
+   Compiling bitflags v2.11.0
+   Compiling heapless v0.8.0
+   Compiling signal-hook-registry v1.4.8
+   Compiling subtle v2.6.1
+   Compiling indexmap v2.14.0
+   Compiling futures-io v0.3.32
+   Compiling faster-hex v0.10.0
+   Compiling getrandom v0.2.17
+   Compiling typenum v1.19.0
+   Compiling num-traits v0.2.19
+   Compiling tracing-core v0.1.36
+   Compiling const-oid v0.9.6
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling parking_lot_core v0.9.12
+   Compiling digest v0.10.7
+   Compiling libm v0.2.16
+   Compiling mio v1.2.0
+   Compiling generic-array v0.14.7
+   Compiling slab v0.4.12
+   Compiling gix-date v0.12.1
+   Compiling bytes v1.11.1
+   Compiling cc v1.2.60
+   Compiling sha1 v0.10.6
+   Compiling parking_lot v0.12.5
+   Compiling tracing v0.1.44
+   Compiling futures-sink v0.3.32
+   Compiling core-foundation-sys v0.8.7
+   Compiling futures-channel v0.3.32
+   Compiling futures-task v0.3.32
+   Compiling dashmap v6.1.0
+   Compiling zmij v1.0.21
+   Compiling sha1-checked v0.10.0
+   Compiling futures-util v0.3.32
+   Compiling block-buffer v0.10.4
+   Compiling zerofrom v0.1.7
+   Compiling socket2 v0.6.3
+   Compiling gix-actor v0.37.1
+   Compiling prodash v30.0.1
+   Compiling stable_deref_trait v1.2.1
+   Compiling tokio v1.51.1
+   Compiling crossbeam-utils v0.8.21
+   Compiling http v1.4.0
+   Compiling yoke v0.8.2
+   Compiling fnv v1.0.7
+   Compiling rand_core v0.6.4
+   Compiling base64ct v1.8.3
+   Compiling serde_json v1.0.149
+   Compiling zerovec v0.11.6
+   Compiling base64 v0.22.1
+   Compiling http-body v1.0.1
+   Compiling atomic-waker v1.1.2
+   Compiling pem-rfc7468 v0.7.0
+   Compiling serde v1.0.228
+   Compiling der v0.7.10
+   Compiling gix-features v0.45.2
+   Compiling rustix v1.1.4
+   Compiling tinystr v0.8.3
+   Compiling gix-hash v0.21.2
+   Compiling gix-fs v0.18.2
+   Compiling gix-glob v0.23.0
+   Compiling iana-time-zone v0.1.65
+   Compiling tower-service v0.3.3
+   Compiling litemap v0.8.2
+   Compiling gix-hashtable v0.11.0
+   Compiling gix-tempfile v20.0.1
+   Compiling gix-commitgraph v0.31.0
+   Compiling percent-encoding v2.3.2
+   Compiling gix-attributes v0.29.0
+   Compiling gix-object v0.54.1
+   Compiling writeable v0.6.3
+   Compiling chrono v0.4.44
+   Compiling potential_utf v0.1.5
+   Compiling icu_locale_core v2.2.0
+   Compiling spki v0.7.3
+   Compiling gix-lock v20.0.1
+   Compiling zerotrie v0.2.4
+   Compiling gix-packetline v0.20.0
+   Compiling fastrand v2.4.1
+   Compiling regex-syntax v0.8.10
+   Compiling utf8_iter v1.0.4
+   Compiling parking v2.2.1
+   Compiling try-lock v0.2.5
+   Compiling icu_provider v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling thiserror v2.0.18
+   Compiling want v0.3.1
+   Compiling gix-pathspec v0.14.0
+   Compiling gix-revwalk v0.25.0
+   Compiling gix-ref v0.57.0
+   Compiling pkcs8 v0.10.2
+   Compiling httparse v1.10.1
+   Compiling gix-ignore v0.18.0
+   Compiling ring v0.17.14
+   Compiling httpdate v1.0.3
+   Compiling spin v0.9.8
+   Compiling rand_core v0.10.1
+   Compiling powerfmt v0.2.0
+   Compiling gix-traverse v0.51.1
+   Compiling lazy_static v1.5.0
+   Compiling deranged v0.5.8
+   Compiling gix-url v0.34.0
+   Compiling cargo_metadata v0.23.1
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+   Compiling tokio-util v0.7.18
+   Compiling concurrent-queue v2.5.0
+   Compiling rustls-pki-types v1.14.0
+   Compiling sync_wrapper v1.0.2
+   Compiling num_threads v0.1.7
+   Compiling gix-index v0.45.1
+   Compiling aho-corasick v1.1.4
+   Compiling zerocopy v0.8.48
+   Compiling ipnet v2.12.0
+   Compiling tower-layer v0.3.3
+   Compiling num-conv v0.2.1
+   Compiling time-core v0.1.8
+   Compiling time v0.3.47
+   Compiling gix-filter v0.24.1
+   Compiling h2 v0.4.14
+   Compiling icu_properties v2.2.0
+   Compiling regex-automata v0.4.14
+   Compiling icu_normalizer v2.2.0
+   Compiling gix-discover v0.45.0
+   Compiling gix-worktree v0.46.0
+   Compiling getrandom v0.4.2
+   Compiling gix-revision v0.39.0
+   Compiling form_urlencoded v1.2.2
+   Compiling http-body-util v0.1.3
+   Compiling hmac v0.12.1
+   Compiling num-integer v0.1.46
+   Compiling cpufeatures v0.2.17
+   Compiling untrusted v0.9.0
+   Compiling gix-diff v0.57.1
+   Compiling sha2 v0.10.9
+   Compiling gix-dir v0.19.0
+   Compiling gix-refspec v0.35.0
+   Compiling gix-pack v0.64.1
+   Compiling idna_adapter v1.2.1
+   Compiling gix-config v0.50.0
+   Compiling tower v0.5.3
+   Compiling gix-transport v0.52.1
+   Compiling gix-shallow v0.7.0
+   Compiling hyper v1.9.0
+   Compiling adler2 v2.0.1
+   Compiling simd-adler32 v0.3.9
+   Compiling rustls v0.23.38
+   Compiling dyn-clone v1.0.20
+   Compiling ryu v1.0.23
+   Compiling gix-protocol v0.55.0
+   Compiling miniz_oxide v0.8.9
+   Compiling gix-status v0.24.0
+   Compiling gix-odb v0.74.0
+   Compiling rustls-webpki v0.103.12
+   Compiling idna v1.1.0
+   Compiling event-listener v5.4.1
+   Compiling futures-lite v2.6.1
+   Compiling signature v2.2.0
+   Compiling ff v0.13.1
+   Compiling core-foundation v0.10.1
+   Compiling gix-submodule v0.24.0
+   Compiling security-framework-sys v2.17.0
+   Compiling iri-string v0.7.12
+   Compiling base16ct v0.2.0
+   Compiling tower-http v0.6.8
+   Compiling security-framework v3.7.0
+   Compiling sec1 v0.7.3
+   Compiling hyper-util v0.1.20
+   Compiling ref-cast v1.0.25
+   Compiling crc32fast v1.5.0
+   Compiling group v0.13.0
+   Compiling event-listener-strategy v0.5.4
+   Compiling url v2.5.8
+   Compiling vergen v9.1.0
+   Compiling derive_more v2.1.1
+   Compiling hkdf v0.12.4
+   Compiling futures-executor v0.3.32
+   Compiling gix v0.77.0
+   Compiling crypto-bigint v0.5.5
+   Compiling ppv-lite86 v0.2.21
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling futures v0.3.32
+   Compiling anyhow v1.0.102
+   Compiling schemars v1.2.1
+   Compiling flate2 v1.1.9
+   Compiling rustls-native-certs v0.8.3
+   Compiling serde_urlencoded v0.7.1
+   Compiling matchers v0.2.0
+   Compiling num-bigint v0.4.6
+   Compiling onig_sys v69.9.1
+   Compiling webpki-roots v1.0.7
+   Compiling sharded-slab v0.1.7
+   Compiling polling v3.11.0
+   Compiling tracing-serde v0.2.0
+   Compiling elliptic-curve v0.13.8
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.9
+   Compiling option-ext v0.2.0
+   Compiling anstyle v1.0.14
+   Compiling nu-ansi-term v0.50.3
+   Compiling anstyle-query v1.1.5
+   Compiling unicode-width v0.2.0
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.5
+   Compiling foldhash v0.2.0
+   Compiling allocator-api2 v0.2.21
+   Compiling tracing-subscriber v0.3.23
+   Compiling anstream v1.0.0
+   Compiling dirs-sys v0.4.1
+   Compiling pin-project v1.1.11
+   Compiling async-io v2.6.0
+   Compiling hashbrown v0.16.1
+   Compiling rand_chacha v0.3.1
+   Compiling getrandom v0.3.4
+   Compiling signal-hook v0.3.18
+   Compiling rfc6979 v0.4.0
+   Compiling uuid v1.23.0
+   Compiling serde_spanned v0.6.9
+   Compiling toml_datetime v0.6.3
+   Compiling strsim v0.11.1
+   Compiling bit-vec v0.8.0
+   Compiling clap_lex v1.1.0
+   Compiling winnow v0.5.40
+   Compiling libsqlite3-sys v0.37.0
+   Compiling tokio-rustls v0.26.4
+   Compiling bit-set v0.8.0
+   Compiling clap_builder v4.6.0
+   Compiling rand v0.8.5
+   Compiling toml_edit v0.20.2
+   Compiling ecdsa v0.16.9
+   Compiling hyper-rustls v0.27.9
+   Compiling strum v0.28.0
+   Compiling signal-hook-mio v0.2.5
+   Compiling rand_core v0.9.5
+   Compiling serde_with v3.21.0
+   Compiling async-signal v0.2.14
+   Compiling primeorder v0.13.6
+   Compiling async-lock v3.4.2
+   Compiling async-channel v2.5.0
+   Compiling num-iter v0.1.45
+   Compiling tempfile v3.27.0
+   Compiling piper v0.2.5
+   Compiling crossbeam-epoch v0.9.18
+   Compiling quick-xml v0.38.4
+   Compiling fixedbitset v0.5.7
+   Compiling gimli v0.32.3
+   Compiling linked-hash-map v0.5.6
+   Compiling rustix v0.38.44
+   Compiling async-task v4.7.1
+   Compiling same-file v1.0.6
+   Compiling blocking v1.6.2
+   Compiling walkdir v2.5.0
+   Compiling addr2line v0.25.1
+   Compiling yaml-rust v0.4.5
+   Compiling plist v1.8.0
+   Compiling futures-concurrency v7.7.1
+   Compiling crossbeam-deque v0.8.6
+   Compiling num-bigint-dig v0.8.6
+   Compiling agent-client-protocol-schema v1.1.0
+   Compiling toml v0.8.2
+   Compiling clap v4.6.0
+   Compiling schemars v0.8.22
+   Compiling async-process v2.5.0
+   Compiling nix v0.31.2
+   Compiling reqwest v0.12.28
+   Compiling curve25519-dalek v4.1.3
+   Compiling object v0.37.3
+   Compiling dirs v5.0.1
+   Compiling getopts v0.2.24
+   Compiling ed25519 v2.2.3
+   Compiling chacha20 v0.10.0
+   Compiling pkcs1 v0.7.5
+   Compiling bincode v1.3.3
+   Compiling serde_path_to_error v0.1.20
+   Compiling crossbeam-channel v0.5.15
+   Compiling mime v0.3.17
+   Compiling rustc-demangle v0.1.27
+   Compiling pulldown-cmark-escape v0.11.0
+   Compiling shell-words v1.1.1
+   Compiling is_executable v1.0.5
+   Compiling unicase v2.9.0
+   Compiling vergen-gix v9.1.0
+   Compiling rustc-hash v2.1.2
+   Compiling shlex v1.3.0
+   Compiling backtrace v0.3.76
+   Compiling pulldown-cmark v0.13.3
+   Compiling axum-core v0.5.6
+   Compiling clap_complete v4.6.3
+   Compiling ed25519-dalek v2.2.0
+   Compiling tracing-appender v0.2.4
+   Compiling rsa v0.9.10
+   Compiling rand v0.10.1
+   Compiling process-wrap v9.1.0
+   Compiling libproc v0.14.11
+   Compiling spur-telemetry v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-telemetry)
+   Compiling rayon-core v1.13.0
+   Compiling portable-atomic v1.13.1
+   Compiling toon_rust v0.1.1 (https://github.com/Dicklesworthstone/toon_rust.git?rev=788589d#788589d7)
+   Compiling beads_rust v0.1.15 (https://github.com/getspur/beads_rust?rev=47b3b39a54b04c7d51d735c032c82e891c2a0db8#47b3b39a)
+   Compiling crossterm v0.29.0
+   Compiling p384 v0.13.1
+   Compiling p256 v0.13.2
+   Compiling fancy-regex v0.17.0
+   Compiling lru v0.16.3
+   Compiling hashlink v0.11.1
+   Compiling directories v5.0.1
+   Compiling agent-client-protocol v1.0.1
+   Compiling console v0.16.3
+   Compiling simple_asn1 v0.6.4
+   Compiling num-rational v0.4.2
+   Compiling file-rotate v0.8.0
+   Compiling reqwest v0.13.2
+   Compiling rmcp-macros v1.5.0
+   Compiling regex v1.12.3
+   Compiling octocrab v0.50.0
+   Compiling sse-stream v0.2.2
+   Compiling tokio-stream v0.1.18
+   Compiling fs4 v0.13.1
+   Compiling pem v3.0.6
+   Compiling os_pipe v1.2.3
+   Compiling stdio-override v0.2.0
+   Compiling wait-timeout v0.2.1
+   Compiling fallible-iterator v0.3.0
+   Compiling unsafe-libyaml v0.2.11
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling unit-prefix v0.5.2
+   Compiling onig v6.5.1
+   Compiling either v1.15.0
+   Compiling similar v2.7.0
+   Compiling matchit v0.8.4
+   Compiling quick-error v1.2.3
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling axum v0.8.9
+   Compiling rusty-fork v0.3.1
+   Compiling rayon v1.12.0
+   Compiling indicatif v0.18.4
+   Compiling rusqlite v0.39.0
+   Compiling syntect v5.3.0
+   Compiling jsonwebtoken v10.4.0
+   Compiling snafu v0.8.9
+   Compiling crossterm v0.28.1
+   Compiling rand v0.9.4
+   Compiling rmcp v1.5.0
+   Compiling rand_chacha v0.9.0
+   Compiling rand_xorshift v0.4.0
+   Compiling rich_rust v0.2.1
+   Compiling hyper-timeout v0.5.2
+   Compiling arc-swap v1.9.1
+   Compiling secrecy v0.10.3
+   Compiling fs2 v0.4.3
+   Compiling unarray v0.1.4
+   Compiling semver v1.0.28
+   Compiling web-time v1.1.0
+   Compiling dunce v1.0.5
+   Compiling fixedbitset v0.4.2
+   Compiling proptest v1.11.0
+   Compiling sysinfo v0.30.13
+   Compiling petgraph v0.6.5
+   Compiling spur-acp v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-acp)
+   Compiling filetime v0.2.27
+   Compiling spur-mcp v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-mcp)
+   Compiling spur-pm v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 11s
+     Running unittests src/lib.rs (target/debug/deps/spur_pm-5a8c47df49134070)
+
+running 16 tests
+test graph_engine::incremental::tests::empty_label_initialization_uses_indexed_queries ... ok
+test graph_engine::incremental::tests::external_single_node_edit_loads_only_that_node ... ok
+test graph_engine::incremental::tests::independent_consumers_do_not_steal_changes ... ok
+test graph_engine::incremental::tests::failed_delta_does_not_publish_partial_data_or_advance_cursor ... ok
+test graph_engine::incremental::tests::deleting_a_dense_graph_node_repairs_indices_and_reintroduction_restores_edges ... ok
+test graph_engine::incremental::tests::edge_mutations_do_not_reload_nodes_and_cover_type_and_endpoints ... ok
+test graph_engine::incremental::tests::incremental_projection_matches_the_existing_full_loader ... ok
+test graph_engine::incremental::tests::rollback_does_not_advance_graph_revision ... ok
+test graph_engine::incremental::tests::label_membership_and_outside_changes_are_scoped ... ok
+test graph_engine::incremental::tests::replace_conflict_records_the_deleted_issue_even_without_recursive_triggers ... ok
+test graph_engine::incremental::tests::schema_recovery_reinstalls_tracking_and_rebuilds_once ... ok
+test graph_engine::incremental::tests::scoped_refresh_ignores_corrupt_outside_dependency_payloads ... ok
+test graph_engine::incremental::tests::replacement_database_reopens_and_initializes_the_new_graph ... ok
+test graph_engine::incremental::tests::unchanged_and_unrelated_writes_do_not_reload_graph_data ... ok
+test graph_engine::incremental::tests::tombstones_templates_and_label_updates_remove_and_restore_membership ... ok
+GRAPH_WORK_SAMPLE {"fixture_nodes":2003,"fixture_edges":2,"observations":[{"scenario":"cold","full_builds":1,"delta_refreshes":0,"reuses":0,"changed_ids":0,"nodes_loaded":2003,"edges_loaded":2},{"scenario":"ten_unchanged_reads","full_builds":1,"delta_refreshes":0,"reuses":10,"changed_ids":0,"nodes_loaded":2003,"edges_loaded":2},{"scenario":"one_node_edit","full_builds":1,"delta_refreshes":1,"reuses":10,"changed_ids":1,"nodes_loaded":2004,"edges_loaded":2}]}
+test graph_engine::incremental::tests::a_large_graph_still_loads_one_node_for_one_field_change ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 212 filtered out; finished in 0.49s

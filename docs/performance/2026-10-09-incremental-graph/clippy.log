@@ -1,0 +1,577 @@
+[spur-cargo] remote (clippy) → aws-my VM
+[build] Worktree: spur/worktrees/incremental-beads-graph  (local=/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph)
+[build] Remote:   ~/spur/worktrees/incremental-beads-graph   target=/mnt/cargo/targets/spur/worktrees/incremental-beads-graph   -j8
+[build] Remote build queue: admitted as ticket 124 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] VM spur-builder missing — spinning a fresh one...
+upload failed: ../../../../../../var/folders/jg/5bryqtwd787gyt56zsdx3r540000gn/T/tmp.CWSuk1P1Oz to s3://spurlab-591950085580-spur-sccache-apse5/bootstrap/16b15f281fabe0bfea0db6591c01585e49482dcfe2e0c913b9ff89716bb3adb4/startup.sh Could not connect to the endpoint URL: "https://spurlab-591950085580-spur-sccache-apse5.s3.ap-southeast-5.amazonaws.com/bootstrap/16b15f281fabe0bfea0db6591c01585e49482dcfe2e0c913b9ff89716bb3adb4/startup.sh"
+[build] create failed and VM is MISSING
+[build] Remote build queue: released ticket 00000000000000000124.
+[spur-cargo] remote aws-my VM unavailable (exit 200) — trying next cloud/local
+[spur-cargo] remote (clippy) → aws VM
+[build] Worktree: spur/worktrees/incremental-beads-graph  (local=/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph)
+[build] Remote:   ~/spur/worktrees/incremental-beads-graph   target=/mnt/cargo/targets/spur/worktrees/incremental-beads-graph   -j16
+[build] Remote build queue: admitted as ticket 2 (slot 1/3) on spur-builder (3 slot(s)/builder, 1 builder(s)).
+[build] VM spur-builder missing — spinning a fresh one...
+upload failed: ../../../../../../var/folders/jg/5bryqtwd787gyt56zsdx3r540000gn/T/tmp.LRUhYhoWRp to s3://spurlab-591950085580-spur-sccache-apse5/bootstrap/d327d98d983a6a482bea68e499abd1c4f7c85562d1581826f14262e3c0f24561/startup.sh Could not connect to the endpoint URL: "https://spurlab-591950085580-spur-sccache-apse5.s3.ap-northeast-1.amazonaws.com/bootstrap/d327d98d983a6a482bea68e499abd1c4f7c85562d1581826f14262e3c0f24561/startup.sh"
+[build] create failed and VM is MISSING
+[build] Remote build queue: released ticket 00000000000000000002.
+[spur-cargo] remote aws VM unavailable (exit 200) — trying next cloud/local
+[spur-cargo] all remote clouds unavailable — falling back to local cargo
+    Checking smallvec v1.15.1
+    Checking subtle v2.6.1
+    Checking typenum v1.19.0
+    Checking bytes v1.11.1
+    Checking num-traits v0.2.19
+    Checking futures-util v0.3.32
+    Checking aho-corasick v1.1.4
+    Checking ring v0.17.14
+    Checking chrono v0.4.44
+    Checking generic-array v0.14.7
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking num-integer v0.1.46
+    Checking parking_lot_core v0.9.12
+    Checking digest v0.10.7
+    Checking icu_normalizer v2.2.0
+    Checking http v1.4.0
+    Checking parking_lot v0.12.5
+    Checking hmac v0.12.1
+    Checking sha2 v0.10.9
+    Checking regex-automata v0.4.14
+    Checking tokio v1.51.1
+    Checking idna_adapter v1.2.1
+    Checking zerocopy v0.8.48
+    Checking simd-adler32 v0.3.9
+    Checking idna v1.1.0
+    Checking miniz_oxide v0.8.9
+    Checking rustls-webpki v0.103.12
+    Checking signature v2.2.0
+    Checking http-body v1.0.1
+    Checking ff v0.13.1
+    Checking security-framework-sys v2.17.0
+    Checking http-body-util v0.1.3
+    Checking sec1 v0.7.3
+    Checking security-framework v3.7.0
+    Checking rustls v0.23.38
+    Checking group v0.13.0
+    Checking url v2.5.8
+    Checking hkdf v0.12.4
+    Checking crypto-bigint v0.5.5
+    Checking schemars v1.2.1
+    Checking futures-executor v0.3.32
+    Checking futures v0.3.32
+    Checking flate2 v1.1.9
+    Checking rustls-native-certs v0.8.3
+    Checking num-bigint v0.4.6
+    Checking hashbrown v0.16.1
+    Checking rfc6979 v0.4.0
+    Checking clap_builder v4.6.0
+    Checking elliptic-curve v0.13.8
+    Checking serde_with v3.21.0
+    Checking onig_sys v69.9.1
+    Checking num-iter v0.1.45
+    Checking matchers v0.2.0
+    Checking primeorder v0.13.6
+    Checking ecdsa v0.16.9
+    Checking tracing-subscriber v0.3.23
+   Compiling spur-telemetry v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-telemetry)
+    Checking futures-concurrency v7.7.1
+    Checking clap v4.6.0
+    Checking schemars v0.8.22
+    Checking onig v6.5.1
+    Checking curve25519-dalek v4.1.3
+    Checking ed25519 v2.2.3
+    Checking backtrace v0.3.76
+    Checking clap_complete v4.6.3
+    Checking axum-core v0.5.6
+    Checking syntect v5.3.0
+    Checking tracing-appender v0.2.4
+    Checking ed25519-dalek v2.2.0
+    Checking libsqlite3-sys v0.37.0
+    Checking p384 v0.13.1
+    Checking p256 v0.13.2
+    Checking ppv-lite86 v0.2.21
+    Checking agent-client-protocol-schema v1.1.0
+    Checking tokio-util v0.7.18
+    Checking tokio-rustls v0.26.4
+    Checking rand_chacha v0.3.1
+    Checking rand v0.8.5
+    Checking tokio-stream v0.1.18
+    Checking process-wrap v9.1.0
+    Checking crossterm v0.29.0
+    Checking h2 v0.4.14
+    Checking tower v0.5.3
+    Checking rustix v0.38.44
+    Checking num-bigint-dig v0.8.6
+    Checking simple_asn1 v0.6.4
+    Checking num-rational v0.4.2
+    Checking fancy-regex v0.17.0
+    Checking regex v1.12.3
+    Checking hashlink v0.11.1
+    Checking tower-http v0.6.8
+    Checking lru v0.16.3
+    Checking file-rotate v0.8.0
+    Checking sse-stream v0.2.2
+    Checking either v1.15.0
+    Checking rsa v0.9.10
+    Checking similar v2.7.0
+    Checking rusqlite v0.39.0
+    Checking rayon v1.12.0
+    Checking rich_rust v0.2.1
+    Checking crossterm v0.28.1
+    Checking jsonwebtoken v10.4.0
+    Checking toon_rust v0.1.1 (https://github.com/Dicklesworthstone/toon_rust.git?rev=788589d#788589d7)
+    Checking rand_chacha v0.9.0
+    Checking rand v0.9.4
+    Checking proptest v1.11.0
+    Checking beads_rust v0.1.15 (https://github.com/getspur/beads_rust?rev=47b3b39a54b04c7d51d735c032c82e891c2a0db8#47b3b39a)
+    Checking sysinfo v0.30.13
+    Checking hyper v1.9.0
+    Checking hyper-util v0.1.20
+    Checking agent-client-protocol v1.0.1
+    Checking hyper-rustls v0.27.9
+    Checking reqwest v0.13.2
+    Checking axum v0.8.9
+    Checking hyper-timeout v0.5.2
+    Checking reqwest v0.12.28
+    Checking octocrab v0.50.0
+    Checking rmcp v1.5.0
+    Checking spur-acp v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-acp)
+    Checking spur-mcp v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-mcp)
+    Checking spur-pm v1.24.0 (/Volumes/Projects/spur/.spur/worktrees/incremental-beads-graph/crates/spur-pm)
+error: future cannot be sent between threads safely
+  --> crates/spur-pm/src/bv.rs:98:52
+   |
+98 |     async fn open_beads(w: &TestBeadsWorkspace) -> Arc<BeadsCrateAdapter> {
+   |                                                    ^^^^^^^^^^^^^^^^^^^^^^ future returned by `open_beads` is not `Send`
+   |
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> crates/spur-pm/src/bv.rs:98:25
+   |
+98 |     async fn open_beads(w: &TestBeadsWorkspace) -> Arc<BeadsCrateAdapter> {
+   |                         ^ has type `&test_workspace::TestBeadsWorkspace` which is not `Send`, because `test_workspace::TestBeadsWorkspace` is not `Sync`
+   = note: `std::cell::RefCell<rusqlite::inner_connection::InnerConnection>` doesn't implement `std::marker::Sync`
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> crates/spur-pm/src/bv.rs:98:25
+   |
+98 |     async fn open_beads(w: &TestBeadsWorkspace) -> Arc<BeadsCrateAdapter> {
+   |                         ^ has type `&test_workspace::TestBeadsWorkspace` which is not `Send`, because `test_workspace::TestBeadsWorkspace` is not `Sync`
+   = note: `std::cell::RefCell<hashlink::lru_cache::LruCache<std::sync::Arc<str>, rusqlite::raw_statement::RawStatement>>` doesn't implement `std::marker::Sync`
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#future_not_send
+   = note: `-D clippy::future-not-send` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::future_not_send)]`
+
+error: consider adding a `;` to the last statement for consistent formatting
+   --> crates/spur-pm/src/graph_engine/incremental_tests.rs:298:13
+    |
+298 |             assert_eq!(s.graph[s.by_id["b"]].title, "Only this one")
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: add a `;` here: `assert_eq!(s.graph[s.by_id["b"]].title, "Only this one");`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#semicolon_if_nothing_returned
+    = note: `-D clippy::semicolon-if-nothing-returned` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::semicolon_if_nothing_returned)]`
+
+error: `#[ignore]` without reason
+  --> crates/spur-pm/tests/watermark_scan_perf.rs:17:1
+   |
+17 | #[ignore]
+   | ^^^^^^^^^
+   |
+   = help: add a reason with `= ".."`
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#ignore_without_reason
+   = note: `-D clippy::ignore-without-reason` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::ignore_without_reason)]`
+
+error: item in documentation is missing backticks
+ --> crates/spur-pm/tests/bv_triage.rs:1:26
+  |
+1 | //! Integration test for BvAdapter::triage against the native GraphEngine.
+  |                          ^^^^^^^^^^^^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+  = note: `-D clippy::doc-markdown` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(clippy::doc_markdown)]`
+help: try
+  |
+1 - //! Integration test for BvAdapter::triage against the native GraphEngine.
+1 + //! Integration test for `BvAdapter::triage` against the native GraphEngine.
+  |
+
+error: item in documentation is missing backticks
+ --> crates/spur-pm/tests/bv_triage.rs:1:63
+  |
+1 | //! Integration test for BvAdapter::triage against the native GraphEngine.
+  |                                                               ^^^^^^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+help: try
+  |
+1 - //! Integration test for BvAdapter::triage against the native GraphEngine.
+1 + //! Integration test for BvAdapter::triage against the native `GraphEngine`.
+  |
+
+error: item in documentation is missing backticks
+ --> crates/spur-pm/tests/bv_triage.rs:4:62
+  |
+4 | //! `BvAdapter::triage(Some("spur:plan-id:<id>"))` returns a TriageReport
+  |                                                              ^^^^^^^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+help: try
+  |
+4 - //! `BvAdapter::triage(Some("spur:plan-id:<id>"))` returns a TriageReport
+4 + //! `BvAdapter::triage(Some("spur:plan-id:<id>"))` returns a `TriageReport`
+  |
+
+error: item in documentation is missing backticks
+ --> crates/spur-pm/tests/watermark_scan_perf.rs:3:21
+  |
+3 | //! M-series Mac in SQLite WAL mode.
+  |                     ^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+  = note: `-D clippy::doc-markdown` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(clippy::doc_markdown)]`
+help: try
+  |
+3 - //! M-series Mac in SQLite WAL mode.
+3 + //! M-series Mac in `SQLite` WAL mode.
+  |
+
+error: importing trait that is only used anonymously
+ --> crates/spur-pm/tests/init_writer_with_flush_lock.rs:8:10
+  |
+8 | use fs2::FileExt;
+  |          ^^^^^^^ help: use: `FileExt as _`
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unused_trait_names
+  = note: `-D clippy::unused-trait-names` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(clippy::unused_trait_names)]`
+
+error: this could be rewritten as `let...else`
+  --> crates/spur-pm/tests/init_writer_with_flush_lock.rs:42:5
+   |
+42 | /     let err = match handle.join().expect("adapter thread should not panic") {
+43 | |         Ok(_) => panic!("adapter open should time out behind held write lock"),
+44 | |         Err(err) => err,
+45 | |     };
+   | |______^ help: consider writing: `let Err(err) = handle.join().expect("adapter thread should not panic") else { panic!("adapter open should time out behind held write lock") };`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#manual_let_else
+   = note: `-D clippy::manual-let-else` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::manual_let_else)]`
+
+error: could not compile `spur-pm` (test "init_writer_with_flush_lock") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: future cannot be sent between threads safely
+  --> crates/spur-pm/tests/bv_triage.rs:15:50
+   |
+15 | async fn make_adapter(w: &TestBeadsWorkspace) -> BvAdapter {
+   |                                                  ^^^^^^^^^ future returned by `make_adapter` is not `Send`
+   |
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> crates/spur-pm/tests/bv_triage.rs:15:23
+   |
+15 | async fn make_adapter(w: &TestBeadsWorkspace) -> BvAdapter {
+   |                       ^ has type `&spur_pm::test_workspace::TestBeadsWorkspace` which is not `Send`, because `spur_pm::test_workspace::TestBeadsWorkspace` is not `Sync`
+   = note: `std::cell::RefCell<rusqlite::inner_connection::InnerConnection>` doesn't implement `std::marker::Sync`
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> crates/spur-pm/tests/bv_triage.rs:15:23
+   |
+15 | async fn make_adapter(w: &TestBeadsWorkspace) -> BvAdapter {
+   |                       ^ has type `&spur_pm::test_workspace::TestBeadsWorkspace` which is not `Send`, because `spur_pm::test_workspace::TestBeadsWorkspace` is not `Sync`
+   = note: `std::cell::RefCell<hashlink::lru_cache::LruCache<std::sync::Arc<str>, rusqlite::raw_statement::RawStatement>>` doesn't implement `std::marker::Sync`
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#future_not_send
+   = note: `-D clippy::future-not-send` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::future_not_send)]`
+
+error: item in documentation is missing backticks
+  --> crates/spur-pm/tests/bv_triage.rs:24:53
+   |
+24 | /// Smoke test: triage returns a structurally valid TriageReport on an empty
+   |                                                     ^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+help: try
+   |
+24 - /// Smoke test: triage returns a structurally valid TriageReport on an empty
+24 + /// Smoke test: triage returns a structurally valid `TriageReport` on an empty
+   |
+
+error: item in documentation is missing backticks
+  --> crates/spur-pm/tests/bv_triage.rs:25:37
+   |
+25 | /// workspace. Proves the adapter + GraphEngine + JSON schema agree.
+   |                                     ^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+help: try
+   |
+25 - /// workspace. Proves the adapter + GraphEngine + JSON schema agree.
+25 + /// workspace. Proves the adapter + `GraphEngine` + JSON schema agree.
+   |
+
+error: item in documentation is missing backticks
+  --> crates/spur-pm/tests/bv_triage.rs:39:67
+   |
+39 | /// The contract Task 9 depends on: triage(Some(label)) returns a TriageReport
+   |                                                                   ^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#doc_markdown
+help: try
+   |
+39 - /// The contract Task 9 depends on: triage(Some(label)) returns a TriageReport
+39 + /// The contract Task 9 depends on: triage(Some(label)) returns a `TriageReport`
+   |
+
+error: could not compile `spur-pm` (test "bv_triage") due to 7 previous errors
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/pm_service.rs:65:20
+   |
+65 |             title: "Actor threaded create".to_string(),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `"Actor threaded create".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+   = note: `-D clippy::str-to-string` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::str_to_string)]`
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/pm_service.rs:66:30
+   |
+66 |             issue_type: Some("task".to_string()),
+   |                              ^^^^^^^^^^^^^^^^^^ help: try: `"task".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/pm_service.rs:96:20
+   |
+96 |             title: "Batch labels".to_string(),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `"Batch labels".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/pm_service.rs:97:30
+   |
+97 |             issue_type: Some("task".to_string()),
+   |                              ^^^^^^^^^^^^^^^^^^ help: try: `"task".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+   --> crates/spur-pm/tests/pm_service.rs:107:34
+    |
+107 |                 add_labels: vec!["alpha".to_string(), "beta".to_string()],
+    |                                  ^^^^^^^^^^^^^^^^^^^ help: try: `"alpha".to_owned()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+   --> crates/spur-pm/tests/pm_service.rs:107:55
+    |
+107 |                 add_labels: vec!["alpha".to_string(), "beta".to_string()],
+    |                                                       ^^^^^^^^^^^^^^^^^^ help: try: `"beta".to_owned()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+   --> crates/spur-pm/tests/pm_service.rs:132:37
+    |
+132 |                 remove_labels: vec!["alpha".to_string(), "beta".to_string()],
+    |                                     ^^^^^^^^^^^^^^^^^^^ help: try: `"alpha".to_owned()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+   --> crates/spur-pm/tests/pm_service.rs:132:58
+    |
+132 |                 remove_labels: vec!["alpha".to_string(), "beta".to_string()],
+    |                                                          ^^^^^^^^^^^^^^^^^^ help: try: `"beta".to_owned()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: could not compile `spur-pm` (test "watermark_scan_perf") due to 2 previous errors
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/mcp_passthrough_snapshots.rs:26:23
+   |
+26 |         (top.clone(), "<id-1>".to_string()),
+   |                       ^^^^^^^^^^^^^^^^^^^^ help: try: `"<id-1>".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+   = note: `-D clippy::str-to-string` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::str_to_string)]`
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/mcp_passthrough_snapshots.rs:27:19
+   |
+27 |         (blocked, "<id-2>".to_string()),
+   |                   ^^^^^^^^^^^^^^^^^^^^ help: try: `"<id-2>".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/mcp_passthrough_snapshots.rs:28:18
+   |
+28 |         (parent, "<id-3>".to_string()),
+   |                  ^^^^^^^^^^^^^^^^^^^^ help: try: `"<id-3>".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: could not compile `spur-pm` (test "pm_service") due to 8 previous errors
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/mcp_passthrough_snapshots.rs:66:44
+   |
+66 |                     *value = Value::String("<normalized>".to_string());
+   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `"<normalized>".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/mcp_passthrough_snapshots.rs:85:22
+   |
+85 |                 *s = "<normalized>".to_string();
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `"<normalized>".to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: matching over `()` is more explicit
+   --> crates/spur-pm/tests/beads_crate_multiprocess.rs:198:44
+    |
+198 |             .validate_and_commit(snap, |s, _| {
+    |                                            ^ help: use `()` instead of `_`: `()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#ignored_unit_patterns
+    = note: `-D clippy::ignored-unit-patterns` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::ignored_unit_patterns)]`
+
+error: could not compile `spur-pm` (test "mcp_passthrough_snapshots") due to 5 previous errors
+error: could not compile `spur-pm` (test "beads_crate_multiprocess") due to 1 previous error
+error: statement has unnecessary safety comment
+   --> crates/spur-pm/src/ingest/github/auth.rs:153:9
+    |
+153 |         env::set_var("SPUR_GITHUB_TOKEN", "  ghp_test_token_001  ");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: consider removing the safety comment
+   --> crates/spur-pm/src/ingest/github/auth.rs:148:12
+    |
+148 |         // SAFETY: tests run single-threaded by default in this crate; we
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unnecessary_safety_comment
+    = note: `-D clippy::unnecessary-safety-comment` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::unnecessary_safety_comment)]`
+
+error: importing trait that is only used anonymously
+  --> crates/spur-pm/tests/apply_test.rs:12:24
+   |
+12 | use chrono::{DateTime, TimeZone, Utc};
+   |                        ^^^^^^^^ help: use: `TimeZone as _`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unused_trait_names
+   = note: `-D clippy::unused-trait-names` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::unused_trait_names)]`
+
+error: importing trait that is only used anonymously
+  --> crates/spur-pm/tests/apply_test.rs:13:10
+   |
+13 | use fs2::FileExt;
+   |          ^^^^^^^ help: use: `FileExt as _`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unused_trait_names
+
+error: importing trait that is only used anonymously
+  --> crates/spur-pm/tests/apply_test.rs:14:23
+   |
+14 | use spur_pm::adapter::IssueTracker;
+   |                       ^^^^^^^^^^^^ help: use: `IssueTracker as _`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unused_trait_names
+
+error: importing trait that is only used anonymously
+  --> crates/spur-pm/tests/apply_test.rs:15:24
+   |
+15 | use spur_pm::advanced::BeadsAdvanced;
+   |                        ^^^^^^^^^^^^^ help: use: `BeadsAdvanced as _`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unused_trait_names
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/apply_test.rs:39:19
+   |
+39 |             repo: repo.to_string(),
+   |                   ^^^^^^^^^^^^^^^^ help: try: `repo.to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+   = note: `-D clippy::str-to-string` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::str_to_string)]`
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/apply_test.rs:76:20
+   |
+76 |         remote_id: remote_id.to_string(),
+   |                    ^^^^^^^^^^^^^^^^^^^^^ help: try: `remote_id.to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: `to_string()` called on a `&str`
+  --> crates/spur-pm/tests/apply_test.rs:79:16
+   |
+79 |         title: title.to_string(),
+   |                ^^^^^^^^^^^^^^^^^ help: try: `title.to_owned()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: unnecessary struct building
+   --> crates/spur-pm/tests/apply_test.rs:149:18
+    |
+149 |           .map(|c| spur_pm::advanced::Comment {
+    |  __________________^
+150 | |             id: c.id,
+151 | |             body: c.body,
+152 | |             actor: c.actor,
+153 | |             created_at: c.created_at,
+154 | |         })
+    | |_________^ help: replace with: `c`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unnecessary_struct_initialization
+    = note: `-D clippy::unnecessary-struct-initialization` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::unnecessary_struct_initialization)]`
+
+error: `to_string()` called on a `&str`
+   --> crates/spur-pm/tests/apply_test.rs:156:62
+    |
+156 |     watermark::latest_sync_sentinel(&crate_comments).map(|s| s.state.as_str().to_string())
+    |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `s.state.as_str().to_owned()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: only a `panic!` in `if`-then statement
+   --> crates/spur-pm/tests/apply_test.rs:191:9
+    |
+191 | /         if name_str.contains("external_links") || name_str.contains("ingest_cache") {
+192 | |             panic!("A-9 violation: forbidden sidecar file {name_str:?} in .beads/");
+193 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#manual_assert
+    = note: `-D clippy::manual-assert` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_assert)]`
+help: replace `if`-then-`panic!` with `assert!`
+    |
+191 -         if name_str.contains("external_links") || name_str.contains("ingest_cache") {
+192 -             panic!("A-9 violation: forbidden sidecar file {name_str:?} in .beads/");
+193 -         }
+191 +         assert!(!(name_str.contains("external_links") || name_str.contains("ingest_cache")), "A-9 violation: forbidden sidecar file {name_str:?} in .beads/")
+    |
+
+error: `to_string()` called on a `&str`
+   --> crates/spur-pm/tests/apply_test.rs:293:25
+    |
+293 |     node2.labels = vec!["bug".to_string()];
+    |                         ^^^^^^^^^^^^^^^^^ help: try: `"bug".to_owned()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#str_to_string
+
+error: could not compile `spur-pm` (test "apply_test") due to 11 previous errors
+error: could not compile `spur-pm` (lib test) due to 3 previous errors

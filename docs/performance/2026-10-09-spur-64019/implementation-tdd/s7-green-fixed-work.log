@@ -1,0 +1,230 @@
+COMMAND ['scripts/spur-cargo', 'test', '-p', 'spur-pm', 'beads_crate::', '--lib', '--', '--nocapture']
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0  (local=/Volumes/Projects/spur/.spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0)
+[build] Remote:   ~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   target=/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0   -j8
+[build] Remote build queue: admitted as ticket 191 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3569 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 ...
+[build] Re-stamping 2 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm beads_crate:: --lib -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=141G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  271G  141G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.93s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 160 tests
+test beads_crate::adapter::tests::backoff_ceiling_error_includes_last_lock_holder ... ok
+test beads_crate::adapter::tests::open_succeeds_in_fresh_dir ... ok
+test beads_crate::adapter::tests::cursor_path_set_but_file_missing_starts_empty ... ok
+test beads_crate::adapter::tests::batch_runs_multiple_steps_under_one_lock ... ok
+test beads_crate::adapter::tests::auto_flush_idempotent_when_clean ... ok
+test beads_crate::adapter::tests::read_completes_while_writer_waits_for_flock_on_single_blocking_thread ... ok
+test beads_crate::backoff::tests::caps_at_max_step ... ok
+test beads_crate::backoff::tests::first_step_is_near_initial ... ok
+test beads_crate::backoff::tests::jitter_extremes_bounded ... ok
+test beads_crate::backoff::tests::returns_none_past_ceiling ... ok
+test beads_crate::adapter::tests::read_returns_count_for_empty_db ... ok
+test beads_crate::adapter::tests::read_snapshot_then_validate_and_commit_no_conflict ... ok
+test beads_crate::adapter::tests::write_requests_actor_checkpoint ... ok
+test beads_crate::adapter::tests::write_runs_closure_under_flock ... ok
+test beads_crate::adapter::tests::reads_reuse_sqlite_connections_after_warmup ... ok
+test beads_crate::adapter::tests::validate_and_commit_rejects_on_data_version_drift ... ok
+test beads_crate::beads_advanced::tests::add_comment_persists_comment ... ok
+test beads_crate::adapter::tests::cursor_persists_across_open ... ok
+test beads_crate::beads_advanced::tests::actor_threads_through_write_methods ... ok
+test beads_crate::beads_advanced::tests::dep_cycles_returns_storage_detected_cycles ... ok
+test beads_crate::beads_db::trace_tests::submit_read_concurrent_readers_do_not_leak_spans ... ok
+test beads_crate::beads_db::trace_tests::submit_read_preserves_backpressure_and_reply_errors ... ok
+test beads_crate::beads_db::trace_tests::submit_read_error_and_cancelled_reply_release_context ... ok
+test beads_crate::dependency_compat::tests::add_dependency_with_metadata_accepts_empty_metadata_for_cycle_seeding ... ok
+test beads_crate::beads_db::trace_tests::submit_read_preserves_parent_span_and_dispatcher ... ok
+test beads_crate::dependency_compat::tests::dependency_batch_preserves_all_fields_and_requested_sources ... ok
+test beads_crate::dependency_compat::tests::get_dependencies_full_for_issues_groups_full_dependencies_by_source_issue ... ok
+test beads_crate::dependency_compat::tests::dependency_batch_reports_corrupt_records_instead_of_losing_edges ... ok
+test beads_crate::beads_advanced::tests::list_comments_returns_existing_comment ... ok
+test beads_crate::beads_advanced::tests::list_ready_empty_priorities_returns_all_priority_levels ... ok
+test beads_crate::beads_advanced::tests::list_ready_priorities_is_set_membership ... ok
+test beads_crate::beads_advanced::tests::list_ready_returns_unblocked_issue ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_db_is_zero_byte ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_db_missing ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_db_newer_than_jsonl ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_jsonl_missing ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_needs_flush_metadata_is_true ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_plain_export_tmp_present ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_stale_tmp_present ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_false_when_wal_newer_than_jsonl ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_true_when_no_wal_and_jsonl_at_least_as_fresh_as_db ... ok
+test beads_crate::init::can_skip_init_flush_tests::returns_true_when_quiet_and_jsonl_at_least_as_fresh_as_db ... ok
+test beads_crate::hygiene::tests::hygiene_review_mixed_case_parent_comment_expands_to_child ... ok
+test beads_crate::init::quarantine_tests::quarantine_batch_dir_includes_pid ... ok
+test beads_crate::init::quarantine_tests::quarantine_can_be_disabled_by_env ... ok
+test beads_crate::init::quarantine_tests::quarantines_stale_db_like_top_level_files_with_manifest ... ok
+test beads_crate::init::sweep_tests::ignores_non_pid_lookalikes ... ok
+test beads_crate::init::sweep_tests::ignores_wal_and_shm_sidecars_and_live_jsonl ... ok
+test beads_crate::init::sweep_tests::keeps_recent_tmp_files ... ok
+test beads_crate::init::sweep_tests::removes_old_jsonl_tmp_files ... ok
+test beads_crate::beads_advanced::tests::remove_dependency_round_trips ... ok
+test beads_crate::init::sweep_tests::tolerates_missing_dir ... ok
+test beads_crate::init::tests::cifs_magic_does_not_sign_extend_through_i32 ... ok
+test beads_crate::init::tests::local_tempdir_is_local ... ok
+test beads_crate::init::tests::nul_byte_in_path_does_not_panic ... ok
+test beads_crate::init::migration_tests::init_writer_with_flush_runs_clean_on_fresh_dir ... ok
+test beads_crate::init::sweep_tests::removes_temp_left_by_pinned_exporter ... ok
+test beads_crate::beads_advanced::tests::plan_id_label_for_epic_returns_plan_label_only_for_epics ... ok
+test beads_crate::hygiene::tests::hygiene_snapshot_expands_closed_parent_and_filters_deleted_or_ineligible_children ... ok
+test beads_crate::hygiene::tests::hygiene_history_gap_reseeds_and_parent_lookup_is_indexed ... ok
+test beads_crate::issue_changes::tests::coalescing_retains_older_domain_changes_for_lagging_independent_readers ... ok
+test beads_crate::issue_changes::tests::comment_and_audit_mutations_are_separate_from_summaries ... ok
+test beads_crate::hygiene::tests::hygiene_review_parent_endpoints_match_graph_eligibility ... ok
+test beads_crate::issue_changes::tests::adapter_installs_feed_before_external_mutations ... ok
+test beads_crate::issue_changes::tests::comment_replace_records_old_owner_even_when_delete_triggers_are_disabled ... ok
+test beads_crate::issue_changes::tests::dependency_edits_are_hygiene_only_and_rollbacks_do_not_advance_the_feed ... ok
+test beads_crate::issue_changes::tests::adapter_comment_timestamp_is_unrelated_to_plain_summaries ... ok
+test beads_crate::issue_changes::tests::external_description_edit_with_fixed_timestamp_and_hash_is_visible ... ok
+test beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost ... ok
+test beads_crate::issue_changes::tests::hygiene_review_mixed_case_structural_changes_track_old_and_new_children ... ok
+test beads_crate::issue_changes::tests::every_summary_filter_order_field_is_tracked_and_other_issue_fields_reach_hygiene ... ok
+test beads_crate::issue_changes::tests::exact_trigger_restoration_cannot_hide_an_untracked_edit ... ok
+test beads_crate::issue_changes::tests::insert_tombstone_delete_and_id_change_retain_deletion_evidence ... ok
+recovery SQLite 3.51.3
+test beads_crate::issue_changes::tests::label_add_remove_rename_and_reparent_report_both_ids ... ok
+test beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner ... ok
+test beads_crate::issue_changes::tests::reconnect_preserves_cursor_and_database_replacement_requires_reseed ... ok
+WAL post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::replace_insert_and_update_include_external_ref_victims_without_recursive_triggers ... ok
+test beads_crate::issue_changes::tests::serialized_cursor_after_feed_restart_detects_clone_replacement ... ok
+test beads_crate::issue_changes::tests::hygiene_review_mixed_case_replace_captures_rowid_and_composite_key_victims ... ok
+test beads_crate::issue_changes::tests::structural_combined_retarget_type_change_marks_both_children ... ok
+test beads_crate::issue_changes::tests::structural_edges_track_old_new_children_and_ignore_blockers ... ok
+test beads_crate::issue_changes::tests::timestamp_only_edits_signal_since_membership_entry_and_exit ... ok
+DELETE post-repair rejection: no such table: main.spur_issue_changes
+test beads_crate::issue_changes::tests::structural_replace_captures_rowid_and_key_victims_without_recursive_triggers ... ok
+test beads_crate::issue_reads_tests::acceptance::s7_request_benchmark ... ignored, manual optimized whole-request and admission measurements
+watermark/delta work size=3: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::repaired_journal_rejects_stale_writer_then_schema_read_allows_tracked_retry ... ok
+test beads_crate::issue_changes::tests::watermark_delta_and_loaded_rows_share_one_snapshot ... ok
+test beads_crate::issue_reads_tests::acceptance::s7_write_benchmark ... ignored, manual batch index/feed overhead and journal allocation measurements
+test beads_crate::issue_changes::tests::timestamp_summary_and_comment_revisions_survive_compaction_in_both_orders ... ok
+test beads_crate::hygiene::tests::hygiene_structural_conflicts_rollback_or_conservatively_invalidate ... ok
+test beads_crate::issue_changes::tests::ignored_and_failed_conflicts_preserve_rows_and_complete_feed ... ok
+test beads_crate::issue_reads_tests::issue_reads_commit_during_load_leaves_snapshot_dirty ... ok
+test beads_crate::issue_reads_tests::acceptance::s7_structural_edits_advance_hygiene_without_summary_payload_loads ... ok
+test beads_crate::issue_reads_tests::acceptance::s7_unchanged_requests_do_not_revalidate_ddl_or_reserialize_payload ... ok
+test beads_crate::issue_reads_tests::issue_reads_database_replacement_rebinds_cached_and_direct_paths ... ok
+test beads_crate::issue_reads_tests::issue_reads_gap_and_schema_change_reseed ... ok
+test beads_crate::issue_reads_tests::issue_reads_identical_concurrent_requests_coalesce ... ok
+test beads_crate::issue_reads_tests::issue_reads_ordinary_adapter_comment_is_summary_unrelated ... ok
+test beads_crate::issue_reads_tests::issue_reads_old_and_new_membership_and_order_match_sql ... ok
+S5 unchanged size=12 work=IssueReadWork { full_builds: 1, delta_refreshes: 0, reuses: 1, direct_reads: 0, over_budget_bypasses: 0, unsupported_order_bypasses: 0, candidate_ids: 0, issue_rows: 6, label_rows: 6, races: 0, connection_opens: 1, retained_bytes: 1859, budget_bytes: 2048000, subscriptions: 1 }
+test beads_crate::issue_reads_tests::issue_reads_over_budget_bypass_is_counted_on_each_request ... ok
+S5 delta size=12 work=IssueReadWork { full_builds: 1, delta_refreshes: 1, reuses: 0, direct_reads: 0, over_budget_bypasses: 0, unsupported_order_bypasses: 0, candidate_ids: 1, issue_rows: 7, label_rows: 7, races: 0, connection_opens: 1, retained_bytes: 1858, budget_bytes: 2048000, subscriptions: 1 }
+test beads_crate::issue_reads_tests::issue_reads_unrelated_edit_and_adapter_comment_load_no_payload ... ok
+test beads_crate::issue_reads_tests::issue_reads_retention_obeys_database_budget_and_reader_width ... ok
+test beads_crate::issue_reads_tests::issue_reads_pages_and_since_keep_sql_boundaries ... ok
+test beads_crate::issue_reads_tests::issue_reads_unsupported_order_bypass_is_counted_on_each_request ... ok
+watermark/delta work size=300: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::lost_or_corrupt_tracking_forces_reseed_and_recovers ... ok
+test beads_crate::issue_reads_tests::issue_reads_validation_gap_discards_and_retries ... ok
+test beads_crate::issue_reads_tests::issue_reads_validation_generation_reset_discards_and_retries ... ok
+test beads_crate::issue_reads_tests::issue_reads_validation_replacement_discards_and_rebinds ... ok
+test beads_crate::issue_tracker::tests::add_dependency_links_two_issues ... ok
+test beads_crate::issue_reads_tests::issue_reads_validation_schema_reset_discards_and_retries ... ok
+test beads_crate::issue_tracker::tests::combined_label_comment_update_rolls_back_after_comment_failure ... ok
+test beads_crate::issue_tracker::tests::combined_status_label_comment_update_rolls_back_after_comment_failure ... ok
+test beads_crate::issue_tracker::tests::create_issue_is_idempotent_for_existing_external_ref ... ok
+test beads_crate::issue_tracker::tests::create_issue_retries_on_id_collision_from_storage ... ok
+test beads_crate::issue_tracker::tests::atomic_multi_issue_update_rolls_back_late_failure_and_retries_idempotently ... ok
+test beads_crate::issue_tracker::tests::create_issue_round_trips_provenance_fields ... ok
+test beads_crate::issue_tracker::tests::create_issue_round_trips_via_get_issue ... ok
+test beads_crate::issue_tracker::tests::create_issue_uses_checked_id_lookup ... ok
+test beads_crate::issue_tracker::tests::get_issue_returns_seeded_issue ... ok
+test beads_crate::issue_reads_tests::issue_reads_validation_error_propagates_and_retry_reseeds ... ok
+test beads_crate::issue_tracker::tests::list_issues_applies_offset_after_fetching_limit_window ... ok
+test beads_crate::issue_tracker::tests::list_observability_keeps_ancestry_shape_and_stage_work ... ok
+test beads_crate::issue_tracker::tests::list_issues_include_closed_excludes_tombstones ... ok
+test beads_crate::issue_tracker::tests::list_issues_returns_seeded_data ... ok
+test beads_crate::issue_tracker::tests::list_observability_reports_label_failure_after_sql_work ... ok
+test beads_crate::issue_tracker::tests::list_observability_reports_sql_error_without_exposing_error_text ... ok
+test beads_crate::issue_tracker::tests::list_observability_without_parent_has_stable_value_free_shape ... ok
+test beads_crate::issue_tracker::tests::poll_emits_created_then_quiesces ... ok
+test beads_crate::metrics::tests::counters_increment ... ok
+test beads_crate::metrics::tests::lock_wait_accumulates_microseconds ... ok
+test beads_crate::reader_pool::tests::capacity_caps_open_connections ... ok
+test beads_crate::issue_tracker::tests::update_issue_can_set_and_clear_external_ref ... ok
+test beads_crate::issue_tracker::tests::poll_does_not_advance_cursor_on_limit_saturation ... ok
+test beads_crate::issue_tracker::tests::saturated_first_poll_keeps_cursor_unset_until_backlog_drains ... ok
+test beads_crate::snapshot::tests::conflict_default_no_detail ... ok
+test beads_crate::snapshot::tests::conflict_with_detail ... ok
+test beads_crate::snapshot::tests::snapshot_carries_value_and_version ... ok
+test beads_crate::issue_tracker::tests::update_issue_changes_status_and_labels ... ok
+test beads_crate::reader_pool::tests::checkout_returns_a_reader ... ok
+test beads_crate::reader_pool::tests::drop_returns_to_pool ... ok
+test beads_crate::sort_index::tests::status_sort_index_write_cost ... ignored, manual synthetic index footprint and write-cost measurement
+test beads_crate::sort_index::tests::ensure_composite_sort_index_is_idempotent ... ok
+test beads_crate::sort_index::tests::reader_checkout_ensures_composite_sort_index ... ok
+test beads_crate::reader_pool::tests::checkout_blocks_when_at_capacity ... ok
+test beads_crate::sort_index::tests::status_sort_plan_with_limit ... ok
+test beads_crate::sort_index::tests::status_sort_plan_without_limit ... ok
+test beads_crate::sort_index::tests::adapter_open_ensures_composite_sort_index ... ok
+test beads_crate::sort_index::tests::status_sort_preserves_rows_and_limit_windows_with_ties ... ok
+test beads_crate::summary_query::tests::summary_projection_does_not_decode_unneeded_metadata ... ok
+test beads_crate::wal_checkpoint::tests::truncate_checkpoint_drains_wal_sidecar ... ok
+test beads_crate::write_lock::tests::busy_error_includes_holder_payload_when_available ... ok
+test beads_crate::summary_query::tests::summary_projection_observes_external_edits_and_reuses_connections ... ok
+test beads_crate::write_lock::tests::lock_writes_holder_payload_and_truncates_on_drop ... ok
+test beads_crate::write_lock::tests::process_start_epoch_cache_is_populated ... ok
+test beads_crate::write_lock::tests::lock_times_out_when_already_held ... ok
+test beads_crate::summary_query::tests::summary_projection_matches_legacy_filter_and_page_matrix ... ok
+S5 unchanged size=1200 work=IssueReadWork { full_builds: 1, delta_refreshes: 0, reuses: 1, direct_reads: 0, over_budget_bypasses: 0, unsupported_order_bypasses: 0, candidate_ids: 0, issue_rows: 600, label_rows: 600, races: 0, connection_opens: 1, retained_bytes: 149229, budget_bytes: 2048000, subscriptions: 1 }
+test beads_crate::issue_reads_tests::issue_reads_unchanged_work_is_zero_at_different_sizes ... ok
+S5 delta size=1200 work=IssueReadWork { full_builds: 1, delta_refreshes: 1, reuses: 0, direct_reads: 0, over_budget_bypasses: 0, unsupported_order_bypasses: 0, candidate_ids: 1, issue_rows: 601, label_rows: 601, races: 0, connection_opens: 1, retained_bytes: 149228, budget_bytes: 2048000, subscriptions: 1 }
+test beads_crate::issue_reads_tests::issue_reads_relevant_delta_loads_only_affected_payload ... ok
+test beads_crate::summary_query::tests::summary_projection_preserves_projected_and_query_errors ... ok
+watermark/delta work size=3000: ((1, 54, 0, 0), (0, 16, 0, 1)) (rows, vm, fullscan, sorts)
+test beads_crate::issue_changes::tests::unchanged_validation_and_delta_work_do_not_scale_with_issue_rows ... ok
+test beads_crate::summary_query::tests::summary_projection_retains_batched_sorted_labels ... ok
+
+test result: ok. 157 passed; 0 failed; 3 ignored; 0 measured; 140 filtered out; finished in 11.96s
+
+
+--- sccache stats (spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0) ---
+Compile requests                    3540
+Compile requests executed           2813
+Cache hits                          1673
+Cache hits (Assembler)                56
+Cache hits (C/C++)                   508
+Cache hits (Rust)                   1109
+Cache misses                        1124
+Cache misses (C/C++)                 242
+Cache misses (Rust)                  882
+Cache hits rate                    59.81 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            67.73 %
+Cache hits rate (Rust)             55.70 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                        1124
+Compilation failures                  16
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/6e49c414-0c7c-43e6-ae12-230c2e47e4c0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000191.
+
+EXIT_STATUS 0

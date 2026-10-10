@@ -1,0 +1,25 @@
+{
+  "source": "existing consistent private backup from original profiling; no live database opened",
+  "captured_utc": "2026-10-09T06:43:30.046054+00:00",
+  "rows": [
+    {
+      "shape": "open_unpaginated",
+      "issue_rows": 396,
+      "string_bytes": 464630,
+      "label_rows": 943,
+      "label_string_bytes": 27013,
+      "string_total_bytes": 491643,
+      "largest_row_string_bytes": 6173
+    },
+    {
+      "shape": "all_non_template",
+      "issue_rows": 2331,
+      "string_bytes": 3598859,
+      "label_rows": 9674,
+      "label_string_bytes": 340205,
+      "string_total_bytes": 3939064,
+      "largest_row_string_bytes": 9217
+    }
+  ],
+  "limitations": "UTF-8 payload lower bound only; excludes Rust structs, allocations/capacity, maps, duplicate keys, source/url strings and staged/output copies. Not an exact cache-admission or memory benchmark."
+}

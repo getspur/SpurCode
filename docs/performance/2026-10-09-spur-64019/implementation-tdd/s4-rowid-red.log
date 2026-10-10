@@ -1,0 +1,51 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3  (local=/Volumes/Projects/spur/.spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3)
+[build] Remote:   ~/spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3   target=/mnt/cargo/targets/spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3   -j8
+[build] Remote build queue: admitted as ticket 152 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3562 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3 ...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib rowid_replace -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=137G used=67% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  275G  137G  67% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3/crates/spur-pm)
+
+running 2 tests
+test beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner ... FAILED
+test beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost ... FAILED
+
+failures:
+
+failures:
+    beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost
+    beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 258 filtered out; finished in 0.03s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.39s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/4dc78d37-1e4d-43e5-8b37-443f4a6fbab3/debug/deps/spur_pm-e546af2f83fe7a11)
+
+thread 'beads_crate::issue_changes::tests::label_rowid_replace_reports_the_displaced_owner' (2902024) panicked at crates/spur-pm/src/beads_crate/issue_changes_tests.rs:359:5:
+hidden label rowid victim's owner must be reported
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'beads_crate::issue_changes::tests::hidden_rowid_replace_victims_are_not_lost' (2902023) panicked at crates/spur-pm/src/beads_crate/issue_changes_tests.rs:336:5:
+hidden rowid replacement must report the deleted issue victim
+error: test failed, to rerun pass `-p spur-pm --lib`
+[build] Remote build queue: released ticket 00000000000000000152.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

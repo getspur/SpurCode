@@ -1,0 +1,61 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873  (local=/Volumes/Projects/spur/.spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873)
+[build] Remote:   ~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   target=/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873   -j8
+[build] Remote build queue: admitted as ticket 181 (slot 1/3) on spur-builder (2 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-035f3692d8c17df4a)
+[build] Waiting for SSH-over-SSM on i-035f3692d8c17df4a...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk watchdog...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3568 files to sync
+[build] Syncing to i-035f3692d8c17df4a:~/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 ...
+[build] Re-stamping 2 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-pm --lib structural -- --nocapture  -j8  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] Disk preflight: cargo free=143G used=66% root free=3G used=98% — running spur-disk-watchdog
+[build]   root disk at 98% free=3G — reclaiming root caches/source
+[build]     ROOT CRITICAL — dropping leftover root ~/.cache/ort + old duckdb extensions
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build]   Filesystem      Size  Used Avail Use% Mounted on
+[build]   /dev/nvme1n1    434G  269G  143G  66% /mnt/cargo
+[build]   /dev/nvme0n1p1   99G   92G  2.4G  98% /
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-pm v1.24.0 (/home/admin/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/crates/spur-pm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.75s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873/debug/deps/spur_pm-e546af2f83fe7a11)
+
+running 4 tests
+test beads_crate::issue_changes::tests::structural_combined_retarget_type_change_marks_both_children ... ok
+test beads_crate::issue_changes::tests::structural_edges_track_old_new_children_and_ignore_blockers ... ok
+test beads_crate::issue_changes::tests::structural_replace_captures_rowid_and_key_victims_without_recursive_triggers ... ok
+test beads_crate::hygiene::tests::hygiene_structural_conflicts_rollback_or_conservatively_invalidate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 288 filtered out; finished in 0.27s
+
+
+--- sccache stats (spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873) ---
+Compile requests                    3533
+Compile requests executed           2799
+Cache hits                          2054
+Cache hits (Assembler)                56
+Cache hits (C/C++)                   508
+Cache hits (Rust)                   1490
+Cache misses                         729
+Cache misses (C/C++)                 242
+Cache misses (Rust)                  487
+Cache hits rate                    73.81 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)            67.73 %
+Cache hits rate (Rust)             75.37 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         729
+Compilation failures                  16
+[build] Done. target lives at i-035f3692d8c17df4a:/mnt/cargo/targets/spur/worktrees/76c39e83-d9e9-4492-8b15-259e417b3873 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000000181.

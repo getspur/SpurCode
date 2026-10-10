@@ -1,0 +1,132 @@
+{
+  "task": "bd-2ef6y",
+  "attempt": 2,
+  "base": "6cea6bc734eda7f21b67916ce2e7de1064626b52",
+  "reviewed_prior": "f3d15e62d9b4b03c82c9c74ba183d235c2c06b6c",
+  "commits": {
+    "preserved": "57856db5955b777d1be25136e43cfc8db4ac1d97",
+    "red": "039aeb470232220bb550ffc92f7838167aeea127",
+    "fix": "1a569e5fc045e2ae81f1cd45ddbf032b5ba584c8"
+  },
+  "working_tree_clean": true,
+  "checks": [
+    {
+      "stage": "RED",
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib issue_reads -- --nocapture",
+      "exit_code": 101,
+      "result": "11 passed; 7 expected assertion failures"
+    },
+    {
+      "stage": "GREEN",
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo test -p spur-pm --lib issue_reads -- --nocapture",
+      "exit_code": 0,
+      "result": "18 passed; 0 failed; 268 filtered out"
+    },
+    {
+      "stage": "clippy_first_attempt",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo clippy -p spur-pm --lib -- -D warnings",
+      "exit_code": 1,
+      "result": "Source revision changed during upload when fix commit was created; stopped before compilation"
+    },
+    {
+      "stage": "clippy_final",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_RSYNC_IO_TIMEOUT=300 scripts/spur-cargo clippy -p spur-pm --lib -- -D warnings",
+      "exit_code": 0,
+      "result": "production library passed with warnings denied"
+    },
+    {
+      "stage": "fmt",
+      "command": "scripts/spur-cargo fmt -p spur-pm -- --check",
+      "exit_code": 0
+    },
+    {
+      "stage": "whitespace",
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "interfaces": {
+    "public": [
+      "IssueReadWork.over_budget_bypasses: u64",
+      "IssueReadWork.unsupported_order_bypasses: u64"
+    ],
+    "internal": [
+      "beads_issue_reads_validate debug trace boundary after load transaction",
+      "beads_issue_reads work tracing includes both bypass counters"
+    ]
+  },
+  "validation_policy": "Ordinary revision race returns coherent dirty rows with original cursor. Known replacement/generation/schema/gap reset discards candidate and returns error; validation errors propagate. Removed subscription remains absent; subsequent request reseeds. All work on discarded candidate remains counted.",
+  "test_plan": [
+    "Deterministic validation-time replacement, generation, schema, coverage gap, and operational error; retries reseed and discarded work remains counted",
+    "Repeated oversized and exceptional SQL-order results retain no subscription and count each bypass",
+    "Existing fixture scaling at 12/1200 rows, ordinary revision race, old/new membership, comments, pagination, concurrency and external-writer checks retained"
+  ],
+  "solver": {
+    "pre": [
+      "sol_68e50056a49749b3",
+      "sol_5d17396943d94ca6"
+    ],
+    "post_lifecycle": "sol_eb8eac2bd5d84631",
+    "post_outcome": "sat/pass",
+    "horizon": 63,
+    "states": 11,
+    "enabled_transitions": 253,
+    "negative_cases": "8 unsat/fail cases; IDs and requests in s5-review-post.json",
+    "post_membership": "sol_bbfa24258e284699",
+    "membership_outcome": "unsat",
+    "membership_bound": "One changing ID; values 0..2; absence -1; assumes complete coverage and stable identity"
+  },
+  "limitations": [
+    "Admission remains unpaginated, since=None, text_search=None on supported platforms; pages/since/ad-hoc queries use direct SQL",
+    "Over-budget and unsupported-order results are not retained and reload on repeated requests with explicit counters",
+    "Finite model is not Rust, SQL-equivalence, exhaustive concurrency, multi-row pagination, or performance proof",
+    "Root owns final Jev compilation, risk disposition and S7 integrated broad suite; worker did not close the issue"
+  ],
+  "files": {
+    "s5-review-red.log": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-red.log",
+      "bytes": 24546,
+      "sha256": "ca63bec4967b90cbf150f00bfa13ac0986eb0c5605470b73219579c9d20f04f9"
+    },
+    "s5-review-green.log": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-green.log",
+      "bytes": 6727,
+      "sha256": "901b2e4b33deb8ffe40cdf09e5f2849a1729c141890175ef939d26d1dfda41ff"
+    },
+    "s5-review-clippy-attempt1.log": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-clippy-attempt1.log",
+      "bytes": 1334,
+      "sha256": "70a96c28183a841cbe641bc8d7164fa834138db4e795c9be6dece0a275cd95c6"
+    },
+    "s5-review-clippy.log": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-clippy.log",
+      "bytes": 4518,
+      "sha256": "2be96b35289b8381994a814f090fa3b647d3ca49bbd6967b8c0eaf03e47375aa"
+    },
+    "s5-review-fmt.log": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "s5-review-unified.diff": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-unified.diff",
+      "bytes": 16600,
+      "sha256": "367a494a0092d8c365b58da8d336d5291c8f1a6f02cd85a9239a7f9bd69d3df2"
+    },
+    "s5-unified.diff": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-unified.diff",
+      "bytes": 55557,
+      "sha256": "e339b008a8e2ffc107a44d4e500c772da7491aa2fd6cb83a8caa955aaa0a8d91"
+    },
+    "s5-review-post.json": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-post.json",
+      "bytes": 459025,
+      "sha256": "4bfc457aa73a6dd9fa1cc9168f74a300b60c79960c46e1af2d55048079c048f2"
+    },
+    "s5-review-jev-final-input.json": {
+      "path": "/Volumes/Projects/spur/.spur/worktrees/37cfc48c-e6f5-48d7-bd37-5652af8c2dec/.spur/tmp/s5-review-jev-final-input.json",
+      "bytes": 43766,
+      "sha256": "8470d44dff67ba8ce3acdc16c3c29be6bfefa9409de88c1dd311643d9ff7ca32"
+    }
+  }
+}

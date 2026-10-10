@@ -30,6 +30,7 @@
 //! | `terminal` | Reconcile terminal epics: completion audits, auto-merge, auto-PR. |
 //! | `tests` | Unit tests, mocks, and shared fixtures for the reconciler. |
 
+mod hygiene;
 mod leases;
 
 mod ownership;
@@ -906,6 +907,7 @@ pub struct Reconciler {
     pub(super) feature_gate: Arc<spur_license::FeatureGate>,
     pub(super) outcomes: Arc<tokio::sync::Mutex<OutcomeStore>>,
     pub(super) clock: Arc<dyn Clock>,
+    hygiene: tokio::sync::Mutex<hygiene::HygieneState>,
 }
 
 impl Reconciler {
@@ -991,6 +993,7 @@ impl Reconciler {
             feature_gate,
             outcomes: Arc::new(tokio::sync::Mutex::new(OutcomeStore::default())),
             clock: Arc::new(SystemClock),
+            hygiene: tokio::sync::Mutex::new(hygiene::HygieneState::default()),
         }
     }
 
@@ -1835,37 +1838,12 @@ impl Reconciler {
         Ok(did_work)
     }
 
-    async fn run_index_hygiene_sweep(&self) -> anyhow::Result<bool> {
-        crate::server::require_feature(
-            spur_license::FeatureKey::PM_PRO_BEADS_ADVANCED,
-            self.feature_gate.as_ref(),
-        )
-        .map_err(|error| anyhow::anyhow!(crate::server::feature_error_message(error)))?;
-        let Some(adv) = self.pm.advanced() else {
-            return Ok(false);
-        };
-        let open_issues = self
-            .pm
-            .list_issues(spur_pm::IssueFilter {
-                status: Some("open".to_string()),
-                ..Default::default()
-            })
-            .await?;
-        let mut did_work = false;
-        for issue in open_issues {
-            let comments = adv.list_comments(&issue.id).await?;
-            let audits =
-                crate::plan::projector::collect_sorted_audits_for_issue(&issue.id, comments)?;
-            did_work |= self.index_hygiene_sweep(adv, &issue, &audits).await?;
-        }
-        Ok(did_work)
-    }
-
     async fn index_hygiene_sweep(
         &self,
         adv: &dyn spur_pm::BeadsAdvanced,
         issue: &spur_pm::IssueSummary,
         audits: &[crate::plan::audit_sentinel::AuditSentinelKind],
+        parent_ids: Option<&[String]>,
     ) -> anyhow::Result<bool> {
         if audits.is_empty() {
             return self.reconcile_label_only_dispatch(issue).await;
@@ -1884,7 +1862,13 @@ impl Reconciler {
         );
         let expected_plan_id_value = match expected_plan_id_from_audits(audits) {
             Some(plan_id) => Some(plan_id),
-            None => self.expected_plan_id_from_parent_epic(adv, issue).await?,
+            None => match parent_ids {
+                Some(parents) => {
+                    self.expected_plan_id_from_parents(adv, issue, parents)
+                        .await?
+                }
+                None => self.expected_plan_id_from_parent_epic(adv, issue).await?,
+            },
         };
         let expected_plan_id =
             expected_plan_id_value.map(|plan_id| crate::plan::labels::plan_id(&plan_id));
@@ -2107,29 +2091,15 @@ impl Reconciler {
                 issue.id
             )
         })?;
-        let mut parents = adjacency
+        let parents = adjacency
             .edges
             .unwrap_or_default()
             .into_iter()
             .filter(|edge| edge.to == issue.id && edge.edge_type.as_deref() == Some("parent-child"))
             .map(|edge| edge.from)
             .collect::<Vec<_>>();
-        parents.sort();
-        parents.dedup();
-        if parents.len() > 1 {
-            anyhow::bail!(
-                "issue '{}' has multiple structural parents: {}",
-                issue.id,
-                parents.join(", ")
-            );
-        }
-        let Some(parent_id) = parents.first() else {
-            return Ok(None);
-        };
-
-        let comments = adv.list_comments(parent_id).await?;
-        let audits = crate::plan::projector::collect_sorted_audits_for_issue(parent_id, comments)?;
-        Ok(expected_plan_id_from_audits(&audits))
+        self.expected_plan_id_from_parents(adv, issue, &parents)
+            .await
     }
 }
 
