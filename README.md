@@ -182,6 +182,8 @@ Prefer not to install globally? Run SPUR through npm:
 npx @getspur/spur-cli tui
 ```
 
+Building from source? Clone the repository and run [`cargo xtask install`](#build-and-install-from-source) — see [Development](#development).
+
 ## How it works
 
 ```mermaid
@@ -245,12 +247,37 @@ Configuration lives in `.spur/config.toml`. Agent entries describe the executabl
 
 ## Development
 
-Clone the repository, then use the workspace wrapper for Rust commands:
+SPUR targets Rust 1.88 or later. The workspace defines a `cargo xtask` alias ([`.cargo/config.toml`](./.cargo/config.toml)) that runs the repository helper for common tasks.
+
+### Build and install from source
+
+Compile a source checkout and install the `spur` binary with its bundled skill catalog:
 
 ```sh
 git clone https://github.com/getspur/SpurCode.git spur
 cd spur
 
+cargo xtask install          # release build; on macOS use --local (see below)
+cargo xtask install --local  # build on this machine with plain cargo
+cargo xtask install --debug  # debug build for local iteration
+```
+
+On Linux, `cargo xtask install` builds locally by default. On macOS the default compiles on the project's remote build VM; contributors without that infrastructure should pass `--local`.
+
+The install step places:
+
+- the `spur` binary in `$CARGO_HOME/bin` (on `PATH` with a standard rustup setup)
+- the bundled skill catalog in `$CARGO_HOME/share/spur/skills`
+
+Arguments after the flags are forwarded to cargo, e.g. `cargo xtask install -- --features disable-notebook-mcp`. Run `cargo xtask help` for the full surface, including `--remote` Linux builds and the `dist` cross-platform release packaging.
+
+The optional notebook frontend is developed separately in [getspur/spur-notebook](https://github.com/getspur/spur-notebook); a source build of SPUR does not bundle it.
+
+### Workspace commands
+
+Use the workspace wrapper for Rust commands:
+
+```sh
 scripts/spur-cargo build --workspace
 scripts/spur-cargo test --workspace
 scripts/spur-cargo clippy --workspace -- -D warnings
