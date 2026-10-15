@@ -25,9 +25,6 @@
   <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
-> [!WARNING]
-> SPUR is early-stage software. APIs, configuration, and workflows may change while the project stabilizes.
-
 ## Featured demo
 
 [spur-dag-aware-multi-agent.webm](https://github.com/user-attachments/assets/16d2fe40-d1cb-4024-b415-1aadebae63ac)
