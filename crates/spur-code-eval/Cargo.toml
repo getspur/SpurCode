@@ -13,6 +13,10 @@ dist = false
 [lib]
 bench = false
 
+[features]
+default = ["duckdb-bundled"]
+duckdb-bundled = ["spur-analyst/duckdb-bundled"]
+
 [dependencies]
 clap.workspace = true
 flate2 = "1"

@@ -108,8 +108,10 @@ TBD_LIST=$(mktemp)
 trap 'rm -f "$TBD_LIST"' EXIT
 (
     cd "$SDK"
-    find System/Library/Frameworks -name '*.tbd'
-    find System/Library/PrivateFrameworks -name '*.tbd' 2>/dev/null
+    # New SDKs relocate frameworks (including WebKit) into Cryptexes and leave
+    # directory symlinks here. Enumerate through those links before rsync -L.
+    find -L System/Library/Frameworks -name '*.tbd'
+    find -L System/Library/PrivateFrameworks -name '*.tbd' 2>/dev/null
     find usr/lib -name '*.tbd'
     echo SDKSettings.json
 ) >"$TBD_LIST"

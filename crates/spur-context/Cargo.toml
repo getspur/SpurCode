@@ -7,12 +7,13 @@ rust-version.workspace = true
 license.workspace = true
 
 [features]
-default = []
+default = ["duckdb-bundled"]
+duckdb-bundled = ["duckdb?/bundled"]
 duckdb = ["dep:duckdb"]
 
 [dependencies]
 spur-cost = { workspace = true }
-duckdb = { workspace = true, optional = true, features = ["bundled"] }
+duckdb = { workspace = true, optional = true }
 rusqlite = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
