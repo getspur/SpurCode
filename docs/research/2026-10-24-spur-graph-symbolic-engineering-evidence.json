@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "assessment_date": "2026-10-24",
+  "source_head": "b16aa9c55f08f3a241d31890253bfe27eba0a471",
+  "graph_content_hash": "4720925b48d72351dda9beb885921e2ae709aa9e9709c4eb898d1e77a8ae6155",
+  "scope": "Synthetic finite workflow demonstration; not extracted from production code; live service build not independently matched to source HEAD.",
+  "cases": [
+    {
+      "name": "incomplete_slice",
+      "request": {
+        "family": "workflow",
+        "mode": "synthesize",
+        "persist": false,
+        "include_smt": true,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "witness"
+            ],
+            "parameters": {}
+          },
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "witness"
+            ],
+            "parameters": {}
+          },
+          {
+            "rule_id": "workflow.bounded_reachability",
+            "subjects": [
+              "witness"
+            ],
+            "parameters": {
+              "bound": 2
+            }
+          }
+        ],
+        "facts": {
+          "horizon": 2,
+          "state_domain": [
+            "Request",
+            "Guarded",
+            "Bypass",
+            "Safe",
+            "Unsafe"
+          ],
+          "event_domain": [
+            "check",
+            "skip",
+            "publish"
+          ],
+          "initial_states": [
+            "Request"
+          ],
+          "safe_states": [
+            "Request",
+            "Guarded",
+            "Bypass",
+            "Safe"
+          ],
+          "target_states": [
+            "Unsafe"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "Request",
+              "event": "check",
+              "to": "Guarded"
+            },
+            {
+              "step": 1,
+              "from": "Guarded",
+              "event": "publish",
+              "to": "Safe"
+            }
+          ],
+          "traces": {
+            "witness": {
+              "states": [
+                "Request",
+                null,
+                null
+              ],
+              "events": [
+                null,
+                null
+              ]
+            }
+          }
+        },
+        "unknowns": [
+          {
+            "kind": "trace_state",
+            "trace": "witness",
+            "index": 1
+          },
+          {
+            "kind": "trace_state",
+            "trace": "witness",
+            "index": 2
+          },
+          {
+            "kind": "trace_event",
+            "trace": "witness",
+            "index": 0
+          },
+          {
+            "kind": "trace_event",
+            "trace": "witness",
+            "index": 1
+          }
+        ]
+      },
+      "response": {
+        "family": "workflow",
+        "mode": "synthesize",
+        "outcome": "infeasible",
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 2,
+          "reachability": [
+            {
+              "rule_id": "workflow.bounded_reachability",
+              "binding_index": 2,
+              "effective_bound": 2
+            }
+          ]
+        },
+        "total_duration_ms": 29,
+        "status": "unsat",
+        "duration_ms": 27,
+        "reason": null,
+        "smt": "(set-logic QF_NIA)\n(set-option :produce-models true)\n(set-option :produce-unsat-cores true)\n(declare-const v_workflow_u_0 Int)\n(declare-const v_workflow_u_1 Int)\n(declare-const v_workflow_u_2 Int)\n(declare-const v_workflow_u_3 Int)\n(assert (>= v_workflow_u_0 0))\n(assert (<= v_workflow_u_0 4))\n(assert (>= v_workflow_u_1 0))\n(assert (<= v_workflow_u_1 4))\n(assert (>= v_workflow_u_2 0))\n(assert (<= v_workflow_u_2 2))\n(assert (>= v_workflow_u_3 0))\n(assert (<= v_workflow_u_3 2))\n(assert (! true :named workflow_rule_0_workflow_initial_state_allowed))\n(assert (! (and (and true (= v_workflow_u_2 0) (= v_workflow_u_0 1)) (and (= v_workflow_u_0 1) (= v_workflow_u_3 1) (= v_workflow_u_1 3))) :named workflow_rule_1_workflow_transition_allowed))\n(assert (! (or false (= v_workflow_u_0 4) (= v_workflow_u_1 4)) :named workflow_rule_2_workflow_bounded_reachability))\n(check-sat)\n(get-unsat-core)\n(get-value (v_workflow_u_0 v_workflow_u_1 v_workflow_u_2 v_workflow_u_3))\n",
+        "unsat_core": [
+          "workflow_rule_1_workflow_transition_allowed",
+          "workflow_rule_2_workflow_bounded_reachability"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "expanded_model",
+      "request": {
+        "family": "workflow",
+        "mode": "synthesize",
+        "persist": false,
+        "include_smt": true,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "workflow.initial_state_allowed",
+            "subjects": [
+              "witness"
+            ],
+            "parameters": {}
+          },
+          {
+            "rule_id": "workflow.transition_allowed",
+            "subjects": [
+              "witness"
+            ],
+            "parameters": {}
+          },
+          {
+            "rule_id": "workflow.bounded_reachability",
+            "subjects": [
+              "witness"
+            ],
+            "parameters": {
+              "bound": 2
+            }
+          }
+        ],
+        "facts": {
+          "horizon": 2,
+          "state_domain": [
+            "Request",
+            "Guarded",
+            "Bypass",
+            "Safe",
+            "Unsafe"
+          ],
+          "event_domain": [
+            "check",
+            "skip",
+            "publish"
+          ],
+          "initial_states": [
+            "Request"
+          ],
+          "safe_states": [
+            "Request",
+            "Guarded",
+            "Bypass",
+            "Safe"
+          ],
+          "target_states": [
+            "Unsafe"
+          ],
+          "enabled_transitions": [
+            {
+              "step": 0,
+              "from": "Request",
+              "event": "check",
+              "to": "Guarded"
+            },
+            {
+              "step": 1,
+              "from": "Guarded",
+              "event": "publish",
+              "to": "Safe"
+            },
+            {
+              "step": 0,
+              "from": "Request",
+              "event": "skip",
+              "to": "Bypass"
+            },
+            {
+              "step": 1,
+              "from": "Bypass",
+              "event": "publish",
+              "to": "Unsafe"
+            }
+          ],
+          "traces": {
+            "witness": {
+              "states": [
+                "Request",
+                null,
+                null
+              ],
+              "events": [
+                null,
+                null
+              ]
+            }
+          }
+        },
+        "unknowns": [
+          {
+            "kind": "trace_state",
+            "trace": "witness",
+            "index": 1
+          },
+          {
+            "kind": "trace_state",
+            "trace": "witness",
+            "index": 2
+          },
+          {
+            "kind": "trace_event",
+            "trace": "witness",
+            "index": 0
+          },
+          {
+            "kind": "trace_event",
+            "trace": "witness",
+            "index": 1
+          }
+        ]
+      },
+      "response": {
+        "family": "workflow",
+        "mode": "synthesize",
+        "outcome": "solution",
+        "assignments": [
+          {
+            "node": "witness",
+            "field": "traces.witness.states[1]",
+            "value": "Bypass"
+          },
+          {
+            "node": "witness",
+            "field": "traces.witness.states[2]",
+            "value": "Unsafe"
+          },
+          {
+            "node": "witness",
+            "field": "traces.witness.events[0]",
+            "value": "skip"
+          },
+          {
+            "node": "witness",
+            "field": "traces.witness.events[1]",
+            "value": "publish"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 2,
+          "reachability": [
+            {
+              "rule_id": "workflow.bounded_reachability",
+              "binding_index": 2,
+              "effective_bound": 2
+            }
+          ]
+        },
+        "total_duration_ms": 7,
+        "status": "sat",
+        "model": {
+          "workflow_u_0": "Bypass",
+          "workflow_u_1": "Unsafe",
+          "workflow_u_2": "skip",
+          "workflow_u_3": "publish"
+        },
+        "duration_ms": 7,
+        "reason": null,
+        "smt": "(set-logic QF_NIA)\n(set-option :produce-models true)\n(set-option :produce-unsat-cores true)\n(declare-const v_workflow_u_0 Int)\n(declare-const v_workflow_u_1 Int)\n(declare-const v_workflow_u_2 Int)\n(declare-const v_workflow_u_3 Int)\n(assert (>= v_workflow_u_0 0))\n(assert (<= v_workflow_u_0 4))\n(assert (>= v_workflow_u_1 0))\n(assert (<= v_workflow_u_1 4))\n(assert (>= v_workflow_u_2 0))\n(assert (<= v_workflow_u_2 2))\n(assert (>= v_workflow_u_3 0))\n(assert (<= v_workflow_u_3 2))\n(assert (! true :named workflow_rule_0_workflow_initial_state_allowed))\n(assert (! (and (or (and true (= v_workflow_u_2 0) (= v_workflow_u_0 1)) (and true (= v_workflow_u_2 2) (= v_workflow_u_0 0))) (or (and (= v_workflow_u_0 1) (= v_workflow_u_3 1) (= v_workflow_u_1 3)) (and (= v_workflow_u_0 0) (= v_workflow_u_3 1) (= v_workflow_u_1 4)))) :named workflow_rule_1_workflow_transition_allowed))\n(assert (! (or false (= v_workflow_u_0 4) (= v_workflow_u_1 4)) :named workflow_rule_2_workflow_bounded_reachability))\n(check-sat)\n(get-unsat-core)\n(get-value (v_workflow_u_0 v_workflow_u_1 v_workflow_u_2 v_workflow_u_3))\n",
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    }
+  ]
+}
