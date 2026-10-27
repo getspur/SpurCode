@@ -96,7 +96,11 @@ impl TestBeadsWorkspace {
     }
 
     fn create_with_type(&mut self, title: &str, issue_type: IssueType) -> String {
-        let id = beads_rust::util::generate_id(title, None, Some("test"), Utc::now());
+        self.create_with_type_at(title, issue_type, Utc::now())
+    }
+
+    fn create_with_type_at(&mut self, title: &str, issue_type: IssueType, now: chrono::DateTime<Utc>) -> String {
+        let id = beads_rust::util::generate_id(title, None, Some("test"), now);
         let issue = build_issue(id.clone(), title.to_string(), issue_type);
         self.storage
             .create_issue(&issue, "test")
@@ -153,6 +157,17 @@ fn build_issue(id: String, title: String, issue_type: IssueType) -> Issue {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fixture_generation_handles_existing_candidate_id() {
+        let mut w = TestBeadsWorkspace::init();
+        let now = Utc::now();
+        let existing = beads_rust::util::generate_id("collision", None, Some("test"), now);
+        w.create_issue_with_id(&existing, "existing issue");
+        let next = w.create_with_type_at("collision", IssueType::Task, now);
+        assert_ne!(next, existing);
+        assert_eq!(w.storage.count_issues().unwrap(), 2);
+    }
 
     #[test]
     fn workspace_init_and_create_round_trip() {
