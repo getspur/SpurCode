@@ -1,0 +1,647 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "purpose": "Finite catalog-rule checks for the batch external indexing proposal; not implementation or production verification.",
+  "assumptions": {
+    "resource": "Source default capacities: queued=20, calls_per_minute=10, running=2. Illustrative occupancy: queued=14, used_calls=7, running=1. Twelve cold unique items require one request each. Admissions and dispatches are distinct conservative checks; global caps, races, and time evolution are omitted.",
+    "progress": "Fixed snapshot with total=24 items, ready=20, failed=2, pending=0; unsupported=0 in the invalid case and 2 in the valid case. Item membership disjointness is assumed, not proved."
+  },
+  "cases": [
+    {
+      "name": "naive_admission",
+      "request": {
+        "family": "resource",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "resource.quota_capacity",
+            "subjects": [
+              "owner_queue",
+              "existing_queue",
+              "new_queued"
+            ],
+            "parameters": {
+              "resources": [
+                "queued_slots"
+              ]
+            }
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "subjects": [
+              "owner_admission_window",
+              "used_admissions",
+              "new_admissions"
+            ],
+            "parameters": {
+              "resources": [
+                "admissions"
+              ]
+            }
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "subjects": [
+              "owner_running",
+              "existing_running",
+              "new_running"
+            ],
+            "parameters": {
+              "resources": [
+                "running_slots"
+              ]
+            }
+          }
+        ],
+        "facts": {
+          "workloads": {
+            "existing_queue": {
+              "replicas": 14,
+              "requests": {
+                "queued_slots": 1
+              },
+              "limits": {
+                "queued_slots": 1
+              },
+              "domain_counts": {}
+            },
+            "new_queued": {
+              "replicas": 12,
+              "requests": {
+                "queued_slots": 1
+              },
+              "limits": {
+                "queued_slots": 1
+              },
+              "domain_counts": {}
+            },
+            "used_admissions": {
+              "replicas": 7,
+              "requests": {
+                "admissions": 1
+              },
+              "limits": {
+                "admissions": 1
+              },
+              "domain_counts": {}
+            },
+            "new_admissions": {
+              "replicas": 12,
+              "requests": {
+                "admissions": 1
+              },
+              "limits": {
+                "admissions": 1
+              },
+              "domain_counts": {}
+            },
+            "existing_running": {
+              "replicas": 1,
+              "requests": {
+                "running_slots": 1
+              },
+              "limits": {
+                "running_slots": 1
+              },
+              "domain_counts": {}
+            },
+            "new_running": {
+              "replicas": 2,
+              "requests": {
+                "running_slots": 1
+              },
+              "limits": {
+                "running_slots": 1
+              },
+              "domain_counts": {}
+            }
+          },
+          "pools": {},
+          "quotas": {
+            "owner_queue": {
+              "resources": {
+                "queued_slots": 20
+              }
+            },
+            "owner_admission_window": {
+              "resources": {
+                "admissions": 10
+              }
+            },
+            "owner_running": {
+              "resources": {
+                "running_slots": 2
+              }
+            }
+          }
+        },
+        "unknowns": [],
+        "persist": true
+      },
+      "result": {
+        "family": "resource",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "resource.quota_capacity",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "resource.quota_capacity.violation"
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "binding_index": 1,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "resource.quota_capacity.violation"
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "binding_index": 2,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "resource.quota_capacity.violation"
+          }
+        ],
+        "total_duration_ms": 139,
+        "status": "unsat",
+        "duration_ms": 49,
+        "solve_id": "sol_f62bcc9ce14b4dd2",
+        "reason": null,
+        "unsat_core": [
+          "resource_rule_0_resource_quota_capacity"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "paced_admission",
+      "request": {
+        "family": "resource",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "resource.quota_capacity",
+            "subjects": [
+              "owner_queue",
+              "existing_queue",
+              "new_queued"
+            ],
+            "parameters": {
+              "resources": [
+                "queued_slots"
+              ]
+            }
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "subjects": [
+              "owner_admission_window",
+              "used_admissions",
+              "new_admissions"
+            ],
+            "parameters": {
+              "resources": [
+                "admissions"
+              ]
+            }
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "subjects": [
+              "owner_running",
+              "existing_running",
+              "new_running"
+            ],
+            "parameters": {
+              "resources": [
+                "running_slots"
+              ]
+            }
+          }
+        ],
+        "facts": {
+          "workloads": {
+            "existing_queue": {
+              "replicas": 14,
+              "requests": {
+                "queued_slots": 1
+              },
+              "limits": {
+                "queued_slots": 1
+              },
+              "domain_counts": {}
+            },
+            "new_queued": {
+              "replicas": 3,
+              "requests": {
+                "queued_slots": 1
+              },
+              "limits": {
+                "queued_slots": 1
+              },
+              "domain_counts": {}
+            },
+            "used_admissions": {
+              "replicas": 7,
+              "requests": {
+                "admissions": 1
+              },
+              "limits": {
+                "admissions": 1
+              },
+              "domain_counts": {}
+            },
+            "new_admissions": {
+              "replicas": 3,
+              "requests": {
+                "admissions": 1
+              },
+              "limits": {
+                "admissions": 1
+              },
+              "domain_counts": {}
+            },
+            "existing_running": {
+              "replicas": 1,
+              "requests": {
+                "running_slots": 1
+              },
+              "limits": {
+                "running_slots": 1
+              },
+              "domain_counts": {}
+            },
+            "new_running": {
+              "replicas": 1,
+              "requests": {
+                "running_slots": 1
+              },
+              "limits": {
+                "running_slots": 1
+              },
+              "domain_counts": {}
+            }
+          },
+          "pools": {},
+          "quotas": {
+            "owner_queue": {
+              "resources": {
+                "queued_slots": 20
+              }
+            },
+            "owner_admission_window": {
+              "resources": {
+                "admissions": 10
+              }
+            },
+            "owner_running": {
+              "resources": {
+                "running_slots": 2
+              }
+            }
+          }
+        },
+        "unknowns": [],
+        "persist": true
+      },
+      "result": {
+        "family": "resource",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "resource.quota_capacity",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "binding_index": 1,
+            "status": "sat",
+            "outcome": "pass"
+          },
+          {
+            "rule_id": "resource.quota_capacity",
+            "binding_index": 2,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "total_duration_ms": 53,
+        "status": "sat",
+        "model": {},
+        "duration_ms": 21,
+        "solve_id": "sol_b20e4491663f49e4",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "missing_unsupported_progress",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.aggregate_balance",
+            "subjects": [
+              "batch_progress"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "counts": {
+              "fields": {
+                "amount": {
+                  "kind": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              },
+              "rows": {
+                "ready": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 20
+                    }
+                  }
+                },
+                "failed": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 2
+                    }
+                  }
+                },
+                "unsupported": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 0
+                    }
+                  }
+                },
+                "pending": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 0
+                    }
+                  }
+                },
+                "total": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 24
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {
+            "batch_progress": {
+              "terms": [
+                {
+                  "relation": "counts",
+                  "row": "ready",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "failed",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "unsupported",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "pending",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "total",
+                  "field": "amount",
+                  "coefficient": -1
+                }
+              ],
+              "target": 0
+            }
+          },
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "unknowns": [],
+        "persist": true
+      },
+      "result": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "outcome": "fail",
+        "rule_results": [
+          {
+            "rule_id": "data_integrity.aggregate_balance",
+            "binding_index": 0,
+            "status": "unsat",
+            "outcome": "fail",
+            "diagnostic": "data_integrity.aggregate_balance.violation"
+          }
+        ],
+        "total_duration_ms": 27,
+        "status": "unsat",
+        "duration_ms": 4,
+        "solve_id": "sol_d261e9b5e8634fb6",
+        "reason": null,
+        "unsat_core": [
+          "data_integrity_rule_0_data_integrity_aggregate_balance__subject_batch_progress"
+        ],
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    },
+    {
+      "name": "complete_progress_ledger",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.aggregate_balance",
+            "subjects": [
+              "batch_progress"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "counts": {
+              "fields": {
+                "amount": {
+                  "kind": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              },
+              "rows": {
+                "ready": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 20
+                    }
+                  }
+                },
+                "failed": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 2
+                    }
+                  }
+                },
+                "unsupported": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 2
+                    }
+                  }
+                },
+                "pending": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 0
+                    }
+                  }
+                },
+                "total": {
+                  "active": true,
+                  "cells": {
+                    "amount": {
+                      "present": true,
+                      "value": 24
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {
+            "batch_progress": {
+              "terms": [
+                {
+                  "relation": "counts",
+                  "row": "ready",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "failed",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "unsupported",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "pending",
+                  "field": "amount",
+                  "coefficient": 1
+                },
+                {
+                  "relation": "counts",
+                  "row": "total",
+                  "field": "amount",
+                  "coefficient": -1
+                }
+              ],
+              "target": 0
+            }
+          },
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "unknowns": [],
+        "persist": true
+      },
+      "result": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "outcome": "pass",
+        "rule_results": [
+          {
+            "rule_id": "data_integrity.aggregate_balance",
+            "binding_index": 0,
+            "status": "sat",
+            "outcome": "pass"
+          }
+        ],
+        "total_duration_ms": 54,
+        "status": "sat",
+        "model": {
+          "di_r0_row0_active": 1,
+          "di_r0_row0_f0_present": 1,
+          "di_r0_row0_f0_value": 2,
+          "di_r0_row1_active": 1,
+          "di_r0_row1_f0_present": 1,
+          "di_r0_row1_f0_value": 0,
+          "di_r0_row2_active": 1,
+          "di_r0_row2_f0_present": 1,
+          "di_r0_row2_f0_value": 20,
+          "di_r0_row3_active": 1,
+          "di_r0_row3_f0_present": 1,
+          "di_r0_row3_f0_value": 24,
+          "di_r0_row4_active": 1,
+          "di_r0_row4_f0_present": 1,
+          "di_r0_row4_f0_value": 2
+        },
+        "duration_ms": 23,
+        "solve_id": "sol_58af86c895bc4e47",
+        "reason": null,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    }
+  ]
+}
