@@ -35,11 +35,13 @@
             "Lambda.ServiceException",
             "Lambda.AWSLambdaException",
             "Lambda.SdkClientException",
-            "Lambda.TooManyRequestsException"
+            "Lambda.TooManyRequestsException",
+            "Lambda.ResourceNotReadyException"
           ],
-          "IntervalSeconds": 2,
-          "MaxAttempts": 2,
-          "BackoffRate": 2.0
+          "IntervalSeconds": 5,
+          "MaxAttempts": 8,
+          "BackoffRate": 2.0,
+          "MaxDelaySeconds": 60
         }
       ],
       "Next": "PrepareFetchedWorkerInput"
@@ -95,11 +97,13 @@
             "Lambda.ServiceException",
             "Lambda.AWSLambdaException",
             "Lambda.SdkClientException",
-            "Lambda.TooManyRequestsException"
+            "Lambda.TooManyRequestsException",
+            "Lambda.ResourceNotReadyException"
           ],
-          "IntervalSeconds": 2,
-          "MaxAttempts": 2,
-          "BackoffRate": 2.0
+          "IntervalSeconds": 5,
+          "MaxAttempts": 8,
+          "BackoffRate": 2.0,
+          "MaxDelaySeconds": 60
         }
       ],
       "Catch": [
@@ -111,7 +115,8 @@
             "Lambda.ServiceException",
             "Lambda.AWSLambdaException",
             "Lambda.SdkClientException",
-            "Lambda.TooManyRequestsException"
+            "Lambda.TooManyRequestsException",
+            "Lambda.ResourceNotReadyException"
           ],
           "Next": "RunBuild",
           "ResultPath": "$.lambdaError"
