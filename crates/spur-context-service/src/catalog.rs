@@ -2104,7 +2104,7 @@ where
     thread::spawn(move || {
         let runtime = tokio::runtime::Runtime::new().map_err(|_| PublicationStoreError::Storage)?;
         runtime.block_on(async move {
-            let client = s3_client_from_env();
+            let client = s3_client_from_env().await;
             f(client).await
         })
     })
@@ -2155,7 +2155,7 @@ fn head_s3_object(uri: &str) -> Result<()> {
             .key(parsed.key)
             .send()
             .await
-            .with_context(|| format!("snapshot references missing S3 object `{uri}`"))?;
+            .with_context(|| format!("failed to inspect snapshot S3 object `{uri}`"))?;
         Ok(())
     })
 }
@@ -2179,7 +2179,7 @@ where
     thread::spawn(move || {
         let runtime = tokio::runtime::Runtime::new().context("failed to create S3 runtime")?;
         runtime.block_on(async move {
-            let client = s3_client_from_env();
+            let client = s3_client_from_env().await;
             f(client).await
         })
     })
@@ -2209,26 +2209,18 @@ fn parse_s3_uri(uri: &str) -> Result<ParsedS3Uri> {
     })
 }
 
-fn s3_client_from_env() -> aws_sdk_s3::Client {
+async fn s3_client_from_env() -> aws_sdk_s3::Client {
     let region = std::env::var("AWS_REGION")
         .or_else(|_| std::env::var("AWS_DEFAULT_REGION"))
         .unwrap_or_else(|_| "us-east-1".to_owned());
-    let mut config = aws_sdk_s3::Config::builder()
-        .behavior_version(aws_sdk_s3::config::BehaviorVersion::latest())
-        .region(aws_sdk_s3::config::Region::new(region));
-    if let (Ok(access_key), Ok(secret_key)) = (
-        std::env::var("AWS_ACCESS_KEY_ID"),
-        std::env::var("AWS_SECRET_ACCESS_KEY"),
-    ) {
-        config = config.credentials_provider(aws_sdk_s3::config::Credentials::new(
-            access_key,
-            secret_key,
-            std::env::var("AWS_SESSION_TOKEN").ok(),
-            None,
-            "Env",
-        ));
-    }
-    aws_sdk_s3::Client::from_conf(config.build())
+    // ECS exposes task-role credentials through its metadata endpoint, while
+    // Lambda supplies environment credentials. The SDK chain supports both and
+    // refreshes temporary credentials instead of issuing unsigned S3 requests.
+    let config = aws_config::defaults(aws_config::BehaviorVersion::latest())
+        .region(aws_sdk_s3::config::Region::new(region))
+        .load()
+        .await;
+    aws_sdk_s3::Client::new(&config)
 }
 
 pub(crate) fn postgres_metadata_dsn(catalog_dsn: &str) -> String {
