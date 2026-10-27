@@ -1561,6 +1561,45 @@ def test_state_machine_does_not_retry_worker_reported_failures():
     assert '"States.ALL"' not in asl
 
 
+@pytest.mark.parametrize("state_name", ["FetchSource", "RunLambdaBuild"])
+@pytest.mark.parametrize(
+    "error", ["Lambda.ResourceNotReadyException", "Lambda.AWSLambdaException"]
+)
+def test_indexing_retries_lambda_restoration_for_several_minutes(state_name, error):
+    state = render_index_build_asl()["States"][state_name]
+    retrier = next(
+        (item for item in state["Retry"] if error in item["ErrorEquals"]), None
+    )
+    assert retrier is not None, f"{state_name} does not retry {error}"
+    waits = [
+        min(
+            retrier["IntervalSeconds"] * retrier["BackoffRate"] ** attempt,
+            retrier.get("MaxDelaySeconds", float("inf")),
+        )
+        for attempt in range(retrier["MaxAttempts"])
+    ]
+    # Budget approved for restoring idle Lambda resources: five to six minutes,
+    # with at most one minute between readiness checks. No jitter reduces it.
+    assert 300 <= sum(waits) <= 360, f"restoration budget is only {sum(waits)}s"
+    assert max(waits) <= 60
+    assert retrier.get("JitterStrategy", "NONE") == "NONE"
+
+
+def test_indexing_falls_back_to_ecs_when_lambda_resources_stay_unready():
+    states = render_index_build_asl()["States"]
+    catcher = next(
+        (
+            item
+            for item in states["RunLambdaBuild"]["Catch"]
+            if "Lambda.ResourceNotReadyException" in item["ErrorEquals"]
+        ),
+        None,
+    )
+    assert catcher is not None, "resource restoration bypasses ECS fallback"
+    assert catcher["Next"] == "RunBuild"
+    assert states[catcher["Next"]]["Resource"].endswith("ecs:runTask.waitForTaskToken")
+
+
 def test_state_machine_invokes_lambda_worker_before_ecs_fallback():
     asl = (INFRA_DIR / "index_build_asl.json").read_text()
     rendered = render_index_build_asl()
@@ -1612,6 +1651,7 @@ def test_state_machine_fetches_source_and_normalizes_worker_input():
         "Lambda.AWSLambdaException",
         "Lambda.SdkClientException",
         "Lambda.TooManyRequestsException",
+        "Lambda.ResourceNotReadyException",
     ]
     assert "CheckFetchSource" not in states
     assert "FetchSourceFailed" not in states
