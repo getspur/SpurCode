@@ -1194,5 +1194,209 @@
       "timeout_ms": 10000
     }
   },
-  "interpretation": "Policy feasibility is sat; catalog verifies two 100 MiB backups fit 256 MiB. Generic unsat proves no protected deletion or removable retained excess in the encoded four-entry domain (sizes 0..64 GiB, protected count 1..4), not filesystem safety or unbounded correctness."
+  "interpretation": "Policy feasibility is sat; catalog verifies two 100 MiB backups fit 256 MiB. Generic unsat proves no protected deletion or removable retained excess in the encoded four-entry domain (sizes 0..64 GiB, protected count 1..4), not filesystem safety or unbounded correctness.",
+  "post": {
+    "policy": {
+      "status": "sat",
+      "model": {
+        "flush_ms": 30000,
+        "history_bytes": 268435456,
+        "protected": 2,
+        "sweep_ms": 900000,
+        "test_ms": 20,
+        "wal_bytes": 67108864
+      },
+      "duration_ms": 33,
+      "solve_id": "sol_a578f2fddbd145ff",
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "capacity": {
+      "family": "resource",
+      "mode": "verify",
+      "outcome": "pass",
+      "rule_results": [
+        {
+          "rule_id": "resource.aggregate_capacity",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "total_duration_ms": 16,
+      "status": "sat",
+      "model": {},
+      "duration_ms": 0,
+      "solve_id": "sol_7152afd04f174228",
+      "reason": null,
+      "cached": true,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "retention_safety": {
+      "status": "unsat",
+      "duration_ms": 5,
+      "solve_id": "sol_a31269a86e894a06",
+      "reason": null,
+      "unsat_core": [
+        "delete_oldest_3",
+        "remaining_1",
+        "delete_oldest_2",
+        "remaining_2",
+        "delete_oldest_1",
+        "remaining_3",
+        "delete_oldest_0",
+        "remaining_4",
+        "find_safety_violation"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    }
+  },
+  "post_policy_request": {
+    "vars": [
+      {
+        "name": "flush_ms",
+        "type": "int_range",
+        "min": 30000,
+        "max": 30000
+      },
+      {
+        "name": "sweep_ms",
+        "type": "int_range",
+        "min": 900000,
+        "max": 900000
+      },
+      {
+        "name": "history_bytes",
+        "type": "int_range",
+        "min": 268435456,
+        "max": 268435456
+      },
+      {
+        "name": "protected",
+        "type": "int_range",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "name": "wal_bytes",
+        "type": "int_range",
+        "min": 67108864,
+        "max": 67108864
+      },
+      {
+        "name": "test_ms",
+        "type": "int_range",
+        "min": 20,
+        "max": 20
+      }
+    ],
+    "constraints": [
+      {
+        "id": "positive_flush",
+        "expr": {
+          "kind": "op",
+          "op": "gt",
+          "args": [
+            {
+              "kind": "var",
+              "name": "flush_ms"
+            },
+            {
+              "kind": "int",
+              "value": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "sweep_at_least_flush",
+        "expr": {
+          "kind": "op",
+          "op": "ge",
+          "args": [
+            {
+              "kind": "var",
+              "name": "sweep_ms"
+            },
+            {
+              "kind": "var",
+              "name": "flush_ms"
+            }
+          ]
+        }
+      },
+      {
+        "id": "positive_budget",
+        "expr": {
+          "kind": "op",
+          "op": "gt",
+          "args": [
+            {
+              "kind": "var",
+              "name": "history_bytes"
+            },
+            {
+              "kind": "int",
+              "value": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "protect_backups",
+        "expr": {
+          "kind": "op",
+          "op": "ge",
+          "args": [
+            {
+              "kind": "var",
+              "name": "protected"
+            },
+            {
+              "kind": "int",
+              "value": 1
+            }
+          ]
+        }
+      },
+      {
+        "id": "positive_wal",
+        "expr": {
+          "kind": "op",
+          "op": "gt",
+          "args": [
+            {
+              "kind": "var",
+              "name": "wal_bytes"
+            },
+            {
+              "kind": "int",
+              "value": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "test_clock_is_positive",
+        "expr": {
+          "kind": "op",
+          "op": "gt",
+          "args": [
+            {
+              "kind": "var",
+              "name": "test_ms"
+            },
+            {
+              "kind": "int",
+              "value": 0
+            }
+          ]
+        }
+      }
+    ],
+    "persist": true,
+    "use_cache": false,
+    "timeout_ms": 10000
+  },
+  "post_evidence": "Shipped defaults read from beads_maintenance_eval JSON; actual Rust plan removes unprotected entries oldest-first while above budget, matching the four-entry bounded transition. Runtime tests and sparse fixture evaluation separately cover filesystem and actor behavior. The solver does not prove unbounded filesystem/concurrency behavior."
 }

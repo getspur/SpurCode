@@ -5,6 +5,7 @@
 #![allow(unsafe_code)] // libc::statfs FFI for NFS/SMB/CIFS detection.
 
 use beads_rust::storage::sqlite::SqliteStorage;
+#[cfg(test)]
 use beads_rust::sync;
 use serde::Serialize;
 use std::path::Path;
@@ -378,13 +379,22 @@ pub(crate) fn sweep_stale_jsonl_temps(beads_dir: &Path, min_age: Duration) -> st
         // TOCTOU: the file may have been renamed/unlinked between read_dir and
         // metadata (e.g., a concurrent atomic write completing). Skip the entry
         // instead of failing the whole sweep.
-        let Ok(meta) = entry.metadata() else {
-            continue;
+        let meta = match std::fs::symlink_metadata(entry.path()) {
+            Ok(meta) => meta,
+            Err(err) if err.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(err) => return Err(err),
         };
+        if !meta.is_file() || meta.file_type().is_symlink() {
+            continue;
+        }
         if let Ok(modified) = meta.modified() {
             if let Ok(age) = now.duration_since(modified) {
-                if age >= min_age && std::fs::remove_file(entry.path()).is_ok() {
-                    removed += 1;
+                if age >= min_age {
+                    match std::fs::remove_file(entry.path()) {
+                        Ok(()) => removed += 1,
+                        Err(err) if err.kind() == std::io::ErrorKind::NotFound => {}
+                        Err(err) => return Err(err),
+                    }
                 }
             }
         }
@@ -603,7 +613,7 @@ pub(crate) fn init_writer_with_flush(
     pre_open_quick_check(&db_path)?;
     let mut storage = SqliteStorage::open_with_timeout(&db_path, Some(lock_timeout_ms))?;
     let _ = sweep_stale_jsonl_temps(beads_dir, stale_tmp_min_age);
-    let result = sync::auto_flush(&mut storage, beads_dir);
+    let result = crate::beads_crate::maintenance::runtime::safe_auto_flush(&mut storage, beads_dir);
     drop(storage);
     drop(_guard);
     // Documented exception to the connection actor rule: startup auto-flush

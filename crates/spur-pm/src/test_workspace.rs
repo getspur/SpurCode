@@ -99,8 +99,27 @@ impl TestBeadsWorkspace {
         self.create_with_type_at(title, issue_type, Utc::now())
     }
 
-    fn create_with_type_at(&mut self, title: &str, issue_type: IssueType, now: chrono::DateTime<Utc>) -> String {
-        let id = beads_rust::util::generate_id(title, None, Some("test"), now);
+    fn create_with_type_at(
+        &mut self,
+        title: &str,
+        issue_type: IssueType,
+        now: chrono::DateTime<Utc>,
+    ) -> String {
+        let id = beads_rust::util::id::IdGenerator::with_defaults().generate(
+            title,
+            None,
+            Some("test"),
+            now,
+            self.storage
+                .count_issues()
+                .expect("count test issues")
+                .saturating_add(1),
+            |candidate| {
+                self.storage
+                    .id_exists(candidate)
+                    .expect("check test issue ID")
+            },
+        );
         let issue = build_issue(id.clone(), title.to_string(), issue_type);
         self.storage
             .create_issue(&issue, "test")

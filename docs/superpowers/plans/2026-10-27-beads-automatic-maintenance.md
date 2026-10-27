@@ -13,6 +13,8 @@
 
 Execution is already authorized. The current agent executes the following beads-backed DAG sequentially; no worker dispatch or additional approval is required.
 
+**Completion:** retention, actor, notebook evaluation, pre/post solve and independent review are complete. [Verification and limitations](../../research/2026-10-27-beads-maintenance-verification.md) record the 284 passing crate tests, three passing simulations, focused lint pass, existing all-target lint failures, and actual Rust fixture results.
+
 ## Task 1: Retention policy and runtime regression tests
 
 **Task ID / beads:** `retention` / `bd-2b6`

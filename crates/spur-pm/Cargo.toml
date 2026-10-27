@@ -43,6 +43,9 @@ filetime = "0.2"
 proptest = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "test-util"] }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "1.1", features = ["fs"] }
+
 [target.'cfg(madsim)'.dev-dependencies]
 madsim = "0.2"
 madsim-tokio = { version = "0.2", features = ["full", "test-util"] }

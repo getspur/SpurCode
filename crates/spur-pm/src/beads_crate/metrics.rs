@@ -19,6 +19,11 @@ pub struct ContentionMetrics {
     pub auto_flush_dirty_total: AtomicU64,
     pub auto_flush_success_total: AtomicU64,
     pub tmp_sweep_removed_total: AtomicU64,
+    pub maintenance_total: AtomicU64,
+    pub maintenance_busy_total: AtomicU64,
+    pub maintenance_error_total: AtomicU64,
+    pub history_removed_bytes_total: AtomicU64,
+    pub history_removed_files_total: AtomicU64,
 }
 
 impl ContentionMetrics {

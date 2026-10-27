@@ -11,6 +11,7 @@ use std::time::{Duration, Instant};
 use crate::beads_crate::backoff::BackoffPolicy;
 use crate::beads_crate::beads_db::{BeadsDb, DEFAULT_READER_THREADS};
 use crate::beads_crate::init;
+use crate::beads_crate::maintenance::{MaintenancePolicy, MaintenanceReport};
 use crate::beads_crate::metrics::ContentionMetrics;
 use crate::beads_crate::snapshot::{Conflict, Snapshot};
 use crate::beads_crate::write_lock;
@@ -148,6 +149,7 @@ fn fastrand_unit() -> f64 {
 
 #[derive(Debug, Clone)]
 pub struct AdapterConfig {
+    pub maintenance: MaintenancePolicy,
     pub lock_timeout_ms: u64,
     pub stale_tmp_min_age: Duration,
     pub allow_non_local_fs: bool,
@@ -162,6 +164,7 @@ pub struct AdapterConfig {
 impl Default for AdapterConfig {
     fn default() -> Self {
         Self {
+            maintenance: MaintenancePolicy::default(),
             lock_timeout_ms: 5_000,
             stale_tmp_min_age: Duration::from_secs(3600),
             allow_non_local_fs: false,
@@ -188,6 +191,7 @@ pub struct BeadsCrateAdapter {
 
 impl BeadsCrateAdapter {
     pub async fn open(beads_dir: &Path, config: AdapterConfig) -> anyhow::Result<Self> {
+        config.maintenance.validate()?;
         let beads_dir = beads_dir.to_path_buf();
         let jsonl_path = beads_dir.join("issues.jsonl");
 
@@ -215,12 +219,16 @@ impl BeadsCrateAdapter {
             let db_beads_dir = beads_dir.clone();
             let db_metrics = Arc::clone(&metrics);
             let lock_timeout_ms = config.lock_timeout_ms;
+            let maintenance = config.maintenance.clone();
+            let stale_tmp_min_age = config.stale_tmp_min_age;
             tokio::task::spawn_blocking(move || {
-                BeadsDb::spawn_with_metrics(
+                BeadsDb::spawn_with_maintenance(
                     db_beads_dir,
                     lock_timeout_ms,
                     DEFAULT_READER_THREADS,
                     db_metrics,
+                    maintenance,
+                    stale_tmp_min_age,
                 )
             })
             .await??
@@ -258,6 +266,17 @@ impl BeadsCrateAdapter {
         &self.metrics
     }
 
+    /// Last automatic or explicit maintenance result, including busy skips and errors.
+    pub fn maintenance_report(&self) -> Option<MaintenanceReport> {
+        self.db.maintenance_report()
+    }
+
+    /// Inspect or perform maintenance immediately. A dry run never exports or deletes.
+    /// Busy flock acquisition is reported without blocking the writer actor.
+    pub async fn maintain_now(&self, dry_run: bool) -> anyhow::Result<MaintenanceReport> {
+        self.db.maintain_now(dry_run).await
+    }
+
     /// Idempotent under-lock auto-flush. Inside `.beads/.write.lock`, calls
     /// `beads_rust::sync::auto_flush` which is a no-op if nothing is dirty.
     /// Safe to call concurrently across processes — they serialize on the flock.
@@ -281,7 +300,8 @@ impl BeadsCrateAdapter {
             .db
             .submit_write(move |storage| -> anyhow::Result<()> {
                 let _flock = flock;
-                let outcome = beads_rust::sync::auto_flush(storage, &beads_dir);
+                let outcome =
+                    crate::beads_crate::maintenance::runtime::safe_auto_flush(storage, &beads_dir);
                 let outcome = outcome?;
                 if outcome.flushed {
                     metrics.incr_auto_flush_dirty();

@@ -7,6 +7,8 @@ use std::time::Duration;
 use anyhow::{anyhow, Context as _};
 use beads_rust::storage::sqlite::SqliteStorage;
 
+use crate::beads_crate::maintenance::runtime::{MaintenanceRuntime, SharedReport};
+use crate::beads_crate::maintenance::{MaintenancePolicy, MaintenanceReport};
 use crate::beads_crate::metrics::ContentionMetrics;
 
 pub(crate) const DEFAULT_READER_THREADS: usize = 4;
@@ -23,6 +25,10 @@ type SummaryReadJob = Box<dyn FnOnce(&rusqlite::Connection) + Send + 'static>;
 enum WriteMsg {
     Job(WriteJob),
     Checkpoint,
+    Maintain {
+        dry_run: bool,
+        reply: tokio::sync::oneshot::Sender<MaintenanceReport>,
+    },
     Shutdown,
 }
 
@@ -35,6 +41,7 @@ pub(crate) struct BeadsDb {
     write_tx: Option<SyncSender<WriteMsg>>,
     read_tx: Option<SyncSender<ReadMsg>>,
     threads: Mutex<Vec<DbThread>>,
+    maintenance_report: SharedReport,
 }
 
 struct DbThread {
@@ -67,6 +74,33 @@ impl BeadsDb {
         reader_threads: usize,
         metrics: Arc<ContentionMetrics>,
     ) -> anyhow::Result<Self> {
+        Self::spawn_with_maintenance(
+            beads_dir,
+            lock_timeout_ms,
+            reader_threads,
+            metrics,
+            MaintenancePolicy::default(),
+            Duration::from_secs(3600),
+        )
+    }
+
+    pub(crate) fn spawn_with_maintenance(
+        beads_dir: PathBuf,
+        lock_timeout_ms: u64,
+        reader_threads: usize,
+        metrics: Arc<ContentionMetrics>,
+        policy: MaintenancePolicy,
+        stale_tmp_min_age: Duration,
+    ) -> anyhow::Result<Self> {
+        policy.validate()?;
+        let maintenance_report = SharedReport::default();
+        let maintenance = MaintenanceRuntime::new(
+            beads_dir.clone(),
+            policy,
+            stale_tmp_min_age,
+            Arc::clone(&metrics),
+            Arc::clone(&maintenance_report),
+        );
         let reader_threads = reader_threads.max(1);
         let db_path = beads_dir.join("beads.db");
         let startup_timeout = startup_timeout(lock_timeout_ms);
@@ -82,6 +116,7 @@ impl BeadsDb {
             Arc::clone(&metrics),
             write_rx,
             startup_timeout,
+            maintenance,
         ) {
             Ok(thread) => threads.push(thread),
             Err(err) => {
@@ -125,7 +160,27 @@ impl BeadsDb {
             write_tx: Some(write_tx),
             read_tx: Some(read_tx),
             threads: Mutex::new(threads),
+            maintenance_report,
         })
+    }
+
+    pub(crate) fn maintenance_report(&self) -> Option<MaintenanceReport> {
+        self.maintenance_report
+            .lock()
+            .unwrap_or_else(|err| err.into_inner())
+            .clone()
+    }
+
+    pub(crate) async fn maintain_now(&self, dry_run: bool) -> anyhow::Result<MaintenanceReport> {
+        let (reply, result) = tokio::sync::oneshot::channel();
+        self.write_tx
+            .as_ref()
+            .context("beads db writer is not running")?
+            .try_send(WriteMsg::Maintain { dry_run, reply })
+            .map_err(write_send_error)?;
+        result
+            .await
+            .context("beads db writer stopped before maintenance reply")
     }
 
     pub(crate) async fn submit_write<T, F>(&self, f: F) -> anyhow::Result<T>
@@ -245,6 +300,7 @@ fn spawn_writer(
     metrics: Arc<ContentionMetrics>,
     write_rx: Receiver<WriteMsg>,
     startup_timeout: Duration,
+    mut maintenance: MaintenanceRuntime,
 ) -> anyhow::Result<DbThread> {
     let name = "beads-db-writer".to_owned();
     let (ready_tx, ready_rx) = mpsc::sync_channel(1);
@@ -273,7 +329,13 @@ fn spawn_writer(
             };
 
             let _ = ready_tx.send(Ok(()));
-            writer_loop(&mut storage, &checkpoint_conn, &write_rx, metrics.as_ref());
+            writer_loop(
+                &mut storage,
+                &checkpoint_conn,
+                &write_rx,
+                metrics.as_ref(),
+                &mut maintenance,
+            );
             drop(storage);
             drop(checkpoint_conn);
             let _ = done_tx.send(());
@@ -365,14 +427,20 @@ fn writer_loop(
     checkpoint_conn: &rusqlite::Connection,
     write_rx: &Receiver<WriteMsg>,
     metrics: &ContentionMetrics,
+    maintenance: &mut MaintenanceRuntime,
 ) {
     loop {
-        match write_rx.recv_timeout(CHECKPOINT_INTERVAL) {
+        // Check deadlines between jobs too: sustained traffic must not reset the clock.
+        maintenance.tick(storage, checkpoint_conn);
+        match write_rx.recv_timeout(CHECKPOINT_INTERVAL.min(maintenance.until_due())) {
             Ok(WriteMsg::Job(job)) => job(storage),
             Ok(WriteMsg::Checkpoint) | Err(RecvTimeoutError::Timeout) => {
                 checkpoint_passive(checkpoint_conn, metrics);
             }
             Ok(WriteMsg::Shutdown) | Err(RecvTimeoutError::Disconnected) => break,
+            Ok(WriteMsg::Maintain { dry_run, reply }) => {
+                let _ = reply.send(maintenance.run_now(storage, checkpoint_conn, dry_run));
+            }
         }
     }
 }
@@ -714,6 +782,7 @@ pub(super) mod trace_tests {
             write_tx: None,
             read_tx: Some(tx),
             threads: Mutex::new(Vec::new()),
+            maintenance_report: SharedReport::default(),
         };
         let error = db.submit_read(|_| Ok(())).await.unwrap_err();
         assert_eq!(error.to_string(), "beads db reader queue is full");
@@ -736,5 +805,55 @@ pub(super) mod trace_tests {
         drop(rx.recv().unwrap());
         let error = read.await.unwrap_err();
         assert_eq!(error.to_string(), "beads db reader stopped before replying");
+    }
+}
+
+#[cfg(test)]
+mod maintenance_tests {
+    use super::*;
+    use fs2::FileExt as _;
+
+    #[test]
+    fn due_maintenance_does_not_wait_for_lock_owned_by_queued_job() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = BeadsDb::spawn_with_maintenance(
+            dir.path().to_path_buf(),
+            1000,
+            1,
+            Arc::new(ContentionMetrics::default()),
+            MaintenancePolicy {
+                flush_interval: Duration::from_millis(20),
+                sweep_interval: Duration::from_millis(20),
+                ..Default::default()
+            },
+            Duration::from_secs(3600),
+        )
+        .unwrap();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (resume_tx, resume_rx) = mpsc::channel();
+        let tx = db.write_tx.as_ref().unwrap();
+        tx.send(WriteMsg::Job(Box::new(move |_| {
+            entered_tx.send(()).unwrap();
+            resume_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        })))
+        .unwrap();
+        entered_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        let lock = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(dir.path().join(".write.lock"))
+            .unwrap();
+        lock.lock_exclusive().unwrap();
+        let (done_tx, done_rx) = mpsc::channel();
+        tx.send(WriteMsg::Job(Box::new(move |_| {
+            drop(lock);
+            done_tx.send(()).unwrap();
+        })))
+        .unwrap();
+        thread::sleep(Duration::from_millis(30));
+        resume_tx.send(()).unwrap();
+        done_rx
+            .recv_timeout(Duration::from_secs(2))
+            .expect("maintenance must skip the flock held by the next queued job");
     }
 }

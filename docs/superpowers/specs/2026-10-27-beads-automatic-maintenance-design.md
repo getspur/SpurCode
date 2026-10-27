@@ -2,7 +2,7 @@
 
 Date: 2026-10-27. Tracking issue: `bd-2md`.
 
-Status: analysis and proposed design; production behavior is unchanged.
+Status: approved and implemented in `spur-pm` under `bd-28k`. The investigation below describes the baseline before implementation. See the [verification record](../../research/2026-10-27-beads-maintenance-verification.md) and the executed implementation section in the notebook.
 
 ## Evidence
 
@@ -115,4 +115,10 @@ Reuse the strict temporary-file sweep under the write lock during periodic maint
 - Dry runs report the same candidate set as execution on unchanged fixtures and leave all bytes intact.
 - Metrics report files/bytes reclaimed, bytes retained by category, over-budget protected bytes, busy skips, errors, duration, dirty count, and last successful export/maintenance.
 
-For the future Rust change, run `scripts/spur-cargo test -p spur-pm beads_crate` and the relevant durability integration tests through the repository wrapper. This investigation did not change Rust and did not run the Rust suite. All nine executable notebook cells succeeded; no live storage maintenance was executed.
+The initial investigation ran nine notebook cells without changing Rust. The approved implementation subsequently passed the full crate suite, three durability simulations, focused strict lint checks, and three additional implementation-evaluation notebook cells. No live storage cleanup was executed as part of this investigation or evaluation.
+
+## Implemented API and reporting
+
+`AdapterConfig.maintenance` accepts the typed policy above. Existing callers using `Default` receive automatic startup/periodic maintenance without extra wiring. `adapter.maintain_now(true).await` previews cleanup without flushing/deleting; `maintain_now(false)` requests an immediate best-effort pass. Callers must inspect the returned `errors` and `skipped_busy` fields. `maintenance_report()` returns the latest non-dry-run report.
+
+Flush-only or busy runs retain the latest storage-size sample with `usage_measured_epoch_ms`; that timestamp makes its age explicit. `last_export_epoch_ms` covers successful exports performed by this actor's maintenance runtime, not historical startup/manual exports. The 256 MiB limit applies only to recognized redundant history, and protected copies can exceed it. Canonical issue/event data and quarantine are retained.

@@ -1,0 +1,165 @@
+{
+  "policy": {
+    "flush_interval": {
+      "secs": 30,
+      "nanos": 0
+    },
+    "sweep_interval": {
+      "secs": 900,
+      "nanos": 0
+    },
+    "history_max_bytes": 268435456,
+    "history_keep_newest": 2,
+    "wal_truncate_threshold_bytes": 67108864
+  },
+  "history_cases": [
+    {
+      "backup_bytes": 10485760,
+      "files_before": 100,
+      "bytes_before": 1048576000,
+      "files_after": 25,
+      "bytes_after": 262144000,
+      "removed_bytes": 786432000,
+      "over_budget_bytes": 0,
+      "protected_bytes": 20971520,
+      "dry_run_unchanged": true,
+      "protected_survived": true,
+      "canonical_preserved": true,
+      "idempotent": true,
+      "passed": true,
+      "duration_ms": 1
+    },
+    {
+      "backup_bytes": 52428800,
+      "files_before": 100,
+      "bytes_before": 5242880000,
+      "files_after": 5,
+      "bytes_after": 262144000,
+      "removed_bytes": 4980736000,
+      "over_budget_bytes": 0,
+      "protected_bytes": 104857600,
+      "dry_run_unchanged": true,
+      "protected_survived": true,
+      "canonical_preserved": true,
+      "idempotent": true,
+      "passed": true,
+      "duration_ms": 1
+    },
+    {
+      "backup_bytes": 104857600,
+      "files_before": 100,
+      "bytes_before": 10485760000,
+      "files_after": 2,
+      "bytes_after": 209715200,
+      "removed_bytes": 10276044800,
+      "over_budget_bytes": 0,
+      "protected_bytes": 209715200,
+      "dry_run_unchanged": true,
+      "protected_survived": true,
+      "canonical_preserved": true,
+      "idempotent": true,
+      "passed": true,
+      "duration_ms": 1
+    },
+    {
+      "backup_bytes": 524288000,
+      "files_before": 100,
+      "bytes_before": 52428800000,
+      "files_after": 2,
+      "bytes_after": 1048576000,
+      "removed_bytes": 51380224000,
+      "over_budget_bytes": 780140544,
+      "protected_bytes": 1048576000,
+      "dry_run_unchanged": true,
+      "protected_survived": true,
+      "canonical_preserved": true,
+      "idempotent": true,
+      "passed": true,
+      "duration_ms": 1
+    }
+  ],
+  "runtime": {
+    "passed": true,
+    "export_latency_ms": 24,
+    "test_flush_ms": 20,
+    "pinned_reader": {
+      "dry_run": false,
+      "skipped_busy": false,
+      "skipped_recent_sweep": false,
+      "dirty_issues": 1,
+      "flushed": true,
+      "history": {
+        "files_before": 1,
+        "bytes_before": 278,
+        "removed_files": 0,
+        "removed_bytes": 0,
+        "bytes_after": 278,
+        "protected_bytes": 278,
+        "over_budget_bytes": 0,
+        "errors": []
+      },
+      "wal": {
+        "bytes_before": 160712,
+        "bytes_after": 160712,
+        "busy": 1,
+        "log_frames": 39,
+        "checkpointed_frames": 9
+      },
+      "temporary_files_removed": 0,
+      "usage": {
+        "database_bytes": 233472,
+        "export_bytes": 543,
+        "wal_bytes": 160712,
+        "history_bytes": 278,
+        "quarantine_bytes": 0,
+        "quarantine_files": 0
+      },
+      "usage_measured_epoch_ms": 1793076234008,
+      "duration_ms": 2,
+      "last_run_epoch_ms": 1793076234006,
+      "last_export_epoch_ms": 1793076234008,
+      "last_sweep_epoch_ms": 1793076234008,
+      "errors": []
+    },
+    "released_reader": {
+      "dry_run": false,
+      "skipped_busy": false,
+      "skipped_recent_sweep": false,
+      "dirty_issues": 0,
+      "flushed": false,
+      "history": {
+        "files_before": 1,
+        "bytes_before": 278,
+        "removed_files": 0,
+        "removed_bytes": 0,
+        "bytes_after": 278,
+        "protected_bytes": 278,
+        "over_budget_bytes": 0,
+        "errors": []
+      },
+      "wal": {
+        "bytes_before": 160712,
+        "bytes_after": 0,
+        "busy": 0,
+        "log_frames": 0,
+        "checkpointed_frames": 0
+      },
+      "temporary_files_removed": 0,
+      "usage": {
+        "database_bytes": 233472,
+        "export_bytes": 543,
+        "wal_bytes": 0,
+        "history_bytes": 278,
+        "quarantine_bytes": 0,
+        "quarantine_files": 0
+      },
+      "usage_measured_epoch_ms": 1793076234009,
+      "duration_ms": 1,
+      "last_run_epoch_ms": 1793076234008,
+      "last_export_epoch_ms": 1793076234008,
+      "last_sweep_epoch_ms": 1793076234009,
+      "errors": []
+    }
+  },
+  "fixture_kind": "temporary sparse files; sizes are logical bytes"
+}

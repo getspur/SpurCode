@@ -13,6 +13,7 @@ pub mod init;
 pub(crate) mod issue_changes;
 pub mod issue_reads;
 pub mod issue_tracker;
+pub mod maintenance;
 pub mod metrics;
 pub mod reader_pool;
 pub mod snapshot;
