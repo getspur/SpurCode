@@ -1,0 +1,1198 @@
+{
+  "pre": {
+    "policy": {
+      "status": "sat",
+      "model": {
+        "flush_ms": 30000,
+        "history_bytes": 268435456,
+        "protected": 2,
+        "sweep_ms": 900000,
+        "test_ms": 20,
+        "wal_bytes": 67108864
+      },
+      "duration_ms": 27,
+      "solve_id": "sol_f3b6ef78501d4fdb",
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "capacity": {
+      "family": "resource",
+      "mode": "verify",
+      "outcome": "pass",
+      "rule_results": [
+        {
+          "rule_id": "resource.aggregate_capacity",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "total_duration_ms": 21,
+      "status": "sat",
+      "model": {},
+      "duration_ms": 4,
+      "solve_id": "sol_1dc164b074404398",
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "retention_safety": {
+      "status": "unsat",
+      "duration_ms": 4,
+      "solve_id": "sol_5043eab2920b428f",
+      "reason": null,
+      "unsat_core": [
+        "delete_oldest_3",
+        "remaining_1",
+        "delete_oldest_2",
+        "remaining_2",
+        "delete_oldest_1",
+        "remaining_3",
+        "delete_oldest_0",
+        "remaining_4",
+        "find_safety_violation"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    }
+  },
+  "requests": {
+    "policy": {
+      "vars": [
+        {
+          "name": "flush_ms",
+          "type": "int_range",
+          "min": 30000,
+          "max": 30000
+        },
+        {
+          "name": "sweep_ms",
+          "type": "int_range",
+          "min": 900000,
+          "max": 900000
+        },
+        {
+          "name": "history_bytes",
+          "type": "int_range",
+          "min": 268435456,
+          "max": 268435456
+        },
+        {
+          "name": "protected",
+          "type": "int_range",
+          "min": 2,
+          "max": 2
+        },
+        {
+          "name": "wal_bytes",
+          "type": "int_range",
+          "min": 67108864,
+          "max": 67108864
+        },
+        {
+          "name": "test_ms",
+          "type": "int_range",
+          "min": 20,
+          "max": 20
+        }
+      ],
+      "constraints": [
+        {
+          "id": "positive_flush",
+          "expr": {
+            "kind": "op",
+            "op": "gt",
+            "args": [
+              {
+                "kind": "var",
+                "name": "flush_ms"
+              },
+              {
+                "kind": "int",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "sweep_at_least_flush",
+          "expr": {
+            "kind": "op",
+            "op": "ge",
+            "args": [
+              {
+                "kind": "var",
+                "name": "sweep_ms"
+              },
+              {
+                "kind": "var",
+                "name": "flush_ms"
+              }
+            ]
+          }
+        },
+        {
+          "id": "positive_budget",
+          "expr": {
+            "kind": "op",
+            "op": "gt",
+            "args": [
+              {
+                "kind": "var",
+                "name": "history_bytes"
+              },
+              {
+                "kind": "int",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "protect_backups",
+          "expr": {
+            "kind": "op",
+            "op": "ge",
+            "args": [
+              {
+                "kind": "var",
+                "name": "protected"
+              },
+              {
+                "kind": "int",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "id": "positive_wal",
+          "expr": {
+            "kind": "op",
+            "op": "gt",
+            "args": [
+              {
+                "kind": "var",
+                "name": "wal_bytes"
+              },
+              {
+                "kind": "int",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "test_clock_is_positive",
+          "expr": {
+            "kind": "op",
+            "op": "gt",
+            "args": [
+              {
+                "kind": "var",
+                "name": "test_ms"
+              },
+              {
+                "kind": "int",
+                "value": 0
+              }
+            ]
+          }
+        }
+      ],
+      "persist": true,
+      "use_cache": false,
+      "timeout_ms": 10000
+    },
+    "capacity": {
+      "family": "resource",
+      "mode": "verify",
+      "persist": true,
+      "rules": [
+        {
+          "rule_id": "resource.aggregate_capacity",
+          "subjects": [
+            "history",
+            "backups"
+          ],
+          "parameters": {
+            "resources": [
+              "bytes"
+            ]
+          }
+        }
+      ],
+      "facts": {
+        "workloads": {
+          "backups": {
+            "replicas": 2,
+            "requests": {
+              "bytes": 104857600
+            },
+            "limits": {
+              "bytes": 104857600
+            },
+            "domain_counts": {}
+          }
+        },
+        "pools": {
+          "history": {
+            "resources": {
+              "bytes": 268435456
+            }
+          }
+        },
+        "quotas": {}
+      },
+      "unknowns": []
+    },
+    "retention_safety": {
+      "vars": [
+        {
+          "name": "budget",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "protected_count",
+          "type": "int_range",
+          "min": 1,
+          "max": 4
+        },
+        {
+          "name": "size0",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "removed0",
+          "type": "bool"
+        },
+        {
+          "name": "freed0",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "size1",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "removed1",
+          "type": "bool"
+        },
+        {
+          "name": "freed1",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "size2",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "removed2",
+          "type": "bool"
+        },
+        {
+          "name": "freed2",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "size3",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "removed3",
+          "type": "bool"
+        },
+        {
+          "name": "freed3",
+          "type": "int_range",
+          "min": 0,
+          "max": 68719476736
+        },
+        {
+          "name": "remaining0",
+          "type": "int_range",
+          "min": 0,
+          "max": 274877906944
+        },
+        {
+          "name": "remaining1",
+          "type": "int_range",
+          "min": 0,
+          "max": 274877906944
+        },
+        {
+          "name": "remaining2",
+          "type": "int_range",
+          "min": 0,
+          "max": 274877906944
+        },
+        {
+          "name": "remaining3",
+          "type": "int_range",
+          "min": 0,
+          "max": 274877906944
+        },
+        {
+          "name": "remaining4",
+          "type": "int_range",
+          "min": 0,
+          "max": 274877906944
+        }
+      ],
+      "constraints": [
+        {
+          "id": "initial_bytes",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "remaining0"
+              },
+              {
+                "kind": "op",
+                "op": "add",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "size0"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "size1"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "size2"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "size3"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "delete_oldest_3",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "removed3"
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 3
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "remaining0"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "budget"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "freed_3",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "removed3"
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed3"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "size3"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "not",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "removed3"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed3"
+                      },
+                      {
+                        "kind": "int",
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "remaining_1",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "remaining1"
+              },
+              {
+                "kind": "op",
+                "op": "sub",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "remaining0"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "freed3"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "delete_oldest_2",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "removed2"
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 2
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "remaining1"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "budget"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "freed_2",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "removed2"
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed2"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "size2"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "not",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "removed2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed2"
+                      },
+                      {
+                        "kind": "int",
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "remaining_2",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "remaining2"
+              },
+              {
+                "kind": "op",
+                "op": "sub",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "remaining1"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "freed2"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "delete_oldest_1",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "removed1"
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 1
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "remaining2"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "budget"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "freed_1",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "removed1"
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed1"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "size1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "not",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "removed1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed1"
+                      },
+                      {
+                        "kind": "int",
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "remaining_3",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "remaining3"
+              },
+              {
+                "kind": "op",
+                "op": "sub",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "remaining2"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "freed1"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "delete_oldest_0",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "removed0"
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "ge",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 0
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "remaining3"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "budget"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "freed_0",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "removed0"
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed0"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "size0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "not",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "removed0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "eq",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "freed0"
+                      },
+                      {
+                        "kind": "int",
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "remaining_4",
+          "expr": {
+            "kind": "op",
+            "op": "eq",
+            "args": [
+              {
+                "kind": "var",
+                "name": "remaining4"
+              },
+              {
+                "kind": "op",
+                "op": "sub",
+                "args": [
+                  {
+                    "kind": "var",
+                    "name": "remaining3"
+                  },
+                  {
+                    "kind": "var",
+                    "name": "freed0"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "find_safety_violation",
+          "expr": {
+            "kind": "op",
+            "op": "or",
+            "args": [
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "lt",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 0
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "var",
+                    "name": "removed0"
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "lt",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 1
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "var",
+                    "name": "removed1"
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "lt",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 2
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "var",
+                    "name": "removed2"
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "lt",
+                    "args": [
+                      {
+                        "kind": "int",
+                        "value": 3
+                      },
+                      {
+                        "kind": "var",
+                        "name": "protected_count"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "var",
+                    "name": "removed3"
+                  }
+                ]
+              },
+              {
+                "kind": "op",
+                "op": "and",
+                "args": [
+                  {
+                    "kind": "op",
+                    "op": "gt",
+                    "args": [
+                      {
+                        "kind": "var",
+                        "name": "remaining4"
+                      },
+                      {
+                        "kind": "var",
+                        "name": "budget"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "op",
+                    "op": "or",
+                    "args": [
+                      {
+                        "kind": "op",
+                        "op": "and",
+                        "args": [
+                          {
+                            "kind": "op",
+                            "op": "ge",
+                            "args": [
+                              {
+                                "kind": "int",
+                                "value": 0
+                              },
+                              {
+                                "kind": "var",
+                                "name": "protected_count"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "op",
+                            "op": "not",
+                            "args": [
+                              {
+                                "kind": "var",
+                                "name": "removed0"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "op",
+                        "op": "and",
+                        "args": [
+                          {
+                            "kind": "op",
+                            "op": "ge",
+                            "args": [
+                              {
+                                "kind": "int",
+                                "value": 1
+                              },
+                              {
+                                "kind": "var",
+                                "name": "protected_count"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "op",
+                            "op": "not",
+                            "args": [
+                              {
+                                "kind": "var",
+                                "name": "removed1"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "op",
+                        "op": "and",
+                        "args": [
+                          {
+                            "kind": "op",
+                            "op": "ge",
+                            "args": [
+                              {
+                                "kind": "int",
+                                "value": 2
+                              },
+                              {
+                                "kind": "var",
+                                "name": "protected_count"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "op",
+                            "op": "not",
+                            "args": [
+                              {
+                                "kind": "var",
+                                "name": "removed2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "op",
+                        "op": "and",
+                        "args": [
+                          {
+                            "kind": "op",
+                            "op": "ge",
+                            "args": [
+                              {
+                                "kind": "int",
+                                "value": 3
+                              },
+                              {
+                                "kind": "var",
+                                "name": "protected_count"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "op",
+                            "op": "not",
+                            "args": [
+                              {
+                                "kind": "var",
+                                "name": "removed3"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "persist": true,
+      "use_cache": false,
+      "timeout_ms": 10000
+    }
+  },
+  "interpretation": "Policy feasibility is sat; catalog verifies two 100 MiB backups fit 256 MiB. Generic unsat proves no protected deletion or removable retained excess in the encoded four-entry domain (sizes 0..64 GiB, protected count 1..4), not filesystem safety or unbounded correctness."
+}
