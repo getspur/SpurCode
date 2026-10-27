@@ -2387,6 +2387,150 @@ mod tests {
     use std::sync::{Mutex, MutexGuard};
     use std::time::{SystemTime, UNIX_EPOCH};
 
+    async fn credential_test_signature(client: aws_sdk_s3::Client) -> Result<String> {
+        let request = client
+            .head_object()
+            .bucket("catalog-credential-test")
+            .key("gold/snapshot.parquet")
+            .presigned(aws_sdk_s3::presigning::PresigningConfig::expires_in(
+                Duration::from_secs(60),
+            )?)
+            .await?;
+        Ok(request.uri().to_owned())
+    }
+
+    #[test]
+    fn snapshot_s3_signing_uses_ecs_task_role_credentials() -> Result<()> {
+        check_snapshot_s3_credentials("ecs")
+    }
+
+    #[test]
+    fn snapshot_s3_signing_preserves_lambda_environment_credentials() -> Result<()> {
+        check_snapshot_s3_credentials("lambda")
+    }
+
+    fn check_snapshot_s3_credentials(provider: &str) -> Result<()> {
+        // Isolate the credential chain from the developer's AWS credentials and
+        // from other tests: only the subprocess changes credential environment.
+        if std::env::var("SPUR_CATALOG_CREDENTIAL_TEST_CHILD").as_deref() == Ok(provider) {
+            let ordinary = run_s3_blocking(credential_test_signature)?;
+            let publication = run_s3_publication_blocking(|client| async move {
+                credential_test_signature(client)
+                    .await
+                    .map_err(|_| PublicationStoreError::Storage)
+            })
+            .map_err(|error| anyhow!("publication credentials: {error:?}"))?;
+            for uri in [ordinary, publication] {
+                assert!(uri.contains("X-Amz-Credential=AKIATESTCATALOG%2F"));
+                assert!(uri.contains("X-Amz-Security-Token=catalog-test-token"));
+                assert!(uri.contains("ap-southeast-5%2Fs3%2Faws4_request"));
+                assert!(uri.contains("X-Amz-Signature="));
+            }
+            return Ok(());
+        }
+
+        use std::io::{Read as _, Write as _};
+        use std::sync::{
+            atomic::{AtomicBool, Ordering},
+            Arc,
+        };
+
+        let root = unique_temp_dir("snapshot-credential-chain")?;
+        let empty_config = root.join("empty-aws-config");
+        fs::write(&empty_config, "")?;
+        let test_name = match provider {
+            "ecs" => "catalog::tests::snapshot_s3_signing_uses_ecs_task_role_credentials",
+            _ => "catalog::tests::snapshot_s3_signing_preserves_lambda_environment_credentials",
+        };
+        let mut child = std::process::Command::new(std::env::current_exe()?);
+        child
+            .args(["--exact", test_name, "--nocapture"])
+            .env_clear()
+            .env("SPUR_CATALOG_CREDENTIAL_TEST_CHILD", provider)
+            .env("AWS_REGION", "ap-southeast-5")
+            .env("AWS_CONFIG_FILE", &empty_config)
+            .env("AWS_SHARED_CREDENTIALS_FILE", &empty_config)
+            .env("AWS_EC2_METADATA_DISABLED", "true");
+        let stopped = Arc::new(AtomicBool::new(false));
+        let server = if provider == "ecs" {
+            let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+            listener.set_nonblocking(true)?;
+            child.env(
+                "AWS_CONTAINER_CREDENTIALS_FULL_URI",
+                format!("http://{}/credentials", listener.local_addr()?),
+            );
+            let stopped = Arc::clone(&stopped);
+            Some(thread::spawn(move || -> Result<()> {
+                while !stopped.load(Ordering::Relaxed) {
+                    match listener.accept() {
+                        Ok((mut stream, _)) => {
+                            let deadline = std::time::Instant::now() + Duration::from_secs(5);
+                            let mut request = Vec::new();
+                            while !request.windows(4).any(|bytes| bytes == b"\r\n\r\n") {
+                                let remaining = deadline
+                                    .checked_duration_since(std::time::Instant::now())
+                                    .ok_or_else(|| anyhow!("credential request timed out"))?;
+                                stream.set_read_timeout(Some(remaining))?;
+                                let mut chunk = [0; 1024];
+                                let read = stream.read(&mut chunk)?;
+                                if read == 0 || request.len() + read > 4096 {
+                                    bail!("incomplete or oversized credential request");
+                                }
+                                request.extend_from_slice(&chunk[..read]);
+                            }
+                            assert!(
+                                String::from_utf8_lossy(&request).starts_with("GET /credentials ")
+                            );
+                            let body = r#"{"AccessKeyId":"AKIATESTCATALOG","SecretAccessKey":"catalog-test-secret","Token":"catalog-test-token","Expiration":"2099-01-01T00:00:00Z"}"#;
+                            write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len())?;
+                        }
+                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                            thread::sleep(Duration::from_millis(10))
+                        }
+                        Err(error) => return Err(error.into()),
+                    }
+                }
+                Ok(())
+            }))
+        } else {
+            child
+                .env("AWS_ACCESS_KEY_ID", "AKIATESTCATALOG")
+                .env("AWS_SECRET_ACCESS_KEY", "catalog-test-secret")
+                .env("AWS_SESSION_TOKEN", "catalog-test-token");
+            None
+        };
+        let output = (|| -> Result<std::process::Output> {
+            let mut child = child
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::piped())
+                .spawn()?;
+            let deadline = std::time::Instant::now() + Duration::from_secs(60);
+            loop {
+                if child.try_wait()?.is_some() {
+                    return Ok(child.wait_with_output()?);
+                }
+                if std::time::Instant::now() >= deadline {
+                    child.kill()?;
+                    child.wait()?;
+                    bail!("credential subprocess timed out after 60 seconds");
+                }
+                thread::sleep(Duration::from_millis(10));
+            }
+        })();
+        stopped.store(true, Ordering::Relaxed);
+        if let Some(server) = server {
+            server.join().expect("credential mock thread panicked")?;
+        }
+        fs::remove_dir_all(root)?;
+        let output = output?;
+        assert!(
+            output.status.success(),
+            "credential subprocess failed:\n{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        Ok(())
+    }
     static ENV_LOCK: Mutex<()> = Mutex::new(());
 
     fn lock_env() -> MutexGuard<'static, ()> {
