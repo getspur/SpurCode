@@ -1,0 +1,2355 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="1400" height="654" onload="init(evt)" viewBox="0 0 1400 654" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<!-- NOTES:  -->
+<defs>
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	text { font-family:Verdana; font-size:12px; fill:rgb(0,0,0); }
+	#search, #ignorecase { opacity:0.1; cursor:pointer; }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show { opacity:1; }
+	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+	#title { text-anchor:middle; font-size:17px}
+	#unzoom { cursor:pointer; }
+	#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+	.hide { display:none; }
+	.parent { opacity:0.5; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+	var details, searchbtn, unzoombtn, matchedtxt, svg, searching, currentSearchTerm, ignorecase, ignorecaseBtn;
+	function init(evt) {
+		details = document.getElementById("details").firstChild;
+		searchbtn = document.getElementById("search");
+		ignorecaseBtn = document.getElementById("ignorecase");
+		unzoombtn = document.getElementById("unzoom");
+		matchedtxt = document.getElementById("matched");
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+		currentSearchTerm = null;
+
+		// use GET parameters to restore a flamegraphs state.
+		var params = get_params();
+		if (params.x && params.y)
+			zoom(find_group(document.querySelector('[x="' + params.x + '"][y="' + params.y + '"]')));
+                if (params.s) search(params.s);
+	}
+
+	// event listeners
+	window.addEventListener("click", function(e) {
+		var target = find_group(e.target);
+		if (target) {
+			if (target.nodeName == "a") {
+				if (e.ctrlKey === false) return;
+				e.preventDefault();
+			}
+			if (target.classList.contains("parent")) unzoom(true);
+			zoom(target);
+			if (!document.querySelector('.parent')) {
+				// we have basically done a clearzoom so clear the url
+				var params = get_params();
+				if (params.x) delete params.x;
+				if (params.y) delete params.y;
+				history.replaceState(null, null, parse_params(params));
+				unzoombtn.classList.add("hide");
+				return;
+			}
+
+			// set parameters for zoom state
+			var el = target.querySelector("rect");
+			if (el && el.attributes && el.attributes.y && el.attributes._orig_x) {
+				var params = get_params()
+				params.x = el.attributes._orig_x.value;
+				params.y = el.attributes.y.value;
+				history.replaceState(null, null, parse_params(params));
+			}
+		}
+		else if (e.target.id == "unzoom") clearzoom();
+		else if (e.target.id == "search") search_prompt();
+		else if (e.target.id == "ignorecase") toggle_ignorecase();
+	}, false)
+
+	// mouse-over for info
+	// show
+	window.addEventListener("mouseover", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = "Function: " + g_to_text(target);
+	}, false)
+
+	// clear
+	window.addEventListener("mouseout", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = ' ';
+	}, false)
+
+	// ctrl-F for search
+	// ctrl-I to toggle case-sensitive search
+	window.addEventListener("keydown",function (e) {
+		if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+			e.preventDefault();
+			search_prompt();
+		}
+		else if (e.ctrlKey && e.keyCode === 73) {
+			e.preventDefault();
+			toggle_ignorecase();
+		}
+	}, false)
+
+	// functions
+	function get_params() {
+		var params = {};
+		var paramsarr = window.location.search.substr(1).split('&');
+		for (var i = 0; i < paramsarr.length; ++i) {
+			var tmp = paramsarr[i].split("=");
+			if (!tmp[0] || !tmp[1]) continue;
+			params[tmp[0]]  = decodeURIComponent(tmp[1]);
+		}
+		return params;
+	}
+	function parse_params(params) {
+		var uri = "?";
+		for (var key in params) {
+			uri += key + '=' + encodeURIComponent(params[key]) + '&';
+		}
+		if (uri.slice(-1) == "&")
+			uri = uri.substring(0, uri.length - 1);
+		if (uri == '?')
+			uri = window.location.href.split('?')[0];
+		return uri;
+	}
+	function find_child(node, selector) {
+		var children = node.querySelectorAll(selector);
+		if (children.length) return children[0];
+	}
+	function find_group(node) {
+		var parent = node.parentElement;
+		if (!parent) return;
+		if (parent.id == "frames") return node;
+		return find_group(parent);
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_" + attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_" + attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_" + attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function g_to_text(e) {
+		var text = find_child(e, "title").firstChild.nodeValue;
+		return (text)
+	}
+	function g_to_func(e) {
+		var func = g_to_text(e);
+		// if there's any manipulation we want to do to the function
+		// name before it's searched, do it here before returning.
+		return (func);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes.width.value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+		t.attributes.x.value = parseFloat(r.attributes.x.value) + 3;
+
+		// Smaller than this size won't fit anything
+		if (w < 2 * 12 * 0.59) {
+			t.textContent = "";
+			return;
+		}
+
+		t.textContent = txt;
+		var sl = t.getSubStringLength(0, txt.length);
+		// check if only whitespace or if we can fit the entire string into width w
+		if (/^ *$/.test(txt) || sl < w)
+			return;
+
+		// this isn't perfect, but gives a good starting point
+		// and avoids calling getSubStringLength too often
+		var start = Math.floor((w/sl) * txt.length);
+		for (var x = start; x > 0; x = x-2) {
+			if (t.getSubStringLength(0, x + 2) <= w) {
+				t.textContent = txt.substring(0, x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = (parseFloat(e.attributes.x.value) - x - 10) * ratio + 10;
+				if (e.tagName == "text")
+					e.attributes.x.value = find_child(e.parentNode, "rect[x]").attributes.x.value + 3;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseFloat(e.attributes.width.value) * ratio;
+			}
+		}
+
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_child(c[i], x - 10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = 10;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseInt(svg.width.baseVal.value) - (10 * 2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) {
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr.width.value);
+		var xmin = parseFloat(attr.x.value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr.y.value);
+		var ratio = (svg.width.baseVal.value - 2 * 10) / width;
+
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+
+		unzoombtn.classList.remove("hide");
+
+		var el = document.getElementById("frames").children;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a.x.value);
+			var ew = parseFloat(a.width.value);
+			var upstack;
+			// Is it an ancestor
+			if (0 == 0) {
+				upstack = parseFloat(a.y.value) > ymin;
+			} else {
+				upstack = parseFloat(a.y.value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.classList.add("parent");
+					zoom_parent(e);
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.classList.add("hide");
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.classList.add("hide");
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					update_text(e);
+				}
+			}
+		}
+		search();
+	}
+	function unzoom(dont_update_text) {
+		unzoombtn.classList.add("hide");
+		var el = document.getElementById("frames").children;
+		for(var i = 0; i < el.length; i++) {
+			el[i].classList.remove("parent");
+			el[i].classList.remove("hide");
+			zoom_reset(el[i]);
+			if(!dont_update_text) update_text(el[i]);
+		}
+		search();
+	}
+	function clearzoom() {
+		unzoom();
+
+		// remove zoom state
+		var params = get_params();
+		if (params.x) delete params.x;
+		if (params.y) delete params.y;
+		history.replaceState(null, null, parse_params(params));
+	}
+
+	// search
+	function toggle_ignorecase() {
+		ignorecase = !ignorecase;
+		if (ignorecase) {
+			ignorecaseBtn.classList.add("show");
+		} else {
+			ignorecaseBtn.classList.remove("show");
+		}
+		reset_search();
+		search();
+	}
+	function reset_search() {
+		var el = document.querySelectorAll("#frames rect");
+		for (var i = 0; i < el.length; i++) {
+			orig_load(el[i], "fill")
+		}
+		var params = get_params();
+		delete params.s;
+		history.replaceState(null, null, parse_params(params));
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)"
+			    + (ignorecase ? ", ignoring case" : "")
+			    + "\nPress Ctrl-i to toggle case sensitivity", "");
+			if (term != null) search(term);
+		} else {
+			reset_search();
+			searching = 0;
+			currentSearchTerm = null;
+			searchbtn.classList.remove("show");
+			searchbtn.firstChild.nodeValue = "Search"
+			matchedtxt.classList.add("hide");
+			matchedtxt.firstChild.nodeValue = ""
+		}
+	}
+	function search(term) {
+		if (term) currentSearchTerm = term;
+		if (currentSearchTerm === null) return;
+
+		var re = new RegExp(currentSearchTerm, ignorecase ? 'i' : '');
+		var el = document.getElementById("frames").children;
+		var matches = new Object();
+		var maxwidth = 0;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var func = g_to_func(e);
+			var rect = find_child(e, "rect");
+			if (func == null || rect == null)
+				continue;
+
+			// Save max width. Only works as we have a root frame
+			var w = parseFloat(rect.attributes.width.value);
+			if (w > maxwidth)
+				maxwidth = w;
+
+			if (func.match(re)) {
+				// highlight
+				var x = parseFloat(rect.attributes.x.value);
+				orig_save(rect, "fill");
+				rect.attributes.fill.value = "rgb(230,0,230)";
+
+				// remember matches
+				if (matches[x] == undefined) {
+					matches[x] = w;
+				} else {
+					if (w > matches[x]) {
+						// overwrite with parent
+						matches[x] = w;
+					}
+				}
+				searching = 1;
+			}
+		}
+		if (!searching)
+			return;
+		var params = get_params();
+		params.s = currentSearchTerm;
+		history.replaceState(null, null, parse_params(params));
+
+		searchbtn.classList.add("show");
+		searchbtn.firstChild.nodeValue = "Reset Search";
+
+		// calculate percent matched, excluding vertical overlap
+		var count = 0;
+		var lastx = -1;
+		var lastw = 0;
+		var keys = Array();
+		for (k in matches) {
+			if (matches.hasOwnProperty(k))
+				keys.push(k);
+		}
+		// sort the matched frames by their x location
+		// ascending, then width descending
+		keys.sort(function(a, b){
+			return a - b;
+		});
+		// Step through frames saving only the biggest bottom-up frames
+		// thanks to the sort order. This relies on the tree property
+		// where children are always smaller than their parents.
+		var fudge = 0.0001;	// JavaScript floating point
+		for (var k in keys) {
+			var x = parseFloat(keys[k]);
+			var w = matches[keys[k]];
+			if (x >= lastx + lastw - fudge) {
+				count += w;
+				lastx = x;
+				lastw = w;
+			}
+		}
+		// display matched percent
+		matchedtxt.classList.remove("hide");
+		var pct = 100 * count / maxwidth;
+		if (pct != 100) pct = pct.toFixed(1)
+		matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="1400.0" height="654.0" fill="url(#background)"  />
+<text id="title" x="700.00" y="24" >spur 94421: other than known waits</text>
+<text id="subtitle" x="700.00" y="48" >35-second macOS sample; wall-thread observations, not CPU percentages</text>
+<text id="details" x="10.00" y="637" > </text>
+<text id="unzoom" x="10.00" y="24" class="hide">Reset Zoom</text>
+<text id="search" x="1290.00" y="24" >Search</text>
+<text id="ignorecase" x="1374.00" y="24" >ic</text>
+<text id="matched" x="1290.00" y="637" > </text>
+<g id="frames">
+<g >
+<title>spur`std::thread::local::LocalKey$LT$T$GT$::with::h32281de457487969 (4 observations, 0.50%)</title><rect x="1383.2" y="413" width="6.8" height="15.0" fill="rgb(226,99,23)" rx="2" ry="2" />
+<text  x="1386.16" y="423.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`xzm_realloc (2 observations, 0.25%)</title><rect x="1292.5" y="237" width="3.4" height="15.0" fill="rgb(216,51,12)" rx="2" ry="2" />
+<text  x="1295.53" y="247.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`open (1 observations, 0.12%)</title><rect x="254.5" y="253" width="1.7" height="15.0" fill="rgb(252,220,52)" rx="2" ry="2" />
+<text  x="257.54" y="263.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Malloc (1 observations, 0.12%)</title><rect x="13.4" y="205" width="1.7" height="15.0" fill="rgb(228,109,26)" rx="2" ry="2" />
+<text  x="16.42" y="215.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3LockAndPrepare (1 observations, 0.12%)</title><rect x="15.1" y="413" width="1.7" height="15.0" fill="rgb(244,183,43)" rx="2" ry="2" />
+<text  x="18.13" y="423.5" ></text>
+</g>
+<g >
+<title>spur`main (658 observations, 81.54%)</title><rect x="264.8" y="573" width="1125.2" height="15.0" fill="rgb(215,46,11)" rx="2" ry="2" />
+<text  x="267.80" y="583.5" >spur`main</text>
+</g>
+<g >
+<title>spur`crossterm::event::poll_internal::h055292a0f86aec4d (5 observations, 0.62%)</title><rect x="348.6" y="381" width="8.5" height="15.0" fill="rgb(239,158,37)" rx="2" ry="2" />
+<text  x="351.59" y="391.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.17626767377967652421) (9 observations, 1.12%)</title><rect x="1367.8" y="429" width="15.4" height="15.0" fill="rgb(251,214,51)" rx="2" ry="2" />
+<text  x="1370.77" y="439.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::buffer::buffer::Buffer::diff::h9761e65434d58e32 (268 observations, 33.21%)</title><rect x="570.9" y="397" width="458.3" height="15.0" fill="rgb(232,128,30)" rx="2" ry="2" />
+<text  x="573.89" y="407.5" >spur`ratatui::buffer::buffer::Buffer::diff::h9761e65434d58e32</text>
+</g>
+<g >
+<title>spur`ratatui::buffer::cell::Cell::set_symbol::hf6ebb4083f9f20f0 (1 observations, 0.12%)</title><rect x="263.1" y="557" width="1.7" height="15.0" fill="rgb(243,178,42)" rx="2" ry="2" />
+<text  x="266.09" y="567.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.16616151037200914767) (1 observations, 0.12%)</title><rect x="10.0" y="77" width="1.7" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
+<text  x="13.00" y="87.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.11768525427537795831) (20 observations, 2.48%)</title><rect x="140.0" y="333" width="34.2" height="15.0" fill="rgb(233,132,31)" rx="2" ry="2" />
+<text  x="142.96" y="343.5" >sp..</text>
+</g>
+<g >
+<title>spur`(.llvm.14759124562569640547) (1 observations, 0.12%)</title><rect x="1278.8" y="349" width="1.8" height="15.0" fill="rgb(209,21,5)" rx="2" ry="2" />
+<text  x="1281.85" y="359.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.16051231190148386572) (1 observations, 0.12%)</title><rect x="259.7" y="333" width="1.7" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
+<text  x="262.67" y="343.5" ></text>
+</g>
+<g >
+<title>spur`std::io::stdio::Stderr::lock::h80585519963a9b67 (1 observations, 0.12%)</title><rect x="413.6" y="317" width="1.7" height="15.0" fill="rgb(222,82,19)" rx="2" ry="2" />
+<text  x="416.57" y="327.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_free (1 observations, 0.12%)</title><rect x="1275.4" y="349" width="1.7" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="1278.43" y="359.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h70a115df2505a32b (2 observations, 0.25%)</title><rect x="11.7" y="509" width="3.4" height="15.0" fill="rgb(207,13,3)" rx="2" ry="2" />
+<text  x="14.71" y="519.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`mach_absolute_time (1 observations, 0.12%)</title><rect x="353.7" y="301" width="1.7" height="15.0" fill="rgb(227,105,25)" rx="2" ry="2" />
+<text  x="356.72" y="311.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::mpsc::chan::Rx$LT$T$C$S$GT$::recv::had9f38ce12603f31 (3 observations, 0.37%)</title><rect x="374.2" y="397" width="5.2" height="15.0" fill="rgb(227,103,24)" rx="2" ry="2" />
+<text  x="377.24" y="407.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_xzone_malloc_tiny (1 observations, 0.12%)</title><rect x="1277.1" y="349" width="1.7" height="15.0" fill="rgb(246,191,45)" rx="2" ry="2" />
+<text  x="1280.14" y="359.5" ></text>
+</g>
+<g >
+<title>spur`std::io::stdio::Stderr::lock::h80585519963a9b67 (1 observations, 0.12%)</title><rect x="406.7" y="317" width="1.7" height="15.0" fill="rgb(222,82,19)" rx="2" ry="2" />
+<text  x="409.73" y="327.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::blocking::pool::spawn_blocking::hed31807422db6656 (3 observations, 0.37%)</title><rect x="246.0" y="301" width="5.1" height="15.0" fill="rgb(248,198,47)" rx="2" ry="2" />
+<text  x="248.99" y="311.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`pthread_mutex_unlock (1 observations, 0.12%)</title><rect x="403.3" y="301" width="1.7" height="15.0" fill="rgb(208,17,4)" rx="2" ry="2" />
+<text  x="406.31" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..time..sleep..Sleep$u20$as$u20$core..future..future..Future$GT$::poll::h943a5f65e0bf0f31 (2 observations, 0.25%)</title><rect x="387.9" y="413" width="3.4" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="390.92" y="423.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime (1 observations, 0.12%)</title><rect x="1364.3" y="397" width="1.8" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
+<text  x="1367.35" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$unicode_segmentation..grapheme..Graphemes$u20$as$u20$core..iter..traits..iterator..Iterator$GT$::next::h39e4d0f4e2285f11 (5 observations, 0.62%)</title><rect x="1284.0" y="301" width="8.5" height="15.0" fill="rgb(218,64,15)" rx="2" ry="2" />
+<text  x="1286.98" y="311.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3GenerateColumnNames (1 observations, 0.12%)</title><rect x="18.6" y="333" width="1.7" height="15.0" fill="rgb(217,58,14)" rx="2" ry="2" />
+<text  x="21.55" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_xzone_malloc_tiny (1 observations, 0.12%)</title><rect x="258.0" y="253" width="1.7" height="15.0" fill="rgb(246,191,45)" rx="2" ry="2" />
+<text  x="260.96" y="263.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_util..future..future..map..Map$LT$Fut$C$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h987f200848142ef5 (1 observations, 0.12%)</title><rect x="10.0" y="285" width="1.7" height="15.0" fill="rgb(232,128,30)" rx="2" ry="2" />
+<text  x="13.00" y="295.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..time..sleep..Sleep$u20$as$u20$core..future..future..Future$GT$::poll::h943a5f65e0bf0f31 (5 observations, 0.62%)</title><rect x="225.5" y="269" width="8.5" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="228.46" y="279.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (1 observations, 0.12%)</title><rect x="15.1" y="573" width="1.7" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="18.13" y="583.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h70a115df2505a32b (1 observations, 0.12%)</title><rect x="18.6" y="509" width="1.7" height="15.0" fill="rgb(207,13,3)" rx="2" ry="2" />
+<text  x="21.55" y="519.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (1 observations, 0.12%)</title><rect x="15.1" y="557" width="1.7" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="18.13" y="567.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..paragraph..Paragraph$u20$as$u20$ratatui..widgets..Widget$GT$::render::h245c1ca785c3be46 (76 observations, 9.42%)</title><rect x="1136.9" y="349" width="130.0" height="15.0" fill="rgb(208,16,3)" rx="2" ry="2" />
+<text  x="1139.91" y="359.5" >spur`_$LT$ratatu..</text>
+</g>
+<g >
+<title>spur`(.llvm.13465709614960655013) (5 observations, 0.62%)</title><rect x="242.6" y="317" width="8.5" height="15.0" fill="rgb(230,118,28)" rx="2" ry="2" />
+<text  x="245.57" y="327.5" ></text>
+</g>
+<g >
+<title>spur`yy_reduce (1 observations, 0.12%)</title><rect x="22.0" y="381" width="1.7" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="24.97" y="391.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::task::atomic_waker::AtomicWaker::register_by_ref::h7dc07f2d92ab0be3 (1 observations, 0.12%)</title><rect x="377.7" y="381" width="1.7" height="15.0" fill="rgb(234,136,32)" rx="2" ry="2" />
+<text  x="380.66" y="391.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (1 observations, 0.12%)</title><rect x="10.0" y="541" width="1.7" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="13.00" y="551.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::terminal::sys::unix::window_size::h735eb7b808320b36 (62 observations, 7.68%)</title><rect x="464.9" y="381" width="106.0" height="15.0" fill="rgb(229,110,26)" rx="2" ry="2" />
+<text  x="467.87" y="391.5" >spur`crosste..</text>
+</g>
+<g >
+<title>spur`spur_tui::theme::resolver::resolve_token::h700e61aaee0fb660 (1 observations, 0.12%)</title><rect x="1307.9" y="333" width="1.7" height="15.0" fill="rgb(225,93,22)" rx="2" ry="2" />
+<text  x="1310.92" y="343.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h4e676ef54d6d3969 (2 observations, 0.25%)</title><rect x="20.3" y="509" width="3.4" height="15.0" fill="rgb(223,85,20)" rx="2" ry="2" />
+<text  x="23.26" y="519.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3RunParser (2 observations, 0.25%)</title><rect x="11.7" y="381" width="3.4" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="14.71" y="391.5" ></text>
+</g>
+<g >
+<title>spur`&lt;deduplicated_symbol&gt; (23 observations, 2.85%)</title><rect x="198.1" y="333" width="39.3" height="15.0" fill="rgb(242,174,41)" rx="2" ry="2" />
+<text  x="201.10" y="343.5" >spu..</text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (2 observations, 0.25%)</title><rect x="403.3" y="365" width="3.4" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="406.31" y="375.5" ></text>
+</g>
+<g >
+<title>spur`spur_acp::spur_agent_caps::normalize_raw_acp_observation::h59e1ce36fba7c0e5 (1 observations, 0.12%)</title><rect x="10.0" y="173" width="1.7" height="15.0" fill="rgb(212,32,7)" rx="2" ry="2" />
+<text  x="13.00" y="183.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::try_read_output::hc9ae5184778a5514 (1 observations, 0.12%)</title><rect x="244.3" y="285" width="1.7" height="15.0" fill="rgb(227,104,25)" rx="2" ry="2" />
+<text  x="247.28" y="295.5" ></text>
+</g>
+<g >
+<title>spur`std::thread::local::LocalKey$LT$T$GT$::with::h32281de457487969 (2 observations, 0.25%)</title><rect x="218.6" y="269" width="3.4" height="15.0" fill="rgb(226,99,23)" rx="2" ry="2" />
+<text  x="221.62" y="279.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::tick::hf4b8ff934bffd6f4 (24 observations, 2.97%)</title><rect x="1321.6" y="397" width="41.0" height="15.0" fill="rgb(240,164,39)" rx="2" ry="2" />
+<text  x="1324.60" y="407.5" >spu..</text>
+</g>
+<g >
+<title>spur`crossterm::command::write_command_ansi::he7fb3ab866d688eb (5 observations, 0.62%)</title><rect x="410.1" y="381" width="8.6" height="15.0" fill="rgb(224,90,21)" rx="2" ry="2" />
+<text  x="413.15" y="391.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::pal::unix::time::Timespec::now::he53f9d80e91bd807 (1 observations, 0.12%)</title><rect x="172.5" y="301" width="1.7" height="15.0" fill="rgb(215,46,11)" rx="2" ry="2" />
+<text  x="175.45" y="311.5" ></text>
+</g>
+<g >
+<title>spur`DYLD-STUB$$clock_gettime (1 observations, 0.12%)</title><rect x="138.3" y="285" width="1.7" height="15.0" fill="rgb(230,116,27)" rx="2" ry="2" />
+<text  x="141.25" y="295.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`open (1 observations, 0.12%)</title><rect x="252.8" y="253" width="1.7" height="15.0" fill="rgb(252,220,52)" rx="2" ry="2" />
+<text  x="255.83" y="263.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.9894640347001106580) (2 observations, 0.25%)</title><rect x="11.7" y="445" width="3.4" height="15.0" fill="rgb(229,113,27)" rx="2" ry="2" />
+<text  x="14.71" y="455.5" ></text>
+</g>
+<g >
+<title>libsystem_platform`_platform_memmove (1 observations, 0.12%)</title><rect x="1135.2" y="301" width="1.7" height="15.0" fill="rgb(246,189,45)" rx="2" ry="2" />
+<text  x="1138.20" y="311.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h80f1825090319778 (2 observations, 0.25%)</title><rect x="11.7" y="477" width="3.4" height="15.0" fill="rgb(218,63,15)" rx="2" ry="2" />
+<text  x="14.71" y="487.5" ></text>
+</g>
+<g >
+<title>spur`std::fs::OpenOptions::_open::hfd14fc0134faefc7 (58 observations, 7.19%)</title><rect x="471.7" y="365" width="99.2" height="15.0" fill="rgb(239,160,38)" rx="2" ry="2" />
+<text  x="474.71" y="375.5" >spur`std::fs..</text>
+</g>
+<g >
+<title>spur`std::sys::pal::unix::time::Timespec::now::he53f9d80e91bd807 (4 observations, 0.50%)</title><rect x="133.1" y="301" width="6.9" height="15.0" fill="rgb(215,46,11)" rx="2" ry="2" />
+<text  x="136.12" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..reflow..LineTruncator$LT$O$C$I$GT$$u20$as$u20$ratatui..widgets..reflow..LineComposer$GT$::next_line::h4c3913b9b1e12876 (7 observations, 0.87%)</title><rect x="1284.0" y="317" width="11.9" height="15.0" fill="rgb(210,25,6)" rx="2" ry="2" />
+<text  x="1286.98" y="327.5" ></text>
+</g>
+<g >
+<title>spur`alloc::raw_vec::RawVec$LT$T$C$A$GT$::grow_one::h0ff3894fb879d732 (2 observations, 0.25%)</title><rect x="1292.5" y="301" width="3.4" height="15.0" fill="rgb(253,224,53)" rx="2" ry="2" />
+<text  x="1295.53" y="311.5" ></text>
+</g>
+<g >
+<title>spur`parking_lot::raw_mutex::RawMutex::lock_slow::h46d58336e28ab59a (2 observations, 0.25%)</title><rect x="353.7" y="365" width="3.4" height="15.0" fill="rgb(206,4,1)" rx="2" ry="2" />
+<text  x="356.72" y="375.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::widgets::block::Block::title::hfe90f334244ccf6c (1 observations, 0.12%)</title><rect x="1130.1" y="333" width="1.7" height="15.0" fill="rgb(248,201,48)" rx="2" ry="2" />
+<text  x="1133.07" y="343.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..backend..crossterm..CrosstermBackend$LT$W$GT$$u20$as$u20$ratatui..backend..Backend$GT$::draw::h0a5079d51378a40c (9 observations, 1.12%)</title><rect x="403.3" y="397" width="15.4" height="15.0" fill="rgb(240,164,39)" rx="2" ry="2" />
+<text  x="406.31" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..command..write_command_ansi..Adapter$LT$T$GT$$u20$as$u20$core..fmt..Write$GT$::write_str::hff32cdad5b2f4135 (1 observations, 0.12%)</title><rect x="406.7" y="349" width="1.7" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="409.73" y="359.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.4485131966837942524) (1 observations, 0.12%)</title><rect x="216.9" y="237" width="1.7" height="15.0" fill="rgb(226,97,23)" rx="2" ry="2" />
+<text  x="219.91" y="247.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::runtime::Runtime::block_on::h9a5130be92bccd0b (1 observations, 0.12%)</title><rect x="10.0" y="477" width="1.7" height="15.0" fill="rgb(217,58,14)" rx="2" ry="2" />
+<text  x="13.00" y="487.5" ></text>
+</g>
+<g >
+<title>spur`alloc::raw_vec::RawVec$LT$T$C$A$GT$::grow_one::h0fdccd5af53b72a4 (1 observations, 0.12%)</title><rect x="1130.1" y="317" width="1.7" height="15.0" fill="rgb(244,180,43)" rx="2" ry="2" />
+<text  x="1133.07" y="327.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`pthread_mutex_unlock (1 observations, 0.12%)</title><rect x="386.2" y="365" width="1.7" height="15.0" fill="rgb(208,17,4)" rx="2" ry="2" />
+<text  x="389.21" y="375.5" ></text>
+</g>
+<g >
+<title>spur`std::rt::lang_start_internal::h11fc0900699d88c7 (658 observations, 81.54%)</title><rect x="264.8" y="557" width="1125.2" height="15.0" fill="rgb(217,56,13)" rx="2" ry="2" />
+<text  x="267.80" y="567.5" >spur`std::rt::lang_start_internal::h11fc0900699d88c7</text>
+</g>
+<g >
+<title>spur`core::iter::traits::double_ended::DoubleEndedIterator::rfold::h1148341974f13c74 (18 observations, 2.23%)</title><rect x="427.2" y="397" width="30.8" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="430.25" y="407.5" >sp..</text>
+</g>
+<g >
+<title>libsystem_pthread`pthread_mutex_lock (1 observations, 0.12%)</title><rect x="163.9" y="301" width="1.7" height="15.0" fill="rgb(225,93,22)" rx="2" ry="2" />
+<text  x="166.90" y="311.5" ></text>
+</g>
+<g >
+<title>spur`tokio::macros::support::thread_rng_n::h2a2a9ded683996ba (1 observations, 0.12%)</title><rect x="370.8" y="397" width="1.7" height="15.0" fill="rgb(217,58,13)" rx="2" ry="2" />
+<text  x="373.82" y="407.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h41053dc4eb27e6b6 (1 observations, 0.12%)</title><rect x="261.4" y="365" width="1.7" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="264.38" y="375.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..sync..broadcast..Recv$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$::poll::hae18641615e4f61c (6 observations, 0.74%)</title><rect x="360.6" y="381" width="10.2" height="15.0" fill="rgb(235,142,34)" rx="2" ry="2" />
+<text  x="363.56" y="391.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$indexmap..map..IndexMap$LT$K$C$V$C$S$GT$$u20$as$u20$core..iter..traits..collect..FromIterator$LT$$LP$K$C$V$RP$$GT$$GT$::from_iter::hb1a56c1c04a7d9a0 (1 observations, 0.12%)</title><rect x="10.0" y="125" width="1.7" height="15.0" fill="rgb(217,57,13)" rx="2" ry="2" />
+<text  x="13.00" y="135.5" ></text>
+</g>
+<g >
+<title>spur`futures_util::future::future::FutureExt::poll_unpin::h3511ac3d2f4faf20 (1 observations, 0.12%)</title><rect x="10.0" y="381" width="1.7" height="15.0" fill="rgb(209,22,5)" rx="2" ry="2" />
+<text  x="13.00" y="391.5" ></text>
+</g>
+<g >
+<title>spur`alloc::fmt::format::format_inner::hd571df24e790cabc (2 observations, 0.25%)</title><rect x="1124.9" y="333" width="3.5" height="15.0" fill="rgb(238,156,37)" rx="2" ry="2" />
+<text  x="1127.94" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (2 observations, 0.25%)</title><rect x="11.7" y="557" width="3.4" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="14.71" y="567.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3WalkSelect (1 observations, 0.12%)</title><rect x="15.1" y="317" width="1.7" height="15.0" fill="rgb(249,205,49)" rx="2" ry="2" />
+<text  x="18.13" y="327.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`&lt;deduplicated_symbol&gt; (1 observations, 0.12%)</title><rect x="18.6" y="237" width="1.7" height="15.0" fill="rgb(222,82,19)" rx="2" ry="2" />
+<text  x="21.55" y="247.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3LockAndPrepare (2 observations, 0.25%)</title><rect x="11.7" y="413" width="3.4" height="15.0" fill="rgb(244,183,43)" rx="2" ry="2" />
+<text  x="14.71" y="423.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime (1 observations, 0.12%)</title><rect x="172.5" y="285" width="1.7" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
+<text  x="175.45" y="295.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..block..Block$u20$as$u20$ratatui..widgets..WidgetRef$GT$::render_ref::he8ebc953f82338d4 (1 observations, 0.12%)</title><rect x="263.1" y="573" width="1.7" height="15.0" fill="rgb(219,65,15)" rx="2" ry="2" />
+<text  x="266.09" y="583.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`write (5 observations, 0.62%)</title><rect x="418.7" y="349" width="8.5" height="15.0" fill="rgb(221,75,17)" rx="2" ry="2" />
+<text  x="421.70" y="359.5" ></text>
+</g>
+<g >
+<title>spur`spur_core::plan::loops::leadership::LoopRuntimeLeadership::try_acquire::h7bba3d0e7712aba2 (3 observations, 0.37%)</title><rect x="251.1" y="301" width="5.1" height="15.0" fill="rgb(218,62,14)" rx="2" ry="2" />
+<text  x="254.12" y="311.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3SelectPrep (1 observations, 0.12%)</title><rect x="15.1" y="333" width="1.7" height="15.0" fill="rgb(247,197,47)" rx="2" ry="2" />
+<text  x="18.13" y="343.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::write_lock::WriteLockGuard::new::hc4a951996549b8a0 (1 observations, 0.12%)</title><rect x="20.3" y="445" width="1.7" height="15.0" fill="rgb(237,151,36)" rx="2" ry="2" />
+<text  x="23.26" y="455.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::react_trace::ReactTrace::drain_fence_dispatches::hf34454620c2ad8df (10 observations, 1.24%)</title><rect x="1343.8" y="381" width="17.1" height="15.0" fill="rgb(240,165,39)" rx="2" ry="2" />
+<text  x="1346.83" y="391.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Select (1 observations, 0.12%)</title><rect x="18.6" y="349" width="1.7" height="15.0" fill="rgb(227,101,24)" rx="2" ry="2" />
+<text  x="21.55" y="359.5" ></text>
+</g>
+<g >
+<title>spur`beads_rust::storage::sqlite::SqliteStorage::list_issues::h007dc595df91976e (1 observations, 0.12%)</title><rect x="18.6" y="461" width="1.7" height="15.0" fill="rgb(223,85,20)" rx="2" ry="2" />
+<text  x="21.55" y="471.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3ExprCodeExprList (1 observations, 0.12%)</title><rect x="11.7" y="301" width="1.7" height="15.0" fill="rgb(233,129,31)" rx="2" ry="2" />
+<text  x="14.71" y="311.5" ></text>
+</g>
+<g >
+<title>libdyld`_tlv_get_addr (1 observations, 0.12%)</title><rect x="358.8" y="381" width="1.8" height="15.0" fill="rgb(240,163,39)" rx="2" ry="2" />
+<text  x="361.85" y="391.5" ></text>
+</g>
+<g >
+<title>spur`core::hash::BuildHasher::hash_one::h94507f59ad5f6923 (1 observations, 0.12%)</title><rect x="1307.9" y="317" width="1.7" height="15.0" fill="rgb(225,96,22)" rx="2" ry="2" />
+<text  x="1310.92" y="327.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (1 observations, 0.12%)</title><rect x="18.6" y="541" width="1.7" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="21.55" y="551.5" ></text>
+</g>
+<g >
+<title>spur`unicode_width::tables::lookup_width::h7d55ff40c2b7bae1 (7 observations, 0.87%)</title><rect x="1017.2" y="365" width="12.0" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="1020.21" y="375.5" ></text>
+</g>
+<g >
+<title>.beads-db-reader-0 (2 observations, 0.25%)</title><rect x="11.7" y="589" width="3.4" height="15.0" fill="rgb(253,224,53)" rx="2" ry="2" />
+<text  x="14.71" y="599.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h8ccb184c15e858fa (1 observations, 0.12%)</title><rect x="256.2" y="349" width="1.8" height="15.0" fill="rgb(238,152,36)" rx="2" ry="2" />
+<text  x="259.25" y="359.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::views::session_detail::state::_$LT$impl$u20$spur_tui..views..session_detail..SessionDetailView$GT$::maybe_request_rerasters::h4f7d7119a085bf00 (3 observations, 0.37%)</title><rect x="1309.6" y="365" width="5.2" height="15.0" fill="rgb(248,202,48)" rx="2" ry="2" />
+<text  x="1312.63" y="375.5" ></text>
+</g>
+<g >
+<title>spur`valueFromExpr (1 observations, 0.12%)</title><rect x="11.7" y="237" width="1.7" height="15.0" fill="rgb(249,203,48)" rx="2" ry="2" />
+<text  x="14.71" y="247.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime_nsec_np (1 observations, 0.12%)</title><rect x="1340.4" y="333" width="1.7" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="1343.41" y="343.5" ></text>
+</g>
+<g >
+<title>all (807 observations, 100%)</title><rect x="10.0" y="605" width="1380.0" height="15.0" fill="rgb(213,39,9)" rx="2" ry="2" />
+<text  x="13.00" y="615.5" ></text>
+</g>
+<g >
+<title>spur`agent_client_protocol::jsonrpc::task_actor::task_actor::_$u7b$$u7b$closure$u7d$$u7d$::_$u7b$$u7b$closure$u7d$$u7d$::_$u7b$$u7b$closure$u7d$$u7d$::hd503c85cf31f93af (1 observations, 0.12%)</title><rect x="10.0" y="301" width="1.7" height="15.0" fill="rgb(206,7,1)" rx="2" ry="2" />
+<text  x="13.00" y="311.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.12340412589632179763) (3 observations, 0.37%)</title><rect x="1378.0" y="349" width="5.2" height="15.0" fill="rgb(217,58,14)" rx="2" ry="2" />
+<text  x="1381.03" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::task::atomic_waker::AtomicWaker::register_by_ref::h7dc07f2d92ab0be3 (1 observations, 0.12%)</title><rect x="389.6" y="381" width="1.7" height="15.0" fill="rgb(234,136,32)" rx="2" ry="2" />
+<text  x="392.63" y="391.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`mach_absolute_time (1 observations, 0.12%)</title><rect x="172.5" y="253" width="1.7" height="15.0" fill="rgb(227,105,25)" rx="2" ry="2" />
+<text  x="175.45" y="263.5" ></text>
+</g>
+<g >
+<title>spur`tokio::macros::support::thread_rng_n::h2a2a9ded683996ba (4 observations, 0.50%)</title><rect x="1383.2" y="429" width="6.8" height="15.0" fill="rgb(217,58,13)" rx="2" ry="2" />
+<text  x="1386.16" y="439.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3VdbeMemSetStr (1 observations, 0.12%)</title><rect x="18.6" y="317" width="1.7" height="15.0" fill="rgb(253,224,53)" rx="2" ry="2" />
+<text  x="21.55" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::write_all::hce8a0a74a5d5d641 (1 observations, 0.12%)</title><rect x="413.6" y="333" width="1.7" height="15.0" fill="rgb(219,68,16)" rx="2" ry="2" />
+<text  x="416.57" y="343.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::buffer::cell::Cell::set_symbol::hf6ebb4083f9f20f0 (1 observations, 0.12%)</title><rect x="1135.2" y="317" width="1.7" height="15.0" fill="rgb(243,178,42)" rx="2" ry="2" />
+<text  x="1138.20" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_util..future..maybe_done..MaybeDone$LT$Fut$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h437b8feb26d1a4e9 (1 observations, 0.12%)</title><rect x="10.0" y="237" width="1.7" height="15.0" fill="rgb(238,152,36)" rx="2" ry="2" />
+<text  x="13.00" y="247.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`free (1 observations, 0.12%)</title><rect x="1270.3" y="333" width="1.7" height="15.0" fill="rgb(214,43,10)" rx="2" ry="2" />
+<text  x="1273.30" y="343.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Malloc (1 observations, 0.12%)</title><rect x="18.6" y="269" width="1.7" height="15.0" fill="rgb(228,109,26)" rx="2" ry="2" />
+<text  x="21.55" y="279.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::buffer::buffer::Buffer::set_style::hfdf136ffdd7255aa (1 observations, 0.12%)</title><rect x="1302.8" y="317" width="1.7" height="15.0" fill="rgb(246,192,45)" rx="2" ry="2" />
+<text  x="1305.79" y="327.5" ></text>
+</g>
+<g >
+<title>spur`releaseMemArray (1 observations, 0.12%)</title><rect x="16.8" y="397" width="1.8" height="15.0" fill="rgb(218,63,15)" rx="2" ry="2" />
+<text  x="19.84" y="407.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`mach_absolute_time (2 observations, 0.25%)</title><rect x="134.8" y="253" width="3.5" height="15.0" fill="rgb(227,105,25)" rx="2" ry="2" />
+<text  x="137.83" y="263.5" ></text>
+</g>
+<g >
+<title>spur`tokio::time::timeout::poll_delay::h42ac4338d8bce452 (1 observations, 0.12%)</title><rect x="1366.1" y="413" width="1.7" height="15.0" fill="rgb(252,217,52)" rx="2" ry="2" />
+<text  x="1369.06" y="423.5" ></text>
+</g>
+<g >
+<title>libsystem_platform`_platform_memcmp (28 observations, 3.47%)</title><rect x="718.0" y="381" width="47.8" height="15.0" fill="rgb(214,45,10)" rx="2" ry="2" />
+<text  x="720.96" y="391.5" >libs..</text>
+</g>
+<g >
+<title>spur`selectExpander (1 observations, 0.12%)</title><rect x="15.1" y="301" width="1.7" height="15.0" fill="rgb(233,133,31)" rx="2" ry="2" />
+<text  x="18.13" y="311.5" ></text>
+</g>
+<g >
+<title>spur`tokio::macros::support::thread_rng_n::h2a2a9ded683996ba (2 observations, 0.25%)</title><rect x="218.6" y="285" width="3.4" height="15.0" fill="rgb(217,58,13)" rx="2" ry="2" />
+<text  x="221.62" y="295.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::he7c970a3d5c915b0 (12 observations, 1.49%)</title><rect x="215.2" y="301" width="20.5" height="15.0" fill="rgb(223,86,20)" rx="2" ry="2" />
+<text  x="218.20" y="311.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::mpsc::chan::Rx$LT$T$C$S$GT$::try_recv::_$u7b$$u7b$closure$u7d$$u7d$::hf55b2decc2715724 (1 observations, 0.12%)</title><rect x="1362.6" y="397" width="1.7" height="15.0" fill="rgb(215,49,11)" rx="2" ry="2" />
+<text  x="1365.64" y="407.5" ></text>
+</g>
+<g >
+<title>spur`selectInnerLoop (2 observations, 0.25%)</title><rect x="11.7" y="333" width="3.4" height="15.0" fill="rgb(220,70,16)" rx="2" ry="2" />
+<text  x="14.71" y="343.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3RunParser (1 observations, 0.12%)</title><rect x="18.6" y="381" width="1.7" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="21.55" y="391.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$alloc..vec..into_iter..IntoIter$LT$T$C$A$GT$$u20$as$u20$core..ops..drop..Drop$GT$::drop::h69bb52032ca01055 (2 observations, 0.25%)</title><rect x="1318.2" y="397" width="3.4" height="15.0" fill="rgb(250,208,49)" rx="2" ry="2" />
+<text  x="1321.18" y="407.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (1 observations, 0.12%)</title><rect x="16.8" y="541" width="1.8" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="19.84" y="551.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_malloc_zone_realloc (2 observations, 0.25%)</title><rect x="1292.5" y="253" width="3.4" height="15.0" fill="rgb(205,1,0)" rx="2" ry="2" />
+<text  x="1295.53" y="263.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h40f8066ff0fa9f75 (658 observations, 81.54%)</title><rect x="264.8" y="525" width="1125.2" height="15.0" fill="rgb(247,195,46)" rx="2" ry="2" />
+<text  x="267.80" y="535.5" >spur`std::sys::backtrace::__rust_begin_short_backtrace::h40f8066ff0fa9f75</text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (1 observations, 0.12%)</title><rect x="10.0" y="557" width="1.7" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="13.00" y="567.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (2 observations, 0.25%)</title><rect x="11.7" y="573" width="3.4" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="14.71" y="583.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Malloc (1 observations, 0.12%)</title><rect x="11.7" y="157" width="1.7" height="15.0" fill="rgb(228,109,26)" rx="2" ry="2" />
+<text  x="14.71" y="167.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::_$LT$impl$u20$tokio..runtime..time..handle..Handle$GT$::process_at_time::hcf77ddd5a0adfc2a (31 observations, 3.84%)</title><rect x="140.0" y="349" width="53.0" height="15.0" fill="rgb(211,31,7)" rx="2" ry="2" />
+<text  x="142.96" y="359.5" >spur`..</text>
+</g>
+<g >
+<title>spur`std::thread::local::LocalKey$LT$T$GT$::with::h32281de457487969 (1 observations, 0.12%)</title><rect x="370.8" y="381" width="1.7" height="15.0" fill="rgb(226,99,23)" rx="2" ry="2" />
+<text  x="373.82" y="391.5" ></text>
+</g>
+<g >
+<title>spur`tokio::io::poll_evented::PollEvented$LT$E$GT$::poll_read::h03354160a40802d1 (1 observations, 0.12%)</title><rect x="259.7" y="317" width="1.7" height="15.0" fill="rgb(220,70,16)" rx="2" ry="2" />
+<text  x="262.67" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$alloc..string..String$u20$as$u20$core..clone..Clone$GT$::clone::hae67e35e1c94f097 (1 observations, 0.12%)</title><rect x="1273.7" y="333" width="1.7" height="15.0" fill="rgb(239,160,38)" rx="2" ry="2" />
+<text  x="1276.72" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_xzone_malloc_tiny (1 observations, 0.12%)</title><rect x="1294.2" y="221" width="1.7" height="15.0" fill="rgb(246,191,45)" rx="2" ry="2" />
+<text  x="1297.24" y="231.5" ></text>
+</g>
+<g >
+<title>spur`spur_acp::spur_agent_caps::secret_key::hbbe0883628a8551f (1 observations, 0.12%)</title><rect x="10.0" y="93" width="1.7" height="15.0" fill="rgb(254,226,54)" rx="2" ry="2" />
+<text  x="13.00" y="103.5" ></text>
+</g>
+<g >
+<title>spur`tokio::util::linked_list::LinkedList$LT$L$C$$LT$L$u20$as$u20$tokio..util..linked_list..Link$GT$..Target$GT$::push_front::h648746b89291da3b (1 observations, 0.12%)</title><rect x="369.1" y="349" width="1.7" height="15.0" fill="rgb(219,68,16)" rx="2" ry="2" />
+<text  x="372.11" y="359.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__open (51 observations, 6.32%)</title><rect x="483.7" y="317" width="87.2" height="15.0" fill="rgb(225,94,22)" rx="2" ry="2" />
+<text  x="486.68" y="327.5" >libsystem_..</text>
+</g>
+<g >
+<title>spur`(.llvm.14870922844863944914) (642 observations, 79.55%)</title><rect x="292.2" y="477" width="1097.8" height="15.0" fill="rgb(227,102,24)" rx="2" ry="2" />
+<text  x="295.16" y="487.5" >spur`(.llvm.14870922844863944914)</text>
+</g>
+<g >
+<title>spur`ratatui::buffer::cell::Cell::set_symbol::hf6ebb4083f9f20f0 (2 observations, 0.25%)</title><rect x="1263.5" y="317" width="3.4" height="15.0" fill="rgb(243,178,42)" rx="2" ry="2" />
+<text  x="1266.46" y="327.5" ></text>
+</g>
+<g >
+<title>spur`dbMallocRawFinish (1 observations, 0.12%)</title><rect x="13.4" y="221" width="1.7" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="16.42" y="231.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::command::write_command_ansi::hac7f15c5dc825499 (1 observations, 0.12%)</title><rect x="408.4" y="381" width="1.7" height="15.0" fill="rgb(220,71,17)" rx="2" ry="2" />
+<text  x="411.44" y="391.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3LocateTable (1 observations, 0.12%)</title><rect x="15.1" y="285" width="1.7" height="15.0" fill="rgb(226,98,23)" rx="2" ry="2" />
+<text  x="18.13" y="295.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3_finalize (1 observations, 0.12%)</title><rect x="16.8" y="429" width="1.8" height="15.0" fill="rgb(250,207,49)" rx="2" ry="2" />
+<text  x="19.84" y="439.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_free (1 observations, 0.12%)</title><rect x="1292.5" y="221" width="1.7" height="15.0" fill="rgb(219,67,16)" rx="2" ry="2" />
+<text  x="1295.53" y="231.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::mpsc::chan::Rx$LT$T$C$S$GT$::recv::h144a1341b233462a (1 observations, 0.12%)</title><rect x="372.5" y="397" width="1.7" height="15.0" fill="rgb(230,117,28)" rx="2" ry="2" />
+<text  x="375.53" y="407.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h70a115df2505a32b (1 observations, 0.12%)</title><rect x="15.1" y="509" width="1.7" height="15.0" fill="rgb(207,13,3)" rx="2" ry="2" />
+<text  x="18.13" y="519.5" ></text>
+</g>
+<g >
+<title>spur`std::time::Instant::duration_since::h19069081c93bd052 (1 observations, 0.12%)</title><rect x="228.9" y="221" width="1.7" height="15.0" fill="rgb(232,127,30)" rx="2" ry="2" />
+<text  x="231.88" y="231.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.9363942173522975917) (1 observations, 0.12%)</title><rect x="1124.9" y="301" width="1.8" height="15.0" fill="rgb(206,8,2)" rx="2" ry="2" />
+<text  x="1127.94" y="311.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::terminal::sys::unix::size::hd9652bbe32b6eb88 (63 observations, 7.81%)</title><rect x="463.2" y="397" width="107.7" height="15.0" fill="rgb(250,207,49)" rx="2" ry="2" />
+<text  x="466.16" y="407.5" >spur`crosster..</text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::write_all::hce8a0a74a5d5d641 (1 observations, 0.12%)</title><rect x="415.3" y="317" width="1.7" height="15.0" fill="rgb(219,68,16)" rx="2" ry="2" />
+<text  x="418.28" y="327.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Select (1 observations, 0.12%)</title><rect x="15.1" y="349" width="1.7" height="15.0" fill="rgb(227,101,24)" rx="2" ry="2" />
+<text  x="18.13" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..collections..hash..map..HashMap$LT$K$C$V$C$S$C$A$GT$$u20$as$u20$core..cmp..PartialEq$GT$::eq::hbbd25e88f1b58dc3 (1 observations, 0.12%)</title><rect x="1131.8" y="349" width="1.7" height="15.0" fill="rgb(252,216,51)" rx="2" ry="2" />
+<text  x="1134.78" y="359.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (2 observations, 0.25%)</title><rect x="20.3" y="573" width="3.4" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="23.26" y="583.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (140 observations, 17.35%)</title><rect x="23.7" y="557" width="239.4" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="26.68" y="567.5" >libsystem_pthread`_pthread_start</text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..block..Block$u20$as$u20$ratatui..widgets..WidgetRef$GT$::render_ref::he8ebc953f82338d4 (1 observations, 0.12%)</title><rect x="1135.2" y="333" width="1.7" height="15.0" fill="rgb(219,65,15)" rx="2" ry="2" />
+<text  x="1138.20" y="343.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::service::PmService::list_issues::_$u7b$$u7b$closure$u7d$$u7d$::h0aa08d11e367100b (1 observations, 0.12%)</title><rect x="258.0" y="285" width="1.7" height="15.0" fill="rgb(237,151,36)" rx="2" ry="2" />
+<text  x="260.96" y="295.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3LockAndPrepare (1 observations, 0.12%)</title><rect x="18.6" y="413" width="1.7" height="15.0" fill="rgb(244,183,43)" rx="2" ry="2" />
+<text  x="21.55" y="423.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3FindTable (1 observations, 0.12%)</title><rect x="15.1" y="269" width="1.7" height="15.0" fill="rgb(215,47,11)" rx="2" ry="2" />
+<text  x="18.13" y="279.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (2 observations, 0.25%)</title><rect x="20.3" y="557" width="3.4" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="23.26" y="567.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`xzm_malloc_zone_size (1 observations, 0.12%)</title><rect x="11.7" y="125" width="1.7" height="15.0" fill="rgb(243,177,42)" rx="2" ry="2" />
+<text  x="14.71" y="135.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::context::runtime::enter_runtime::h94ee76dfd2591325 (140 observations, 17.35%)</title><rect x="23.7" y="413" width="239.4" height="15.0" fill="rgb(234,136,32)" rx="2" ry="2" />
+<text  x="26.68" y="423.5" >spur`tokio::runtime::context::r..</text>
+</g>
+<g >
+<title>spur`crossterm::command::write_command_ansi::h2e32d23ffaf5e2c5 (2 observations, 0.25%)</title><rect x="403.3" y="381" width="3.4" height="15.0" fill="rgb(247,194,46)" rx="2" ry="2" />
+<text  x="406.31" y="391.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::status_bar::StatusBar::metric_spans::h6d51adba550ac61e (2 observations, 0.25%)</title><rect x="1306.2" y="349" width="3.4" height="15.0" fill="rgb(231,124,29)" rx="2" ry="2" />
+<text  x="1309.21" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h6d7a9745c9bfa18d (3 observations, 0.37%)</title><rect x="251.1" y="349" width="5.1" height="15.0" fill="rgb(249,204,48)" rx="2" ry="2" />
+<text  x="254.12" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::flush::h3be81e786e85327b (5 observations, 0.62%)</title><rect x="418.7" y="397" width="8.5" height="15.0" fill="rgb(217,57,13)" rx="2" ry="2" />
+<text  x="421.70" y="407.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__open (1 observations, 0.12%)</title><rect x="254.5" y="237" width="1.7" height="15.0" fill="rgb(225,94,22)" rx="2" ry="2" />
+<text  x="257.54" y="247.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::entry::TimerEntry::reset::h29196289a50fc4a8 (2 observations, 0.25%)</title><rect x="227.2" y="237" width="3.4" height="15.0" fill="rgb(211,29,7)" rx="2" ry="2" />
+<text  x="230.17" y="247.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.5632222919559675112) (2 observations, 0.25%)</title><rect x="215.2" y="285" width="3.4" height="15.0" fill="rgb(234,135,32)" rx="2" ry="2" />
+<text  x="218.20" y="295.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::beads_db::reader_loop::hb5abc76d2b05366e (1 observations, 0.12%)</title><rect x="15.1" y="493" width="1.7" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="18.13" y="503.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::Driver::park_thread_timeout::h33a8caf229e1415f (1 observations, 0.12%)</title><rect x="131.4" y="317" width="1.7" height="15.0" fill="rgb(233,131,31)" rx="2" ry="2" />
+<text  x="134.41" y="327.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3ExprCodeTarget (1 observations, 0.12%)</title><rect x="11.7" y="285" width="1.7" height="15.0" fill="rgb(252,219,52)" rx="2" ry="2" />
+<text  x="14.71" y="295.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.13073710555429814633) (2 observations, 0.25%)</title><rect x="189.6" y="317" width="3.4" height="15.0" fill="rgb(206,7,1)" rx="2" ry="2" />
+<text  x="192.55" y="327.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::blocking::schedule::BlockingSchedule::new::h19f4d7480704d584 (1 observations, 0.12%)</title><rect x="249.4" y="285" width="1.7" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="252.41" y="295.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::command::write_command_ansi::habb1687f810d237c (1 observations, 0.12%)</title><rect x="458.0" y="397" width="1.7" height="15.0" fill="rgb(211,27,6)" rx="2" ry="2" />
+<text  x="461.03" y="407.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.16051231190148386572) (21 observations, 2.60%)</title><rect x="201.5" y="317" width="35.9" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
+<text  x="204.52" y="327.5" >spu..</text>
+</g>
+<g >
+<title>spur`_RNvCs1Y7DaGC1cwg_7___rustc14___rust_dealloc (1 observations, 0.12%)</title><rect x="1272.0" y="333" width="1.7" height="15.0" fill="rgb(252,218,52)" rx="2" ry="2" />
+<text  x="1275.01" y="343.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3ExprCodeGetColumn (1 observations, 0.12%)</title><rect x="11.7" y="269" width="1.7" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="14.71" y="279.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..runtime..blocking..task..BlockingTask$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$::poll::hcb9ec47d5519e397 (140 observations, 17.35%)</title><rect x="23.7" y="445" width="239.4" height="15.0" fill="rgb(232,125,29)" rx="2" ry="2" />
+<text  x="26.68" y="455.5" >spur`_$LT$tokio..runtime..block..</text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (1 observations, 0.12%)</title><rect x="15.1" y="541" width="1.7" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="18.13" y="551.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::fs::unix::File::open_c::h0466f5a622c2e68f (1 observations, 0.12%)</title><rect x="254.5" y="269" width="1.7" height="15.0" fill="rgb(251,213,50)" rx="2" ry="2" />
+<text  x="257.54" y="279.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$$RF$std..net..tcp..TcpStream$u20$as$u20$std..io..Read$GT$::read::hc720439bb4fe092a (1 observations, 0.12%)</title><rect x="259.7" y="285" width="1.7" height="15.0" fill="rgb(213,37,8)" rx="2" ry="2" />
+<text  x="262.67" y="295.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::context::scoped::Scoped$LT$T$GT$::set::hf876309c1cd7991f (140 observations, 17.35%)</title><rect x="23.7" y="397" width="239.4" height="15.0" fill="rgb(253,223,53)" rx="2" ry="2" />
+<text  x="26.68" y="407.5" >spur`tokio::runtime::context::s..</text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_xzone_malloc (1 observations, 0.12%)</title><rect x="1130.1" y="285" width="1.7" height="15.0" fill="rgb(230,115,27)" rx="2" ry="2" />
+<text  x="1133.07" y="295.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::blocking::pool::Spawner::spawn_task::had056afb356f371e (2 observations, 0.25%)</title><rect x="246.0" y="285" width="3.4" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="248.99" y="295.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::Formatter::pad_integral::write_prefix::ha0951390ec14bbe2 (1 observations, 0.12%)</title><rect x="417.0" y="333" width="1.7" height="15.0" fill="rgb(226,99,23)" rx="2" ry="2" />
+<text  x="419.99" y="343.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.17288644985766305149) (1 observations, 0.12%)</title><rect x="22.0" y="477" width="1.7" height="15.0" fill="rgb(238,154,36)" rx="2" ry="2" />
+<text  x="24.97" y="487.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.11768525427537795831) (1 observations, 0.12%)</title><rect x="377.7" y="365" width="1.7" height="15.0" fill="rgb(233,132,31)" rx="2" ry="2" />
+<text  x="380.66" y="375.5" ></text>
+</g>
+<g >
+<title>spur`spur_acp::connection::native::acp_thread_main::_$u7b$$u7b$closure$u7d$$u7d$::h163216673e5c1b35 (1 observations, 0.12%)</title><rect x="10.0" y="429" width="1.7" height="15.0" fill="rgb(239,158,37)" rx="2" ry="2" />
+<text  x="13.00" y="439.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..fs..File$u20$as$u20$std..io..Write$GT$::write::h198b9133de86887d (3 observations, 0.37%)</title><rect x="210.1" y="285" width="5.1" height="15.0" fill="rgb(205,3,0)" rx="2" ry="2" />
+<text  x="213.07" y="295.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Prepare (1 observations, 0.12%)</title><rect x="15.1" y="397" width="1.7" height="15.0" fill="rgb(210,23,5)" rx="2" ry="2" />
+<text  x="18.13" y="407.5" ></text>
+</g>
+<g >
+<title>spur`valueNew (1 observations, 0.12%)</title><rect x="13.4" y="237" width="1.7" height="15.0" fill="rgb(214,45,10)" rx="2" ry="2" />
+<text  x="16.42" y="247.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::buffer::buffer::Buffer::set_style::hfdf136ffdd7255aa (4 observations, 0.50%)</title><rect x="1256.6" y="317" width="6.9" height="15.0" fill="rgb(246,192,45)" rx="2" ry="2" />
+<text  x="1259.62" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..StdoutLock$u20$as$u20$std..io..Write$GT$::write_all::h34cc11c080bf2685 (1 observations, 0.12%)</title><rect x="415.3" y="301" width="1.7" height="15.0" fill="rgb(227,101,24)" rx="2" ry="2" />
+<text  x="418.28" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$alloc..vec..Vec$LT$T$GT$$u20$as$u20$alloc..vec..spec_from_iter_nested..SpecFromIterNested$LT$T$C$I$GT$$GT$::from_iter::ha2f0c01f15257eb2 (1 observations, 0.12%)</title><rect x="1316.5" y="397" width="1.7" height="15.0" fill="rgb(205,3,0)" rx="2" ry="2" />
+<text  x="1319.47" y="407.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::fs::unix::File::open_c::h0466f5a622c2e68f (55 observations, 6.82%)</title><rect x="476.8" y="349" width="94.1" height="15.0" fill="rgb(251,213,50)" rx="2" ry="2" />
+<text  x="479.84" y="359.5" >spur`std::s..</text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::wheel::Wheel::poll::h84920bbb31bfd022 (7 observations, 0.87%)</title><rect x="181.0" y="333" width="12.0" height="15.0" fill="rgb(239,156,37)" rx="2" ry="2" />
+<text  x="184.00" y="343.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::write_lock::try_blocking_write_lock_once::h39529b62200197df (1 observations, 0.12%)</title><rect x="20.3" y="461" width="1.7" height="15.0" fill="rgb(222,81,19)" rx="2" ry="2" />
+<text  x="23.26" y="471.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::command::write_command_ansi::he7fb3ab866d688eb (1 observations, 0.12%)</title><rect x="459.7" y="397" width="1.7" height="15.0" fill="rgb(224,90,21)" rx="2" ry="2" />
+<text  x="462.74" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..command..write_command_ansi..Adapter$LT$T$GT$$u20$as$u20$core..fmt..Write$GT$::write_str::hff32cdad5b2f4135 (2 observations, 0.25%)</title><rect x="411.9" y="349" width="3.4" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="414.86" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::Driver::park_thread_timeout::h33a8caf229e1415f (5 observations, 0.62%)</title><rect x="124.6" y="333" width="8.5" height="15.0" fill="rgb(233,131,31)" rx="2" ry="2" />
+<text  x="127.57" y="343.5" ></text>
+</g>
+<g >
+<title>spur`parking_lot::condvar::Condvar::notify_one_slow::h2622c01336c46831 (20 observations, 2.48%)</title><rect x="140.0" y="317" width="34.2" height="15.0" fill="rgb(232,125,30)" rx="2" ry="2" />
+<text  x="142.96" y="327.5" >sp..</text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h09ec700a7fabe96a (1 observations, 0.12%)</title><rect x="18.6" y="525" width="1.7" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="21.55" y="535.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::fs::unix::File::open_c::h0466f5a622c2e68f (1 observations, 0.12%)</title><rect x="252.8" y="269" width="1.7" height="15.0" fill="rgb(251,213,50)" rx="2" ry="2" />
+<text  x="255.83" y="279.5" ></text>
+</g>
+<g >
+<title>spur`spur::main::h07ccf9b488e6021e (658 observations, 81.54%)</title><rect x="264.8" y="509" width="1125.2" height="15.0" fill="rgb(218,62,14)" rx="2" ry="2" />
+<text  x="267.80" y="519.5" >spur`spur::main::h07ccf9b488e6021e</text>
+</g>
+<g >
+<title>spur`(.llvm.10276655859104093268) (4 observations, 0.50%)</title><rect x="124.6" y="317" width="6.8" height="15.0" fill="rgb(241,170,40)" rx="2" ry="2" />
+<text  x="127.57" y="327.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3MemMalloc (1 observations, 0.12%)</title><rect x="13.4" y="189" width="1.7" height="15.0" fill="rgb(224,91,21)" rx="2" ry="2" />
+<text  x="16.42" y="199.5" ></text>
+</g>
+<g >
+<title>spur`alloc::fmt::format::format_inner::hd571df24e790cabc (1 observations, 0.12%)</title><rect x="1306.2" y="333" width="1.7" height="15.0" fill="rgb(238,156,37)" rx="2" ry="2" />
+<text  x="1309.21" y="343.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::status_bar::StatusBar::render::h81519be1e7f66cac (20 observations, 2.48%)</title><rect x="1275.4" y="365" width="34.2" height="15.0" fill="rgb(205,1,0)" rx="2" ry="2" />
+<text  x="1278.43" y="375.5" >sp..</text>
+</g>
+<g >
+<title>spur`&lt;deduplicated_symbol&gt; (3 observations, 0.37%)</title><rect x="251.1" y="333" width="5.1" height="15.0" fill="rgb(242,174,41)" rx="2" ry="2" />
+<text  x="254.12" y="343.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..task..coop..RestoreOnPending$u20$as$u20$core..ops..drop..Drop$GT$::drop::h03c30ce5773958c6 (1 observations, 0.12%)</title><rect x="374.2" y="381" width="1.7" height="15.0" fill="rgb(205,4,1)" rx="2" ry="2" />
+<text  x="377.24" y="391.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::state::State::transition_to_idle::hce072d46a30cdcb3 (2 observations, 0.25%)</title><rect x="237.4" y="333" width="3.5" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="240.43" y="343.5" ></text>
+</g>
+<g >
+<title>spur`pushOntoSorter (1 observations, 0.12%)</title><rect x="11.7" y="317" width="1.7" height="15.0" fill="rgb(225,94,22)" rx="2" ry="2" />
+<text  x="14.71" y="327.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h09ec700a7fabe96a (1 observations, 0.12%)</title><rect x="16.8" y="525" width="1.8" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="19.84" y="535.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3ExprCodeTarget (1 observations, 0.12%)</title><rect x="13.4" y="301" width="1.7" height="15.0" fill="rgb(252,219,52)" rx="2" ry="2" />
+<text  x="16.42" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::hc8c70fa3f3a2fbd1 (1 observations, 0.12%)</title><rect x="258.0" y="301" width="1.7" height="15.0" fill="rgb(245,184,44)" rx="2" ry="2" />
+<text  x="260.96" y="311.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::input_bar::InputBar::render::h72de3b3a5c7ad791 (5 observations, 0.62%)</title><rect x="1123.2" y="365" width="8.6" height="15.0" fill="rgb(236,144,34)" rx="2" ry="2" />
+<text  x="1126.23" y="375.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__posix_spawn (1 observations, 0.12%)</title><rect x="20.3" y="365" width="1.7" height="15.0" fill="rgb(206,5,1)" rx="2" ry="2" />
+<text  x="23.26" y="375.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.9894640347001106580) (1 observations, 0.12%)</title><rect x="16.8" y="445" width="1.8" height="15.0" fill="rgb(229,113,27)" rx="2" ry="2" />
+<text  x="19.84" y="455.5" ></text>
+</g>
+<g >
+<title>.beads-db-reader-2 (1 observations, 0.12%)</title><rect x="16.8" y="589" width="1.8" height="15.0" fill="rgb(240,165,39)" rx="2" ry="2" />
+<text  x="19.84" y="599.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::layout::layout::Layout::split_with_spacers::hcb9adf88af503d4c (1 observations, 0.12%)</title><rect x="1121.5" y="349" width="1.7" height="15.0" fill="rgb(229,114,27)" rx="2" ry="2" />
+<text  x="1124.52" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..runtime..task..join..JoinHandle$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h2124aef6485c2a89 (1 observations, 0.12%)</title><rect x="244.3" y="301" width="1.7" height="15.0" fill="rgb(221,77,18)" rx="2" ry="2" />
+<text  x="247.28" y="311.5" ></text>
+</g>
+<g >
+<title>spur`parking_lot_core::parking_lot::lock_bucket_pair::h72c2e3067df1bd45 (4 observations, 0.50%)</title><rect x="165.6" y="301" width="6.9" height="15.0" fill="rgb(211,29,7)" rx="2" ry="2" />
+<text  x="168.61" y="311.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3RunParser (1 observations, 0.12%)</title><rect x="22.0" y="397" width="1.7" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="24.97" y="407.5" ></text>
+</g>
+<g >
+<title>spur`rusqlite::inner_connection::InnerConnection::prepare::h0ec248e13057087a (1 observations, 0.12%)</title><rect x="22.0" y="445" width="1.7" height="15.0" fill="rgb(211,31,7)" rx="2" ry="2" />
+<text  x="24.97" y="455.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime (1 observations, 0.12%)</title><rect x="1340.4" y="349" width="1.7" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
+<text  x="1343.41" y="359.5" ></text>
+</g>
+<g >
+<title>spur`core::iter::traits::double_ended::DoubleEndedIterator::rfold::h1148341974f13c74 (7 observations, 0.87%)</title><rect x="1244.6" y="317" width="12.0" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="1247.65" y="327.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Select (2 observations, 0.25%)</title><rect x="11.7" y="349" width="3.4" height="15.0" fill="rgb(227,101,24)" rx="2" ry="2" />
+<text  x="14.71" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h8e2504d5a9a3aaed (1 observations, 0.12%)</title><rect x="258.0" y="349" width="1.7" height="15.0" fill="rgb(212,32,7)" rx="2" ry="2" />
+<text  x="260.96" y="359.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::command::write_command_ansi::h8cc8ea74dfe5015a (1 observations, 0.12%)</title><rect x="406.7" y="381" width="1.7" height="15.0" fill="rgb(208,16,3)" rx="2" ry="2" />
+<text  x="409.73" y="391.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::num::imp::_$LT$impl$u20$core..fmt..Display$u20$for$u20$u16$GT$::fmt::hf3a5665b0c5f9595 (2 observations, 0.25%)</title><rect x="415.3" y="349" width="3.4" height="15.0" fill="rgb(253,222,53)" rx="2" ry="2" />
+<text  x="418.28" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::write_all::hce8a0a74a5d5d641 (1 observations, 0.12%)</title><rect x="403.3" y="317" width="1.7" height="15.0" fill="rgb(219,68,16)" rx="2" ry="2" />
+<text  x="406.31" y="327.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_xzone_malloc_tiny (1 observations, 0.12%)</title><rect x="1118.1" y="365" width="1.7" height="15.0" fill="rgb(246,191,45)" rx="2" ry="2" />
+<text  x="1121.10" y="375.5" ></text>
+</g>
+<g >
+<title>.acp-codex (1 observations, 0.12%)</title><rect x="10.0" y="589" width="1.7" height="15.0" fill="rgb(205,3,0)" rx="2" ry="2" />
+<text  x="13.00" y="599.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::buffer::buffer::Buffer::reset::h81c84eea75d7275e (49 observations, 6.07%)</title><rect x="1029.2" y="397" width="83.8" height="15.0" fill="rgb(211,28,6)" rx="2" ry="2" />
+<text  x="1032.18" y="407.5" >spur`rata..</text>
+</g>
+<g >
+<title>spur`_$LT$tokio..sync..broadcast..Recv$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h3e24edd9664aa558 (1 observations, 0.12%)</title><rect x="216.9" y="253" width="1.7" height="15.0" fill="rgb(217,58,14)" rx="2" ry="2" />
+<text  x="219.91" y="263.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (1 observations, 0.12%)</title><rect x="18.6" y="573" width="1.7" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="21.55" y="583.5" ></text>
+</g>
+<g >
+<title>spur`&lt;deduplicated_symbol&gt; (1 observations, 0.12%)</title><rect x="256.2" y="333" width="1.8" height="15.0" fill="rgb(242,174,41)" rx="2" ry="2" />
+<text  x="259.25" y="343.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.12930347629546215018) (2 observations, 0.25%)</title><rect x="340.0" y="413" width="3.5" height="15.0" fill="rgb(250,207,49)" rx="2" ry="2" />
+<text  x="343.04" y="423.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.17626767377967652421) (7 observations, 0.87%)</title><rect x="1371.2" y="413" width="12.0" height="15.0" fill="rgb(251,214,51)" rx="2" ry="2" />
+<text  x="1374.19" y="423.5" ></text>
+</g>
+<g >
+<title>spur`tokio::time::clock::Clock::now::h55b3adb266a3910c (4 observations, 0.50%)</title><rect x="133.1" y="333" width="6.9" height="15.0" fill="rgb(205,2,0)" rx="2" ry="2" />
+<text  x="136.12" y="343.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::raw::schedule::hfca4cdecd6a35595 (1 observations, 0.12%)</title><rect x="179.3" y="317" width="1.7" height="15.0" fill="rgb(241,166,39)" rx="2" ry="2" />
+<text  x="182.29" y="327.5" ></text>
+</g>
+<g >
+<title>spur`dbMallocRawFinish (1 observations, 0.12%)</title><rect x="18.6" y="285" width="1.7" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="21.55" y="295.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..pin..Pin$LT$P$GT$$u20$as$u20$core..future..future..Future$GT$::poll::hb80724e4e6e69981 (1 observations, 0.12%)</title><rect x="10.0" y="461" width="1.7" height="15.0" fill="rgb(215,48,11)" rx="2" ry="2" />
+<text  x="13.00" y="471.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h04cbde9105ebb25a (140 observations, 17.35%)</title><rect x="23.7" y="509" width="239.4" height="15.0" fill="rgb(245,185,44)" rx="2" ry="2" />
+<text  x="26.68" y="519.5" >spur`std::sys::backtrace::__rus..</text>
+</g>
+<g >
+<title>.tokio-rt-worker (140 observations, 17.35%)</title><rect x="23.7" y="589" width="239.4" height="15.0" fill="rgb(244,179,42)" rx="2" ry="2" />
+<text  x="26.68" y="599.5" >.tokio-rt-worker</text>
+</g>
+<g >
+<title>spur`core::ffi::c_str::CStr::from_bytes_with_nul::h56c199ab25f830ea (2 observations, 0.25%)</title><rect x="473.4" y="349" width="3.4" height="15.0" fill="rgb(240,164,39)" rx="2" ry="2" />
+<text  x="476.42" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..paragraph..Paragraph$u20$as$u20$ratatui..widgets..Widget$GT$::render::h245c1ca785c3be46 (14 observations, 1.73%)</title><rect x="1280.6" y="349" width="23.9" height="15.0" fill="rgb(208,16,3)" rx="2" ry="2" />
+<text  x="1283.56" y="359.5" >s..</text>
+</g>
+<g >
+<title>spur`sqlite3MemMalloc (1 observations, 0.12%)</title><rect x="18.6" y="253" width="1.7" height="15.0" fill="rgb(224,91,21)" rx="2" ry="2" />
+<text  x="21.55" y="263.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::issue_tracker::_$LT$impl$u20$spur_pm..adapter..IssueTracker$u20$for$u20$spur_pm..beads_crate..adapter..BeadsCrateAdapter$GT$::list_issues::_$u7b$$u7b$closure$u7d$$u7d$::h77e848c4ba947798 (1 observations, 0.12%)</title><rect x="258.0" y="269" width="1.7" height="15.0" fill="rgb(205,4,1)" rx="2" ry="2" />
+<text  x="260.96" y="279.5" ></text>
+</g>
+<g >
+<title>spur`std::fs::DirBuilder::_create::h8aa79a64ba94c04e (1 observations, 0.12%)</title><rect x="251.1" y="285" width="1.7" height="15.0" fill="rgb(206,6,1)" rx="2" ry="2" />
+<text  x="254.12" y="295.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::input_bar::InputBar::build_block::h2b879a866a618209 (4 observations, 0.50%)</title><rect x="1124.9" y="349" width="6.9" height="15.0" fill="rgb(230,116,27)" rx="2" ry="2" />
+<text  x="1127.94" y="359.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.2880357417725301030) (12 observations, 1.49%)</title><rect x="119.4" y="349" width="20.6" height="15.0" fill="rgb(237,150,35)" rx="2" ry="2" />
+<text  x="122.44" y="359.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Pragma (1 observations, 0.12%)</title><rect x="22.0" y="349" width="1.7" height="15.0" fill="rgb(228,109,26)" rx="2" ry="2" />
+<text  x="24.97" y="359.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3RunParser (1 observations, 0.12%)</title><rect x="15.1" y="381" width="1.7" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="18.13" y="391.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3VMPrintf (1 observations, 0.12%)</title><rect x="11.7" y="205" width="1.7" height="15.0" fill="rgb(251,213,51)" rx="2" ry="2" />
+<text  x="14.71" y="215.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::mpsc::list::Rx$LT$T$GT$::pop::h8aa9d5c9f9d76e3a (1 observations, 0.12%)</title><rect x="375.9" y="381" width="1.8" height="15.0" fill="rgb(219,65,15)" rx="2" ry="2" />
+<text  x="378.95" y="391.5" ></text>
+</g>
+<g >
+<title>spur`&lt;deduplicated_symbol&gt; (1 observations, 0.12%)</title><rect x="258.0" y="333" width="1.7" height="15.0" fill="rgb(242,174,41)" rx="2" ry="2" />
+<text  x="260.96" y="343.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.17086666790289365300) (1 observations, 0.12%)</title><rect x="1130.1" y="301" width="1.7" height="15.0" fill="rgb(209,21,5)" rx="2" ry="2" />
+<text  x="1133.07" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$spur_acp..connection..native..EvidenceCaptureReader$LT$R$GT$$u20$as$u20$tokio..io..async_read..AsyncRead$GT$::poll_read::h6fdd7cb6641feb80 (1 observations, 0.12%)</title><rect x="10.0" y="205" width="1.7" height="15.0" fill="rgb(243,179,42)" rx="2" ry="2" />
+<text  x="13.00" y="215.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..block..Block$u20$as$u20$ratatui..widgets..Widget$GT$::render::h56aa5b570f72cdc4 (1 observations, 0.12%)</title><rect x="1135.2" y="349" width="1.7" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
+<text  x="1138.20" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_concurrency..future..race..tuple..Race2$LT$T$C$A$C$B$GT$$u20$as$u20$core..future..future..Future$GT$::poll::hd8912557b2f9fd4d (1 observations, 0.12%)</title><rect x="10.0" y="333" width="1.7" height="15.0" fill="rgb(222,82,19)" rx="2" ry="2" />
+<text  x="13.00" y="343.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h4b524ee9f798e621 (140 observations, 17.35%)</title><rect x="23.7" y="525" width="239.4" height="15.0" fill="rgb(239,159,38)" rx="2" ry="2" />
+<text  x="26.68" y="535.5" >spur`core::ops::function::FnOnc..</text>
+</g>
+<g >
+<title>spur`sqlite3ExprCodeExprList (1 observations, 0.12%)</title><rect x="13.4" y="317" width="1.7" height="15.0" fill="rgb(233,129,31)" rx="2" ry="2" />
+<text  x="16.42" y="327.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`pthread_testcancel (1 observations, 0.12%)</title><rect x="290.4" y="429" width="1.8" height="15.0" fill="rgb(210,27,6)" rx="2" ry="2" />
+<text  x="293.45" y="439.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.7157096927125639920) (1 observations, 0.12%)</title><rect x="1362.6" y="381" width="1.7" height="15.0" fill="rgb(232,127,30)" rx="2" ry="2" />
+<text  x="1365.64" y="391.5" ></text>
+</g>
+<g >
+<title>spur`&lt;deduplicated_symbol&gt; (5 observations, 0.62%)</title><rect x="242.6" y="333" width="8.5" height="15.0" fill="rgb(242,174,41)" rx="2" ry="2" />
+<text  x="245.57" y="343.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$$RF$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::flush::h76c03acde4667d25 (5 observations, 0.62%)</title><rect x="418.7" y="381" width="8.5" height="15.0" fill="rgb(231,121,29)" rx="2" ry="2" />
+<text  x="421.70" y="391.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h742a0da8e02e3437 (628 observations, 77.82%)</title><rect x="316.1" y="445" width="1073.9" height="15.0" fill="rgb(235,140,33)" rx="2" ry="2" />
+<text  x="319.10" y="455.5" >spur`_$LT$core..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h742a0da8e02e3437</text>
+</g>
+<g >
+<title>spur`_$LT$alloc..vec..Vec$LT$T$GT$$u20$as$u20$alloc..vec..spec_from_iter_nested..SpecFromIterNested$LT$T$C$I$GT$$GT$::from_iter::h89e9cd5336027a9b (3 observations, 0.37%)</title><rect x="1309.6" y="349" width="5.2" height="15.0" fill="rgb(234,137,32)" rx="2" ry="2" />
+<text  x="1312.63" y="359.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::layout::layout::Layout::areas::ha9639b0bc474bfc5 (1 observations, 0.12%)</title><rect x="1121.5" y="365" width="1.7" height="15.0" fill="rgb(223,83,19)" rx="2" ry="2" />
+<text  x="1124.52" y="375.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h65c4f309dba0b53f (5 observations, 0.62%)</title><rect x="242.6" y="349" width="8.5" height="15.0" fill="rgb(215,49,11)" rx="2" ry="2" />
+<text  x="245.57" y="359.5" ></text>
+</g>
+<g >
+<title>spur`std::fs::OpenOptions::_open::hfd14fc0134faefc7 (1 observations, 0.12%)</title><rect x="252.8" y="285" width="1.7" height="15.0" fill="rgb(239,160,38)" rx="2" ry="2" />
+<text  x="255.83" y="295.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::h70a115df2505a32b (1 observations, 0.12%)</title><rect x="16.8" y="509" width="1.8" height="15.0" fill="rgb(207,13,3)" rx="2" ry="2" />
+<text  x="19.84" y="519.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::queue::Steal$LT$T$GT$::steal_into::h5b72a7c49319b295 (2 observations, 0.25%)</title><rect x="100.6" y="365" width="3.5" height="15.0" fill="rgb(236,144,34)" rx="2" ry="2" />
+<text  x="103.63" y="375.5" ></text>
+</g>
+<g >
+<title>spur`tokio::task::coop::Budget::has_remaining::hdd7c9dc17708f783 (2 observations, 0.25%)</title><rect x="222.0" y="285" width="3.5" height="15.0" fill="rgb(248,198,47)" rx="2" ry="2" />
+<text  x="225.04" y="295.5" ></text>
+</g>
+<g >
+<title>spur`strAccumFinishRealloc (1 observations, 0.12%)</title><rect x="11.7" y="189" width="1.7" height="15.0" fill="rgb(252,218,52)" rx="2" ry="2" />
+<text  x="14.71" y="199.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.12340412589632179763) (1 observations, 0.12%)</title><rect x="256.2" y="269" width="1.8" height="15.0" fill="rgb(217,58,14)" rx="2" ry="2" />
+<text  x="259.25" y="279.5" ></text>
+</g>
+<g >
+<title>spur`rusqlite::inner_connection::InnerConnection::prepare::h0ec248e13057087a (1 observations, 0.12%)</title><rect x="15.1" y="429" width="1.7" height="15.0" fill="rgb(211,31,7)" rx="2" ry="2" />
+<text  x="18.13" y="439.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::waker::wake_by_val::hb74ed43c3ca94adc (3 observations, 0.37%)</title><rect x="175.9" y="333" width="5.1" height="15.0" fill="rgb(233,131,31)" rx="2" ry="2" />
+<text  x="178.87" y="343.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.16051231190148386572) (3 observations, 0.37%)</title><rect x="251.1" y="317" width="5.1" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
+<text  x="254.12" y="327.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.13824873599972217464) (2 observations, 0.25%)</title><rect x="1292.5" y="285" width="3.4" height="15.0" fill="rgb(251,214,51)" rx="2" ry="2" />
+<text  x="1295.53" y="295.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..StdoutLock$u20$as$u20$std..io..Write$GT$::write_all::h34cc11c080bf2685 (1 observations, 0.12%)</title><rect x="458.0" y="349" width="1.7" height="15.0" fill="rgb(227,101,24)" rx="2" ry="2" />
+<text  x="461.03" y="359.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime (3 observations, 0.37%)</title><rect x="133.1" y="285" width="5.2" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
+<text  x="136.12" y="295.5" ></text>
+</g>
+<g >
+<title>.beads-db-reader-3 (1 observations, 0.12%)</title><rect x="18.6" y="589" width="1.7" height="15.0" fill="rgb(234,135,32)" rx="2" ry="2" />
+<text  x="21.55" y="599.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::beads_db::reader_loop::hb5abc76d2b05366e (1 observations, 0.12%)</title><rect x="16.8" y="493" width="1.8" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="19.84" y="503.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$alloc..string..String$u20$as$u20$core..fmt..Display$GT$::fmt::hf4ed6bc6dff88b09 (1 observations, 0.12%)</title><rect x="408.4" y="349" width="1.7" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="411.44" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::context::scoped::Scoped$LT$T$GT$::with::he7bed951caf702de (1 observations, 0.12%)</title><rect x="177.6" y="301" width="1.7" height="15.0" fill="rgb(243,175,42)" rx="2" ry="2" />
+<text  x="180.58" y="311.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3MPrintf (1 observations, 0.12%)</title><rect x="11.7" y="221" width="1.7" height="15.0" fill="rgb(206,8,2)" rx="2" ry="2" />
+<text  x="14.71" y="231.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..pin..Pin$LT$P$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h4ebe65efab083d0a (1 observations, 0.12%)</title><rect x="10.0" y="397" width="1.7" height="15.0" fill="rgb(220,69,16)" rx="2" ry="2" />
+<text  x="13.00" y="407.5" ></text>
+</g>
+<g >
+<title>spur`rusqlite::inner_connection::InnerConnection::prepare::h0ec248e13057087a (1 observations, 0.12%)</title><rect x="18.6" y="429" width="1.7" height="15.0" fill="rgb(211,31,7)" rx="2" ry="2" />
+<text  x="21.55" y="439.5" ></text>
+</g>
+<g >
+<title>spur`spur_acp::connection::native::acp_thread_main::he687d91e45b524a7 (1 observations, 0.12%)</title><rect x="10.0" y="493" width="1.7" height="15.0" fill="rgb(233,132,31)" rx="2" ry="2" />
+<text  x="13.00" y="503.5" ></text>
+</g>
+<g >
+<title>spur`beads_rust::storage::sqlite::SqliteStorage::get_labels_for_issues::h432c1cd75d77289e (1 observations, 0.12%)</title><rect x="15.1" y="461" width="1.7" height="15.0" fill="rgb(223,83,20)" rx="2" ry="2" />
+<text  x="18.13" y="471.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.11681672623846908347) (1 observations, 0.12%)</title><rect x="220.3" y="253" width="1.7" height="15.0" fill="rgb(209,21,5)" rx="2" ry="2" />
+<text  x="223.33" y="263.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (1 observations, 0.12%)</title><rect x="406.7" y="365" width="1.7" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="409.73" y="375.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3ExprCodeGetColumn (1 observations, 0.12%)</title><rect x="13.4" y="285" width="1.7" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="16.42" y="295.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_util..future..maybe_done..MaybeDone$LT$Fut$GT$$u20$as$u20$core..future..future..Future$GT$::poll::hdd168de5d0d17da3 (1 observations, 0.12%)</title><rect x="10.0" y="349" width="1.7" height="15.0" fill="rgb(229,113,27)" rx="2" ry="2" />
+<text  x="13.00" y="359.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$spur_tui..views..session_detail..SessionDetailView$u20$as$u20$spur_tui..views..View$GT$::render::h5045690733a6df62 (118 observations, 14.62%)</title><rect x="1113.0" y="381" width="201.8" height="15.0" fill="rgb(222,78,18)" rx="2" ry="2" />
+<text  x="1115.97" y="391.5" >spur`_$LT$spur_tui..views...</text>
+</g>
+<g >
+<title>spur`std::sys::backtrace::__rust_begin_short_backtrace::he1f591011553b2e3 (1 observations, 0.12%)</title><rect x="10.0" y="509" width="1.7" height="15.0" fill="rgb(209,22,5)" rx="2" ry="2" />
+<text  x="13.00" y="519.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`pthread_cond_signal (2 observations, 0.25%)</title><rect x="246.0" y="253" width="3.4" height="15.0" fill="rgb(223,83,19)" rx="2" ry="2" />
+<text  x="248.99" y="263.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::process::unix::unix::_$LT$impl$u20$std..sys..process..unix..common..Command$GT$::spawn::h33961355665e6c5e (1 observations, 0.12%)</title><rect x="20.3" y="413" width="1.7" height="15.0" fill="rgb(240,164,39)" rx="2" ry="2" />
+<text  x="23.26" y="423.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (2 observations, 0.25%)</title><rect x="1124.9" y="317" width="3.5" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="1127.94" y="327.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.9894640347001106580) (1 observations, 0.12%)</title><rect x="15.1" y="445" width="1.7" height="15.0" fill="rgb(229,113,27)" rx="2" ry="2" />
+<text  x="18.13" y="455.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime_nsec_np (1 observations, 0.12%)</title><rect x="172.5" y="269" width="1.7" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="175.45" y="279.5" ></text>
+</g>
+<g >
+<title>libsystem_platform`_platform_memmove (1 observations, 0.12%)</title><rect x="1119.8" y="365" width="1.7" height="15.0" fill="rgb(246,189,45)" rx="2" ry="2" />
+<text  x="1122.81" y="375.5" ></text>
+</g>
+<g >
+<title>spur`core::slice::memchr::memrchr::h746a03bcae7249ab (1 observations, 0.12%)</title><rect x="458.0" y="333" width="1.7" height="15.0" fill="rgb(205,4,1)" rx="2" ry="2" />
+<text  x="461.03" y="343.5" ></text>
+</g>
+<g >
+<title>spur`std::io::buffered::bufwriter::BufWriter$LT$W$GT$::flush_buf::h3be42f7ec1de0b07 (5 observations, 0.62%)</title><rect x="418.7" y="365" width="8.5" height="15.0" fill="rgb(244,182,43)" rx="2" ry="2" />
+<text  x="421.70" y="375.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::worker::Context::run::hf1f6b1945c2fd8bd (140 observations, 17.35%)</title><rect x="23.7" y="381" width="239.4" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
+<text  x="26.68" y="391.5" >spur`tokio::runtime::scheduler:..</text>
+</g>
+<g >
+<title>spur`_$LT$core..iter..adapters..map..Map$LT$I$C$F$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$::fold::h96cde75aa4ada10d (1 observations, 0.12%)</title><rect x="10.0" y="109" width="1.7" height="15.0" fill="rgb(235,142,34)" rx="2" ry="2" />
+<text  x="13.00" y="119.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.6954221369082186384) (1 observations, 0.12%)</title><rect x="1307.9" y="301" width="1.7" height="15.0" fill="rgb(252,216,51)" rx="2" ry="2" />
+<text  x="1310.92" y="311.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (1 observations, 0.12%)</title><rect x="18.6" y="557" width="1.7" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="21.55" y="567.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::idle::Idle::transition_worker_to_parked::ha5b6adfd62195667 (7 observations, 0.87%)</title><rect x="88.7" y="365" width="11.9" height="15.0" fill="rgb(243,175,42)" rx="2" ry="2" />
+<text  x="91.66" y="375.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::app::App::render::h61eadc82b7594683 (118 observations, 14.62%)</title><rect x="1113.0" y="397" width="201.8" height="15.0" fill="rgb(245,185,44)" rx="2" ry="2" />
+<text  x="1115.97" y="407.5" >spur`spur_tui::app::App::r..</text>
+</g>
+<g >
+<title>spur`(.llvm.574955987700278836) (658 observations, 81.54%)</title><rect x="264.8" y="541" width="1125.2" height="15.0" fill="rgb(228,106,25)" rx="2" ry="2" />
+<text  x="267.80" y="551.5" >spur`(.llvm.574955987700278836)</text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (1 observations, 0.12%)</title><rect x="1306.2" y="317" width="1.7" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="1309.21" y="327.5" ></text>
+</g>
+<g >
+<title>spur`rusqlite::Connection::prepare_with_flags::ha7b93a4ef2ab6a9b (1 observations, 0.12%)</title><rect x="22.0" y="461" width="1.7" height="15.0" fill="rgb(219,66,15)" rx="2" ry="2" />
+<text  x="24.97" y="471.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..command..write_command_ansi..Adapter$LT$T$GT$$u20$as$u20$core..fmt..Write$GT$::write_str::hff32cdad5b2f4135 (1 observations, 0.12%)</title><rect x="415.3" y="333" width="1.7" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="418.28" y="343.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3VdbeMemGrow (1 observations, 0.12%)</title><rect x="18.6" y="301" width="1.7" height="15.0" fill="rgb(232,127,30)" rx="2" ry="2" />
+<text  x="21.55" y="311.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Prepare (1 observations, 0.12%)</title><rect x="22.0" y="413" width="1.7" height="15.0" fill="rgb(210,23,5)" rx="2" ry="2" />
+<text  x="24.97" y="423.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Pragma (1 observations, 0.12%)</title><rect x="22.0" y="365" width="1.7" height="15.0" fill="rgb(228,109,26)" rx="2" ry="2" />
+<text  x="24.97" y="375.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime (1 observations, 0.12%)</title><rect x="353.7" y="333" width="1.7" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
+<text  x="356.72" y="343.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..task..coop..Coop$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h9245756e53a9a418 (6 observations, 0.74%)</title><rect x="1372.9" y="365" width="10.3" height="15.0" fill="rgb(247,195,46)" rx="2" ry="2" />
+<text  x="1375.90" y="375.5" ></text>
+</g>
+<g >
+<title>spur`yy_reduce (2 observations, 0.25%)</title><rect x="11.7" y="365" width="3.4" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="14.71" y="375.5" ></text>
+</g>
+<g >
+<title>spur`valueFromExpr (1 observations, 0.12%)</title><rect x="13.4" y="253" width="1.7" height="15.0" fill="rgb(249,203,48)" rx="2" ry="2" />
+<text  x="16.42" y="263.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::write_all::hce8a0a74a5d5d641 (1 observations, 0.12%)</title><rect x="458.0" y="365" width="1.7" height="15.0" fill="rgb(219,68,16)" rx="2" ry="2" />
+<text  x="461.03" y="375.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3MemSize (1 observations, 0.12%)</title><rect x="11.7" y="141" width="1.7" height="15.0" fill="rgb(245,187,44)" rx="2" ry="2" />
+<text  x="14.71" y="151.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime_nsec_np (1 observations, 0.12%)</title><rect x="353.7" y="317" width="1.7" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="356.72" y="327.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::input_completion::InputCompletionPort::flush_pending_query_if_due::h8058b65b7f1bf8db (3 observations, 0.37%)</title><rect x="1337.0" y="381" width="5.1" height="15.0" fill="rgb(246,188,45)" rx="2" ry="2" />
+<text  x="1339.99" y="391.5" ></text>
+</g>
+<g >
+<title>spur`mio::poll::Poll::poll::h28c86fd89155d3d9 (2 observations, 0.25%)</title><rect x="128.0" y="301" width="3.4" height="15.0" fill="rgb(254,227,54)" rx="2" ry="2" />
+<text  x="130.99" y="311.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h80f1825090319778 (1 observations, 0.12%)</title><rect x="18.6" y="477" width="1.7" height="15.0" fill="rgb(218,63,15)" rx="2" ry="2" />
+<text  x="21.55" y="487.5" ></text>
+</g>
+<g >
+<title>spur`yy_reduce (1 observations, 0.12%)</title><rect x="15.1" y="365" width="1.7" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="18.13" y="375.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_util..io..lines..Lines$LT$R$GT$$u20$as$u20$futures_core..stream..Stream$GT$::poll_next::hf08b5785b2ff4f3f (1 observations, 0.12%)</title><rect x="10.0" y="221" width="1.7" height="15.0" fill="rgb(205,1,0)" rx="2" ry="2" />
+<text  x="13.00" y="231.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.15288706184465579474) (1 observations, 0.12%)</title><rect x="20.3" y="477" width="1.7" height="15.0" fill="rgb(251,214,51)" rx="2" ry="2" />
+<text  x="23.26" y="487.5" ></text>
+</g>
+<g >
+<title>.beads-db-writer (2 observations, 0.25%)</title><rect x="20.3" y="589" width="3.4" height="15.0" fill="rgb(233,130,31)" rx="2" ry="2" />
+<text  x="23.26" y="599.5" ></text>
+</g>
+<g >
+<title>spur`beads_rust::storage::sqlite::SqliteStorage::list_issues::h007dc595df91976e (1 observations, 0.12%)</title><rect x="16.8" y="461" width="1.8" height="15.0" fill="rgb(223,85,20)" rx="2" ry="2" />
+<text  x="19.84" y="471.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::terminal::terminal::Terminal$LT$B$GT$::draw::hf3d1f9406775101d (538 observations, 66.67%)</title><rect x="394.8" y="413" width="920.0" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="397.76" y="423.5" >spur`ratatui::terminal::terminal::Terminal$LT$B$GT$::draw::hf3d1f9406775101d</text>
+</g>
+<g >
+<title>spur`std::time::Instant::elapsed::h24c12cbf81a95e5a (4 observations, 0.50%)</title><rect x="133.1" y="317" width="6.9" height="15.0" fill="rgb(234,134,32)" rx="2" ry="2" />
+<text  x="136.12" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..reflow..LineTruncator$LT$O$C$I$GT$$u20$as$u20$ratatui..widgets..reflow..LineComposer$GT$::next_line::h4c3913b9b1e12876 (51 observations, 6.32%)</title><rect x="1157.4" y="317" width="87.2" height="15.0" fill="rgb(210,25,6)" rx="2" ry="2" />
+<text  x="1160.43" y="327.5" >spur`_$LT$..</text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h80f1825090319778 (1 observations, 0.12%)</title><rect x="16.8" y="477" width="1.8" height="15.0" fill="rgb(218,63,15)" rx="2" ry="2" />
+<text  x="19.84" y="487.5" ></text>
+</g>
+<g >
+<title>spur`yy_reduce (1 observations, 0.12%)</title><rect x="18.6" y="365" width="1.7" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="21.55" y="375.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`open (55 observations, 6.82%)</title><rect x="476.8" y="333" width="94.1" height="15.0" fill="rgb(252,220,52)" rx="2" ry="2" />
+<text  x="479.84" y="343.5" >libsystem_k..</text>
+</g>
+<g >
+<title>spur`_$LT$agent_client_protocol..jsonrpc..Lines$LT$OutgoingSink$C$IncomingStream$GT$$u20$as$u20$agent_client_protocol..component..ConnectTo$LT$R$GT$$GT$::into_channel_and_future::_$u7b$$u7b$closure$u7d$$u7d$::h23d8e30e7b8c161a (1 observations, 0.12%)</title><rect x="10.0" y="269" width="1.7" height="15.0" fill="rgb(243,177,42)" rx="2" ry="2" />
+<text  x="13.00" y="279.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..paragraph..Paragraph$u20$as$u20$ratatui..widgets..WidgetRef$GT$::render_ref::hfb2d742a7a4eb3ed (76 observations, 9.42%)</title><rect x="1136.9" y="333" width="130.0" height="15.0" fill="rgb(245,184,44)" rx="2" ry="2" />
+<text  x="1139.91" y="343.5" >spur`_$LT$ratatu..</text>
+</g>
+<g >
+<title>spur`_$LT$tracing..instrument..Instrumented$LT$T$GT$$u20$as$u20$core..future..future..Future$GT$::poll::he6ae99efdaaf0242 (1 observations, 0.12%)</title><rect x="10.0" y="413" width="1.7" height="15.0" fill="rgb(222,78,18)" rx="2" ry="2" />
+<text  x="13.00" y="423.5" ></text>
+</g>
+<g >
+<title>spur`spur_acp::connection::native::RawAcpFrameCapture::feed::h03cb80d42c24a7b4 (1 observations, 0.12%)</title><rect x="10.0" y="189" width="1.7" height="15.0" fill="rgb(245,184,44)" rx="2" ry="2" />
+<text  x="13.00" y="199.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__psynch_cvsignal (2 observations, 0.25%)</title><rect x="246.0" y="237" width="3.4" height="15.0" fill="rgb(222,79,19)" rx="2" ry="2" />
+<text  x="248.99" y="247.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..time..Instant$u20$as$u20$core..ops..arith..Sub$GT$::sub::h09e9d2ef3689042f (3 observations, 0.37%)</title><rect x="83.5" y="365" width="5.2" height="15.0" fill="rgb(239,158,37)" rx="2" ry="2" />
+<text  x="86.53" y="375.5" ></text>
+</g>
+<g >
+<title>libsystem_c`posix_spawnp (1 observations, 0.12%)</title><rect x="20.3" y="397" width="1.7" height="15.0" fill="rgb(211,29,7)" rx="2" ry="2" />
+<text  x="23.26" y="407.5" ></text>
+</g>
+<g >
+<title>spur`lru::LruCache$LT$K$C$V$C$S$GT$::get_or_insert::hb57684d2e498691a (1 observations, 0.12%)</title><rect x="1121.5" y="333" width="1.7" height="15.0" fill="rgb(238,155,37)" rx="2" ry="2" />
+<text  x="1124.52" y="343.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::state::State::transition_to_running::h9f4b8dc0c0126aee (1 observations, 0.12%)</title><rect x="240.9" y="333" width="1.7" height="15.0" fill="rgb(248,200,47)" rx="2" ry="2" />
+<text  x="243.86" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_c`clock_gettime_nsec_np (2 observations, 0.25%)</title><rect x="134.8" y="269" width="3.5" height="15.0" fill="rgb(250,210,50)" rx="2" ry="2" />
+<text  x="137.83" y="279.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__psynch_cvsignal (11 observations, 1.36%)</title><rect x="145.1" y="285" width="18.8" height="15.0" fill="rgb(222,79,19)" rx="2" ry="2" />
+<text  x="148.09" y="295.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`posix_spawn (1 observations, 0.12%)</title><rect x="20.3" y="381" width="1.7" height="15.0" fill="rgb(233,131,31)" rx="2" ry="2" />
+<text  x="23.26" y="391.5" ></text>
+</g>
+<g >
+<title>spur`beads_rust::storage::sqlite::SqliteStorage::list_issues::h007dc595df91976e (2 observations, 0.25%)</title><rect x="11.7" y="461" width="3.4" height="15.0" fill="rgb(223,85,20)" rx="2" ry="2" />
+<text  x="14.71" y="471.5" ></text>
+</g>
+<g >
+<title>spur`unicode_segmentation::grapheme::GraphemeCursor::grapheme_category::h2e5ef42562cb695e (2 observations, 0.25%)</title><rect x="1217.3" y="285" width="3.4" height="15.0" fill="rgb(211,28,6)" rx="2" ry="2" />
+<text  x="1220.29" y="295.5" ></text>
+</g>
+<g >
+<title>spur`tokio::time::interval::Interval::poll_tick::h8acd365a0eeea6de (2 observations, 0.25%)</title><rect x="379.4" y="397" width="3.4" height="15.0" fill="rgb(238,152,36)" rx="2" ry="2" />
+<text  x="382.37" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..task..coop..Coop$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h609da9e08a76df22 (1 observations, 0.12%)</title><rect x="216.9" y="269" width="1.7" height="15.0" fill="rgb(249,205,49)" rx="2" ry="2" />
+<text  x="219.91" y="279.5" ></text>
+</g>
+<g >
+<title>dyld`start (658 observations, 81.54%)</title><rect x="264.8" y="589" width="1125.2" height="15.0" fill="rgb(217,57,13)" rx="2" ry="2" />
+<text  x="267.80" y="599.5" >dyld`start</text>
+</g>
+<g >
+<title>spur`sqlite3ColumnDefault (1 observations, 0.12%)</title><rect x="11.7" y="253" width="1.7" height="15.0" fill="rgb(206,7,1)" rx="2" ry="2" />
+<text  x="14.71" y="263.5" ></text>
+</g>
+<g >
+<title>libsystem_platform`_platform_memmove (1 observations, 0.12%)</title><rect x="1265.2" y="301" width="1.7" height="15.0" fill="rgb(246,189,45)" rx="2" ry="2" />
+<text  x="1268.17" y="311.5" ></text>
+</g>
+<g >
+<title>spur`spur::run::_$u7b$$u7b$closure$u7d$$u7d$::h019b4d330f42a488 (635 observations, 78.69%)</title><rect x="304.1" y="461" width="1085.9" height="15.0" fill="rgb(252,217,52)" rx="2" ry="2" />
+<text  x="307.13" y="471.5" >spur`spur::run::_$u7b$$u7b$closure$u7d$$u7d$::h019b4d330f42a488</text>
+</g>
+<g >
+<title>spur`tokio::runtime::blocking::pool::Inner::run::h5462436ba8032221 (140 observations, 17.35%)</title><rect x="23.7" y="493" width="239.4" height="15.0" fill="rgb(243,177,42)" rx="2" ry="2" />
+<text  x="26.68" y="503.5" >spur`tokio::runtime::blocking::..</text>
+</g>
+<g >
+<title>spur`parking_lot::condvar::Condvar::wait_until_internal::h9534e36e64903f1f (5 observations, 0.62%)</title><rect x="283.6" y="461" width="8.6" height="15.0" fill="rgb(245,186,44)" rx="2" ry="2" />
+<text  x="286.61" y="471.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::pal::unix::time::Timespec::now::he53f9d80e91bd807 (1 observations, 0.12%)</title><rect x="353.7" y="349" width="1.7" height="15.0" fill="rgb(215,46,11)" rx="2" ry="2" />
+<text  x="356.72" y="359.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h09ec700a7fabe96a (1 observations, 0.12%)</title><rect x="15.1" y="525" width="1.7" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="18.13" y="535.5" ></text>
+</g>
+<g >
+<title>libsystem_m`pow (1 observations, 0.12%)</title><rect x="81.8" y="365" width="1.7" height="15.0" fill="rgb(233,133,31)" rx="2" ry="2" />
+<text  x="84.82" y="375.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_cond_wait (1 observations, 0.12%)</title><rect x="290.4" y="445" width="1.8" height="15.0" fill="rgb(207,13,3)" rx="2" ry="2" />
+<text  x="293.45" y="455.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (2 observations, 0.25%)</title><rect x="11.7" y="541" width="3.4" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="14.71" y="551.5" ></text>
+</g>
+<g >
+<title>spur`parking_lot::raw_mutex::RawMutex::unlock_slow::h340ed279e1c19955 (2 observations, 0.25%)</title><rect x="246.0" y="269" width="3.4" height="15.0" fill="rgb(249,205,49)" rx="2" ry="2" />
+<text  x="248.99" y="279.5" ></text>
+</g>
+<g >
+<title>spur`std::thread::local::LocalKey$LT$T$GT$::with::h8d3caa3e0262f45f (1 observations, 0.12%)</title><rect x="10.0" y="445" width="1.7" height="15.0" fill="rgb(237,150,35)" rx="2" ry="2" />
+<text  x="13.00" y="455.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`_pthread_start (1 observations, 0.12%)</title><rect x="16.8" y="557" width="1.8" height="15.0" fill="rgb(253,220,52)" rx="2" ry="2" />
+<text  x="19.84" y="567.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_realloc (2 observations, 0.25%)</title><rect x="1292.5" y="269" width="3.4" height="15.0" fill="rgb(233,131,31)" rx="2" ry="2" />
+<text  x="1295.53" y="279.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`xzm_malloc_zone_try_free_default (1 observations, 0.12%)</title><rect x="242.6" y="301" width="1.7" height="15.0" fill="rgb(223,85,20)" rx="2" ry="2" />
+<text  x="245.57" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..command..write_command_ansi..Adapter$LT$T$GT$$u20$as$u20$core..fmt..Write$GT$::write_str::hff32cdad5b2f4135 (1 observations, 0.12%)</title><rect x="403.3" y="333" width="1.7" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="406.31" y="343.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::react_trace::ReactTrace::set_theme::ha3c8ed60a40900a0 (1 observations, 0.12%)</title><rect x="1131.8" y="365" width="1.7" height="15.0" fill="rgb(224,90,21)" rx="2" ry="2" />
+<text  x="1134.78" y="375.5" ></text>
+</g>
+<g >
+<title>spur`std::fs::read::inner::hebd695181b114834 (1 observations, 0.12%)</title><rect x="254.5" y="285" width="1.7" height="15.0" fill="rgb(210,26,6)" rx="2" ry="2" />
+<text  x="257.54" y="295.5" ></text>
+</g>
+<g >
+<title>spur`&lt;deduplicated_symbol&gt; (1 observations, 0.12%)</title><rect x="1131.8" y="333" width="1.7" height="15.0" fill="rgb(242,174,41)" rx="2" ry="2" />
+<text  x="1134.78" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_xzone_malloc_tiny (1 observations, 0.12%)</title><rect x="13.4" y="173" width="1.7" height="15.0" fill="rgb(246,191,45)" rx="2" ry="2" />
+<text  x="16.42" y="183.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h0694f89e43ce9327 (23 observations, 2.85%)</title><rect x="343.5" y="413" width="39.3" height="15.0" fill="rgb(221,74,17)" rx="2" ry="2" />
+<text  x="346.46" y="423.5" >spu..</text>
+</g>
+<g >
+<title>spur`rusqlite::inner_connection::InnerConnection::prepare::h0ec248e13057087a (2 observations, 0.25%)</title><rect x="11.7" y="429" width="3.4" height="15.0" fill="rgb(211,31,7)" rx="2" ry="2" />
+<text  x="14.71" y="439.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3VdbeDelete (1 observations, 0.12%)</title><rect x="16.8" y="413" width="1.8" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
+<text  x="19.84" y="423.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$unicode_segmentation..grapheme..Graphemes$u20$as$u20$core..iter..traits..iterator..Iterator$GT$::next::h39e4d0f4e2285f11 (30 observations, 3.72%)</title><rect x="1169.4" y="301" width="51.3" height="15.0" fill="rgb(218,64,15)" rx="2" ry="2" />
+<text  x="1172.41" y="311.5" >spur`..</text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..event..stream..EventStream$u20$as$u20$futures_core..stream..Stream$GT$::poll_next::h84dd62463edadc90 (3 observations, 0.37%)</title><rect x="382.8" y="413" width="5.1" height="15.0" fill="rgb(221,75,18)" rx="2" ry="2" />
+<text  x="385.79" y="423.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`mkdir (1 observations, 0.12%)</title><rect x="251.1" y="269" width="1.7" height="15.0" fill="rgb(250,209,50)" rx="2" ry="2" />
+<text  x="254.12" y="279.5" ></text>
+</g>
+<g >
+<title>spur`ratatui::text::line::Line::width::heaaf21dcdc238cc1 (1 observations, 0.12%)</title><rect x="1304.5" y="349" width="1.7" height="15.0" fill="rgb(247,193,46)" rx="2" ry="2" />
+<text  x="1307.50" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::time::clock::now::h340f9c269fa66387 (1 observations, 0.12%)</title><rect x="234.0" y="269" width="1.7" height="15.0" fill="rgb(235,139,33)" rx="2" ry="2" />
+<text  x="237.01" y="279.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h80f1825090319778 (1 observations, 0.12%)</title><rect x="15.1" y="477" width="1.7" height="15.0" fill="rgb(218,63,15)" rx="2" ry="2" />
+<text  x="18.13" y="487.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$alloc..string..String$u20$as$u20$core..fmt..Write$GT$::write_str::hfaf892e59da79312 (1 observations, 0.12%)</title><rect x="1126.7" y="301" width="1.7" height="15.0" fill="rgb(253,224,53)" rx="2" ry="2" />
+<text  x="1129.65" y="311.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.9608909924150142529) (1 observations, 0.12%)</title><rect x="131.4" y="301" width="1.7" height="15.0" fill="rgb(214,45,10)" rx="2" ry="2" />
+<text  x="134.41" y="311.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::worker::Context::run_task::h5701c520e768d314 (40 observations, 4.96%)</title><rect x="193.0" y="365" width="68.4" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="195.97" y="375.5" >spur`to..</text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::worker::run::h425dcffd2ab58731 (140 observations, 17.35%)</title><rect x="23.7" y="429" width="239.4" height="15.0" fill="rgb(206,6,1)" rx="2" ry="2" />
+<text  x="26.68" y="439.5" >spur`tokio::runtime::scheduler:..</text>
+</g>
+<g >
+<title>spur`std::thread::functions::yield_now::h413145e62bf045e5 (1 observations, 0.12%)</title><rect x="355.4" y="349" width="1.7" height="15.0" fill="rgb(239,158,37)" rx="2" ry="2" />
+<text  x="358.43" y="359.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__recvfrom (1 observations, 0.12%)</title><rect x="259.7" y="269" width="1.7" height="15.0" fill="rgb(221,78,18)" rx="2" ry="2" />
+<text  x="262.67" y="279.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h2d5015ea766a2b53 (140 observations, 17.35%)</title><rect x="23.7" y="477" width="239.4" height="15.0" fill="rgb(211,30,7)" rx="2" ry="2" />
+<text  x="26.68" y="487.5" >spur`tokio::runtime::task::harn..</text>
+</g>
+<g >
+<title>spur`sqlite3Prepare (1 observations, 0.12%)</title><rect x="18.6" y="397" width="1.7" height="15.0" fill="rgb(210,23,5)" rx="2" ry="2" />
+<text  x="21.55" y="407.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::waker::drop_waker::hf9b03800525769e6 (1 observations, 0.12%)</title><rect x="232.3" y="221" width="1.7" height="15.0" fill="rgb(215,49,11)" rx="2" ry="2" />
+<text  x="235.30" y="231.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::_$LT$impl$u20$tokio..runtime..time..handle..Handle$GT$::clear_entry::h5029e523b6036cb6 (1 observations, 0.12%)</title><rect x="393.0" y="397" width="1.8" height="15.0" fill="rgb(221,74,17)" rx="2" ry="2" />
+<text  x="396.05" y="407.5" ></text>
+</g>
+<g >
+<title>spur`tokio::sync::task::atomic_waker::AtomicWaker::register_by_ref::h7dc07f2d92ab0be3 (2 observations, 0.25%)</title><rect x="230.6" y="237" width="3.4" height="15.0" fill="rgb(234,136,32)" rx="2" ry="2" />
+<text  x="233.59" y="247.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::event::poll_internal::h055292a0f86aec4d (2 observations, 0.25%)</title><rect x="384.5" y="397" width="3.4" height="15.0" fill="rgb(239,158,37)" rx="2" ry="2" />
+<text  x="387.50" y="407.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (2 observations, 0.25%)</title><rect x="20.3" y="541" width="3.4" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="23.26" y="551.5" ></text>
+</g>
+<g >
+<title>spur`core::str::pattern::StrSearcher::new::h4cabcb1377b9c47b (1 observations, 0.12%)</title><rect x="10.0" y="61" width="1.7" height="15.0" fill="rgb(208,17,4)" rx="2" ry="2" />
+<text  x="13.00" y="71.5" ></text>
+</g>
+<g >
+<title>spur`core::str::pattern::StrSearcher::new::h4cabcb1377b9c47b (1 observations, 0.12%)</title><rect x="1128.4" y="333" width="1.7" height="15.0" fill="rgb(208,17,4)" rx="2" ry="2" />
+<text  x="1131.36" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`__open (1 observations, 0.12%)</title><rect x="252.8" y="237" width="1.7" height="15.0" fill="rgb(225,94,22)" rx="2" ry="2" />
+<text  x="255.83" y="247.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (1 observations, 0.12%)</title><rect x="10.0" y="573" width="1.7" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="13.00" y="583.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::react_trace::render::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::render_with_ctx_focused::h2f8bc013b603cbb9 (83 observations, 10.29%)</title><rect x="1133.5" y="365" width="141.9" height="15.0" fill="rgb(239,158,37)" rx="2" ry="2" />
+<text  x="1136.49" y="375.5" >spur`spur_tui::com..</text>
+</g>
+<g >
+<title>spur`(.llvm.83279332334765383) (1 observations, 0.12%)</title><rect x="256.2" y="317" width="1.8" height="15.0" fill="rgb(223,86,20)" rx="2" ry="2" />
+<text  x="259.25" y="327.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.15721004660085704268) (7 observations, 0.87%)</title><rect x="1371.2" y="381" width="12.0" height="15.0" fill="rgb(238,155,37)" rx="2" ry="2" />
+<text  x="1374.19" y="391.5" ></text>
+</g>
+<g >
+<title>spur`tokio::time::interval::Interval::poll_tick::h8acd365a0eeea6de (6 observations, 0.74%)</title><rect x="225.5" y="285" width="10.2" height="15.0" fill="rgb(238,152,36)" rx="2" ry="2" />
+<text  x="228.46" y="295.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::park::CachedParkThread::block_on::h903837339e708e73 (658 observations, 81.54%)</title><rect x="264.8" y="493" width="1125.2" height="15.0" fill="rgb(214,42,10)" rx="2" ry="2" />
+<text  x="267.80" y="503.5" >spur`tokio::runtime::park::CachedParkThread::block_on::h903837339e708e73</text>
+</g>
+<g >
+<title>spur`std::sys::pal::unix::time::Timespec::now::he53f9d80e91bd807 (1 observations, 0.12%)</title><rect x="1364.3" y="413" width="1.8" height="15.0" fill="rgb(215,46,11)" rx="2" ry="2" />
+<text  x="1367.35" y="423.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::views::session_detail::state::_$LT$impl$u20$spur_tui..views..session_detail..SessionDetailView$GT$::build_state_lookup_sets::ha8f3af100bdd0c59 (1 observations, 0.12%)</title><rect x="1360.9" y="381" width="1.7" height="15.0" fill="rgb(228,108,25)" rx="2" ry="2" />
+<text  x="1363.93" y="391.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::worker::_$LT$impl$u20$tokio..runtime..scheduler..multi_thread..handle..Handle$GT$::schedule_task::he71885e6efd7747a (2 observations, 0.25%)</title><rect x="175.9" y="317" width="3.4" height="15.0" fill="rgb(211,28,6)" rx="2" ry="2" />
+<text  x="178.87" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_util..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h301b7adfb106f035 (1 observations, 0.12%)</title><rect x="10.0" y="253" width="1.7" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
+<text  x="13.00" y="263.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (1 observations, 0.12%)</title><rect x="405.0" y="333" width="1.7" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="408.02" y="343.5" ></text>
+</g>
+<g >
+<title>spur`futures_util::stream::stream::StreamExt::poll_next_unpin::h2d4db0d498e37f5b (1 observations, 0.12%)</title><rect x="10.0" y="317" width="1.7" height="15.0" fill="rgb(213,39,9)" rx="2" ry="2" />
+<text  x="13.00" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$indexmap..map..IndexMap$LT$K$C$V$C$S$GT$$u20$as$u20$core..iter..traits..collect..FromIterator$LT$$LP$K$C$V$RP$$GT$$GT$::from_iter::hb1a56c1c04a7d9a0 (1 observations, 0.12%)</title><rect x="10.0" y="157" width="1.7" height="15.0" fill="rgb(217,57,13)" rx="2" ry="2" />
+<text  x="13.00" y="167.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h41053dc4eb27e6b6 (29 observations, 3.59%)</title><rect x="193.0" y="349" width="49.6" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="195.97" y="359.5" >spur`..</text>
+</g>
+<g >
+<title>spur`core::ptr::drop_in_place$LT$tokio..time..sleep..Sleep$GT$::h19b7b4d410519b98 (2 observations, 0.25%)</title><rect x="391.3" y="413" width="3.5" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
+<text  x="394.34" y="423.5" ></text>
+</g>
+<g >
+<title>spur`std::process::Command::output::h603175eca38db81e (1 observations, 0.12%)</title><rect x="20.3" y="429" width="1.7" height="15.0" fill="rgb(208,15,3)" rx="2" ry="2" />
+<text  x="23.26" y="439.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::h09ec700a7fabe96a (2 observations, 0.25%)</title><rect x="11.7" y="525" width="3.4" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<text  x="14.71" y="535.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.11681672623846908347) (4 observations, 0.50%)</title><rect x="1383.2" y="397" width="6.8" height="15.0" fill="rgb(209,21,5)" rx="2" ry="2" />
+<text  x="1386.16" y="407.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::entry::TimerEntry::poll_elapsed::h8e2c6ba35b5c33ee (4 observations, 0.50%)</title><rect x="227.2" y="253" width="6.8" height="15.0" fill="rgb(247,195,46)" rx="2" ry="2" />
+<text  x="230.17" y="263.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3ColumnDefault (1 observations, 0.12%)</title><rect x="13.4" y="269" width="1.7" height="15.0" fill="rgb(206,7,1)" rx="2" ry="2" />
+<text  x="16.42" y="279.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (1 observations, 0.12%)</title><rect x="16.8" y="573" width="1.8" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="19.84" y="583.5" ></text>
+</g>
+<g >
+<title>libsystem_pthread`thread_start (140 observations, 17.35%)</title><rect x="23.7" y="573" width="239.4" height="15.0" fill="rgb(240,162,38)" rx="2" ry="2" />
+<text  x="26.68" y="583.5" >libsystem_pthread`thread_start</text>
+</g>
+<g >
+<title>spur`tokio::runtime::scheduler::multi_thread::worker::Context::park_internal::h79db86a2a0f1dc8c (52 observations, 6.44%)</title><rect x="104.1" y="365" width="88.9" height="15.0" fill="rgb(246,192,45)" rx="2" ry="2" />
+<text  x="107.05" y="375.5" >spur`tokio..</text>
+</g>
+<g >
+<title>libsystem_platform`_platform_memmove (1 observations, 0.12%)</title><rect x="1273.7" y="317" width="1.7" height="15.0" fill="rgb(246,189,45)" rx="2" ry="2" />
+<text  x="1276.72" y="327.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::beads_db::reader_loop::hb5abc76d2b05366e (1 observations, 0.12%)</title><rect x="18.6" y="493" width="1.7" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="21.55" y="503.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::_$LT$impl$u20$tokio..runtime..time..handle..Handle$GT$::reregister::h5c223194fd0baff2 (1 observations, 0.12%)</title><rect x="387.9" y="397" width="1.7" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
+<text  x="390.92" y="407.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (1 observations, 0.12%)</title><rect x="408.4" y="365" width="1.7" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="411.44" y="375.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3LockAndPrepare (1 observations, 0.12%)</title><rect x="22.0" y="429" width="1.7" height="15.0" fill="rgb(244,183,43)" rx="2" ry="2" />
+<text  x="24.97" y="439.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::app::App::tick::ha8d74764d0b0c414 (29 observations, 3.59%)</title><rect x="1314.8" y="413" width="49.5" height="15.0" fill="rgb(218,60,14)" rx="2" ry="2" />
+<text  x="1317.76" y="423.5" >spur`..</text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::hf12fb689f266a761 (1 observations, 0.12%)</title><rect x="10.0" y="525" width="1.7" height="15.0" fill="rgb(222,78,18)" rx="2" ry="2" />
+<text  x="13.00" y="535.5" ></text>
+</g>
+<g >
+<title>spur`tokio::signal::RxFuture::poll_recv::h22bd5b94992cf4be (7 observations, 0.87%)</title><rect x="1371.2" y="397" width="12.0" height="15.0" fill="rgb(210,23,5)" rx="2" ry="2" />
+<text  x="1374.19" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$std..io..stdio..Stdout$u20$as$u20$std..io..Write$GT$::write_all::hce8a0a74a5d5d641 (1 observations, 0.12%)</title><rect x="406.7" y="333" width="1.7" height="15.0" fill="rgb(219,68,16)" rx="2" ry="2" />
+<text  x="409.73" y="343.5" ></text>
+</g>
+<g >
+<title>spur`core::ops::function::FnOnce::call_once$u7b$$u7b$vtable.shim$u7d$$u7d$::hbf71aa97944076e2 (2 observations, 0.25%)</title><rect x="20.3" y="525" width="3.4" height="15.0" fill="rgb(247,197,47)" rx="2" ry="2" />
+<text  x="23.26" y="535.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::markdown_stream::MarkdownStream::maybe_flush::ha7cfce249ed8d1bc (1 observations, 0.12%)</title><rect x="1342.1" y="381" width="1.7" height="15.0" fill="rgb(234,135,32)" rx="2" ry="2" />
+<text  x="1345.12" y="391.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::beads_db::reader_loop::hb5abc76d2b05366e (2 observations, 0.25%)</title><rect x="11.7" y="493" width="3.4" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="14.71" y="503.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`mach_timebase_info (1 observations, 0.12%)</title><rect x="1340.4" y="317" width="1.7" height="15.0" fill="rgb(233,128,30)" rx="2" ry="2" />
+<text  x="1343.41" y="327.5" ></text>
+</g>
+<g >
+<title>spur`spur_tui::components::react_trace::builder::_$LT$impl$u20$spur_tui..components..react_trace..ReactTrace$GT$::build_virtual_rows_with_tail::h1121a86e66d49e67 (1 observations, 0.12%)</title><rect x="1273.7" y="349" width="1.7" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="1276.72" y="359.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::core::Core$LT$T$C$S$GT$::poll::h5b4900039d5c90dc (140 observations, 17.35%)</title><rect x="23.7" y="461" width="239.4" height="15.0" fill="rgb(205,3,0)" rx="2" ry="2" />
+<text  x="26.68" y="471.5" >spur`tokio::runtime::task::core..</text>
+</g>
+<g >
+<title>libsystem_pthread`pthread_cond_signal (11 observations, 1.36%)</title><rect x="145.1" y="301" width="18.8" height="15.0" fill="rgb(223,83,19)" rx="2" ry="2" />
+<text  x="148.09" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$ratatui..widgets..paragraph..Paragraph$u20$as$u20$ratatui..widgets..WidgetRef$GT$::render_ref::hfb2d742a7a4eb3ed (14 observations, 1.73%)</title><rect x="1280.6" y="333" width="23.9" height="15.0" fill="rgb(245,184,44)" rx="2" ry="2" />
+<text  x="1283.56" y="343.5" >s..</text>
+</g>
+<g >
+<title>spur`core::iter::traits::double_ended::DoubleEndedIterator::rfold::h1148341974f13c74 (154 observations, 19.08%)</title><rect x="765.8" y="381" width="263.4" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="768.84" y="391.5" >spur`core::iter::traits::double_end..</text>
+</g>
+<g >
+<title>spur`core::fmt::write::hedd53bdb9e87b4cf (5 observations, 0.62%)</title><rect x="410.1" y="365" width="8.6" height="15.0" fill="rgb(238,153,36)" rx="2" ry="2" />
+<text  x="413.15" y="375.5" ></text>
+</g>
+<g >
+<title>&lt;unknown binary&gt;`??? (1 observations, 0.12%)</title><rect x="263.1" y="589" width="1.7" height="15.0" fill="rgb(246,190,45)" rx="2" ry="2" />
+<text  x="266.09" y="599.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$futures_util..future..poll_fn..PollFn$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::h999923d964c6a46a (1 observations, 0.12%)</title><rect x="10.0" y="365" width="1.7" height="15.0" fill="rgb(207,10,2)" rx="2" ry="2" />
+<text  x="13.00" y="375.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.14870922844863944914) (609 observations, 75.46%)</title><rect x="326.4" y="429" width="1041.4" height="15.0" fill="rgb(227,102,24)" rx="2" ry="2" />
+<text  x="329.36" y="439.5" >spur`(.llvm.14870922844863944914)</text>
+</g>
+<g >
+<title>spur`core::iter::traits::double_ended::DoubleEndedIterator::rfold::h1148341974f13c74 (14 observations, 1.73%)</title><rect x="1220.7" y="301" width="23.9" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="1223.71" y="311.5" >s..</text>
+</g>
+<g >
+<title>.beads-db-reader-1 (1 observations, 0.12%)</title><rect x="15.1" y="589" width="1.7" height="15.0" fill="rgb(247,194,46)" rx="2" ry="2" />
+<text  x="18.13" y="599.5" ></text>
+</g>
+<g >
+<title>spur`core::fmt::Formatter::pad::h979e8369ca7c7fc2 (1 observations, 0.12%)</title><rect x="1306.2" y="301" width="1.7" height="15.0" fill="rgb(247,195,46)" rx="2" ry="2" />
+<text  x="1309.21" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..event..stream..EventStream$u20$as$u20$futures_core..stream..Stream$GT$::poll_next::h84dd62463edadc90 (6 observations, 0.74%)</title><rect x="346.9" y="397" width="10.2" height="15.0" fill="rgb(221,75,18)" rx="2" ry="2" />
+<text  x="349.88" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..sync..notify..Notified$u20$as$u20$core..ops..drop..Drop$GT$::drop::h0eec8830808bdc04 (1 observations, 0.12%)</title><rect x="256.2" y="285" width="1.8" height="15.0" fill="rgb(227,104,25)" rx="2" ry="2" />
+<text  x="259.25" y="295.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.11768525427537795831) (6 observations, 0.74%)</title><rect x="281.9" y="477" width="10.3" height="15.0" fill="rgb(233,132,31)" rx="2" ry="2" />
+<text  x="284.90" y="487.5" ></text>
+</g>
+<g >
+<title>libsystem_platform`_platform_memmove (1 observations, 0.12%)</title><rect x="338.3" y="413" width="1.7" height="15.0" fill="rgb(246,189,45)" rx="2" ry="2" />
+<text  x="341.33" y="423.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::harness::Harness$LT$T$C$S$GT$::poll::h9f2215b13afa0145 (1 observations, 0.12%)</title><rect x="259.7" y="349" width="1.7" height="15.0" fill="rgb(250,208,49)" rx="2" ry="2" />
+<text  x="262.67" y="359.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.12930347629546215018) (4 observations, 0.50%)</title><rect x="364.0" y="365" width="6.8" height="15.0" fill="rgb(250,207,49)" rx="2" ry="2" />
+<text  x="366.98" y="375.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.13073710555429814633) (1 observations, 0.12%)</title><rect x="174.2" y="333" width="1.7" height="15.0" fill="rgb(206,7,1)" rx="2" ry="2" />
+<text  x="177.16" y="343.5" ></text>
+</g>
+<g >
+<title>libsystem_malloc`_xzm_free (1 observations, 0.12%)</title><rect x="16.8" y="381" width="1.8" height="15.0" fill="rgb(219,67,16)" rx="2" ry="2" />
+<text  x="19.84" y="391.5" ></text>
+</g>
+<g >
+<title>spur`core::iter::traits::double_ended::DoubleEndedIterator::rfold::h1148341974f13c74 (4 observations, 0.50%)</title><rect x="1295.9" y="317" width="6.9" height="15.0" fill="rgb(249,206,49)" rx="2" ry="2" />
+<text  x="1298.95" y="327.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$$RF$mio..net..uds..stream..UnixStream$u20$as$u20$std..io..Read$GT$::read::hacdda4f52bfef290 (1 observations, 0.12%)</title><rect x="259.7" y="301" width="1.7" height="15.0" fill="rgb(209,19,4)" rx="2" ry="2" />
+<text  x="262.67" y="311.5" ></text>
+</g>
+<g >
+<title>spur`sqlite3Prepare (2 observations, 0.25%)</title><rect x="11.7" y="397" width="3.4" height="15.0" fill="rgb(210,23,5)" rx="2" ry="2" />
+<text  x="14.71" y="407.5" ></text>
+</g>
+<g >
+<title>spur`core::ptr::drop_in_place$LT$ratatui..widgets..paragraph..Paragraph$GT$::h2f758bbfdc4de61a (4 observations, 0.50%)</title><rect x="1266.9" y="349" width="6.8" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="1269.88" y="359.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.9894640347001106580) (1 observations, 0.12%)</title><rect x="18.6" y="445" width="1.7" height="15.0" fill="rgb(229,113,27)" rx="2" ry="2" />
+<text  x="21.55" y="455.5" ></text>
+</g>
+<g >
+<title>spur`spur_pm::beads_crate::beads_db::writer_loop::hecfca78ee0bd0411 (2 observations, 0.25%)</title><rect x="20.3" y="493" width="3.4" height="15.0" fill="rgb(205,0,0)" rx="2" ry="2" />
+<text  x="23.26" y="503.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..command..write_command_ansi..Adapter$LT$T$GT$$u20$as$u20$core..fmt..Write$GT$::write_str::hff32cdad5b2f4135 (1 observations, 0.12%)</title><rect x="458.0" y="381" width="1.7" height="15.0" fill="rgb(212,34,8)" rx="2" ry="2" />
+<text  x="461.03" y="391.5" ></text>
+</g>
+<g >
+<title>spur`crossterm::terminal::size::hd781bb1e562feb9d (1 observations, 0.12%)</title><rect x="461.4" y="397" width="1.8" height="15.0" fill="rgb(239,156,37)" rx="2" ry="2" />
+<text  x="464.45" y="407.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::pal::unix::time::Timespec::now::he53f9d80e91bd807 (1 observations, 0.12%)</title><rect x="1340.4" y="365" width="1.7" height="15.0" fill="rgb(215,46,11)" rx="2" ry="2" />
+<text  x="1343.41" y="375.5" ></text>
+</g>
+<g >
+<title>libsystem_kernel`write (3 observations, 0.37%)</title><rect x="210.1" y="269" width="5.1" height="15.0" fill="rgb(221,75,17)" rx="2" ry="2" />
+<text  x="213.07" y="279.5" ></text>
+</g>
+<g >
+<title>spur`core::ptr::drop_in_place$LT$$LP$$RF$mut$u20$core..pin..Pin$LT$$RF$mut$u20$tokio..sync..oneshot..Receiver$LT$$LP$$RP$$GT$$GT$$C$tokio..sync..notify..Notified$C$$RF$mut$u20$core..pin..Pin$LT$$RF$mut$u20$spur_core..plan..reconciler..Reconciler..run..$u7b$$u7b$closure$u7d$$u7d$..$u7b$$u7b$closure$u7d$$u7d$$GT$$C$core..pin..Pin$LT$alloc..boxed..Box$LT$dyn$u20$core..future..future..Future$u2b$Output$u20$$u3d$$u20$$LP$$RP$$u2b$core..marker..Send$GT$$GT$$RP$$GT$::h26809b4dc45179a7 (1 observations, 0.12%)</title><rect x="256.2" y="301" width="1.8" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
+<text  x="259.25" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$core..iter..adapters..map..Map$LT$I$C$F$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$::fold::h96cde75aa4ada10d (1 observations, 0.12%)</title><rect x="10.0" y="141" width="1.7" height="15.0" fill="rgb(235,142,34)" rx="2" ry="2" />
+<text  x="13.00" y="151.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.12949780378602301469) (4 observations, 0.50%)</title><rect x="208.4" y="301" width="6.8" height="15.0" fill="rgb(229,110,26)" rx="2" ry="2" />
+<text  x="211.36" y="311.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$tokio..task..coop..Coop$LT$F$GT$$u20$as$u20$core..future..future..Future$GT$::poll::heb9e384be6aed33d (8 observations, 0.99%)</title><rect x="357.1" y="397" width="13.7" height="15.0" fill="rgb(225,96,22)" rx="2" ry="2" />
+<text  x="360.14" y="407.5" ></text>
+</g>
+<g >
+<title>spur`std::sys::thread::unix::Thread::new::thread_start::h7cf39b7a7f135f48 (140 observations, 17.35%)</title><rect x="23.7" y="541" width="239.4" height="15.0" fill="rgb(225,92,22)" rx="2" ry="2" />
+<text  x="26.68" y="551.5" >spur`std::sys::thread::unix::Th..</text>
+</g>
+<g >
+<title>spur`tokio::runtime::task::waker::drop_waker::hf9b03800525769e6 (1 observations, 0.12%)</title><rect x="235.7" y="301" width="1.7" height="15.0" fill="rgb(215,49,11)" rx="2" ry="2" />
+<text  x="238.72" y="311.5" ></text>
+</g>
+<g >
+<title>spur`dbMallocRawFinish (1 observations, 0.12%)</title><rect x="11.7" y="173" width="1.7" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
+<text  x="14.71" y="183.5" ></text>
+</g>
+<g >
+<title>libdyld`_tlv_get_addr (1 observations, 0.12%)</title><rect x="324.6" y="429" width="1.8" height="15.0" fill="rgb(240,163,39)" rx="2" ry="2" />
+<text  x="327.65" y="439.5" ></text>
+</g>
+<g >
+<title>spur`tokio::runtime::time::entry::TimerEntry::poll_elapsed::h8e2c6ba35b5c33ee (1 observations, 0.12%)</title><rect x="389.6" y="397" width="1.7" height="15.0" fill="rgb(247,195,46)" rx="2" ry="2" />
+<text  x="392.63" y="407.5" ></text>
+</g>
+<g >
+<title>spur`_$LT$crossterm..style..types..colored..Colored$u20$as$u20$core..fmt..Display$GT$::fmt::hcaa0f350bf9c4ab4 (2 observations, 0.25%)</title><rect x="403.3" y="349" width="3.4" height="15.0" fill="rgb(206,7,1)" rx="2" ry="2" />
+<text  x="406.31" y="359.5" ></text>
+</g>
+<g >
+<title>spur`(.llvm.83279332334765383) (1 observations, 0.12%)</title><rect x="258.0" y="317" width="1.7" height="15.0" fill="rgb(223,86,20)" rx="2" ry="2" />
+<text  x="260.96" y="327.5" ></text>
+</g>
+<g >
+<title>spur`parking_lot::raw_mutex::RawMutex::lock_slow::h46d58336e28ab59a (2 observations, 0.25%)</title><rect x="384.5" y="381" width="3.4" height="15.0" fill="rgb(206,4,1)" rx="2" ry="2" />
+<text  x="387.50" y="391.5" ></text>
+</g>
+</g>
+</svg>
