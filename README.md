@@ -1,4 +1,4 @@
-<h1 align="center">SPUR</h1>
+<h1 align="center">SpurCode</h1>
 
 <p align="center">
   <strong>The control tower for your CLI coding agents.</strong>
@@ -32,17 +32,17 @@
 <p align="center">
   <sub>
     <a href="./docs/demos/spur-dag-aware-multi-agent.webm">Watch the 85-second WebM demo</a>
-    — a brain plans the work, parallel agents execute it, and SPUR brings every result back to one review lane.
+    — a brain plans the work, parallel agents execute it, and SpurCode brings every result back to one review lane.
   </sub>
 </p>
 
-## Why SPUR
+## Why SpurCode
 
 Running one coding agent is simple. Running several across vendors, repositories, and worktrees quickly becomes an operations problem.
 
-SPUR is a Rust-native terminal application that sits above the agents you already use. It turns a task or issue into a durable plan, delegates work into isolated git worktrees, streams progress into one TUI, and keeps a human in control of every change that reaches the staging branch.
+SpurCode is a Rust-native terminal application that sits above the agents you already use. It turns a task or issue into a durable plan, delegates work into isolated git worktrees, streams progress into one TUI, and keeps a human in control of every change that reaches the staging branch.
 
-| You need | SPUR gives you |
+| You need | SpurCode gives you |
 |---|---|
 | One place to operate a mixed agent fleet | Claude Code, Codex, Gemini, Kimi, OpenCode, Kiro (partial), and generic ACP agents behind one interface |
 | Safe parallel execution | One isolated git worktree per worker, with liveness checks and orphan cleanup |
@@ -55,7 +55,7 @@ SPUR is a Rust-native terminal application that sits above the agents you alread
 
 ## Capability demos
 
-Eight focused capability demos — plus the featured walkthrough above — cover the full SPUR workflow in under nine minutes. Follow them in order for a guided tour, or jump directly to the capability you need.
+Eight focused capability demos — plus the featured walkthrough above — cover the full SpurCode workflow in under nine minutes. Follow them in order for a guided tour, or jump directly to the capability you need.
 
 ### 1. Get productive
 
@@ -173,7 +173,7 @@ Validate the generated configuration at any time:
 spur config check
 ```
 
-Prefer not to install globally? Run SPUR through npm:
+Prefer not to install globally? Run SpurCode through npm:
 
 ```sh
 npx @getspur/spur-cli tui
@@ -199,11 +199,11 @@ flowchart LR
 
 - The **brain** reasons about the task, chooses workers, and submits a plan.
 - **Workers** execute bounded subtasks concurrently in isolated worktrees.
-- SPUR records lineage, events, outcomes, and cost while work is running.
+- SpurCode records lineage, events, outcomes, and cost while work is running.
 - The **review lane** keeps integration human-controlled; rejected work can retry with your feedback.
 - Approved commits land on a staging branch in dependency order.
 
-SPUR speaks [Agent Client Protocol](https://github.com/agentclientprotocol/agent-client-protocol) to agents and exposes delegation tools over MCP. It coordinates agents; it does not replace their in-session experience.
+SpurCode speaks [Agent Client Protocol](https://github.com/agentclientprotocol/agent-client-protocol) to agents and exposes delegation tools over MCP. It coordinates agents; it does not replace their in-session experience.
 
 ## Core capabilities
 
@@ -218,9 +218,9 @@ SPUR speaks [Agent Client Protocol](https://github.com/agentclientprotocol/agent
 
 ## Scope
 
-SPUR is an orchestration and review layer for a fleet of coding agents.
+SpurCode is an orchestration and review layer for a fleet of coding agents.
 
-It is not an IDE, chat client, CI/CD system, or fully autonomous “set and forget” engineer. The review gate is intentional. SPUR works alongside your editor, project-management tool, and agent subscriptions rather than replacing them.
+It is not an IDE, chat client, CI/CD system, or fully autonomous “set and forget” engineer. The review gate is intentional. SpurCode works alongside your editor, project-management tool, and agent subscriptions rather than replacing them.
 
 Native project-management support currently covers [beads](https://github.com/steveyegge/beads) and GitHub Issues through `gh`.
 
@@ -241,10 +241,12 @@ Configuration lives in `.spur/config.toml`. Agent entries describe the executabl
 | [Privacy](./docs/PRIVACY.md) | Telemetry tiers, retention, and opt-out controls |
 | [OSS boundary](./docs/OSS_BOUNDARY.md) | What belongs in the public product repository |
 | [Changelog](./CHANGELOG.md) | Unreleased and shipped changes |
+| [Security policy](./SECURITY.md) | How to report vulnerabilities privately |
+| [Code of conduct](./CODE_OF_CONDUCT.md) | Community standards for participation |
 
 ## Development
 
-SPUR targets Rust 1.88 or later. The workspace defines a `cargo xtask` alias ([`.cargo/config.toml`](./.cargo/config.toml)) that runs the repository helper for common tasks.
+SpurCode targets Rust 1.88 or later. The workspace defines a `cargo xtask` alias ([`.cargo/config.toml`](./.cargo/config.toml)) that runs the repository helper for common tasks.
 
 ### Build and install from source
 
@@ -268,7 +270,7 @@ The install step places:
 
 Arguments after the flags are forwarded to cargo, e.g. `cargo xtask install -- --features disable-notebook-mcp`. Run `cargo xtask help` for the full surface, including `--remote` Linux builds and the `dist` cross-platform release packaging.
 
-The optional notebook frontend is developed separately in [getspur/spur-notebook](https://github.com/getspur/spur-notebook); a source build of SPUR does not bundle it.
+The optional notebook frontend is developed separately in [getspur/spur-notebook](https://github.com/getspur/spur-notebook); a source build of SpurCode does not bundle it.
 
 ### Workspace commands
 
@@ -326,6 +328,6 @@ See the [privacy documentation](./docs/PRIVACY.md) for collected fields, retenti
 
 ## Community and license
 
-Issues, feature requests, and pull requests are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md), open a [GitHub issue](https://github.com/getspur/SpurCode/issues), or send product feedback through [getspur.dev/feedback](https://getspur.dev/feedback).
+Issues, feature requests, and pull requests are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md), open a [GitHub issue](https://github.com/getspur/SpurCode/issues), or send product feedback through [getspur.dev/feedback](https://getspur.dev/feedback). Security reports go through the [private reporting channel](./SECURITY.md).
 
-SPUR is licensed under the [GNU General Public License v3.0 only](./LICENSE) (`GPL-3.0-only`). The Community tier requires no license key; paid feature entitlements are separate from the source license.
+SpurCode is licensed under the [GNU General Public License v3.0 only](./LICENSE) (`GPL-3.0-only`). The Community tier requires no license key; paid feature entitlements are separate from the source license.

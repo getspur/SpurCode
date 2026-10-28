@@ -94,8 +94,17 @@
   - P0.8: `SessionRow::models` aggregates across mid-session model switches.
 
 ### Changed
+- **Project renamed to SpurCode for the public open-source identity.** The
+  repository at `getspur/SpurCode` is now branded "SpurCode" in top-level
+  documentation (README, ARCHITECTURE); the `spur` binary, `@getspur/spur-cli`
+  npm package, `.spur/` paths, crate names, and protocol sentinels
+  (e.g. `[[spur-loop v1]]`) are unchanged. Added community health files:
+  `SECURITY.md` (private vulnerability reporting policy),
+  `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), issue templates
+  (bug / feature / contact links), and a pull request template
+  (`.github/`).
 - **Read-only future metadata saves now fail visibly.** When
-  `.spur/session_metadata.json` was written by a future SPUR version,
+  `.spur/session_metadata.json` was written by a future SpurCode version,
   `SessionMetadataStore::save()` now returns `Err(ReadOnlyFutureSchema)`
   instead of silently accepting and discarding in-session edits. App
   save paths route through `App::persist_metadata`, which surfaces the

@@ -1,6 +1,6 @@
-# SPUR Architecture
+# SpurCode Architecture
 
-SPUR is a Rust workspace for running agentic software work under explicit process
+SpurCode is a Rust workspace for running agentic software work under explicit process
 control. Most work is brain-led: a long-lived brain session reasons about a
 task, calls MCP tools to inspect or delegate work, workers execute in isolated
 git worktrees, and the orchestrator routes results through review, merge,
@@ -91,7 +91,7 @@ That produces two orchestration modes:
 - Brain-owned runtime: ad-hoc runs, interactive sessions, and L1/L2 loops keep
   a brain session in the planner role and use MCP as the brain's side-effect
   surface.
-- Project-owned L3 runtime: at most one elected interactive SPUR process per
+- Project-owned L3 runtime: at most one elected interactive SpurCode process per
   repo holds `.spur/loop-runtime.lock` at a time, while additional interactive
   processes remain passive standbys. That leader schedules due generations,
   reconciles durable beads state under `spur-loop-runtime`, and dispatches a
@@ -100,10 +100,10 @@ That produces two orchestration modes:
 
 Two protocol planes stay deliberately separate:
 
-- ACP (`spur-acp`) is the outbound control channel from SPUR to agent sessions.
+- ACP (`spur-acp`) is the outbound control channel from SpurCode to agent sessions.
   It owns transports, session/config types, notifications, and compatibility
   adapters such as `stdio`, `cli_wrap`, `stream_json`, and native ACP.
-- MCP is the inbound tool channel from the brain back into SPUR. `spur-mcp`
+- MCP is the inbound tool channel from the brain back into SpurCode. `spur-mcp`
   provides the JSON-RPC server, tool registry, and module interface used by
   domain crates such as `spur-core`, `spur-pm`, `spur-graph`, and
   `spur-analyst`.
@@ -234,7 +234,7 @@ surface and is consumed primarily by `spur-cli` and `spur-tui`.
 
 ## Code and session intelligence
 
-SPUR has two distinct intelligence stacks:
+SpurCode has two distinct intelligence stacks:
 
 ### 1. Worktree code intelligence
 
@@ -290,7 +290,7 @@ fully inside it.
 
 ## Frontends and external repos
 
-SPUR currently presents itself through several frontends:
+SpurCode currently presents itself through several frontends:
 
 - `spur-cli` is the main binary entry point
 - `spur-tui` is the ratatui dashboard and interactive session UI
