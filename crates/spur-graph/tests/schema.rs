@@ -185,6 +185,62 @@ fn structural_symbol_ids_match_temporal_snapshot_ids_for_fixture_corpora() {
     }
 }
 
+#[test]
+fn temporal_enum_variant_keeps_query_local_name_and_parent_identity() {
+    let fixture = TempDir::new().expect("fixture");
+    std::fs::create_dir(fixture.path().join("src")).expect("src");
+    // Two import matches put the edge-query variant at the same local match
+    // index as App in the symbols query. Both also have local pattern index 1.
+    let source = "use crate::utils::{helper, Helper};\n\nmod inline {\n    pub enum Mode {\n        Fast,\n    }\n}\n\npub struct App {\n    helper: Helper,\n}\n";
+    std::fs::write(fixture.path().join("src/lib.rs"), source).expect("source");
+    let repo = committed_fixture_repo(fixture.path());
+    let facts = spur_graph::build_facts(repo.path(), None)
+        .expect("structural facts")
+        .0;
+    let structural =
+        spur_graph::store::build::artifact_from_facts(&facts, repo.path()).expect("artifact");
+    let (temporal, _) =
+        spur_graph::git_walk::run_full_walk_into(repo.path(), &Default::default(), None, None)
+            .expect("temporal walk");
+    eprintln!(
+        "enum projection trace: {}",
+        serde_json::json!({"source":source,"structural":structural.symbols,"temporal":temporal.symbol_snapshots})
+    );
+
+    for (qualified_name, kind, range, parent) in [
+        ("inline", "module", [37, 91], None),
+        ("inline::Mode", "enum", [54, 89], Some("inline")),
+        (
+            "inline::Mode::Fast",
+            "enum_variant",
+            [78, 82],
+            Some("inline::Mode"),
+        ),
+    ] {
+        let symbol = structural
+            .symbols
+            .iter()
+            .find(|symbol| symbol.qualified_name == qualified_name && symbol.symbol_kind == kind)
+            .unwrap_or_else(|| panic!("missing structural {qualified_name}"));
+        assert_eq!(symbol.byte_range, range);
+        assert_eq!(
+            symbol.enclosing_scope.as_deref(),
+            parent.map(|scope| scope.rsplit("::").next().expect("parent name"))
+        );
+        let snapshot = matching_snapshot(symbol, &temporal.symbol_snapshots).unwrap_or_else(|| {
+            panic!(
+                "missing temporal {qualified_name}; snapshots: {:#?}",
+                temporal.symbol_snapshots
+            )
+        });
+        assert_eq!(snapshot.enclosing_scope.as_deref(), parent);
+        assert_eq!(snapshot.key.stable_symbol_id, symbol.stable_symbol_id);
+        if kind == "enum_variant" {
+            assert_eq!(symbol.stable_symbol_id, "88715eb9664f575d");
+        }
+    }
+}
+
 fn sample_corpus_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/sample_corpus")
 }

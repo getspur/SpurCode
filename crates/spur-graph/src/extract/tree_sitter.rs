@@ -288,7 +288,16 @@ impl BytesExtractor {
             .ok_or(ExtractError::NoTree)?;
         let mut captures = run_query(&self.queries.symbols, tree.root_node(), source);
         if let Some(spur_edges) = self.queries.spur_edges.as_ref() {
-            captures.extend(run_query(spur_edges, tree.root_node(), source));
+            // Pattern/match indices are query-local. Keep name lookup keys
+            // disjoint when projecting definitions from both capture groups.
+            captures.extend(
+                run_query(spur_edges, tree.root_node(), source)
+                    .into_iter()
+                    .map(|mut capture| {
+                        capture.pattern_index += self.queries.symbols.pattern_count();
+                        capture
+                    }),
+            );
         }
         Ok(extracted_symbols(&self.config, source, &captures))
     }

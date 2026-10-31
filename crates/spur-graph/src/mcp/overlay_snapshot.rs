@@ -1345,11 +1345,7 @@ where
 #[cfg(test)]
 mod tests {
     use std::collections::{BTreeMap, BTreeSet};
-    #[cfg(unix)]
-    use std::ffi::OsString;
     use std::fs;
-    #[cfg(unix)]
-    use std::os::unix::ffi::OsStringExt as _;
     use std::path::{Path, PathBuf};
     use std::process::Command;
 
@@ -1567,13 +1563,6 @@ mod tests {
         }
     }
 
-    #[cfg(unix)]
-    fn injected_discovery_failure_path(worktree: &Path) -> PathBuf {
-        worktree
-            .join("src")
-            .join(OsString::from_vec(b"discovery-failure-\x80.rs".to_vec()))
-    }
-
     impl SnapshotRuntime for InstrumentedRuntime {
         fn capabilities(&self) -> FsmonitorCapabilities {
             self.capabilities
@@ -1649,17 +1638,6 @@ mod tests {
 
         fn fallback_scan_hook(&mut self, attempt: usize, phase: FallbackScanPhase, path: &Path) {
             if phase == FallbackScanPhase::BeforeDiscovery {
-                #[cfg(unix)]
-                {
-                    let failure_path = injected_discovery_failure_path(path);
-                    if attempt > 0 {
-                        let _ = fs::remove_file(&failure_path);
-                    }
-                    if self.discovery_failures.contains(&(attempt, phase)) {
-                        fs::write(&failure_path, "pub fn invalid_path() {}\n")
-                            .expect("inject strict discovery failure");
-                    }
-                }
                 if attempt > 0 {
                     let _ = fs::remove_file(path.join("src/path-set-added.rs"));
                 }

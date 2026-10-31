@@ -318,6 +318,8 @@ fn complete_manifest_json() -> String {
             edges: 0,
             edges_by_dst: None,
             edges_unresolved: 0,
+            macro_invocations: None,
+            macro_scopes: None,
             files: 0,
             file_manifests: 0,
             tombstones: 0,
@@ -333,6 +335,7 @@ fn complete_manifest_json() -> String {
             row_group_size: 16_384,
         },
         edges_by_dst_present: false,
+        macro_evidence: None,
         temporal_shards: Vec::new(),
     })
     .expect("encode complete overlay manifest")

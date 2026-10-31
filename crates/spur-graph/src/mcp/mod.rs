@@ -8752,9 +8752,9 @@ mod tests {
         let tempdir = tempfile::tempdir().expect("tempdir");
         let root = tempdir.path().canonicalize().expect("canonical root");
         let path = root.join(OsString::from_vec(b"non-utf8-\x80.rs".to_vec()));
-        fs::write(&path, "pub fn invalid_path() {}\n").expect("non-UTF-8 source path");
 
-        let error = supported_file_paths_via_fs(&root, &["rs"])
+        // Validate the OS path directly: some filesystems cannot create these bytes.
+        let error = collect_supported_file_paths(&root, [path.clone()])
             .expect_err("fallback path conversion must reject non-UTF-8 paths");
 
         eprintln!("lossless fallback path trace: rejected={}", path.display());
@@ -8771,10 +8771,10 @@ mod tests {
         let root = tempdir.path().canonicalize().expect("canonical root");
         let first = root.join(OsString::from_vec(b"collision-\x80.rs".to_vec()));
         let second = root.join(OsString::from_vec(b"collision-\x81.rs".to_vec()));
-        fs::write(&first, "pub fn first() {}\n").expect("first source");
-        fs::write(&second, "pub fn second() {}\n").expect("second source");
+        assert_ne!(first, second);
+        assert_eq!(first.to_string_lossy(), second.to_string_lossy());
 
-        let error = supported_file_paths_via_fs(&root, &["rs"])
+        let error = collect_supported_file_paths(&root, [first.clone(), second.clone()])
             .expect_err("distinct paths must never overwrite one normalized fallback key");
 
         eprintln!(
@@ -8783,7 +8783,7 @@ mod tests {
             second.display()
         );
         assert!(
-            error.to_string().contains("UTF-8") || error.to_string().contains("duplicate"),
+            error.to_string().contains("UTF-8"),
             "unexpected normalized-collision error: {error:#}"
         );
     }

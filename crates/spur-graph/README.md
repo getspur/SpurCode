@@ -402,3 +402,165 @@ The crate is self-hosting — use the graph tools it powers (see `spurpower-code
 | `crates/spur-cli` `graph` command | Build, vector backfill, standalone MCP |
 | `docs/architecture/spur-graph-git-invalidation.md` | Content-hash invalidation design |
 | `docs/superpowers/specs/*spur-graph*` | Feature design specs (notebook, HCL, parquet, …) |
+
+## Direct Rust macro evidence
+
+Direct macro syntax is stored separately from runtime `Calls` edges. For example,
+`unreachable!` in `parse_raw_diff` and two repeated `debug_assert!` sites in that
+caller produce three distinct evidence rows. Existing call-shaped tokens inside
+macro arguments (such as `input.len()`) retain their previous graph behavior.
+
+`GraphIndexArtifact.macro_invocations` is optional: `None` means unavailable
+(legacy or uncaptured); `Some` with zero rows means captured with zero sites.
+The current domain is **`source_scope = physical_rust_files`**. Notebook Rust
+function definitions and calls remain supported, but direct macro evidence for
+embedded cells awaits a separate cell/source-location contract. Query a notebook
+file or its function caller to obtain `UnsupportedSource`; zero macro rows alone
+never establish coverage or safety. A real physical Rust filename containing
+`#cell` remains supported.
+
+Both `macro_invocations.parquet` and `macro_scopes.parquet` are required core
+tables for captured evidence, even when empty. `manifest.json` records optional
+row counts, completeness, schema/extractor versions, source scope and a shared
+BLAKE3 checksum binding both tables. Footers bind those metadata to the graph
+snapshot. Global site identity is `(graph_content_hash, site_id)`; the full site
+digest binds version, physical path, exact source blob OID and coordinates.
+
+| Table | Main columns |
+| --- | --- |
+| `macro_invocations.parquet` | `site_id`, `file_path`, `source_oid`, nullable `caller_stable_symbol_id`, `enclosing_scope_id`, `enclosing_scope_kind`, `raw_macro_path`, `normalized_macro_path`, `byte_range_start`, `byte_range_end`, `line_start`, `line_end`, `test_context`, `execution_phase`, `debug_assertions_candidate`, nullable `sink_family_candidate`, `attributes`, `resolution` |
+| `macro_scopes.parquet` | `scope_id`, `kind`, `file_path`, `source_oid`, `byte_range_start`, `byte_range_end`, `line_start`, `line_end` |
+
+Byte ranges are half-open UTF-8 offsets; lines are one-based and inclusive.
+`attributes` and tagged `resolution` are JSON strings retaining raw text, owner
+references and local-definition locations. Scopes include non-function const/type
+sites and attribute owners. IDs beginning `macro-scope-v1:` identify evidence-only
+scopes and do not become graph functions. Only an actual enclosing function has
+`caller_stable_symbol_id`; outside-function sites keep it null.
+
+Use `GraphQueryClient::macro_invocations(&MacroInvocationFilter)` for validated
+queries. Filters `file_path`, `caller_stable_symbol_id` and `source_oid` are exact
+and conjunctive; an expected `source_oid` requires an explicit `file_path`.
+Results carry rows, exactly required scopes, snapshot bindings and availability:
+`Complete`, `Partial`, `Unavailable` or `UnsupportedSource`. Complete means
+captured for the supported source domain, with no result cap. Overlay results
+retain separate base/delta snapshots, replace both rows and scopes for changed
+paths, remove deleted paths, and preserve untouched scopes. An unknown base stays
+partial globally and unavailable for untouched paths; supported recaptured paths
+can be complete.
+
+```rust,ignore
+use spur_graph::{MacroInvocationFilter, query_client::{GraphQueryClient, ParquetClient}};
+let client = ParquetClient::open(artifact_dir)?;
+let result = client.macro_invocations(&MacroInvocationFilter {
+    file_path: Some("src/diff.rs".into()),
+    caller_stable_symbol_id: Some(caller_id), // an actual graph function stable ID
+    source_oid: None, // or the expected exact source blob OID
+})?;
+// Inspect result.availability, result.source_scope and result.snapshots as well as rows.
+```
+
+`InMemoryClient` needs the full artifact's source manifests for nonempty evidence.
+Slim loads validate then clear those manifests; use `ParquetClient` for persisted
+directories. Its first macro query freezes both complete compressed evidence
+tables and validates their shared checksum, stored source/scopes and actual graph
+caller projection before filtering. It also verifies decoded supporting source
+manifest count, including zero-site files. Full decoded evidence is then dropped;
+compressed bytes and source context stay resident. Subsequent queries prune those
+immutable in-memory Parquet bytes and perform no evidence-table disk IO. Caller-only
+ownership lookup can separately hydrate graph caller data. Reopen the client to
+observe later on-disk changes. The legacy full artifact reader still uses the
+supporting source-table declared count as capacity; the focused macro-query count
+check does not repair that separate full-reader integrity limitation.
+
+### DuckDB queries
+
+Validate the artifact through `ParquetClient` first; raw `read_parquet` SQL does
+not enforce the shared checksum or API availability semantics. Run these queries
+in one DuckDB session from the artifact directory, or replace the file paths with
+absolute paths to a single validated snapshot. Check the declared domain first:
+
+```sql
+SELECT macro_evidence.complete, macro_evidence.source_scope,
+       macro_evidence.schema_version, macro_evidence.extractor_version,
+       graph_content_hash, row_counts.macro_invocations, row_counts.macro_scopes
+FROM read_json_auto('manifest.json');
+
+CREATE TEMP VIEW macro_sites AS SELECT * FROM read_parquet('macro_invocations.parquet');
+CREATE TEMP VIEW macro_scopes AS SELECT * FROM read_parquet('macro_scopes.parquet');
+CREATE TEMP VIEW graph_symbols AS SELECT * FROM read_parquet('nodes.parquet');
+
+-- Every direct source candidate, including nullable non-function callers.
+SELECT m.site_id, m.file_path, m.source_oid, m.raw_macro_path,
+       m.normalized_macro_path, m.byte_range_start, m.byte_range_end,
+       m.line_start, m.line_end, m.caller_stable_symbol_id,
+       c.qualified_name AS caller, s.kind AS enclosing_kind,
+       s.byte_range_start AS scope_start, s.byte_range_end AS scope_end,
+       m.test_context, m.debug_assertions_candidate, m.execution_phase,
+       m.sink_family_candidate, m.resolution, m.attributes
+FROM macro_sites m
+LEFT JOIN graph_symbols c
+  ON c.stable_symbol_id = m.caller_stable_symbol_id AND c.file_path = m.file_path
+JOIN macro_scopes s
+  ON s.scope_id = m.enclosing_scope_id AND s.file_path = m.file_path
+ AND s.source_oid = m.source_oid
+ORDER BY m.file_path, m.byte_range_start, m.site_id;
+
+-- Scoped caller join: the held-out fixture returns three distinct sites.
+SELECT m.site_id, m.normalized_macro_path, m.line_start,
+       m.debug_assertions_candidate, c.stable_symbol_id AS caller_id
+FROM macro_sites m
+JOIN graph_symbols c ON c.stable_symbol_id = m.caller_stable_symbol_id
+WHERE c.file_path = 'src/diff.rs' AND c.entity_name = 'parse_raw_diff'
+  AND m.file_path = c.file_path
+ORDER BY m.byte_range_start, m.site_id;
+
+-- Attribute-owner locations also survive independently of graph function symbols.
+SELECT DISTINCT m.site_id, json_extract_string(a.value, '$.raw_text') AS attribute,
+       s.scope_id, s.kind, s.file_path, s.source_oid,
+       s.byte_range_start, s.byte_range_end, s.line_start, s.line_end
+FROM macro_sites m, json_each(m.attributes) a, macro_scopes s
+WHERE s.scope_id = json_extract_string(a.value, '$.owner.stable_symbol_id')
+  AND s.file_path = m.file_path AND s.source_oid = m.source_oid
+ORDER BY m.site_id, s.scope_id, attribute;
+```
+
+These are source candidates, not panic executions. Bare and std/core-looking
+paths are candidate identities; aliases remain unresolved, and local macro
+shadowing is only a lexical definition candidate. Raw `cfg`/`cfg_attr` evidence is
+retained without evaluating a build. Absence of a test marker is unspecified,
+not proof of production execution. Nested token-tree text and macro-definition
+bodies do not become direct invocation rows. No expansion, namespace resolution,
+MIR/CGA, cfg evaluation, panic feasibility or panic-freedom claim is provided.
+
+Reproduce the held-out extraction, full/incremental artifact, scope, Parquet,
+query, notebook-domain and row-group boundary checks with local builds:
+
+```sh
+env -u SPUR_GRAPH_BLESS TMPDIR=/private/tmp SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --test macro_invocation_end_to_end
+env -u SPUR_GRAPH_BLESS TMPDIR=/private/tmp SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph
+SPUR_REMOTE=0 scripts/spur-cargo check -p spur-core -p spur-analyst -p spur-tui -p spur-cli -p spur-mentions --tests
+SPUR_REMOTE=0 scripts/spur-cargo check -p spur-graph --all-targets
+SPUR_REMOTE=0 scripts/spur-cargo fmt -p spur-graph -p spur-analyst -- --check
+```
+
+For reproducible SQL and cost inspection, set `M6_EVIDENCE_DIR=/private/tmp/m6-evidence`
+on the held-out command and add `-- --nocapture`. It writes observed JSON and a
+`parquet/` directory outside the fixture input. Timings separate full extraction,
+artifact construction/validation, incremental rebuild, Parquet writing and first
+versus subsequent filtered queries. `scope_verification_io_hash_s` separately
+measures the existing extra scope/source rereads, hashes and identity/context
+assertions (summed over incremental filters); it excludes query time. Other
+roundtrip/oracle assertions, SQL and export copying also remain outside extraction
+timers. The boundary test rewrites the same evidence into two-row
+Parquet groups and asserts actual metadata and cross-group membership; it is a
+correctness check with no speed threshold. Exact task receipts and the measured
+bounded workload are in the [implementation plan](../../docs/superpowers/plans/2026-10-31-macro-invocation-evidence.md).
+
+The final integration review passed the complete graph suite with default test
+parallelism: **1,128 passed, 0 failed, 19 existing ignores**. Affected dependent
+test compilation, graph all-target checks, formatting and the exact SQL oracle
+also pass. The implementation plan preserves earlier schedule-sensitive failures
+and the serial verification run; no timeout or snapshot fallback policy was
+changed. Bounded timing observations and their source/IO separation are recorded
+in that ledger and the experiment notebook.
