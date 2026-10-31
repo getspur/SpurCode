@@ -94,10 +94,11 @@ fn import_request() -> anyhow::Result<Value> {
         .iter()
         .map(|(path, text)| json!({"path":path,"text":text}))
         .collect();
-    let inventory: Vec<_> = corpus["files"].as_object().unwrap().iter().map(|(path,text)| {
+    let mut inventory: Vec<_> = corpus["files"].as_object().unwrap().iter().map(|(path,text)| {
         let kind = if path.ends_with(".rs") {"source"} else if path.ends_with("Cargo.lock") {"lockfile"} else if path.ends_with("Cargo.toml") {"manifest"} else {"config"};
         json!({"path":path,"kind":kind,"sha256":sha256_bytes(text.as_str().unwrap().as_bytes())})
     }).collect();
+    inventory.sort_by(|a, b| a["path"].as_str().cmp(&b["path"].as_str()));
     let identity: CaptureBuildIdentity = serde_json::from_value(json!({
         "schema_version":CAPTURE_BUILD_SCHEMA_VERSION,"scope":"bounded_fixture","provenance":"synthetic_fixture",
         "graph_content_hash":collect["graph"]["graph_content_hash"],"capture_root":dir.path().to_str().unwrap(),
@@ -146,7 +147,39 @@ fn json_import_rejects_source_config_checksum_reference_and_ownership_corruption
     for field in ["source", "config", "checksum", "reference", "ownership"] {
         let mut changed = request.clone();
         match field {
-            "source" => changed["inputs"][0]["text"] = json!("changed"),
+            "source" => {
+                assert_eq!(request["identity"]["inputs"][0]["kind"], "config");
+                let input = request["identity"]["inputs"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|r| r["kind"] == "source" && r["path"].as_str().unwrap().ends_with(".rs"))
+                    .expect("source control needs a physical Rust identity input");
+                let path = input["path"].as_str().unwrap();
+                let row = changed["inputs"]
+                    .as_array_mut()
+                    .unwrap()
+                    .iter_mut()
+                    .find(|r| r["path"] == path)
+                    .expect("identity path must exist in request inputs");
+                let text = row["text"].as_str().unwrap();
+                assert_eq!(sha256_bytes(text.as_bytes()), input["sha256"]);
+                row["text"] = json!(format!("{text} "));
+                assert_eq!(changed["identity"], request["identity"]);
+                let mut restored = changed.clone();
+                restored["inputs"] = request["inputs"].clone();
+                assert_eq!(restored, request);
+                assert_eq!(
+                    changed["inputs"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .zip(request["inputs"].as_array().unwrap())
+                        .filter(|(a, b)| a != b)
+                        .count(),
+                    1
+                );
+            }
             "config" => changed["identity"]["compiler_flags"] = json!(["-Coverflow-checks=on"]),
             "checksum" => changed["raw_export"] = json!("{}"),
             "reference" => {
@@ -157,17 +190,173 @@ fn json_import_rejects_source_config_checksum_reference_and_ownership_corruption
                 changed["expected_build_id"] = json!(id.build_id()?);
             }
             "ownership" => {
-                changed["method_sites"]["sites"][0]["caller_stable_symbol_id"] = json!("forged")
+                let symbols = request["graph"]["symbols"].as_array().unwrap();
+                let unique_function = |id: &Value, path: &Value| {
+                    let matches: Vec<_> = symbols
+                        .iter()
+                        .filter(|s| s["stable_symbol_id"] == *id)
+                        .collect();
+                    matches.len() == 1
+                        && matches[0]["file_path"] == *path
+                        && matches!(
+                            matches[0]["symbol_kind"].as_str(),
+                            Some("function" | "method")
+                        )
+                };
+                let (index, replacement) = request["method_sites"]["sites"].as_array().unwrap().iter().enumerate()
+                    .find_map(|(index, site)| {
+                        let original = &site["caller_stable_symbol_id"];
+                        let path = &site["file_path"];
+                        if !unique_function(original, path) { return None; }
+                        symbols.iter().find(|s| s["stable_symbol_id"] != *original && unique_function(&s["stable_symbol_id"], path))
+                            .map(|s| (index, s["stable_symbol_id"].clone()))
+                    }).expect("ownership control needs two unique existing function/method callers in the same file");
+                let site = &request["method_sites"]["sites"][index];
+                assert!(unique_function(
+                    &site["caller_stable_symbol_id"],
+                    &site["file_path"]
+                ));
+                assert!(unique_function(&replacement, &site["file_path"]));
+                assert_ne!(site["caller_stable_symbol_id"], replacement);
+                changed["method_sites"]["sites"][index]["caller_stable_symbol_id"] = replacement;
+                let mut restored = changed.clone();
+                restored["method_sites"]["sites"][index]["caller_stable_symbol_id"] =
+                    site["caller_stable_symbol_id"].clone();
+                assert_eq!(restored, request, "only the caller identity changes");
             }
             _ => unreachable!(),
         }
-        assert!(
-            example::execute(changed).is_err(),
-            "reject {field} corruption before association"
-        );
+        let error = example::execute(changed)
+            .expect_err(&format!("reject {field} corruption before association"));
+        if field == "source" {
+            assert!(
+                error.to_string().contains("input checksum"),
+                "source byte binding must cause rejection: {error:#}"
+            );
+        }
     }
     Ok(())
 }
+
+// Test capture()'s actual control construction without requiring a compiler in
+// the portable suite. Only process/producer I/O is replaced. This is not the
+// mandatory real-export acceptance, which runs separately with the pinned CGA.
+fn capture_control_contract(control: &str) -> anyhow::Result<()> {
+    use std::io::Write;
+    use std::process::{Command, Stdio};
+    let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../scripts/experiments/panic-evidence-capture.py");
+    let mut child = Command::new("python3")
+        .args(["-B", "-c", CAPTURE_CONTROL_CONTRACT])
+        .arg(script)
+        .arg(control)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()?;
+    serde_json::to_writer(child.stdin.as_mut().unwrap(), &import_request()?)?;
+    child.stdin.take().unwrap().flush()?;
+    let output = child.wait_with_output()?;
+    assert!(
+        output.status.success(),
+        "capture {control} mutation contract: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    Ok(())
+}
+
+#[test]
+fn capture_source_control_changes_only_physical_source_with_config_first() -> anyhow::Result<()> {
+    capture_control_contract("source")
+}
+
+#[test]
+fn capture_ownership_control_uses_existing_different_same_file_caller() -> anyhow::Result<()> {
+    capture_control_contract("ownership")
+}
+
+const CAPTURE_CONTROL_CONTRACT: &str = r#"
+import copy, importlib.util, json, subprocess, sys, tempfile
+from pathlib import Path
+from types import SimpleNamespace
+
+spec = importlib.util.spec_from_file_location('capture', sys.argv[1])
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+good = json.load(sys.stdin)
+control = sys.argv[2]
+
+class Checked(Exception): pass
+
+def check_request(bad, request):
+    if control == 'source':
+        assert request['identity']['inputs'][0]['kind'] == 'config'
+        before = {r['path']: r for r in request['inputs']}
+        changed = [r for r in bad['inputs'] if r != before[r['path']]]
+        assert len(changed) == 1, 'exactly one input must change'
+        path = changed[0]['path']
+        identity = next(r for r in request['identity']['inputs'] if r['path'] == path)
+        assert identity['kind'] == 'source', 'source control mutated config instead of source'
+        assert path.endswith('.rs') and (fixture / path).is_file()
+        assert m.digest((fixture / path).read_bytes()) == identity['sha256']
+        assert changed[0]['text'] == before[path]['text'] + ' '
+        expected = copy.deepcopy(request)
+        next(r for r in expected['inputs'] if r['path'] == path)['text'] += ' '
+    else:
+        original = {s['site_id']: s for s in request['method_sites']['sites']}
+        changed = [s for s in bad['method_sites']['sites'] if s != original[s['site_id']]]
+        assert len(changed) == 1, 'exactly one site must change'
+        site = changed[0]
+        old = original[site['site_id']]['caller_stable_symbol_id']
+        new = site['caller_stable_symbol_id']
+        for caller in (old, new):
+            symbols = [s for s in request['graph']['symbols'] if s['stable_symbol_id'] == caller]
+            assert len(symbols) == 1, 'both callers must be unique existing graph symbols'
+            assert symbols[0]['file_path'] == site['file_path']
+            assert symbols[0]['symbol_kind'] in ('function', 'method')
+        assert old != new
+        expected = copy.deepcopy(request)
+        next(s for s in expected['method_sites']['sites'] if s['site_id'] == site['site_id'])['caller_stable_symbol_id'] = new
+    assert bad == expected, 'control changed unrelated identity, graph, source, span or site fields'
+
+def example(binary, request, work, env, directory, name, success=True):
+    if name == 'snapshot': return {'graph': good['graph'], 'method_sites': good['method_sites']}
+    if name.endswith('identity'): return {'build_id': 'portable-control-only'}
+    if name == 'import':
+        requests.append(copy.deepcopy(request))
+        return {'compiler_evidence': {}}
+    if name == 'validate': return {'valid': True}
+    if name == 'negative-' + control:
+        check_request(request, requests[0])
+        raise Checked()
+    return {'rejected': True}
+
+def run(argv, cwd, env, directory, name, *args, **kwargs):
+    if name == 'rustc-identity':
+        return subprocess.CompletedProcess(argv, 0, ('commit-hash: ' + m.RUSTC_COMMIT + '\nhost: portable\n').encode(), b'')
+    assert name == 'compiler'
+    path = directory / 'target' / 'portable.json'
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({'roots': [], 'nodes': [{'name': 'panic_pilot::main'}], 'edges': {}}))
+    return subprocess.CompletedProcess(argv, 0, b'', ('cga-emit:' + str(path) + '\n').encode())
+
+with tempfile.TemporaryDirectory() as tmp:
+    work = Path(tmp).resolve() / 'capture'
+    fixture, plan = m.prepare(work)
+    requests = []
+    binary = Path(sys.executable).resolve()
+    pins = {'cga_driver_sha256': m.digest(binary.read_bytes()), 'cargo_cga_sha256': m.digest(binary.read_bytes())}
+    m.producer = lambda args, work: (binary, pins, binary)
+    m.closed_environment = lambda work: {}
+    m.run, m.example = run, example
+    args = SimpleNamespace(**{k: str(binary) for k in ('cga_driver', 'cargo_cga', 'cga_source', 'expected_driver_sha256', 'expected_launcher_sha256', 'example')})
+    try:
+        m.capture(args, work, fixture, plan)
+    except Checked:
+        pass
+    else:
+        raise AssertionError('capture did not construct the requested negative control')
+"#;
 
 #[test]
 fn capture_script_exposes_the_bounded_wrapper_only_command_contract() -> anyhow::Result<()> {
