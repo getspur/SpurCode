@@ -42,5 +42,5868 @@
         "extra"
       ]
     }
-  ]
+  ],
+  "compiler_witness": {
+    "provenance": "compiler_capture_partial_projection",
+    "projection_status": "Not a complete standalone CGA graph. Raw caller/target nodes and edges are unchanged from checksum-bound full exports; associations come from validated P2 import.",
+    "exporter_revision": "2fc63108f0b674fe7a178191ffa15647a18879f1",
+    "toolchain": "nightly-2026-10-18",
+    "rustc_verbose": "rustc 1.101.0-nightly (8006091eb 2026-10-17)\nbinary: rustc\ncommit-hash: 8006091eb71ae7d9e9bccb66c6122c9d68af4466\ncommit-date: 2026-10-17\nhost: aarch64-apple-darwin\nrelease: 1.101.0-nightly\nLLVM version: 23.1.4\n",
+    "producer": {
+      "build": {
+        "state": "patched",
+        "patch_sha256": "72f3d4cd64439d988deba0ee1e0f449df8290e6f1d1e0ae83ba82d97b1592aca"
+      },
+      "cargo_cga_sha256": "7f84bc715138c09744fd351859ca02b240ea768d9756069229e9250fa9447b7a",
+      "cga_driver_sha256": "5647b7f2c7f857dda0dd0204e91d870287988181ca5ec4d7792810a561886172"
+    },
+    "capture_directory": "/private/tmp/panic-evidence-p3/capture-02",
+    "source_sha256": {
+      "Cargo.toml": "204ebe761e036b5a02202a9a8026661c2349035b461d42fa5b2e00fd13dd3cff",
+      "Cargo.lock": "cb0a47a2b99a33440606745f5c2266549a73413c6c1a4e33b5bd0288bf411180",
+      ".cargo/config.toml": "f1da0a3043a564a0dd59ca6423c50fff6044c2379041f1222130b79dfdf06873",
+      "dep/Cargo.toml": "ab944be67d6deec623575a606697f5235cf4c6ba8d925c0f3b652c98e22b4db2",
+      "dep/src/lib.rs": "6936ecc96a26fbc2c7c1ab1bf181a8883bcaa7e7cd8dd65c14deb50ec9e563a6",
+      "src/lib.rs": "a0adc578013625637f8a6c9643a53687f857f5718d2bd78eea754aa5861bcacf",
+      "src/main.rs": "61dc842434b04765c58789d249d6590fc905f4d7ce60be6fb7a594d643a0dcf4"
+    },
+    "configurations": [
+      {
+        "name": "d0_o0",
+        "build_id": "7259601f616a29794b1e81bd5a2068ef87b43f64a8b8bdc9b6873bfb8be991de",
+        "raw_export_sha256": "27df1702b006375c44c6643ca7fcbf0360ab5ec6a188565fd1630e23dd8ed4cb",
+        "raw_export": "/private/tmp/panic-evidence-p3/capture-02/d0_o0/raw-export.json",
+        "inputs_before_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "inputs_after_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "runtime_controls_passed": 9,
+        "negative_controls_passed": [
+          "source",
+          "config",
+          "checksum",
+          "reference",
+          "ownership"
+        ],
+        "acceptance": "/private/tmp/panic-evidence-p3/capture-02/d0_o0/acceptance.json",
+        "observation_count": 134,
+        "association_counts": {
+          "exact": 18,
+          "unique_containing": 1,
+          "ambiguous": 0,
+          "unmapped": 55,
+          "external": 60
+        },
+        "compiler_flags": [
+          "-Zalways-encode-mir",
+          "-Zhint-mostly-unused",
+          "-Copt-level=0",
+          "-Cpanic=unwind",
+          "-Cdebug-assertions=off",
+          "-Coverflow-checks=off"
+        ],
+        "features": [],
+        "cases": {
+          "options": [
+            {
+              "from_node": 6,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0df106b6f5f761d62ca8f7d78fb53baa956dd4da25faf7d60cdb2474464f4757"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "fca1c450817f1e5cbe6ba9cbabd2b61edc09abc2848647313de8858e96cefa4e"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 63
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "ad38c513ef92e0ab89e452f0a44278e3c9bb9b82d55e5d8dc8d4502c488696cb"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d85a86b8a729403e4942189b7093d54a97f8b25b76e4ceebd60b97ff3d61cee0"
+              }
+            }
+          ],
+          "results": [
+            {
+              "from_node": 8,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "343db53bbfe01101380f6fd5f35baa3c55a3c3b4c2266892282511a0799e2938"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "a2a4573dba325254e69e14043cf9a8779163103c5c299c24b38e46fd06832577"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 73
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d64f1a2d40eca72104edb46a335c5cb0466be7592cf2cd7eb2e953fc1db98593"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 33
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "7a37c77d850b7e7d1f22953b96e56108adb82717cb5fecac8815221b0b2717f7"
+              }
+            }
+          ],
+          "custom": [
+            {
+              "from_node": 9,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 73
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::unwrap",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 5,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "f280eee12404af8c0dfc2e76f44c642b59f3498fe06d944a72eac54b2ae0ae91"
+              }
+            },
+            {
+              "from_node": 9,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 74
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 61
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::expect",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 40
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "569a53f63d9c1964a9ec1ae3ce353170dc455c516dca74638db9b638c21266ae"
+              }
+            }
+          ],
+          "chain": [
+            {
+              "from_node": 10,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 75
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 55
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<std::option::Option<u8>>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5e787843a4cac57fd27c98e290cfa1b4edf7fcf957e2969739173c11a4b73a0f"
+              }
+            },
+            {
+              "from_node": 10,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 71
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "9cf80cfcd0d1a5492a0c0b686ecd4b6ec3a24eeacc46a747124922942596e4ee"
+              }
+            }
+          ],
+          "generic": [
+            {
+              "from_node": 11,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u8>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            },
+            {
+              "from_node": 12,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u16>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 76
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u16>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            }
+          ],
+          "unicode": [
+            {
+              "from_node": 14,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::unicode",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 36
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 72
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "8a97a3e20b7079fd3ab60c5b8bfe06ece9c10d1dca4414f6c695497c42273ba7"
+              }
+            }
+          ],
+          "expanded": [
+            {
+              "from_node": 15,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::expanded",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 29,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 27,
+                      "column": 40
+                    },
+                    "end": {
+                      "line": 27,
+                      "column": 58
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "dependency": [
+            {
+              "from_node": 16,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "pilot_dep::dependency",
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 39
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 42
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5f0657037adc946dacaeaa703001813517d8f295fd0abbc675999f3d51dc7d55"
+              }
+            }
+          ],
+          "feature_control": [],
+          "indexing": [
+            {
+              "from_node": 17,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::indexing",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 46
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "addition": [],
+          "debug_control": []
+        }
+      },
+      {
+        "name": "d0_o1",
+        "build_id": "33d97393a028ca62026a239d003d374e955aa9e963e38936c8a650fee6c11928",
+        "raw_export_sha256": "6a1920a377d085aaa06ac5f959030b54a50ccdcc40092befc5b9985d5fd9591f",
+        "raw_export": "/private/tmp/panic-evidence-p3/capture-02/d0_o1/raw-export.json",
+        "inputs_before_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "inputs_after_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "runtime_controls_passed": 9,
+        "negative_controls_passed": [
+          "source",
+          "config",
+          "checksum",
+          "reference",
+          "ownership"
+        ],
+        "acceptance": "/private/tmp/panic-evidence-p3/capture-02/d0_o1/acceptance.json",
+        "observation_count": 135,
+        "association_counts": {
+          "exact": 18,
+          "unique_containing": 1,
+          "ambiguous": 0,
+          "unmapped": 56,
+          "external": 60
+        },
+        "compiler_flags": [
+          "-Zalways-encode-mir",
+          "-Zhint-mostly-unused",
+          "-Copt-level=0",
+          "-Cpanic=unwind",
+          "-Cdebug-assertions=off",
+          "-Coverflow-checks=on"
+        ],
+        "features": [],
+        "cases": {
+          "options": [
+            {
+              "from_node": 6,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0df106b6f5f761d62ca8f7d78fb53baa956dd4da25faf7d60cdb2474464f4757"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "fca1c450817f1e5cbe6ba9cbabd2b61edc09abc2848647313de8858e96cefa4e"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 63
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "ad38c513ef92e0ab89e452f0a44278e3c9bb9b82d55e5d8dc8d4502c488696cb"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d85a86b8a729403e4942189b7093d54a97f8b25b76e4ceebd60b97ff3d61cee0"
+              }
+            }
+          ],
+          "results": [
+            {
+              "from_node": 8,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "343db53bbfe01101380f6fd5f35baa3c55a3c3b4c2266892282511a0799e2938"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "a2a4573dba325254e69e14043cf9a8779163103c5c299c24b38e46fd06832577"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 73
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d64f1a2d40eca72104edb46a335c5cb0466be7592cf2cd7eb2e953fc1db98593"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 33
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "7a37c77d850b7e7d1f22953b96e56108adb82717cb5fecac8815221b0b2717f7"
+              }
+            }
+          ],
+          "custom": [
+            {
+              "from_node": 9,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 73
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::unwrap",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 5,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "f280eee12404af8c0dfc2e76f44c642b59f3498fe06d944a72eac54b2ae0ae91"
+              }
+            },
+            {
+              "from_node": 9,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 74
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 61
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::expect",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 40
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "569a53f63d9c1964a9ec1ae3ce353170dc455c516dca74638db9b638c21266ae"
+              }
+            }
+          ],
+          "chain": [
+            {
+              "from_node": 10,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 75
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 55
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<std::option::Option<u8>>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5e787843a4cac57fd27c98e290cfa1b4edf7fcf957e2969739173c11a4b73a0f"
+              }
+            },
+            {
+              "from_node": 10,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 71
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "9cf80cfcd0d1a5492a0c0b686ecd4b6ec3a24eeacc46a747124922942596e4ee"
+              }
+            }
+          ],
+          "generic": [
+            {
+              "from_node": 11,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u8>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            },
+            {
+              "from_node": 12,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u16>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 76
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u16>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            }
+          ],
+          "unicode": [
+            {
+              "from_node": 14,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::unicode",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 36
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 72
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "8a97a3e20b7079fd3ab60c5b8bfe06ece9c10d1dca4414f6c695497c42273ba7"
+              }
+            }
+          ],
+          "expanded": [
+            {
+              "from_node": 15,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::expanded",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 29,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 27,
+                      "column": 40
+                    },
+                    "end": {
+                      "line": 27,
+                      "column": 58
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "dependency": [
+            {
+              "from_node": 16,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "pilot_dep::dependency",
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 39
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 42
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5f0657037adc946dacaeaa703001813517d8f295fd0abbc675999f3d51dc7d55"
+              }
+            }
+          ],
+          "feature_control": [],
+          "indexing": [
+            {
+              "from_node": 17,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::indexing",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 46
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "addition": [
+            {
+              "from_node": 18,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::addition",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 33,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 33,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "debug_control": []
+        }
+      },
+      {
+        "name": "d1_o0",
+        "build_id": "a035376f376336902df2186469826e9704a9a6eac12859b6fe2bfac249c45a52",
+        "raw_export_sha256": "d11a4885b773791cdac643fd8697e76a575d7c1cae14224341138d55ae0f2996",
+        "raw_export": "/private/tmp/panic-evidence-p3/capture-02/d1_o0/raw-export.json",
+        "inputs_before_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "inputs_after_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "runtime_controls_passed": 9,
+        "negative_controls_passed": [
+          "source",
+          "config",
+          "checksum",
+          "reference",
+          "ownership"
+        ],
+        "acceptance": "/private/tmp/panic-evidence-p3/capture-02/d1_o0/acceptance.json",
+        "observation_count": 135,
+        "association_counts": {
+          "exact": 18,
+          "unique_containing": 1,
+          "ambiguous": 0,
+          "unmapped": 55,
+          "external": 61
+        },
+        "compiler_flags": [
+          "-Zalways-encode-mir",
+          "-Zhint-mostly-unused",
+          "-Copt-level=0",
+          "-Cpanic=unwind",
+          "-Cdebug-assertions=on",
+          "-Coverflow-checks=off"
+        ],
+        "features": [],
+        "cases": {
+          "options": [
+            {
+              "from_node": 6,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0df106b6f5f761d62ca8f7d78fb53baa956dd4da25faf7d60cdb2474464f4757"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "fca1c450817f1e5cbe6ba9cbabd2b61edc09abc2848647313de8858e96cefa4e"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 63
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "ad38c513ef92e0ab89e452f0a44278e3c9bb9b82d55e5d8dc8d4502c488696cb"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d85a86b8a729403e4942189b7093d54a97f8b25b76e4ceebd60b97ff3d61cee0"
+              }
+            }
+          ],
+          "results": [
+            {
+              "from_node": 8,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "343db53bbfe01101380f6fd5f35baa3c55a3c3b4c2266892282511a0799e2938"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "a2a4573dba325254e69e14043cf9a8779163103c5c299c24b38e46fd06832577"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 73
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d64f1a2d40eca72104edb46a335c5cb0466be7592cf2cd7eb2e953fc1db98593"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 33
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "7a37c77d850b7e7d1f22953b96e56108adb82717cb5fecac8815221b0b2717f7"
+              }
+            }
+          ],
+          "custom": [
+            {
+              "from_node": 9,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 73
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::unwrap",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 5,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "f280eee12404af8c0dfc2e76f44c642b59f3498fe06d944a72eac54b2ae0ae91"
+              }
+            },
+            {
+              "from_node": 9,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 74
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 61
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::expect",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 40
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "569a53f63d9c1964a9ec1ae3ce353170dc455c516dca74638db9b638c21266ae"
+              }
+            }
+          ],
+          "chain": [
+            {
+              "from_node": 10,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 75
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 55
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<std::option::Option<u8>>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5e787843a4cac57fd27c98e290cfa1b4edf7fcf957e2969739173c11a4b73a0f"
+              }
+            },
+            {
+              "from_node": 10,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 71
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "9cf80cfcd0d1a5492a0c0b686ecd4b6ec3a24eeacc46a747124922942596e4ee"
+              }
+            }
+          ],
+          "generic": [
+            {
+              "from_node": 11,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u8>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            },
+            {
+              "from_node": 12,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u16>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 76
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u16>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            }
+          ],
+          "unicode": [
+            {
+              "from_node": 14,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::unicode",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 36
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 72
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "8a97a3e20b7079fd3ab60c5b8bfe06ece9c10d1dca4414f6c695497c42273ba7"
+              }
+            }
+          ],
+          "expanded": [
+            {
+              "from_node": 15,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::expanded",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 29,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 27,
+                      "column": 40
+                    },
+                    "end": {
+                      "line": 27,
+                      "column": 58
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "dependency": [
+            {
+              "from_node": 16,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "pilot_dep::dependency",
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 39
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 42
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5f0657037adc946dacaeaa703001813517d8f295fd0abbc675999f3d51dc7d55"
+              }
+            }
+          ],
+          "feature_control": [],
+          "indexing": [
+            {
+              "from_node": 17,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::indexing",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 46
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "addition": [],
+          "debug_control": [
+            {
+              "from_node": 19,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::debug_control",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 35,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 34
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 56
+                },
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+                  "span": {
+                    "start": {
+                      "line": 293,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 293,
+                      "column": 38
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "core::panicking::panic",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panicking.rs",
+                  "span": {
+                    "start": {
+                      "line": 138,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 138,
+                      "column": 44
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "external"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "d1_o1",
+        "build_id": "c7f7495f647f0963f2e2c76e0d3a4e459f4441f70f15feb2b6093a31c25874e5",
+        "raw_export_sha256": "ff1ac7f15f02450ad17e2d3a9c4ff9bc0bb5d40b6a658a55737108b7b325c63c",
+        "raw_export": "/private/tmp/panic-evidence-p3/capture-02/d1_o1/raw-export.json",
+        "inputs_before_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "inputs_after_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "runtime_controls_passed": 9,
+        "negative_controls_passed": [
+          "source",
+          "config",
+          "checksum",
+          "reference",
+          "ownership"
+        ],
+        "acceptance": "/private/tmp/panic-evidence-p3/capture-02/d1_o1/acceptance.json",
+        "observation_count": 136,
+        "association_counts": {
+          "exact": 18,
+          "unique_containing": 1,
+          "ambiguous": 0,
+          "unmapped": 56,
+          "external": 61
+        },
+        "compiler_flags": [
+          "-Zalways-encode-mir",
+          "-Zhint-mostly-unused",
+          "-Copt-level=0",
+          "-Cpanic=unwind",
+          "-Cdebug-assertions=on",
+          "-Coverflow-checks=on"
+        ],
+        "features": [],
+        "cases": {
+          "options": [
+            {
+              "from_node": 6,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0df106b6f5f761d62ca8f7d78fb53baa956dd4da25faf7d60cdb2474464f4757"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "fca1c450817f1e5cbe6ba9cbabd2b61edc09abc2848647313de8858e96cefa4e"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 63
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "ad38c513ef92e0ab89e452f0a44278e3c9bb9b82d55e5d8dc8d4502c488696cb"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d85a86b8a729403e4942189b7093d54a97f8b25b76e4ceebd60b97ff3d61cee0"
+              }
+            }
+          ],
+          "results": [
+            {
+              "from_node": 8,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "343db53bbfe01101380f6fd5f35baa3c55a3c3b4c2266892282511a0799e2938"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "a2a4573dba325254e69e14043cf9a8779163103c5c299c24b38e46fd06832577"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 73
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d64f1a2d40eca72104edb46a335c5cb0466be7592cf2cd7eb2e953fc1db98593"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 33
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "7a37c77d850b7e7d1f22953b96e56108adb82717cb5fecac8815221b0b2717f7"
+              }
+            }
+          ],
+          "custom": [
+            {
+              "from_node": 9,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 73
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::unwrap",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 5,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "f280eee12404af8c0dfc2e76f44c642b59f3498fe06d944a72eac54b2ae0ae91"
+              }
+            },
+            {
+              "from_node": 9,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 74
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 61
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::expect",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 40
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "569a53f63d9c1964a9ec1ae3ce353170dc455c516dca74638db9b638c21266ae"
+              }
+            }
+          ],
+          "chain": [
+            {
+              "from_node": 10,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 75
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 55
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<std::option::Option<u8>>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5e787843a4cac57fd27c98e290cfa1b4edf7fcf957e2969739173c11a4b73a0f"
+              }
+            },
+            {
+              "from_node": 10,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 71
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "9cf80cfcd0d1a5492a0c0b686ecd4b6ec3a24eeacc46a747124922942596e4ee"
+              }
+            }
+          ],
+          "generic": [
+            {
+              "from_node": 11,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u8>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            },
+            {
+              "from_node": 12,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u16>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 76
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u16>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            }
+          ],
+          "unicode": [
+            {
+              "from_node": 14,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::unicode",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 36
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 72
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "8a97a3e20b7079fd3ab60c5b8bfe06ece9c10d1dca4414f6c695497c42273ba7"
+              }
+            }
+          ],
+          "expanded": [
+            {
+              "from_node": 15,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::expanded",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 29,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 27,
+                      "column": 40
+                    },
+                    "end": {
+                      "line": 27,
+                      "column": 58
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "dependency": [
+            {
+              "from_node": 16,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "pilot_dep::dependency",
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 39
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 42
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5f0657037adc946dacaeaa703001813517d8f295fd0abbc675999f3d51dc7d55"
+              }
+            }
+          ],
+          "feature_control": [],
+          "indexing": [
+            {
+              "from_node": 17,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::indexing",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 46
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "addition": [
+            {
+              "from_node": 18,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::addition",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 33,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 33,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "debug_control": [
+            {
+              "from_node": 19,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::debug_control",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 35,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 34
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 56
+                },
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+                  "span": {
+                    "start": {
+                      "line": 293,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 293,
+                      "column": 38
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "core::panicking::panic",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panicking.rs",
+                  "span": {
+                    "start": {
+                      "line": 138,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 138,
+                      "column": 44
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "external"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "d1_o1_extra",
+        "build_id": "d7c6468895cb01b505f5044b4cb12fb7ae94e2b0918ad35752219a66207ec3ef",
+        "raw_export_sha256": "0c7c773aeb17a78b8edec00d49981cb2b3c2e16bff637fa1c69f03df8dc4e0dd",
+        "raw_export": "/private/tmp/panic-evidence-p3/capture-02/d1_o1_extra/raw-export.json",
+        "inputs_before_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "inputs_after_sha256": "fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e",
+        "runtime_controls_passed": 9,
+        "negative_controls_passed": [
+          "source",
+          "config",
+          "checksum",
+          "reference",
+          "ownership"
+        ],
+        "acceptance": "/private/tmp/panic-evidence-p3/capture-02/d1_o1_extra/acceptance.json",
+        "observation_count": 137,
+        "association_counts": {
+          "exact": 19,
+          "unique_containing": 1,
+          "ambiguous": 0,
+          "unmapped": 56,
+          "external": 61
+        },
+        "compiler_flags": [
+          "-Zalways-encode-mir",
+          "-Zhint-mostly-unused",
+          "-Copt-level=0",
+          "-Cpanic=unwind",
+          "-Cdebug-assertions=on",
+          "-Coverflow-checks=on"
+        ],
+        "features": [
+          "extra"
+        ],
+        "cases": {
+          "options": [
+            {
+              "from_node": 6,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0df106b6f5f761d62ca8f7d78fb53baa956dd4da25faf7d60cdb2474464f4757"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "fca1c450817f1e5cbe6ba9cbabd2b61edc09abc2848647313de8858e96cefa4e"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 63
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "ad38c513ef92e0ab89e452f0a44278e3c9bb9b82d55e5d8dc8d4502c488696cb"
+              }
+            },
+            {
+              "from_node": 6,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::options",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d85a86b8a729403e4942189b7093d54a97f8b25b76e4ceebd60b97ff3d61cee0"
+              }
+            }
+          ],
+          "results": [
+            {
+              "from_node": 8,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "343db53bbfe01101380f6fd5f35baa3c55a3c3b4c2266892282511a0799e2938"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 69
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1226,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1228,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "a2a4573dba325254e69e14043cf9a8779163103c5c299c24b38e46fd06832577"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 2,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 16,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 73
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "d64f1a2d40eca72104edb46a335c5cb0466be7592cf2cd7eb2e953fc1db98593"
+              }
+            },
+            {
+              "from_node": 8,
+              "edge_index": 3,
+              "raw_caller_node": {
+                "name": "panic_pilot::results",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 59
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 70
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 33
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::result::Result::<u8, u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/result.rs",
+                  "span": {
+                    "start": {
+                      "line": 1178,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1180,
+                      "column": 23
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "7a37c77d850b7e7d1f22953b96e56108adb82717cb5fecac8815221b0b2717f7"
+              }
+            }
+          ],
+          "custom": [
+            {
+              "from_node": 9,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 73
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::unwrap",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 5,
+                      "column": 31
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "f280eee12404af8c0dfc2e76f44c642b59f3498fe06d944a72eac54b2ae0ae91"
+              }
+            },
+            {
+              "from_node": 9,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::custom",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 74
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 20,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 61
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "panic_pilot::Safe::expect",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 40
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "569a53f63d9c1964a9ec1ae3ce353170dc455c516dca74638db9b638c21266ae"
+              }
+            }
+          ],
+          "chain": [
+            {
+              "from_node": 10,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 75
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 55
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<std::option::Option<u8>>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5e787843a4cac57fd27c98e290cfa1b4edf7fcf957e2969739173c11a4b73a0f"
+              }
+            },
+            {
+              "from_node": 10,
+              "edge_index": 1,
+              "raw_caller_node": {
+                "name": "panic_pilot::chain",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 42
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 22,
+                      "column": 45
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 71
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "9cf80cfcd0d1a5492a0c0b686ecd4b6ec3a24eeacc46a747124922942596e4ee"
+              }
+            }
+          ],
+          "generic": [
+            {
+              "from_node": 11,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u8>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 64
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            },
+            {
+              "from_node": 12,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::generic::<u16>",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 76
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 24,
+                      "column": 54
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u16>::unwrap",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 1013,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 1013,
+                      "column": 35
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "0afb1c4cf29c10ce5e907226508e7e1ff4ec8df58a3c3c158d5be747e18c8c4a"
+              }
+            }
+          ],
+          "unicode": [
+            {
+              "from_node": 14,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::unicode",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 36
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 26,
+                      "column": 53
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 72
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "8a97a3e20b7079fd3ab60c5b8bfe06ece9c10d1dca4414f6c695497c42273ba7"
+              }
+            }
+          ],
+          "expanded": [
+            {
+              "from_node": 15,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::expanded",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 29,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 27,
+                      "column": 40
+                    },
+                    "end": {
+                      "line": 27,
+                      "column": 58
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "dependency": [
+            {
+              "from_node": 16,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "pilot_dep::dependency",
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 39
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "dep/src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "column": 42
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 64
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "5f0657037adc946dacaeaa703001813517d8f295fd0abbc675999f3d51dc7d55"
+              }
+            }
+          ],
+          "feature_control": [
+            {
+              "from_node": 20,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::feature_control",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 38,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 38,
+                      "column": 44
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 65
+                },
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 38,
+                      "column": 47
+                    },
+                    "end": {
+                      "line": 38,
+                      "column": 66
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "std::option::Option::<u8>::expect",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+                  "span": {
+                    "start": {
+                      "line": 968,
+                      "column": 5
+                    },
+                    "end": {
+                      "line": 968,
+                      "column": 46
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "exact",
+                "site_id": "4efcc0f9d52d5cd2896a14a388ea74255099fc79d8bc5bcd2e0a148ee8c8b733"
+              }
+            }
+          ],
+          "indexing": [
+            {
+              "from_node": 17,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::indexing",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 43
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 31,
+                      "column": 46
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 51
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "addition": [
+            {
+              "from_node": 18,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::addition",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 33,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": "BuiltinAssert",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 33,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 37
+                    }
+                  }
+                }
+              },
+              "raw_target_node": null,
+              "association": {
+                "state": "unmapped",
+                "reason": "no_site_at_span"
+              }
+            }
+          ],
+          "debug_control": [
+            {
+              "from_node": 19,
+              "edge_index": 0,
+              "raw_caller_node": {
+                "name": "panic_pilot::debug_control",
+                "location": {
+                  "path": "src/lib.rs",
+                  "span": {
+                    "start": {
+                      "line": 35,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 34
+                    }
+                  }
+                }
+              },
+              "raw_edge": {
+                "kind": {
+                  "Called": 56
+                },
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+                  "span": {
+                    "start": {
+                      "line": 293,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 293,
+                      "column": 38
+                    }
+                  }
+                }
+              },
+              "raw_target_node": {
+                "name": "core::panicking::panic",
+                "location": {
+                  "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panicking.rs",
+                  "span": {
+                    "start": {
+                      "line": 138,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 138,
+                      "column": 44
+                    }
+                  }
+                }
+              },
+              "association": {
+                "state": "external"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "unicode_observation": {
+      "from_node": 14,
+      "edge_index": 0,
+      "node": {
+        "name": "panic_pilot::unicode",
+        "location": {
+          "path": "src/lib.rs",
+          "span": {
+            "start": {
+              "line": 26,
+              "column": 1
+            },
+            "end": {
+              "line": 26,
+              "column": 36
+            }
+          }
+        }
+      },
+      "edge": {
+        "kind": {
+          "Called": 65
+        },
+        "location": {
+          "path": "src/lib.rs",
+          "span": {
+            "start": {
+              "line": 26,
+              "column": 53
+            },
+            "end": {
+              "line": 26,
+              "column": 72
+            }
+          }
+        }
+      },
+      "target_node": {
+        "name": "std::option::Option::<u8>::expect",
+        "location": {
+          "path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs",
+          "span": {
+            "start": {
+              "line": 968,
+              "column": 5
+            },
+            "end": {
+              "line": 968,
+              "column": 46
+            }
+          }
+        }
+      },
+      "raw_export_sha256": "27df1702b006375c44c6643ca7fcbf0360ab5ec6a188565fd1630e23dd8ed4cb"
+    }
+  }
 }

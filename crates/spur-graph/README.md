@@ -564,3 +564,88 @@ also pass. The implementation plan preserves earlier schedule-sensitive failures
 and the serial verification run; no timeout or snapshot fallback policy was
 changed. Bounded timing observations and their source/IO separation are recorded
 in that ledger and the experiment notebook.
+
+## Experimental panic evidence sidecar
+
+`spur_graph::panic_evidence` is opt-in, source/configuration-bound evidence.
+It preserves individual direct method invocations and actual compiler instance
+names. It does not change v11 facts, ordinary graph builds, Parquet or CURRENT.
+
+Build and invoke the JSON runner locally:
+
+```sh
+SPUR_REMOTE=0 scripts/spur-cargo build -p spur-graph --no-default-features --example panic_evidence
+SPUR_REMOTE=0 scripts/spur-cargo run -p spur-graph --no-default-features --example panic_evidence < request.json > response.json
+```
+
+One UTF-8 JSON request enters stdin and one JSON response leaves stdout;
+validation errors use stderr and a nonzero exit. Commands and fields:
+
+| `command` | Request fields | Response |
+| --- | --- | --- |
+| `snapshot` | `root`, `source_paths` | `graph`, `method_sites` (in-memory fixture snapshot; no graph writes) |
+| `collect` | `graph`, `sources` | `method_sites` |
+| `identity` | `identity` | `build_id` |
+| `import` | `graph`, `sources`, `method_sites`, `inputs`, `identity`, `expected_build_id`, `raw_export` | `compiler_evidence` |
+| `validate` | all import fields plus `compiler_evidence` | `valid`, `build_id` |
+
+Sources are `{ "file_path": "src/lib.rs", "text": "exact UTF-8 source" }`;
+inputs use `path` and `text`. `raw_export` is the complete, unchanged compiler
+JSON encoded as a JSON string, including whitespace for checksum verification.
+An independently retained expected build ID is required before import. The
+snapshot command is for a bounded standalone fixture; callers with an existing
+graph pass its artifact directly to `collect`/`import`.
+
+The standard-library-only capture script materializes the portable corpus from
+`tests/fixtures/panic_evidence/corpus.json` in a **new** directory outside the
+workspace. Use `--prepare-only --work-dir /private/tmp/panic-pilot-prepared` to
+inspect the seven-input/five-configuration contract without a compiler. For
+mandatory fresh acceptance, supply already-built pinned binaries and the exact
+retained producer patch (omit `--producer-patch` only for a clean producer):
+
+```sh
+python3 scripts/experiments/panic-evidence-capture.py \
+  --work-dir /private/tmp/panic-pilot-capture \
+  --cga-source /private/tmp/spur-cga-pilot-20261031 \
+  --cga-driver /private/tmp/spur-cga-pilot-20261031/target/release/cga-driver \
+  --cargo-cga /private/tmp/spur-cga-pilot-20261031/target/release/cargo-cga \
+  --producer-patch /private/tmp/panic-evidence-p3/producer.patch \
+  --expected-driver-sha256 5647b7f2c7f857dda0dd0204e91d870287988181ca5ec4d7792810a561886172 \
+  --expected-launcher-sha256 7f84bc715138c09744fd351859ca02b240ea768d9756069229e9250fa9447b7a \
+  --example /private/tmp/panic-evidence-p1/target/debug/examples/panic_evidence
+```
+
+The producer is CGA `2fc63108f0b674fe7a178191ffa15647a18879f1` on
+`nightly-2026-10-18`. The driver runs as `RUSTC` through the absolute repository
+`scripts/spur-cargo --workdir` with `SPUR_REMOTE=0`. The launcher digest records
+build lineage; the script bypasses its implicit `build-std`/Cargo subprocesses.
+No MIR-text parser, installation or toolchain-default change occurs. Cargo home,
+targets and output are isolated, ambient compiler settings are cleared, ancestor
+Cargo configuration is rejected, and local path dependencies use a frozen lock.
+Verbose compiler commands and the entire effective environment are retained.
+
+Each opt0/panic=unwind debug/overflow pair gets an independent build; a fifth
+build enables `extra`. All compiler JSON fragments are retained verbatim. The
+bin fragment containing `panic_pilot::main` is imported verbatim, with its raw
+checksum, exact source inventory, patched-producer lineage and expected build
+ID. `summary.json` links identities, unchanged before/after inventories, logs,
+25 corruption rejections, the cross-configuration rejection, and 45 runtime
+controls against those same compiled executables. Expected panics must exit 101
+and report a panic. A failing capture retains `blocked.json` and logs; no
+mandatory gate is silently skipped.
+
+Fresh held-out evidence confirms repeated Option/Result calls, distinct Safe
+methods, both generic instances, chains, dependency calls, cfg/feature contrast,
+bounds checks and overflow/debug contrasts. A multibyte-prefix call verifies
+one-based **scalar** columns and an **exclusive** end against actual bytes.
+Compiler macro locations remain unmapped; bounds/addition have no method site,
+and debug macro locations can be external. Receiver types, assertion reasons
+and expansion maps are unavailable. Optimized MIR may inline/elide calls even
+at opt0; absent associations do not establish safety or whole-program coverage.
+The frozen corpus projection retains unchanged raw nodes/edges and full-export
+checksums with truthful provenance; it is not a standalone CGA graph or a
+substitute for fresh acceptance. Run the focused suite with:
+
+```sh
+SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --no-default-features --test panic_method_sites --test panic_compiler_evidence --test panic_evidence_end_to_end
+```
