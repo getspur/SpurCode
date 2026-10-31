@@ -31,6 +31,83 @@ fn fixture_git_repo() -> tempfile::TempDir {
 }
 
 #[test]
+fn graph_build_temporal_without_embeddings_materializes_analyst() {
+    let dir = fixture_git_repo();
+    let out = Command::new(spur_binary())
+        .current_dir(dir.path())
+        .args([
+            "graph",
+            "build",
+            "--workspace",
+            "--no-section-embeddings",
+            "--no-code-symbol-embeddings",
+            "--with-temporal",
+            "--quiet",
+        ])
+        .env_remove("SPUR_GRAPH_SKIP_ANALYST")
+        .env_remove("SPUR_CODE_GRAPH_INDEX")
+        .env_remove("SPUR_GRAPH_ARTIFACT_DIR")
+        .env_remove("SPUR_ANALYST_DB")
+        .env_remove("SPUR_GRAPH_TEMPORAL_JOBS")
+        .output()
+        .expect("spawn");
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(out.status.success(), "graph build failed: {stderr}");
+
+    let artifact_dir = std::fs::canonicalize(dir.path().join(".spur/graph/CURRENT"))
+        .expect("CURRENT resolves to the fresh graph artifact");
+    let manifest: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(artifact_dir.join("manifest.json")).expect("read fresh manifest"),
+    )
+    .expect("parse fresh manifest");
+    assert_eq!(
+        manifest["schema_version"],
+        spur_graph::store::SCHEMA_VERSION
+    );
+
+    let db_path = dir.path().join(".spur/analyst.duckdb");
+    let metadata = std::fs::metadata(&db_path).unwrap_or_else(|error| {
+        panic!("analyst DB must be materialized: {error}; stderr: {stderr}")
+    });
+    assert!(metadata.len() > 0, "analyst DB must be non-empty");
+
+    let conn = duckdb::Connection::open(&db_path).expect("open materialized analyst DB");
+    let (schema_version, content_hash, node_count, commit_count, snapshot_count): (
+        String,
+        String,
+        i64,
+        i64,
+        i64,
+    ) = conn
+        .query_row(
+            "SELECT schema_version, graph_content_hash,
+                    (SELECT count(*) FROM nodes),
+                    (SELECT count(*) FROM commits),
+                    (SELECT count(*) FROM symbol_snapshots)
+             FROM _meta",
+            [],
+            |row| {
+                Ok((
+                    row.get(0)?,
+                    row.get(1)?,
+                    row.get(2)?,
+                    row.get(3)?,
+                    row.get(4)?,
+                ))
+            },
+        )
+        .expect("query fresh analyst metadata and structural/temporal views");
+    assert_eq!(schema_version, spur_graph::store::SCHEMA_VERSION);
+    assert_eq!(
+        content_hash,
+        manifest["graph_content_hash"].as_str().unwrap()
+    );
+    assert!(node_count > 0, "fixture must have graph nodes");
+    assert_eq!(commit_count, 1, "fixture has one Git commit");
+    assert!(snapshot_count > 0, "fixture must have temporal snapshots");
+}
+
+#[test]
 fn analyst_build_skipped_by_flag() {
     let dir = fixture_git_repo();
     let out = Command::new(spur_binary())

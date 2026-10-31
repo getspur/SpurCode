@@ -870,14 +870,14 @@ mod tests {
     }
 
     #[test]
-    fn verify_schema_version_accepts_matching() {
+    fn verify_schema_version_accepts_graph_writer_version() {
         let dir = temp_root();
         std::fs::write(
             dir.path().join("manifest.json"),
-            format!(r#"{{"schema_version":"{SUPPORTED_GRAPH_SCHEMA_VERSION}"}}"#),
+            serde_json::json!({ "schema_version": spur_graph::store::SCHEMA_VERSION }).to_string(),
         )
         .unwrap();
-        verify_schema_version(dir.path()).expect("matching schema version");
+        verify_schema_version(dir.path()).expect("graph writer schema version must be accepted");
     }
 
     #[test]
@@ -892,6 +892,22 @@ mod tests {
         let msg = format!("{err:#}");
         assert!(
             msg.contains(SUPPORTED_GRAPH_SCHEMA_VERSION) && msg.contains("vNEXT"),
+            "expected both versions in error, got: {msg}"
+        );
+    }
+
+    #[test]
+    fn verify_schema_version_rejects_old_writer_version() {
+        let dir = temp_root();
+        std::fs::write(
+            dir.path().join("manifest.json"),
+            r#"{"schema_version":"spur-graph-schema-v10"}"#,
+        )
+        .unwrap();
+        let err = verify_schema_version(dir.path()).expect_err("old writer schema should error");
+        let msg = format!("{err:#}");
+        assert!(
+            msg.contains(spur_graph::store::SCHEMA_VERSION) && msg.contains("v10"),
             "expected both versions in error, got: {msg}"
         );
     }
