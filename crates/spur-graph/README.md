@@ -634,6 +634,18 @@ controls against those same compiled executables. Expected panics must exit 101
 and report a panic. A failing capture retains `blocked.json` and logs; no
 mandatory gate is silently skipped.
 
+The source corruption selects a physical `.rs` input whose identity kind is
+`source`, then finds the request input by its path. Only those bytes change;
+the expected identity and graph/source evidence stay fixed. The ownership
+corruption changes only a site's caller to a different, unique existing
+function or method in the same physical file. Capture fails if either witness
+cannot be constructed. Each control retains its request and a
+`negative-{source,ownership}.witness.json` with the selected path or caller
+symbols and exact changed JSON leaf. Both nonzero exits and the intended
+binding/ownership validation messages are required. Portable tests exercise
+control construction with process I/O replaced; fresh pinned-compiler capture
+remains a separate mandatory gate.
+
 Fresh held-out evidence confirms repeated Option/Result calls, distinct Safe
 methods, both generic instances, chains, dependency calls, cfg/feature contrast,
 bounds checks and overflow/debug contrasts. A multibyte-prefix call verifies

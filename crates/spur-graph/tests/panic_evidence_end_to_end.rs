@@ -329,6 +329,9 @@ def example(binary, request, work, env, directory, name, success=True):
     if name == 'negative-' + control:
         check_request(request, requests[0])
         raise Checked()
+    if name == 'negative-source':
+        changed = next(r for r in request['inputs'] if r not in requests[0]['inputs'])
+        (directory / (name + '.stderr')).write_text('capture input checksum mismatch: ' + changed['path'])
     return {'rejected': True}
 
 def run(argv, cwd, env, directory, name, *args, **kwargs):

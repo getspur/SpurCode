@@ -149,6 +149,17 @@ def example(binary, request, work, env, directory, name, success=True):
     return {"rejected": True}
 
 
+def request_changes(before, after, path=()):
+    """Retain exact changed JSON leaves, including their array positions."""
+    if before == after:
+        return []
+    if isinstance(before, dict) and isinstance(after, dict) and before.keys() == after.keys():
+        return [change for key in before for change in request_changes(before[key], after[key], path + (key,))]
+    if isinstance(before, list) and isinstance(after, list) and len(before) == len(after):
+        return [change for i, (a, b) in enumerate(zip(before, after)) for change in request_changes(a, b, path + (i,))]
+    return [{"path": list(path), "before": before, "after": after}]
+
+
 def producer(args, work):
     driver, launcher, source = (Path(v).resolve(strict=True) for v in
                                 (args.cga_driver, args.cargo_cga, args.cga_source))
@@ -326,8 +337,27 @@ def capture(args, work, fixture, plan):
         controls = []
         for name in ["source", "config", "checksum", "reference", "ownership"]:
             bad = copy.deepcopy(request)
+            witness = None
             if name == "source":
-                bad["inputs"][0]["text"] += " "
+                candidates = [row for row in identity["inputs"] if row["kind"] == "source"
+                              and row["path"].endswith(".rs") and (fixture / row["path"]).is_file()
+                              and not (fixture / row["path"]).is_symlink()
+                              and (fixture / row["path"]).resolve().is_relative_to(fixture.resolve())]
+                require(candidates, "source control requires a physical .rs Source identity input")
+                selected = candidates[0]
+                matches = [i for i, row in enumerate(bad["inputs"]) if row["path"] == selected["path"]]
+                require(len(matches) == 1, "source control requires exactly one request input matching the identity path")
+                index = matches[0]
+                original = bad["inputs"][index]["text"].encode()
+                require(original == (fixture / selected["path"]).read_bytes()
+                        and digest(original) == selected["sha256"], "source control original bytes differ from identity")
+                bad["inputs"][index]["text"] += " "
+                changes = request_changes(request, bad)
+                require(len(changes) == 1 and changes[0]["path"] == ["inputs", index, "text"],
+                        "source control must change only the selected source input bytes")
+                witness = {"path": selected["path"], "kind": selected["kind"],
+                           "expected_sha256": selected["sha256"], "before_sha256": digest(original),
+                           "after_sha256": digest(bad["inputs"][index]["text"].encode()), "changes": changes}
             elif name == "config":
                 bad["identity"]["compiler_flags"].append("-Copt-level=1")
             elif name == "checksum":
@@ -339,8 +369,41 @@ def capture(args, work, fixture, plan):
                 bad["identity"]["raw_export_sha256"] = digest(bad["raw_export"].encode())
                 bad["expected_build_id"] = example(binary, {"command": "identity", "identity": bad["identity"]}, work, env, directory, "negative-reference-identity")["build_id"]
             else:
-                bad["method_sites"]["sites"][0]["caller_stable_symbol_id"] = "forged"
+                symbols = request["graph"]["symbols"]
+                by_id = {}
+                for symbol in symbols:
+                    by_id.setdefault(symbol["stable_symbol_id"], []).append(symbol)
+                eligible = [s for s in symbols if s["symbol_kind"] in ("function", "method")
+                            and len(by_id[s["stable_symbol_id"]]) == 1]
+                chosen = None
+                for index, site in enumerate(request["method_sites"]["sites"]):
+                    original = [s for s in eligible if s["stable_symbol_id"] == site["caller_stable_symbol_id"]
+                                and s["file_path"] == site["file_path"]]
+                    alternatives = [s for s in eligible if s["stable_symbol_id"] != site["caller_stable_symbol_id"]
+                                    and s["file_path"] == site["file_path"]]
+                    if len(original) == 1 and alternatives:
+                        chosen = (index, site, original[0], alternatives[0])
+                        break
+                require(chosen is not None, "ownership control requires two unique existing function/method callers in the same file")
+                index, site, original, replacement = chosen
+                require(original in symbols and replacement in symbols
+                        and original["stable_symbol_id"] != replacement["stable_symbol_id"]
+                        and original["file_path"] == replacement["file_path"] == site["file_path"],
+                        "ownership control caller membership/file/inequality mismatch")
+                bad["method_sites"]["sites"][index]["caller_stable_symbol_id"] = replacement["stable_symbol_id"]
+                changes = request_changes(request, bad)
+                require(len(changes) == 1 and changes[0]["path"] == ["method_sites", "sites", index, "caller_stable_symbol_id"],
+                        "ownership control must change only the existing caller identity")
+                witness = {"site_id": site["site_id"], "file_path": site["file_path"],
+                           "original_caller": original, "replacement_caller": replacement, "changes": changes}
+            if witness is not None:
+                write_json(directory / ("negative-" + name + ".witness.json"), witness)
             example(binary, bad, work, env, directory, "negative-" + name, False)
+            if name in ("source", "ownership"):
+                error = (directory / ("negative-" + name + ".stderr")).read_text()
+                expected = ("capture input checksum mismatch: " + witness["path"] if name == "source"
+                            else "method-call evidence differs from canonical source-bound collection")
+                require(expected in error, "negative-" + name + " rejected for an unintended reason")
             controls.append(name)
         executable = target / host / "debug/panic-pilot"
         runtime = []
