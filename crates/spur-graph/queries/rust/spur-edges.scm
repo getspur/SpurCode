@@ -1,5 +1,10 @@
 ; SPUR-specific graph edges that are outside the standard tags.scm surface.
 
+; Direct macro syntax evidence is collected separately from Calls resolution.
+; Macro arguments and macro definitions remain opaque token trees here.
+(macro_invocation
+  macro: (_) @macro_invocation.path) @macro_invocation
+
 ; Enum variants are SPUR-specific symbols; the canonical Rust tags query
 ; captures enum declarations but not their variants.
 (enum_variant

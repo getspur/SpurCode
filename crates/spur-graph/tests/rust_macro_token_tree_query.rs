@@ -111,6 +111,24 @@ fn rust_spur_edges_query_marks_macro_body_calls_with_macro_capture_names() {
 }
 
 #[test]
+fn rust_query_captures_direct_macro_nodes_and_exact_paths_separately() {
+    let source = r#"macro_rules! hidden { () => { panic!("hidden") }; }
+fn caller() { ::std /* raw */ :: r#panic!("direct"); wrapper!(panic!("tokens")); helper(); }"#;
+    assert_eq!(
+        capture_texts(SPUR_EDGES_QUERY, source, "macro_invocation"),
+        [
+            "::std /* raw */ :: r#panic!(\"direct\")",
+            "wrapper!(panic!(\"tokens\"))"
+        ]
+    );
+    assert_eq!(
+        capture_texts(SPUR_EDGES_QUERY, source, "macro_invocation.path"),
+        ["::std /* raw */ :: r#panic", "wrapper"]
+    );
+    assert!(call_names(SPUR_EDGES_QUERY, source).contains(&"helper".to_owned()));
+}
+
+#[test]
 fn rust_graph_artifact_emits_macro_body_calls_without_token_tree_noise() {
     let dir = tempfile::tempdir().expect("tempdir");
     std::fs::write(

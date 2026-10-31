@@ -359,6 +359,18 @@ impl<'a> FactBuilder<'a> {
         self.facts
     }
 
+    pub(crate) fn node_stable_key(&self, node_id: NodeId) -> Option<&str> {
+        self.facts
+            .nodes
+            .iter()
+            .find(|node| node.node_id == node_id)
+            .map(|node| node.stable_key.as_str())
+    }
+
+    pub(crate) fn record_macro_invocations(&mut self, rows: Vec<crate::MacroInvocationEvidence>) {
+        self.facts.macro_invocations.extend(rows);
+    }
+
     pub(crate) fn next_file_id(&mut self) -> u64 {
         let next = self.next_file;
         self.next_file += 1;
@@ -3498,6 +3510,25 @@ pub(crate) fn extract_file_contents_from_tree(
             &definitions,
         );
         definitions.extend(edge_definitions);
+        // Phase-one macro evidence uses physical file bytes and coordinates.
+        // Notebook cells keep normal definitions/edges until a cell source
+        // contract exists; their virtual paths cannot identify physical files.
+        if language_label == "rust"
+            && builder
+                .facts
+                .nodes
+                .iter()
+                .any(|node| node.node_id == file_node && node.kind == NodeKind::File)
+        {
+            crate::extract::rust_macros::emit_macro_invocations(
+                builder,
+                relative_path,
+                file_node,
+                source,
+                &definitions,
+                &edge_captures,
+            )?;
+        }
         emit_edges(
             config,
             builder,

@@ -7,6 +7,7 @@ pub mod markdown;
 pub mod mcp_tools;
 pub(crate) mod notebook;
 pub(crate) mod openapi;
+pub(crate) mod rust_macros;
 pub mod tree_sitter;
 
 pub use tree_sitter::{build_facts, build_facts_for_paths};
