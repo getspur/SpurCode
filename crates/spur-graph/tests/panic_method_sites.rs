@@ -91,6 +91,10 @@ fn repeated_calls_remain_individual_source_bound_sites() -> anyhow::Result<()> {
     }
     set.validate(&graph, &sources(SOURCE))?;
     println!("P1_OBSERVED={}", serde_json::to_string(&set)?);
+    println!(
+        "P1_GRAPH_SYMBOLS={}",
+        serde_json::to_string(&graph.symbols)?
+    );
     Ok(())
 }
 
@@ -259,7 +263,11 @@ fn validation_rejects_missing_duplicate_and_reordered_sites() -> anyhow::Result<
 #[test]
 fn validation_rejects_changed_text_spans_id_phase_and_provenance() -> anyhow::Result<()> {
     let (graph, set) = fixture()?;
-    assert_eq!(set.sites.len(), 4, "tamper controls require collected sites");
+    assert_eq!(
+        set.sites.len(),
+        4,
+        "tamper controls require collected sites"
+    );
     for (field, value) in [
         ("site_id", serde_json::json!("forged")),
         ("source_oid", serde_json::json!(git_blob_oid(b"stale"))),
