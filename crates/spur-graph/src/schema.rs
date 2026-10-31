@@ -91,6 +91,8 @@ pub struct GraphIndexArtifact {
     pub symbol_node_ids: Vec<NodeId>,
     #[serde(default)]
     pub edges: Vec<GraphEdgeArtifact>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub macro_invocations: Option<crate::MacroInvocationEvidenceSet>,
     #[serde(default)]
     pub tombstones: Vec<GraphTombstoneEntry>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -101,6 +103,56 @@ pub struct GraphIndexArtifact {
     pub symbol_snapshots: Vec<SymbolSnapshotArtifact>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub temporal_edges: Vec<TemporalEdgeArtifact>,
+}
+
+impl GraphIndexArtifact {
+    /// Check optional direct macro evidence against exact bytes, authoritative
+    /// lexical scopes and this graph's physical files and function symbols.
+    /// Evidence-only scope IDs never establish graph symbol membership.
+    pub fn validate_macro_invocations(
+        &self,
+        sources: &[crate::MacroEvidenceSource<'_>],
+        scopes: &[crate::MacroScopeEvidence],
+    ) -> anyhow::Result<()> {
+        let Some(set) = &self.macro_invocations else {
+            return Ok(());
+        };
+        set.validate(&self.graph_content_hash, sources, scopes)?;
+        for scope in &set.scopes {
+            anyhow::ensure!(
+                self.file_manifests.iter().any(
+                    |file| file.path == scope.file_path && file.content_oid == scope.source_oid
+                ),
+                "macro scope does not match artifact source manifest"
+            );
+        }
+        for row in &set.rows {
+            anyhow::ensure!(
+                self.file_manifests
+                    .iter()
+                    .any(|file| file.path == row.file_path && file.content_oid == row.source_oid),
+                "macro site does not match artifact source manifest"
+            );
+            if let Some(caller) = &row.caller_stable_symbol_id {
+                let enclosing = set
+                    .scopes
+                    .iter()
+                    .find(|scope| scope.scope == row.enclosing)
+                    .context("missing persisted caller scope")?;
+                anyhow::ensure!(
+                    self.symbols
+                        .iter()
+                        .any(|symbol| symbol.stable_symbol_id == *caller
+                            && symbol.file_path == row.file_path
+                            && matches!(symbol.symbol_kind.as_str(), "function" | "method")
+                            && symbol.byte_range == enclosing.byte_range
+                            && symbol.line_range == enclosing.line_range),
+                    "macro caller is not an actual graph function symbol"
+                );
+            }
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

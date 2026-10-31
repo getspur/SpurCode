@@ -29,8 +29,8 @@ use crate::{
     GraphSymbolArtifact, GraphTombstoneEntry, NodeId, NodeKind, RelationKind, SourceSpan,
 };
 
-pub const SCHEMA_VERSION: &str = "spur-graph-schema-v10";
-pub const EXTRACTOR_VERSION: &str = "2026-08-30-html-css-extraction-v1";
+pub const SCHEMA_VERSION: &str = "spur-graph-schema-v11";
+pub const EXTRACTOR_VERSION: &str = "2026-10-31-physical-rust-macro-evidence-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
 pub const RESOLVER_VERSION: &str = "2026-08-30-web-edge-resolution-v1";
 
@@ -249,6 +249,8 @@ struct FileBucket {
     symbols: Vec<GraphSymbolArtifact>,
     symbol_node_ids: Vec<NodeId>,
     edges: Vec<GraphEdgeArtifact>,
+    macro_invocations: Vec<crate::MacroInvocationEvidence>,
+    macro_scopes: Vec<crate::MacroScopeEvidence>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -347,6 +349,7 @@ pub fn artifact_from_facts(
             current_manifest_version(),
             Vec::new(),
         );
+        validate_macro_evidence(&artifact, &worktree_root, &facts.macro_scopes)?;
         tracing::info!(
             target: "spur_graph::build::compose",
             files = artifact.files.len(),
@@ -380,11 +383,16 @@ pub fn artifact_from_facts_incremental(
         .canonicalize()
         .with_context(|| format!("failed to canonicalize `{}`", root.display()))?;
     let manifest_version = current_manifest_version();
-    if prev.manifest_version != manifest_version {
+    if prev.manifest_version != manifest_version
+        || !prev.macro_invocations.as_ref().is_some_and(|set| {
+            set.schema_version == crate::MACRO_INVOCATION_SCHEMA_VERSION
+                && set.extractor_version == EXTRACTOR_VERSION
+        })
+    {
         tracing::info!(
             expected = %manifest_version,
             found = %prev.manifest_version,
-            "spur-graph: full rebuild selected: manifest_version changed"
+            "spur-graph: full rebuild selected: incompatible manifest or macro evidence"
         );
         let extract_started = Instant::now();
         let extract_span = tracing::info_span!(
@@ -490,6 +498,12 @@ pub fn artifact_from_facts_incremental(
         prev_symbols = prev.symbols.len(),
         prev_edges = prev.edges.len()
     );
+    anyhow::ensure!(
+        prev.macro_invocations
+            .as_ref()
+            .is_some_and(|set| set.graph_content_hash == prev.graph_content_hash),
+        "previous macro evidence snapshot mismatch"
+    );
     let prev_buckets = {
         let _entered = rebucket_span.enter();
         let buckets = buckets_from_artifact(prev);
@@ -590,6 +604,15 @@ pub fn artifact_from_facts_incremental(
 
         let tombstones = tombstones_for_worktree(prev, &current_entries, changed_tombstones);
         let artifact = compose_artifact(buckets, &current_entries, manifest_version, tombstones);
+        validate_macro_evidence(
+            &artifact,
+            &root,
+            &artifact
+                .macro_invocations
+                .as_ref()
+                .context("composed artifact must carry captured macro evidence")?
+                .scopes,
+        )?;
         tracing::info!(
             target: "spur_graph::build::compose",
             files = artifact.files.len(),
@@ -662,6 +685,7 @@ pub(crate) fn build_worktree_delta_artifact(
             .map(|entry| (entry.path.as_str(), entry.content_oid.as_str())),
     );
     let artifact = rebuild_from_buckets(buckets, manifest_version, graph_content_hash, tombstones);
+    validate_macro_evidence(&artifact, &root, &changed_facts.macro_scopes)?;
     let prev_symbol_ids: HashSet<_> = prev
         .symbols
         .iter()
@@ -733,6 +757,8 @@ fn buckets_from_facts(
                         symbols: Vec::new(),
                         symbol_node_ids: Vec::new(),
                         edges: Vec::new(),
+                        macro_invocations: Vec::new(),
+                        macro_scopes: Vec::new(),
                     });
                 entry.file = GraphFileArtifact {
                     stable_file_id: stable_file_id.clone(),
@@ -796,6 +822,8 @@ fn buckets_from_facts(
                         symbols: Vec::new(),
                         symbol_node_ids: Vec::new(),
                         edges: Vec::new(),
+                        macro_invocations: Vec::new(),
+                        macro_scopes: Vec::new(),
                     }
                 });
                 entry.manifest.node_ids.push(node.node_id);
@@ -854,6 +882,8 @@ fn buckets_from_facts(
                 symbols: Vec::new(),
                 symbol_node_ids: Vec::new(),
                 edges: Vec::new(),
+                macro_invocations: Vec::new(),
+                macro_scopes: Vec::new(),
             }
         });
         entry.edges.push(GraphEdgeArtifact {
@@ -872,6 +902,35 @@ fn buckets_from_facts(
         });
     }
 
+    // Transport the already collected records; never infer scopes from symbol IDs.
+    for row in &facts.macro_invocations {
+        let entry = current_entries
+            .get(&row.file_path)
+            .context("missing macro source entry")?;
+        anyhow::ensure!(
+            entry.content_oid == row.source_oid,
+            "macro source OID mismatch"
+        );
+        buckets
+            .entry(row.file_path.clone())
+            .or_insert_with(|| empty_bucket(&row.file_path, &entry.content_oid))
+            .macro_invocations
+            .push(row.clone());
+    }
+    for scope in &facts.macro_scopes {
+        let entry = current_entries
+            .get(&scope.file_path)
+            .context("missing macro scope source entry")?;
+        anyhow::ensure!(
+            entry.content_oid == scope.source_oid,
+            "macro scope source OID mismatch"
+        );
+        buckets
+            .entry(scope.file_path.clone())
+            .or_insert_with(|| empty_bucket(&scope.file_path, &entry.content_oid))
+            .macro_scopes
+            .push(scope.clone());
+    }
     for bucket in buckets.values_mut() {
         bucket.manifest.node_ids.sort_by_key(|id| id.get());
         sort_bucket_symbols(bucket);
@@ -890,6 +949,31 @@ fn discover_current_entries(root: &Path) -> anyhow::Result<BTreeMap<String, Curr
     } else {
         discover_fs_entries(root, &allowed_extensions)
     }
+}
+
+fn validate_macro_evidence(
+    artifact: &GraphIndexArtifact,
+    root: &Path,
+    scopes: &[crate::MacroScopeEvidence],
+) -> anyhow::Result<()> {
+    let Some(set) = &artifact.macro_invocations else {
+        return Ok(());
+    };
+    let paths: BTreeSet<_> = set
+        .rows
+        .iter()
+        .map(|row| row.file_path.as_str())
+        .chain(set.scopes.iter().map(|scope| scope.file_path.as_str()))
+        .collect();
+    let bytes: Vec<_> = paths
+        .into_iter()
+        .map(|path| fs::read(root.join(path)).map(|bytes| (path, bytes)))
+        .collect::<Result<_, _>>()?;
+    let sources: Vec<_> = bytes
+        .iter()
+        .map(|(file_path, bytes)| crate::MacroEvidenceSource { file_path, bytes })
+        .collect();
+    artifact.validate_macro_invocations(&sources, scopes)
 }
 
 fn discover_git_entries(
@@ -1154,6 +1238,28 @@ fn buckets_from_artifact(artifact: &GraphIndexArtifact) -> BTreeMap<String, File
                     .get(path)
                     .map(|edges| edges.iter().copied().cloned().collect())
                     .unwrap_or_default(),
+                macro_invocations: artifact
+                    .macro_invocations
+                    .as_ref()
+                    .map(|set| {
+                        set.rows
+                            .iter()
+                            .filter(|row| row.file_path == path)
+                            .cloned()
+                            .collect()
+                    })
+                    .unwrap_or_default(),
+                macro_scopes: artifact
+                    .macro_invocations
+                    .as_ref()
+                    .map(|set| {
+                        set.scopes
+                            .iter()
+                            .filter(|scope| scope.file_path == path)
+                            .cloned()
+                            .collect()
+                    })
+                    .unwrap_or_default(),
             },
         );
     }
@@ -1212,6 +1318,8 @@ fn empty_bucket(path: &str, content_oid: &str) -> FileBucket {
         symbols: Vec::new(),
         symbol_node_ids: Vec::new(),
         edges: Vec::new(),
+        macro_invocations: Vec::new(),
+        macro_scopes: Vec::new(),
     }
 }
 
@@ -2470,6 +2578,8 @@ fn rebuild_from_buckets(
     let mut symbol_node_ids = Vec::new();
     let mut manifests = Vec::new();
     let mut edges = Vec::new();
+    let mut macro_rows = Vec::new();
+    let mut macro_scopes = Vec::new();
 
     for bucket in buckets.values_mut() {
         sort_bucket_symbols(bucket);
@@ -2505,6 +2615,8 @@ fn rebuild_from_buckets(
         }
         manifests.push(bucket.manifest.clone());
         edges.extend(bucket.edges.clone());
+        macro_rows.extend(bucket.macro_invocations.clone());
+        macro_scopes.extend(bucket.macro_scopes.clone());
     }
 
     files.sort_by(|a, b| a.0.file_path.cmp(&b.0.file_path));
@@ -2544,7 +2656,25 @@ fn rebuild_from_buckets(
         })
         .collect();
 
+    macro_rows.sort_by(|a, b| {
+        (&a.file_path, a.byte_range, &a.site_id).cmp(&(&b.file_path, b.byte_range, &b.site_id))
+    });
+    macro_scopes.sort_by(|a, b| {
+        (&a.file_path, a.byte_range, &a.scope.stable_symbol_id).cmp(&(
+            &b.file_path,
+            b.byte_range,
+            &b.scope.stable_symbol_id,
+        ))
+    });
     GraphIndexArtifact {
+        macro_invocations: Some(crate::MacroInvocationEvidenceSet {
+            schema_version: crate::MACRO_INVOCATION_SCHEMA_VERSION.into(),
+            extractor_version: EXTRACTOR_VERSION.into(),
+            graph_content_hash: graph_content_hash.clone(),
+            source_scope: crate::MacroEvidenceSourceScope::PhysicalRustFiles,
+            rows: macro_rows,
+            scopes: macro_scopes,
+        }),
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
             // Content hash is stamped at write time, after body serialization input is finalized.
@@ -2798,6 +2928,46 @@ fn enclosing_scope(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn macro_evidence_survives_worktree_delta_with_all_owner_scopes() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        std::fs::write(root.join("changed.rs"), "fn old() { panic!(); }\n").unwrap();
+        std::fs::write(root.join("keep.rs"), "fn keep() { todo!(); }\n").unwrap();
+        let facts = crate::build_facts(&root, None).unwrap().0;
+        let baseline = super::artifact_from_facts(&facts, &root).unwrap();
+        let source = "#![allow(dead_code)]\nconst C: () = assert!(true);\n";
+        std::fs::write(root.join("changed.rs"), source).unwrap();
+        let delta = super::build_worktree_delta_artifact(&baseline, &root)
+            .unwrap()
+            .artifact;
+        let json = serde_json::to_value(&delta).unwrap();
+        assert!(
+            json["macro_invocations"].is_object(),
+            "delta must carry captured macro evidence"
+        );
+        let set = &json["macro_invocations"];
+        assert_eq!(set["source_scope"], "physical_rust_files");
+        assert_eq!(set["graph_content_hash"], delta.graph_content_hash);
+        assert_eq!(set["rows"].as_array().unwrap().len(), 1);
+        assert_eq!(set["rows"][0]["file_path"], "changed.rs");
+        assert_eq!(
+            set["rows"][0]["source_oid"],
+            crate::git_blob_oid(source.as_bytes())
+        );
+        assert_eq!(set["rows"][0]["enclosing"]["kind"], "const");
+        assert!(set["scopes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|s| s["scope"]["kind"] == "file"));
+        assert!(set["scopes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|s| s["file_path"] == "changed.rs"));
+    }
+
     use std::collections::{BTreeMap, BTreeSet};
     use std::fs;
     use std::path::{Path, PathBuf};
@@ -2977,7 +3147,7 @@ mod tests {
 
     #[test]
     fn schema_version_carries_phase_1b_vocabulary() {
-        assert_eq!(super::SCHEMA_VERSION, "spur-graph-schema-v10");
+        assert_eq!(super::SCHEMA_VERSION, "spur-graph-schema-v11");
     }
 
     #[test]
@@ -3077,6 +3247,7 @@ mod tests {
     #[test]
     fn buckets_from_artifact_rebuckets_edges_by_file_or_symbol_source() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
                 content_hash_blake3: None,
@@ -4221,6 +4392,7 @@ fn submit_plan_def() -> ToolDefinition {
                 end_line: 0,
             }],
             macro_invocations: Vec::new(),
+            macro_scopes: Vec::new(),
         };
 
         let artifact = artifact_from_facts(&facts, root).expect("artifact");

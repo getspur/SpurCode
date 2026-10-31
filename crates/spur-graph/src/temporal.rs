@@ -1107,6 +1107,7 @@ mod tests {
 
     fn fixture() -> (GraphIndexArtifact, CommitIndexArtifact) {
         let mut graph = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.into(),
                 content_hash_blake3: None,

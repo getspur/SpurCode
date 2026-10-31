@@ -12,7 +12,7 @@ pub mod tree_sitter;
 
 pub use tree_sitter::{build_facts, build_facts_for_paths};
 
-use crate::{GraphEdge, GraphNode, MacroInvocationEvidence, SourceSpan};
+use crate::{GraphEdge, GraphNode, MacroInvocationEvidence, MacroScopeEvidence, SourceSpan};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct GraphFacts {
@@ -20,6 +20,7 @@ pub struct GraphFacts {
     pub edges: Vec<GraphEdge>,
     pub spans: Vec<SourceSpan>,
     pub macro_invocations: Vec<MacroInvocationEvidence>,
+    pub macro_scopes: Vec<MacroScopeEvidence>,
 }
 
 impl GraphFacts {
@@ -29,6 +30,7 @@ impl GraphFacts {
             edges: Vec::new(),
             spans: Vec::new(),
             macro_invocations: Vec::new(),
+            macro_scopes: Vec::new(),
         }
     }
 }

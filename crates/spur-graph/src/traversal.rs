@@ -612,6 +612,7 @@ mod tests {
 
     fn artifact() -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -653,6 +654,7 @@ mod tests {
         }
 
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -712,6 +714,7 @@ mod tests {
     #[test]
     fn callee_edges_include_unresolved_target_labels() {
         let mut artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -852,6 +855,7 @@ mod tests {
     #[test]
     fn edge_budget_exhaustion_does_not_frontier_returned_nodes() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -968,6 +972,7 @@ mod tests {
     #[test]
     fn subgraph_filters_outgoing_unresolved_edges_by_default() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -1004,6 +1009,7 @@ mod tests {
     #[test]
     fn subgraph_can_include_outgoing_unresolved_edges_without_enqueueing_neighbor() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -1043,6 +1049,7 @@ mod tests {
     #[test]
     fn subgraph_can_include_incoming_unresolved_caller_edges() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -1091,6 +1098,7 @@ mod tests {
     #[test]
     fn unresolved_edge_does_not_advance_radius_depth() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -1121,6 +1129,7 @@ mod tests {
     #[test]
     fn callers_and_callees_include_references_edges() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -1150,6 +1159,7 @@ mod tests {
     #[test]
     fn subgraph_edge_kind_filter_is_strict_for_static_calls() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -1214,6 +1224,7 @@ mod tests {
     #[test]
     fn caller_and_callee_records_carry_edge_kind_for_all_public_values() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,

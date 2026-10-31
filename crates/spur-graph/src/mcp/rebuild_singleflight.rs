@@ -294,6 +294,7 @@ mod tests {
 
     fn artifact(hash: &str) -> Arc<GraphIndexArtifact> {
         Arc::new(GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_string(),
                 content_hash_blake3: None,

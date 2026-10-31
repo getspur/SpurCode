@@ -78,6 +78,7 @@ fn write_and_load_graph_artifact(
 
 fn minimal_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
             content_hash_blake3: None,

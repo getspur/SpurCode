@@ -8,9 +8,9 @@ use super::languages::DefinitionBinding;
 use super::tree_sitter::{CaptureHit, FactBuilder};
 use crate::{
     git_blob_oid, macro_invocation_site_id, MacroAttributeEvidence, MacroDefinitionLocation,
-    MacroEvidenceSource, MacroExecutionPhase, MacroInvocationEvidence, MacroInvocationEvidenceSet,
-    MacroResolutionEvidence, MacroScopeEvidence, MacroScopeKind, MacroScopeRef, MacroSinkFamily,
-    MacroTestContext, NodeId, MACRO_INVOCATION_SCHEMA_VERSION,
+    MacroEvidenceSource, MacroEvidenceSourceScope, MacroExecutionPhase, MacroInvocationEvidence,
+    MacroInvocationEvidenceSet, MacroResolutionEvidence, MacroScopeEvidence, MacroScopeKind,
+    MacroScopeRef, MacroSinkFamily, MacroTestContext, NodeId, MACRO_INVOCATION_SCHEMA_VERSION,
 };
 
 pub(crate) fn emit_macro_invocations(
@@ -166,15 +166,16 @@ pub(crate) fn emit_macro_invocations(
         };
         rows.insert(byte_range, row);
     }
-    // GraphFacts has rows only: the graph snapshot is bound by the artifact stage.
-    // This temporary set validates same-file source/scope evidence against the
-    // exact file snapshot; it is never persisted as an artifact evidence set.
+    // Validate and retain these exact source/scope records. The artifact stage
+    // supplies the graph snapshot binding without reparsing the file.
     let snapshot = format!("file-source:{file_path}:{source_oid}");
     let set = MacroInvocationEvidenceSet {
         schema_version: MACRO_INVOCATION_SCHEMA_VERSION.into(),
         extractor_version: "rust-direct-macro-invocation-v1".into(),
         graph_content_hash: snapshot.clone(),
+        source_scope: MacroEvidenceSourceScope::PhysicalRustFiles,
         rows: rows.into_values().collect(),
+        scopes: scopes.into_values().collect(),
     };
     set.validate(
         &snapshot,
@@ -182,9 +183,9 @@ pub(crate) fn emit_macro_invocations(
             file_path,
             bytes: source.as_bytes(),
         }],
-        &scopes.into_values().collect::<Vec<_>>(),
+        &set.scopes,
     )?;
-    builder.record_macro_invocations(set.rows);
+    builder.record_macro_invocations(set.rows, set.scopes);
     Ok(())
 }
 

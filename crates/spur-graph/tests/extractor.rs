@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -79,6 +79,99 @@ fn markdown_golden_path() -> PathBuf {
         .join("tests/fixtures/markdown_corpus/expected_graph_index.json")
 }
 
+// Keep producer output outside the input tree without suppressing JSON sources.
+// Returning the owner keeps the isolated tree alive through extraction and hashing.
+fn prepare_corpus(source_root: &Path, golden_output: &Path) -> tempfile::TempDir {
+    fn copy_inputs(source: &Path, destination: &Path, golden_output: &Path) {
+        fs::create_dir_all(destination).expect("create corpus input directory");
+        for entry in fs::read_dir(source).expect("read corpus directory") {
+            let entry = entry.expect("corpus entry");
+            if entry.path() == golden_output {
+                continue;
+            }
+            let target = destination.join(entry.file_name());
+            if entry.file_type().expect("corpus file type").is_dir() {
+                copy_inputs(&entry.path(), &target, golden_output);
+            } else {
+                fs::copy(entry.path(), target).expect("copy corpus input");
+            }
+        }
+    }
+
+    let input = tempfile::tempdir().expect("temporary input corpus");
+    copy_inputs(source_root, input.path(), golden_output);
+    input
+}
+
+#[test]
+fn corpus_goldens_are_external_to_input_files_and_manifests() {
+    for (source, golden) in [
+        (fixture_root(), golden_path()),
+        (python_fixture_root(), python_golden_path()),
+        (typescript_fixture_root(), typescript_golden_path()),
+        (javascript_fixture_root(), javascript_golden_path()),
+        (cpp_fixture_root(), cpp_golden_path()),
+        (markdown_fixture_root(), markdown_golden_path()),
+    ] {
+        let input = prepare_corpus(&source, &golden);
+        let facts = build_facts(input.path(), None)
+            .expect("extract input corpus")
+            .0;
+        let artifact = artifact_from_facts(&facts, input.path()).expect("input artifact");
+        assert!(
+            artifact
+                .files
+                .iter()
+                .all(|file| file.file_path != "expected_graph_index.json")
+                && artifact
+                    .file_manifests
+                    .iter()
+                    .all(|file| file.path != "expected_graph_index.json"),
+            "golden producer output entered corpus files/manifests: {}",
+            source.display()
+        );
+        assert!(!input.path().join("expected_graph_index.json").exists());
+        for manifest in &artifact.file_manifests {
+            let original = fs::read(source.join(&manifest.path)).expect("original input bytes");
+            assert_eq!(
+                fs::read(input.path().join(&manifest.path)).unwrap(),
+                original
+            );
+            assert_eq!(manifest.content_oid, spur_graph::git_blob_oid(&original));
+        }
+    }
+}
+
+#[test]
+fn corpus_preparation_preserves_legitimate_json_and_relative_paths() {
+    let source = tempfile::tempdir().expect("source corpus");
+    fs::create_dir_all(source.path().join("nested")).unwrap();
+    let golden = source.path().join("expected_graph_index.json");
+    fs::write(&golden, "{}").unwrap();
+    fs::write(source.path().join("input.json"), r#"{"input": true}"#).unwrap();
+    fs::write(
+        source.path().join("nested/expected_graph_index.json"),
+        r#"{"nested_input": true}"#,
+    )
+    .unwrap();
+
+    let input = prepare_corpus(source.path(), &golden);
+    let facts = build_facts(input.path(), None)
+        .expect("extract JSON inputs")
+        .0;
+    let artifact = artifact_from_facts(&facts, input.path()).expect("JSON artifact");
+    let paths: BTreeSet<_> = artifact
+        .file_manifests
+        .iter()
+        .map(|file| file.path.as_str())
+        .collect();
+    assert_eq!(
+        paths,
+        BTreeSet::from(["input.json", "nested/expected_graph_index.json"])
+    );
+    assert_eq!(fs::read_to_string(&golden).unwrap(), "{}");
+}
+
 fn normalize_for_golden(
     mut artifact: spur_graph::GraphIndexArtifact,
 ) -> spur_graph::GraphIndexArtifact {
@@ -145,10 +238,10 @@ fn find_symbol_json<'a>(
 }
 
 #[test]
-fn graph_store_schema_version_is_v10() {
+fn graph_store_schema_version_is_v11() {
     assert_eq!(
         spur_graph::store::build::SCHEMA_VERSION,
-        "spur-graph-schema-v10"
+        "spur-graph-schema-v11"
     );
 }
 
@@ -392,7 +485,8 @@ enum EditStep {
 
 #[test]
 fn rust_extractor_matches_sample_corpus_golden_artifact() {
-    let root = fixture_root();
+    let input = prepare_corpus(&fixture_root(), &golden_path());
+    let root = input.path().to_path_buf();
     let facts = build_facts(&root, None).expect("extract fixture").0;
     let artifact = normalize_for_golden(artifact_from_facts(&facts, &root).expect("artifact"));
     let actual = serde_json::to_string_pretty(&artifact).expect("encode artifact");
@@ -408,7 +502,8 @@ fn rust_extractor_matches_sample_corpus_golden_artifact() {
 
 #[test]
 fn python_extractor_matches_sample_corpus_golden_artifact() {
-    let root = python_fixture_root();
+    let input = prepare_corpus(&python_fixture_root(), &python_golden_path());
+    let root = input.path().to_path_buf();
     let facts = build_facts(&root, None).expect("extract fixture").0;
     let artifact = normalize_for_golden(artifact_from_facts(&facts, &root).expect("artifact"));
     let actual = serde_json::to_string_pretty(&artifact).expect("encode artifact");
@@ -424,7 +519,8 @@ fn python_extractor_matches_sample_corpus_golden_artifact() {
 
 #[test]
 fn typescript_extractor_matches_typescript_corpus_golden_artifact() {
-    let root = typescript_fixture_root();
+    let input = prepare_corpus(&typescript_fixture_root(), &typescript_golden_path());
+    let root = input.path().to_path_buf();
     let facts = build_facts(&root, None).expect("extract fixture").0;
     let artifact = normalize_for_golden(artifact_from_facts(&facts, &root).expect("artifact"));
     let actual = serde_json::to_string_pretty(&artifact).expect("encode artifact");
@@ -509,7 +605,8 @@ fn assert_javascript_fixture_surface(artifact: &spur_graph::GraphIndexArtifact) 
 
 #[test]
 fn javascript_extractor_matches_javascript_corpus_golden_artifact() {
-    let root = javascript_fixture_root();
+    let input = prepare_corpus(&javascript_fixture_root(), &javascript_golden_path());
+    let root = input.path().to_path_buf();
     let (facts, file_counts) = build_facts(&root, None).expect("extract fixture");
     assert_eq!(file_counts.get("javascript").copied(), Some(4));
     let artifact = normalize_for_golden(artifact_from_facts(&facts, &root).expect("artifact"));
@@ -527,7 +624,8 @@ fn javascript_extractor_matches_javascript_corpus_golden_artifact() {
 
 #[test]
 fn cpp_extractor_matches_corpus_golden_artifact() {
-    let root = cpp_fixture_root();
+    let input = prepare_corpus(&cpp_fixture_root(), &cpp_golden_path());
+    let root = input.path().to_path_buf();
     let facts = build_facts(&root, None).expect("extract fixture").0;
     let artifact = normalize_for_golden(artifact_from_facts(&facts, &root).expect("artifact"));
     let actual = serde_json::to_string_pretty(&artifact).expect("encode artifact");
@@ -618,7 +716,8 @@ fn cpp_extractor_captures_duckdb_style_surface() {
 
 #[test]
 fn markdown_extractor_matches_corpus_golden_artifact() {
-    let root = markdown_fixture_root();
+    let input = prepare_corpus(&markdown_fixture_root(), &markdown_golden_path());
+    let root = input.path().to_path_buf();
     let facts = build_facts(&root, None).expect("extract fixture").0;
     let artifact = normalize_for_golden(artifact_from_facts(&facts, &root).expect("artifact"));
     let actual = serde_json::to_string_pretty(&artifact).expect("encode artifact");
@@ -753,7 +852,8 @@ fn python_extractor_classifies_decorated_methods_as_methods() {
 
 #[test]
 fn rust_extractor_finds_expected_nodes_edges_and_spans() {
-    let root = fixture_root();
+    let input = prepare_corpus(&fixture_root(), &golden_path());
+    let root = input.path().to_path_buf();
     let facts = build_facts(&root, None).expect("extract fixture").0;
 
     let labels: BTreeSet<_> = facts.nodes.iter().map(|node| node.label.as_str()).collect();

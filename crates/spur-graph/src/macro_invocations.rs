@@ -14,6 +14,13 @@ use crate::git_blob_oid;
 pub const MACRO_INVOCATION_SCHEMA_VERSION: &str = "spur-macro-invocation-v1";
 const SITE_ID_VERSION: &[u8] = b"spur-macro-invocation-site-v1";
 
+/// Coverage is limited to physical Rust file owners, excluding notebook cells.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MacroEvidenceSourceScope {
+    PhysicalRustFiles,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum MacroScopeKind {
@@ -132,7 +139,9 @@ pub struct MacroInvocationEvidenceSet {
     pub extractor_version: String,
     /// Source graph snapshot hash, supplied independently of this set's hash.
     pub graph_content_hash: String,
+    pub source_scope: MacroEvidenceSourceScope,
     pub rows: Vec<MacroInvocationEvidence>,
+    pub scopes: Vec<MacroScopeEvidence>,
 }
 
 /// Exact bytes supplied by extraction or artifact validation, not HEAD guesses.
@@ -199,18 +208,41 @@ impl MacroInvocationEvidenceSet {
                 "duplicate source path"
             );
         }
-        let mut scope_map = BTreeMap::new();
+        let mut authoritative_scopes = BTreeMap::new();
         for scope in scopes {
             ensure!(
                 !scope.scope.stable_symbol_id.trim().is_empty(),
                 "empty scope ID"
             );
             ensure!(
-                scope_map
+                authoritative_scopes
                     .insert(scope.scope.stable_symbol_id.as_str(), scope)
                     .is_none(),
                 "duplicate scope ID"
             );
+        }
+        let mut scope_map = BTreeMap::new();
+        for scope in &self.scopes {
+            ensure!(
+                scope_map
+                    .insert(scope.scope.stable_symbol_id.as_str(), scope)
+                    .is_none(),
+                "duplicate persisted scope ID"
+            );
+            ensure!(
+                authoritative_scopes
+                    .get(scope.scope.stable_symbol_id.as_str())
+                    .copied()
+                    == Some(scope),
+                "persisted macro scope differs from authoritative scope"
+            );
+            validate_location(
+                &scope.file_path,
+                &scope.source_oid,
+                scope.byte_range,
+                scope.line_range,
+                &source_map,
+            )?;
         }
         let mut identities = BTreeSet::new();
         for row in &self.rows {

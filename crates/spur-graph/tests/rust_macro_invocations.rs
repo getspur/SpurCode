@@ -496,6 +496,8 @@ fn direct_sites_have_exact_spans_callers_and_conservative_context() {
         schema_version: MACRO_INVOCATION_SCHEMA_VERSION.into(),
         extractor_version: "m2-fixture-v1".into(),
         graph_content_hash: "m2-fixture-snapshot".into(),
+        source_scope: spur_graph::MacroEvidenceSourceScope::PhysicalRustFiles,
+        scopes: facts.macro_scopes.clone(),
         rows: facts.macro_invocations.clone(),
     };
     let sources = [MacroEvidenceSource {

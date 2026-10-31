@@ -367,8 +367,13 @@ impl<'a> FactBuilder<'a> {
             .map(|node| node.stable_key.as_str())
     }
 
-    pub(crate) fn record_macro_invocations(&mut self, rows: Vec<crate::MacroInvocationEvidence>) {
+    pub(crate) fn record_macro_invocations(
+        &mut self,
+        rows: Vec<crate::MacroInvocationEvidence>,
+        scopes: Vec<crate::MacroScopeEvidence>,
+    ) {
         self.facts.macro_invocations.extend(rows);
+        self.facts.macro_scopes.extend(scopes);
     }
 
     pub(crate) fn next_file_id(&mut self) -> u64 {

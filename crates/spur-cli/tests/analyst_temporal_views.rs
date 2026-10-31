@@ -1270,6 +1270,7 @@ fn identity_integrity_artifact(graph_content_hash: &str) -> GraphIndexArtifact {
 
 fn structural_artifact(graph_content_hash: &str) -> GraphIndexArtifact {
     GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "spur-graph-phase2".to_string(),
             content_hash_blake3: None,

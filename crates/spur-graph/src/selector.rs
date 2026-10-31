@@ -318,6 +318,7 @@ mod tests {
 
     fn artifact() -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,

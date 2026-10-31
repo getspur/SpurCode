@@ -188,6 +188,7 @@ impl MemoryGraph {
             edges: builder.edges,
             spans: Vec::new(),
             macro_invocations: Vec::new(),
+            macro_scopes: Vec::new(),
         };
         let content_hash = graph_content_hash(
             &facts,

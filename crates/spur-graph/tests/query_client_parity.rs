@@ -90,6 +90,7 @@ fn artifact() -> GraphIndexArtifact {
     let symbol_node_ids = (1..=symbols.len()).map(|id| NodeId(id as u64)).collect();
 
     GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "test".to_owned(),
             content_hash_blake3: None,

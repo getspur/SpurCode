@@ -20,6 +20,9 @@ pub(crate) struct GraphArtifactBodyForHash<'a> {
     pub symbol_snapshots: &'a [SymbolSnapshotArtifact],
     pub temporal_edges: &'a [TemporalEdgeArtifact],
     pub diagnostics: &'a [String],
+    // Omit absent evidence to preserve content hashes of legitimate legacy bodies.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub macro_invocations: Option<&'a crate::MacroInvocationEvidenceSet>,
 }
 
 pub fn artifact_content_hash_blake3_hex(artifact: &GraphIndexArtifact) -> anyhow::Result<String> {
@@ -35,6 +38,7 @@ pub fn artifact_content_hash_blake3_hex(artifact: &GraphIndexArtifact) -> anyhow
         symbol_snapshots: &artifact.symbol_snapshots,
         temporal_edges: &artifact.temporal_edges,
         diagnostics: &artifact.diagnostics,
+        macro_invocations: artifact.macro_invocations.as_ref(),
     };
     let canonical_json = serde_json::to_vec(&body)
         .context("failed to encode graph artifact body for content hash")?;
@@ -52,6 +56,14 @@ mod tests {
     #[test]
     fn canonical_bytes_snapshot_guard() {
         let artifact = GraphIndexArtifact {
+            macro_invocations: Some(crate::MacroInvocationEvidenceSet {
+                schema_version: crate::MACRO_INVOCATION_SCHEMA_VERSION.into(),
+                extractor_version: crate::store::EXTRACTOR_VERSION.into(),
+                graph_content_hash: "graph-content-hash".into(),
+                source_scope: crate::MacroEvidenceSourceScope::PhysicalRustFiles,
+                rows: Vec::new(),
+                scopes: Vec::new(),
+            }),
             header: GraphIndexHeader {
                 graph_index_version: "v5".to_owned(),
                 content_hash_blake3: Some("header-content-hash".to_owned()),
@@ -116,6 +128,7 @@ mod tests {
             symbol_snapshots: &artifact.symbol_snapshots,
             temporal_edges: &artifact.temporal_edges,
             diagnostics: &artifact.diagnostics,
+            macro_invocations: artifact.macro_invocations.as_ref(),
         };
         let bytes = serde_json::to_vec(&body).expect("canonical JSON should serialize");
 
@@ -189,6 +202,7 @@ mod tests {
 
     fn minimal_hash_artifact() -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "v5".to_owned(),
                 content_hash_blake3: None,

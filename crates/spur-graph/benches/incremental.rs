@@ -986,6 +986,7 @@ fn synthetic_history_artifact(
     assert!(snapshot_count >= target_chain_len);
 
     let mut graph = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.into(),
             content_hash_blake3: None,
@@ -1080,6 +1081,7 @@ fn synthetic_resolve_artifact(
     assert!(snapshot_count >= target_chain_len);
 
     let mut graph = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.into(),
             content_hash_blake3: None,

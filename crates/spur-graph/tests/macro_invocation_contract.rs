@@ -97,6 +97,8 @@ fn fixture() -> MacroInvocationEvidenceSet {
         schema_version: MACRO_INVOCATION_SCHEMA_VERSION.into(),
         extractor_version: "fixture-extractor-v1".into(),
         graph_content_hash: GRAPH.into(),
+        source_scope: spur_graph::MacroEvidenceSourceScope::PhysicalRustFiles,
+        scopes: scopes(),
         rows,
     }
 }
@@ -413,6 +415,7 @@ fn empty_facts_and_captured_empty_set_are_distinct_from_unavailable() {
     assert!(GraphFacts::empty().macro_invocations.is_empty());
     let mut set = fixture();
     set.rows.clear();
+    set.scopes.clear();
     set.validate(GRAPH, &[], &[]).unwrap();
     let captured = Some(set);
     let unavailable: Option<MacroInvocationEvidenceSet> = None;

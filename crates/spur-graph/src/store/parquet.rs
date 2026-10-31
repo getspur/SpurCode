@@ -948,6 +948,7 @@ pub fn read_artifact_parquet(dir: &Path) -> anyhow::Result<GraphIndexArtifact> {
     edges.extend(unresolved_edges);
 
     let mut artifact = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
@@ -1002,6 +1003,7 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
         })?;
 
     let mut artifact = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
@@ -1087,6 +1089,7 @@ pub(crate) fn load_temporal_artifact_metadata_parquet(
     })?;
 
     let mut artifact = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
@@ -1220,6 +1223,7 @@ pub(crate) fn read_temporal_artifact_parquet(dir: &Path) -> anyhow::Result<Graph
     })?;
 
     let mut artifact = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
@@ -1301,6 +1305,7 @@ pub(crate) fn read_temporal_artifact_parquet_for_symbol_history_with_cache(
         read_temporal_edges_for_symbols_with_cache(dir, &manifest, &chain_ids, metadata_cache)?;
 
     let mut artifact = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
@@ -1523,6 +1528,7 @@ mod edge_rows_test {
 
     fn test_artifact(edge: GraphEdgeArtifact) -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: crate::schema::GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
                 content_hash_blake3: None,
@@ -5014,6 +5020,7 @@ mod parquet_temporal_test {
 
     fn empty_artifact(graph_content_hash: &str) -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: crate::schema::GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
                 content_hash_blake3: None,

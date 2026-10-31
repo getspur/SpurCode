@@ -381,6 +381,7 @@ async fn lance_sections_skips_non_utf8_markdown_files() {
     fs::write(root.join("docs/bad.md"), b"# Bad\n\nInvalid \xFE body.\n").expect("write bad");
 
     let artifact = GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "test".to_owned(),
             content_hash_blake3: None,

@@ -3492,6 +3492,7 @@ mod tests {
         }
 
         GraphIndexArtifact {
+            macro_invocations: None,
             header: crate::GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -3908,6 +3909,7 @@ mod tests {
         symbols: Vec<GraphSymbolArtifact>,
     ) -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: crate::GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -4651,6 +4653,7 @@ mod tests {
             })
             .collect();
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: crate::GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -4776,6 +4779,7 @@ mod tests {
         let tiny_end = source.find("\n\nfn handle_error").expect("tiny end");
         let long_start = source.find("fn handle_error").expect("long start");
         let artifact = GraphIndexArtifact {
+            macro_invocations: None,
             header: crate::GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,

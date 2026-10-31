@@ -4006,6 +4006,7 @@ mod tests {
         content_hash: &str,
     ) -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: TEST_GRAPH_INDEX_VERSION.to_string(),
                 content_hash_blake3: Some(content_hash.to_string()),

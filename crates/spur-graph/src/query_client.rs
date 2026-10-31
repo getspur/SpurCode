@@ -323,6 +323,7 @@ impl OverlayFinalizationMeasurements {
 
 fn empty_overlay_delta_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
+        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
             content_hash_blake3: None,
@@ -2452,6 +2453,7 @@ mod tests {
 
     fn artifact(symbols: Vec<GraphSymbolArtifact>) -> GraphIndexArtifact {
         GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,

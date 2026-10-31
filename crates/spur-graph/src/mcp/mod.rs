@@ -9076,6 +9076,7 @@ mod tests {
         let oid = git_blob_oid(src);
 
         let artifact = Arc::new(GraphIndexArtifact {
+            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
