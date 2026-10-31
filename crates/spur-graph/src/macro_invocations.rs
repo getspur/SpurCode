@@ -144,6 +144,43 @@ pub struct MacroInvocationEvidenceSet {
     pub scopes: Vec<MacroScopeEvidence>,
 }
 
+/// Exact, conjunctive filters; no implicit limit or macro-name resolution.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MacroInvocationFilter {
+    pub file_path: Option<String>,
+    pub caller_stable_symbol_id: Option<String>,
+    /// Optional expected snapshot identity, requiring file_path.
+    pub source_oid: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MacroEvidenceAvailability {
+    Complete,
+    Partial,
+    Unavailable,
+    UnsupportedSource,
+}
+
+/// A source domain from one snapshot. Overlays retain separate base/delta
+/// bindings, removing replaced sources from the base domain.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MacroEvidenceSnapshot {
+    pub graph_content_hash: String,
+    pub schema_version: String,
+    pub extractor_version: String,
+    pub source_oids: BTreeMap<String, String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MacroInvocationQueryResult {
+    pub availability: MacroEvidenceAvailability,
+    pub source_scope: Option<MacroEvidenceSourceScope>,
+    pub snapshots: Vec<MacroEvidenceSnapshot>,
+    pub rows: Vec<MacroInvocationEvidence>,
+    pub scopes: Vec<MacroScopeEvidence>,
+}
+
 /// Exact bytes supplied by extraction or artifact validation, not HEAD guesses.
 #[derive(Debug, Clone, Copy)]
 pub struct MacroEvidenceSource<'a> {
@@ -553,4 +590,76 @@ fn validate_location(
         "macro byte and line coordinates disagree"
     );
     Ok(())
+}
+
+pub(crate) fn referenced_scope_ids(rows: &[MacroInvocationEvidence]) -> BTreeSet<String> {
+    rows.iter()
+        .flat_map(|row| {
+            std::iter::once(row.enclosing.stable_symbol_id.clone()).chain(
+                row.attributes
+                    .iter()
+                    .map(|a| a.owner.stable_symbol_id.clone()),
+            )
+        })
+        .collect()
+}
+
+impl MacroInvocationFilter {
+    pub(crate) fn validate_shape(&self) -> anyhow::Result<()> {
+        ensure!(
+            self.source_oid.is_none() || self.file_path.is_some(),
+            "source_oid requires file_path"
+        );
+        Ok(())
+    }
+
+    pub(crate) fn matches(&self, row: &MacroInvocationEvidence) -> bool {
+        self.file_path.as_ref().is_none_or(|p| *p == row.file_path)
+            && self
+                .caller_stable_symbol_id
+                .as_ref()
+                .is_none_or(|c| row.caller_stable_symbol_id.as_ref() == Some(c))
+    }
+
+    pub(crate) fn validate_source(&self, sources: &BTreeMap<String, String>) -> anyhow::Result<()> {
+        self.validate_shape()?;
+        if let (Some(oid), Some(path)) = (&self.source_oid, &self.file_path) {
+            ensure!(
+                sources.get(path) == Some(oid),
+                "macro query source identity mismatch"
+            );
+        }
+        Ok(())
+    }
+}
+
+impl MacroInvocationQueryResult {
+    pub(crate) fn unavailable() -> Self {
+        Self {
+            availability: MacroEvidenceAvailability::Unavailable,
+            source_scope: None,
+            snapshots: Vec::new(),
+            rows: Vec::new(),
+            scopes: Vec::new(),
+        }
+    }
+
+    pub(crate) fn sort(&mut self) {
+        self.rows.sort_by(|a, b| {
+            (&a.file_path, a.byte_range, &a.site_id).cmp(&(&b.file_path, b.byte_range, &b.site_id))
+        });
+        self.scopes.sort_by(|a, b| {
+            (&a.file_path, a.byte_range, &a.scope.stable_symbol_id).cmp(&(
+                &b.file_path,
+                b.byte_range,
+                &b.scope.stable_symbol_id,
+            ))
+        });
+    }
+
+    pub(crate) fn retain_referenced_scopes(&mut self) {
+        let ids = referenced_scope_ids(&self.rows);
+        self.scopes
+            .retain(|s| ids.contains(&s.scope.stable_symbol_id));
+    }
 }

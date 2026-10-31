@@ -3,13 +3,21 @@
 //! Nested attributes and tagged resolution payloads use JSON columns to retain
 //! exact raw text, owner references and local-definition coordinates losslessly.
 
-use std::{collections::HashMap, fs::File, path::Path, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    path::Path,
+    sync::Arc,
+};
 
 use anyhow::{ensure, Context as _};
 use arrow_array::{Array, ArrayRef, BooleanArray, Int64Array, RecordBatch, StringArray};
 use arrow_schema::{DataType, Field, Schema};
 use parquet::{
-    arrow::{arrow_reader::ParquetRecordBatchReaderBuilder, ArrowWriter},
+    arrow::{
+        arrow_reader::{ArrowPredicateFn, ParquetRecordBatchReaderBuilder, RowFilter},
+        ArrowWriter, ProjectionMask,
+    },
     basic::{Compression, ZstdLevel},
     file::properties::WriterProperties,
 };
@@ -111,6 +119,14 @@ pub(super) fn read(
     dir: &Path,
     manifest: &GraphArtifactManifest,
 ) -> anyhow::Result<Option<MacroInvocationEvidenceSet>> {
+    read_impl(dir, manifest, None)
+}
+
+fn read_impl(
+    dir: &Path,
+    manifest: &GraphArtifactManifest,
+    frozen: Option<&MacroQueryTables>,
+) -> anyhow::Result<Option<MacroInvocationEvidenceSet>> {
     let Some(evidence) = &manifest.macro_evidence else {
         ensure!(
             manifest.row_counts.macro_invocations.is_none()
@@ -147,31 +163,10 @@ pub(super) fn read(
             .row_counts
             .macro_invocations
             .context("missing invocation count")?,
-    )?
-    .into_iter()
-    .map(|mut value| {
-        let object = value.as_object_mut().context("invalid invocation object")?;
-        let id = object
-            .remove("enclosing_scope_id")
-            .context("missing enclosing scope ID")?;
-        let kind = object
-            .remove("enclosing_scope_kind")
-            .context("missing enclosing scope kind")?;
-        object.insert(
-            "enclosing".into(),
-            serde_json::json!({"stable_symbol_id":id,"kind":kind}),
-        );
-        unflatten_ranges(object)?;
-        for name in ["attributes", "resolution"] {
-            let nested = object.remove(name).context("missing nested macro field")?;
-            object.insert(
-                name.into(),
-                serde_json::from_str(nested.as_str().context("invalid macro JSON column")?)?,
-            );
-        }
-        Ok(serde_json::from_value(value)?)
-    })
-    .collect::<anyhow::Result<Vec<_>>>()?;
+        frozen.map(|t| &t.invocations),
+        &[],
+    )?;
+    let rows = decode_invocations(rows)?;
     let scopes = read_table(
         &dir.join(SCOPES),
         fields(true),
@@ -180,20 +175,10 @@ pub(super) fn read(
             .row_counts
             .macro_scopes
             .context("missing scope count")?,
-    )?
-    .into_iter()
-    .map(|mut value| {
-        let object = value.as_object_mut().context("invalid scope object")?;
-        let id = object.remove("scope_id").context("missing scope ID")?;
-        let kind = object.remove("kind").context("missing scope kind")?;
-        object.insert(
-            "scope".into(),
-            serde_json::json!({"stable_symbol_id":id,"kind":kind}),
-        );
-        unflatten_ranges(object)?;
-        Ok(serde_json::from_value(value)?)
-    })
-    .collect::<anyhow::Result<Vec<_>>>()?;
+        frozen.map(|t| &t.scopes),
+        &[],
+    )?;
+    let scopes = decode_scopes(scopes)?;
     let set = MacroInvocationEvidenceSet {
         schema_version: evidence.schema_version.clone(),
         extractor_version: evidence.extractor_version.clone(),
@@ -348,10 +333,31 @@ fn read_table(
     fields: Vec<Field>,
     metadata: &HashMap<String, String>,
     count: usize,
+    frozen: Option<&FrozenMacroTable>,
+    filters: &[(String, HashSet<String>)],
 ) -> anyhow::Result<Vec<Value>> {
-    let reader = ParquetRecordBatchReaderBuilder::try_new(
+    if let Some(frozen) = frozen {
+        return (frozen.read)(filters);
+    }
+    read_table_input(
         File::open(path).with_context(|| format!("open {}", path.display()))?,
-    )?;
+        path,
+        fields,
+        metadata,
+        count,
+        filters,
+    )
+}
+
+fn read_table_input(
+    input: impl parquet::file::reader::ChunkReader + 'static,
+    path: &Path,
+    fields: Vec<Field>,
+    metadata: &HashMap<String, String>,
+    count: usize,
+    filters: &[(String, HashSet<String>)],
+) -> anyhow::Result<Vec<Value>> {
+    let mut reader = ParquetRecordBatchReaderBuilder::try_new(input)?;
     ensure!(
         reader.schema().fields() == Schema::new(fields).fields(),
         "macro table column schema mismatch: {}",
@@ -367,6 +373,58 @@ fn read_table(
         usize::try_from(reader.metadata().file_metadata().num_rows())? == count,
         "macro table manifest row count mismatch"
     );
+    if !filters.is_empty() {
+        // Skip row groups only when exact string statistics rule them out.
+        let groups = (0..reader.metadata().num_row_groups())
+            .filter(|&group| {
+                filters.iter().all(|(name, values)| {
+                    let column = reader
+                        .schema()
+                        .index_of(name)
+                        .expect("validated macro column");
+                    let stats = reader
+                        .metadata()
+                        .row_group(group)
+                        .column(column)
+                        .statistics();
+                    !values.is_empty()
+                        && stats.is_none_or(|s| {
+                            if !s.min_is_exact() || !s.max_is_exact() {
+                                return true;
+                            }
+                            match (s.min_bytes_opt(), s.max_bytes_opt()) {
+                                (Some(min), Some(max)) => values
+                                    .iter()
+                                    .any(|v| min <= v.as_bytes() && v.as_bytes() <= max),
+                                _ => true,
+                            }
+                        })
+                })
+            })
+            .collect();
+        let mut predicates: Vec<Box<dyn parquet::arrow::arrow_reader::ArrowPredicate>> = Vec::new();
+        for (name, values) in filters {
+            let values = values.clone();
+            let projection = ProjectionMask::columns(reader.parquet_schema(), [name.as_str()]);
+            predicates.push(Box::new(ArrowPredicateFn::new(projection, move |batch| {
+                let strings = batch
+                    .column(0)
+                    .as_any()
+                    .downcast_ref::<StringArray>()
+                    .ok_or_else(|| {
+                        arrow_schema::ArrowError::SchemaError("invalid macro filter column".into())
+                    })?;
+                Ok(BooleanArray::from_iter(
+                    strings
+                        .iter()
+                        .map(|v| Some(v.is_some_and(|v| values.contains(v)))),
+                ))
+            })));
+        }
+        reader = reader
+            .with_row_groups(groups)
+            .with_row_filter(RowFilter::new(predicates));
+    }
     let mut rows = Vec::new();
     for batch in reader.build()? {
         let batch = batch?;
@@ -391,6 +449,179 @@ fn read_table(
             rows.push(Value::Object(object));
         }
     }
-    ensure!(rows.len() == count, "decoded macro row count mismatch");
+    ensure!(
+        !filters.is_empty() || rows.len() == count,
+        "decoded macro row count mismatch"
+    );
     Ok(rows)
+}
+
+fn decode_invocations(values: Vec<Value>) -> anyhow::Result<Vec<crate::MacroInvocationEvidence>> {
+    values
+        .into_iter()
+        .map(|mut value| {
+            let object = value.as_object_mut().context("invalid invocation object")?;
+            let id = object
+                .remove("enclosing_scope_id")
+                .context("missing enclosing scope ID")?;
+            let kind = object
+                .remove("enclosing_scope_kind")
+                .context("missing enclosing scope kind")?;
+            object.insert(
+                "enclosing".into(),
+                serde_json::json!({"stable_symbol_id":id,"kind":kind}),
+            );
+            unflatten_ranges(object)?;
+            for name in ["attributes", "resolution"] {
+                let nested = object.remove(name).context("missing nested macro field")?;
+                object.insert(
+                    name.into(),
+                    serde_json::from_str(nested.as_str().context("invalid macro JSON column")?)?,
+                );
+            }
+            Ok(serde_json::from_value(value)?)
+        })
+        .collect::<anyhow::Result<Vec<_>>>()
+}
+
+fn decode_scopes(values: Vec<Value>) -> anyhow::Result<Vec<crate::MacroScopeEvidence>> {
+    values
+        .into_iter()
+        .map(|mut value| {
+            let object = value.as_object_mut().context("invalid scope object")?;
+            let id = object.remove("scope_id").context("missing scope ID")?;
+            let kind = object.remove("kind").context("missing scope kind")?;
+            object.insert(
+                "scope".into(),
+                serde_json::json!({"stable_symbol_id":id,"kind":kind}),
+            );
+            unflatten_ranges(object)?;
+            Ok(serde_json::from_value(value)?)
+        })
+        .collect::<anyhow::Result<Vec<_>>>()
+}
+
+/// Immutable compressed table snapshot. Opening decodes the entire evidence set
+/// once to verify the shared checksum. Queries prune row groups and decode only
+/// selected invocations and their referenced scope records from these bytes.
+/// Subsequent disk mutation cannot invalidate this validated context.
+pub(crate) struct MacroQueryTables {
+    invocations: FrozenMacroTable,
+    scopes: FrozenMacroTable,
+}
+
+impl MacroQueryTables {
+    pub(crate) fn open(
+        dir: &Path,
+        manifest: &GraphArtifactManifest,
+    ) -> anyhow::Result<(Option<Self>, Option<MacroInvocationEvidenceSet>)> {
+        if manifest.macro_evidence.is_none() {
+            return Ok((None, read(dir, manifest)?));
+        }
+        let tables = Self {
+            invocations: FrozenMacroTable::open(&dir.join(INVOCATIONS), false, manifest)?,
+            scopes: FrozenMacroTable::open(&dir.join(SCOPES), true, manifest)?,
+        };
+        let set = read_impl(dir, manifest, Some(&tables))?;
+        Ok((Some(tables), set))
+    }
+
+    pub(crate) fn query(
+        &self,
+        manifest: &GraphArtifactManifest,
+        filter: &crate::MacroInvocationFilter,
+    ) -> anyhow::Result<(
+        Vec<crate::MacroInvocationEvidence>,
+        Vec<crate::MacroScopeEvidence>,
+    )> {
+        let evidence = manifest
+            .macro_evidence
+            .as_ref()
+            .context("missing macro metadata")?;
+        let metadata = metadata(
+            evidence,
+            &manifest.graph_content_hash,
+            &manifest.manifest_version,
+        );
+        let mut filters = Vec::new();
+        for (name, value) in [
+            ("file_path", &filter.file_path),
+            ("caller_stable_symbol_id", &filter.caller_stable_symbol_id),
+        ] {
+            if let Some(value) = value {
+                filters.push((name.to_owned(), HashSet::from([value.clone()])));
+            }
+        }
+        let rows = decode_invocations(read_table(
+            Path::new(INVOCATIONS),
+            fields(false),
+            &metadata,
+            manifest
+                .row_counts
+                .macro_invocations
+                .context("missing invocation count")?,
+            Some(&self.invocations),
+            &filters,
+        )?)?;
+        let ids = crate::macro_invocations::referenced_scope_ids(&rows);
+        let scopes = if ids.is_empty() {
+            Vec::new()
+        } else {
+            decode_scopes(read_table(
+                Path::new(SCOPES),
+                fields(true),
+                &metadata,
+                manifest
+                    .row_counts
+                    .macro_scopes
+                    .context("missing scope count")?,
+                Some(&self.scopes),
+                &[("scope_id".to_owned(), ids.into_iter().collect())],
+            )?)?
+        };
+        Ok((rows, scopes))
+    }
+}
+
+// Erase the concrete byte-buffer type behind the table reader so this module
+// uses Parquet's ChunkReader contract without adding a production dependency.
+type MacroTableFilters = [(String, HashSet<String>)];
+type FrozenTableRead = dyn Fn(&MacroTableFilters) -> anyhow::Result<Vec<Value>> + Send + Sync;
+struct FrozenMacroTable {
+    read: Box<FrozenTableRead>,
+}
+impl FrozenMacroTable {
+    fn open(path: &Path, scopes: bool, manifest: &GraphArtifactManifest) -> anyhow::Result<Self> {
+        use parquet::file::reader::ChunkReader as _;
+        let file = File::open(path)?;
+        let bytes = file.get_bytes(0, usize::try_from(file.metadata()?.len())?)?;
+        let path = path.to_owned();
+        let evidence = manifest
+            .macro_evidence
+            .as_ref()
+            .context("missing macro metadata")?;
+        let metadata = metadata(
+            evidence,
+            &manifest.graph_content_hash,
+            &manifest.manifest_version,
+        );
+        let count = if scopes {
+            manifest.row_counts.macro_scopes
+        } else {
+            manifest.row_counts.macro_invocations
+        }
+        .context("missing macro row count")?;
+        Ok(Self {
+            read: Box::new(move |filters| {
+                read_table_input(
+                    bytes.clone(),
+                    &path,
+                    fields(scopes),
+                    &metadata,
+                    count,
+                    filters,
+                )
+            }),
+        })
+    }
 }

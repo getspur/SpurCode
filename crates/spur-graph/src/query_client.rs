@@ -49,9 +49,118 @@ use crate::{
 };
 use crate::{CandidateRow, NodeId, ResolvedSymbol, SearchFilters, SearchMode};
 
+use crate::store::macro_invocations::MacroQueryTables;
+use crate::{
+    MacroEvidenceAvailability, MacroEvidenceSnapshot, MacroEvidenceSourceScope,
+    MacroInvocationFilter, MacroInvocationQueryResult,
+};
+
 pub type CodeSelectorResolution = SelectorResolution;
 
+/// Validated snapshot metadata, retained independently of decoded query rows.
+struct MacroQueryContext {
+    snapshot: Option<MacroEvidenceSnapshot>,
+    graph_files: HashSet<String>,
+    notebook_owners: Vec<String>,
+}
+
+impl MacroQueryContext {
+    fn new(artifact: &GraphIndexArtifact) -> anyhow::Result<Self> {
+        if let Some(set) = &artifact.macro_invocations {
+            set.validate_stored(artifact)?;
+        }
+        Ok(Self {
+            snapshot: artifact
+                .macro_invocations
+                .as_ref()
+                .map(|set| MacroEvidenceSnapshot {
+                    graph_content_hash: set.graph_content_hash.clone(),
+                    schema_version: set.schema_version.clone(),
+                    extractor_version: set.extractor_version.clone(),
+                    source_oids: artifact
+                        .file_manifests
+                        .iter()
+                        .filter(|f| physical_rust_path(&f.path))
+                        .map(|f| (f.path.clone(), f.content_oid.clone()))
+                        .collect(),
+                }),
+            graph_files: artifact.files.iter().map(|f| f.file_path.clone()).collect(),
+            notebook_owners: artifact
+                .file_manifests
+                .iter()
+                .filter(|f| {
+                    Path::new(&f.path)
+                        .extension()
+                        .is_some_and(|ext| ext.eq_ignore_ascii_case("ipynb"))
+                })
+                .map(|f| f.path.clone())
+                .collect(),
+        })
+    }
+
+    fn result(
+        &self,
+        filter: &MacroInvocationFilter,
+        caller_file: Option<&str>,
+    ) -> anyhow::Result<MacroInvocationQueryResult> {
+        filter.validate_shape()?;
+        let Some(snapshot) = &self.snapshot else {
+            return Ok(MacroInvocationQueryResult::unavailable());
+        };
+        filter.validate_source(&snapshot.source_oids)?;
+        let unsupported = filter
+            .file_path
+            .as_deref()
+            .or(caller_file)
+            .is_some_and(|p| {
+                // A physical source owner wins even when its spelling resembles a
+                // notebook identity. Virtual identities are bound to known owners.
+                !snapshot.source_oids.contains_key(p)
+                    && (!physical_rust_path(p)
+                        || self.graph_files.contains(p)
+                        || self.notebook_owners.iter().any(|owner| {
+                            p.strip_prefix(owner.as_str())
+                                .is_some_and(|suffix| suffix.starts_with("#cell:"))
+                        }))
+            });
+        let mut snapshot = snapshot.clone();
+        if let Some(path) = &filter.file_path {
+            snapshot.source_oids.retain(|p, _| p == path);
+        }
+        Ok(MacroInvocationQueryResult {
+            availability: if unsupported {
+                MacroEvidenceAvailability::UnsupportedSource
+            } else {
+                MacroEvidenceAvailability::Complete
+            },
+            source_scope: Some(MacroEvidenceSourceScope::PhysicalRustFiles),
+            snapshots: vec![snapshot],
+            rows: Vec::new(),
+            scopes: Vec::new(),
+        })
+    }
+}
+
+fn physical_rust_path(path: &str) -> bool {
+    Path::new(path)
+        .extension()
+        .is_some_and(|ext| ext.eq_ignore_ascii_case("rs"))
+}
+
+struct ParquetMacroContext {
+    context: MacroQueryContext,
+    tables: Option<MacroQueryTables>,
+}
+
 pub trait GraphQueryClient {
+    /// Direct syntax evidence. Custom backends must opt in explicitly.
+    fn macro_invocations(
+        &self,
+        _filter: &crate::MacroInvocationFilter,
+    ) -> anyhow::Result<crate::MacroInvocationQueryResult> {
+        Ok(MacroInvocationQueryResult::unavailable())
+    }
+
     fn search_symbols(&self, opts: &SearchOptions) -> anyhow::Result<SearchResult>;
     fn find_caller_edges(&self, sid: &str) -> Vec<OwnedCallerRecord>;
     fn find_unresolved_caller_edges_by_labels(
@@ -93,6 +202,13 @@ pub trait GraphQueryClient {
 }
 
 impl<T: GraphQueryClient + ?Sized> GraphQueryClient for &T {
+    fn macro_invocations(
+        &self,
+        filter: &MacroInvocationFilter,
+    ) -> anyhow::Result<MacroInvocationQueryResult> {
+        (**self).macro_invocations(filter)
+    }
+
     fn search_symbols(&self, opts: &SearchOptions) -> anyhow::Result<SearchResult> {
         (**self).search_symbols(opts)
     }
@@ -161,6 +277,7 @@ impl<T: GraphQueryClient + ?Sized> GraphQueryClient for &T {
 pub struct InMemoryClient {
     artifact: Arc<GraphIndexArtifact>,
     temporal_index: Arc<OnceLock<Arc<TemporalIndex>>>,
+    macro_context: Arc<OnceLock<Result<MacroQueryContext, String>>>,
 }
 
 impl InMemoryClient {
@@ -168,6 +285,7 @@ impl InMemoryClient {
         Self {
             artifact,
             temporal_index: Arc::new(OnceLock::new()),
+            macro_context: Arc::new(OnceLock::new()),
         }
     }
 
@@ -177,6 +295,47 @@ impl InMemoryClient {
 }
 
 impl GraphQueryClient for InMemoryClient {
+    fn macro_invocations(
+        &self,
+        filter: &MacroInvocationFilter,
+    ) -> anyhow::Result<MacroInvocationQueryResult> {
+        let context = self
+            .macro_context
+            .get_or_init(|| MacroQueryContext::new(&self.artifact).map_err(|e| format!("{e:#}")))
+            .as_ref()
+            .map_err(|e| anyhow!(e.clone()))?;
+        let caller = if filter.file_path.is_none() && context.snapshot.is_some() {
+            filter
+                .caller_stable_symbol_id
+                .as_deref()
+                .map(|sid| self.symbol_by_id(sid))
+                .transpose()?
+                .flatten()
+        } else {
+            None
+        };
+        let mut result = context.result(filter, caller.as_ref().map(|s| s.file_path.as_str()))?;
+        if result.availability == MacroEvidenceAvailability::Complete {
+            if let Some(set) = &self.artifact.macro_invocations {
+                result.rows = set
+                    .rows
+                    .iter()
+                    .filter(|r| filter.matches(r))
+                    .cloned()
+                    .collect();
+                let ids = crate::macro_invocations::referenced_scope_ids(&result.rows);
+                result.scopes = set
+                    .scopes
+                    .iter()
+                    .filter(|s| ids.contains(&s.scope.stable_symbol_id))
+                    .cloned()
+                    .collect();
+            }
+        }
+        result.sort();
+        Ok(result)
+    }
+
     fn search_symbols(&self, opts: &SearchOptions) -> anyhow::Result<SearchResult> {
         Ok(search_symbols(&self.artifact, opts))
     }
@@ -615,6 +774,73 @@ impl<B: GraphQueryClient> OverlayClient<B> {
 }
 
 impl<B: GraphQueryClient> GraphQueryClient for OverlayClient<B> {
+    fn macro_invocations(
+        &self,
+        filter: &MacroInvocationFilter,
+    ) -> anyhow::Result<MacroInvocationQueryResult> {
+        // Validate the original request before inferring a caller's file path.
+        filter.validate_shape()?;
+        if self.is_identity_overlay() {
+            return self.base.macro_invocations(filter);
+        }
+        // Resolve only real caller symbols. Evidence-only scope IDs are never
+        // treated as graph callers. Routing by the current owner also preserves
+        // UnsupportedSource for notebook callers in a dirty overlay.
+        if filter.file_path.is_none() {
+            if let Some(caller) = filter
+                .caller_stable_symbol_id
+                .as_deref()
+                .map(|sid| self.symbol_by_id(sid))
+                .transpose()?
+                .flatten()
+            {
+                return self.macro_invocations(&MacroInvocationFilter {
+                    file_path: Some(caller.file_path),
+                    ..filter.clone()
+                });
+            }
+        }
+        if filter
+            .file_path
+            .as_ref()
+            .is_some_and(|p| self.is_shadowed_path(p))
+        {
+            return self.delta.macro_invocations(filter);
+        }
+        let mut base = self.base.macro_invocations(filter)?;
+        if filter.file_path.is_some() {
+            return Ok(base);
+        }
+        let mut delta = self.delta.macro_invocations(filter)?;
+        base.rows.retain(|r| !self.is_shadowed_path(&r.file_path));
+        base.retain_referenced_scopes();
+        for snapshot in &mut base.snapshots {
+            snapshot
+                .source_oids
+                .retain(|p, _| !self.is_shadowed_path(p));
+        }
+        delta.rows.retain(|r| self.is_shadowed_path(&r.file_path));
+        delta.retain_referenced_scopes();
+        for snapshot in &mut delta.snapshots {
+            snapshot.source_oids.retain(|p, _| self.is_shadowed_path(p));
+        }
+        base.availability = match (base.availability, delta.availability) {
+            (MacroEvidenceAvailability::Complete, MacroEvidenceAvailability::Complete) => {
+                MacroEvidenceAvailability::Complete
+            }
+            (MacroEvidenceAvailability::Unavailable, MacroEvidenceAvailability::Unavailable) => {
+                MacroEvidenceAvailability::Unavailable
+            }
+            _ => MacroEvidenceAvailability::Partial,
+        };
+        base.source_scope = base.source_scope.or(delta.source_scope);
+        base.rows.extend(delta.rows);
+        base.scopes.extend(delta.scopes);
+        base.snapshots.extend(delta.snapshots);
+        base.sort();
+        Ok(base)
+    }
+
     fn search_symbols(&self, opts: &SearchOptions) -> anyhow::Result<SearchResult> {
         self.search_symbols_counted(opts, None)
     }
@@ -1028,6 +1254,7 @@ pub struct ParquetClient {
     #[cfg(test)]
     file_oids_load_count: std::sync::atomic::AtomicUsize,
     temporal_index: OnceLock<Arc<TemporalIndex>>,
+    macro_context: OnceLock<Result<ParquetMacroContext, String>>,
 }
 
 #[derive(Clone)]
@@ -1123,6 +1350,44 @@ impl ParquetClient {
             #[cfg(test)]
             file_oids_load_count: std::sync::atomic::AtomicUsize::new(0),
             temporal_index: OnceLock::new(),
+            macro_context: OnceLock::new(),
+        })
+    }
+
+    // No edges, temporal tables, or full graph hydration. The first macro query
+    // freezes both compressed tables, validates their complete shared checksum,
+    // then checks source manifests and the actual function caller projection.
+    // Later queries perform zero disk IO for evidence, using Parquet pruning on
+    // immutable bytes. Decoded full evidence is discarded after validation.
+    fn load_macro_context(&self) -> anyhow::Result<ParquetMacroContext> {
+        let (tables, set) = MacroQueryTables::open(&self.dir, &self.manifest)?;
+        let mut artifact = empty_overlay_delta_artifact();
+        artifact.graph_content_hash = self.manifest.graph_content_hash.clone();
+        if let Some(set) = &set {
+            artifact.file_manifests = file_manifests_from_batches(read_projected_batches(
+                &self.dir.join("file_manifests.parquet"),
+                &self.metadata_cache,
+                FILE_MANIFEST_COLUMNS,
+            )?)?;
+            anyhow::ensure!(
+                artifact.file_manifests.len() == self.manifest.row_counts.file_manifests,
+                "macro query file_manifests row count mismatch: declared {}, decoded {}",
+                self.manifest.row_counts.file_manifests,
+                artifact.file_manifests.len()
+            );
+            artifact.files = self.files()?;
+            let callers = set
+                .rows
+                .iter()
+                .filter_map(|r| r.caller_stable_symbol_id.clone())
+                .collect::<HashSet<_>>();
+            artifact.symbols =
+                self.symbols_by_stable_ids(&callers.into_iter().collect::<Vec<_>>())?;
+        }
+        artifact.macro_invocations = set;
+        Ok(ParquetMacroContext {
+            context: MacroQueryContext::new(&artifact)?,
+            tables,
         })
     }
 
@@ -1671,6 +1936,37 @@ impl ParquetClient {
 }
 
 impl GraphQueryClient for ParquetClient {
+    fn macro_invocations(
+        &self,
+        filter: &MacroInvocationFilter,
+    ) -> anyhow::Result<MacroInvocationQueryResult> {
+        let context = self
+            .macro_context
+            .get_or_init(|| self.load_macro_context().map_err(|e| format!("{e:#}")))
+            .as_ref()
+            .map_err(|e| anyhow!(e.clone()))?;
+        let caller = if filter.file_path.is_none() && context.context.snapshot.is_some() {
+            filter
+                .caller_stable_symbol_id
+                .as_deref()
+                .map(|sid| self.symbol_by_id(sid))
+                .transpose()?
+                .flatten()
+        } else {
+            None
+        };
+        let mut result = context
+            .context
+            .result(filter, caller.as_ref().map(|s| s.file_path.as_str()))?;
+        if result.availability == MacroEvidenceAvailability::Complete {
+            if let Some(tables) = &context.tables {
+                (result.rows, result.scopes) = tables.query(&self.manifest, filter)?;
+            }
+        }
+        result.sort();
+        Ok(result)
+    }
+
     fn search_symbols(&self, opts: &SearchOptions) -> anyhow::Result<SearchResult> {
         self.search_symbols_inner(opts)
     }
