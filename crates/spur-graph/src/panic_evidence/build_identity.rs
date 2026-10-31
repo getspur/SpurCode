@@ -10,9 +10,12 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 
-pub const CAPTURE_BUILD_SCHEMA_VERSION: &str = "panic-cga-capture-v1";
+pub const CAPTURE_BUILD_SCHEMA_VERSION: &str = "panic-cga-capture-v2";
 pub const CGA_REVISION: &str = "2fc63108f0b674fe7a178191ffa15647a18879f1";
 pub const CGA_TOOLCHAIN: &str = "nightly-2026-10-18";
+pub const CGA_RUSTC_COMMIT: &str = "8006091eb71ae7d9e9bccb66c6122c9d68af4466";
+pub const CGA_RUSTC_COMMIT_DATE: &str = "2026-10-17";
+pub const CGA_RUSTC_RELEASE: &str = "1.101.0-nightly";
 /// Every key must be present, including an explicit None for an unset value.
 /// All other semantic environment variables must be cleared by the producer;
 /// required process plumbing (PATH, isolated Cargo/Rustup homes, wrapper and
@@ -66,6 +69,23 @@ pub struct CaptureInputBytes<'a> {
     pub bytes: &'a [u8],
 }
 
+/// Build lineage is explicit even for an unmodified upstream checkout. A
+/// patched producer binds the exact retained patch bytes through their digest.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum CgaProducerBuild {
+    Unmodified {},
+    Patched { patch_sha256: String },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CgaProducerIdentity {
+    pub build: CgaProducerBuild,
+    pub cargo_cga_sha256: String,
+    pub cga_driver_sha256: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CaptureBuildIdentity {
@@ -81,7 +101,7 @@ pub struct CaptureBuildIdentity {
     pub host: String,
     pub target: String,
     pub exporter_revision: String,
-    pub exporter_binary_sha256: String,
+    pub producer: CgaProducerIdentity,
     /// Sets; canonicalized for hashing, with duplicate members rejected.
     pub packages: Vec<String>,
     pub targets: Vec<String>,
@@ -108,7 +128,7 @@ impl CaptureBuildIdentity {
     pub fn build_id(&self) -> anyhow::Result<String> {
         let canonical = self.canonical()?;
         let mut hash = Sha256::new();
-        hash.update(b"spur-panic-cga-capture-v1\0");
+        hash.update(b"spur-panic-cga-capture-v2\0");
         hash.update(serde_json::to_vec(&canonical)?);
         Ok(format!("{:x}", hash.finalize()))
     }
@@ -150,10 +170,17 @@ impl CaptureBuildIdentity {
         );
         ensure!(
             valid_sha256(&self.graph_content_hash)
-                && valid_sha256(&self.exporter_binary_sha256)
+                && valid_sha256(&self.producer.cargo_cga_sha256)
+                && valid_sha256(&self.producer.cga_driver_sha256)
                 && valid_sha256(&self.raw_export_sha256),
             "missing or invalid capture digest"
         );
+        if let CgaProducerBuild::Patched { patch_sha256 } = &self.producer.build {
+            ensure!(
+                valid_sha256(patch_sha256),
+                "missing or invalid producer patch digest"
+            );
+        }
         ensure!(
             self.capture_root.starts_with('/')
                 && (self.capture_root == "/" || normal_relative_path(&self.capture_root[1..])),
@@ -200,6 +227,21 @@ impl CaptureBuildIdentity {
                     values[0].contains("nightly"),
                     "pinned exporter requires nightly rustc"
                 );
+            }
+            if self.provenance == ExportProvenance::CompilerCapture {
+                let pinned = match key {
+                    "binary" => Some("rustc"),
+                    "commit-hash" => Some(CGA_RUSTC_COMMIT),
+                    "commit-date" => Some(CGA_RUSTC_COMMIT_DATE),
+                    "release" => Some(CGA_RUSTC_RELEASE),
+                    _ => None,
+                };
+                if let Some(pinned) = pinned {
+                    ensure!(
+                        values[0] == pinned,
+                        "rustc {key} does not match pinned toolchain"
+                    );
+                }
             }
         }
         ensure!(

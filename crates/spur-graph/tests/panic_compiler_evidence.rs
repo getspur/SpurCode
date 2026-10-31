@@ -50,7 +50,11 @@ impl Fixture {
             host: "x86_64-unknown-linux-gnu".into(),
             target: "x86_64-unknown-linux-gnu".into(),
             exporter_revision: CGA_REVISION.into(),
-            exporter_binary_sha256: sha256_bytes(b"synthetic exporter binary"),
+            producer: CgaProducerIdentity {
+                build: CgaProducerBuild::Unmodified {},
+                cargo_cga_sha256: sha256_bytes(b"synthetic cargo-cga launcher"),
+                cga_driver_sha256: sha256_bytes(b"synthetic cga-driver binary"),
+            },
             packages: vec!["fixture".into(), "dep".into()],
             targets: vec!["lib:fixture".into(), "bin:fixture".into()],
             features: vec!["checks".into(), "extra".into()],
@@ -147,8 +151,12 @@ fn every_semantic_identity_field_is_bound_before_association() -> anyhow::Result
         ("target", json!("aarch64-unknown-linux-gnu")),
         ("exporter_revision", json!("unsupported")),
         (
-            "exporter_binary_sha256",
-            json!(sha256_bytes(b"different exporter")),
+            "producer",
+            json!({
+                "build":{"state":"unmodified"},
+                "cargo_cga_sha256":sha256_bytes(b"different launcher"),
+                "cga_driver_sha256":sha256_bytes(b"different driver"),
+            }),
         ),
         ("packages", json!(["different"])),
         ("targets", json!(["bin:other"])),
@@ -238,7 +246,6 @@ fn incomplete_unsupported_and_duplicate_envelopes_are_rejected() -> anyhow::Resu
         "host",
         "target",
         "exporter_revision",
-        "exporter_binary_sha256",
         "profile",
         "raw_export_sha256",
     ] {
@@ -302,7 +309,7 @@ fn incomplete_unsupported_and_duplicate_envelopes_are_rejected() -> anyhow::Resu
     changed.inputs[0].path = "../src/lib.rs".into();
     assert!(changed.build_id().is_err());
     let mut changed = f.identity.clone();
-    changed.exporter_binary_sha256 = "invalid".into();
+    changed.producer.cga_driver_sha256 = "invalid".into();
     assert!(changed.build_id().is_err());
     Ok(())
 }
@@ -740,8 +747,12 @@ fn fixture_with_source(source: &str) -> anyhow::Result<Fixture> {
     f.graph = artifact_from_facts(&facts, root.path())?;
     f.sites = collect_method_call_sites(&f.graph, &sources(&f.source))?;
     f.identity.graph_content_hash = f.graph.graph_content_hash.clone();
-    f.identity.inputs.iter_mut().find(|i| i.path == "src/lib.rs").unwrap().sha256 =
-        sha256_bytes(f.source.as_bytes());
+    f.identity
+        .inputs
+        .iter_mut()
+        .find(|i| i.path == "src/lib.rs")
+        .unwrap()
+        .sha256 = sha256_bytes(f.source.as_bytes());
     Ok(f)
 }
 
@@ -784,18 +795,31 @@ fn synthetic_observation(
 fn regression_real_pinned_export_uses_one_based_scalar_columns() -> anyhow::Result<()> {
     let witness = &controls()["real_coordinate_witness"];
     let source = witness["source"].as_str().unwrap();
-    assert_eq!(sha256_bytes(source.as_bytes()), witness["provenance"]["source_sha256"]);
+    assert_eq!(
+        sha256_bytes(source.as_bytes()),
+        witness["provenance"]["source_sha256"]
+    );
     assert_eq!(witness["provenance"]["upstream_revision"], CGA_REVISION);
     let span: CgaSpan = serde_json::from_value(witness["edge"]["location"]["span"].clone())?;
-    assert_eq!((span.start.line, span.start.column, span.end.column), (4, 63, 77));
+    assert_eq!(
+        (span.start.line, span.start.column, span.end.column),
+        (4, 63, 77)
+    );
     let range = span.to_byte_range(source.as_bytes())?;
-    assert_eq!(range, [100, 114], "authentic pinned compiler span after 雪🙂");
+    assert_eq!(
+        range,
+        [100, 114],
+        "authentic pinned compiler span after 雪🙂"
+    );
     assert_eq!(&source[range[0]..range[1]], "value.unwrap()");
     // Exercise association too, with a clearly synthetic two-node projection.
     let mut f = fixture_with_source(source)?;
     let caller: CgaSpan = serde_json::from_value(witness["node"]["location"]["span"].clone())?;
     let result = synthetic_observation(&mut f, caller.to_byte_range(source.as_bytes())?, range)?;
-    assert!(matches!(result.observations[0].association, LocationAssociation::Exact { .. }));
+    assert!(matches!(
+        result.observations[0].association,
+        LocationAssociation::Exact { .. }
+    ));
     Ok(())
 }
 
@@ -803,63 +827,127 @@ fn regression_real_pinned_export_uses_one_based_scalar_columns() -> anyhow::Resu
 fn regression_zero_local_columns_are_rejected() -> anyhow::Result<()> {
     for (start, end) in [(0, 1), (1, 0), (0, 0)] {
         let span = CgaSpan {
-            start: CgaFilePosition { line: 1, column: start },
-            end: CgaFilePosition { line: 1, column: end },
+            start: CgaFilePosition {
+                line: 1,
+                column: start,
+            },
+            end: CgaFilePosition {
+                line: 1,
+                column: end,
+            },
         };
-        assert!(span.to_byte_range(b"a").is_err(), "pinned compiler columns are one-based: {span:?}");
+        assert!(
+            span.to_byte_range(b"a").is_err(),
+            "pinned compiler columns are one-based: {span:?}"
+        );
     }
     let f = Fixture::new()?;
     for object in ["node", "edge", "unsupplied"] {
-        assert!(f.altered_raw(|v| {
-            let loc = if object == "node" { &mut v["nodes"][0]["location"] }
-                else { &mut v["edges"]["0"][0]["location"] };
-            loc["span"]["start"]["column"] = json!(0);
-            if object == "unsupplied" { loc["path"] = json!("src/missing.rs"); }
-        }).is_err(), "zero column in local {object}");
+        assert!(
+            f.altered_raw(|v| {
+                let loc = if object == "node" {
+                    &mut v["nodes"][0]["location"]
+                } else {
+                    &mut v["edges"]["0"][0]["location"]
+                };
+                loc["span"]["start"]["column"] = json!(0);
+                if object == "unsupplied" {
+                    loc["path"] = json!("src/missing.rs");
+                }
+            })
+            .is_err(),
+            "zero column in local {object}"
+        );
     }
     Ok(())
 }
 
 #[test]
 fn regression_nested_definition_cannot_authorize_outer_site() -> anyhow::Result<()> {
-    let source = controls()["ownership_witness"]["source"].as_str().unwrap().to_owned();
+    let source = controls()["ownership_witness"]["source"]
+        .as_str()
+        .unwrap()
+        .to_owned();
     let mut f = fixture_with_source(&source)?;
     assert!(f.graph.symbols.iter().any(|s| s.entity_name == "inner"));
-    let site = f.sites.sites.iter().find(|s| s.receiver_text == "x").unwrap();
-    let outer = f.graph.symbols.iter().find(|s| s.entity_name == "outer").unwrap();
-    assert_eq!(site.caller_stable_symbol_id.as_deref(), Some(outer.stable_symbol_id.as_str()));
+    let site = f
+        .sites
+        .sites
+        .iter()
+        .find(|s| s.receiver_text == "x")
+        .unwrap();
+    let outer = f
+        .graph
+        .symbols
+        .iter()
+        .find(|s| s.entity_name == "outer")
+        .unwrap();
+    assert_eq!(
+        site.caller_stable_symbol_id.as_deref(),
+        Some(outer.stable_symbol_id.as_str())
+    );
     let method = site.method_byte_range[0];
     let result = synthetic_observation(&mut f, header(&source, "fn inner"), [method, method + 3])?;
-    assert_eq!(result.observations[0].association, LocationAssociation::Unmapped {
-        reason: UnmappedReason::CallerNotBound
-    }, "nested function header must not authorize an ancestor's call site");
+    assert_eq!(
+        result.observations[0].association,
+        LocationAssociation::Unmapped {
+            reason: UnmappedReason::CallerNotBound
+        },
+        "nested function header must not authorize an ancestor's call site"
+    );
     Ok(())
 }
 
 #[test]
 fn regression_closure_definition_cannot_authorize_outer_or_sibling_site() -> anyhow::Result<()> {
-    let source = controls()["ownership_witness"]["source"].as_str().unwrap().to_owned();
+    let source = controls()["ownership_witness"]["source"]
+        .as_str()
+        .unwrap()
+        .to_owned();
     let mut f = fixture_with_source(&source)?;
     let closure = header(&source, "|z:");
     for receiver in ["x", "w"] {
-        let method = f.sites.sites.iter().find(|s| s.receiver_text == receiver).unwrap().method_byte_range[0];
+        let method = f
+            .sites
+            .sites
+            .iter()
+            .find(|s| s.receiver_text == receiver)
+            .unwrap()
+            .method_byte_range[0];
         let result = synthetic_observation(&mut f, closure, [method, method + 3])?;
-        assert_eq!(result.observations[0].association, LocationAssociation::Unmapped {
-            reason: UnmappedReason::CallerNotBound
-        }, "closure definition cannot authorize receiver {receiver}");
+        assert_eq!(
+            result.observations[0].association,
+            LocationAssociation::Unmapped {
+                reason: UnmappedReason::CallerNotBound
+            },
+            "closure definition cannot authorize receiver {receiver}"
+        );
     }
     Ok(())
 }
 
 #[test]
 fn regression_nondefinition_token_cannot_bind_caller() -> anyhow::Result<()> {
-    let source = controls()["ownership_witness"]["source"].as_str().unwrap().to_owned();
+    let source = controls()["ownership_witness"]["source"]
+        .as_str()
+        .unwrap()
+        .to_owned();
     let mut f = fixture_with_source(&source)?;
-    let method = f.sites.sites.iter().find(|s| s.receiver_text == "x").unwrap().method_byte_range[0];
+    let method = f
+        .sites
+        .sites
+        .iter()
+        .find(|s| s.receiver_text == "x")
+        .unwrap()
+        .method_byte_range[0];
     let result = synthetic_observation(&mut f, [method, method + 2], [method, method + 3])?;
-    assert_eq!(result.observations[0].association, LocationAssociation::Unmapped {
-        reason: UnmappedReason::CallerNotBound
-    }, "an arbitrary body token is not a callable definition");
+    assert_eq!(
+        result.observations[0].association,
+        LocationAssociation::Unmapped {
+            reason: UnmappedReason::CallerNotBound
+        },
+        "an arbitrary body token is not a callable definition"
+    );
     Ok(())
 }
 
@@ -867,18 +955,52 @@ fn regression_nondefinition_token_cannot_bind_caller() -> anyhow::Result<()> {
 fn ordinary_generic_nested_and_closure_definitions_bind_without_name_joins() -> anyhow::Result<()> {
     let source = "fn outer(x: Option<u8>) { fn inner(y: Option<u8>) { y.unwrap(); } x.unwrap(); let c = |z: Option<u8>| { z.unwrap() }; }\nfn generic<T>(t: Option<T>) { t.unwrap(); }\nfn ordinary(a: Option<u8>) { a.unwrap(); }\n";
     let mut f = fixture_with_source(source)?;
-    for (marker, receiver) in [("fn outer","x"),("fn inner","y"),("|z:","z"),("fn generic","t"),("fn ordinary","a")] {
-        let site = f.sites.sites.iter().find(|s| s.receiver_text == receiver).unwrap();
+    for (marker, receiver) in [
+        ("fn outer", "x"),
+        ("fn inner", "y"),
+        ("|z:", "z"),
+        ("fn generic", "t"),
+        ("fn ordinary", "a"),
+    ] {
+        let site = f
+            .sites
+            .sites
+            .iter()
+            .find(|s| s.receiver_text == receiver)
+            .unwrap();
         let range = site.byte_range;
         let method = site.method_byte_range;
-        let owner = site.lexical_owners.iter().find(|o| matches!(o.syntax_kind.as_str(), "function_item" | "closure_expression")).unwrap().byte_range;
+        let owner = site
+            .lexical_owners
+            .iter()
+            .find(|o| {
+                matches!(
+                    o.syntax_kind.as_str(),
+                    "function_item" | "closure_expression"
+                )
+            })
+            .unwrap()
+            .byte_range;
         let definition = header(source, marker);
         for span in [definition, owner] {
             let result = synthetic_observation(&mut f, span, range)?;
-            assert!(matches!(result.observations[0].association, LocationAssociation::Exact { .. }), "{marker} full span/header: {:?}", result.observations[0].association);
+            assert!(
+                matches!(
+                    result.observations[0].association,
+                    LocationAssociation::Exact { .. }
+                ),
+                "{marker} full span/header: {:?}",
+                result.observations[0].association
+            );
         }
         let result = synthetic_observation(&mut f, definition, method)?;
-        assert!(matches!(result.observations[0].association, LocationAssociation::UniqueContaining { .. }), "{marker} method token");
+        assert!(
+            matches!(
+                result.observations[0].association,
+                LocationAssociation::UniqueContaining { .. }
+            ),
+            "{marker} method token"
+        );
     }
     Ok(())
 }
@@ -894,33 +1016,55 @@ fn patched_producer() -> Value {
 
 fn identity_with_producer(f: &Fixture) -> Value {
     let mut value = serde_json::to_value(&f.identity).unwrap();
-    value.as_object_mut().unwrap().remove("exporter_binary_sha256");
+    value
+        .as_object_mut()
+        .unwrap()
+        .remove("exporter_binary_sha256");
     value["producer"] = patched_producer();
     value
 }
 
 #[test]
-fn regression_patched_and_unmodified_producers_are_representable_and_hash_bound() -> anyhow::Result<()> {
+fn regression_patched_and_unmodified_producers_are_representable_and_hash_bound(
+) -> anyhow::Result<()> {
     let f = Fixture::new()?;
     let value = identity_with_producer(&f);
     let identity = serde_json::from_value::<CaptureBuildIdentity>(value.clone());
-    assert!(identity.is_ok(), "both producer binaries and patched lineage must be representable: {identity:?}");
+    assert!(
+        identity.is_ok(),
+        "both producer binaries and patched lineage must be representable: {identity:?}"
+    );
     let identity = identity?;
     let expected = identity.build_id()?;
-    assert_eq!(serde_json::to_value(&identity)?["producer"], patched_producer());
+    assert_eq!(
+        serde_json::to_value(&identity)?["producer"],
+        patched_producer()
+    );
     for (field, replacement) in [
         ("cargo_cga_sha256", json!(sha256_bytes(b"other launcher"))),
         ("cga_driver_sha256", json!(sha256_bytes(b"other driver"))),
-        ("build", json!({"state":"patched","patch_sha256":sha256_bytes(b"other patch")})),
+        (
+            "build",
+            json!({"state":"patched","patch_sha256":sha256_bytes(b"other patch")}),
+        ),
         ("build", json!({"state":"unmodified"})),
     ] {
         let mut changed = value.clone();
         changed["producer"][field] = replacement;
         let changed: CaptureBuildIdentity = serde_json::from_value(changed)?;
-        assert_ne!(expected, changed.build_id()?, "producer hash omitted {field}");
+        assert_ne!(
+            expected,
+            changed.build_id()?,
+            "producer hash omitted {field}"
+        );
         // Malformed raw bytes expose any accidental parse-before-identity path.
         let error = f.import(&changed, &expected, b"not JSON").unwrap_err();
-        assert!(error.to_string().contains("expected build identity mismatch"), "{error}");
+        assert!(
+            error
+                .to_string()
+                .contains("expected build identity mismatch"),
+            "{error}"
+        );
     }
     Ok(())
 }
@@ -930,8 +1074,10 @@ fn regression_producer_metadata_is_mandatory() -> anyhow::Result<()> {
     let f = Fixture::new()?;
     let mut value = serde_json::to_value(&f.identity)?;
     value.as_object_mut().unwrap().remove("producer");
-    assert!(serde_json::from_value::<CaptureBuildIdentity>(value).is_err(),
-        "a lone exporter fingerprint cannot establish producer lineage");
+    assert!(
+        serde_json::from_value::<CaptureBuildIdentity>(value).is_err(),
+        "a lone exporter fingerprint cannot establish producer lineage"
+    );
     Ok(())
 }
 
@@ -942,7 +1088,10 @@ fn producer_missing_invalid_and_contradictory_fields_are_rejected() -> anyhow::R
     for field in ["build", "cargo_cga_sha256", "cga_driver_sha256"] {
         let mut missing = value.clone();
         missing["producer"].as_object_mut().unwrap().remove(field);
-        assert!(serde_json::from_value::<CaptureBuildIdentity>(missing).is_err(), "missing producer {field}");
+        assert!(
+            serde_json::from_value::<CaptureBuildIdentity>(missing).is_err(),
+            "missing producer {field}"
+        );
     }
     for build in [
         json!({}),
@@ -956,14 +1105,20 @@ fn producer_missing_invalid_and_contradictory_fields_are_rejected() -> anyhow::R
         let mut changed = value.clone();
         changed["producer"]["build"] = build;
         let invalid = serde_json::from_value::<CaptureBuildIdentity>(changed);
-        assert!(invalid.is_err() || invalid?.build_id().is_err(), "invalid producer build state");
+        assert!(
+            invalid.is_err() || invalid?.build_id().is_err(),
+            "invalid producer build state"
+        );
     }
     for field in ["cargo_cga_sha256", "cga_driver_sha256"] {
         for digest in [json!(null), json!(""), json!("bad")] {
             let mut changed = value.clone();
             changed["producer"][field] = digest;
             let invalid = serde_json::from_value::<CaptureBuildIdentity>(changed);
-            assert!(invalid.is_err() || invalid?.build_id().is_err(), "invalid {field}");
+            assert!(
+                invalid.is_err() || invalid?.build_id().is_err(),
+                "invalid {field}"
+            );
         }
     }
     Ok(())
@@ -974,7 +1129,10 @@ fn regression_compiler_provenance_cannot_use_synthetic_rustc_identity() -> anyho
     let f = Fixture::new()?;
     let mut changed = f.identity.clone();
     changed.provenance = ExportProvenance::CompilerCapture;
-    assert!(changed.build_id().is_err(), "synthetic verbose identity cannot claim a pinned compiler capture");
+    assert!(
+        changed.build_id().is_err(),
+        "synthetic verbose identity cannot claim a pinned compiler capture"
+    );
     Ok(())
 }
 
@@ -982,19 +1140,28 @@ fn regression_compiler_provenance_cannot_use_synthetic_rustc_identity() -> anyho
 fn regression_real_rustc_identity_must_match_the_pinned_nightly() -> anyhow::Result<()> {
     let f = Fixture::new()?;
     let mut identity = f.identity.clone();
-    identity.rustc_verbose = controls()["real_coordinate_witness"]["provenance"]["rustc_verbose"].as_str().unwrap().into();
+    identity.rustc_verbose = controls()["real_coordinate_witness"]["provenance"]["rustc_verbose"]
+        .as_str()
+        .unwrap()
+        .into();
     identity.host = "aarch64-apple-darwin".into();
     identity.target = identity.host.clone();
     identity.provenance = ExportProvenance::CompilerCapture;
     identity.build_id()?;
     for (from, to) in [
-        ("8006091eb71ae7d9e9bccb66c6122c9d68af4466", "0000000000000000000000000000000000000000"),
+        (
+            "8006091eb71ae7d9e9bccb66c6122c9d68af4466",
+            "0000000000000000000000000000000000000000",
+        ),
         ("2026-10-17", "2026-10-18"),
         ("1.101.0-nightly", "1.100.0-nightly"),
     ] {
         let mut changed = identity.clone();
         changed.rustc_verbose = changed.rustc_verbose.replace(from, to);
-        assert!(changed.build_id().is_err(), "wrong compiler component {from}");
+        assert!(
+            changed.build_id().is_err(),
+            "wrong compiler component {from}"
+        );
     }
     Ok(())
 }

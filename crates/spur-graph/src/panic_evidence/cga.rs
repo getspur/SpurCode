@@ -11,6 +11,7 @@ use anyhow::{ensure, Context as _};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
+use tree_sitter::Parser;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -27,10 +28,11 @@ pub struct CgaSpan {
 }
 
 impl CgaSpan {
-    /// Explicit pilot convention: one-based line, zero-based Unicode scalar
+    /// Pinned compiler convention: one-based line, one-based Unicode scalar
     /// column, exclusive end. Upstream uses RangeInclusive only as a serde
-    /// container for rustc span_to_location_info endpoints. P3 must validate
-    /// these semantics with real pinned output. LF-only physical UTF-8 is the
+    /// container for rustc span_to_location_info endpoints (col + 1, span.hi).
+    /// Verified by the frozen real-export UTF-8 witness; P3 must also revalidate
+    /// its held-out exports. LF-only physical UTF-8 is the
     /// supported bounded domain; rustc BOM/CRLF normalization is not guessed.
     pub fn to_byte_range(&self, bytes: &[u8]) -> anyhow::Result<[usize; 2]> {
         let text = std::str::from_utf8(bytes).context("compiler source is not UTF-8")?;
@@ -40,10 +42,11 @@ impl CgaSpan {
         );
         fn offset(text: &str, pos: &CgaFilePosition) -> anyhow::Result<usize> {
             ensure!(pos.line > 0, "compiler lines are one-based");
+            ensure!(pos.column > 0, "compiler columns are one-based");
             let mut base = 0;
             for (line_index, line) in text.split('\n').enumerate() {
                 if line_index == pos.line as usize - 1 {
-                    let column = pos.column as usize;
+                    let column = pos.column as usize - 1;
                     let at = match line.char_indices().nth(column) {
                         Some((index, _)) => index,
                         None => {
@@ -192,7 +195,7 @@ pub struct CgaCapabilities {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CgaCoordinateConvention {
-    Line1ScalarColumn0EndExclusiveNeedsRealExportCheck,
+    Line1ScalarColumn1EndExclusive,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -284,6 +287,11 @@ pub fn import_cga(request: CgaImportRequest<'_>) -> anyhow::Result<CompilerEvide
             convert_location(&edge.location, &request)?;
         }
     }
+    let callables = lexical_callables(&request)?;
+    let caller_owners: Vec<_> = node_locations
+        .iter()
+        .map(|(location, _)| resolve_caller(location, &callables))
+        .collect();
     let mut observations = Vec::new();
     for (from, edges) in &raw_graph.edges {
         for (edge_index, edge) in edges.iter().enumerate() {
@@ -291,7 +299,7 @@ pub fn import_cga(request: CgaImportRequest<'_>) -> anyhow::Result<CompilerEvide
             let association = associate(
                 &converted_location,
                 state,
-                &node_locations[*from as usize].0,
+                caller_owners[*from as usize],
                 &request,
             );
             observations.push(CompilerObservation {
@@ -318,8 +326,7 @@ pub fn import_cga(request: CgaImportRequest<'_>) -> anyhow::Result<CompilerEvide
             assert_reason: CapabilityStatus::Unavailable,
             macro_expansion: CapabilityStatus::Unavailable,
         },
-        coordinate_convention:
-            CgaCoordinateConvention::Line1ScalarColumn0EndExclusiveNeedsRealExportCheck,
+        coordinate_convention: CgaCoordinateConvention::Line1ScalarColumn1EndExclusive,
     })
 }
 
@@ -367,6 +374,8 @@ fn convert_location(
     );
     ensure!(
         location.span.start.line > 0
+            && location.span.start.column > 0
+            && location.span.end.column > 0
             && (location.span.start.line, location.span.start.column)
                 <= (location.span.end.line, location.span.end.column),
         "malformed local CGA span"
@@ -407,7 +416,7 @@ fn convert_location(
 fn associate(
     location: &ConvertedCgaLocation,
     state: LocationState,
-    caller: &ConvertedCgaLocation,
+    caller: Option<&LexicalCallable>,
     request: &CgaImportRequest<'_>,
 ) -> LocationAssociation {
     let unmapped = |reason| LocationAssociation::Unmapped { reason };
@@ -467,26 +476,93 @@ fn contains(outer: [usize; 2], inner: [usize; 2]) -> bool {
     outer[0] <= inner[0] && inner[1] <= outer[1]
 }
 
-fn caller_owns(site: &MethodCallSiteEvidence, caller: &ConvertedCgaLocation) -> bool {
+struct LexicalCallable {
+    file_path: String,
+    syntax_kind: String,
+    byte_range: [usize; 2],
+    header_range: [usize; 2],
+}
+
+/// Resolve definitions from the same validated physical bytes as P1, without
+/// changing P1's collector. Nested callable bodies are never part of an
+/// ancestor's definition header. Opaque macro token trees stay opaque.
+fn lexical_callables(request: &CgaImportRequest<'_>) -> anyhow::Result<Vec<LexicalCallable>> {
+    let mut parser = Parser::new();
+    parser.set_language(&tree_sitter_rust::LANGUAGE.into())?;
+    let mut callables = Vec::new();
+    for source in request.sources {
+        let tree = parser
+            .parse(source.bytes, None)
+            .context("caller definition parse unavailable")?;
+        let mut pending = vec![tree.root_node()];
+        while let Some(node) = pending.pop() {
+            if matches!(
+                node.kind(),
+                "macro_definition" | "macro_invocation" | "token_tree"
+            ) {
+                continue;
+            }
+            if matches!(node.kind(), "function_item" | "closure_expression")
+                && !node.has_error()
+                && !node.is_missing()
+            {
+                if let Some(body) = node.child_by_field_name("body") {
+                    callables.push(LexicalCallable {
+                        file_path: source.file_path.into(),
+                        syntax_kind: node.kind().into(),
+                        byte_range: [node.start_byte(), node.end_byte()],
+                        header_range: [node.start_byte(), body.start_byte()],
+                    });
+                }
+            }
+            let mut cursor = node.walk();
+            pending.extend(node.named_children(&mut cursor));
+        }
+    }
+    Ok(callables)
+}
+
+fn resolve_caller<'a>(
+    location: &ConvertedCgaLocation,
+    callables: &'a [LexicalCallable],
+) -> Option<&'a LexicalCallable> {
+    let (Some(path), Some(range)) = (&location.file_path, location.byte_range) else {
+        return None;
+    };
+    if range[0] == range[1] {
+        return None;
+    }
+    // rustc def_span may cover a signature or the full callable. A partial
+    // location must lie in the definition header, never an arbitrary body
+    // token. More than one candidate is insufficient evidence of identity.
+    let mut candidates = callables.iter().filter(|owner| {
+        owner.file_path == *path
+            && (owner.byte_range == range || contains(owner.header_range, range))
+    });
+    let candidate = candidates.next()?;
+    candidates.next().is_none().then_some(candidate)
+}
+
+fn caller_owns(site: &MethodCallSiteEvidence, caller: Option<&LexicalCallable>) -> bool {
+    let Some(caller) = caller else {
+        return false;
+    };
     if !matches!(
         site.lexical_phase,
         MethodCallLexicalPhase::FunctionBodySyntax | MethodCallLexicalPhase::ClosureBodySyntax
-    ) || caller.file_path.as_deref() != Some(&site.file_path)
+    ) || caller.file_path != site.file_path
     {
         return false;
     }
-    let Some(range) = caller.byte_range else {
-        return false;
-    };
-    range[0] < range[1]
-        && site
-            .lexical_owners
-            .iter()
-            .find(|o| {
-                matches!(
-                    o.syntax_kind.as_str(),
-                    "function_item" | "closure_expression"
-                )
-            })
-            .is_some_and(|owner| contains(owner.byte_range, range))
+    site.lexical_owners
+        .iter()
+        .find(|o| {
+            matches!(
+                o.syntax_kind.as_str(),
+                "function_item" | "closure_expression"
+            )
+        })
+        .is_some_and(|owner| {
+            owner.byte_range == caller.byte_range && owner.syntax_kind == caller.syntax_kind
+        })
 }
