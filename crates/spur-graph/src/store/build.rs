@@ -4220,6 +4220,7 @@ fn submit_plan_def() -> ToolDefinition {
                 start_line: 0,
                 end_line: 0,
             }],
+            macro_invocations: Vec::new(),
         };
 
         let artifact = artifact_from_facts(&facts, root).expect("artifact");

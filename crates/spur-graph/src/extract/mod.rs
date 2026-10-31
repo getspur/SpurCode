@@ -11,13 +11,14 @@ pub mod tree_sitter;
 
 pub use tree_sitter::{build_facts, build_facts_for_paths};
 
-use crate::{GraphEdge, GraphNode, SourceSpan};
+use crate::{GraphEdge, GraphNode, MacroInvocationEvidence, SourceSpan};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct GraphFacts {
     pub nodes: Vec<GraphNode>,
     pub edges: Vec<GraphEdge>,
     pub spans: Vec<SourceSpan>,
+    pub macro_invocations: Vec<MacroInvocationEvidence>,
 }
 
 impl GraphFacts {
@@ -26,6 +27,7 @@ impl GraphFacts {
             nodes: Vec::new(),
             edges: Vec::new(),
             spans: Vec::new(),
+            macro_invocations: Vec::new(),
         }
     }
 }
