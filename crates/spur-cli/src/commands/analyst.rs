@@ -32,7 +32,8 @@ const SYMBOL_EMBEDDING_EXPR_PLACEHOLDER: &str = "__SPUR_SYMBOL_EMBEDDING_EXPR__"
 /// Must match `manifest.json::schema_version` in the artifact dir. Hard-fail
 /// on mismatch to prevent silent miscompiles where `init.sql` view definitions
 /// parse but produce wrong results against a newer parquet schema.
-pub const SUPPORTED_GRAPH_SCHEMA_VERSION: &str = "spur-graph-schema-v10";
+/// Use the graph writer's version so the reader cannot drift on schema upgrades.
+pub const SUPPORTED_GRAPH_SCHEMA_VERSION: &str = spur_graph::store::SCHEMA_VERSION;
 
 /// Default relative path to the analyst DuckDB inside a worktree.
 pub const DEFAULT_ANALYST_DB_REL: &str = ".spur/analyst.duckdb";
