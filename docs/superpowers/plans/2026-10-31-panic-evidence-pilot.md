@@ -306,8 +306,11 @@ end exclusive, independently checked against the multibyte-prefix source bytes.
 
 All **45** runtime children used those same compiled executables. Expected
 panics exited 101 and reported a panic; good/disabled controls exited zero.
-All **25** source/config/checksum/reference/ownership corruptions and the
-cross-configuration substitution failed for their intended validation reason.
+All **25** corruption requests and the cross-configuration substitution exited
+nonzero. Brain review subsequently found that the initial source control
+mutated a config input and the ownership control used a nonexistent symbol;
+those two intended gates were not satisfied by this first capture. The
+attempt-2 ledger below supersedes those control claims.
 The frozen corpus is explicitly a partial projection: 97 raw node/edge rows
 were checked verbatim against full exports; 98 command-log hashes also verify.
 
@@ -358,8 +361,124 @@ Receiver types, assertion reasons and expansion maps remain unavailable.
 Optimization/monomorphization can elide or multiply observations; absence is
 not safety. Capture is bounded to this standalone package/local dependency and
 pinned producer/platform, not arbitrary ambient Cargo or whole-program coverage.
-All P3-owned gates pass. Brain review, root notebook/MCP acceptance and final
+This first attempt required the two control repairs recorded below. Brain
+review, root notebook/MCP acceptance and final
 integration/CURRENT verification remain with the root, which alone writes the
 notebook. The final unified diff, command/exit/hash inventory, changed paths and
 authored OIDs are retained in `/private/tmp/panic-evidence-p3/verification.json`
 and `/private/tmp/panic-evidence-p3/unified.diff`.
+
+## P3 control repair verification ledger (attempt 2)
+
+Execution issue **`bd-1l9`**, delegation `1bab26aa461d4db3`, was verified
+`in_progress` with P1/P2 approved. The issue remains open for brain review.
+The staged attempt-1 tree exactly matched retained ref
+`spur/panic-evidence/p3-attempt1-authored`; the worker branch now includes its
+original test/feature/ledger commits, followed by these authored repair commits:
+
+- Test: `305e4a42bc9bf334691389042990e5a60f7f1a99`
+  (`test(spur-graph): P3 assert physical source and existing caller controls`).
+- Fix: `5476e18112214570d51c676062f4093744f0d657`
+  (`fix(spur-graph): P3 bind negative controls to source and existing callers`).
+
+The repair changes only the capture script, end-to-end test, crate README and
+this ledger. The example and frozen positive compiler corpus remain unchanged.
+No P1/P2 validators, graph schema/storage, dependencies, toolchains, notebook or
+main-tree source were edited. Graph-first retrieval again failed its analyst
+query and reported the missing graph artifact; exact native reads supplied the
+documented fallback without a rebuild.
+
+**RED:** the two portable capture-construction tests failed against the
+unchanged script with runtime assertions, while the other seven P3 tests
+passed. `capture_source_control_changes_only_physical_source_with_config_first`
+reported `source control mutated config instead of source`;
+`capture_ownership_control_uses_existing_different_same_file_caller` reported
+`both callers must be unique existing graph symbols`. The tests exercise
+`capture()` with only process/producer I/O replaced; this is not compiler
+acceptance. Earlier harness-authoring errors were corrected before accepting
+this assertion RED. The JSON-boundary corruption test independently constructs
+an actual source-byte mismatch and a different existing same-file caller.
+
+**Real compiler controls:** all five configurations were captured afresh under
+`/private/tmp/panic-evidence-p3-attempt2/capture/`, with the same pinned producer,
+toolchain, explicit flags and seven physical inputs documented above. Full raw
+exports are byte-for-byte identical to the retained attempt-1 exports. All
+inventories before/after retain SHA256
+`fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e`.
+New expected build IDs bind the new capture root and exact invocation:
+
+| Configuration | Build ID |
+| --- | --- |
+| d0_o0 | `5f80d65818d72f30ed1e6c9e5a761334ca3a73ba12bb793e77f5ad2628e8e46f` |
+| d0_o1 | `5749cdaf822e38d63cecdd8e0e0121a5a552ee5256510e95628c92fd40f8c055` |
+| d1_o0 | `d79e7e2b2ca35ddab9d0c7bae0179f9048a2723aad0c81f767637d79e8313eb5` |
+| d1_o1 | `8b2c6e0ad6462dbdd92daaf81a4b19a2fc13ac8c2bf5626b72b42cd43f815354` |
+| d1_o1_extra | `d3e81baeaf1392a66353996156b332821d0c5da28ffd58d6d905467169571901` |
+
+In every configuration, the source request changes only `dep/src/lib.rs`
+(identity kind `source`), selected by path despite `.cargo/config.toml` sorting
+first. Its expected/original SHA256 is
+`6936ecc96a26fbc2c7c1ab1bf181a8883bcaa7e7cd8dd65c14deb50ec9e563a6`;
+corrupted bytes hash to
+`8b7f0a22bfa02565a29aa7d87b96178ab94b7b81008727c9606452891c2d4e64`.
+The unchanged expected identity rejects it with
+`capture input checksum mismatch: dep/src/lib.rs`.
+
+The ownership request changes only the selected site's caller from existing
+function `options` (`49b3dffb0d2e7988`) to existing method `impl Safe::unwrap`
+(`a3bea14bc67afc3c`), both unique graph symbols in `src/lib.rs`. Graph, source,
+spans and site IDs remain fixed; canonical source-bound recollection rejects
+the change. Each negative request has a `.witness.json` containing its exact
+changed leaf and selected input or both complete graph symbols. A missing
+physical source or suitable existing caller witness fails capture explicitly.
+No nonexistent-caller control is counted as this ownership gate.
+
+All **45 runtime children**, **25 corruption requests** and the
+cross-configuration substitution passed their expected exit/rejection checks.
+The root's unmodified `brain-control-contract.py` (SHA256
+`778c7782d5cb0f0707ff86ca9b3fba6bc713f129c451047048e67948d450d4e4`)
+passed both assertions for every configuration (**10 assertions**).
+`verify-capture.py` independently checked all **98** child command records,
+request/stdout/stderr hashes, emitted fragments, inventories, exact mutation
+semantics and unchanged positive raw exports; `control-facts.json` records the
+observed payload hashes and predicates.
+
+| Artifact under `/private/tmp/panic-evidence-p3-attempt2/` | Result | Log SHA256 |
+| --- | --- | --- |
+| `red-all.log` | exit 101; 2 assertion REDs, 7 passed | `4085580e103312bae8e0fedfe990bba2fe7bf6a09211b18265f55db757ae7965` |
+| `focused-02.log` | exit 0; 60 P1/P2/P3 and macro tests passed | `0e4b86651909abe3b952fac6d7ca6b7cba76efc87760c1a1e6ff9f85e4562d7f` |
+| `build-example.log` | local wrapper example build, exit 0 | `e58e9ff2457bb23869591795bbb297b23794ebf5f8d73525238b4fd3bd89d9b7` |
+| `all-targets.log` | local wrapper graph all-target check, exit 0 | `47388c8dd2e162eff7bb6b4a488a31530f13d36625b2619db391edb6e03c777b` |
+| `capture.log` | five real compiler configurations, exit 0 | `ae285287c6f342e169ab8837e5d3b44a76e713ebdbfd1770f7a7b4e4ff317d8b` |
+| `verify-capture.log` | independent artifact/control checks, exit 0 | `fe356ea8368239f44136159f863b247ec4c2d8d367d1fb20598afedd0497ef95` |
+| `format-check.log` | wrapper fmt on only the two P3 Rust files, exit 0 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `full-graph-loopback.log` | identical complete graph suite with loopback permission, exit 0; **1,170 passed, 0 failed, 19 existing ignores**, 90 groups | `d16090723ddaf1066e46c602cb34aecb036015cb65991b9c96b9c0d35b29dc93` |
+
+All Rust commands use `SPUR_REMOTE=0`, the wrapper,
+`CARGO_TARGET_DIR=/private/tmp/panic-evidence-p1/target`, canonical
+`TMPDIR=/private/tmp` and unset `SPUR_GRAPH_BLESS`. An initial complete graph
+run stopped at the existing loopback mock's `TcpListener::bind` with sandbox
+EPERM; `full-graph.log` SHA256
+`332fb6e163932ee7887ef5c8d307b407e4870a5dccdbfc84a446fe005d2e8edb`
+retains the failure. The same complete selection was rerun with loopback
+permission, without source changes, skips, blessing or configuration fallback.
+
+**SOLVE:** PRE `sol_a913698a0b2d4ff4` passes the intended finite control
+predicates; `sol_60253e9df0b047cc` rejects the prior config/nonexistent-caller
+counterexample. POST derives the predicates from each actual landed payload:
+`sol_e22f4c7e836744af`, `sol_edb60852587c4014`,
+`sol_cdd1d075cfcd4e2e`, `sol_00451f7cbfcb41f8`,
+`sol_93099f4c581b4388` all pass. Exact family requests and complete reloaded,
+pinned receipts are retained in `solve-pre.json` / `solve-post.json` and durable
+audits **953–955, 957–962** on `bd-1l9`. These finite metadata predicates do
+not prove compiler semantics. Macro/optimization/unmapped and unavailable-type
+limitations remain as documented above. Root notebook/MCP acceptance and final
+integration/CURRENT checks remain root-owned.
+
+All P3-owned mandatory gates pass after this repair. The main CURRENT symlink
+and active manifest were unchanged during the post-capture verification window
+(`main-graph-window-before.json` / `main-graph-window-after.json`); this bounded
+check does not replace the root's final integration check. Exact command arrays,
+exits, logs, hashes, changed paths, authored OIDs and remaining root gates are in
+`/private/tmp/panic-evidence-p3-attempt2/verification.json`, with the repair diff
+in `unified.diff` and the complete six-file P3 delta in `p3-complete.diff`.
