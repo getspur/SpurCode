@@ -230,3 +230,136 @@ The brain supplies the installed pinned CGA driver path in a Beads comment befor
 For each task, verify assigned execution Beads status, durable completion/audit, signals, actual diff, assertion RED and GREEN logs, and reloaded PRE/POST. Request changes for missing real assertions or fabricated semantic certainty. Preserve authored test/fix history using refs or cherry-picks after comparing normalized trees.
 
 After P3 approval, integrate only reviewed deltas into main while preserving all five user edits. Run the final appropriate suite and verify source/fixture inputs. Through Notebook MCP append the executable sidecar experiment, actual coverage/type/configuration results, unsupported cases, costs, raw-export/source hashes, exact commands and solver receipts. Keep historical v11 counts pinned to their original hash. Recheck graph CURRENT/main manifest remained unchanged, commit explicit task paths only, reconcile source and execution issues, and close the epic when all accepted gates pass.
+
+## P3 verification ledger (2026-10-31 UTC)
+
+Execution issue **`bd-1l9`**, delegation `35e65f33e81741a7`, was verified
+`in_progress`; P1/P2 were approved in plan
+`770b6376-2b19-46bf-9fba-4004ed3e76b3`. The worker leaves the issue open for
+brain review. Authored history is preserved:
+
+- Test: `64b3e5981dcf9f8c384ad2ac30a3f196033286f3`
+  (`test(spur-graph): P3 assert executable capture and held-out evidence contract`).
+- Implementation: `e5451b8f0a23a3fe873d6053b2f2f21034ffa1fe`
+  (`feat(spur-graph): P3 run source-bound compiler capture and held-out acceptance`).
+
+The six P3 paths are the example, end-to-end test, corpus JSON, capture script,
+crate README and this plan. No P1/P2 implementation, graph schema/storage,
+CURRENT, workspace dependencies/toolchain or user notebooks were edited.
+Graph-first retrieval was attempted: the knowledge pack failed its analyst DB
+query, and exact symbol search reported no graph artifact. Exact native file
+reads supplied the fallback; no graph rebuild occurred. Worker `get_issue`
+does not expose comments, so producer pins were independently recovered from
+approved P2 frozen provenance and checked against the supplied checkout.
+
+**RED:** missing-example compilation was recorded separately in
+`/private/tmp/panic-evidence-p3/missing-api.log`; a test-authoring type error is
+retained in `scaffold-compile.log`. Minimum empty-response scaffolding then
+produced **seven runtime assertion failures**, not compilation errors, in
+`red-all.log`: `json_collect_preserves_held_out_multiplicity_and_utf8`,
+`json_collect_rejects_stale_sources`,
+`json_import_validate_roundtrip_and_explicit_capabilities`,
+`json_import_rejects_source_config_checksum_reference_and_ownership_corruption`,
+`capture_script_exposes_the_bounded_wrapper_only_command_contract`,
+`capture_prepare_recreates_exact_inputs_and_independent_configuration_flags`,
+and `frozen_held_out_compiler_witness_verifies_scalar_columns_and_exclusive_end`.
+
+**Fresh compiler acceptance:** full exports and every emitted fragment remain
+verbatim under `/private/tmp/panic-evidence-p3/capture-02/`. The script uses the
+pinned driver as `RUSTC` through the absolute main-repository `spur-cargo`
+wrapper with `--workdir` and `SPUR_REMOTE=0`. It bypasses cargo-cga's implicit
+Cargo/build-std launching, while retaining its binary digest as producer lineage.
+The supplied producer has the exact retained build.rs rpath patch; no exporter
+source modification or installation was performed by P3.
+
+- CGA revision: `2fc63108f0b674fe7a178191ffa15647a18879f1`.
+- Rustc: `nightly-2026-10-18`, `1.101.0-nightly`, commit
+  `8006091eb71ae7d9e9bccb66c6122c9d68af4466`, host/target
+  `aarch64-apple-darwin`; exact `-vV` output is retained.
+- Driver SHA256: `5647b7f2c7f857dda0dd0204e91d870287988181ca5ec4d7792810a561886172`.
+- Launcher SHA256: `7f84bc715138c09744fd351859ca02b240ea768d9756069229e9250fa9447b7a`.
+- Producer patch SHA256: `72f3d4cd64439d988deba0ee1e0f449df8290e6f1d1e0ae83ba82d97b1592aca`.
+- Graph content hash: `b6e27b54bc5a4d50833d33ff765c7169032f2688bbb12f1facde04a99e0f0560`.
+- Seven-input inventory SHA256 before **and** after every configuration:
+  `fde8eab1931a9a77f541c46271d9f8f3e63b35f0eb26d54af3c8c675b8c4242e`.
+
+Every configuration uses opt-level 0 and panic=unwind, with independent explicit
+debug-assertions and overflow-checks flags. `d1_o1_extra` enables feature `extra`;
+all other captures use no default features and no enabled features.
+
+| Configuration | Build ID | Raw bin-export SHA256 | Observations (exact / containing / unmapped / external) |
+| --- | --- | --- | --- |
+| d0_o0 | `7259601f616a29794b1e81bd5a2068ef87b43f64a8b8bdc9b6873bfb8be991de` | `27df1702b006375c44c6643ca7fcbf0360ab5ec6a188565fd1630e23dd8ed4cb` | 134 (18 / 1 / 55 / 60) |
+| d0_o1 | `33d97393a028ca62026a239d003d374e955aa9e963e38936c8a650fee6c11928` | `6a1920a377d085aaa06ac5f959030b54a50ccdcc40092befc5b9985d5fd9591f` | 135 (18 / 1 / 56 / 60) |
+| d1_o0 | `a035376f376336902df2186469826e9704a9a6eac12859b6fe2bfac249c45a52` | `d11a4885b773791cdac643fd8697e76a575d7c1cae14224341138d55ae0f2996` | 135 (18 / 1 / 55 / 61) |
+| d1_o1 | `c7f7495f647f0963f2e2c76e0d3a4e459f4441f70f15feb2b6093a31c25874e5` | `ff1ac7f15f02450ad17e2d3a9c4ff9bc0bb5d40b6a658a55737108b7b325c63c` | 136 (18 / 1 / 56 / 61) |
+| d1_o1_extra | `d7c6468895cb01b505f5044b4cb12fb7ae94e2b0918ad35752219a66207ec3ef` | `0c7c773aeb17a78b8edec00d49981cb2b3c2e16bff637fa1c69f03df8dc4e0dd` | 137 (19 / 1 / 56 / 61) |
+
+All captures retain four Option calls, four Result calls, two custom Safe calls,
+two chained calls, two generic instances at one physical site, one Unicode call,
+one macro-produced call, one dependency call and one index BuiltinAssert. The
+addition BuiltinAssert occurs only with overflow checks; the debug-control
+observation occurs only with debug assertions; the feature call occurs only
+with `extra`. The collector retains 18 physical direct method sites. Actual
+Unicode raw endpoints select `x.expect("unicode")`: one-based scalar columns,
+end exclusive, independently checked against the multibyte-prefix source bytes.
+
+All **45** runtime children used those same compiled executables. Expected
+panics exited 101 and reported a panic; good/disabled controls exited zero.
+All **25** source/config/checksum/reference/ownership corruptions and the
+cross-configuration substitution failed for their intended validation reason.
+The frozen corpus is explicitly a partial projection: 97 raw node/edge rows
+were checked verbatim against full exports; 98 command-log hashes also verify.
+
+**Verification commands:** every Rust command used `SPUR_REMOTE=0` and the
+wrapper, with `CARGO_TARGET_DIR=/private/tmp/panic-evidence-p1/target`.
+
+| Artifact under `/private/tmp/panic-evidence-p3/` | Command/result | Log SHA256 |
+| --- | --- | --- |
+| `red-all.log` | focused P3 test, exit 101; 7 assertion REDs | `966a19a28cc733f13beffc55fc2613cc82f511b3ebfe9adac953666db8c8343a` |
+| `focused.log` | P1/P2/P3 + macro contract/extraction, exit 0; 58 passed | `dfcb02ea9ace52893fe7d400e67194444b8da69fd886fbba4274d0e5129ae133` |
+| `all-targets.log` | `scripts/spur-cargo check -p spur-graph --all-targets`, exit 0 | `165ce6f7401e96c615e8aad3550e731267c9efdddb01cc2fd12e40741f170672` |
+| `full-graph-canonical-tmp.log` | `env -u SPUR_GRAPH_BLESS TMPDIR=/private/tmp scripts/spur-cargo test -p spur-graph`, exit 0; **1,168 passed, 19 existing ignores** | `3466ff165df92064b3deef4b95d5041cc2dce17143890b42944c26328100b358` |
+| `format-check.log` | wrapper fmt through a temporary manifest naming only the two P3 Rust files, exit 0 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `evidence-check.log` | exact raw/projection/inventory/control/log checks, exit 0 | `6da53df542c2efd5fbd26e995526def8752b715af1e658b19bd08d4523b01ef2` |
+| `capture-02.log` | fresh five-configuration real compiler/runtime acceptance, exit 0 | `5774b646a5bf84fff335d139aa39a73dbd853d2ed3c57b1bff880652c384da8a` |
+
+An initial full-suite run failed 12 existing tests on `/var` versus
+`/private/var` temporary-root identities (559 passed); its command/log is retained
+as `full-graph.json`/`.log`, SHA256
+`c234ce8d1cc9fbb224405d36839dcdb420251112389596eec569b4b4fac60d43`.
+The unchanged complete selection passed after applying the README-documented
+canonical TMPDIR. No source workaround, timeout weakening or snapshot blessing
+occurred. Risk signal `3627fe65-04af-445c-9ac7-2e15105b4dcd` and resolution audit
+935 retain this history for the brain. Existing unrelated compiler/bench
+warnings remain in the logs.
+
+**SOLVE:** catalog data-integrity uniqueness, cardinality, references and value
+range checks used named finite configuration/input rows; a combined request hit
+the 64-variable limit, so identity-preserving projections were used. Exact
+requests and complete reloaded receipts are in `solve-pre.json` and
+`solve-post.json`, and durable `report_audit` comments **912–919, 925–934** on
+`bd-1l9`. PRE IDs:
+`sol_4ee36f09ab09443f`, `sol_06e705b026a84c5e`, `sol_7b191c873911451f`,
+`sol_ee2ce81e231e4ebd`, `sol_25e01f7576284257`, `sol_6f8b0287e2e24aeb`,
+`sol_b9c366a1f07b44d5`, `sol_03a052c6a7c94e8d`.
+POST IDs: `sol_85f0dee2216a42f5`, `sol_006e62276e0b4290`,
+`sol_7f03dcc4d7904dca`, `sol_370c0329d99a4c07`, `sol_05ed444ea2854640`,
+`sol_30fe6ab6c4ae40ba`, `sol_2d88a69bb2fe43a9`, `sol_47abdcf7fa634c8c`,
+`sol_f5d9437a91004344`, `sol_f5667fad670e4a90`. Valid projections passed;
+duplicate/missing/configuration/reference/inventory negative controls failed.
+POST additionally checks actual distinct build/export IDs, unchanged inventories
+and nine runtime controls per capture. Solver results prove supplied finite
+metadata predicates, not compiler semantics.
+
+**Limits and remaining acceptance:** macro expansion stays unmapped; index/add
+assertions have no direct-method site; debug macro locations are external.
+Receiver types, assertion reasons and expansion maps remain unavailable.
+Optimization/monomorphization can elide or multiply observations; absence is
+not safety. Capture is bounded to this standalone package/local dependency and
+pinned producer/platform, not arbitrary ambient Cargo or whole-program coverage.
+All P3-owned gates pass. Brain review, root notebook/MCP acceptance and final
+integration/CURRENT verification remain with the root, which alone writes the
+notebook. The final unified diff, command/exit/hash inventory, changed paths and
+authored OIDs are retained in `/private/tmp/panic-evidence-p3/verification.json`
+and `/private/tmp/panic-evidence-p3/unified.diff`.
