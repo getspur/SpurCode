@@ -888,3 +888,43 @@ source/scopes/caller provenance and lossless artifact/Parquet/overlay transport.
 No macro expansion, namespace/cfg evaluation or panic-execution/freedom proof is
 claimed. The final notebook records verified source recapture and these limits
 through notebook MCP.
+
+### Main commits and final source experiment
+
+The reviewed task deltas are committed on active main as M1 `1cd740e85`,
+M2 `44bfced71`, M3 `caae9e630`, M4 `6328f3c52`, M5 `eb85ed874`,
+and M6 `51f7458c6`. All 62 non-document feature files match the tested tree;
+the five unrelated dirty user files remain byte-identical and unstaged.
+Authored test/fix histories remain reachable through local
+`spur/macro-evidence/m1-authored` through `m6-authored` branches.
+
+Notebook MCP executed a new experiment over a byte-identical mirror of all 63
+current physical Rust source files under `crates/spur-graph/src`, preserving
+repository-relative paths and recording origin commit
+`51f7458c6d898a17544046e4273128dd8759f400`. Artifact snapshot
+`37ef5600b79894ce8d016e8c6eb35dbfc5b62f051516e3754861702d1da2f014`
+contains 4,256 invocation sites and 1,636 scopes; 58 sites have no function
+caller, preserving their non-function contexts. The six originally missing direct candidates are all returned
+by the exact caller join. Eight SQL identity/reference checks return zero
+violations, and all 63 source SHA256/blob OIDs match the origin manifest.
+
+The selected debug source run separates extraction (105.690547333s),
+artifact construction/validation (78.882536291s), Parquet write (0.487259417s),
+first filtered query/context (0.276618959s) and repeated query/equality (0.005686292s).
+Macro tables occupy 335,674 bytes. These are single bounded observations, not a
+production benchmark or a comparison with earlier mixed verification timings.
+
+Finite post-integration verification of the six sites/four callers/two source
+identities passes `sol_3334f66c731e402e` (60 variables). Expected rejecting
+controls: wrong caller `sol_6cc5218dda1d4dc1`, stale source
+`sol_9a35f31ed4c84345`, omission `sol_1f23cab3b6984534`, duplicate
+`sol_485cf5209fb8495b`. All five receipts were reloaded/pinned; these facts do not
+prove parser correctness, macro expansion, cfg inclusion or panic execution.
+
+The notebook and ignored experiment directory retain query outputs, origin
+manifest, producer source/log and exact solver requests/receipts. Artifact:
+`.spur/graph/experiments/macro-invocations-final-20261031-51f7458c6.parquet`.
+The serving index and earlier notebook research cells are separate snapshots;
+the source changed from 60 to 63 files, so total counts are not a paired recall
+metric. The next semantic comparison requires a pinned Rust build configuration
+and compiler-derived evidence; CGA/MIR was not run in this phase.
