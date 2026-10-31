@@ -661,3 +661,12 @@ substitute for fresh acceptance. Run the focused suite with:
 ```sh
 SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --no-default-features --test panic_method_sites --test panic_compiler_evidence --test panic_evidence_end_to_end
 ```
+
+The [2026-11-01 notebook pilot evidence](../../docs/research/artifacts/2026-11-01-panic-evidence-pilot/README.md)
+retains fresh five-configuration compiler captures, executable controls and
+checksummed replay archives. The held-out fixture associates 17/18 declared AST
+sites in each base build and 18/18 with its cfg feature enabled; macro token
+trees are outside that denominator. On the original workspace frontier, seven
+legacy method labels become three exact function-owned sites, two closure sites
+and two macro-token cases. Workspace compiler targets remain unknown. The
+notebook records these limits and the measured snapshot-construction cost.

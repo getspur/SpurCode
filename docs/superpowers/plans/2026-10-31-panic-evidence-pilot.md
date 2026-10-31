@@ -482,3 +482,51 @@ check does not replace the root's final integration check. Exact command arrays,
 exits, logs, hashes, changed paths, authored OIDs and remaining root gates are in
 `/private/tmp/panic-evidence-p3-attempt2/verification.json`, with the repair diff
 in `unified.diff` and the complete six-file P3 delta in `p3-complete.diff`.
+
+## Root acceptance — 2026-11-01
+
+P1/P2/P3 are approved. The twelve retained authored test, feature, repair and
+ledger commits were integrated through `22476e124`, preserving genuine RED
+history. All pilot crate, script and plan paths matched the tested normalized
+tree `7c6382c79bd6af34cf7ac8da9123801f4fd3b0ad` before this root documentation
+entry. The root main-tree selection passed **60 focused tests**; the unchanged
+tested worker tree passed **1,170 graph tests**, with **19 existing ignores**.
+
+Notebook MCP cell `3178a0a9-0c59-4398-83d5-34511ea780c9` ran a fresh real
+five-configuration capture in **5.43 seconds**, including **45 executable
+controls** (32 panic exits, 13 normal exits) and **26 corruption/substitution
+rejections**. Independent saved-request checks passed **10/10 assertions**.
+All five raw export hashes reproduce the reviewed captures, while capture IDs
+change with their exact root binding. Typed standard and custom methods remain
+distinct; two generic instances share one source site. Unicode bytes 887..906
+bind exactly to the held-out `x.expect("unicode")` call.
+
+The declared held-out AST inventory has 18 sites. Four base configurations
+associate 17 sites; the only missing site is the inactive cfg-gated expect.
+Enabling `extra` associates all 18. This denominator excludes macro token trees
+and does not measure whole-workspace recall or panic safety.
+
+For the original seven source-bound workspace records, the five-file subset
+preserves every indexed source OID and yields **three exact function callers,
+two closure sites and two macro-token-only cases**. All workspace compiler
+targets remain Unknown. The full debug subset snapshot took **103.27s wall,
+101.10s user and 0.50s system**. A one-second sample at 16s placed all 695
+main-thread samples in the existing macro extraction/validation path before
+method collection. This is a follow-up performance lead, not a collector-only
+benchmark or an optimization included in the pilot.
+
+The [durable dossier](../../research/artifacts/2026-11-01-panic-evidence-pilot/README.md)
+contains exact capture requests, exports, runtime logs, control witnesses,
+source subset, profiler output and Beads receipt snapshots. Notebook replay
+cell `2c59fa3f-6343-4b8c-b500-5b31821ddace` verified **11 payloads and 496
+archive members** without compiler access or extraction. Index SHA256:
+`4804c236fb9adc129acb8c67af2c6f2d8bb53c387dc9c09b3e7857e3c25a3097`.
+Notebook replay at revision 537 has no failed or stale cells; subsequent markdown updates link the accepted result.
+
+The published v11 CURRENT target and manifest SHA256
+`1b9275fc691c61f990e278c8d3bcb2748dd03068a2dabd17b31750e2b8f50f56`
+remain unchanged, and the five original dirty user files are byte-identical.
+All root pilot gates are satisfied. Remaining research is explicit: selected
+workspace compiler captures, compiler closure ownership, expansion-to-invocation
+mapping and reuse of existing graph artifacts. Receiver types, assertion
+reasons and expansion maps remain unavailable from this pinned exporter.
