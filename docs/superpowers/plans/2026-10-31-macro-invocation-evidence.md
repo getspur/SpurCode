@@ -33,6 +33,18 @@ SEMANTICS: Direct macro_invocation evidence is separate from runtime Calls edges
 
 EXPECTED OUTPUT: Unified diff + one-sentence rationale, followed by concise verification evidence (RED/GREEN outputs, PRE/POST solve IDs and interpretations, commit OIDs, changed files, unresolved limitations). Worker must not claim completion unless both solver and runtime gates actually ran.
 
+## Durable scope and source-domain clarification
+
+Mutation `c1b2c0da-8dc3-4081-9dd7-b0c051e87721` updates M3–M6 before M3 dispatch. Physical Rust files are the supported macro evidence domain; notebook-cell Rust keeps ordinary definitions/calls but requires a separate future source contract. Evidence/query metadata exposes `source_scope = physical_rust_files` and distinguishes unsupported source coverage from captured-empty and legacy-unavailable.
+
+M3 adds `GraphFacts.macro_scopes: Vec<MacroScopeEvidence>` and extends `MacroInvocationEvidenceSet` with `scopes: Vec<MacroScopeEvidence>` and typed `source_scope`. Retain M2's already-collected locators; do not reparse snapshots or pretend evidence-only scope IDs are graph symbols. Keep the existing validation entry point, compare persisted scope records with authoritative supplied locations, and require every enclosing/attribute-owner reference to resolve to matching scope provenance. Rows and scopes follow the same per-file full/incremental/delta replacement, move, deletion and canonical ordering/hash rules.
+
+Additional M3 write scope is limited to `src/macro_invocations.rs`, `src/extract/{mod,tree_sitter,rust_macros}.rs`, and `tests/{macro_invocation_contract,rust_macro_invocations}.rs` inside `crates/spur-graph`, for scope transport, validation and fixture updates. The existing broad constructor migration remains mechanical. M4 may additionally update the typed macro model only for persisted scope/source validation.
+
+M4 persists core `macro_scopes.parquet` beside `macro_invocations.parquet`, including explicit evidence/source-domain metadata, manifest counts, completeness, delta handling and legacy distinctions. Complete new empty evidence requires both zero-row tables; missing or conflicting scope data is invalid. M5 exposes the relevant scope locators through backend/overlay parity and avoids complete-coverage claims for unsupported sources. M6 adds end-to-end scope retention/removal assertions and documents the two-table SQL join and coverage boundary.
+
+The new TDD cases cover non-indexed const/type/file scopes and raw-attribute owners, missing/conflicting scope IDs, snapshot/source mismatches, canonical/full-vs-incremental equality, and stale scope removal/move. Runtime RED/GREEN and fresh catalog PRE/POST remain required for each task; no new panic, expansion, cfg-evaluation or production-performance claim is implied.
+
 ## Interface contract
 
 M1 defines and tests `MacroInvocationEvidence` and `MacroInvocationEvidenceSet`; subsequent tasks consume that exact API. `GraphFacts.macro_invocations` is a vector of evidence rows. M3 adds `GraphIndexArtifact.macro_invocations: Option<MacroInvocationEvidenceSet>`. Missing legacy evidence is `None`; a new captured graph with no macro sites is `Some` with zero rows. Evidence-set metadata binds graph content hash, schema and extractor version; each row binds source blob OID and exact location. The stable site key is snapshot scoped by the collection hash; no self-referential content hashing is permitted.
