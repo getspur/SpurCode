@@ -7,7 +7,9 @@
 **Source spec:** `2026-10-31-panic-graph-experiment.ipynb`, design cell `5cc809ce-a082-47f9-9f82-17146b946f25`
 **Formal @spec cells (if notebook):** none; approved narrative contract and measured fixture/corpus cells.
 **Design epic:** `bd-11o` (closed approved-design record)
-**Implementation epic:** `bd-krq`
+**Source planning epic:** `bd-krq`
+**Execution epic:** `bd-156`
+**Execution plan:** `6888d1b0-fee6-47eb-8cc7-c8f18d8ca570`
 
 **Goal:** Capture direct Rust macro sites with exact source evidence and preserve them through full/incremental artifacts, Parquet and scoped queries.
 
@@ -68,7 +70,9 @@ assert!(facts.macro_invocations.iter().all(|site| site.debug_assertions_candidat
 
 **Task ID:** `M1`
 
-**Beads issue:** `bd-gn4`
+**Assigned execution issue:** `bd-3dj`
+
+**Source planning template:** `bd-gn4` (do not target worker audit/signal calls here)
 
 **Depends on:** none
 
@@ -97,7 +101,9 @@ TEST: SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --test macro_invocatio
 
 **Task ID:** `M2`
 
-**Beads issue:** `bd-3ns`
+**Assigned execution issue:** `bd-1rr`
+
+**Source planning template:** `bd-3ns` (do not target worker audit/signal calls here)
 
 **Depends on:** `M1`
 
@@ -127,7 +133,9 @@ TEST: SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --test rust_macro_invo
 
 **Task ID:** `M3`
 
-**Beads issue:** `bd-shq`
+**Assigned execution issue:** `bd-1k5`
+
+**Source planning template:** `bd-shq` (do not target worker audit/signal calls here)
 
 **Depends on:** `M2`
 
@@ -201,7 +209,9 @@ TEST: SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --test macro_invocatio
 
 **Task ID:** `M4`
 
-**Beads issue:** `bd-3tg`
+**Assigned execution issue:** `bd-iea`
+
+**Source planning template:** `bd-3tg` (do not target worker audit/signal calls here)
 
 **Depends on:** `M3`
 
@@ -231,7 +241,9 @@ TEST: SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --test macro_invocatio
 
 **Task ID:** `M5`
 
-**Beads issue:** `bd-1kx`
+**Assigned execution issue:** `bd-3u8`
+
+**Source planning template:** `bd-1kx` (do not target worker audit/signal calls here)
 
 **Depends on:** `M4`
 
@@ -257,7 +269,9 @@ TEST: SPUR_REMOTE=0 scripts/spur-cargo test -p spur-graph --test macro_invocatio
 
 **Task ID:** `M6`
 
-**Beads issue:** `bd-3vi`
+**Assigned execution issue:** `bd-2u9`
+
+**Source planning template:** `bd-3vi` (do not target worker audit/signal calls here)
 
 **Depends on:** `M5`
 
@@ -280,6 +294,8 @@ OUTPUT: Unified diff + one-sentence rationale + complete verification matrix, PR
 **Implementation sequence:** SOLVE PRE -> failing behavioral tests -> observed RED -> test commit -> minimal implementation -> observed GREEN -> SOLVE POST using landed facts -> implementation commit -> beads audit -> brain review. The worker must return exact commands/output and persisted solve IDs.
 
 ## Review and completion
+
+M3 attempt 1 made no changes because it selected source template `bd-shq` rather than its assigned execution issue `bd-1k5`. The latter was correctly in progress; worker audit/signal tools correctly rejected the template. Mutation `b87390e6-7aa7-4463-80d3-80bb5f49acac` prefixes the actual execution identity for M3–M6 and removes stale automatic context paths. The retry must target the execution issue; no rebind or source-template activation is required.
 
 M1 attempt 2 produced the typed model and contract tests but failed compilation at the additional memory-evaluation GraphFacts initializer. Review accepted that same-crate mechanical scope addition in mutation `181d774c-216a-4aab-a303-d2e8ba13ed94` and requested changes with prior work preserved. Review also independently found incorrect fixture line annotations: the two debug assertions are on lines 3 and 4, the register invocation on line 6, the function covers lines 2–5 and the file covers lines 1–6. Earlier PRE receipts (`sol_464b1e08c2c44f3f`, `sol_c6fbad0d1cc0486c`; negative controls `sol_b3b6d03c0d374e62`, `sol_03b385b54c424b49`) verify only their supplied finite facts, which included those inaccurate line values. The retry must correct source-bound facts, refresh PRE, exercise a runtime regression rejecting FunctionBodySyntax on a file-scope row without a caller, complete local GREEN and persist POST receipts before approval. No M1 success is claimed from the earlier compile-time API absence or E0063 setup failure.
 
