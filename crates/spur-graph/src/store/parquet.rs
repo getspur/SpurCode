@@ -369,6 +369,8 @@ pub struct GraphArtifactManifest {
     pub complete: bool,
     pub row_counts: GraphArtifactRowCounts,
     #[serde(default)]
+    pub macro_evidence: Option<super::macro_invocations::MacroEvidenceManifest>,
+    #[serde(default)]
     pub sidecar_complete: bool,
     #[serde(default)]
     pub sidecar_row_counts: GraphArtifactSidecarRowCounts,
@@ -388,6 +390,10 @@ pub struct GraphArtifactRowCounts {
     pub files: usize,
     pub file_manifests: usize,
     pub tombstones: usize,
+    #[serde(default)]
+    pub macro_invocations: Option<usize>,
+    #[serde(default)]
+    pub macro_scopes: Option<usize>,
     #[serde(default)]
     pub commits: usize,
     #[serde(default)]
@@ -623,6 +629,7 @@ pub fn write_worktree_delta(
         Ok::<_, anyhow::Error>(())
     })?;
 
+    let macro_evidence = super::macro_invocations::write(artifact, out_dir)?;
     let manifest = GraphArtifactManifest {
         graph_index_version: artifact.header.graph_index_version.clone(),
         schema_version: SCHEMA_VERSION.to_owned(),
@@ -631,6 +638,7 @@ pub fn write_worktree_delta(
         indexed_commit_oid: None,
         extractor_version: EXTRACTOR_VERSION.to_owned(),
         complete: true,
+        macro_evidence,
         row_counts: GraphArtifactRowCounts {
             nodes: nodes.len(),
             edges: resolved_edges.len(),
@@ -639,6 +647,14 @@ pub fn write_worktree_delta(
             files: files.len(),
             file_manifests: file_manifests.len(),
             tombstones: tombstones.len(),
+            macro_invocations: artifact
+                .macro_invocations
+                .as_ref()
+                .map(|set| set.rows.len()),
+            macro_scopes: artifact
+                .macro_invocations
+                .as_ref()
+                .map(|set| set.scopes.len()),
             commits: 0,
             symbol_snapshots: 0,
             temporal_edges: 0,
@@ -796,6 +812,7 @@ pub fn write_artifact_parquet(
         Ok::<_, anyhow::Error>(())
     })?;
 
+    let macro_evidence = super::macro_invocations::write(artifact, out_dir)?;
     let manifest = GraphArtifactManifest {
         graph_index_version: artifact.header.graph_index_version.clone(),
         schema_version: SCHEMA_VERSION.to_owned(),
@@ -804,6 +821,7 @@ pub fn write_artifact_parquet(
         indexed_commit_oid: None,
         extractor_version: EXTRACTOR_VERSION.to_owned(),
         complete: true,
+        macro_evidence,
         row_counts: GraphArtifactRowCounts {
             nodes: nodes.len(),
             edges: resolved_edges.len(),
@@ -812,6 +830,14 @@ pub fn write_artifact_parquet(
             files: files.len(),
             file_manifests: file_manifests.len(),
             tombstones: tombstones.len(),
+            macro_invocations: artifact
+                .macro_invocations
+                .as_ref()
+                .map(|set| set.rows.len()),
+            macro_scopes: artifact
+                .macro_invocations
+                .as_ref()
+                .map(|set| set.scopes.len()),
             commits: artifact.commits.len(),
             symbol_snapshots: temporal_shards
                 .iter()
@@ -947,8 +973,10 @@ pub fn read_artifact_parquet(dir: &Path) -> anyhow::Result<GraphIndexArtifact> {
 
     edges.extend(unresolved_edges);
 
+    let macro_invocations = super::macro_invocations::read(dir, &manifest)?;
+
     let mut artifact = GraphIndexArtifact {
-        macro_invocations: None,
+        macro_invocations,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
@@ -969,6 +997,9 @@ pub fn read_artifact_parquet(dir: &Path) -> anyhow::Result<GraphIndexArtifact> {
     };
     if legacy_snapshot_ids {
         crate::schema::rehash_legacy_snapshot_ids(&mut artifact);
+    }
+    if let Some(set) = &artifact.macro_invocations {
+        set.validate_stored(&artifact)?;
     }
     Ok(artifact)
 }
@@ -1002,15 +1033,24 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
             ))
         })?;
 
+    let macro_invocations = super::macro_invocations::read(dir, &manifest)?;
+    let file_manifests = if macro_invocations.is_some() {
+        read_file_manifests(
+            &dir.join("file_manifests.parquet"),
+            row_counts.file_manifests,
+        )?
+    } else {
+        Vec::new()
+    };
     let mut artifact = GraphIndexArtifact {
-        macro_invocations: None,
+        macro_invocations,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
             content_hash_blake3: None,
         },
         manifest_version: manifest.manifest_version,
         graph_content_hash: manifest.graph_content_hash,
-        file_manifests: Vec::new(),
+        file_manifests,
         files,
         file_node_ids,
         symbols,
@@ -1025,6 +1065,10 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
     if legacy_snapshot_ids {
         crate::schema::rehash_legacy_snapshot_ids(&mut artifact);
     }
+    if let Some(set) = &artifact.macro_invocations {
+        set.validate_stored(&artifact)?;
+    }
+    artifact.file_manifests.clear();
     Ok(artifact)
 }
 

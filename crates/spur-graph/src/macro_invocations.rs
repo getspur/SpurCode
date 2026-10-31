@@ -176,6 +176,164 @@ pub fn macro_invocation_site_id(
 }
 
 impl MacroInvocationEvidenceSet {
+    /// Validate persisted provenance without reading a later working tree.
+    /// Exact UTF-8 boundaries, attribute text and byte/line agreement require
+    /// `validate` with the original source bytes; this checks stored references.
+    pub(crate) fn validate_stored(
+        &self,
+        artifact: &crate::GraphIndexArtifact,
+    ) -> anyhow::Result<()> {
+        ensure!(
+            self.schema_version == MACRO_INVOCATION_SCHEMA_VERSION,
+            "unsupported macro evidence schema"
+        );
+        ensure!(
+            self.extractor_version == crate::store::EXTRACTOR_VERSION,
+            "incompatible macro extractor version"
+        );
+        ensure!(
+            !self.graph_content_hash.is_empty()
+                && self.graph_content_hash == artifact.graph_content_hash,
+            "macro evidence snapshot mismatch"
+        );
+        let mut sources = BTreeMap::new();
+        for file in &artifact.file_manifests {
+            ensure!(
+                sources
+                    .insert(file.path.as_str(), file.content_oid.as_str())
+                    .is_none(),
+                "duplicate artifact source path"
+            );
+        }
+        let location =
+            |path: &str, oid: &str, bytes: [usize; 2], lines: [usize; 2]| -> anyhow::Result<()> {
+                ensure!(
+                    std::path::Path::new(path)
+                        .extension()
+                        .is_some_and(|ext| ext.eq_ignore_ascii_case("rs")),
+                    "macro evidence requires physical Rust files"
+                );
+                ensure!(
+                    oid.len() == 40
+                        && oid.bytes().all(|b| b.is_ascii_hexdigit())
+                        && sources.get(path).copied() == Some(oid),
+                    "macro source does not match artifact source manifest"
+                );
+                ensure!(
+                    bytes[0] < bytes[1] && lines[0] > 0 && lines[0] <= lines[1],
+                    "invalid persisted macro range"
+                );
+                Ok(())
+            };
+        let mut scopes = BTreeMap::new();
+        for scope in &self.scopes {
+            ensure!(
+                !scope.scope.stable_symbol_id.trim().is_empty()
+                    && scopes
+                        .insert(scope.scope.stable_symbol_id.as_str(), scope)
+                        .is_none(),
+                "empty or duplicate persisted scope ID"
+            );
+            location(
+                &scope.file_path,
+                &scope.source_oid,
+                scope.byte_range,
+                scope.line_range,
+            )?;
+        }
+        let mut sites = BTreeSet::new();
+        for row in &self.rows {
+            location(
+                &row.file_path,
+                &row.source_oid,
+                row.byte_range,
+                row.line_range,
+            )?;
+            ensure!(
+                row.site_id
+                    == macro_invocation_site_id(
+                        &row.file_path,
+                        &row.source_oid,
+                        row.byte_range,
+                        row.line_range
+                    )
+                    && sites.insert(&row.site_id),
+                "invalid or duplicate macro site identity"
+            );
+            ensure!(
+                !row.raw_macro_path.trim().is_empty()
+                    && !row.normalized_macro_path.trim().is_empty(),
+                "empty macro path"
+            );
+            let scope_for = |reference: &MacroScopeRef| -> anyhow::Result<&MacroScopeEvidence> {
+                let scope = scopes
+                    .get(reference.stable_symbol_id.as_str())
+                    .copied()
+                    .context("unknown macro scope reference")?;
+                ensure!(
+                    scope.scope == *reference
+                        && scope.file_path == row.file_path
+                        && scope.source_oid == row.source_oid,
+                    "macro scope provenance mismatch"
+                );
+                ensure!(
+                    contains(scope.byte_range, row.byte_range)
+                        && contains(scope.line_range, row.line_range),
+                    "macro site outside enclosing scope"
+                );
+                Ok(scope)
+            };
+            let enclosing = scope_for(&row.enclosing)?;
+            ensure!(
+                row.execution_phase != MacroExecutionPhase::FunctionBodySyntax
+                    || row.enclosing.kind == MacroScopeKind::Function,
+                "function body syntax requires a function enclosing scope"
+            );
+            match (row.enclosing.kind, row.caller_stable_symbol_id.as_deref()) {
+                (MacroScopeKind::Function, Some(caller)) => {
+                    ensure!(
+                        caller == row.enclosing.stable_symbol_id,
+                        "macro caller differs from enclosing function"
+                    );
+                    ensure!(
+                        artifact.symbols.iter().any(|s| s.stable_symbol_id == caller
+                            && s.file_path == row.file_path
+                            && matches!(s.symbol_kind.as_str(), "function" | "method")
+                            && s.byte_range == enclosing.byte_range
+                            && s.line_range == enclosing.line_range),
+                        "macro caller is not an actual graph function symbol"
+                    );
+                }
+                (MacroScopeKind::Function, None) => {
+                    anyhow::bail!("enclosing function requires its caller ID")
+                }
+                (_, Some(_)) => anyhow::bail!("non-function scope cannot invent a caller"),
+                (_, None) => {}
+            }
+            for attribute in &row.attributes {
+                scope_for(&attribute.owner)?;
+                location(
+                    &row.file_path,
+                    &row.source_oid,
+                    attribute.byte_range,
+                    attribute.line_range,
+                )?;
+                ensure!(!attribute.raw_text.is_empty(), "empty macro attribute");
+            }
+            if let MacroResolutionEvidence::LocalDefinitionCandidate { definition } =
+                &row.resolution
+            {
+                location(
+                    &definition.file_path,
+                    &definition.source_oid,
+                    definition.byte_range,
+                    definition.line_range,
+                )?;
+            }
+        }
+        Ok(())
+    }
+
     /// Validate finite provenance, identity, coordinates and lexical references.
     /// The caller supplies source bytes and exact scope locations from the same
     /// snapshot. This does not validate parsing, name resolution, build conditions,

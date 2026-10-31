@@ -4,6 +4,7 @@ pub mod cache;
 pub mod canonical_hash;
 pub mod commit_index;
 pub mod lance_sections;
+pub mod macro_invocations;
 pub mod parquet;
 pub mod pointer;
 pub mod shard_writer;

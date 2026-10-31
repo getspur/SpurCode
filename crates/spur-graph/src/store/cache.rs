@@ -30,8 +30,8 @@ use crate::{git, git::GitCtx, GraphIndexArtifact, GraphIndexPointer, SourceKind}
 const CACHE_DIR_NAME: &str = "spur-graph";
 const ARTIFACTS_DIR_NAME: &str = "artifacts";
 const LOCK_FILE_NAME: &str = ".lock";
-const WORKTREE_ARTIFACT_PATH: &str = ".spur/graph";
-const POINTER_PATH: &str = ".spur/graph-index.pointer.json";
+pub(crate) const WORKTREE_ARTIFACT_PATH: &str = ".spur/graph";
+pub(crate) const POINTER_PATH: &str = ".spur/graph-index.pointer.json";
 pub const COMMIT_INDEX_POINTER_PATH: &str = ".spur/commit-index.pointer.json";
 const POINTER_SCHEMA: &str = "spur-graph-pointer-v1";
 const RETAINED_CANONICAL_ARTIFACTS: usize = 3;
@@ -151,6 +151,7 @@ pub fn write_with_dedup_with_section_sidecar_options(
 
     let publish_result = (|| -> Result<()> {
         let written_dir = if canonical.join("manifest.json").is_file() {
+            validate_publication(artifact, &canonical)?;
             repair_canonical_sidecar_if_incomplete(
                 worktree_root,
                 &canonical,
@@ -664,6 +665,7 @@ fn write_canonical_atomically(
         WriteOptions::default(),
         Vec::new(),
     )?;
+    validate_publication(artifact, staging.path())?;
     let final_path = staging.commit()?;
     write_sidecar_and_stamp_best_effort(
         artifact,
@@ -907,6 +909,7 @@ fn write_artifact_to_worktree(
         WriteOptions::default(),
         Vec::new(),
     )?;
+    validate_publication(artifact, staging.path())?;
     let final_path = staging.commit()?;
     write_sidecar_and_stamp_best_effort(
         artifact,
@@ -926,11 +929,27 @@ pub fn publish_worktree_rebuild(
     ctx: Option<&GitCtx>,
     written_dir: &Path,
 ) -> Result<()> {
+    validate_publication(artifact, written_dir)?;
     write_current_pointer(worktree_root, written_dir)?;
     match ctx {
         Some(ctx) => write_pointer(artifact, worktree_root, ctx, written_dir)?,
         None => remove_if_exists(&worktree_root.join(POINTER_PATH))?,
     }
+    Ok(())
+}
+
+fn validate_publication(expected: &GraphIndexArtifact, path: &Path) -> Result<()> {
+    let stored =
+        read_artifact_parquet(path).context("validate core artifact before publication")?;
+    anyhow::ensure!(
+        stored.graph_content_hash == expected.graph_content_hash
+            && stored.manifest_version == expected.manifest_version,
+        "publication snapshot mismatch"
+    );
+    anyhow::ensure!(
+        stored.macro_invocations == expected.macro_invocations,
+        "publication macro evidence mismatch"
+    );
     Ok(())
 }
 

@@ -1066,6 +1066,9 @@ fn read_worktree_content_oid(root: &Path, path: &str) -> anyhow::Result<Option<S
 }
 
 fn is_supported_path(path: &str, allowed_extensions: &[&str]) -> bool {
+    if crate::discovery::is_graph_owned_path(Path::new(path)) {
+        return false;
+    }
     Path::new(path)
         .extension()
         .and_then(|extension| extension.to_str())

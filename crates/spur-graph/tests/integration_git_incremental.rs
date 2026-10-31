@@ -8,6 +8,101 @@ use std::sync::{Arc, Mutex};
 
 mod support;
 
+const LEGITIMATE_GRAPH_NEIGHBORS: &[&str] = &[
+    ".spur/graph-index.pointer.json.example.json",
+    ".spur/graphical.json",
+    ".spur/settings.json",
+    "config.json",
+    "nested/.spur/graph/fixture.json",
+    "src/lib.rs",
+];
+const GENERATED_GRAPH_OUTPUTS: &[&str] = &[
+    ".spur/graph-index.pointer.json",
+    ".spur/commit-index.pointer.json",
+    ".spur/graph/manifest.json",
+    ".spur/graph/old.parquet/manifest.json",
+];
+
+fn graph_source_boundary(root: &Path, mode: &str) {
+    let before = build_full(root);
+    for path in GENERATED_GRAPH_OUTPUTS {
+        fs::create_dir_all(root.join(path).parent().unwrap()).unwrap();
+        fs::write(root.join(path), r#"{"generated":1}"#).unwrap();
+    }
+    let after = build_full(root);
+    let identities = |a: &GraphIndexArtifact| {
+        a.file_manifests
+            .iter()
+            .map(|f| (f.path.clone(), f.content_oid.clone()))
+            .collect::<Vec<_>>()
+    };
+    eprintln!(
+        "M4_SOURCE_{mode}={}",
+        serde_json::json!({"before":identities(&before),"after":identities(&after),"before_hash":before.graph_content_hash,"after_hash":after.graph_content_hash})
+    );
+    assert_manifest_paths(&after, LEGITIMATE_GRAPH_NEIGHBORS);
+    assert_eq!(identities(&before), identities(&after));
+    assert_eq!(before.graph_content_hash, after.graph_content_hash);
+}
+
+fn write_legitimate_graph_neighbors(root: &Path) {
+    for path in LEGITIMATE_GRAPH_NEIGHBORS {
+        fs::create_dir_all(root.join(path).parent().unwrap()).unwrap();
+        fs::write(
+            root.join(path),
+            if path.ends_with(".rs") {
+                "pub fn sample() {}\n"
+            } else {
+                "{}\n"
+            },
+        )
+        .unwrap();
+    }
+}
+
+#[test]
+fn filesystem_graph_output_exclusion_preserves_legitimate_sources_and_hash() {
+    let dir = tempfile::tempdir().unwrap();
+    write_legitimate_graph_neighbors(dir.path());
+    graph_source_boundary(dir.path(), "filesystem");
+}
+
+#[test]
+fn git_graph_output_exclusion_covers_dirty_and_tracked_paths() {
+    let repo = GitRepo::new();
+    write_legitimate_graph_neighbors(repo.path());
+    repo.git(&["add", "."]);
+    repo.git(&["commit", "-m", "legitimate sources"]);
+    graph_source_boundary(repo.path(), "git_dirty");
+    repo.git(&["add", ".spur"]);
+    repo.git(&["commit", "-m", "tracked outputs"]);
+    let tracked = build_full(repo.path());
+    assert_manifest_paths(&tracked, LEGITIMATE_GRAPH_NEIGHBORS);
+}
+
+#[test]
+fn canonical_reuse_rejects_corrupt_core_macro_tables_before_pointer_publication() {
+    for table in ["macro_invocations.parquet", "macro_scopes.parquet"] {
+        let repo = GitRepo::new();
+        repo.write("src/lib.rs", "pub fn check() { assert!(true); }\n");
+        repo.git(&["add", "."]);
+        repo.git(&["commit", "-m", "source"]);
+        let artifact = build_full(repo.path());
+        let ctx = git::detect(repo.path()).unwrap();
+        write_with_dedup(&artifact, repo.path(), &ctx).unwrap();
+        let canonical = canonical_artifact_path(repo.path(), &artifact);
+        let _ = fs::remove_file(canonical.join(table));
+        fs::remove_file(repo.path().join(".spur/graph/CURRENT")).unwrap();
+        fs::remove_file(repo.path().join(".spur/graph-index.pointer.json")).unwrap();
+        assert!(
+            write_with_dedup(&artifact, repo.path(), &ctx).is_err(),
+            "reused missing {table}"
+        );
+        assert!(!repo.path().join(".spur/graph/CURRENT").exists());
+        assert!(!repo.path().join(".spur/graph-index.pointer.json").exists());
+    }
+}
+
 use serde_json::json;
 use spur_graph::mcp::{
     code_symbol_info_rebuild_aware, markdown_overlay_base_delta_for_worktree,
