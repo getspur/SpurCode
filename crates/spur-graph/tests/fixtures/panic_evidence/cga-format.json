@@ -14,11 +14,11 @@
           "span": {
             "start": {
               "line": 3,
-              "column": 3
+              "column": 4
             },
             "end": {
               "line": 3,
-              "column": 9
+              "column": 10
             }
           }
         }
@@ -30,11 +30,11 @@
           "span": {
             "start": {
               "line": 123,
-              "column": 0
+              "column": 1
             },
             "end": {
               "line": 123,
-              "column": 6
+              "column": 7
             }
           }
         }
@@ -46,11 +46,11 @@
           "span": {
             "start": {
               "line": 2,
-              "column": 15
+              "column": 16
             },
             "end": {
               "line": 2,
-              "column": 21
+              "column": 22
             }
           }
         }
@@ -62,11 +62,11 @@
           "span": {
             "start": {
               "line": 3,
-              "column": 3
+              "column": 4
             },
             "end": {
               "line": 3,
-              "column": 9
+              "column": 10
             }
           }
         }
@@ -78,11 +78,11 @@
           "span": {
             "start": {
               "line": 123,
-              "column": 0
+              "column": 1
             },
             "end": {
               "line": 123,
-              "column": 6
+              "column": 7
             }
           }
         }
@@ -99,11 +99,11 @@
             "span": {
               "start": {
                 "line": 4,
-                "column": 20
+                "column": 21
               },
               "end": {
                 "line": 4,
-                "column": 30
+                "column": 31
               }
             }
           }
@@ -117,11 +117,11 @@
             "span": {
               "start": {
                 "line": 4,
-                "column": 32
+                "column": 33
               },
               "end": {
                 "line": 4,
-                "column": 42
+                "column": 43
               }
             }
           }
@@ -135,11 +135,11 @@
             "span": {
               "start": {
                 "line": 4,
-                "column": 44
+                "column": 45
               },
               "end": {
                 "line": 4,
-                "column": 57
+                "column": 58
               }
             }
           }
@@ -153,11 +153,11 @@
             "span": {
               "start": {
                 "line": 4,
-                "column": 44
+                "column": 45
               },
               "end": {
                 "line": 4,
-                "column": 57
+                "column": 58
               }
             }
           }
@@ -171,11 +171,11 @@
             "span": {
               "start": {
                 "line": 5,
-                "column": 6
+                "column": 7
               },
               "end": {
                 "line": 5,
-                "column": 12
+                "column": 13
               }
             }
           }
@@ -187,11 +187,11 @@
             "span": {
               "start": {
                 "line": 4,
-                "column": 4
+                "column": 5
               },
               "end": {
                 "line": 4,
-                "column": 7
+                "column": 8
               }
             }
           }
@@ -203,11 +203,11 @@
             "span": {
               "start": {
                 "line": 20,
-                "column": 0
+                "column": 1
               },
               "end": {
                 "line": 20,
-                "column": 8
+                "column": 9
               }
             }
           }
@@ -239,16 +239,82 @@
             "span": {
               "start": {
                 "line": 4,
-                "column": 20
+                "column": 21
               },
               "end": {
                 "line": 4,
-                "column": 30
+                "column": 31
               }
             }
           }
         }
       ]
     }
+  },
+  "real_coordinate_witness": {
+    "fixture_status": "frozen partial projection of authentic compiler output; raw node/edge unchanged, not a complete importable CGA graph",
+    "provenance": {
+      "repository_commit": "475eaa402",
+      "artifact_directory": "docs/research/artifacts/2026-10-31-panic-evidence-pilot-setup",
+      "raw_export_file": "d1_o1.callgraph.json",
+      "raw_export_sha256": "b7d0287e7467350d82cd05c6f21346cf12de3b399a057ee3381db2f7fad6bf6e",
+      "probe_sources_sha256": "37da319175d6c9456f6c53e251cfb6ae4fe9c1cd9aee6d2ae8cbb9112d86e909",
+      "source_sha256": "ca4746ba5d8f51d1e516450741a16ff27d6f027d2b9f487eab3d47c57c8f51c8",
+      "upstream_revision": "2fc63108f0b674fe7a178191ffa15647a18879f1",
+      "toolchain": "nightly-2026-10-18",
+      "rustc_verbose": "rustc 1.101.0-nightly (8006091eb 2026-10-17)\nbinary: rustc\ncommit-hash: 8006091eb71ae7d9e9bccb66c6122c9d68af4466\ncommit-date: 2026-10-17\nhost: aarch64-apple-darwin\nrelease: 1.101.0-nightly\nLLVM version: 23.1.4\n",
+      "producer_build": {
+        "state": "patched",
+        "patch_sha256": "72f3d4cd64439d988deba0ee1e0f449df8290e6f1d1e0ae83ba82d97b1592aca"
+      },
+      "cargo_cga_sha256": "7f84bc715138c09744fd351859ca02b240ea768d9756069229e9250fa9447b7a",
+      "cga_driver_sha256": "5647b7f2c7f857dda0dd0204e91d870287988181ca5ec4d7792810a561886172"
+    },
+    "source": "#![no_std]\n\n#[unsafe(no_mangle)]\npub fn option_unwrap(value: Option<u8>) -> u8 { let _ = \"雪🙂\"; value.unwrap() }\n\n#[unsafe(no_mangle)]\npub fn slice_index(values: &[u8], index: usize) -> u8 { values[index] }\n\n#[unsafe(no_mangle)]\npub fn add(value: u8) -> u8 { value + 1 }\n\n#[unsafe(no_mangle)]\npub fn debug_assertion(value: u8) { debug_assert!(value > 0); }\n",
+    "node_id": 3,
+    "node": {
+      "name": "spur_panic_cga_probe::option_unwrap",
+      "location": {
+        "path": "src/lib.rs",
+        "span": {
+          "start": {
+            "line": 4,
+            "column": 1
+          },
+          "end": {
+            "line": 4,
+            "column": 46
+          }
+        }
+      }
+    },
+    "edge_index": 0,
+    "edge": {
+      "kind": {
+        "Called": 14
+      },
+      "location": {
+        "path": "src/lib.rs",
+        "span": {
+          "start": {
+            "line": 4,
+            "column": 63
+          },
+          "end": {
+            "line": 4,
+            "column": 77
+          }
+        }
+      }
+    },
+    "expected_byte_range": [
+      100,
+      114
+    ],
+    "expected_slice": "value.unwrap()"
+  },
+  "ownership_witness": {
+    "fixture_status": "synthetic lexical-ownership controls; not compiler output",
+    "source": "fn outer(x: Option<u8>) {\n    fn inner(y: Option<u8>) { let _ = y; }\n    let _ = x.unwrap();\n    let c = |z: Option<u8>| { z.unwrap() };\n    let d = |w: Option<u8>| { w.unwrap() };\n    let _ = (c, d);\n}\nfn generic<T>(t: Option<T>) { t.unwrap(); }\nfn ordinary(a: Option<u8>) { a.unwrap(); }\n"
   }
 }
