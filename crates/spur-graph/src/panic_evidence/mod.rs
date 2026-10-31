@@ -1,6 +1,11 @@
 //! Experimental source-bound evidence, independent of the canonical graph schema.
 
+mod build_identity;
+mod cga;
 mod method_sites;
+
+pub use build_identity::*;
+pub use cga::*;
 
 use std::collections::BTreeSet;
 use std::path::{Component, Path};

@@ -1,0 +1,254 @@
+{
+  "fixture_status": "synthetic; hand-authored format and location controls, not compiler output",
+  "source": "struct Safe;\nimpl Safe { fn unwrap(&self) {} }\nfn repeat<T>(a: Option<u8>, safe: Safe) {\n    let café = \"é\"; a.unwrap(); a.unwrap(); safe.unwrap();\n    a.as_ref().unwrap();\n}\nfn other(a: Option<u8>) { a.unwrap(); }\n",
+  "export": {
+    "roots": [
+      0,
+      3
+    ],
+    "nodes": [
+      {
+        "name": "fixture::repeat::<u8>",
+        "location": {
+          "path": "src/lib.rs",
+          "span": {
+            "start": {
+              "line": 3,
+              "column": 3
+            },
+            "end": {
+              "line": 3,
+              "column": 9
+            }
+          }
+        }
+      },
+      {
+        "name": "core::option::Option::<u8>::unwrap",
+        "location": {
+          "path": "/rustc/core/option.rs",
+          "span": {
+            "start": {
+              "line": 123,
+              "column": 0
+            },
+            "end": {
+              "line": 123,
+              "column": 6
+            }
+          }
+        }
+      },
+      {
+        "name": "fixture::Safe::unwrap",
+        "location": {
+          "path": "src/lib.rs",
+          "span": {
+            "start": {
+              "line": 2,
+              "column": 15
+            },
+            "end": {
+              "line": 2,
+              "column": 21
+            }
+          }
+        }
+      },
+      {
+        "name": "fixture::repeat::<u16>",
+        "location": {
+          "path": "src/lib.rs",
+          "span": {
+            "start": {
+              "line": 3,
+              "column": 3
+            },
+            "end": {
+              "line": 3,
+              "column": 9
+            }
+          }
+        }
+      },
+      {
+        "name": "core::option::Option::<u16>::unwrap",
+        "location": {
+          "path": "/rustc/core/option.rs",
+          "span": {
+            "start": {
+              "line": 123,
+              "column": 0
+            },
+            "end": {
+              "line": 123,
+              "column": 6
+            }
+          }
+        }
+      }
+    ],
+    "edges": {
+      "0": [
+        {
+          "kind": {
+            "Called": 1
+          },
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 4,
+                "column": 20
+              },
+              "end": {
+                "line": 4,
+                "column": 30
+              }
+            }
+          }
+        },
+        {
+          "kind": {
+            "Called": 1
+          },
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 4,
+                "column": 32
+              },
+              "end": {
+                "line": 4,
+                "column": 42
+              }
+            }
+          }
+        },
+        {
+          "kind": {
+            "Called": 2
+          },
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 4,
+                "column": 44
+              },
+              "end": {
+                "line": 4,
+                "column": 57
+              }
+            }
+          }
+        },
+        {
+          "kind": {
+            "VTableCalled": 2
+          },
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 4,
+                "column": 44
+              },
+              "end": {
+                "line": 4,
+                "column": 57
+              }
+            }
+          }
+        },
+        {
+          "kind": {
+            "FnPtrCast": 1
+          },
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 5,
+                "column": 6
+              },
+              "end": {
+                "line": 5,
+                "column": 12
+              }
+            }
+          }
+        },
+        {
+          "kind": "BuiltinAssert",
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 4,
+                "column": 4
+              },
+              "end": {
+                "line": 4,
+                "column": 7
+              }
+            }
+          }
+        },
+        {
+          "kind": "AsyncPanic",
+          "location": {
+            "path": "/rustc/core/future.rs",
+            "span": {
+              "start": {
+                "line": 20,
+                "column": 0
+              },
+              "end": {
+                "line": 20,
+                "column": 8
+              }
+            }
+          }
+        },
+        {
+          "kind": "BuiltinAssert",
+          "location": {
+            "path": "{unknown}",
+            "span": {
+              "start": {
+                "line": 0,
+                "column": 0
+              },
+              "end": {
+                "line": 0,
+                "column": 0
+              }
+            }
+          }
+        }
+      ],
+      "3": [
+        {
+          "kind": {
+            "Called": 4
+          },
+          "location": {
+            "path": "src/lib.rs",
+            "span": {
+              "start": {
+                "line": 4,
+                "column": 20
+              },
+              "end": {
+                "line": 4,
+                "column": 30
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
