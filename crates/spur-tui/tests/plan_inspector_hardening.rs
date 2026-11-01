@@ -1,5 +1,184 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 #[test]
+fn selected_detail_prioritizes_action_and_keeps_verbose_metadata_accessible() {
+    let mut row = task("task-short", "failed");
+    row.task_name = "concise".into();
+    row.issue_title = Some("CONTEXT: approved design notebook ".repeat(30));
+    row.error = Some("fix the overlapping file".into());
+    row.next_action = "retry after resolving conflict".into();
+    row.summary = Some(format!(
+        "FIRST_OUTPUT_LINE\nSECOND_OUTPUT_LINE\n{}\nOUTPUT_TAIL",
+        "wrapped output ".repeat(200)
+    ));
+    row.worker_branch = Some(format!(
+        "spur/worker/{}BRANCH_TAIL",
+        "metadata/".repeat(100)
+    ));
+    let fixture = Fixture::new(snapshot(
+        vec![row],
+        PlanSnapshotCounts {
+            failed: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    let text = fixture.render(&mut view, 100, 16);
+    assert!(
+        text.contains("concise · codex"),
+        "concise identity hidden by context:\n{text}"
+    );
+    for expected in [
+        "error: fix the overlapping file",
+        "next: retry after resolving conflict",
+    ] {
+        assert!(
+            text.contains(expected),
+            "actionable detail hidden: {expected}\n{text}"
+        );
+    }
+    for needle in [
+        "error: fix the overlapping file",
+        "next: retry after resolving conflict",
+    ] {
+        let y = text.lines().position(|line| line.contains(needle)).unwrap();
+        println!(
+            "I9_GEOMETRY {}",
+            serde_json::json!({"needle":needle,"x":53,"y":y,"width":needle.len(),"height":1})
+        );
+    }
+    fixture.key(&mut view, KeyCode::Tab);
+    fixture.key(&mut view, KeyCode::Char('G'));
+    assert!(fixture.render(&mut view, 100, 16).contains("OUTPUT_TAIL"));
+    fixture.key(&mut view, KeyCode::Char('e'));
+    fixture.render(&mut view, 100, 16);
+    fixture.key(&mut view, KeyCode::Char('G'));
+    assert!(
+        fixture.render(&mut view, 100, 16).contains("BRANCH_TAIL"),
+        "expanded metadata remains reachable"
+    );
+}
+#[test]
+fn multiline_task_output_preserves_source_line_boundaries() {
+    let mut row = task("multiline", "approved");
+    row.summary = Some("FIRST_OUTPUT_LINE\nSECOND_OUTPUT_LINE\nOUTPUT_TAIL".into());
+    let fixture = Fixture::new(snapshot(
+        vec![row],
+        PlanSnapshotCounts {
+            approved: 1,
+            ..Default::default()
+        },
+    ));
+    let text = fixture.render(&mut fixture.view(), 200, 24);
+    let first = text
+        .lines()
+        .position(|line| line.contains("FIRST_OUTPUT_LINE"))
+        .unwrap();
+    let second = text
+        .lines()
+        .position(|line| line.contains("SECOND_OUTPUT_LINE"))
+        .unwrap();
+    assert!(
+        second > first,
+        "multiline output flattened into one rendered line:\n{text}"
+    );
+}
+#[test]
+fn full_dependency_ids_expand_and_parent_child_navigation_cycles_from_origin() {
+    let parents: Vec<_> = (0..3)
+        .map(|i| format!("parent-{i:02}-very-long-identifier"))
+        .collect();
+    let children: Vec<_> = (0..3)
+        .map(|i| format!("child-{i:02}-very-long-identifier"))
+        .collect();
+    let mut hub = task("hub", "pending");
+    hub.depends_on = parents
+        .iter()
+        .cloned()
+        .chain(["external-parent".into()])
+        .collect();
+    hub.blocked_by = parents[..2].to_vec();
+    hub.unblocks = children.clone();
+    let mut tasks: Vec<_> = parents.iter().map(|id| task(id, "approved")).collect();
+    tasks.push(hub);
+    tasks.extend(children.iter().map(|id| {
+        let mut row = task(id, "pending");
+        row.depends_on = vec!["hub".into()];
+        row
+    }));
+    let fixture = Fixture::new(snapshot(
+        tasks,
+        PlanSnapshotCounts {
+            approved: 3,
+            pending: 4,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    fixture.render(&mut view, 100, 24);
+    fixture.key(&mut view, KeyCode::Char('l'));
+    fixture.key(&mut view, KeyCode::Char('e'));
+    let mut seen = String::new();
+    for _ in 0..50 {
+        seen.push_str(&fixture.render(&mut view, 100, 24));
+        fixture.key(&mut view, KeyCode::Down);
+    }
+    for id in parents.iter().chain(&children) {
+        assert!(seen.contains(id), "expanded relationship ID missing: {id}");
+    }
+    fixture.key(&mut view, KeyCode::Char('p'));
+    assert!(
+        fixture
+            .render(&mut view, 100, 24)
+            .contains(&format!("task: {}", parents[0])),
+        "p must select first parent"
+    );
+    fixture.key(&mut view, KeyCode::Char('p'));
+    assert!(
+        fixture
+            .render(&mut view, 100, 24)
+            .contains(&format!("task: {}", parents[1])),
+        "p must cycle the original parent list"
+    );
+    fixture.key(&mut view, KeyCode::Char('p'));
+    let action = fixture.key(&mut view, KeyCode::Char('p'));
+    assert!(
+        matches!(action,Some(Action::FlashHint { message }) if message.contains("external-parent"))
+    );
+    fixture.key(&mut view, KeyCode::Char('l'));
+    fixture.key(&mut view, KeyCode::Char('n'));
+    assert!(
+        fixture
+            .render(&mut view, 100, 24)
+            .contains(&format!("task: {}", children[0])),
+        "n must select first child"
+    );
+    fixture.key(&mut view, KeyCode::Char('n'));
+    let text = fixture.render(&mut view, 100, 24);
+    assert!(
+        text.contains(&format!("task: {}", children[1])),
+        "n must cycle original child list"
+    );
+    fixture.key(&mut view, KeyCode::Char('h'));
+    fixture.key(&mut view, KeyCode::Char('b'));
+    let text = fixture.render(&mut view, 100, 24);
+    assert!(
+        text.contains(&format!("task: {}", parents[0])),
+        "b blocker navigation must remain available"
+    );
+    let empty = Fixture::new(snapshot(
+        vec![task("alone", "pending")],
+        PlanSnapshotCounts::default(),
+    ));
+    let mut view = empty.view();
+    empty.render(&mut view, 100, 24);
+    assert!(
+        matches!(empty.key(&mut view,KeyCode::Char('p')),Some(Action::FlashHint { message }) if message.contains("no parents"))
+    );
+    assert!(
+        matches!(empty.key(&mut view,KeyCode::Char('n')),Some(Action::FlashHint { message }) if message.contains("no children"))
+    );
+}
+#[test]
 fn compact_header_protects_status_progress_and_selection_at_each_geometry() {
     let tasks = (0..20)
         .map(|i| task(&format!("selected-{i:02}"), "pending"))
