@@ -3569,7 +3569,10 @@ pub(crate) fn extract_file_contents_from_tree(
                     let Some(callee) = crate::extract::rust_bindings::callee(capture.node) else {
                         return true;
                     };
-                    let name = callee.child_by_field_name("name").unwrap_or(callee);
+                    let name = callee
+                        .child_by_field_name("name")
+                        .or_else(|| callee.child_by_field_name("field"))
+                        .unwrap_or(callee);
                     let Ok(name) = name.utf8_text(source.as_bytes()) else {
                         return true;
                     };
@@ -3605,14 +3608,21 @@ pub(crate) fn extract_file_contents_from_tree(
                         relation: RelationKind::Calls,
                         edge_kind: None,
                         origin: CallOrigin::Expression,
-                        receiver_text: None,
+                        receiver_text: (callee.kind() == "field_expression")
+                            .then(|| callee.child_by_field_name("value"))
+                            .flatten()
+                            .and_then(|value| value.utf8_text(source.as_bytes()).ok())
+                            .map(str::to_owned),
                         scope_text: callee
                             .child_by_field_name("path")
                             .and_then(|p| p.utf8_text(source.as_bytes()).ok())
-                            .map(str::to_owned),
+                            .map(str::to_owned)
+                            .or_else(|| {
+                                crate::extract::rust_bindings::receiver_scope(capture.node, source)
+                            }),
                     };
                     let bind_method = target.map(|_| {
-                        if edge.scope_text.is_some() {
+                        if edge.receiver_text.is_none() && edge.scope_text.is_some() {
                             "fqn"
                         } else {
                             "scope_match"
@@ -5026,7 +5036,7 @@ pub fn same_file_helper() {}
     }
 
     #[test]
-    fn method_crate_singleton_recovers_cross_module_same_crate() {
+    fn rust_method_spelling_cannot_substitute_an_incompatible_receiver() {
         let dir = tempfile::tempdir().expect("tempdir");
         std::fs::create_dir_all(dir.path().join("crates/foo/src/sub")).expect("foo sub dir");
         std::fs::create_dir_all(dir.path().join("crates/bar/src")).expect("bar crate dir");
@@ -5078,11 +5088,9 @@ impl ExternalPanel {
         };
 
         let same_crate = call("repaint_panel");
-        assert!(same_crate.target_node_id.is_some());
-        assert_eq!(
-            same_crate.bind_method.as_deref(),
-            Some("method_crate_singleton")
-        );
+        // Panel is not Widget; crate membership cannot establish its method.
+        assert_eq!(same_crate.target_node_id, None);
+        assert_eq!(same_crate.bind_method.as_deref(), None);
 
         let cross_crate = call("repaint_from_bar");
         assert_eq!(cross_crate.target_node_id, None);
@@ -6908,7 +6916,7 @@ pub fn caller() {
     }
 
     #[test]
-    fn pending_edges_group_receivers_by_query_match() {
+    fn rust_edges_group_receivers_by_query_match() {
         let dir = tempfile::tempdir().expect("tempdir");
         let root = dir.path();
         fs::create_dir_all(root.join("src")).expect("mkdir src");
@@ -6958,16 +6966,21 @@ pub fn caller() {
             .find(|node| node.label == "caller" && node.kind == NodeKind::Function)
             .expect("caller function");
         let outer_edge = builder
-            .pending_edges
+            .facts
+            .edges
             .iter()
-            .find(|edge| edge.source == caller.node_id && edge.target_name == "foo")
+            .find(|edge| {
+                edge.source_node_id == caller.node_id && edge.target_label.as_deref() == Some("foo")
+            })
             .expect("outer foo edge");
 
         assert_eq!(outer_edge.receiver_text.as_deref(), Some("outer"));
         assert_ne!(outer_edge.receiver_text.as_deref(), Some("inner"));
         assert!(!builder
-            .pending_edges
+            .facts
+            .edges
             .iter()
-            .any(|edge| edge.source == caller.node_id && edge.target_name == "bar"));
+            .any(|edge| edge.source_node_id == caller.node_id
+                && edge.target_label.as_deref() == Some("bar")));
     }
 }

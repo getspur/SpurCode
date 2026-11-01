@@ -1,5 +1,5 @@
-//! Physical-source lexical bindings for ordinary Rust function calls.
-//! Macro token trees and receiver/type lookup stay on their existing paths.
+//! Physical-source lexical bindings for ordinary Rust calls.
+//! Receiver lookup is deliberately limited to exact local nominal types.
 
 use tree_sitter::Node;
 
@@ -44,6 +44,11 @@ pub(super) fn resolve(
     relative_path: &str,
 ) -> Option<Option<NodeId>> {
     let callee = callee(call)?;
+    if callee.kind() == "field_expression" {
+        // Own every ordinary receiver call, including unknown receivers. A
+        // missing type must never fall through to a method-name singleton.
+        return Some(resolve_method(callee, source, definitions));
+    }
     if callee.kind() == "scoped_identifier" {
         let name = text(callee.child_by_field_name("name")?, source)?;
         let path = text(callee.child_by_field_name("path")?, source)?;
@@ -196,6 +201,349 @@ pub(super) fn resolve(
                     == Some(name)
         })
         .then_some(None)
+}
+
+/// Export the exact local nominal path through the existing scope metadata.
+/// This is source binding evidence, not compiler dispatch authority.
+pub(super) fn receiver_scope(call: Node<'_>, source: &str) -> Option<String> {
+    let callee = callee(call)?;
+    if callee.kind() != "field_expression" {
+        return None;
+    }
+    let ty = value_type(callee.child_by_field_name("value")?, source)?;
+    let mut path = vec![text(ty.child_by_field_name("name")?, source)?];
+    let mut parent = ty.parent();
+    while let Some(node) = parent {
+        if node.kind() == "mod_item" {
+            path.push(text(node.child_by_field_name("name")?, source)?);
+        }
+        parent = node.parent();
+    }
+    path.reverse();
+    Some(path.join("::"))
+}
+
+fn resolve_method(
+    callee: Node<'_>,
+    source: &str,
+    definitions: &[DefinitionBinding<'_>],
+) -> Option<NodeId> {
+    let receiver = value_type(callee.child_by_field_name("value")?, source)?;
+    // Nominal identity alone cannot establish Rust receiver candidate order.
+    // A trait on T, &T, or a bounded blanket impl can precede an inherent
+    // method after autoref/autoderef. Keep that whole dispatch unresolved.
+    if trait_dispatch_uncertain(callee, receiver, source) {
+        return None;
+    }
+    let name = text(callee.child_by_field_name("field")?, source)?;
+    let mut candidates = definitions.iter().filter(|d| {
+        if d.node.kind() != "function_item"
+            || d.node
+                .child_by_field_name("name")
+                .and_then(|n| text(n, source))
+                != Some(name)
+        {
+            return false;
+        }
+        let Some(implementation) = d.node.parent().and_then(|n| n.parent()) else {
+            return false;
+        };
+        // Trait visibility, generic substitution, and autoderef need compiler
+        // evidence. Only direct inherent methods participate in this lane.
+        implementation.kind() == "impl_item"
+            && implementation.child_by_field_name("trait").is_none()
+            && implementation
+                .child_by_field_name("type_parameters")
+                .is_none()
+            && implementation
+                .child_by_field_name("type")
+                .and_then(|ty| nominal_type(ty, source))
+                == Some(receiver)
+            && d.node
+                .child_by_field_name("parameters")
+                .is_some_and(|parameters| {
+                    let mut cursor = parameters.walk();
+                    let found = parameters
+                        .named_children(&mut cursor)
+                        .any(|p| p.kind() == "self_parameter");
+                    found
+                })
+    });
+    let target = candidates.next()?.node_id;
+    candidates.next().is_none().then_some(target)
+}
+
+fn trait_dispatch_uncertain(call: Node<'_>, receiver: Node<'_>, source: &str) -> bool {
+    // Imports may bring extension traits (including blanket impls) into scope.
+    // Their visibility and implementations require evidence outside this AST.
+    let mut scope = Some(call);
+    while let Some(node) = scope {
+        if matches!(node.kind(), "block" | "declaration_list" | "source_file") {
+            let mut cursor = node.walk();
+            if node
+                .named_children(&mut cursor)
+                .any(|child| child.kind() == "use_declaration")
+            {
+                return true;
+            }
+            if node.kind() == "source_file" || node.parent().is_some_and(|p| p.kind() == "mod_item")
+            {
+                break;
+            }
+        }
+        scope = node.parent();
+    }
+
+    let mut root = call;
+    while let Some(parent) = root.parent() {
+        root = parent;
+    }
+    let mut pending = vec![root];
+    while let Some(node) = pending.pop() {
+        match node.kind() {
+            // Expansions can introduce competing impls, even from a statement
+            // or expression nested inside a function. This lane has no expanded
+            // AST, so neither the macro name nor its tokens establish dispatch.
+            "macro_invocation" => return true,
+            "attribute_item" | "inner_attribute_item" => {
+                let path = node
+                    .named_child(0)
+                    .and_then(|attribute| attribute.named_child(0));
+                let non_generating = path
+                    .filter(|path| path.kind() == "identifier")
+                    .and_then(|path| text(path, source))
+                    .is_some_and(|name| {
+                        matches!(
+                            name,
+                            "allow" | "warn" | "deny" | "forbid" | "expect" | "doc"
+                        )
+                    });
+                if !non_generating {
+                    // Includes derives, procedural attributes, and cfg_attr.
+                    return true;
+                }
+                // Lint/doc arguments are tokens, not ordinary Rust items.
+                continue;
+            }
+            // A definition alone does not expand; token trees are never an
+            // authoritative source of physical trait implementations.
+            "macro_definition" | "token_tree" => continue,
+            _ => {}
+        }
+        if node.kind() == "impl_item" && node.child_by_field_name("trait").is_some() {
+            let implemented_type = node
+                .child_by_field_name("type")
+                .and_then(|ty| nominal_type(ty, source));
+            // Erasing reference layers is deliberately an OVER-approximation
+            // for rejection, never evidence to choose a method. Unknown types
+            // include bounded generic, alias, and qualified trait impl owners.
+            // Do not inspect only explicit impl methods: defaults/supertraits
+            // can supply a competing receiver without a method body here.
+            if implemented_type.is_none() || implemented_type == Some(receiver) {
+                return true;
+            }
+        }
+        let mut cursor = node.walk();
+        pending.extend(node.named_children(&mut cursor));
+    }
+    false
+}
+
+/// Recover nominal identity, never just the last spelling of a type path.
+/// References need no user-defined deref; aliases and generic types do.
+fn nominal_type<'tree>(ty: Node<'tree>, source: &str) -> Option<Node<'tree>> {
+    match ty.kind() {
+        "reference_type" => nominal_type(ty.child_by_field_name("type")?, source),
+        "type_identifier" | "identifier" => local_type(ty, text(ty, source)?, source),
+        _ => None,
+    }
+}
+
+fn local_type<'tree>(mut scope: Node<'tree>, name: &str, source: &str) -> Option<Node<'tree>> {
+    loop {
+        if scope
+            .child_by_field_name("type_parameters")
+            .is_some_and(|parameters| {
+                let mut cursor = parameters.walk();
+                let found = parameters.named_children(&mut cursor).any(|p| {
+                    p.child_by_field_name("name").and_then(|n| text(n, source)) == Some(name)
+                });
+                found
+            })
+        {
+            return None;
+        }
+        if matches!(scope.kind(), "block" | "declaration_list" | "source_file") {
+            let mut cursor = scope.walk();
+            let mut candidates = scope.named_children(&mut cursor).filter(|n| {
+                (n.kind() == "use_declaration" && imports(*n, name, source))
+                    || (matches!(
+                        n.kind(),
+                        "struct_item"
+                            | "enum_item"
+                            | "union_item"
+                            | "type_item"
+                            | "trait_item"
+                            | "mod_item"
+                    ) && n.child_by_field_name("name").and_then(|n| text(n, source))
+                        == Some(name))
+            });
+            if let Some(candidate) = candidates.next() {
+                return (candidates.next().is_none()
+                    && matches!(candidate.kind(), "struct_item" | "enum_item" | "union_item"))
+                .then_some(candidate);
+            }
+            // A child module does not inherit bare type names from its parent.
+            if scope.kind() == "source_file"
+                || scope.parent().is_some_and(|p| p.kind() == "mod_item")
+            {
+                return None;
+            }
+        }
+        scope = scope.parent()?;
+    }
+}
+
+fn value_type<'tree>(value: Node<'tree>, source: &str) -> Option<Node<'tree>> {
+    match value.kind() {
+        "reference_expression" => value_type(value.child_by_field_name("value")?, source),
+        "parenthesized_expression" => value_type(value.named_child(0)?, source),
+        "struct_expression" => nominal_type(value.child_by_field_name("name")?, source),
+        "call_expression" => {
+            let constructor = callee(value)?;
+            let ty = nominal_type(constructor, source)?;
+            // R1 owns value-namespace shadows too. With no definition IDs a
+            // visible function/parameter/local is an unknown callable, never
+            // evidence for the same-spelled tuple constructor.
+            if resolve(value, source, &[], "").is_some() {
+                return None;
+            }
+            // Tuple constructors only; ordinary function/associated-call return
+            // inference is intentionally unsupported.
+            (ty.kind() == "struct_item"
+                && ty
+                    .child_by_field_name("body")
+                    .is_some_and(|body| body.kind() == "ordered_field_declaration_list"))
+            .then_some(ty)
+        }
+        "identifier" => binding_type(value, text(value, source)?, source),
+        "self" => {
+            let mut scope = value.parent()?;
+            loop {
+                if scope.kind() == "impl_item" {
+                    return nominal_type(scope.child_by_field_name("type")?, source);
+                }
+                scope = scope.parent()?;
+            }
+        }
+        _ => None,
+    }
+}
+
+fn binding_type<'tree>(value: Node<'tree>, name: &str, source: &str) -> Option<Node<'tree>> {
+    let mut scope = value.parent()?;
+    loop {
+        match scope.kind() {
+            "block" => {
+                let mut cursor = scope.walk();
+                // Lookup starts at the nearest completed declaration; the
+                // initializer still sees the previous binding.
+                let binding = scope
+                    .named_children(&mut cursor)
+                    .filter(|n| {
+                        n.kind() == "let_declaration"
+                            && n.end_byte() <= value.start_byte()
+                            && n.child_by_field_name("pattern")
+                                .is_some_and(|p| binds(p, name, source))
+                    })
+                    .last();
+                if let Some(binding) = binding {
+                    let pattern = binding.child_by_field_name("pattern")?;
+                    if pattern.kind() != "identifier" {
+                        return None;
+                    }
+                    return if let Some(ty) = binding.child_by_field_name("type") {
+                        nominal_type(ty, source)
+                    } else {
+                        value_type(binding.child_by_field_name("value")?, source)
+                    };
+                }
+            }
+            "function_item" | "closure_expression" => {
+                if let Some(parameters) = scope.child_by_field_name("parameters") {
+                    let mut cursor = parameters.walk();
+                    let parameter = parameters
+                        .named_children(&mut cursor)
+                        .find(|p| binds(*p, name, source));
+                    if let Some(parameter) = parameter {
+                        let pattern = parameter.child_by_field_name("pattern")?;
+                        if pattern.kind() != "identifier" {
+                            return None;
+                        }
+                        return nominal_type(parameter.child_by_field_name("type")?, source);
+                    }
+                }
+                if scope.kind() == "function_item" {
+                    break;
+                }
+            }
+            "for_expression" => {
+                if scope
+                    .child_by_field_name("body")
+                    .is_some_and(|body| contains(body, value))
+                    && scope
+                        .child_by_field_name("pattern")
+                        .is_some_and(|p| binds(p, name, source))
+                {
+                    return None;
+                }
+            }
+            "match_arm" => {
+                if scope
+                    .child_by_field_name("pattern")
+                    .is_some_and(|p| binds(p, name, source))
+                {
+                    return None;
+                }
+            }
+            "if_expression" | "while_expression" => {
+                if let Some(condition) = scope.child_by_field_name("condition") {
+                    let in_body = scope
+                        .child_by_field_name("consequence")
+                        .or_else(|| scope.child_by_field_name("body"))
+                        .is_some_and(|body| contains(body, value));
+                    if (in_body || contains(condition, value))
+                        && condition_binds(condition, value, in_body, name, source)
+                    {
+                        return None;
+                    }
+                }
+            }
+            "source_file" | "declaration_list" => break,
+            _ => {}
+        }
+        scope = scope.parent()?;
+    }
+    let ty = local_type(value, name, source)?;
+    // A bare unit constructor is exact only without a competing value item.
+    let mut ancestor = value.parent();
+    while let Some(scope) = ancestor {
+        if matches!(scope.kind(), "block" | "source_file" | "declaration_list") {
+            let mut cursor = scope.walk();
+            if scope.named_children(&mut cursor).any(|n| {
+                (matches!(n.kind(), "const_item" | "static_item" | "function_item")
+                    && n.child_by_field_name("name").and_then(|n| text(n, source)) == Some(name))
+                    || (n.kind() == "use_declaration" && imports(n, name, source))
+            }) {
+                return None;
+            }
+        }
+        if scope == ty.parent()? {
+            break;
+        }
+        ancestor = scope.parent();
+    }
+    (ty.kind() == "struct_item" && ty.child_by_field_name("body").is_none()).then_some(ty)
 }
 
 fn inline_module<'tree>(
