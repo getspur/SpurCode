@@ -588,6 +588,10 @@ validation errors use stderr and a nonzero exit. Commands and fields:
 | `identity` | `identity` | `build_id` |
 | `import` | `graph`, `sources`, `method_sites`, `inputs`, `identity`, `expected_build_id`, `raw_export` | `compiler_evidence` |
 | `validate` | all import fields plus `compiler_evidence` | `valid`, `build_id` |
+| `analyze` | `graph`, `sources`, `build` | `status: "collected"`, `facts`; or `status: "unknown"`, `obligation` |
+| `solve` | `graph`, `sources`, `build`, `facts`, `domains`, `limits` | `report` (`panic-analysis-v1`) |
+| `compiler_report` | all validate fields plus `build`, `config_binding` | `compiler_report` (`panic-compiler-validation-v1`) |
+| `replay` | all solve fields plus `report`, `query_index`, `expected_request_identity`, `expected_panic_payload`, `execution_timeout_ms` | `replay` (`panic-fixture-replay-v1`) |
 
 Sources are `{ "file_path": "src/lib.rs", "text": "exact UTF-8 source" }`;
 inputs use `path` and `text`. `raw_export` is the complete, unchanged compiler
@@ -595,6 +599,132 @@ JSON encoded as a JSON string, including whitespace for checksum verification.
 An independently retained expected build ID is required before import. The
 snapshot command is for a bounded standalone fixture; callers with an existing
 graph pass its artifact directly to `collect`/`import`.
+
+These command names and required JSON fields are the experimental v1 contract.
+Unknown fields and malformed requests are errors. The synchronous Rust
+`execute(Value)` entrypoint remains available for all synchronous commands;
+`execute_async(Value, &SolverService)` also accepts `solve` and `replay`.
+The stdin runner uses the async entrypoint and persists requested solver receipts
+under its current repository directory. API callers supply that directory through
+`SolverService::with_repo_root` and reload receipts with `get_solve_result`.
+
+`analyze` collects canonical facts from exact source bytes. Its required `build`
+object has this complete shape (the graph hash and compiler strings are actual
+values, and `cfg` is the complete sorted inventory of enabled compiler atoms):
+
+```json
+{
+  "schema_version": "panic-build-config-v1",
+  "graph_content_hash": "<graph.graph_content_hash>",
+  "target": "<target triple>",
+  "edition": "2021",
+  "cfg": [{"key": "panic", "value": "unwind"}],
+  "overflow_checks": true,
+  "debug_assertions": true,
+  "panic_strategy": "unwind",
+  "rustc_verbose": "<exact rustc -vV stdout>",
+  "codegen_flags": [],
+  "features": []
+}
+```
+
+Editions are `2015`, `2018`, `2021`, or `2024`; panic strategy is `unwind` or
+`abort`. Cfg atoms use a null value for bare names. This build object declares
+the intended model; collection and solving do not attest compiler execution.
+Cfg/parse collection uncertainty returns `unknown` with `{kind, detail}` and
+no facts. Opaque constructs that have a known body remain explicit obligations
+inside collected facts. In particular, macro expansion (including `assert!`)
+is unsupported by the source collector.
+
+Pass the unchanged `facts` returned by `analyze` to `solve`, alongside the same
+graph, source bytes, and independently expected build. Before narrowing any
+domains, `solve` recollects and compares the entire canonical fact set. Missing
+sites, implicit operations, coverage, or source bindings therefore fail closed.
+`domains` is an array of the following records, exactly one per modeled parameter
+of each explicit entry body; duplicate, missing, widened, or unrelated domains
+are rejected:
+
+```json
+{
+  "body_id": "<facts.bodies entry body_id>",
+  "parameter_index": 0,
+  "domain": {"kind": "u8", "minimum": 0, "maximum": 255}
+}
+```
+
+U8 bounds are inclusive and within 0–255. Bool domains use
+`{"kind":"bool","values":[false,true]}` (nonempty, unique, sorted).
+Parameters absent from the supported translation retain their obligations;
+domains cannot invent them. Entry IDs identify exact bodies, including source
+identity, rather than resolving a function by its spelling. `limits` has no
+implicit defaults:
+
+```json
+{
+  "entry_body_ids": ["<entry body_id>"],
+  "expected_build_hash": "<facts.build_hash>",
+  "max_call_depth": 0,
+  "max_loop_iterations": 0,
+  "max_states": 4096,
+  "timeout_ms": 30000,
+  "persist": true
+}
+```
+
+These are caller-chosen exploration budgets, subject to the typed solver's
+caps (timeout at most 60,000 ms). A query returns its exact typed `request`,
+request digest, source/build/limits-bound `request_identity`, optional solver
+response and receipt binding, candidate inputs, obligations, and outcome:
+
+| Query outcome | Meaning |
+| --- | --- |
+| `candidate_witness` | SAT with a validated model; `runtime_reproduced` remains false |
+| `no_counterexample_within_complete_scope` | UNSAT with no open obligations, only for the declared model/domains/bounds |
+| `incomplete_semantics` | UNSAT with unsupported semantics or an open exploration frontier |
+| `unknown`, `timeout` | Solver did not establish SAT or UNSAT |
+| `operational_error`, `invalid_model` | Solver invocation/request failure or rejected model; no safety conclusion |
+
+Validation failures return Rust `Err`, or CLI stderr and a nonzero exit without
+a successful JSON response. Compiler/execution timeouts and compilation failures
+also return errors. Unknown and timeout never establish safety. The
+`compiler_report` command authenticates the legacy import, recollects canonical
+source semantics, then runs compiler correlation with
+`config_binding: {"capture_build_id":"<expected_build_id>",
+"semantic_build_hash":"<build.content_hash()>"}`. This independently retained
+binding is a capture-procedure declaration. The report preserves all observations
+and unknown obligations; semantic completeness remains `unestablished`.
+
+`replay` is a separate operation for a trusted standalone fixture. It requires
+a persisted complete candidate, the original entire `report`, a zero-based
+`query_index`, its independently retained `expected_request_identity`, an exact
+`expected_panic_payload` string, and `execution_timeout_ms` in 1–60,000. It
+revalidates source/build/facts/domains, reloads original solver receipts, and
+re-solves to reconstruct the report. A different model is rejected; rerun solve
+if the solver selects another candidate. Altered report identities, candidates,
+receipt bindings, and solver-produced reproduction claims are rejected before
+compilation.
+
+Replay supports one source file with a top-level synchronous function whose
+entire signature is modeled primitive `u8`/`bool` inputs. It runs native ordinary
+`rustc` with exact recorded compiler version, edition, target, overflow/debug
+settings, `opt-level=0`, and `panic=unwind`; the effective compiler cfg must equal
+the complete declared inventory. Additional codegen flags and features are
+rejected. The fixture source and generated include/catch-unwind harness are
+written to a fresh temporary directory. Compiler and execution subprocesses
+have explicit per-process deadlines and a recorded allowlisted environment.
+This executes trusted local fixture code; it is not a sandbox for hostile Rust.
+
+The replay record binds graph/source identities, build/fact/request digests,
+request identity, original receipt, candidate, harness and executable digests,
+compiler arguments/environment, actual exit/stdout/stderr and panic payload.
+`runtime_reproduced` becomes true only after successful execution catches the
+exact expected string payload. Other outcomes are `panic_payload_mismatch`,
+`returned`, or `execution_error`, with reproduction false. `replay_digest` hashes
+the compact UTF-8 JSON record in emitted field order before adding that field.
+These hashes support local evidence
+integrity; they do not attest a producer or independently certify a supplied
+record. Only this fixture/harness executed. No arbitrary workspace binary replay
+or general Rust safety is established.
 
 The standard-library-only capture script materializes the portable corpus from
 `tests/fixtures/panic_evidence/corpus.json` in a **new** directory outside the
