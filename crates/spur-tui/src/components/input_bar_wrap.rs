@@ -175,7 +175,7 @@ pub(crate) fn wrap_with_cell_width(
                 continue;
             }
 
-            if cur_cells + g.width as u16 > width {
+            while cur_cells + g.width as u16 > width {
                 // Look for the trailing-most whitespace break opportunity in
                 // `cur`, but leave at least one grapheme before it.
                 let mut break_at: Option<usize> = None;

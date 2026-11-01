@@ -148,7 +148,15 @@ pub fn render_task_detail(
 
     let visible_lines = area.height.saturating_sub(2) as usize;
     // Virtual rows use usize; only the visible slice reaches the u16 widget.
-    let source: Vec<String> = lines.iter().map(ToString::to_string).collect();
+    let source: Vec<String> = lines
+        .iter()
+        .map(|line| {
+            line.spans
+                .iter()
+                .map(|span| span.content.as_ref())
+                .collect()
+        })
+        .collect();
     let layout = (content_width > 0).then(|| {
         super::input_bar_wrap::wrap_with_cell_width(&source, content_width as u16, |grapheme| {
             Span::raw(grapheme).width() as u8
