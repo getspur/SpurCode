@@ -289,7 +289,7 @@ fn dispatch_observation(case: &serde_json::Value) -> (Vec<Option<NodeId>>, Optio
     );
     assert_eq!(
         edges[0].receiver_text.as_deref(),
-        Some("value"),
+        Some(case["expression"].as_str().unwrap_or("value")),
         "{name}: preserve the physical receiver text"
     );
     (targets(&facts, owner, method), expected)
@@ -406,6 +406,68 @@ fn expansion_uncertainty_covers_attributes_includes_and_macro_statements() {
 #[test]
 fn builtin_attributes_and_uninvoked_macro_tokens_preserve_grounded_methods() {
     for case in expansion_cases()
+        .iter()
+        .filter(|case| case["target"] != "unresolved")
+    {
+        let (observed, expected) = dispatch_observation(case);
+        assert_eq!(observed, vec![expected], "{}", case["case"]);
+    }
+}
+
+fn prelude_cases() -> Vec<serde_json::Value> {
+    serde_json::from_str(include_str!(
+        "../../../docs/research/artifacts/2026-11-01-panic-implementation/R2C/cases.json"
+    ))
+    .unwrap()
+}
+
+fn assert_prelude_case(name: &str) {
+    let cases = prelude_cases();
+    let case = cases.iter().find(|case| case["case"] == name).unwrap();
+    let (observed, expected) = dispatch_observation(case);
+    assert_eq!(
+        observed,
+        vec![expected],
+        "{name}: implicit dispatch uncertainty"
+    );
+}
+
+#[test]
+fn implicit_identity_into_precedes_shared_inherent() {
+    assert_prelude_case("prelude_into_owned");
+}
+
+#[test]
+fn implicit_identity_try_into_precedes_shared_inherent() {
+    assert_prelude_case("prelude_try_into_owned");
+}
+
+#[test]
+fn implicit_reference_clone_precedes_mutable_inherent() {
+    assert_prelude_case("prelude_clone_borrowed");
+}
+
+#[test]
+fn implicit_dispatch_guards_renamed_receivers_and_other_prelude_obligations() {
+    let mut mismatches = Vec::new();
+    for case in prelude_cases()
+        .iter()
+        .filter(|case| case["target"] == "unresolved")
+    {
+        let (observed, expected) = dispatch_observation(case);
+        if observed != vec![expected] {
+            mismatches.push((case["case"].clone(), observed));
+        }
+    }
+    assert!(
+        mismatches.is_empty(),
+        "implicit trait targets: {mismatches:?}"
+    );
+}
+
+#[test]
+fn implicit_dispatch_policy_preserves_grounded_inherent_positives() {
+    for case in prelude_cases()
         .iter()
         .filter(|case| case["target"] != "unresolved")
     {

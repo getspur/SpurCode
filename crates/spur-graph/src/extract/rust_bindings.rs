@@ -269,8 +269,67 @@ fn resolve_method(
                     found
                 })
     });
-    let target = candidates.next()?.node_id;
-    candidates.next().is_none().then_some(target)
+    let target = candidates.next()?;
+    if candidates.next().is_some() {
+        return None;
+    }
+    if let Some(earlier_receiver) = prelude_method_may_precede_shared(name) {
+        // The prelude is implicit: lack of physical impl/use nodes cannot
+        // establish absence of blanket or reference implementations. The one
+        // supported ordering proof is an owned nominal receiver and an
+        // inherent &self method, with no prelude by-value/explicit receiver
+        // of this name preceding &T. Inherent methods win at that candidate.
+        let shared_self = target
+            .node
+            .child_by_field_name("parameters")
+            .is_some_and(|parameters| {
+                let mut cursor = parameters.walk();
+                let found = parameters.named_children(&mut cursor).any(|parameter| {
+                    parameter.kind() == "self_parameter"
+                        && text(parameter, source)
+                            .is_some_and(|s| s.split_whitespace().collect::<String>() == "&self")
+                });
+                found
+            });
+        if earlier_receiver
+            || !shared_self
+            || value_type_inner(callee.child_by_field_name("value")?, source, false)
+                != Some(receiver)
+        {
+            return None;
+        }
+    }
+    Some(target.node_id)
+}
+
+/// Union of receiver methods in the Rust 1.94.1 std/core preludes for editions
+/// 2015/2018/2021/2024, including unstable methods conservatively. No edition
+/// or prelude configuration is established by this physical AST. See R2C's
+/// prelude-inventory.json for pinned compiler declarations and primary sources.
+/// `true` includes by-value and explicit receivers (e.g. Future::poll); `false`
+/// means every inventoried receiver of this name is &self or &mut self.
+fn prelude_method_may_precede_shared(name: &str) -> Option<bool> {
+    match name {
+        "array_chunks" | "async_call_once" | "call_once" | "chain" | "clamp" | "cloned" | "cmp"
+        | "cmp_by" | "collect" | "collect_into" | "copied" | "count" | "cycle" | "enumerate"
+        | "eq" | "eq_by" | "filter" | "filter_map" | "flat_map" | "flatten" | "fold"
+        | "for_each" | "fuse" | "ge" | "gt" | "inspect" | "intersperse" | "intersperse_with"
+        | "into" | "into_future" | "into_iter" | "is_partitioned" | "is_sorted"
+        | "is_sorted_by" | "is_sorted_by_key" | "last" | "le" | "lt" | "map" | "map_while"
+        | "map_windows" | "max" | "max_by" | "max_by_key" | "min" | "min_by" | "min_by_key"
+        | "ne" | "partial_cmp" | "partial_cmp_by" | "partition" | "partition_in_place"
+        | "peekable" | "poll" | "product" | "reduce" | "rev" | "rfold" | "scan" | "skip"
+        | "skip_while" | "step_by" | "sum" | "take" | "take_while" | "try_into" | "unzip"
+        | "zip" => Some(true),
+        "advance_back_by" | "advance_by" | "all" | "any" | "as_mut" | "as_ref" | "async_call"
+        | "async_call_mut" | "by_ref" | "call" | "call_mut" | "clone" | "clone_from"
+        | "clone_into" | "drop" | "extend" | "extend_one" | "extend_reserve" | "find"
+        | "find_map" | "is_empty" | "len" | "next" | "next_back" | "next_chunk" | "nth"
+        | "nth_back" | "position" | "rfind" | "rposition" | "size_hint" | "to_owned"
+        | "to_string" | "try_collect" | "try_find" | "try_fold" | "try_for_each" | "try_reduce"
+        | "try_rfold" => Some(false),
+        _ => None,
+    }
 }
 
 fn trait_dispatch_uncertain(call: Node<'_>, receiver: Node<'_>, source: &str) -> bool {
@@ -301,6 +360,9 @@ fn trait_dispatch_uncertain(call: Node<'_>, receiver: Node<'_>, source: &str) ->
     let mut pending = vec![root];
     while let Some(node) = pending.pop() {
         match node.kind() {
+            // Another physical source file can implement a visible local or
+            // prelude trait. This AST cannot certify its applicability.
+            "mod_item" if node.child_by_field_name("body").is_none() => return true,
             // Expansions can introduce competing impls, even from a statement
             // or expression nested inside a function. This lane has no expanded
             // AST, so neither the macro name nor its tokens establish dispatch.
@@ -405,9 +467,26 @@ fn local_type<'tree>(mut scope: Node<'tree>, name: &str, source: &str) -> Option
 }
 
 fn value_type<'tree>(value: Node<'tree>, source: &str) -> Option<Node<'tree>> {
+    value_type_inner(value, source, true)
+}
+
+// The dispatch-order witness uses the same lexical bindings as nominal scope,
+// but rejects references instead of erasing them. A failed witness must never
+// be interpreted as an owned receiver. `self` needs its own signature analysis.
+fn value_type_inner<'tree>(
+    value: Node<'tree>,
+    source: &str,
+    allow_references: bool,
+) -> Option<Node<'tree>> {
     match value.kind() {
-        "reference_expression" => value_type(value.child_by_field_name("value")?, source),
-        "parenthesized_expression" => value_type(value.named_child(0)?, source),
+        "reference_expression" if allow_references => value_type_inner(
+            value.child_by_field_name("value")?,
+            source,
+            allow_references,
+        ),
+        "parenthesized_expression" => {
+            value_type_inner(value.named_child(0)?, source, allow_references)
+        }
         "struct_expression" => nominal_type(value.child_by_field_name("name")?, source),
         "call_expression" => {
             let constructor = callee(value)?;
@@ -426,8 +505,8 @@ fn value_type<'tree>(value: Node<'tree>, source: &str) -> Option<Node<'tree>> {
                     .is_some_and(|body| body.kind() == "ordered_field_declaration_list"))
             .then_some(ty)
         }
-        "identifier" => binding_type(value, text(value, source)?, source),
-        "self" => {
+        "identifier" => binding_type(value, text(value, source)?, source, allow_references),
+        "self" if allow_references => {
             let mut scope = value.parent()?;
             loop {
                 if scope.kind() == "impl_item" {
@@ -440,7 +519,12 @@ fn value_type<'tree>(value: Node<'tree>, source: &str) -> Option<Node<'tree>> {
     }
 }
 
-fn binding_type<'tree>(value: Node<'tree>, name: &str, source: &str) -> Option<Node<'tree>> {
+fn binding_type<'tree>(
+    value: Node<'tree>,
+    name: &str,
+    source: &str,
+    allow_references: bool,
+) -> Option<Node<'tree>> {
     let mut scope = value.parent()?;
     loop {
         match scope.kind() {
@@ -463,9 +547,17 @@ fn binding_type<'tree>(value: Node<'tree>, name: &str, source: &str) -> Option<N
                         return None;
                     }
                     return if let Some(ty) = binding.child_by_field_name("type") {
-                        nominal_type(ty, source)
+                        if !allow_references && ty.kind() == "reference_type" {
+                            None
+                        } else {
+                            nominal_type(ty, source)
+                        }
                     } else {
-                        value_type(binding.child_by_field_name("value")?, source)
+                        value_type_inner(
+                            binding.child_by_field_name("value")?,
+                            source,
+                            allow_references,
+                        )
                     };
                 }
             }
@@ -480,7 +572,11 @@ fn binding_type<'tree>(value: Node<'tree>, name: &str, source: &str) -> Option<N
                         if pattern.kind() != "identifier" {
                             return None;
                         }
-                        return nominal_type(parameter.child_by_field_name("type")?, source);
+                        let ty = parameter.child_by_field_name("type")?;
+                        if !allow_references && ty.kind() == "reference_type" {
+                            return None;
+                        }
+                        return nominal_type(ty, source);
                     }
                 }
                 if scope.kind() == "function_item" {

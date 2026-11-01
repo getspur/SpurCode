@@ -1,0 +1,382 @@
+[
+  {
+    "case": "prelude_into_owned",
+    "receiver": "Alpha",
+    "method": "into",
+    "source": "struct Alpha(u8); impl Alpha { fn into(&self) -> u8 { 1 } } fn caller(value: Alpha) -> u8 { let result: Alpha = value.into(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Alpha(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_into_renamed_shared",
+    "receiver": "Cinder",
+    "method": "into",
+    "source": "struct Cinder(u8); impl Cinder { fn into(&mut self) -> u8 { 1 } } fn caller(value: &Cinder) -> u8 { let result: &Cinder = value.into(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&Cinder(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_into_renamed_mut",
+    "receiver": "Harbor",
+    "method": "into",
+    "source": "struct Harbor(u8); impl Harbor { fn into(&self) -> u8 { 1 } } fn caller(value: &mut Harbor) -> u8 { let result: &mut Harbor = value.into(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&mut Harbor(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_into_renamed_double",
+    "receiver": "Vela",
+    "method": "into",
+    "source": "struct Vela(u8); impl Vela { fn into(&mut self) -> u8 { 1 } } fn caller(value: &&Vela) -> u8 { let result: &&Vela = value.into(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&&Vela(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_try_into_owned",
+    "receiver": "Alpha",
+    "method": "try_into",
+    "source": "struct Alpha(u8); impl Alpha { fn try_into(&self) -> u8 { 1 } } fn caller(value: Alpha) -> u8 { let result: Result<Alpha, std::convert::Infallible> = value.try_into(); match result { Ok(value) => value.0, Err(_) => 99 } }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Alpha(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_try_into_renamed_shared",
+    "receiver": "Cinder",
+    "method": "try_into",
+    "source": "struct Cinder(u8); impl Cinder { fn try_into(&mut self) -> u8 { 1 } } fn caller(value: &Cinder) -> u8 { let result: Result<&Cinder, std::convert::Infallible> = value.try_into(); match result { Ok(value) => value.0, Err(_) => 99 } }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&Cinder(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_try_into_renamed_mut",
+    "receiver": "Harbor",
+    "method": "try_into",
+    "source": "struct Harbor(u8); impl Harbor { fn try_into(&self) -> u8 { 1 } } fn caller(value: &mut Harbor) -> u8 { let result: Result<&mut Harbor, std::convert::Infallible> = value.try_into(); match result { Ok(value) => value.0, Err(_) => 99 } }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&mut Harbor(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_try_into_renamed_double",
+    "receiver": "Vela",
+    "method": "try_into",
+    "source": "struct Vela(u8); impl Vela { fn try_into(&mut self) -> u8 { 1 } } fn caller(value: &&Vela) -> u8 { let result: Result<&&Vela, std::convert::Infallible> = value.try_into(); match result { Ok(value) => value.0, Err(_) => 99 } }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&&Vela(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_clone_borrowed",
+    "receiver": "Alpha",
+    "method": "clone",
+    "source": "struct Alpha(u8); impl Alpha { fn clone(&mut self) -> u8 { 1 } } fn caller(value: &Alpha) -> u8 {  let result: &Alpha = value.clone(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&Alpha(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_clone_renamed_double",
+    "receiver": "Cinder",
+    "method": "clone",
+    "source": "struct Cinder(u8); impl Cinder { fn clone(&self) -> u8 { 1 } } fn caller(value: &&Cinder) -> u8 {  let result: &Cinder = value.clone(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&&Cinder(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_clone_local_borrow",
+    "receiver": "Harbor",
+    "method": "clone",
+    "source": "struct Harbor(u8); impl Harbor { fn clone(&mut self) -> u8 { 1 } } fn caller(value: Harbor) -> u8 { let value = &value; let result: &Harbor = value.clone(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Harbor(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_clone_parenthesized",
+    "receiver": "Vela",
+    "method": "clone",
+    "source": "struct Vela(u8); impl Vela { fn clone(&mut self) -> u8 { 1 } } fn caller(value: &Vela) -> u8 {  let result: &Vela = (value).clone(); result.0 }",
+    "target": "unresolved",
+    "expression": "(value)",
+    "runtime": "assert_eq!(caller(&Vela(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_to_owned_reference",
+    "receiver": "Ash",
+    "method": "to_owned",
+    "source": "struct Ash(u8); impl Ash { fn to_owned(&mut self) -> u8 { 1 } } fn caller(value: &Ash) -> u8 { let result: &Ash = value.to_owned(); result.0 }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(&Ash(0)), 0);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_clone_from",
+    "receiver": "Ember",
+    "method": "clone_from",
+    "source": "struct Ember; impl Ember { fn clone_from(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.clone_from() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_clone_into",
+    "receiver": "Ember",
+    "method": "clone_into",
+    "source": "struct Ember; impl Ember { fn clone_into(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.clone_into() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_to_string",
+    "receiver": "Ember",
+    "method": "to_string",
+    "source": "struct Ember; impl Ember { fn to_string(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.to_string() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_as_ref",
+    "receiver": "Ember",
+    "method": "as_ref",
+    "source": "struct Ember; impl Ember { fn as_ref(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.as_ref() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_extend",
+    "receiver": "Ember",
+    "method": "extend",
+    "source": "struct Ember; impl Ember { fn extend(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.extend() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_next",
+    "receiver": "Ember",
+    "method": "next",
+    "source": "struct Ember; impl Ember { fn next(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.next() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_len",
+    "receiver": "Ember",
+    "method": "len",
+    "source": "struct Ember; impl Ember { fn len(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.len() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_poll",
+    "receiver": "Ember",
+    "method": "poll",
+    "source": "struct Ember; impl Ember { fn poll(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.poll() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "prelude_obligation_into_future",
+    "receiver": "Ember",
+    "method": "into_future",
+    "source": "struct Ember; impl Ember { fn into_future(&mut self) -> u8 { 1 } } fn caller(mut value: Ember) -> u8 { value.into_future() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Ember), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "external_module_impl",
+    "receiver": "Alpha",
+    "method": "mark",
+    "source": "struct Alpha; trait Mark { fn mark(self) -> u8; } impl Alpha { fn mark(&self) -> u8 { 1 } } mod elsewhere; fn caller(value: Alpha) -> u8 { value.mark() }",
+    "target": "unresolved",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Alpha), 0);",
+    "companions": {
+      "elsewhere.rs": "impl super::Mark for super::Alpha { fn mark(self) -> u8 { 0 } }"
+    },
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "positive_owned_mark",
+    "receiver": "Alpha",
+    "method": "mark",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } fn caller(value: Alpha) -> u8 { value.mark() }",
+    "target": "Alpha::mark",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Alpha), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "positive_owned_len",
+    "receiver": "Alpha",
+    "method": "len",
+    "source": "struct Alpha; impl Alpha { fn len(&self) -> u8 { 1 } } fn caller(value: Alpha) -> u8 { value.len() }",
+    "target": "Alpha::len",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Alpha), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "positive_owned_clone",
+    "receiver": "Alpha",
+    "method": "clone",
+    "source": "struct Alpha; impl Alpha { fn clone(&self) -> u8 { 1 } } fn caller(value: Alpha) -> u8 { value.clone() }",
+    "target": "Alpha::clone",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Alpha), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  },
+  {
+    "case": "positive_custom_unwrap",
+    "receiver": "Lookalike",
+    "method": "unwrap",
+    "source": "struct Lookalike; impl Lookalike { fn unwrap(&self) -> u8 { 1 } } fn caller(value: Lookalike) -> u8 { value.unwrap() }",
+    "target": "Lookalike::unwrap",
+    "expression": "value",
+    "runtime": "assert_eq!(caller(Lookalike), 1);",
+    "companions": {},
+    "editions": [
+      2021,
+      2024
+    ]
+  }
+]
