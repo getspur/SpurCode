@@ -1,4 +1,112 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+fn add_worker(fixture: &mut Fixture, phase: spur_acp::LifecycleState) {
+    use spur_acp::Role;
+    for event in [
+        SpurEventBody::ExecutorSpawned {
+            id: "audit-exec".into(),
+            parent_id: None,
+            session_id: SessionId("audit-worker".into()),
+            agent: "codex".into(),
+            role: Role::Executor,
+            task_spec: "task".into(),
+        },
+        SpurEventBody::DelegationRequested {
+            from: SessionId("audit-brain".into()),
+            to_agent: "codex".into(),
+            task: "task".into(),
+            request_id: "audit-request".into(),
+            delegation_plan: None,
+            issue_id: Some("bd-worker".into()),
+        },
+        SpurEventBody::DelegationDispatched {
+            from: SessionId("audit-brain".into()),
+            request_id: "audit-request".into(),
+            executor_id: "audit-exec".into(),
+        },
+        SpurEventBody::ExecutorPhaseChanged {
+            id: "audit-exec".into(),
+            phase,
+        },
+    ] {
+        fixture.lineage.apply(&SpurEvent::now(event));
+    }
+}
+#[test]
+fn terminal_worker_history_is_distinct_from_live_execution() {
+    use spur_acp::LifecycleState::*;
+    for (phase, live) in [
+        (Spawning, true),
+        (Running, true),
+        (AwaitingReview, true),
+        (Resuming, true),
+        (Succeeded, false),
+        (Failed, false),
+        (Cancelled, false),
+    ] {
+        let mut row = task("task-a", if live { "dispatched" } else { "approved" });
+        row.issue_id = Some("bd-worker".into());
+        let mut fixture = Fixture::new(snapshot(vec![row], PlanSnapshotCounts::default()));
+        add_worker(&mut fixture, phase);
+        let text = fixture.render(&mut fixture.view(), 200, 24);
+        let expected = format!(
+            "{} codex {:?}",
+            if live { "live" } else { "last worker" },
+            phase
+        )
+        .to_lowercase();
+        assert!(
+            text.contains(&expected),
+            "incorrect worker activity label, expected {expected}:\n{text}"
+        );
+        if !live {
+            assert!(
+                !text.contains("live codex"),
+                "terminal history labeled live:\n{text}"
+            );
+        }
+    }
+}
+#[test]
+fn lifecycle_counts_are_disjoint_and_dependency_counts_are_labeled() {
+    let mut pending = task("waiting", "pending");
+    pending.blocked_by = vec!["external".into()];
+    pending.depends_on = pending.blocked_by.clone();
+    let fixture = Fixture::new(snapshot(
+        vec![
+            task("done", "approved"),
+            pending,
+            task("ready", "ready"),
+            task("cancel", "cancelled"),
+            task("old", "superseded"),
+            task("conflict", "blocked_on_setup_conflict"),
+        ],
+        PlanSnapshotCounts {
+            approved: 1,
+            pending: 2,
+            ready: 1,
+            cancelled: 2,
+            ..Default::default()
+        },
+    ));
+    let text = fixture.render(&mut fixture.view(), 200, 24);
+    let header = text.lines().take(4).collect::<Vec<_>>().join("\n");
+    for expected in [
+        "1 pending",
+        "1 ready",
+        "1 approved",
+        "1 cancelled",
+        "1 superseded",
+        "1 setup conflict",
+        "deps blocked: 1",
+        "1 / 6 approved",
+    ] {
+        assert!(
+            header.contains(expected),
+            "missing disjoint count {expected}:\n{text}"
+        );
+    }
+    assert!(!header.contains("2 cancelled") && !header.contains("2 pending"));
+}
 #[test]
 fn setup_conflict_is_blocked_without_dependency_blockers() {
     let mut conflict = task("conflict", "blocked_on_setup_conflict");
