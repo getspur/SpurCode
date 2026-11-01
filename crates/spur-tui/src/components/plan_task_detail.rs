@@ -11,6 +11,11 @@ use spur_pm::Issue;
 
 use crate::theme::{resolve_token, ColorDepth, Theme};
 
+pub struct TaskDetailScroll {
+    pub offset: usize,
+    pub max_offset: usize,
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn render_task_detail(
     frame: &mut Frame,
@@ -22,7 +27,7 @@ pub fn render_task_detail(
     issue_detail_status: Option<&str>,
     scroll_offset: usize,
     theme: &Theme,
-) {
+) -> TaskDetailScroll {
     let content_width = area.width.saturating_sub(2) as usize;
     let now = Utc::now();
     let mut lines = vec![hero_line(task, live_node, theme)];
@@ -142,37 +147,40 @@ pub fn render_task_detail(
     }
 
     let visible_lines = area.height.saturating_sub(2) as usize;
-    let total_lines = lines.len();
-    let mut scroll_offset = u16::try_from(scroll_offset).unwrap_or(u16::MAX);
-
-    if visible_lines > 0 && total_lines > visible_lines {
-        let max_scroll = total_lines - visible_lines;
-        scroll_offset = scroll_offset.min(max_scroll as u16);
+    let paragraph = Paragraph::new(lines).wrap(Wrap { trim: false });
+    let total_lines = paragraph.line_count(content_width as u16);
+    let max_scroll = if visible_lines == 0 || content_width == 0 {
+        0
     } else {
-        scroll_offset = 0;
-    }
+        total_lines
+            .saturating_sub(visible_lines)
+            .min(u16::MAX as usize)
+    };
+    let scroll_offset = scroll_offset.min(max_scroll);
 
     let title = if visible_lines == 0 || total_lines <= visible_lines {
         "Task detail".to_string()
     } else {
-        let start_line = (scroll_offset as usize).saturating_add(1);
-        let end_line = ((scroll_offset as usize).saturating_add(visible_lines)).min(total_lines);
-        let max_scroll = total_lines - visible_lines;
+        let start_line = scroll_offset.saturating_add(1);
+        let end_line = scroll_offset.saturating_add(visible_lines).min(total_lines);
         let percent = if max_scroll == 0 {
             100
         } else {
-            ((scroll_offset as usize).saturating_mul(100)) / max_scroll
+            scroll_offset.saturating_mul(100) / max_scroll
         };
         format!("Task detail ({start_line}-{end_line}/{total_lines}) {percent}%")
     };
 
     frame.render_widget(
-        Paragraph::new(lines)
-            .wrap(Wrap { trim: false })
-            .scroll((scroll_offset, 0))
+        paragraph
+            .scroll((scroll_offset as u16, 0))
             .block(Block::default().borders(Borders::ALL).title(title)),
         area,
     );
+    TaskDetailScroll {
+        offset: scroll_offset,
+        max_offset: max_scroll,
+    }
 }
 
 fn token(theme: &Theme, name: &str) -> ratatui::style::Color {

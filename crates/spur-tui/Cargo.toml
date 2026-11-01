@@ -27,7 +27,7 @@ spur-mentions = { workspace = true, features = ["code"] }
 spur-telemetry = { path = "../../crates/spur-telemetry" }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
-ratatui = { workspace = true }
+ratatui = { workspace = true, features = ["unstable-rendered-line-info"] }
 crossterm = { workspace = true, features = ["event-stream"] }
 anyhow = { workspace = true }
 arboard = { version = "2", default-features = false, features = ["image-data"] }

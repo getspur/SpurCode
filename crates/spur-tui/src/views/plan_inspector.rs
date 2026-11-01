@@ -41,6 +41,9 @@ pub struct PlanInspectorView {
     open_issue_id: Option<String>,
     issue_states: HashMap<String, TaskIssueState>,
     task_detail_scroll: usize,
+    task_detail_max_scroll: usize,
+    task_detail_to_bottom: bool,
+    detail_focused: bool,
     mode: PlanInspectorMode,
     confirm: Option<PlanInspectorConfirm>,
     loop_event_status: Option<PlanInspectorEventStatus>,
@@ -114,6 +117,9 @@ impl PlanInspectorView {
             open_issue_id: None,
             issue_states: HashMap::new(),
             task_detail_scroll: 0,
+            task_detail_max_scroll: 0,
+            task_detail_to_bottom: false,
+            detail_focused: false,
             mode: PlanInspectorMode::Browse,
             confirm: None,
             loop_event_status: None,
@@ -130,6 +136,9 @@ impl PlanInspectorView {
             open_issue_id: None,
             issue_states: HashMap::new(),
             task_detail_scroll: 0,
+            task_detail_max_scroll: 0,
+            task_detail_to_bottom: false,
+            detail_focused: false,
             mode: PlanInspectorMode::Browse,
             confirm: None,
             loop_event_status: None,
@@ -209,6 +218,8 @@ impl PlanInspectorView {
         if selection_changed {
             self.open_issue_id = None;
             self.task_detail_scroll = 0;
+            self.task_detail_max_scroll = 0;
+            self.task_detail_to_bottom = false;
             if previous_task_id.is_some()
                 && matches!(self.mode, PlanInspectorMode::StreamPeek { .. })
             {
@@ -221,22 +232,33 @@ impl PlanInspectorView {
     fn close_issue_detail(&mut self) {
         self.open_issue_id = None;
         self.task_detail_scroll = 0;
+        self.task_detail_to_bottom = false;
     }
 
     fn scroll_task_detail_up(&mut self, lines: usize) {
-        self.task_detail_scroll = self.task_detail_scroll.saturating_sub(lines);
+        self.task_detail_to_bottom = false;
+        self.task_detail_scroll = self
+            .task_detail_scroll
+            .min(self.task_detail_max_scroll)
+            .saturating_sub(lines);
     }
 
     fn scroll_task_detail_down(&mut self, lines: usize) {
-        self.task_detail_scroll = self.task_detail_scroll.saturating_add(lines);
+        self.task_detail_to_bottom = false;
+        self.task_detail_scroll = self
+            .task_detail_scroll
+            .saturating_add(lines)
+            .min(self.task_detail_max_scroll);
     }
 
     fn scroll_task_detail_to_top(&mut self) {
         self.task_detail_scroll = 0;
+        self.task_detail_to_bottom = false;
     }
 
     fn scroll_task_detail_to_bottom(&mut self) {
-        self.task_detail_scroll = usize::MAX;
+        self.task_detail_scroll = self.task_detail_max_scroll;
+        self.task_detail_to_bottom = true;
     }
 
     fn selected_issue_id<'a>(&self, task: &'a spur_core::TrackedTask) -> Option<&'a str> {
@@ -967,7 +989,14 @@ impl View for PlanInspectorView {
         if let Some(plan) = plan {
             self.ensure_selection(plan);
 
-            if self.open_issue_id.is_some() {
+            if key.code == KeyCode::Tab && key.modifiers.is_empty() {
+                if self.open_issue_id.is_none() {
+                    self.detail_focused = !self.detail_focused;
+                }
+                return None;
+            }
+
+            if self.open_issue_id.is_some() || self.detail_focused {
                 match key.code {
                     KeyCode::Char('k') | KeyCode::Up => {
                         self.scroll_task_detail_up(1);
@@ -1340,7 +1369,7 @@ impl View for PlanInspectorView {
                     );
                 }
                 if let Some(task) = selected {
-                    crate::components::plan_task_detail::render_task_detail(
+                    let scroll = crate::components::plan_task_detail::render_task_detail(
                         frame,
                         detail_area,
                         plan,
@@ -1348,9 +1377,16 @@ impl View for PlanInspectorView {
                         live_node,
                         issue_detail.0,
                         issue_detail.1,
-                        self.task_detail_scroll,
+                        if self.task_detail_to_bottom {
+                            usize::MAX
+                        } else {
+                            self.task_detail_scroll
+                        },
                         ctx.theme,
                     );
+                    self.task_detail_scroll = scroll.offset;
+                    self.task_detail_max_scroll = scroll.max_offset;
+                    self.task_detail_to_bottom = false;
                 } else {
                     frame.render_widget(
                         Paragraph::new("No task selected")
@@ -1385,7 +1421,7 @@ impl View for PlanInspectorView {
                     selected_area,
                 );
                 if let Some(task) = selected {
-                    crate::components::plan_task_detail::render_task_detail(
+                    let scroll = crate::components::plan_task_detail::render_task_detail(
                         frame,
                         detail_area,
                         plan,
@@ -1393,9 +1429,16 @@ impl View for PlanInspectorView {
                         live_node,
                         issue_detail.0,
                         issue_detail.1,
-                        self.task_detail_scroll,
+                        if self.task_detail_to_bottom {
+                            usize::MAX
+                        } else {
+                            self.task_detail_scroll
+                        },
                         ctx.theme,
                     );
+                    self.task_detail_scroll = scroll.offset;
+                    self.task_detail_max_scroll = scroll.max_offset;
+                    self.task_detail_to_bottom = false;
                 }
             }
 
