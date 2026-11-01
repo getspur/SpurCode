@@ -1,12 +1,12 @@
 # Plan Inspector Hardening Implementation Plan
 
 > **For SPUR orchestrator:** This plan is designed for submit_plan with existing beads issues.
-> Every task is a child of bd-tje and has explicit dependencies and file scope.
+> Every task is a child of bd-2mr and has explicit dependencies and file scope.
 
 **Source spec:** `docs/superpowers/specs/2026-11-01-plan-inspector-hardening-design.md`
 **Formal @spec cells:** none; Markdown specification
 **Design authorization:** User's 2026-11-01 request to address every reviewed issue with TDD and pre/post solve.
-**Implementation epic:** `bd-tje`
+**Implementation epic:** `bd-2mr`
 **Goal:** Correct and usable plan inspection across long plans, long output, and all task states.
 **Architecture:** Preserve stage boards with a readable stage viewport and selection visibility. Add independently scrollable detail focus, complete status classification, truthful summaries, and mode-aware help.
 **Tech stack:** Rust 2021, ratatui TestBackend, existing unicode-width/unicode-segmentation, SPUR solver MCP.
@@ -33,7 +33,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I1: Window stage lanes to preserve readable task labels
 
-**Issue:** `bd-3a4`
+**Issue:** `bd-1o3`
 **Task ID:** `I1`
 **Depends on:** none
 **Suggested worker:** `codex`
@@ -55,7 +55,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I2: Keep selected tasks visible in both board layouts
 
-**Issue:** `bd-32o`
+**Issue:** `bd-2e6`
 **Task ID:** `I2`
 **Depends on:** `I1`
 **Suggested worker:** `codex`
@@ -77,7 +77,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I3: Make task detail independently scrollable and clamp wrapped rows
 
-**Issue:** `bd-uw9`
+**Issue:** `bd-3kb`
 **Task ID:** `I3`
 **Depends on:** none
 **Suggested worker:** `claude-code`
@@ -101,7 +101,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I4: Include escalations in progress and task status presentation
 
-**Issue:** `bd-1hq`
+**Issue:** `bd-2vm`
 **Task ID:** `I4`
 **Depends on:** `I2`, `I3`
 **Suggested worker:** `claude-code`
@@ -125,7 +125,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I5: Show setup conflicts as explicit blocked work
 
-**Issue:** `bd-twt`
+**Issue:** `bd-3ee`
 **Task ID:** `I5`
 **Depends on:** `I4`
 **Suggested worker:** `claude-code`
@@ -149,7 +149,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I6: Make worker labels and overlapping task counts truthful
 
-**Issue:** `bd-pu1`
+**Issue:** `bd-36e`
 **Task ID:** `I6`
 **Depends on:** `I5`
 **Suggested worker:** `claude-code`
@@ -173,7 +173,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I7: Keep next action visible and restrict risks to actionable facts
 
-**Issue:** `bd-1k0`
+**Issue:** `bd-2ns`
 **Task ID:** `I7`
 **Depends on:** `I6`
 **Suggested worker:** `claude-code`
@@ -195,7 +195,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I8: Protect header state and choose layout from usable geometry
 
-**Issue:** `bd-27u`
+**Issue:** `bd-mig`
 **Task ID:** `I8`
 **Depends on:** `I7`
 **Suggested worker:** `claude-code`
@@ -217,7 +217,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I9: Prioritize selected task action and expose dependency/output detail
 
-**Issue:** `bd-1ji`
+**Issue:** `bd-1aa`
 **Task ID:** `I9`
 **Depends on:** `I8`
 **Suggested worker:** `claude-code`
@@ -241,7 +241,7 @@ Test commands use `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo tes
 
 ## Task I10: Make inspector help mode-correct and text cell-width aware
 
-**Issue:** `bd-2p1`
+**Issue:** `bd-ptq`
 **Task ID:** `I10`
 **Depends on:** `I9`
 **Suggested worker:** `claude-code`
@@ -294,5 +294,5 @@ The solver PRE must run first and justify the ten-cell readability witness and d
 
 ## Integration gate
 
-After all ten reviewed tasks are approved, integrate their finished commits in dependency order without overwriting unrelated working-tree changes. Run local scoped formatting verification, all inspector integration suites, the spur-tui unit/integration suite, and targeted remote clippy. Inspect the final diff against every accepted contract, including 80x24, 90x24, 120x32, and 200x50 layouts. Verify ten pre/post pairs and ten observed TDD cycles before closing bd-tje.
+After all ten reviewed tasks are approved, integrate their finished commits in dependency order without overwriting unrelated working-tree changes. Run local scoped formatting verification, all inspector integration suites, the spur-tui unit/integration suite, and targeted remote clippy. Inspect the final diff against every accepted contract, including 80x24, 90x24, 120x32, and 200x50 layouts. Verify ten pre/post pairs and ten observed TDD cycles before closing bd-2mr.
 
