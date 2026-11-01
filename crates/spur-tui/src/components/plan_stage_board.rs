@@ -94,7 +94,7 @@ pub fn render_stage_board(
                     ),
                     Span::raw(" "),
                     Span::raw(fit_stage_label(
-                        task.issue_title.as_ref().unwrap_or(&task.task_name),
+                        &task.task_name,
                         stage_area.width.saturating_sub(6) as usize,
                     )),
                 ];

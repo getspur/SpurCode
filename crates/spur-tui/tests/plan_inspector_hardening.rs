@@ -52,9 +52,22 @@ fn selected_detail_prioritizes_action_and_keeps_verbose_metadata_accessible() {
     fixture.key(&mut view, KeyCode::Char('e'));
     fixture.render(&mut view, 100, 16);
     fixture.key(&mut view, KeyCode::Char('G'));
+    let expanded = fixture.render(&mut view, 100, 16);
+    let pane = expanded
+        .lines()
+        .map(|line| {
+            line.chars()
+                .skip(53)
+                .take(46)
+                .collect::<String>()
+                .trim_end()
+                .to_string()
+        })
+        .collect::<Vec<_>>()
+        .join("");
     assert!(
-        fixture.render(&mut view, 100, 16).contains("BRANCH_TAIL"),
-        "expanded metadata remains reachable"
+        pane.contains("BRANCH_TAIL"),
+        "expanded metadata remains reachable across wrapped rows:\n{expanded}"
     );
 }
 #[test]

@@ -26,63 +26,94 @@ pub fn render_task_detail(
     issue_detail: Option<&Issue>,
     issue_detail_status: Option<&str>,
     scroll_offset: usize,
+    expanded: bool,
     theme: &Theme,
 ) -> TaskDetailScroll {
     let content_width = area.width.saturating_sub(2) as usize;
     let now = Utc::now();
-    let mut lines = vec![hero_line(task, live_node, theme)];
+    let mut lines = vec![
+        hero_line(task, live_node, theme),
+        execution_strip(task, theme),
+    ];
+    if !task.next_action.is_empty() {
+        lines.extend(kv_lines(theme, "next", &task.next_action));
+    }
+    if let Some(error) = task.error.as_deref() {
+        lines.extend(kv_lines(theme, "error", error));
+    }
     if task_is_blocked(task) {
         lines.push(blocked_banner(task, plan, content_width, theme));
     }
-    lines.extend(dependency_strip(task, plan, content_width, theme));
-    lines.push(execution_strip(task, theme));
     lines.push(kv(theme, "task", &task.task_id));
     if let Some(issue_id) = task.issue_id.as_deref() {
         lines.push(kv(theme, "issue", issue_id));
     }
-
+    if expanded {
+        lines.extend(section_header(
+            "Relationships (p parents / n children)",
+            theme,
+        ));
+        for (label, arrow, ids) in [
+            ("Parents", "↑", &task.depends_on),
+            ("Children", "→", &task.unblocks),
+            ("Blocked by", "↑", &task.blocked_by),
+        ] {
+            if ids.is_empty() {
+                lines.push(kv(theme, label, "--"));
+            }
+            for id in ids {
+                lines.push(kv(theme, label, &task_ref(id, arrow, plan)));
+            }
+        }
+    } else {
+        lines.extend(dependency_strip(task, plan, content_width, theme));
+    }
     if task.summary.is_some()
         || task.feedback.is_some()
-        || task.error.is_some()
         || task.diff_summary.is_some()
         || task.mutation_id.is_some()
         || !task.superseded_by.is_empty()
-        || !task.next_action.is_empty()
     {
         lines.extend(section_header("Output", theme));
-        if let Some(summary) = task.summary.as_deref() {
-            lines.push(kv(theme, "summary", summary));
-        }
         if let Some(feedback) = task.feedback.as_deref() {
-            lines.push(kv(theme, "feedback", feedback));
+            lines.extend(kv_lines(theme, "feedback", feedback));
         }
-        if let Some(error) = task.error.as_deref() {
-            lines.push(kv(theme, "error", error));
+        if let Some(summary) = task.summary.as_deref() {
+            lines.extend(kv_lines(theme, "summary", summary));
         }
-        if let Some(diff_summary) = task.diff_summary.as_ref() {
+        if let Some(diff) = task.diff_summary.as_ref() {
             lines.push(kv(
                 theme,
                 "diff",
                 &format!(
                     "{} files +{}/-{}",
-                    diff_summary.files_changed, diff_summary.insertions, diff_summary.deletions
+                    diff.files_changed, diff.insertions, diff.deletions
                 ),
             ));
         }
-        if let Some(mutation_id) = task.mutation_id.as_deref() {
-            lines.push(kv(theme, "mutation", mutation_id));
+        if let Some(mutation) = task.mutation_id.as_deref() {
+            lines.push(kv(theme, "mutation", mutation));
         }
         if !task.superseded_by.is_empty() {
             lines.push(kv(theme, "superseded_by", &task.superseded_by.join(", ")));
         }
-        if !task.next_action.is_empty() {
-            lines.push(kv(theme, "next", &task.next_action));
+    }
+    if expanded {
+        lines.extend(section_header("Metadata (e to collapse)", theme));
+        if let Some(context) = task.issue_title.as_deref() {
+            lines.extend(kv_lines(theme, "context", context));
+        }
+        if let Some(delegation) = task.delegation_id.as_deref() {
+            lines.extend(kv_lines(theme, "delegation", delegation));
+        }
+        if let Some(branch) = task.worker_branch.as_deref() {
+            lines.extend(kv_lines(theme, "branch", branch));
         }
     }
 
     if let Some(status) = issue_detail_status {
         lines.extend(section_header("Issue", theme));
-        lines.push(kv(theme, "status", status));
+        lines.extend(kv_lines(theme, "status", status));
     }
     if let Some(issue) = issue_detail {
         // Essentials + Description first so the body is visible at scroll 0
@@ -227,7 +258,7 @@ fn token(theme: &Theme, name: &str) -> ratatui::style::Color {
 fn hero_line(task: &TrackedTask, live_node: Option<&ExecutorNode>, theme: &Theme) -> Line<'static> {
     let mut spans = vec![
         Span::styled(
-            task.issue_title.as_ref().unwrap_or(&task.task_name).clone(),
+            task.task_name.clone(),
             Style::default()
                 .fg(token(theme, "plan_inspector.detail.hero.fg"))
                 .add_modifier(Modifier::BOLD),
@@ -397,12 +428,6 @@ fn execution_strip(task: &TrackedTask, theme: &Theme) -> Line<'static> {
             fields.push("R retry".into());
         }
     }
-    if let Some(branch) = task.worker_branch.as_deref() {
-        fields.push(format!("branch {branch}"));
-    }
-    if let Some(delegation_id) = task.delegation_id.as_deref() {
-        fields.push(format!("delegation {delegation_id}"));
-    }
     Line::from(vec![Span::styled(
         fields.join(" · "),
         Style::default().fg(token(theme, "plan_inspector.detail.section.fg")),
@@ -500,6 +525,20 @@ fn relative_age(secs: i64) -> Option<String> {
         format!("{}y", magnitude / (365 * 86_400))
     };
     Some(format!("{label} {suffix}"))
+}
+
+fn kv_lines(theme: &Theme, label: &str, value: &str) -> Vec<Line<'static>> {
+    value
+        .split('\n')
+        .enumerate()
+        .map(|(index, line)| {
+            if index == 0 {
+                kv(theme, label, line)
+            } else {
+                Line::raw(line.to_string())
+            }
+        })
+        .collect()
 }
 
 fn kv(theme: &Theme, label: &str, value: &str) -> Line<'static> {

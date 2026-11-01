@@ -37,6 +37,8 @@ pub struct PlanInspectorView {
     pinned_plan_id: Option<String>,
     selected_task_id: Option<String>,
     blocker_cycle: Option<(String, usize)>,
+    relationship_cycle: Option<(String, bool, usize)>,
+    details_expanded: bool,
     stacked_mode: bool,
     open_issue_id: Option<String>,
     issue_states: HashMap<String, TaskIssueState>,
@@ -114,6 +116,8 @@ impl PlanInspectorView {
             pinned_plan_id: None,
             selected_task_id: None,
             blocker_cycle: None,
+            relationship_cycle: None,
+            details_expanded: false,
             stacked_mode: false,
             open_issue_id: None,
             issue_states: HashMap::new(),
@@ -134,6 +138,8 @@ impl PlanInspectorView {
             pinned_plan_id: Some(plan_id),
             selected_task_id: None,
             blocker_cycle: None,
+            relationship_cycle: None,
+            details_expanded: false,
             stacked_mode: false,
             open_issue_id: None,
             issue_states: HashMap::new(),
@@ -208,6 +214,7 @@ impl PlanInspectorView {
 
     fn set_selected_task_id(&mut self, task_id: Option<String>) {
         self.blocker_cycle = None;
+        self.relationship_cycle = None;
         self.set_selected_task_id_inner(task_id);
     }
 
@@ -219,6 +226,7 @@ impl PlanInspectorView {
         let previous_task_id = self.selected_task_id.as_deref();
         let selection_changed = previous_task_id != task_id.as_deref();
         if selection_changed {
+            self.details_expanded = false;
             self.open_issue_id = None;
             self.task_detail_scroll = 0;
             self.task_detail_max_scroll = 0;
@@ -434,6 +442,7 @@ impl PlanInspectorView {
     }
 
     fn jump_to_next_blocker(&mut self, plan: &TrackedPlan) -> Option<Action> {
+        self.relationship_cycle = None;
         let selected_id = self.selected_task_id.as_deref()?;
         let origin_id = self
             .blocker_cycle
@@ -478,6 +487,55 @@ impl PlanInspectorView {
         } else {
             Some(Action::FlashHint {
                 message: format!("Blocker {blocker_id} is not in the current plan"),
+            })
+        }
+    }
+
+    fn jump_to_relative(&mut self, plan: &TrackedPlan, parents: bool) -> Option<Action> {
+        let selected_id = self.selected_task_id.as_deref()?;
+        let origin_id = self
+            .relationship_cycle
+            .as_ref()
+            .and_then(|(id, direction, _)| {
+                let origin = plan.task(id)?;
+                let ids = if parents {
+                    &origin.depends_on
+                } else {
+                    &origin.unblocks
+                };
+                (*direction == parents
+                    && (selected_id == id || ids.iter().any(|id| id == selected_id)))
+                .then(|| id.clone())
+            })
+            .unwrap_or_else(|| selected_id.to_string());
+        let origin = plan.task(&origin_id)?;
+        let ids = if parents {
+            &origin.depends_on
+        } else {
+            &origin.unblocks
+        };
+        let label = if parents { "parents" } else { "children" };
+        if ids.is_empty() {
+            self.relationship_cycle = None;
+            return Some(Action::FlashHint {
+                message: format!("Selected task has no {label}"),
+            });
+        }
+        let index = self
+            .relationship_cycle
+            .as_ref()
+            .filter(|(id, direction, _)| id == &origin_id && *direction == parents)
+            .map(|(_, _, index)| *index)
+            .unwrap_or(0);
+        let target = ids[index % ids.len()].clone();
+        self.relationship_cycle = Some((origin_id, parents, index.wrapping_add(1)));
+        self.blocker_cycle = None;
+        if plan.task(&target).is_some() {
+            self.set_selected_task_id_inner(Some(target));
+            None
+        } else {
+            Some(Action::FlashHint {
+                message: format!("Related task {target} is not in the current plan"),
             })
         }
     }
@@ -1051,6 +1109,17 @@ impl View for PlanInspectorView {
                 KeyCode::Char('k') | KeyCode::Up => self.move_task(plan, -1),
                 KeyCode::Char('g') if key.modifiers.is_empty() => self.jump_lane_start(plan),
                 KeyCode::Char('G') => self.jump_lane_end(plan),
+                KeyCode::Char('e') if key.modifiers.is_empty() && self.open_issue_id.is_none() => {
+                    self.details_expanded = !self.details_expanded;
+                    self.detail_focused = true;
+                    self.scroll_task_detail_to_top();
+                }
+                KeyCode::Char('p') if key.modifiers.is_empty() && self.open_issue_id.is_none() => {
+                    return self.jump_to_relative(plan, true);
+                }
+                KeyCode::Char('n') if key.modifiers.is_empty() && self.open_issue_id.is_none() => {
+                    return self.jump_to_relative(plan, false);
+                }
                 KeyCode::Char('b') if key.modifiers.is_empty() => {
                     return self.jump_to_next_blocker(plan);
                 }
@@ -1474,6 +1543,7 @@ impl View for PlanInspectorView {
                         } else {
                             self.task_detail_scroll
                         },
+                        self.details_expanded,
                         ctx.theme,
                     );
                     self.task_detail_scroll = scroll.offset;
