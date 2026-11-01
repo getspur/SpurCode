@@ -6,7 +6,7 @@ use ratatui::{
     style::{Color, Modifier, Style},
     symbols::border,
     text::{Line, Span},
-    widgets::{Block, Borders, Clear, Gauge, Paragraph},
+    widgets::{Block, Borders, Clear, Gauge, Paragraph, Wrap},
     Frame,
 };
 use spur_acp::{SessionId, SpurEvent};
@@ -44,6 +44,7 @@ pub struct PlanInspectorView {
     task_detail_max_scroll: usize,
     task_detail_to_bottom: bool,
     detail_focused: bool,
+    help_open: bool,
     mode: PlanInspectorMode,
     confirm: Option<PlanInspectorConfirm>,
     loop_event_status: Option<PlanInspectorEventStatus>,
@@ -120,6 +121,7 @@ impl PlanInspectorView {
             task_detail_max_scroll: 0,
             task_detail_to_bottom: false,
             detail_focused: false,
+            help_open: false,
             mode: PlanInspectorMode::Browse,
             confirm: None,
             loop_event_status: None,
@@ -139,6 +141,7 @@ impl PlanInspectorView {
             task_detail_max_scroll: 0,
             task_detail_to_bottom: false,
             detail_focused: false,
+            help_open: false,
             mode: PlanInspectorMode::Browse,
             confirm: None,
             loop_event_status: None,
@@ -747,6 +750,9 @@ impl PlanInspectorView {
         ctx: &super::ViewContext,
     ) -> Option<Action> {
         let _ = worker_streams;
+        if self.help_open || key.code == KeyCode::Char('?') {
+            return <Self as View>::handle_key(self, key, ctx);
+        }
 
         if let PlanInspectorMode::StreamPeek { .. } = &self.mode {
             if let Some(action) = self.handle_peek_key(key) {
@@ -985,6 +991,17 @@ impl View for PlanInspectorView {
             };
         }
 
+        if self.help_open {
+            if matches!(key.code, KeyCode::Esc | KeyCode::Char('?')) {
+                self.help_open = false;
+            }
+            return None;
+        }
+        if key.code == KeyCode::Char('?') {
+            self.help_open = true;
+            return None;
+        }
+
         let plan = self.active_plan(ctx);
         if let Some(plan) = plan {
             self.ensure_selection(plan);
@@ -1212,13 +1229,37 @@ impl View for PlanInspectorView {
     }
 
     fn render(&mut self, frame: &mut Frame, area: Rect, ctx: &super::ViewContext) {
+        // Three readable lanes; detail fits the longest status/attempt line and borders.
+        let minimum_board_width = 3 * crate::components::plan_stage_board::MIN_STAGE_LANE_WIDTH;
+        let minimum_detail_width =
+            Span::raw("status blocked_on_setup_conflict · attempt 3/3").width() as u16 + 2;
+        // Board: heading + task + borders. Detail: identity + status + task + borders.
+        let minimum_board_height = 1 + 1 + 2;
+        let minimum_stacked_height = minimum_board_height + 1 + (3 + 2);
+        let count_rows = self
+            .active_plan(ctx)
+            .map(|plan| {
+                Paragraph::new(Line::from(header_count_spans(plan, ctx.theme)))
+                    .wrap(Wrap { trim: false })
+                    .line_count(area.width)
+                    .max(1) as u16
+            })
+            .unwrap_or(1)
+            .min(
+                area.height
+                    .saturating_sub(2 + minimum_board_height + 1)
+                    .max(1),
+            );
+        let source_visible = area.height >= 2 + count_rows + 1 + minimum_stacked_height + 1;
+        let header_height =
+            (2 + count_rows + u16::from(source_visible)).min(area.height.saturating_sub(1));
         let chunks = Layout::vertical([
-            Constraint::Length(4),
-            Constraint::Min(3),
+            Constraint::Length(header_height),
+            Constraint::Min(0),
             Constraint::Length(1),
         ])
         .split(area);
-        self.stacked_mode = area.width < 90;
+        self.stacked_mode = area.width < minimum_board_width + minimum_detail_width;
 
         let (selected_task_has_issue, selected_task_available) = if let Some(plan) =
             self.active_plan(ctx)
@@ -1241,30 +1282,40 @@ impl View for PlanInspectorView {
                 .map(|task| self.issue_detail_for_selected(task))
                 .unwrap_or((None, None));
 
-            // ── Header ──────────────────────────────────────────────────────
             let header_rows = Layout::vertical([
                 Constraint::Length(1),
                 Constraint::Length(1),
-                Constraint::Length(1),
-                Constraint::Length(1),
+                Constraint::Length(count_rows),
+                Constraint::Length(u16::from(source_visible)),
             ])
             .split(chunks[0]);
-            let header_cols =
-                Layout::horizontal([Constraint::Percentage(45), Constraint::Percentage(55)])
-                    .split(header_rows[0]);
-
+            let total_tasks = plan.counts.pending
+                + plan.counts.ready
+                + plan.counts.dispatched
+                + plan.counts.awaiting_review
+                + plan.counts.approved
+                + plan.counts.rejected
+                + plan.counts.failed
+                + plan.counts.escalated
+                + plan.counts.cancelled;
+            let gauge_label = format!("{} / {} approved", plan.counts.approved, total_tasks);
+            let header_cols = Layout::horizontal([
+                Constraint::Fill(1),
+                Constraint::Length(Span::raw(&gauge_label).width() as u16 + 2),
+            ])
+            .split(header_rows[0]);
             let status_color = plan_status_color(ctx.theme, &plan.status);
             let mut header_spans = vec![
-                Span::styled(
-                    format!(" Plan: {} ", plan.plan_id),
-                    Style::default()
-                        .fg(token(ctx.theme, "plan_inspector.title.fg"))
-                        .add_modifier(Modifier::BOLD),
-                ),
                 Span::styled(
                     format!(" {} ", plan.status.to_uppercase()),
                     Style::default()
                         .fg(status_color)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled(
+                    format!("Plan: {} ", compact_plan_id(&plan.plan_id)),
+                    Style::default()
+                        .fg(token(ctx.theme, "plan_inspector.title.fg"))
                         .add_modifier(Modifier::BOLD),
                 ),
             ];
@@ -1276,18 +1327,7 @@ impl View for PlanInspectorView {
                         .add_modifier(Modifier::BOLD),
                 ));
             }
-            header_spans.push(Span::raw(format!("  {} ", plan.progress)));
             frame.render_widget(Paragraph::new(Line::from(header_spans)), header_cols[0]);
-
-            let total_tasks = plan.counts.pending
-                + plan.counts.ready
-                + plan.counts.dispatched
-                + plan.counts.awaiting_review
-                + plan.counts.approved
-                + plan.counts.rejected
-                + plan.counts.failed
-                + plan.counts.escalated
-                + plan.counts.cancelled;
             let gauge_ratio = if total_tasks == 0 {
                 0.0
             } else {
@@ -1296,10 +1336,7 @@ impl View for PlanInspectorView {
             frame.render_widget(
                 Gauge::default()
                     .ratio(gauge_ratio.clamp(0.0, 1.0))
-                    .label(format!(
-                        "{} / {} approved",
-                        plan.counts.approved, total_tasks
-                    ))
+                    .label(gauge_label)
                     .gauge_style(
                         Style::default().fg(token(ctx.theme, "plan_inspector.gauge.fill.fg")),
                     )
@@ -1327,7 +1364,8 @@ impl View for PlanInspectorView {
             );
 
             frame.render_widget(
-                Paragraph::new(Line::from(header_count_spans(plan, ctx.theme))),
+                Paragraph::new(Line::from(header_count_spans(plan, ctx.theme)))
+                    .wrap(Wrap { trim: false }),
                 header_rows[2],
             );
 
@@ -1357,11 +1395,47 @@ impl View for PlanInspectorView {
                 header_rows[3],
             );
 
-            if !self.stacked_mode {
-                let [board_area, detail_area] =
-                    Layout::horizontal([Constraint::Percentage(60), Constraint::Percentage(40)])
-                        .areas(chunks[1]);
-                if let Some(selected_task_id) = self.selected_task_id.as_deref() {
+            let mut selected_area = None;
+            let (board_area, detail_area) = if chunks[1].height < minimum_stacked_height {
+                if self.detail_focused || self.open_issue_id.is_some() {
+                    (None, Some(chunks[1]))
+                } else {
+                    (Some(chunks[1]), None)
+                }
+            } else if !self.stacked_mode {
+                let detail_width =
+                    ((area.width as u32 * 40 / 100) as u16).max(minimum_detail_width);
+                let [board, detail] = Layout::horizontal([
+                    Constraint::Length(area.width.saturating_sub(detail_width)),
+                    Constraint::Min(0),
+                ])
+                .areas(chunks[1]);
+                (Some(board), Some(detail))
+            } else {
+                let detail_height =
+                    ((chunks[1].height.saturating_sub(1) as u32 * 45 / 100) as u16).max(3 + 2);
+                let [board, selected, detail] = Layout::vertical([
+                    Constraint::Min(minimum_board_height),
+                    Constraint::Length(1),
+                    Constraint::Length(detail_height),
+                ])
+                .areas(chunks[1]);
+                selected_area = Some(selected);
+                (Some(board), Some(detail))
+            };
+            if let (Some(board_area), Some(selected_task_id)) =
+                (board_area, self.selected_task_id.as_deref())
+            {
+                if self.stacked_mode {
+                    crate::components::plan_stage_board::render_stacked_stage_groups(
+                        frame,
+                        board_area,
+                        plan,
+                        selected_task_id,
+                        ctx.lineage,
+                        ctx.theme,
+                    );
+                } else {
                     crate::components::plan_stage_board::render_stage_board(
                         frame,
                         board_area,
@@ -1372,6 +1446,19 @@ impl View for PlanInspectorView {
                         ctx.theme,
                     );
                 }
+            }
+            if let Some(selected_area) = selected_area {
+                frame.render_widget(
+                    Paragraph::new(format!(
+                        "Selected: {}",
+                        selected
+                            .map(|task| task.task_name.as_str())
+                            .unwrap_or("(none)")
+                    )),
+                    selected_area,
+                );
+            }
+            if let Some(detail_area) = detail_area {
                 if let Some(task) = selected {
                     let scroll = crate::components::plan_task_detail::render_task_detail(
                         frame,
@@ -1397,52 +1484,6 @@ impl View for PlanInspectorView {
                             .block(Block::default().borders(Borders::ALL).title("Task detail")),
                         detail_area,
                     );
-                }
-            } else {
-                let [board_area, selected_area, detail_area] = Layout::vertical([
-                    Constraint::Percentage(55),
-                    Constraint::Length(1),
-                    Constraint::Percentage(45),
-                ])
-                .areas(chunks[1]);
-                if let Some(selected_task_id) = self.selected_task_id.as_deref() {
-                    crate::components::plan_stage_board::render_stacked_stage_groups(
-                        frame,
-                        board_area,
-                        plan,
-                        selected_task_id,
-                        ctx.lineage,
-                        ctx.theme,
-                    );
-                }
-                frame.render_widget(
-                    Paragraph::new(format!(
-                        "Selected: {}",
-                        selected
-                            .map(|task| task.task_name.as_str())
-                            .unwrap_or("(none)")
-                    )),
-                    selected_area,
-                );
-                if let Some(task) = selected {
-                    let scroll = crate::components::plan_task_detail::render_task_detail(
-                        frame,
-                        detail_area,
-                        plan,
-                        task,
-                        live_node,
-                        issue_detail.0,
-                        issue_detail.1,
-                        if self.task_detail_to_bottom {
-                            usize::MAX
-                        } else {
-                            self.task_detail_scroll
-                        },
-                        ctx.theme,
-                    );
-                    self.task_detail_scroll = scroll.offset;
-                    self.task_detail_max_scroll = scroll.max_offset;
-                    self.task_detail_to_bottom = false;
                 }
             }
 
@@ -1533,12 +1574,48 @@ impl View for PlanInspectorView {
             chunks[2],
         );
         self.render_confirm(frame, area, ctx.theme);
+        if self.help_open {
+            self.render_help(frame, area, ctx);
+        }
     }
 
     fn tick(&mut self) {}
 }
 
 impl PlanInspectorView {
+    fn render_help(&self, frame: &mut Frame, area: Rect, ctx: &super::ViewContext) {
+        let mut lines = vec![
+            Line::from("? / Esc: return to inspector"),
+            Line::from("Tab: focus board / detail; j/k: navigate or scroll"),
+        ];
+        if let Some(plan) = self.active_plan(ctx) {
+            lines.push(Line::from(format!("Plan: {}", plan.plan_id)));
+            lines.push(Line::from(format!("Status: {}", plan.status)));
+            lines.push(Line::from(format!("Next: {}", plan.next_action)));
+            lines.push(Line::from(format!(
+                "Summary: {}",
+                operator_summary(plan, ctx.lineage).1
+            )));
+            lines.push(Line::from(format!(
+                "Source: {}",
+                plan.epic_id.as_deref().unwrap_or("--")
+            )));
+            lines.push(Line::from(format!(
+                "Owner: {}",
+                plan.owner_brain_session_id.as_deref().unwrap_or("--")
+            )));
+        }
+        frame.render_widget(Clear, area);
+        frame.render_widget(
+            Paragraph::new(lines).wrap(Wrap { trim: false }).block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title("Plan inspector help"),
+            ),
+            area,
+        );
+    }
+
     fn render_confirm(&self, frame: &mut Frame, area: Rect, theme: &Theme) {
         let Some(confirm) = self.confirm.as_ref() else {
             return;
@@ -1662,6 +1739,19 @@ impl PlanInspectorView {
             .border_style(Style::default().fg(token(theme, "plan_browser.confirm.border.fg")));
 
         frame.render_widget(Paragraph::new(lines).block(block), popup);
+    }
+}
+
+fn compact_plan_id(plan_id: &str) -> &str {
+    let groups: Vec<_> = plan_id.split('-').collect();
+    if groups.iter().map(|part| part.len()).eq([8, 4, 4, 4, 12])
+        && groups
+            .iter()
+            .all(|part| part.bytes().all(|b| b.is_ascii_hexdigit()))
+    {
+        groups[0]
+    } else {
+        plan_id
     }
 }
 

@@ -13,7 +13,7 @@ use spur_core::{ExecutorLineage, ExecutorNode, LifecycleState, TrackedPlan, Trac
 
 const BLOCKED_ON_SETUP_CONFLICT_STATUS: &str = "blocked_on_setup_conflict";
 // Ten readable title cells, four cursor/status cells, and two borders.
-const MIN_STAGE_LANE_WIDTH: u16 = 10 + 4 + 2;
+pub(crate) const MIN_STAGE_LANE_WIDTH: u16 = 10 + 4 + 2;
 
 fn token(theme: &Theme, name: &str) -> ratatui::style::Color {
     resolve_token(theme, name, ColorDepth::Truecolor)
