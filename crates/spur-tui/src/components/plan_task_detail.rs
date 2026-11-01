@@ -9,6 +9,7 @@ use ratatui::{
 use spur_core::{ExecutorNode, TrackedPlan, TrackedTask};
 use spur_pm::Issue;
 
+use super::plan_text::{display_cells, fit_to_cells, visible_lines as slice_lines, wrap_lines};
 use crate::theme::{resolve_token, ColorDepth, Theme};
 
 pub struct TaskDetailScroll {
@@ -27,6 +28,7 @@ pub fn render_task_detail(
     issue_detail_status: Option<&str>,
     scroll_offset: usize,
     expanded: bool,
+    focused: bool,
     theme: &Theme,
 ) -> TaskDetailScroll {
     let content_width = area.width.saturating_sub(2) as usize;
@@ -178,21 +180,7 @@ pub fn render_task_detail(
     }
 
     let visible_lines = area.height.saturating_sub(2) as usize;
-    // Virtual rows use usize; only the visible slice reaches the u16 widget.
-    let source: Vec<String> = lines
-        .iter()
-        .map(|line| {
-            line.spans
-                .iter()
-                .map(|span| span.content.as_ref())
-                .collect()
-        })
-        .collect();
-    let layout = (content_width > 0).then(|| {
-        super::input_bar_wrap::wrap_with_cell_width(&source, content_width as u16, |grapheme| {
-            Span::raw(grapheme).width() as u8
-        })
-    });
+    let layout = wrap_lines(&lines, content_width as u16);
     let total_lines = layout.as_ref().map(|layout| layout.rows.len()).unwrap_or(0);
     let max_scroll = if visible_lines == 0 || content_width == 0 {
         0
@@ -201,7 +189,7 @@ pub fn render_task_detail(
     };
     let scroll_offset = scroll_offset.min(max_scroll);
 
-    let title = if visible_lines == 0 || total_lines <= visible_lines {
+    let mut title = if visible_lines == 0 || total_lines <= visible_lines {
         "Task detail".to_string()
     } else {
         let start_line = scroll_offset.saturating_add(1);
@@ -214,35 +202,21 @@ pub fn render_task_detail(
         format!("Task detail ({start_line}-{end_line}/{total_lines}) {percent}%")
     };
 
-    let visible: Vec<Line<'static>> = layout
-        .into_iter()
-        .flat_map(|layout| layout.rows.into_iter())
-        .skip(scroll_offset)
-        .take(visible_lines)
-        .map(|row| {
-            let original = &lines[row.logical_row];
-            let mut byte = 0;
-            let spans = original
-                .spans
-                .iter()
-                .filter_map(|span| {
-                    let span_start = byte;
-                    byte += span.content.len();
-                    let start = row.byte_start.max(span_start);
-                    let end = row.byte_end.min(byte);
-                    (start < end).then(|| {
-                        Span::styled(
-                            span.content[start - span_start..end - span_start].to_string(),
-                            original.style.patch(span.style),
-                        )
-                    })
-                })
-                .collect::<Vec<_>>();
-            Line::from(spans).style(original.style)
-        })
-        .collect();
+    if focused {
+        title.push_str(" [focus]");
+    }
+    let visible = slice_lines(&lines, layout.as_ref(), scroll_offset, visible_lines);
     frame.render_widget(
-        Paragraph::new(visible).block(Block::default().borders(Borders::ALL).title(title)),
+        Paragraph::new(visible).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(title)
+                .border_style(if focused {
+                    Style::default().fg(token(theme, "plan_inspector.board.selection.fg"))
+                } else {
+                    Style::default()
+                }),
+        ),
         area,
     );
     TaskDetailScroll {
@@ -313,10 +287,8 @@ fn blocked_banner(
             .collect::<Vec<_>>()
             .join(", ")
     };
-    let mut text = format!(" BLOCKED {refs}");
-    if content_width > text.len() {
-        text.push_str(&" ".repeat(content_width - text.len()));
-    }
+    let mut text = fit_to_cells(&format!(" BLOCKED {refs}"), content_width);
+    text.push_str(&" ".repeat(content_width.saturating_sub(display_cells(&text))));
     Line::from(vec![Span::styled(
         text,
         Style::default()
@@ -436,7 +408,7 @@ fn execution_strip(task: &TrackedTask, theme: &Theme) -> Line<'static> {
 
 fn pad_column(value: &str, width: usize) -> String {
     let truncated = truncate_to_width(value, width);
-    let len = truncated.chars().count();
+    let len = display_cells(&truncated);
     if len >= width {
         truncated
     } else {
@@ -445,16 +417,7 @@ fn pad_column(value: &str, width: usize) -> String {
 }
 
 fn truncate_to_width(value: &str, width: usize) -> String {
-    if value.chars().count() <= width {
-        return value.to_string();
-    }
-    if width == 0 {
-        return String::new();
-    }
-
-    let mut truncated: String = value.chars().take(width - 1).collect();
-    truncated.push('…');
-    truncated
+    fit_to_cells(value, width)
 }
 
 fn section_header(title: &str, theme: &Theme) -> Vec<Line<'static>> {

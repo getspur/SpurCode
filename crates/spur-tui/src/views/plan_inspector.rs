@@ -13,6 +13,9 @@ use spur_acp::{SessionId, SpurEvent};
 use spur_core::{ExecutorId, ExecutorNode, LifecycleState, TrackedPlan};
 
 use crate::action::{Action, IssueAction};
+use crate::components::plan_text::{
+    display_cells, fit_to_cells, visible_lines as slice_lines, wrap_lines,
+};
 use crate::theme::{resolve_token, ColorDepth, Theme};
 
 use super::plan_provenance::loop_origin_badge;
@@ -47,6 +50,11 @@ pub struct PlanInspectorView {
     task_detail_to_bottom: bool,
     detail_focused: bool,
     help_open: bool,
+    help_scroll: usize,
+    help_max_scroll: usize,
+    help_to_bottom: bool,
+    help_page_rows: usize,
+    task_detail_page_rows: usize,
     mode: PlanInspectorMode,
     confirm: Option<PlanInspectorConfirm>,
     loop_event_status: Option<PlanInspectorEventStatus>,
@@ -126,6 +134,11 @@ impl PlanInspectorView {
             task_detail_to_bottom: false,
             detail_focused: false,
             help_open: false,
+            help_scroll: 0,
+            help_max_scroll: 0,
+            help_to_bottom: false,
+            help_page_rows: 1,
+            task_detail_page_rows: 1,
             mode: PlanInspectorMode::Browse,
             confirm: None,
             loop_event_status: None,
@@ -148,6 +161,11 @@ impl PlanInspectorView {
             task_detail_to_bottom: false,
             detail_focused: false,
             help_open: false,
+            help_scroll: 0,
+            help_max_scroll: 0,
+            help_to_bottom: false,
+            help_page_rows: 1,
+            task_detail_page_rows: 1,
             mode: PlanInspectorMode::Browse,
             confirm: None,
             loop_event_status: None,
@@ -746,6 +764,9 @@ impl PlanInspectorView {
         ctx: &super::ViewContext,
     ) {
         <Self as View>::render(self, frame, area, ctx);
+        if self.help_open {
+            return;
+        }
 
         if self.stream_peek_executor_is_stale(ctx) {
             self.leave_stream_peek();
@@ -809,7 +830,7 @@ impl PlanInspectorView {
         ctx: &super::ViewContext,
     ) -> Option<Action> {
         let _ = worker_streams;
-        if self.help_open || key.code == KeyCode::Char('?') {
+        if self.confirm.is_some() || self.help_open || key.code == KeyCode::Char('?') {
             return <Self as View>::handle_key(self, key, ctx);
         }
 
@@ -920,14 +941,24 @@ impl PlanInspectorView {
         let title_left = format!("stream: {title_name} ({task_id})");
         let title_right =
             node.and_then(|node| is_terminal_phase(node.phase).then_some("[completed]"));
-        let bottom_hint = "[esc] close · [j/k] scroll · [f] follow";
+        let budget = stream_area.width.saturating_sub(2) as usize;
+        let full = "Esc close  ? help  j/k: scroll  f: follow";
+        let compact = "Esc close  ? help  j/k: scroll";
+        let hint = if display_cells(full) <= budget {
+            full
+        } else if display_cells(compact) <= budget {
+            compact
+        } else {
+            "Esc  ? help"
+        };
+        let bottom_hint = fit_to_cells(hint, budget);
 
         crate::components::stream_pane::render_stream(
             frame,
             stream_area,
             &title_left,
             title_right,
-            Some(bottom_hint),
+            Some(&bottom_hint),
             trace,
             state,
         );
@@ -1051,14 +1082,18 @@ impl View for PlanInspectorView {
         }
 
         if self.help_open {
-            if matches!(key.code, KeyCode::Esc | KeyCode::Char('?')) {
-                self.help_open = false;
-            }
+            self.handle_help_key(key);
             return None;
         }
         if key.code == KeyCode::Char('?') {
             self.help_open = true;
+            self.help_scroll = 0;
+            self.help_max_scroll = 0;
+            self.help_to_bottom = false;
             return None;
+        }
+        if matches!(self.mode, PlanInspectorMode::StreamPeek { .. }) {
+            return self.handle_peek_key(key);
         }
 
         let plan = self.active_plan(ctx);
@@ -1091,11 +1126,11 @@ impl View for PlanInspectorView {
                         return Some(Action::ScrollToBottom);
                     }
                     KeyCode::PageUp => {
-                        self.scroll_task_detail_up(10);
+                        self.scroll_task_detail_up(self.task_detail_page_rows);
                         return Some(Action::ScrollUp);
                     }
                     KeyCode::PageDown => {
-                        self.scroll_task_detail_down(10);
+                        self.scroll_task_detail_down(self.task_detail_page_rows);
                         return Some(Action::ScrollDown);
                     }
                     _ => {}
@@ -1320,7 +1355,7 @@ impl View for PlanInspectorView {
                     .saturating_sub(2 + minimum_board_height + 1)
                     .max(1),
             );
-        let source_visible = area.height >= 2 + count_rows + 1 + minimum_stacked_height + 1;
+        let source_visible = area.height > 2 + count_rows + 1 + minimum_stacked_height;
         let header_height =
             (2 + count_rows + u16::from(source_visible)).min(area.height.saturating_sub(1));
         let chunks = Layout::vertical([
@@ -1371,7 +1406,7 @@ impl View for PlanInspectorView {
             let gauge_label = format!("{} / {} approved", plan.counts.approved, total_tasks);
             let header_cols = Layout::horizontal([
                 Constraint::Fill(1),
-                Constraint::Length(Span::raw(&gauge_label).width() as u16 + 2),
+                Constraint::Length(display_cells(&gauge_label) as u16 + 2),
             ])
             .split(header_rows[0]);
             let status_color = plan_status_color(ctx.theme, &plan.status);
@@ -1417,7 +1452,7 @@ impl View for PlanInspectorView {
             let (summary_label, summary_text) = operator_summary(plan, ctx.lineage);
             let summary_width =
                 area.width
-                    .saturating_sub(summary_label.chars().count() as u16) as usize;
+                    .saturating_sub(display_cells(summary_label) as u16) as usize;
             frame.render_widget(
                 Paragraph::new(Line::from(vec![
                     Span::styled(
@@ -1425,7 +1460,7 @@ impl View for PlanInspectorView {
                         Style::default().fg(token(ctx.theme, "plan_inspector.label.fg")),
                     ),
                     Span::styled(
-                        truncate_display(&summary_text, summary_width),
+                        fit_operator_summary(&summary_text, summary_width),
                         Style::default()
                             .fg(token(ctx.theme, "plan_inspector.header.next_action.fg")),
                     ),
@@ -1544,11 +1579,14 @@ impl View for PlanInspectorView {
                             self.task_detail_scroll
                         },
                         self.details_expanded,
+                        self.detail_focused || self.open_issue_id.is_some(),
                         ctx.theme,
                     );
                     self.task_detail_scroll = scroll.offset;
                     self.task_detail_max_scroll = scroll.max_offset;
                     self.task_detail_to_bottom = false;
+                    self.task_detail_page_rows =
+                        detail_area.height.saturating_sub(2).max(1) as usize;
                 } else {
                     frame.render_widget(
                         Paragraph::new("No task selected")
@@ -1599,7 +1637,7 @@ impl View for PlanInspectorView {
         } else {
             "Enter: no linked issue"
         };
-        let scroll_hint = if self.open_issue_id.is_some() {
+        let scroll_hint = if self.open_issue_id.is_some() || self.detail_focused {
             "  j/k: line scroll  g/G: top/btm  PgUp/PgDn: page"
         } else {
             ""
@@ -1624,19 +1662,28 @@ impl View for PlanInspectorView {
         } else {
             ""
         };
-        let footer = footer_hint(
-            area.width,
-            enter_hint,
-            peek_hint,
-            retry_hint,
-            stop_hint,
-            review_hint,
-            scroll_hint,
-            self.open_issue_id.is_none() && self.active_plan(ctx).is_some(),
-            self.loop_event_status
-                .as_ref()
-                .map(PlanInspectorEventStatus::message),
-        );
+        let footer = if self.confirm.is_some() {
+            fit_to_cells("Enter confirm  Esc cancel", area.width as usize)
+        } else if matches!(self.mode, PlanInspectorMode::StreamPeek { .. }) {
+            fit_to_cells(
+                "Esc close  ? help  j/k: scroll  f: follow  S: worker",
+                area.width as usize,
+            )
+        } else {
+            footer_hint(
+                area.width,
+                enter_hint,
+                peek_hint,
+                retry_hint,
+                stop_hint,
+                review_hint,
+                scroll_hint,
+                self.open_issue_id.is_none() && self.active_plan(ctx).is_some(),
+                self.loop_event_status
+                    .as_ref()
+                    .map(PlanInspectorEventStatus::message),
+            )
+        };
         frame.render_widget(
             Paragraph::new(Line::from(vec![Span::styled(
                 footer,
@@ -1654,10 +1701,50 @@ impl View for PlanInspectorView {
 }
 
 impl PlanInspectorView {
-    fn render_help(&self, frame: &mut Frame, area: Rect, ctx: &super::ViewContext) {
+    fn handle_help_key(&mut self, key: KeyEvent) {
+        match key.code {
+            KeyCode::Esc | KeyCode::Char('?') => {
+                self.help_open = false;
+                self.help_to_bottom = false;
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                self.help_to_bottom = false;
+                self.help_scroll = self.help_scroll.saturating_add(1).min(self.help_max_scroll);
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                self.help_to_bottom = false;
+                self.help_scroll = self.help_scroll.min(self.help_max_scroll).saturating_sub(1);
+            }
+            KeyCode::PageDown => {
+                self.help_to_bottom = false;
+                self.help_scroll = self
+                    .help_scroll
+                    .saturating_add(self.help_page_rows)
+                    .min(self.help_max_scroll);
+            }
+            KeyCode::PageUp => {
+                self.help_to_bottom = false;
+                self.help_scroll = self
+                    .help_scroll
+                    .min(self.help_max_scroll)
+                    .saturating_sub(self.help_page_rows);
+            }
+            KeyCode::Char('g') => {
+                self.help_scroll = 0;
+                self.help_to_bottom = false;
+            }
+            KeyCode::Char('G') => {
+                self.help_scroll = self.help_max_scroll;
+                self.help_to_bottom = true;
+            }
+            _ => {}
+        }
+    }
+
+    fn render_help(&mut self, frame: &mut Frame, area: Rect, ctx: &super::ViewContext) {
         let mut lines = vec![
-            Line::from("? / Esc: return to inspector"),
-            Line::from("Tab: focus board / detail; j/k: navigate or scroll"),
+            Line::from("Esc / ?: return; j/k: scroll; g/G: ends; PgUp/PgDn: page"),
+            Line::from("Tab: focus board / detail. [focus] marks the pane that owns j/k."),
         ];
         if let Some(plan) = self.active_plan(ctx) {
             lines.push(Line::from(format!("Plan: {}", plan.plan_id)));
@@ -1683,12 +1770,56 @@ impl PlanInspectorView {
                 plan.owner_brain_session_id.as_deref().unwrap_or("--")
             )));
         }
+        if let Some(status) = self.loop_event_status.as_ref() {
+            lines.push(Line::from(format!("Event: {}", status.message())));
+        }
+        lines.extend([
+            Line::raw(""),Line::from("Task states"),
+            Line::from("○ pending"),Line::from("◐ ready"),Line::from("◉ dispatched"),Line::from("◈ awaiting_review"),
+            Line::from("✓ approved"),Line::from("⊘ rejected"),Line::from("✕ failed"),Line::from("⊝ cancelled"),
+            Line::from("⇢ superseded"),Line::from("⦿ setup conflict (blocked_on_setup_conflict)"),Line::from("! escalated_to_brain"),
+            Line::raw(""),Line::from("Board and relationships"),
+            Line::from("h/l: change stage; j/k: select task; g/G: first/last task in stage."),
+            Line::from("Lanes show a readable stage window; arrows and range indicate hidden stages."),
+            Line::from("Stages group dependency depth. Each task waits for its own prerequisites."),
+            Line::from("b: cycle blockers; p/n: cycle parents / children from the original task."),
+            Line::from("e: expand/collapse metadata and full relationships; selection changes collapse it."),
+            Line::from("Enter: open/close linked issue. Detail/issue focus owns j/k, g/G, PgUp/PgDn."),
+            Line::from("r: start/resume; R: retry; X: stop; a/d/c: approve/reject/request changes when eligible."),
+            Line::from("s: stream peek; S: worker dashboard. Stream: j/k scroll, f follow, Esc return."),
+            Line::from("Esc closes the current help, confirmation, stream or issue before leaving the inspector."),
+            Line::from("Alt+P: close inspector. Very short terminals show the focused pane; Tab switches it."),
+        ]);
+        let layout = wrap_lines(&lines, area.width.saturating_sub(2));
+        let visible = area.height.saturating_sub(2) as usize;
+        self.help_page_rows = visible.max(1);
+        self.help_max_scroll = layout
+            .as_ref()
+            .map(|layout| layout.rows.len().saturating_sub(visible))
+            .unwrap_or(0);
+        self.help_scroll = if self.help_to_bottom {
+            self.help_max_scroll
+        } else {
+            self.help_scroll.min(self.help_max_scroll)
+        };
+        self.help_to_bottom = false;
+        let content = slice_lines(&lines, layout.as_ref(), self.help_scroll, visible);
+        let title = format!(
+            "Plan inspector help ({}/{})",
+            self.help_scroll.saturating_add(1),
+            self.help_max_scroll.saturating_add(1)
+        );
+        let bottom = fit_to_cells(
+            "Esc return  ? close  j/k: scroll  g/G ends",
+            area.width.saturating_sub(2) as usize,
+        );
         frame.render_widget(Clear, area);
         frame.render_widget(
-            Paragraph::new(lines).wrap(Wrap { trim: false }).block(
+            Paragraph::new(content).block(
                 Block::default()
                     .borders(Borders::ALL)
-                    .title("Plan inspector help"),
+                    .title(title)
+                    .title_bottom(bottom),
             ),
             area,
         );
@@ -2075,17 +2206,25 @@ fn format_age(secs: u64) -> String {
     }
 }
 
-fn truncate_display(s: &str, max: usize) -> String {
-    if s.len() <= max {
-        return s.to_string();
+fn truncate_display(value: &str, width: usize) -> String {
+    fit_to_cells(value, width)
+}
+
+fn fit_operator_summary(value: &str, width: usize) -> String {
+    if display_cells(value) <= width {
+        return value.to_string();
     }
-    let mut end = max;
-    while end > 0 && !s.is_char_boundary(end) {
-        end -= 1;
-    }
-    let mut out = s[..end].trim_end().to_string();
-    out.push('…');
-    out
+    let Some((next, risk)) = value.split_once(" | risk: ") else {
+        return fit_to_cells(value, width);
+    };
+    let risk = format!(" | risk: {risk}");
+    // Two priority fields share residual cells; a short field returns its unused share.
+    let next_budget = display_cells(next)
+        .min(width / 2)
+        .max(width.saturating_sub(display_cells(&risk)));
+    let next = fit_to_cells(next, next_budget);
+    let risk_budget = width.saturating_sub(display_cells(&next));
+    format!("{next}{}", fit_to_cells(&risk, risk_budget))
 }
 
 fn prompt_input_line(text: &str, cursor: usize, theme: &Theme) -> Line<'static> {
@@ -2213,94 +2352,67 @@ fn footer_hint_tiers(
     scroll_hint: &str,
     show_start: bool,
 ) -> [String; 3] {
-    let start_hint = if show_start { "  r: start/resume" } else { "" };
-    let full = format!(
-        " h/l: lane  j/k: task  b: blocker  {}  o: work item{}{}{}{}{}  g/G: ends  Alt+P/Esc: close {}",
-        enter_hint, start_hint, retry_hint, stop_hint, review_hint, peek_hint, scroll_hint
-    );
-
-    let compact_peek = if peek_hint.is_empty() {
-        ""
-    } else {
-        "  s: peek  S: worker"
-    };
+    if !scroll_hint.is_empty() {
+        let essential = "Esc close  ? help  j/k: scroll";
+        let issue = enter_hint.contains("close issue");
+        let focus = if issue {
+            "  Enter: close issue detail"
+        } else {
+            "  Tab: board"
+        };
+        let metadata = if issue {
+            ""
+        } else {
+            "  e: metadata  p/n: relatives"
+        };
+        return [
+            format!("{essential}{focus}  g/G: top/btm  PgUp/PgDn: page{metadata}"),
+            format!("{essential}{focus}"),
+            essential.into(),
+        ];
+    }
+    let essential = "Esc close  ? help  j/k: task";
+    let start = if show_start { "  r: start/resume" } else { "" };
     let compact_start = if show_start { "  r: start" } else { "" };
-    let compact_retry = if retry_hint.is_empty() {
-        ""
-    } else {
-        "  R: retry"
-    };
-    let compact_stop = if stop_hint.is_empty() {
-        ""
-    } else {
-        "  X: stop"
-    };
     let compact_review = if review_hint.is_empty() {
         ""
     } else {
         "  a/d/c: review"
     };
-    let compact = format!(
-        " h/l lane  j/k task  b blocker  {}  o item{}{}{}{}{}  Esc close",
-        enter_hint, compact_start, compact_retry, compact_stop, compact_review, compact_peek
-    );
-    let minimal = format!(
-        " j/k task  b blocker{}{}{}{}  Esc close",
-        compact_start, compact_retry, compact_stop, compact_review
-    );
-
+    let full=format!("{essential}  Tab: detail  h/l: lane  b: blocker  {enter_hint}{start}{retry_hint}{stop_hint}{review_hint}{peek_hint}  e: metadata  p/n: relatives  g/G: ends  o: work item");
+    let compact=format!("{essential}  Tab: detail  {enter_hint}{start}{retry_hint}{stop_hint}{compact_review}{peek_hint}");
+    let minimal = format!("{essential}{compact_start}{retry_hint}{stop_hint}{compact_review}");
     [full, compact, minimal]
 }
 
 fn footer_hint_without_status(width: u16, tiers: &[String; 3]) -> String {
     let width = width as usize;
     for tier in &tiers[..2] {
-        if tier.chars().count() <= width {
+        if display_cells(tier) <= width {
             return tier.clone();
         }
     }
-
-    truncate_display(&tiers[2], width)
+    fit_to_cells(&tiers[2], width)
 }
-
 fn footer_hint_with_status(width: u16, status: &str, tiers: &[String; 3]) -> String {
     let width = width as usize;
     let separator = "  ";
-    let separator_len = separator.chars().count();
-    let status_len = status.chars().count();
-
+    let gap = display_cells(separator);
     for tier in tiers {
-        if status_len + separator_len + tier.chars().count() <= width {
+        if display_cells(status) + gap + display_cells(tier) <= width {
             return format!("{status}{separator}{tier}");
         }
     }
-
     let minimal = &tiers[2];
-    let minimal_len = minimal.chars().count();
-    if minimal_len + separator_len >= width {
-        return truncate_display(minimal, width);
+    let minimal_width = display_cells(minimal);
+    if minimal_width + gap >= width {
+        return fit_to_cells(minimal, width);
     }
-
-    let status_budget = width - minimal_len - separator_len;
-    let status = truncate_footer_status(status, status_budget);
+    let status = truncate_footer_status(status, width - minimal_width - gap);
     format!("{status}{separator}{minimal}")
 }
-
-fn truncate_footer_status(status: &str, max_chars: usize) -> String {
-    let char_count = status.chars().count();
-    if char_count <= max_chars {
-        return status.to_string();
-    }
-    if max_chars == 0 {
-        return String::new();
-    }
-
-    let mut out = status
-        .chars()
-        .take(max_chars.saturating_sub(1))
-        .collect::<String>();
-    out.push('…');
-    out
+fn truncate_footer_status(status: &str, width: usize) -> String {
+    fit_to_cells(status, width)
 }
 
 fn centered_rect(outer: Rect, width: u16, height: u16) -> Rect {
@@ -2322,8 +2434,8 @@ fn action_line(
     popup_width: u16,
     theme: &Theme,
 ) -> Line<'static> {
-    let left_width = 1 + left_key.len() + 1 + left_label.len();
-    let right_width = right_key.len() + 1 + right_label.len();
+    let left_width = 1 + display_cells(left_key) + 1 + display_cells(left_label);
+    let right_width = display_cells(right_key) + 1 + display_cells(right_label);
     let content_width = popup_width.saturating_sub(2) as usize;
     let gap = content_width
         .saturating_sub(left_width + right_width)
@@ -2384,6 +2496,12 @@ mod tests {
         for width in 0..10 {
             assert!(Span::raw(truncate_footer_status("漢字é👩‍💻", width)).width() <= width);
         }
+        let next = "لا".repeat(20);
+        let fitted = fit_operator_summary(&format!("{next} | risk: {}", "R".repeat(100)), 100);
+        assert!(
+            fitted.starts_with(&next),
+            "a short priority field must retain its unused share"
+        );
     }
 
     fn key(code: KeyCode) -> KeyEvent {

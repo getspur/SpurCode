@@ -38,6 +38,7 @@ pub mod picker_shell;
 pub mod plan_pulse;
 pub mod plan_stage_board;
 pub mod plan_task_detail;
+pub(crate) mod plan_text;
 pub mod query_source;
 pub mod quit_confirm;
 pub mod react_trace;

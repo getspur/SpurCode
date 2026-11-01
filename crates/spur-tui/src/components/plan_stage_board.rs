@@ -1,3 +1,4 @@
+use super::plan_text::fit_to_cells;
 use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::{Modifier, Style},
@@ -6,7 +7,6 @@ use ratatui::{
     Frame,
 };
 use std::time::SystemTime;
-use unicode_segmentation::UnicodeSegmentation;
 
 use crate::theme::{resolve_token, ColorDepth, Theme};
 use spur_core::{ExecutorLineage, ExecutorNode, LifecycleState, TrackedPlan, TrackedTask};
@@ -93,7 +93,7 @@ pub fn render_stage_board(
                         status_style(theme, &task.status),
                     ),
                     Span::raw(" "),
-                    Span::raw(fit_stage_label(
+                    Span::raw(fit_to_cells(
                         &task.task_name,
                         stage_area.width.saturating_sub(6) as usize,
                     )),
@@ -140,27 +140,6 @@ pub fn render_stage_board(
             *stage_area,
         );
     }
-}
-
-fn fit_stage_label(value: &str, width: usize) -> String {
-    if Span::raw(value).width() <= width {
-        return value.to_string();
-    }
-    if width == 0 {
-        return String::new();
-    }
-    let mut result = String::new();
-    let mut used = 0;
-    for grapheme in value.graphemes(true) {
-        let cells = Span::raw(grapheme).width();
-        if used + cells > width - 1 {
-            break;
-        }
-        result.push_str(grapheme);
-        used += cells;
-    }
-    result.push('…');
-    result
 }
 
 pub fn render_stacked_stage_groups(

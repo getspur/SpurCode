@@ -53,43 +53,57 @@ If a graph has more nodes than can fit on your screen, use `PgUp` and `PgDn` to 
 
 ## Plan Inspector
 
-When you ask the agent to execute a complex task or an epic, it generates a multi-stage **Plan**. The **Plan Inspector** provides a visual kanban-style board mapping the lifecycle of these tasks.
+The Plan Inspector shows task progress, dependencies, review state, and worker output for an implementation plan.
 
-### The Board View
+### Board and detail panes
 
-By default, on wider terminals, the Plan Inspector displays a side-by-side view:
-*   **Stages (Lanes)**: The plan is broken down into sequential stages. All tasks in Stage 0 must complete before Stage 1 begins, and so on.
-*   **Header**: Shows the plan's overall status (`RUNNING`, `APPROVED`, `FAILED`, etc.), a progress gauge (e.g., `4 / 10 done`), and the current action the brain is taking.
-*   **Task Detail**: The right pane shows the execution logs, summaries, and agent output for the specifically highlighted task.
+On wide terminals, stage lanes sit beside the selected task. Lanes show a readable window around the selected stage; the range and arrows indicate hidden stages. On narrow terminals, tasks form a stage-grouped list. The selected task stays visible as you navigate or resize. Very short terminals show the focused pane; use **Tab** to switch between board and detail.
 
-*(On narrower terminals, the lanes collapse into a stacked list to preserve readability.)*
+Stages group tasks by dependency depth. Each task waits for its own prerequisites; an unrelated task in an earlier stage does not create a global stage barrier.
 
-### Navigating the Plan Inspector
+The header prioritizes plan status, **approved / total** progress, attention counts, and the next action. Escalated tasks count toward the total. Lifecycle counts are separate from the overlapping **deps blocked** count, and cancelled and superseded tasks have distinct counts. Press **?** to inspect the full plan ID, complete counts, source, owner, controls, and status legend.
 
-*   **`h` / `l`** or **Left / Right**: Move horizontally between plan stages (lanes).
-*   **`j` / `k`** or **Down / Up**: Select individual tasks within the current stage.
-*   **`g` / `G`**: Jump to the first or last task in the current stage.
-*   **`Esc`** or **`Alt-p`**: Close the Plan Inspector and return to the previous view.
+The detail pane puts task identity, status, next action, errors, and blocker reasons before long output. Press **e** to expand or collapse execution metadata, issue context, and full relationship IDs. Selecting another task collapses this information. Multiline output and loaded issue bodies remain scrollable.
 
-### Task States & Meta Chips
+### Controls and focus
 
-Each task in the board shows a badge indicating its execution state:
-*   `[QUE]`: Pending / Queued
-*   `[RDY]`: Ready to run
-*   `[RUN]`: Dispatched to a worker
-*   `[REV]`: Awaiting review
-*   `[PAS]`: Approved / Completed
-*   `[ERR]`: Failed
-*   `[REJ]`: Rejected (needs rework)
-*   `[SKP]`: Cancelled / Skipped
-*   `[SUP]`: Superseded
-*   `BLOCKED`: Blocked by a setup conflict or another task.
+| Key | Action |
+| --- | --- |
+| **h / l**, Left / Right | Change stage |
+| **j / k**, Down / Up | Select a task on the board; scroll when detail or issue has focus |
+| **g / G** | First/last task in the current stage; top/bottom in a scrolling pane |
+| **Tab** | Switch board/detail focus when linked issue detail is closed |
+| **PgUp / PgDn** | Scroll a page in detail, issue, or help |
+| **b** | Cycle the selected task's actual blockers |
+| **p / n** | Cycle parents/children from the original task; missing external tasks show feedback |
+| **e** | Expand/collapse metadata and full relationships, and focus detail |
+| **Enter** | Open/close the linked issue; confirms an active confirmation dialog |
+| **r / R / X** | Start or resume the plan / retry an eligible task / stop a dispatched task |
+| **a / d / c** | Approve / reject / request changes for a task awaiting review |
+| **s / S** | Stream peek / jump to the worker dashboard |
+| **?** | Open/close scrollable help and legend, preserving the prior focus |
+| **Esc** | Close help, a confirmation, stream peek, or linked issue before leaving the inspector |
+| **Alt+P** | Close the inspector while browsing |
 
-Next to the task title, you may see **Meta Chips** providing live context:
-*   **Live Worker** (e.g., `codex:run`): Displays the specific agent model and phase currently handling the task.
-*   **Dependencies** (e.g., `↑T1`): Indicates which task IDs this task relies on.
-*   **Retries** (e.g., `retry 2/3`): Shows if a task failed previously and is being re-attempted.
-*   **Conflicts**: Explicit warnings if setup overlays conflicted (e.g., `2 files conflict with T1`).
+The **[focus]** marker and highlighted detail border identify the pane that owns scrolling. The footer follows the current mode. Stream peek owns **j/k** scrolling and **f** follow; **Esc** returns. Confirmation dialogs own their keys until confirmed or cancelled.
+
+### Task states and metadata
+
+| Glyph | Task state |
+| --- | --- |
+| ○ | Pending |
+| ◐ | Ready |
+| ◉ | Dispatched |
+| ◈ | Awaiting review |
+| ✓ | Approved |
+| ⊘ | Rejected |
+| ✕ | Failed |
+| ⊝ | Cancelled |
+| ⇢ | Superseded |
+| ⦿ | Blocked on setup conflict |
+| ! | Escalated to the brain |
+
+A **BLOCKED** banner distinguishes setup conflicts from dependency waits, including conflicts with no dependency blocker IDs. Conflict output includes the reason and affected files. Worker chips show an active agent and phase; terminal executors are labeled **last worker** history. Retry chips describe attempts, while current risks omit completed retry history and deduplicate shared failed blockers. Failure ages are shown only when supported by task evidence.
 
 ## Worktree Isolation Discipline (The Spur Advantage)
 

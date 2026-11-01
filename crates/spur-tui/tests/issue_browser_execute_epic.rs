@@ -1,6 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{backend::TestBackend, Terminal};
-use spur_acp::{ContentBlock, IssueSummaryEvent, SpurEvent, SpurEventBody};
+use spur_acp::{ContentBlock, IssueSummaryEvent, SessionId, SpurEvent, SpurEventBody};
+use spur_core::plan::labels::derive_brain_session_id;
 use spur_tui::action::{Action, ViewId};
 use spur_tui::{app::App, UserInput};
 use tokio::sync::mpsc;
@@ -101,7 +102,10 @@ fn e_on_epic_opens_modal_and_enter_dispatches_active_session_prompt() {
             blocks,
             interrupt,
         }) => {
-            assert_eq!(session.0, "active-session");
+            assert_eq!(
+                session,
+                derive_brain_session_id(&SessionId("active-session".into())).into_session_id()
+            );
             assert!(!interrupt);
             let prompt = text_from_blocks(&blocks);
             assert!(
@@ -201,7 +205,9 @@ fn e_in_execute_modal_prefills_active_session_prompt_without_dispatch() {
 
     assert_eq!(
         app.current_view(),
-        &ViewId::SessionDetail(spur_acp::SessionId("active-session".into()))
+        &ViewId::SessionDetail(
+            derive_brain_session_id(&SessionId("active-session".into())).into_session_id()
+        )
     );
     let detail =
         spur_tui::test_support::session_detail(&app).expect("session detail should be active");
