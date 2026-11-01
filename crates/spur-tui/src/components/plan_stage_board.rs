@@ -69,12 +69,14 @@ pub fn render_stage_board(
         let stage_idx = first_stage + lane_idx;
         let tasks = tasks_in_stage(plan, stage_idx);
         let mut lines = Vec::new();
+        let mut selected_rows = None;
 
         if tasks.is_empty() {
             lines.push(Line::from("(empty)"));
         } else {
             for task in tasks {
                 let selected = task.task_id == selected_task_id;
+                let start_row = lines.len();
                 let title_line = vec![
                     Span::styled(
                         if selected { "▶ " } else { "  " },
@@ -109,6 +111,9 @@ pub fn render_stage_board(
                     }
                     lines.push(Line::from(meta_line));
                 }
+                if selected {
+                    selected_rows = Some((start_row, lines.len()));
+                }
                 lines.push(Line::raw(""));
             }
         }
@@ -129,7 +134,11 @@ pub fn render_stage_board(
             } else {
                 Style::default().fg(token(theme, "plan_inspector.board.stage.inactive.fg"))
             });
-        frame.render_widget(Paragraph::new(lines).block(block), *stage_area);
+        let offset = selection_offset(selected_rows, stage_area.height.saturating_sub(2) as usize);
+        frame.render_widget(
+            Paragraph::new(lines.into_iter().skip(offset).collect::<Vec<_>>()).block(block),
+            *stage_area,
+        );
     }
 }
 
@@ -163,6 +172,7 @@ pub fn render_stacked_stage_groups(
     theme: &Theme,
 ) {
     let mut lines = Vec::new();
+    let mut selected_rows = None;
     let active_stage_idx = plan
         .tasks
         .iter()
@@ -189,6 +199,7 @@ pub fn render_stacked_stage_groups(
         )));
         for task in tasks_in_stage(plan, stage_idx) {
             let selected = task.task_id == selected_task_id;
+            let start_row = lines.len();
             let mut task_line = vec![
                 Span::styled(
                     if selected { "▶ " } else { "  " },
@@ -218,12 +229,16 @@ pub fn render_stacked_stage_groups(
                 }
             }
             lines.push(Line::from(task_line));
+            if selected {
+                selected_rows = Some((start_row, lines.len()));
+            }
         }
         lines.push(Line::raw(""));
     }
 
+    let offset = selection_offset(selected_rows, area.height.saturating_sub(2) as usize);
     frame.render_widget(
-        Paragraph::new(lines).block(
+        Paragraph::new(lines.into_iter().skip(offset).collect::<Vec<_>>()).block(
             Block::default()
                 .borders(Borders::ALL)
                 .title("Plan board")
@@ -236,6 +251,12 @@ pub fn render_stacked_stage_groups(
         ),
         area,
     );
+}
+
+fn selection_offset(selected_rows: Option<(usize, usize)>, visible_rows: usize) -> usize {
+    selected_rows
+        .map(|(start, end)| end.saturating_sub(visible_rows).min(start))
+        .unwrap_or(0)
 }
 
 pub(crate) fn stage_grouped_tasks(plan: &TrackedPlan) -> Vec<&TrackedTask> {
