@@ -1,4 +1,60 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+#[test]
+fn next_action_survives_terminal_retry_history_at_wide_and_narrow_widths() {
+    for status in ["approved", "cancelled", "superseded"] {
+        let mut row = task("historical", status);
+        row.attempt = 2;
+        let fixture = Fixture::new(snapshot(vec![row], PlanSnapshotCounts::default()));
+        for width in [80, 200] {
+            let text = fixture.render(&mut fixture.view(), width, 24);
+            let header = text.lines().take(4).collect::<Vec<_>>().join("\n");
+            assert!(
+                header.contains("next: Review next task"),
+                "next action replaced by history:\n{text}"
+            );
+            assert!(
+                !header.contains("risk:") && !header.contains("retry 2/3"),
+                "terminal retry is not a current risk:\n{text}"
+            );
+        }
+    }
+}
+#[test]
+fn shared_failed_blocker_is_reported_once_without_an_invented_age() {
+    let failed = task("failed-lint", "failed");
+    let children = ["child-a", "child-b"].map(|id| {
+        let mut row = task(id, "pending");
+        row.depends_on = vec!["failed-lint".into()];
+        row.blocked_by = row.depends_on.clone();
+        row
+    });
+    let fixture = Fixture::new(snapshot(
+        vec![failed, children[0].clone(), children[1].clone()],
+        PlanSnapshotCounts {
+            failed: 1,
+            pending: 2,
+            ..Default::default()
+        },
+    ));
+    for width in [80, 200] {
+        let text = fixture.render(&mut fixture.view(), width, 24);
+        let header = text.lines().take(4).collect::<Vec<_>>().join("\n");
+        assert_eq!(
+            header.matches("failed-lint error").count(),
+            1,
+            "duplicate blocker risk:\n{text}"
+        );
+        assert!(
+            !header.contains("ago"),
+            "snapshot refresh is not a failure timestamp:\n{text}"
+        );
+        assert!(
+            header.contains("next: Review next task"),
+            "risk must preserve next action:\n{text}"
+        );
+        assert!(header.contains("risk: failed-lint error"));
+    }
+}
 fn add_worker(fixture: &mut Fixture, phase: spur_acp::LifecycleState) {
     use spur_acp::Role;
     for event in [
