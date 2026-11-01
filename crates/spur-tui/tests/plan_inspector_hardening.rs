@@ -639,3 +639,72 @@ fn every_backend_task_status_has_an_explicit_board_glyph() {
         );
     }
 }
+
+#[test]
+fn short_mixed_attention_counts_stay_visible_and_full_counts_are_inspectable() {
+    let statuses = [
+        "pending",
+        "ready",
+        "dispatched",
+        "awaiting_review",
+        "approved",
+        "rejected",
+        "failed",
+        "cancelled",
+        "superseded",
+        "blocked_on_setup_conflict",
+        "escalated_to_brain",
+    ];
+    let fixture = Fixture::new(snapshot(
+        statuses
+            .iter()
+            .enumerate()
+            .map(|(i, s)| task(&format!("T{i}"), s))
+            .collect(),
+        PlanSnapshotCounts {
+            pending: 2,
+            ready: 1,
+            dispatched: 1,
+            awaiting_review: 1,
+            approved: 1,
+            rejected: 1,
+            failed: 1,
+            cancelled: 2,
+            escalated: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    let text = fixture.render(&mut view, 90, 8);
+    let header = text.lines().take(3).collect::<Vec<_>>().join("\n");
+    for label in ["1 escalated", "1 setup conflict", "1 failed"] {
+        assert!(
+            header.contains(label),
+            "priority attention count hidden: {label}\n{text}"
+        );
+    }
+    fixture.key(&mut view, KeyCode::Char('?'));
+    let help = fixture
+        .render(&mut view, 90, 24)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    for label in [
+        "1 pending",
+        "1 ready",
+        "1 dispatched",
+        "1 awaiting_review",
+        "1 approved",
+        "1 rejected",
+        "1 failed",
+        "1 cancelled",
+        "1 superseded",
+        "1 setup conflict",
+        "1 escalated",
+    ] {
+        assert!(
+            help.contains(label),
+            "complete count missing from help: {label}\n{help}"
+        );
+    }
+}
