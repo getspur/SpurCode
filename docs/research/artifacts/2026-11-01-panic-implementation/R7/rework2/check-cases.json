@@ -1,0 +1,846 @@
+[
+  {
+    "id": "underscore_overflow",
+    "flags": [
+      "-Coverflow_checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": true,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "underscore_overflow_agree",
+    "flags": [
+      "-Coverflow_checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "underscore_debug",
+    "flags": [
+      "--codegen=debug_assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": true,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "underscore_debug_agree",
+    "flags": [
+      "--codegen=debug_assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "bare_overflow",
+    "flags": [
+      "-Coverflow-checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": true,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "bare_overflow_agree",
+    "flags": [
+      "-Coverflow-checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "bare_debug",
+    "flags": [
+      "--codegen=debug-assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": true,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "bare_debug_agree",
+    "flags": [
+      "--codegen=debug-assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "alias_last_wins",
+    "flags": [
+      "-Coverflow-checks=on",
+      "-Coverflow_checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": true,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "alias_last_wins_agree",
+    "flags": [
+      "-Coverflow-checks=on",
+      "-Coverflow_checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_0_agree",
+    "flags": [
+      "-Coverflow_checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_0_mismatch",
+    "flags": [
+      "-Coverflow_checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_1_agree",
+    "flags": [
+      "-C",
+      "overflow_checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_1_mismatch",
+    "flags": [
+      "-C",
+      "overflow_checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_2_agree",
+    "flags": [
+      "--codegen=overflow_checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_2_mismatch",
+    "flags": [
+      "--codegen=overflow_checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_3_agree",
+    "flags": [
+      "--codegen",
+      "overflow_checks=false"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_underscore_3_mismatch",
+    "flags": [
+      "--codegen",
+      "overflow_checks=false"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_0_agree",
+    "flags": [
+      "-Coverflow-checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_0_mismatch",
+    "flags": [
+      "-Coverflow-checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_1_agree",
+    "flags": [
+      "-C",
+      "overflow-checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_1_mismatch",
+    "flags": [
+      "-C",
+      "overflow-checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_2_agree",
+    "flags": [
+      "--codegen=overflow-checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_2_mismatch",
+    "flags": [
+      "--codegen=overflow-checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_3_agree",
+    "flags": [
+      "--codegen",
+      "overflow-checks=false"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_overflow_checks_hyphen_3_mismatch",
+    "flags": [
+      "--codegen",
+      "overflow-checks=false"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_0_agree",
+    "flags": [
+      "-Cdebug_assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_0_mismatch",
+    "flags": [
+      "-Cdebug_assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_1_agree",
+    "flags": [
+      "-C",
+      "debug_assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_1_mismatch",
+    "flags": [
+      "-C",
+      "debug_assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_2_agree",
+    "flags": [
+      "--codegen=debug_assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_2_mismatch",
+    "flags": [
+      "--codegen=debug_assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_3_agree",
+    "flags": [
+      "--codegen",
+      "debug_assertions=false"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_underscore_3_mismatch",
+    "flags": [
+      "--codegen",
+      "debug_assertions=false"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_0_agree",
+    "flags": [
+      "-Cdebug-assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_0_mismatch",
+    "flags": [
+      "-Cdebug-assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_1_agree",
+    "flags": [
+      "-C",
+      "debug-assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_1_mismatch",
+    "flags": [
+      "-C",
+      "debug-assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_2_agree",
+    "flags": [
+      "--codegen=debug-assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_2_mismatch",
+    "flags": [
+      "--codegen=debug-assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_3_agree",
+    "flags": [
+      "--codegen",
+      "debug-assertions=false"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "matrix_debug_assertions_hyphen_3_mismatch",
+    "flags": [
+      "--codegen",
+      "debug-assertions=false"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_overflow_checks_bare_last_agree",
+    "flags": [
+      "-C",
+      "overflow_checks=off",
+      "--codegen=overflow-checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_overflow_checks_bare_last_mismatch",
+    "flags": [
+      "-C",
+      "overflow_checks=off",
+      "--codegen=overflow-checks"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_overflow_checks_off_last_agree",
+    "flags": [
+      "--codegen=overflow_checks",
+      "-C",
+      "overflow-checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_overflow_checks_off_last_mismatch",
+    "flags": [
+      "--codegen=overflow_checks",
+      "-C",
+      "overflow-checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_overflow_checks_underscore_on_last_agree",
+    "flags": [
+      "--codegen",
+      "overflow-checks=off",
+      "-Coverflow_checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_overflow_checks_underscore_on_last_mismatch",
+    "flags": [
+      "--codegen",
+      "overflow-checks=off",
+      "-Coverflow_checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_overflow_checks_hyphen_off_last_agree",
+    "flags": [
+      "-Coverflow_checks=on",
+      "--codegen",
+      "overflow-checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_overflow_checks_hyphen_off_last_mismatch",
+    "flags": [
+      "-Coverflow_checks=on",
+      "--codegen",
+      "overflow-checks=off"
+    ],
+    "key": "overflow_checks",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "invalid_overflow_checks_0",
+    "flags": [
+      "-Coverflow_checks=0"
+    ],
+    "key": "overflow_checks",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "invalid_overflow_checks_1",
+    "flags": [
+      "-Coverflow_checks=1"
+    ],
+    "key": "overflow_checks",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "invalid_overflow_checks_empty",
+    "flags": [
+      "-Coverflow_checks="
+    ],
+    "key": "overflow_checks",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "invalid_overflow_checks_superseded",
+    "flags": [
+      "-Coverflow_checks=0",
+      "-Coverflow-checks=on"
+    ],
+    "key": "overflow_checks",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "order_debug_assertions_bare_last_agree",
+    "flags": [
+      "-C",
+      "debug_assertions=off",
+      "--codegen=debug-assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_debug_assertions_bare_last_mismatch",
+    "flags": [
+      "-C",
+      "debug_assertions=off",
+      "--codegen=debug-assertions"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_debug_assertions_off_last_agree",
+    "flags": [
+      "--codegen=debug_assertions",
+      "-C",
+      "debug-assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_debug_assertions_off_last_mismatch",
+    "flags": [
+      "--codegen=debug_assertions",
+      "-C",
+      "debug-assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_debug_assertions_underscore_on_last_agree",
+    "flags": [
+      "--codegen",
+      "debug-assertions=off",
+      "-Cdebug_assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_debug_assertions_underscore_on_last_mismatch",
+    "flags": [
+      "--codegen",
+      "debug-assertions=off",
+      "-Cdebug_assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": true,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "order_debug_assertions_hyphen_off_last_agree",
+    "flags": [
+      "-Cdebug_assertions=on",
+      "--codegen",
+      "debug-assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": false,
+    "review": false,
+    "valid": true,
+    "accepted": true
+  },
+  {
+    "id": "order_debug_assertions_hyphen_off_last_mismatch",
+    "flags": [
+      "-Cdebug_assertions=on",
+      "--codegen",
+      "debug-assertions=off"
+    ],
+    "key": "debug_assertions",
+    "effective": false,
+    "semantic": true,
+    "review": false,
+    "valid": true,
+    "accepted": false
+  },
+  {
+    "id": "invalid_debug_assertions_0",
+    "flags": [
+      "-Cdebug_assertions=0"
+    ],
+    "key": "debug_assertions",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "invalid_debug_assertions_1",
+    "flags": [
+      "-Cdebug_assertions=1"
+    ],
+    "key": "debug_assertions",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "invalid_debug_assertions_empty",
+    "flags": [
+      "-Cdebug_assertions="
+    ],
+    "key": "debug_assertions",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  },
+  {
+    "id": "invalid_debug_assertions_superseded",
+    "flags": [
+      "-Cdebug_assertions=0",
+      "-Cdebug-assertions=on"
+    ],
+    "key": "debug_assertions",
+    "effective": null,
+    "semantic": true,
+    "review": false,
+    "valid": false,
+    "accepted": false
+  }
+]
