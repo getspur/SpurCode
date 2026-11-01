@@ -1,0 +1,7 @@
+fn ping() {}
+fn demo() {
+    let _plain = || /*body:plain*/ { /*site:plain*/ ping(); };
+    let _deferred = async || /*body:deferred*/ { /*site:deferred_one*/ ping(); /*site:deferred_two*/ ping(); };
+    let _moving = async move || /*body:moving*/ { /*site:moving*/ ping(); };
+    let _expression = async || /*body:expression*/ /*site:expression*/ ping();
+}

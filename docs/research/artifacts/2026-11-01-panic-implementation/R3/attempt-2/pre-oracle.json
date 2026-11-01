@@ -1,0 +1,365 @@
+{
+  "async": {
+    "source_oid": "0b0415d1d5b9358f314cf3ab33cf4dfaf21d6e72",
+    "file_path": "src/lib.rs",
+    "byte_length": 358,
+    "bodies": {
+      "ping": {
+        "byte_range": [
+          10,
+          12
+        ],
+        "kind": "function"
+      },
+      "demo": {
+        "byte_range": [
+          23,
+          357
+        ],
+        "kind": "function"
+      },
+      "plain": {
+        "byte_range": [
+          60,
+          86
+        ],
+        "kind": "closure"
+      },
+      "deferred": {
+        "byte_range": [
+          135,
+          198
+        ],
+        "kind": "async_closure"
+      },
+      "moving": {
+        "byte_range": [
+          248,
+          275
+        ],
+        "kind": "async_closure"
+      },
+      "expression": {
+        "byte_range": [
+          348,
+          354
+        ],
+        "kind": "async_closure"
+      }
+    },
+    "sites": [
+      {
+        "label": "plain",
+        "byte_range": [
+          77,
+          83
+        ],
+        "body": "plain",
+        "call_text": "ping()"
+      },
+      {
+        "label": "deferred_one",
+        "byte_range": [
+          159,
+          165
+        ],
+        "body": "deferred",
+        "call_text": "ping()"
+      },
+      {
+        "label": "deferred_two",
+        "byte_range": [
+          189,
+          195
+        ],
+        "body": "deferred",
+        "call_text": "ping()"
+      },
+      {
+        "label": "moving",
+        "byte_range": [
+          266,
+          272
+        ],
+        "body": "moving",
+        "call_text": "ping()"
+      },
+      {
+        "label": "expression",
+        "byte_range": [
+          348,
+          354
+        ],
+        "body": "expression",
+        "call_text": "ping()"
+      }
+    ]
+  },
+  "repeats": {
+    "source_oid": "a7e27191c98763ce6411cdd1ef94d7a335d7273f",
+    "file_path": "src/lib.rs",
+    "byte_length": 1063,
+    "bodies": {
+      "length": {
+        "byte_range": [
+          27,
+          32
+        ],
+        "kind": "function"
+      },
+      "value": {
+        "byte_range": [
+          50,
+          55
+        ],
+        "kind": "function"
+      },
+      "generic": {
+        "byte_range": [
+          85,
+          87
+        ],
+        "kind": "function"
+      },
+      "demo": {
+        "byte_range": [
+          98,
+          1062
+        ],
+        "kind": "function"
+      },
+      "closure": {
+        "byte_range": [
+          401,
+          504
+        ],
+        "kind": "closure"
+      },
+      "async": {
+        "byte_range": [
+          544,
+          676
+        ],
+        "kind": "async_block"
+      },
+      "deferred": {
+        "byte_range": [
+          725,
+          831
+        ],
+        "kind": "async_closure"
+      },
+      "count": {
+        "byte_range": [
+          226,
+          234
+        ],
+        "kind": "const_expression"
+      },
+      "compound": {
+        "byte_range": [
+          325,
+          359
+        ],
+        "kind": "const_expression"
+      },
+      "closure_count": {
+        "byte_range": [
+          492,
+          500
+        ],
+        "kind": "const_expression"
+      },
+      "async_count": {
+        "byte_range": [
+          608,
+          672
+        ],
+        "kind": "const_expression"
+      },
+      "deferred_count": {
+        "byte_range": [
+          819,
+          827
+        ],
+        "kind": "const_expression"
+      },
+      "type_count": {
+        "byte_range": [
+          889,
+          897
+        ],
+        "kind": "const_expression"
+      },
+      "generic_count": {
+        "byte_range": [
+          936,
+          994
+        ],
+        "kind": "const_expression"
+      },
+      "item": {
+        "byte_range": [
+          1051,
+          1059
+        ],
+        "kind": "const_initializer"
+      }
+    },
+    "sites": [
+      {
+        "label": "runtime_const",
+        "byte_range": [
+          142,
+          150
+        ],
+        "body": "demo",
+        "call_text": "length()"
+      },
+      {
+        "label": "element",
+        "byte_range": [
+          187,
+          194
+        ],
+        "body": "demo",
+        "call_text": "value()"
+      },
+      {
+        "label": "count",
+        "byte_range": [
+          226,
+          234
+        ],
+        "body": "count",
+        "call_text": "length()"
+      },
+      {
+        "label": "compound_element",
+        "byte_range": [
+          284,
+          291
+        ],
+        "body": "demo",
+        "call_text": "value()"
+      },
+      {
+        "label": "left",
+        "byte_range": [
+          325,
+          333
+        ],
+        "body": "compound",
+        "call_text": "length()"
+      },
+      {
+        "label": "right",
+        "byte_range": [
+          351,
+          359
+        ],
+        "body": "compound",
+        "call_text": "length()"
+      },
+      {
+        "label": "closure_element",
+        "byte_range": [
+          437,
+          444
+        ],
+        "body": "closure",
+        "call_text": "value()"
+      },
+      {
+        "label": "closure_count",
+        "byte_range": [
+          492,
+          500
+        ],
+        "body": "closure_count",
+        "call_text": "length()"
+      },
+      {
+        "label": "async_element",
+        "byte_range": [
+          578,
+          585
+        ],
+        "body": "async",
+        "call_text": "value()"
+      },
+      {
+        "label": "async_left",
+        "byte_range": [
+          630,
+          638
+        ],
+        "body": "async_count",
+        "call_text": "length()"
+      },
+      {
+        "label": "async_right",
+        "byte_range": [
+          662,
+          670
+        ],
+        "body": "async_count",
+        "call_text": "length()"
+      },
+      {
+        "label": "deferred_element",
+        "byte_range": [
+          762,
+          769
+        ],
+        "body": "deferred",
+        "call_text": "value()"
+      },
+      {
+        "label": "deferred_count",
+        "byte_range": [
+          819,
+          827
+        ],
+        "body": "deferred_count",
+        "call_text": "length()"
+      },
+      {
+        "label": "type_count",
+        "byte_range": [
+          889,
+          897
+        ],
+        "body": "type_count",
+        "call_text": "length()"
+      },
+      {
+        "label": "generic_call",
+        "byte_range": [
+          926,
+          997
+        ],
+        "body": "demo",
+        "call_text": "generic::<{ /*body:generic_count*/ /*site:generic_count*/ length() }>()"
+      },
+      {
+        "label": "generic_count",
+        "byte_range": [
+          984,
+          992
+        ],
+        "body": "generic_count",
+        "call_text": "length()"
+      },
+      {
+        "label": "item",
+        "byte_range": [
+          1051,
+          1059
+        ],
+        "body": "item",
+        "call_text": "length()"
+      }
+    ]
+  }
+}
