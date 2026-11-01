@@ -311,6 +311,7 @@ fn status_glyph(status: &str) -> &str {
         "failed" => "✕",
         "cancelled" => "⊝",
         "superseded" => "⇢",
+        "escalated_to_brain" => "!",
         BLOCKED_ON_SETUP_CONFLICT_STATUS => "⦿",
         _ => "?",
     }
@@ -329,7 +330,7 @@ fn status_style(theme: &Theme, status: &str) -> Style {
         "approved" => Style::default()
             .fg(token(theme, "plan_inspector.status.approved.fg"))
             .add_modifier(Modifier::BOLD),
-        "rejected" => Style::default()
+        "rejected" | "escalated_to_brain" => Style::default()
             .fg(token(theme, "plan_inspector.status.rejected.fg"))
             .add_modifier(Modifier::BOLD),
         "failed" => Style::default()

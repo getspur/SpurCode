@@ -1286,6 +1286,7 @@ impl View for PlanInspectorView {
                 + plan.counts.approved
                 + plan.counts.rejected
                 + plan.counts.failed
+                + plan.counts.escalated
                 + plan.counts.cancelled;
             let gauge_ratio = if total_tasks == 0 {
                 0.0
@@ -1721,6 +1722,11 @@ fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
         plan.counts.failed,
         "failed",
         "plan_inspector.header.count.failed.fg",
+    );
+    push_count(
+        plan.counts.escalated,
+        "escalated",
+        "plan_inspector.header.count.rejected.fg",
     );
     let blocked = plan
         .tasks
