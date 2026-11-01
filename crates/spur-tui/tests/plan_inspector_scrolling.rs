@@ -11,6 +11,12 @@ use spur_tui::{
 };
 
 fn projection(issue: bool) -> PlanProjectionStore {
+    projection_with_summary(
+        issue,
+        format!("{} OUTPUT_TAIL", "wrapped-output ".repeat(300)),
+    )
+}
+fn projection_with_summary(issue: bool, summary: String) -> PlanProjectionStore {
     let mut store = PlanProjectionStore::default();
     store.apply(&SpurEvent::now(SpurEventBody::PlanSnapshotUpdated {
         session_id: SessionId("scroll-brain".into()),
@@ -37,7 +43,7 @@ fn projection(issue: bool) -> PlanProjectionStore {
                 depends_on: vec![],
                 blocked_by: vec![],
                 unblocks: vec![],
-                summary: Some(format!("{} OUTPUT_TAIL", "wrapped-output ".repeat(300))),
+                summary: Some(summary),
                 feedback: None,
                 error: None,
                 worker_branch: None,
@@ -58,14 +64,22 @@ fn key(view: &mut PlanInspectorView, ctx: &ViewContext<'_>, code: KeyCode) -> Op
     view.handle_key(KeyEvent::new(code, KeyModifiers::NONE), ctx)
 }
 fn render(view: &mut PlanInspectorView, ctx: &ViewContext<'_>) -> String {
-    let mut terminal = Terminal::new(TestBackend::new(100, 16)).unwrap();
+    render_size(view, ctx, 100, 16)
+}
+fn render_size(
+    view: &mut PlanInspectorView,
+    ctx: &ViewContext<'_>,
+    width: u16,
+    height: u16,
+) -> String {
+    let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
     terminal
         .draw(|frame| view.render(frame, frame.area(), ctx))
         .unwrap();
     let buffer = terminal.backend().buffer();
-    (0..16)
+    (0..height)
         .map(|y| {
-            (0..100)
+            (0..width)
                 .map(|x| buffer[(x, y)].symbol())
                 .collect::<String>()
         })
@@ -194,5 +208,102 @@ fn confirmation_owns_tab_and_does_not_change_board_focus() {
     assert!(
         key(&mut view, &ctx, KeyCode::Down).is_none(),
         "confirmation Tab leaked to detail focus"
+    );
+}
+
+#[test]
+fn large_output_bottom_is_reachable_beyond_u16_visual_rows() {
+    let plans = projection_with_summary(true, String::new());
+    let lineage = ExecutorLineage::new();
+    let synopsis = SessionSynopsisProjection::new();
+    let ctx = ViewContext {
+        lineage: &lineage,
+        plan_projection: &plans,
+        synopsis: &synopsis,
+        brain_status: &BrainStatus::Idle,
+        flag_summary: None,
+        tombstone: None,
+        transient_hint_override: None,
+        notebook_ready: false,
+        theme: spur_tui::theme::fallback_theme(),
+    };
+    let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Enter);
+    let now = chrono::Utc::now();
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::IssueDetailFetched {
+            requested_id: "bd-scroll".into(),
+            issue: spur_acp::IssueDetailEvent {
+                id: "bd-scroll".into(),
+                source: "beads".into(),
+                title: "loaded issue".into(),
+                status: "open".into(),
+                body: format!(
+                    "{}HUGE_OUTPUT_TAIL",
+                    "a loaded issue line that wraps across this narrow detail pane\n"
+                        .repeat(35_000)
+                ),
+                labels: vec![],
+                assignee: None,
+                url: String::new(),
+                priority: None,
+                issue_type: None,
+                blocked_by: vec![],
+                comments: vec![],
+                due_at: None,
+                created_at: now,
+                updated_at: now,
+            },
+        }),
+        &ctx,
+    );
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Char('G'));
+    let bottom = render(&mut view, &ctx);
+    assert!(
+        bottom.contains("HUGE_OUTPUT_TAIL"),
+        "large loaded wrapped output tail is unreachable"
+    );
+    let wide = render_size(&mut view, &ctx, 200, 24);
+    assert!(
+        wide.contains("HUGE_OUTPUT_TAIL"),
+        "resize must re-clamp the stored offset"
+    );
+    key(&mut view, &ctx, KeyCode::Up);
+    assert_ne!(
+        wide,
+        render_size(&mut view, &ctx, 200, 24),
+        "large-output up must move immediately"
+    );
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Char('G'));
+    assert!(render(&mut view, &ctx).contains("HUGE_OUTPUT_TAIL"));
+}
+#[test]
+fn opening_issue_clears_a_pending_bottom_request_before_the_next_draw() {
+    let plans = projection(true);
+    let lineage = ExecutorLineage::new();
+    let synopsis = SessionSynopsisProjection::new();
+    let ctx = ViewContext {
+        lineage: &lineage,
+        plan_projection: &plans,
+        synopsis: &synopsis,
+        brain_status: &BrainStatus::Idle,
+        flag_summary: None,
+        tombstone: None,
+        transient_hint_override: None,
+        notebook_ready: false,
+        theme: spur_tui::theme::fallback_theme(),
+    };
+    let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Tab);
+    key(&mut view, &ctx, KeyCode::Char('G'));
+    key(&mut view, &ctx, KeyCode::Enter);
+    let text = render(&mut view, &ctx);
+    assert!(
+        text.contains("scroll-task · codex"),
+        "issue must open at top after a queued G:\n{text}"
     );
 }
