@@ -79,9 +79,14 @@ fn render_size(
     let buffer = terminal.backend().buffer();
     (0..height)
         .map(|y| {
-            (0..width)
-                .map(|x| buffer[(x, y)].symbol())
-                .collect::<String>()
+            let mut row = String::new();
+            let mut x = 0;
+            while x < width {
+                let symbol = buffer[(x, y)].symbol();
+                row.push_str(symbol);
+                x += ratatui::text::Span::raw(symbol).width().max(1) as u16;
+            }
+            row
         })
         .collect::<Vec<_>>()
         .join("\n")
@@ -211,6 +216,32 @@ fn confirmation_owns_tab_and_does_not_change_board_focus() {
     );
 }
 
+fn load_issue(view: &mut PlanInspectorView, ctx: &ViewContext<'_>, body: &str) {
+    let now = chrono::Utc::now();
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::IssueDetailFetched {
+            requested_id: "bd-scroll".into(),
+            issue: spur_acp::IssueDetailEvent {
+                id: "bd-scroll".into(),
+                source: "beads".into(),
+                title: "loaded issue".into(),
+                status: "open".into(),
+                body: body.to_string(),
+                labels: vec![],
+                assignee: None,
+                url: String::new(),
+                priority: None,
+                issue_type: None,
+                blocked_by: vec![],
+                comments: vec![],
+                due_at: None,
+                created_at: now,
+                updated_at: now,
+            },
+        }),
+        ctx,
+    );
+}
 #[test]
 fn large_output_bottom_is_reachable_beyond_u16_visual_rows() {
     let plans = projection_with_summary(true, String::new());
@@ -230,33 +261,13 @@ fn large_output_bottom_is_reachable_beyond_u16_visual_rows() {
     let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
     render(&mut view, &ctx);
     key(&mut view, &ctx, KeyCode::Enter);
-    let now = chrono::Utc::now();
-    view.handle_spur_event(
-        &SpurEvent::now(SpurEventBody::IssueDetailFetched {
-            requested_id: "bd-scroll".into(),
-            issue: spur_acp::IssueDetailEvent {
-                id: "bd-scroll".into(),
-                source: "beads".into(),
-                title: "loaded issue".into(),
-                status: "open".into(),
-                body: format!(
-                    "{}HUGE_OUTPUT_TAIL",
-                    "a loaded issue line that wraps across this narrow detail pane\n"
-                        .repeat(35_000)
-                ),
-                labels: vec![],
-                assignee: None,
-                url: String::new(),
-                priority: None,
-                issue_type: None,
-                blocked_by: vec![],
-                comments: vec![],
-                due_at: None,
-                created_at: now,
-                updated_at: now,
-            },
-        }),
+    load_issue(
+        &mut view,
         &ctx,
+        &format!(
+            "{}HUGE_OUTPUT_TAIL",
+            "a loaded issue line that wraps across this narrow detail pane\n".repeat(35_000)
+        ),
     );
     render(&mut view, &ctx);
     key(&mut view, &ctx, KeyCode::Char('G'));
@@ -306,4 +317,74 @@ fn opening_issue_clears_a_pending_bottom_request_before_the_next_draw() {
         text.contains("scroll-task · codex"),
         "issue must open at top after a queued G:\n{text}"
     );
+}
+
+#[test]
+fn zero_cell_whitespace_does_not_drop_wide_output_graphemes() {
+    println!(
+        "I3_CALLBACK_WIDTHS tab={} zero_width_prefix={}",
+        ratatui::text::Span::raw("\t").width(),
+        ratatui::text::Span::raw("\u{200B}").width()
+    );
+    let plans = projection_with_summary(true, String::new());
+    let lineage = ExecutorLineage::new();
+    let synopsis = SessionSynopsisProjection::new();
+    let ctx = ViewContext {
+        lineage: &lineage,
+        plan_projection: &plans,
+        synopsis: &synopsis,
+        brain_status: &BrainStatus::Idle,
+        flag_summary: None,
+        tombstone: None,
+        transient_hint_override: None,
+        notebook_ready: false,
+        theme: spur_tui::theme::fallback_theme(),
+    };
+    let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Enter);
+    load_issue(
+        &mut view,
+        &ctx,
+        &format!("\u{200B} {}你TAIL", "b".repeat(45)),
+    );
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Char('G'));
+    let text = render(&mut view, &ctx);
+    assert!(
+        text.contains("你TAIL"),
+        "wide grapheme was clipped from virtual rows:\n{text}"
+    );
+}
+
+#[test]
+fn multiline_unicode_issue_error_keeps_source_and_style_offsets_aligned() {
+    let plans = projection_with_summary(true, String::new());
+    let lineage = ExecutorLineage::new();
+    let synopsis = SessionSynopsisProjection::new();
+    let ctx = ViewContext {
+        lineage: &lineage,
+        plan_projection: &plans,
+        synopsis: &synopsis,
+        brain_status: &BrainStatus::Idle,
+        flag_summary: None,
+        tombstone: None,
+        transient_hint_override: None,
+        notebook_ready: false,
+        theme: spur_tui::theme::fallback_theme(),
+    };
+    let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Enter);
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::IssueCommandError {
+            operation: "GetIssueDetail".into(),
+            id: Some("bd-scroll".into()),
+            error: "x\n你".into(),
+        }),
+        &ctx,
+    );
+    render(&mut view, &ctx);
+    key(&mut view, &ctx, KeyCode::Char('G'));
+    assert!(render(&mut view, &ctx).contains('你'));
 }
