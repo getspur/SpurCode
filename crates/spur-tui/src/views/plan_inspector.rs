@@ -1296,7 +1296,10 @@ impl View for PlanInspectorView {
             frame.render_widget(
                 Gauge::default()
                     .ratio(gauge_ratio.clamp(0.0, 1.0))
-                    .label(format!("{} / {} done", plan.counts.approved, total_tasks))
+                    .label(format!(
+                        "{} / {} approved",
+                        plan.counts.approved, total_tasks
+                    ))
                     .gauge_style(
                         Style::default().fg(token(ctx.theme, "plan_inspector.gauge.fill.fg")),
                     )
@@ -1674,6 +1677,13 @@ fn plan_status_color(theme: &Theme, status: &str) -> Color {
 }
 
 fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
+    let count_status = |status: &str| {
+        plan.tasks
+            .iter()
+            .filter(|task| task.status == status)
+            .count() as u32
+    };
+    let setup_conflicts = count_status("blocked_on_setup_conflict");
     let mut spans = Vec::new();
     let mut push_count = |count: u32, label: &'static str, token_name: &'static str| {
         if count == 0 {
@@ -1689,7 +1699,7 @@ fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
     };
 
     push_count(
-        plan.counts.pending,
+        plan.counts.pending.saturating_sub(setup_conflicts),
         "pending",
         "plan_inspector.header.count.pending.fg",
     );
@@ -1728,27 +1738,32 @@ fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
         "escalated",
         "plan_inspector.header.count.rejected.fg",
     );
-    let blocked = plan
-        .tasks
-        .iter()
-        .filter(|task| !task.blocked_by.is_empty() || task.status == "blocked_on_setup_conflict")
-        .count() as u32;
-    push_count(blocked, "blocked", "plan_inspector.header.count.blocked.fg");
-    let setup_conflicts = plan
-        .tasks
-        .iter()
-        .filter(|task| task.status == "blocked_on_setup_conflict")
-        .count() as u32;
     push_count(
         setup_conflicts,
         "setup conflict",
         "plan_inspector.header.count.blocked.fg",
     );
     push_count(
-        plan.counts.cancelled,
+        count_status("cancelled"),
         "cancelled",
         "plan_inspector.header.count.cancelled.fg",
     );
+    push_count(
+        count_status("superseded"),
+        "superseded",
+        "plan_inspector.header.count.cancelled.fg",
+    );
+    let dependency_blocked = plan
+        .tasks
+        .iter()
+        .filter(|task| !task.blocked_by.is_empty())
+        .count();
+    if dependency_blocked > 0 {
+        spans.push(Span::styled(
+            format!(" | deps blocked: {dependency_blocked}"),
+            Style::default().fg(token(theme, "plan_inspector.header.count.blocked.fg")),
+        ));
+    }
 
     spans
 }

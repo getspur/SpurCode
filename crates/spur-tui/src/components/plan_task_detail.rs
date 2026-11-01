@@ -204,7 +204,17 @@ fn hero_line(task: &TrackedTask, live_node: Option<&ExecutorNode>, theme: &Theme
     if let Some(node) = live_node {
         spans.push(Span::raw(" · "));
         spans.push(Span::styled(
-            format!("live {} {:?}", node.agent, node.phase).to_lowercase(),
+            format!(
+                "{} {} {:?}",
+                if super::plan_stage_board::is_live_phase(node.phase) {
+                    "live"
+                } else {
+                    "last worker"
+                },
+                node.agent,
+                node.phase
+            )
+            .to_lowercase(),
             Style::default().fg(token(theme, "plan_inspector.chip.live.fg")),
         ));
     }

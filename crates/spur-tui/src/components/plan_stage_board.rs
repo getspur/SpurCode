@@ -357,7 +357,16 @@ fn task_meta_chips<'a>(
     if let Some(issue_id) = task.issue_id.as_deref() {
         if let Some(node) = preferred_live_node(lineage, issue_id) {
             chips.push(Span::styled(
-                format!("{}:{}", node.agent, phase_label(node.phase)),
+                format!(
+                    "{}{}:{}",
+                    if is_live_phase(node.phase) {
+                        ""
+                    } else {
+                        "last "
+                    },
+                    node.agent,
+                    phase_label(node.phase)
+                ),
                 Style::default().fg(token(theme, "plan_inspector.chip.live.fg")),
             ));
         }
@@ -461,7 +470,7 @@ fn setup_conflict_file_count_from_summary(summary: &str) -> Option<usize> {
         .and_then(|count| count.parse().ok())
 }
 
-fn is_live_phase(phase: LifecycleState) -> bool {
+pub(crate) fn is_live_phase(phase: LifecycleState) -> bool {
     !matches!(
         phase,
         LifecycleState::Succeeded | LifecycleState::Failed | LifecycleState::Cancelled
