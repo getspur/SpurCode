@@ -1,4 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use unicode_segmentation::UnicodeSegmentation;
 #[test]
 fn selected_detail_prioritizes_action_and_keeps_verbose_metadata_accessible() {
     let mut row = task("task-short", "failed");
@@ -871,6 +872,11 @@ fn stream_help_and_modal_dependency_keys_do_not_leak_into_browsing() {
     view.enter_stream_peek("audit-exec".into(), "task-a".into());
     let text = fixture.render_streams(&mut view, 120, 24);
     let footer = text.lines().last().unwrap();
+    let narrow = fixture.render_streams(&mut view, 40, 24);
+    assert!(
+        narrow.contains("? help"),
+        "narrow peek must retain help access:\n{narrow}"
+    );
     assert!(
         footer.contains("j/k: scroll") && !footer.contains("j/k: task"),
         "stream footer leaks browsing:\n{text}"
@@ -971,4 +977,39 @@ fn unicode_status_footer_preserves_essential_hints_within_cell_budget() {
             serde_json::json!({"mode":"board","width":width,"cells":ratatui::text::Span::raw(footer).width()})
         );
     }
+}
+
+#[test]
+fn cell_arabic_footer_keeps_controls_visible_under_contextual_width() {
+    let fixture = Fixture::new(snapshot(
+        vec![task("task-a", "pending")],
+        PlanSnapshotCounts {
+            pending: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::PlanCommandError {
+            operation: "RetryPlanTask".into(),
+            plan_id: Some("plan-audit".into()),
+            error: "لا".repeat(80),
+        }),
+        &fixture.ctx(),
+    );
+    let text = fixture.render(&mut view, 160, 24);
+    let footer = text.lines().last().unwrap();
+    assert!(
+        footer.contains("Esc close") && footer.contains("? help"),
+        "contextual string width displaced essential controls:\n{text}"
+    );
+    let cells = footer
+        .graphemes(true)
+        .map(|g| ratatui::text::Span::raw(g).width())
+        .sum::<usize>();
+    assert!(cells <= 160);
+    println!(
+        "I10_FOOTER {}",
+        serde_json::json!({"mode":"board-arabic","width":160,"cells":cells})
+    );
 }

@@ -672,6 +672,18 @@ fn plan_inspector_task_detail_scroll_affordance() {
 
     let down_action = view.handle_key(KeyEvent::new(KeyCode::PageDown, KeyModifiers::NONE), &ctx);
     assert!(matches!(down_action, Some(Action::ScrollDown)));
+    terminal
+        .draw(|frame| view.render(frame, frame.area(), &ctx))
+        .unwrap();
+    let first_page = terminal.backend().buffer().clone();
+    assert_eq!(
+        visible_body_indices(&first_page, "body-line-")
+            .first()
+            .copied(),
+        visible_body_indices(&initial, "body-line-")
+            .last()
+            .map(|index| index + 1)
+    );
     let down_action = view.handle_key(KeyEvent::new(KeyCode::PageDown, KeyModifiers::NONE), &ctx);
     assert!(matches!(down_action, Some(Action::ScrollDown)));
 
@@ -679,7 +691,14 @@ fn plan_inspector_task_detail_scroll_affordance() {
         .draw(|frame| view.render(frame, frame.area(), &ctx))
         .unwrap();
     let scrolled = terminal.backend().buffer().clone();
-    assert!(buffer_contains(&scrolled, "body-line-020"));
+    assert_eq!(
+        visible_body_indices(&scrolled, "body-line-")
+            .first()
+            .copied(),
+        visible_body_indices(&first_page, "body-line-")
+            .last()
+            .map(|index| index + 1)
+    );
 }
 
 #[test]
@@ -749,7 +768,9 @@ fn plan_inspector_detail_scroll_reset_when_switching_tasks() {
         .draw(|frame| view.render(frame, frame.area(), &ctx))
         .unwrap();
     let a_scrolled = terminal.backend().buffer().clone();
-    assert!(buffer_contains(&a_scrolled, "A-body-line-020"));
+    assert!(visible_body_indices(&a_scrolled, "A-body-line-")
+        .first()
+        .is_some_and(|index| *index > 0));
 
     let lane_right = view.handle_key(KeyEvent::new(KeyCode::Char('l'), KeyModifiers::NONE), &ctx);
     assert!(lane_right.is_none());
@@ -778,9 +799,14 @@ fn plan_inspector_detail_scroll_reset_when_switching_tasks() {
         .draw(|frame| view.render(frame, frame.area(), &ctx))
         .unwrap();
     let b_scrolled = terminal.backend().buffer().clone();
-    assert!(
-        buffer_contains(&b_scrolled, "B-body-line-000"),
-        "after one page down, switched task body should start at top due reset scroll"
+    assert_eq!(
+        visible_body_indices(&b_scrolled, "B-body-line-")
+            .first()
+            .copied(),
+        visible_body_indices(&b_open, "B-body-line-")
+            .last()
+            .map(|index| index + 1),
+        "paging the switched task must follow its own first page"
     );
     assert!(
         !buffer_contains(&b_scrolled, "A-body-line-020"),
@@ -813,8 +839,16 @@ fn plan_inspector_detail_scroll_reset_when_switching_tasks() {
         .unwrap();
     let b_reopen_scrolled = terminal.backend().buffer().clone();
     assert!(
-        buffer_contains(&b_reopen_scrolled, "B-body-line-000"),
-        "reopening after close should reset scroll to top"
+        buffer_contains(&b_reopen, "B-body-line-000"),
+        "reopening must reset to top before paging"
+    );
+    assert_eq!(
+        visible_body_indices(&b_reopen_scrolled, "B-body-line-")
+            .first()
+            .copied(),
+        visible_body_indices(&b_reopen, "B-body-line-")
+            .last()
+            .map(|index| index + 1)
     );
 
     let first_back_action = view.handle_key(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE), &ctx);
@@ -1431,4 +1465,23 @@ fn lineage_with_long_running_ui() -> ExecutorLineage {
         },
     });
     lineage
+}
+
+fn visible_body_indices(buffer: &Buffer, prefix: &str) -> Vec<usize> {
+    let mut indices = Vec::new();
+    for y in 0..buffer.area.height {
+        let row = (0..buffer.area.width)
+            .map(|x| buffer[(x, y)].symbol())
+            .collect::<String>();
+        if let Some(start) = row.find(prefix) {
+            let number = row[start + prefix.len()..]
+                .chars()
+                .take_while(|ch| ch.is_ascii_digit())
+                .collect::<String>();
+            if let Ok(index) = number.parse() {
+                indices.push(index);
+            }
+        }
+    }
+    indices
 }
