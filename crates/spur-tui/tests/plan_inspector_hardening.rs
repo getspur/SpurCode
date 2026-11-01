@@ -1,4 +1,61 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+#[test]
+fn setup_conflict_is_blocked_without_dependency_blockers() {
+    let mut conflict = task("conflict", "blocked_on_setup_conflict");
+    conflict.summary = Some("Setup overlay conflict applying parent: 1 file".into());
+    conflict.error = Some("src/conflicted.rs".into());
+    let fixture = Fixture::new(snapshot(
+        vec![conflict],
+        PlanSnapshotCounts {
+            pending: 1,
+            ..Default::default()
+        },
+    ));
+    let text = fixture.render(&mut fixture.view(), 200, 24);
+    let header = text.lines().take(4).collect::<Vec<_>>().join("\n");
+    assert!(
+        header.contains("1 setup conflict"),
+        "setup conflict missing from attention counts:\n{text}"
+    );
+    assert!(
+        text.contains("BLOCKED setup conflict"),
+        "setup conflict lacks a reason banner:\n{text}"
+    );
+    assert!(
+        text.contains("src/conflicted.rs"),
+        "conflict file must be visible:\n{text}"
+    );
+}
+#[test]
+fn ordinary_pending_and_dependency_wait_have_distinct_blocking_feedback() {
+    for (blocked, expected) in [(false, false), (true, true)] {
+        let mut row = task("pending-task", "pending");
+        if blocked {
+            row.depends_on = vec!["external-parent".into()];
+            row.blocked_by = row.depends_on.clone();
+        }
+        let fixture = Fixture::new(snapshot(
+            vec![row],
+            PlanSnapshotCounts {
+                pending: 1,
+                ..Default::default()
+            },
+        ));
+        let text = fixture.render(&mut fixture.view(), 200, 24);
+        assert_eq!(
+            text.contains("BLOCKED"),
+            expected,
+            "pending classification wrong:\n{text}"
+        );
+        assert!(
+            !text.contains("setup conflict"),
+            "dependency wait is not a setup conflict:\n{text}"
+        );
+        if blocked {
+            assert!(text.contains("external-parent"));
+        }
+    }
+}
 use ratatui::{backend::TestBackend, Terminal};
 use spur_acp::{
     PlanSnapshot, PlanSnapshotCounts, PlanSnapshotTask, SessionId, SpurEvent, SpurEventBody,
