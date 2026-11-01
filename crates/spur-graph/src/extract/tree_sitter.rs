@@ -3543,6 +3543,88 @@ pub(crate) fn extract_file_contents_from_tree(
                 &edge_captures,
             )?;
         }
+        // Resolve ordinary Rust calls while physical lexical intervals are
+        // still available. PendingEdge deliberately remains schema-compatible.
+        let edge_captures = if language_label == "rust" {
+            edge_captures
+                .into_iter()
+                .filter(|capture| {
+                    if capture.name != "call" {
+                        return true;
+                    }
+                    let Some(target) = crate::extract::rust_bindings::resolve(
+                        capture.node,
+                        source,
+                        &definitions,
+                        relative_path,
+                    ) else {
+                        // Generic captures are a Rust lexical supplement.
+                        // Unsupported associated/type paths keep the existing
+                        // extractor behavior rather than entering a new path.
+                        return !capture
+                            .node
+                            .child_by_field_name("function")
+                            .is_some_and(|callee| callee.kind() == "generic_function");
+                    };
+                    let Some(callee) = crate::extract::rust_bindings::callee(capture.node) else {
+                        return true;
+                    };
+                    let name = callee.child_by_field_name("name").unwrap_or(callee);
+                    let Ok(name) = name.utf8_text(source.as_bytes()) else {
+                        return true;
+                    };
+                    let owner = definitions
+                        .iter()
+                        .rev()
+                        .find(|d| {
+                            d.node.start_byte() <= capture.node.start_byte()
+                                && capture.node.end_byte() <= d.node.end_byte()
+                        })
+                        .map_or(file_node, |d| d.node_id);
+                    // Preserve the established singleton path and provenance
+                    // for ordinary nonrecursive calls without local homonyms.
+                    if callee.kind() == "identifier"
+                        && target.is_some_and(|target| target != owner)
+                        && definitions
+                            .iter()
+                            .filter(|d| {
+                                d.node.kind() == "function_item"
+                                    && d.node.child_by_field_name("name").is_some_and(|n| {
+                                        n.utf8_text(source.as_bytes()).ok() == Some(name)
+                                    })
+                            })
+                            .count()
+                            == 1
+                    {
+                        return true;
+                    }
+                    let edge = PendingEdge {
+                        source: owner,
+                        target_name: name.to_owned(),
+                        import_path: None,
+                        relation: RelationKind::Calls,
+                        edge_kind: None,
+                        origin: CallOrigin::Expression,
+                        receiver_text: None,
+                        scope_text: callee
+                            .child_by_field_name("path")
+                            .and_then(|p| p.utf8_text(source.as_bytes()).ok())
+                            .map(str::to_owned),
+                    };
+                    let bind_method = target.map(|_| {
+                        if edge.scope_text.is_some() {
+                            "fqn"
+                        } else {
+                            "scope_match"
+                        }
+                    });
+                    builder.add_pending_edge_with_bind_method(&edge, target, bind_method);
+                    false
+                })
+                .collect()
+        } else {
+            edge_captures
+        };
         emit_edges(
             config,
             builder,
@@ -3589,7 +3671,15 @@ pub(crate) fn compile_queries(
                 })?);
             }
             "spur-edges" => {
-                spur_edges = Some(Query::new(&config.language, source).with_context(|| {
+                let source = if language == Language::Rust {
+                    std::borrow::Cow::Owned(format!(
+                        "{source}\n{}",
+                        crate::extract::rust_bindings::GENERIC_FREE_CALLS
+                    ))
+                } else {
+                    std::borrow::Cow::Borrowed(*source)
+                };
+                spur_edges = Some(Query::new(&config.language, &source).with_context(|| {
                     format!("failed to compile tree-sitter query `{name}` for `{language_label}`")
                 })?);
             }
