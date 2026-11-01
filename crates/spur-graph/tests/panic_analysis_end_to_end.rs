@@ -20,7 +20,9 @@ fn compiler_report_json_retains_import_validation_and_unknowns() -> anyhow::Resu
     let hash=|bytes:&[u8]|format!("{:x}",Sha256::digest(bytes));
     let fixture:Value=serde_json::from_str(include_str!("fixtures/panic_evidence/cga-format.json"))?;
     let source=fixture["source"].as_str().unwrap();
-    let analyze=analyze_request(source,true)?;
+    let mut analyze=analyze_request(source,true)?;
+    analyze["build"]["rustc_verbose"]=json!(include_str!("../../../docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/capture/rustc-version.stdout"));
+    analyze["build"]["target"]=json!("aarch64-apple-darwin");
     let collected=example::execute(analyze.clone())?;
     let methods=example::execute(json!({"command":"collect","graph":analyze["graph"],"sources":analyze["sources"]}))?;
     let raw=serde_json::to_string(&fixture["export"])?;
