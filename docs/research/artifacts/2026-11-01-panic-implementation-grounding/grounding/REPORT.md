@@ -1,0 +1,44 @@
+Research for **bd-3dw**, parent **bd-39y**. Four dependency-free held-out fixtures provide **32 hand-grounded sites**, eight source snapshots (four repeat controls), ordinary rustc execution/MIR, and one successful pinned-CGA capture. No production implementation, notebook access, Cargo invocation, application build, graph publication, producer change, installation, or upstream contact occurred. Leave the issue `in_progress` for root review.
+
+Run the retained-evidence replay from the new notebook through a subprocess:
+
+```sh
+python3 docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/verify.py --current-source
+```
+
+It uses Python's standard library, hashes the evidence, regenerates all findings, checks exact source/instance locations and all runtime results, and optionally compares the 100 current extraction inputs. It does not read a notebook, CURRENT, or a compiler cache. Omit `--current-source` for a portable retained-evidence check. Fresh execution on this pinned macOS host:
+
+```sh
+python3 docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/run.py \
+  --out docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fresh-root-replay
+```
+
+Choose a new output directory for each fresh run. All outputs stay under `grounding/`; generated binaries are hashed and removed. Each subprocess has a 60-second limit. Nothing needs installing. Raw JSON retains integer identities in Python, without JavaScript number conversion.
+
+| Control | Current measured output | Ordinary Rust grounding |
+|---|---|---|
+| Lexical recursion | All four self-call sites absent: plain, before shadowing, after its block, qualified self. Closure target also absent. Nested-function and module homonyms bind to their exact definitions. | Inputs `n=0..3`; plain/qualified return `1..4`; shadowing function returns `100,301,704,1511`; nested/module markers are `200+n` / `300+n`. |
+| Receiver binding | Nine sites: three expected target pairs, four unresolved sites, two wrong target pairs. Typed Alpha, borrowed Beta, custom `len` resolve. Inferred Alpha/Beta and both sides of variable rebinding remain unresolved. Both `&str.len` and literal-string `len` incorrectly target `Pretender::len`. | Exact markers: `[11,22,11,22,11,22,3,77,4]`. The wrong source target returns `77`, visibly different from standard string lengths. |
+| Sites/bodies | Five targeted `p.mark()` spans have five unique stable method-site IDs across repeated snapshots. Immediate sites identify the enclosing function; closure is `closure_body_syntax` with no caller; async is `unknown` with no caller; nested function has its own caller. Repeated free calls have no corresponding method-site IDs. Graph Calls rows contain no callsite/body IDs or spans and collapse repeated pairs. | Immediate results `[31,31,9,9]`; atomic counters are exactly two method hits and two free hits. The closure, future and nested function bodies were not entered. |
+| Compiler controls | Six nodes, seven edges: three `Called`, one `VTableCalled`, two `BuiltinAssert`, one `FnPtrCast`. Concrete unit implementation, expanded identity call, implicit bounds/overflow checks and explicit assert are observed. | All **768** inputs (`x:u8`, `index=0..2`, concrete object `()`) match the independent finite panic and return-value oracle: **640 panics / 128 returns**. Ordinary MIR independently retains both implicit assertions and the expanded call. |
+
+Counts in the receiver row are **source-site observations matched to candidate pairs** using exact owner definitions plus label/receiver syntax. Graph rows have no invocation identity: both `value.mark()` sites share one unresolved pair. A matching pair does not establish an exact site-to-edge mapping. The method sidecar separately preserves exact spans and marks every compiler target `unknown`. Additional atomic-counter method sites are retained but excluded from the five-site body comparison.
+
+The CGA comparison uses raw node indices and edge references, exact compiler file/line/column spans converted to fixture byte ranges, and declaration containment with exact name spans. Five local instances map uniquely to hand-grounded declarations. `capture/findings.json` retains references such as `nodes[i]` and `edges.0[j]` beside the original source locations. The external panic node retains its original location. **FnPtrCast is address flow, not an executable call**: no `Called` edge targets `address_only`.
+
+The expanded call's raw edge points to **`expanded_target($value)` in the macro definition**, not the `expand_call!(v)` invocation. This one fixture confirms expansion observation but cannot validate general invocation/expansion identity. Virtual implementation enumeration is not proof of runtime feasibility. The known generic virtual substitution ICE was deliberately not exercised; this successful nongeneric control supports no general CGA safety claim.
+
+Candidate implementation gates for root's SOLVE evaluation:
+
+1. **Lexical/receiver resolution:** preserve exact source definitions and lexical binding intervals. Require the four self-call positives, closure-shadow negative, nested/module negatives and all nine receiver outcomes. Adding a self-edge by spelling alone would misclassify the local closure. This corpus does not prove any name-only heuristic.
+2. **Site/body and typed facts:** reuse the existing method syntax-site evidence as a partial starting point. Require identities for free calls, executable closure/async bodies, and creation-versus-invocation links; preserve uncertainty. Require typed value origins, branch/path conditions and source bindings before encoding panic feasibility. The current snapshots do not contain those semantic facts.
+3. **Bounded panic/replay:** `capture/corpus.json` supplies an explicitly **hand-normalized** typed model and source-bound obligations for root. For one entry call, `x=0..255`, `index=0..2`, `object=()`, overflow checks on, the predicate is `index >= 2 OR x+x > 255 OR index != 0`. Safe returns equal `7 XOR (x+x)`. All outcomes were replayed through ordinary rustc. No solver ran in this lane; runtime agreement is not automatic semantic extraction or an unbounded safety result.
+4. **Retained compiler validation:** retain the raw successful export, ordinary MIR, flags, concrete instance identities, and unresolved expansion mapping. A future producer repair still needs separate owned-generic and reference-generic regressions from the prior isolation dossier. No CLI-target capture is claimed here.
+
+Provenance is in `capture/provenance.json`, commands/environment/exits in `capture/commands.json`, exact fixture spans in `capture/corpus.json`, and the reproducible comparisons in `capture/findings.json`. Snapshot and compiler stdout/stderr are retained verbatim. The snapshot example is SHA256 **9d515d0b0160afef11b9063e24383f621006332be14cba6db9259899a5d46777**. All **100** dep-info-listed `spur-graph` source/query files equal the prior build inventory and this worktree. Of 190 local dep-info inputs, the two ACP adapter files differ from that inventory; freshness is explicitly limited to the extraction subsystem, not the whole linked application or every dependency. No rebuild was necessary for that bounded claim.
+
+CGA is revision `2fc63108f0b674fe7a178191ffa15647a18879f1`, original driver SHA256 `5647b7f2c7f857dda0dd0204e91d870287988181ca5ec4d7792810a561886172`, original launcher SHA256 `7f84bc715138c09744fd351859ca02b240ea768d9756069229e9250fa9447b7a` (never invoked). The existing macOS rpath-only patch is retained in the command output. Ordinary rustc is nightly-2026-10-18, commit `8006091eb71ae7d9e9bccb66c6122c9d68af4466`; explicit flags preserve MIR, opt-level=0, panic=unwind, debug assertions, overflow checks and frame pointers. The runtime compile exited zero with a retained Xcode SDK/cache warning.
+
+`retrieval.json` records graph-first failures and the bounded raw fallback. A first nested-fixture probe encountered parent-repository discovery; a per-process Git ceiling isolates filesystem discovery without changing config. Every successful snapshot verifies exactly one `lib.rs` and the exact Git blob OID. Remaining unknowns include cfg/build variants, arbitrary trait objects/generics, macro expansion stacks, opaque calls and unbounded paths. Full source/receipt evidence stays local; tracker updates contain compact artifact/commit references only.
+
+The compact completion append was rejected by `report_audit` with `unauthorized: worker evidence: target is not assigned to this delegation`, while a fresh issue lookup still showed this worker assigned and `in_progress`. `audit-request.json` and `audit-error.json` retain the compact request and exact response. Root must persist the compact local artifact/commit reference through its authorized issue API; no full source/receipt payload was sent.

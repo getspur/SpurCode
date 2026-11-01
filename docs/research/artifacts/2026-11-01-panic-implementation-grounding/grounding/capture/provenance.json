@@ -1,0 +1,559 @@
+{
+  "binary_pins": {
+    "driver": "5647b7f2c7f857dda0dd0204e91d870287988181ca5ec4d7792810a561886172",
+    "launcher": "7f84bc715138c09744fd351859ca02b240ea768d9756069229e9250fa9447b7a",
+    "snapshot": "9d515d0b0160afef11b9063e24383f621006332be14cba6db9259899a5d46777"
+  },
+  "compiler_flags": [
+    "-Zalways-encode-mir",
+    "-Zhint-mostly-unused",
+    "-Copt-level=0",
+    "-Cpanic=unwind",
+    "-Cdebug-assertions=on",
+    "-Coverflow-checks=on",
+    "-Cforce-frame-pointers=yes"
+  ],
+  "fixtures": {
+    "bodies": "3a1e1a7935f312c41ff585bc48b7709a8cbe051164c800d4c47b32e716c4001f",
+    "compiler": "d5b043f5f88a8a7373b0b9a87fa0e901dee74142532bd677131db429bcff24a0",
+    "lexical": "b7f418ce0597709b3b8f5e95fdc14cbba6babddb803a8ba7b1c9c5b11d9e972c",
+    "receivers": "0bab872b895ba47002a91d79bb1a83e2385cb00df37f1688d438d7a0db9d93db"
+  },
+  "launcher_invoked": false,
+  "producer_revision": "2fc63108f0b674fe7a178191ffa15647a18879f1",
+  "raw_fallback": {
+    "code_resolve": "graph artifact not found; no graph build requested",
+    "orientation": "analyst DB failed to prepare context candidate query"
+  },
+  "runner_sha256": "ab86fc75b6ad21412e1f332c3cd82558acda928108e53d4e35d651166fe69bc2",
+  "runtime_binary_sha256": "d8575943152317aa3fcc706ead0fbfa3bfa094d4edd6f1acbdefab7010ffc5c4",
+  "runtime_source_sha256": "a64af6023eb3164bd9ff467812e4780ae2f7d7dd79f4b729c4ee1f47358ae049",
+  "rustc_commit": "8006091eb71ae7d9e9bccb66c6122c9d68af4466",
+  "rustc_path": "/Users/kevintruong/.rustup/toolchains/nightly-2026-10-18-aarch64-apple-darwin/bin/rustc",
+  "rustc_sha256": "8b6ee68f1623cb83fabcf0d8b8b6dbf898edad3f950b381c0ed6eff931409a9e",
+  "source": {
+    "all_local_dependency_count": 190,
+    "binary_path": "/private/tmp/panic-workspace-20261101/target/aarch64-apple-darwin/debug/examples/panic_evidence",
+    "binary_sha256": "9d515d0b0160afef11b9063e24383f621006332be14cba6db9259899a5d46777",
+    "build_inventory_path": "/private/tmp/panic-workspace-20261101/workspace-inputs-before.json",
+    "build_inventory_sha256": "cb57fdf4465388b9c62f9dfbb4669f07ad5b7fbbc8f022c5204e115a676e4ba0",
+    "depinfo_path": "/private/tmp/panic-workspace-20261101/target/aarch64-apple-darwin/debug/examples/panic_evidence.d",
+    "depinfo_sha256": "773d09595d0e14c9e894c3da2280c161dd181ade9a488476ad506bfd68b09e78",
+    "extraction_input_count": 100,
+    "extraction_inputs": [
+      {
+        "build_inventory_sha256": "e1c5d04da0ec76e59332201c3c6bdb4c1d8fd1f219ec925b8748f2e0b11502e5",
+        "current_sha256": "e1c5d04da0ec76e59332201c3c6bdb4c1d8fd1f219ec925b8748f2e0b11502e5",
+        "path": "crates/spur-graph/examples/panic_evidence.rs"
+      },
+      {
+        "build_inventory_sha256": "51dd4b86e3160f118eef443272a47dbcacdfe4cedfdb10ce56dd02014dc20a4f",
+        "current_sha256": "51dd4b86e3160f118eef443272a47dbcacdfe4cedfdb10ce56dd02014dc20a4f",
+        "path": "crates/spur-graph/queries/c/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "3590c5840ff31513389122f79db2c7d924ea44e1231f28e7e061af90343d839d",
+        "current_sha256": "3590c5840ff31513389122f79db2c7d924ea44e1231f28e7e061af90343d839d",
+        "path": "crates/spur-graph/queries/c/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "0130eb8f8ea8f6c0577cc201ceed4734115b4e2ccacab78d6388fa9ab7786ef9",
+        "current_sha256": "0130eb8f8ea8f6c0577cc201ceed4734115b4e2ccacab78d6388fa9ab7786ef9",
+        "path": "crates/spur-graph/queries/cpp/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "be8fc62d8378f3d66cc6b9e17b378f7ce73f998e1f73d6045e21479ffcef06cf",
+        "current_sha256": "be8fc62d8378f3d66cc6b9e17b378f7ce73f998e1f73d6045e21479ffcef06cf",
+        "path": "crates/spur-graph/queries/cpp/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "1cc7d29064bf76ddd7f822c17700457dfadaa857f622dd6cbaaea0d38badb2bd",
+        "current_sha256": "1cc7d29064bf76ddd7f822c17700457dfadaa857f622dd6cbaaea0d38badb2bd",
+        "path": "crates/spur-graph/queries/css/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "4525bf4e23f2a16c2917cc350fd9daee6154b3f05f29e3e837facfae966b1549",
+        "current_sha256": "4525bf4e23f2a16c2917cc350fd9daee6154b3f05f29e3e837facfae966b1549",
+        "path": "crates/spur-graph/queries/css/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "e73f26aa8e13fd40cd4aa231c76ba5f60b37f2c254d13e8a2e6eaf4afdc9c802",
+        "current_sha256": "e73f26aa8e13fd40cd4aa231c76ba5f60b37f2c254d13e8a2e6eaf4afdc9c802",
+        "path": "crates/spur-graph/queries/go/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "c46b0db427e0cab77b037c77f360e023c38b1cc1561d006d46ae48ed89b30276",
+        "current_sha256": "c46b0db427e0cab77b037c77f360e023c38b1cc1561d006d46ae48ed89b30276",
+        "path": "crates/spur-graph/queries/go/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "d1692d0b346b3a6f0e30a57bab0a1c4f702b5bf006a485cb048bbe46ff37cab4",
+        "current_sha256": "d1692d0b346b3a6f0e30a57bab0a1c4f702b5bf006a485cb048bbe46ff37cab4",
+        "path": "crates/spur-graph/queries/hcl/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "a15e67140874fa96257468ab8d6589e217275f504edc0417589f19fe7442f2e4",
+        "current_sha256": "a15e67140874fa96257468ab8d6589e217275f504edc0417589f19fe7442f2e4",
+        "path": "crates/spur-graph/queries/hcl/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "1a5bbe06c30083293aad9909c0704984be68d71b86650f0e58f59bc5b012c3d9",
+        "current_sha256": "1a5bbe06c30083293aad9909c0704984be68d71b86650f0e58f59bc5b012c3d9",
+        "path": "crates/spur-graph/queries/html/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "fd320706cde59484848c3680052a6c78dca0817b10972229f184b752b878bbe4",
+        "current_sha256": "fd320706cde59484848c3680052a6c78dca0817b10972229f184b752b878bbe4",
+        "path": "crates/spur-graph/queries/html/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "97f5b5d43cdcf274f7037452c8ad8e5c89411fce464a4e332dc6a4495f1ae39f",
+        "current_sha256": "97f5b5d43cdcf274f7037452c8ad8e5c89411fce464a4e332dc6a4495f1ae39f",
+        "path": "crates/spur-graph/queries/json/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "d48c9b4a22bcb760a3759c0042d3586712d2128f59ccdc6439fd72de81748b3c",
+        "current_sha256": "d48c9b4a22bcb760a3759c0042d3586712d2128f59ccdc6439fd72de81748b3c",
+        "path": "crates/spur-graph/queries/lua/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "f3c31711ad5357e2f59495b53ea0669c09fc2dc0723c9103086593cf1f19c688",
+        "current_sha256": "f3c31711ad5357e2f59495b53ea0669c09fc2dc0723c9103086593cf1f19c688",
+        "path": "crates/spur-graph/queries/lua/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "534cdf5fc36f507b2450b75e6f132bb2bd7a577450762f394e5785f8f05291ff",
+        "current_sha256": "534cdf5fc36f507b2450b75e6f132bb2bd7a577450762f394e5785f8f05291ff",
+        "path": "crates/spur-graph/queries/markdown/inline-spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "2c2ee3034fe1bd3ac06b11e0d3cd1930e6b5a2b3b6f4e2f5fa0219d0b822d444",
+        "current_sha256": "2c2ee3034fe1bd3ac06b11e0d3cd1930e6b5a2b3b6f4e2f5fa0219d0b822d444",
+        "path": "crates/spur-graph/queries/markdown/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "2d382020e4893cb6c3ea15cc1f46648e8f59d9dc7a394c6684eb1d98f5c905ed",
+        "current_sha256": "2d382020e4893cb6c3ea15cc1f46648e8f59d9dc7a394c6684eb1d98f5c905ed",
+        "path": "crates/spur-graph/queries/markdown/symbols.scm"
+      },
+      {
+        "build_inventory_sha256": "2d382020e4893cb6c3ea15cc1f46648e8f59d9dc7a394c6684eb1d98f5c905ed",
+        "current_sha256": "2d382020e4893cb6c3ea15cc1f46648e8f59d9dc7a394c6684eb1d98f5c905ed",
+        "path": "crates/spur-graph/queries/markdown/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "0a8aa4eeac2b9fd3e09da4f9179b8c838576dc5c7c2e11c78a87d6595b833160",
+        "current_sha256": "0a8aa4eeac2b9fd3e09da4f9179b8c838576dc5c7c2e11c78a87d6595b833160",
+        "path": "crates/spur-graph/queries/mermaid/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "ad0829fbc2aae87be62072909b3293723f5e22ce93a8f7a5156698670f40e8e3",
+        "current_sha256": "ad0829fbc2aae87be62072909b3293723f5e22ce93a8f7a5156698670f40e8e3",
+        "path": "crates/spur-graph/queries/python/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "dd57da54e319b4a78442058e7949ed6cc6f17a36c6166859825a087de56ab0d0",
+        "current_sha256": "dd57da54e319b4a78442058e7949ed6cc6f17a36c6166859825a087de56ab0d0",
+        "path": "crates/spur-graph/queries/python/spur-notebook-facts.scm"
+      },
+      {
+        "build_inventory_sha256": "e2c4d9a138afab3923d9b0b2febba2b415e1144697dcca99606662485768caf7",
+        "current_sha256": "e2c4d9a138afab3923d9b0b2febba2b415e1144697dcca99606662485768caf7",
+        "path": "crates/spur-graph/queries/python/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "ed338ba3837a9437b6045892ae22ef2064bc76e25b2daa7fb3df475576b20f35",
+        "current_sha256": "ed338ba3837a9437b6045892ae22ef2064bc76e25b2daa7fb3df475576b20f35",
+        "path": "crates/spur-graph/queries/rust/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "f943dc1e2380f3aad10b86e3592d349e20a079c77b60da6cfecf00b7d6562241",
+        "current_sha256": "f943dc1e2380f3aad10b86e3592d349e20a079c77b60da6cfecf00b7d6562241",
+        "path": "crates/spur-graph/queries/rust/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "bfdb46f392bfb648657c075efff15690f220678cac0ce0139d0af5a5971d8dcf",
+        "current_sha256": "bfdb46f392bfb648657c075efff15690f220678cac0ce0139d0af5a5971d8dcf",
+        "path": "crates/spur-graph/queries/shell/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "383fc3598fa59789ca516d70ea954020555d64afd28cefe33e4ad3d6ab8ebd79",
+        "current_sha256": "383fc3598fa59789ca516d70ea954020555d64afd28cefe33e4ad3d6ab8ebd79",
+        "path": "crates/spur-graph/queries/shell/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "70bad6183a13f079b175118e837bd2cc139310fefb860f853d9223925b93c4c7",
+        "current_sha256": "70bad6183a13f079b175118e837bd2cc139310fefb860f853d9223925b93c4c7",
+        "path": "crates/spur-graph/queries/sql/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "3404edeb6b440167bec960150dcd05e2942a0fa4fc32bb566c4731b88983d167",
+        "current_sha256": "3404edeb6b440167bec960150dcd05e2942a0fa4fc32bb566c4731b88983d167",
+        "path": "crates/spur-graph/queries/sql/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "ff65b9225d78b4e403a40a338a3ac7490e839c855ff44b2a64f1d460e2f00b74",
+        "current_sha256": "ff65b9225d78b4e403a40a338a3ac7490e839c855ff44b2a64f1d460e2f00b74",
+        "path": "crates/spur-graph/queries/toml/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "868907a234c0bae601d80a1120bdc6a31c47bedcf505002d560508b9c3bb2f22",
+        "current_sha256": "868907a234c0bae601d80a1120bdc6a31c47bedcf505002d560508b9c3bb2f22",
+        "path": "crates/spur-graph/queries/typescript/jsx-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "06c76d60080cfde619359b673d85a1e0321a2e6b380bc9f3a8aae73e3f0fa6ae",
+        "current_sha256": "06c76d60080cfde619359b673d85a1e0321a2e6b380bc9f3a8aae73e3f0fa6ae",
+        "path": "crates/spur-graph/queries/typescript/spur-edges.scm"
+      },
+      {
+        "build_inventory_sha256": "1aff453d5ad271f4f42c8b72807773cb6bab5e8cde08d5ce6ef2edb5fafcb77d",
+        "current_sha256": "1aff453d5ad271f4f42c8b72807773cb6bab5e8cde08d5ce6ef2edb5fafcb77d",
+        "path": "crates/spur-graph/queries/typescript/spur-notebook-facts.scm"
+      },
+      {
+        "build_inventory_sha256": "f9c6a4ad4dc7a66c8048219563e5192bfb0f72ad1b2b9006ad9fc5d183d7c404",
+        "current_sha256": "f9c6a4ad4dc7a66c8048219563e5192bfb0f72ad1b2b9006ad9fc5d183d7c404",
+        "path": "crates/spur-graph/queries/typescript/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "a6300bee9fec6ce78b343ebda02d8c3bf587d54b98ca843c5ac803a9f8709819",
+        "current_sha256": "a6300bee9fec6ce78b343ebda02d8c3bf587d54b98ca843c5ac803a9f8709819",
+        "path": "crates/spur-graph/queries/yaml/tags.scm"
+      },
+      {
+        "build_inventory_sha256": "ce3d81b59d6a036535efcaeccfbbcbf0097dfa3efce8833d139cf7e1d1c9aad0",
+        "current_sha256": "ce3d81b59d6a036535efcaeccfbbcbf0097dfa3efce8833d139cf7e1d1c9aad0",
+        "path": "crates/spur-graph/src/content_hash.rs"
+      },
+      {
+        "build_inventory_sha256": "eac77b148d9a4955fe96f3dcdb38012e7d716a17b22e4e9cd95302f0881dfc53",
+        "current_sha256": "eac77b148d9a4955fe96f3dcdb38012e7d716a17b22e4e9cd95302f0881dfc53",
+        "path": "crates/spur-graph/src/discovery.rs"
+      },
+      {
+        "build_inventory_sha256": "89245ee9399321e87e96d3952d6071ccfd59cd5ee3f117d5aa305b49ebcc2a70",
+        "current_sha256": "89245ee9399321e87e96d3952d6071ccfd59cd5ee3f117d5aa305b49ebcc2a70",
+        "path": "crates/spur-graph/src/extract/languages.rs"
+      },
+      {
+        "build_inventory_sha256": "a9bc1d26e283b96a26271341cf086f91daa6bbd84784d510812c1ac5f151364d",
+        "current_sha256": "a9bc1d26e283b96a26271341cf086f91daa6bbd84784d510812c1ac5f151364d",
+        "path": "crates/spur-graph/src/extract/markdown.rs"
+      },
+      {
+        "build_inventory_sha256": "cb6a2cd747d4e415a5451e8a82e015b9a3e72cee96b36148d4de434d41a750b7",
+        "current_sha256": "cb6a2cd747d4e415a5451e8a82e015b9a3e72cee96b36148d4de434d41a750b7",
+        "path": "crates/spur-graph/src/extract/mcp_tools.rs"
+      },
+      {
+        "build_inventory_sha256": "bfa719d0f4b58ed53f15fc535cd7e3b1286cab3bbbf7dfaf9561fc0f32bafe11",
+        "current_sha256": "bfa719d0f4b58ed53f15fc535cd7e3b1286cab3bbbf7dfaf9561fc0f32bafe11",
+        "path": "crates/spur-graph/src/extract/mod.rs"
+      },
+      {
+        "build_inventory_sha256": "ee61abd5c21fe8010587b7616c2e81622dcd814f562e9521bf97f8e3da6c1471",
+        "current_sha256": "ee61abd5c21fe8010587b7616c2e81622dcd814f562e9521bf97f8e3da6c1471",
+        "path": "crates/spur-graph/src/extract/notebook.rs"
+      },
+      {
+        "build_inventory_sha256": "89893611a8b2403f1540255adcec7a8a7476bd6081101b2b9e0e6709e42447f4",
+        "current_sha256": "89893611a8b2403f1540255adcec7a8a7476bd6081101b2b9e0e6709e42447f4",
+        "path": "crates/spur-graph/src/extract/openapi.rs"
+      },
+      {
+        "build_inventory_sha256": "186ce5b64b7be1b17cf7b57eca59ad315b4a573d359628bf8ea7d9e96b04bf97",
+        "current_sha256": "186ce5b64b7be1b17cf7b57eca59ad315b4a573d359628bf8ea7d9e96b04bf97",
+        "path": "crates/spur-graph/src/extract/rust_macros.rs"
+      },
+      {
+        "build_inventory_sha256": "96a2ef37a3f4323de8ab9155d6a1f30cea44cbccdfa8eb1a5a30b34936e30455",
+        "current_sha256": "96a2ef37a3f4323de8ab9155d6a1f30cea44cbccdfa8eb1a5a30b34936e30455",
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs"
+      },
+      {
+        "build_inventory_sha256": "e5dd55c28ed0cb3b62b6318ab580d93f50ab609b6509ac2331ce91a6b3e9b8a6",
+        "current_sha256": "e5dd55c28ed0cb3b62b6318ab580d93f50ab609b6509ac2331ce91a6b3e9b8a6",
+        "path": "crates/spur-graph/src/git.rs"
+      },
+      {
+        "build_inventory_sha256": "13de1fe19d15b2c94ac49e65be2933ce62610fa2087f43ed5ef2de990b5e7d15",
+        "current_sha256": "13de1fe19d15b2c94ac49e65be2933ce62610fa2087f43ed5ef2de990b5e7d15",
+        "path": "crates/spur-graph/src/git_walk.rs"
+      },
+      {
+        "build_inventory_sha256": "981f399479914d932f104dd21be90cc922bc0d9f15da72c0bb98131975966d5e",
+        "current_sha256": "981f399479914d932f104dd21be90cc922bc0d9f15da72c0bb98131975966d5e",
+        "path": "crates/spur-graph/src/graph/algorithms.rs"
+      },
+      {
+        "build_inventory_sha256": "5fe40c59282b0478ac8d94b83795b43d5019a8ca4cc5a05eb468c92062243d22",
+        "current_sha256": "5fe40c59282b0478ac8d94b83795b43d5019a8ca4cc5a05eb468c92062243d22",
+        "path": "crates/spur-graph/src/graph/mod.rs"
+      },
+      {
+        "build_inventory_sha256": "879e14b12fa2d9dc22737e3f663eff1124ed6190bf56388dbb8f28f312df5062",
+        "current_sha256": "879e14b12fa2d9dc22737e3f663eff1124ed6190bf56388dbb8f28f312df5062",
+        "path": "crates/spur-graph/src/graph/petgraph_builder.rs"
+      },
+      {
+        "build_inventory_sha256": "6e04336f95e609d0e6d5234bf0e40d8f4dc8dc9fe4249cb01b781bf2ab0bba8d",
+        "current_sha256": "6e04336f95e609d0e6d5234bf0e40d8f4dc8dc9fe4249cb01b781bf2ab0bba8d",
+        "path": "crates/spur-graph/src/identity.rs"
+      },
+      {
+        "build_inventory_sha256": "f59980eeb4659fa20ad135e64bfce6f57f87f83eb152d2192e3f7a9a40ca59cd",
+        "current_sha256": "f59980eeb4659fa20ad135e64bfce6f57f87f83eb152d2192e3f7a9a40ca59cd",
+        "path": "crates/spur-graph/src/lib.rs"
+      },
+      {
+        "build_inventory_sha256": "5555b19205d61cbc0e251892238fac0fb1e66cece18f16ba71870e521b8f7f3a",
+        "current_sha256": "5555b19205d61cbc0e251892238fac0fb1e66cece18f16ba71870e521b8f7f3a",
+        "path": "crates/spur-graph/src/locking.rs"
+      },
+      {
+        "build_inventory_sha256": "4b5862c085cfe0b223d1a295f3dec5f1ecb93a8b8fd493a56951844ef177096e",
+        "current_sha256": "4b5862c085cfe0b223d1a295f3dec5f1ecb93a8b8fd493a56951844ef177096e",
+        "path": "crates/spur-graph/src/macro_invocations.rs"
+      },
+      {
+        "build_inventory_sha256": "dde4b6f9268b5729741e02745c8c5a310f4809334df3df3744b32404591e076a",
+        "current_sha256": "dde4b6f9268b5729741e02745c8c5a310f4809334df3df3744b32404591e076a",
+        "path": "crates/spur-graph/src/mcp/mod.rs"
+      },
+      {
+        "build_inventory_sha256": "4370177b6f0c3c1ea823c2b6374b4ee15749fbe67a933ef73a6009c4057f6445",
+        "current_sha256": "4370177b6f0c3c1ea823c2b6374b4ee15749fbe67a933ef73a6009c4057f6445",
+        "path": "crates/spur-graph/src/mcp/overlay_runtime.rs"
+      },
+      {
+        "build_inventory_sha256": "94176d5ac3e86b7f50f6a5c994a2c6e3c0a9218f2210bb5198ef44100a140048",
+        "current_sha256": "94176d5ac3e86b7f50f6a5c994a2c6e3c0a9218f2210bb5198ef44100a140048",
+        "path": "crates/spur-graph/src/mcp/overlay_snapshot.rs"
+      },
+      {
+        "build_inventory_sha256": "8374bccc4d11bf1f1449550e9df059a94d9c74a3bd6ab084b3dfde1a4d552b8d",
+        "current_sha256": "8374bccc4d11bf1f1449550e9df059a94d9c74a3bd6ab084b3dfde1a4d552b8d",
+        "path": "crates/spur-graph/src/mcp/rebuild_singleflight.rs"
+      },
+      {
+        "build_inventory_sha256": "fd4f7b865384e7792fa6a8a068a1d6038c18eb3df30f0314a4a90e1cbf04827b",
+        "current_sha256": "fd4f7b865384e7792fa6a8a068a1d6038c18eb3df30f0314a4a90e1cbf04827b",
+        "path": "crates/spur-graph/src/mcp/request_cache.rs"
+      },
+      {
+        "build_inventory_sha256": "1a01a9515563bb01b8f8a9079e91276b9f1df9a45fb6d4a551d7dc8889f1ac77",
+        "current_sha256": "1a01a9515563bb01b8f8a9079e91276b9f1df9a45fb6d4a551d7dc8889f1ac77",
+        "path": "crates/spur-graph/src/mcp/request_replay.rs"
+      },
+      {
+        "build_inventory_sha256": "c43b5c6f5088826730fa4ac89e58c4c49716f468ff259f71a5024707134cff97",
+        "current_sha256": "c43b5c6f5088826730fa4ac89e58c4c49716f468ff259f71a5024707134cff97",
+        "path": "crates/spur-graph/src/memory_eval/artifacts.rs"
+      },
+      {
+        "build_inventory_sha256": "80609089f0ae755bf1d9a205fe9c694ea25e7dd3f0b97dc6dd4ede11d0adaab4",
+        "current_sha256": "80609089f0ae755bf1d9a205fe9c694ea25e7dd3f0b97dc6dd4ede11d0adaab4",
+        "path": "crates/spur-graph/src/memory_eval/contract.rs"
+      },
+      {
+        "build_inventory_sha256": "bec0e6ec71ed8adaa4098b6c7fc2c86cc1553e8d53f48fdcf94235faba10a032",
+        "current_sha256": "bec0e6ec71ed8adaa4098b6c7fc2c86cc1553e8d53f48fdcf94235faba10a032",
+        "path": "crates/spur-graph/src/memory_eval/locomo.rs"
+      },
+      {
+        "build_inventory_sha256": "07061ef7f74a0afe30bb77ed707582099ed008710d9d0611e0b074a2e491d365",
+        "current_sha256": "07061ef7f74a0afe30bb77ed707582099ed008710d9d0611e0b074a2e491d365",
+        "path": "crates/spur-graph/src/memory_eval/longmemeval.rs"
+      },
+      {
+        "build_inventory_sha256": "876276913e787ea27d4d21652323ebb2bd40ea2b7eb8d7ee3d9c9087b2bf4059",
+        "current_sha256": "876276913e787ea27d4d21652323ebb2bd40ea2b7eb8d7ee3d9c9087b2bf4059",
+        "path": "crates/spur-graph/src/memory_eval/materialize.rs"
+      },
+      {
+        "build_inventory_sha256": "c3a8d085fb3c8c41751b81fc202e5ad376632c7450bc68cb5b7db2909f320929",
+        "current_sha256": "c3a8d085fb3c8c41751b81fc202e5ad376632c7450bc68cb5b7db2909f320929",
+        "path": "crates/spur-graph/src/memory_eval/memory_graph.rs"
+      },
+      {
+        "build_inventory_sha256": "3caa582b008e13c0cec88e8a147a01415b771cd55d71fbe367ff86bf6dcf958f",
+        "current_sha256": "3caa582b008e13c0cec88e8a147a01415b771cd55d71fbe367ff86bf6dcf958f",
+        "path": "crates/spur-graph/src/memory_eval/metrics.rs"
+      },
+      {
+        "build_inventory_sha256": "4872e4dbabd0c4c68a6f7125f970a437e41777552592d03b811cda43a201c1c0",
+        "current_sha256": "4872e4dbabd0c4c68a6f7125f970a437e41777552592d03b811cda43a201c1c0",
+        "path": "crates/spur-graph/src/memory_eval/mod.rs"
+      },
+      {
+        "build_inventory_sha256": "f4cca308eabc5fb01bb123dfb07b47f8119a4fa40e35e27f5e314a098f6fbd64",
+        "current_sha256": "f4cca308eabc5fb01bb123dfb07b47f8119a4fa40e35e27f5e314a098f6fbd64",
+        "path": "crates/spur-graph/src/memory_eval/qa.rs"
+      },
+      {
+        "build_inventory_sha256": "4a049af57d235475f1d22ac5556fa4ec883fe573a2c0c79b6d9a63115b5a4199",
+        "current_sha256": "4a049af57d235475f1d22ac5556fa4ec883fe573a2c0c79b6d9a63115b5a4199",
+        "path": "crates/spur-graph/src/memory_eval/ranking.rs"
+      },
+      {
+        "build_inventory_sha256": "50565a7136331f9d3a1749fe1673e91b6abe0960f925a0dd8ebcbcf73291318a",
+        "current_sha256": "50565a7136331f9d3a1749fe1673e91b6abe0960f925a0dd8ebcbcf73291318a",
+        "path": "crates/spur-graph/src/memory_eval/retrieve.rs"
+      },
+      {
+        "build_inventory_sha256": "6ebcbd923679cc62e15a068ee35a61ccf6705f3c2ea96ccc875d99b3087a5576",
+        "current_sha256": "6ebcbd923679cc62e15a068ee35a61ccf6705f3c2ea96ccc875d99b3087a5576",
+        "path": "crates/spur-graph/src/overlay_generation.rs"
+      },
+      {
+        "build_inventory_sha256": "0fb683d77118d693e6ff89dc8fcd8aba55c939ba857dd1b26e069cff56c9b94c",
+        "current_sha256": "0fb683d77118d693e6ff89dc8fcd8aba55c939ba857dd1b26e069cff56c9b94c",
+        "path": "crates/spur-graph/src/overlay_watch.rs"
+      },
+      {
+        "build_inventory_sha256": "043b3ffb30f43f38d8b91cfc56c1547efe5e3020229eff36c5359817a7a2e1e9",
+        "current_sha256": "043b3ffb30f43f38d8b91cfc56c1547efe5e3020229eff36c5359817a7a2e1e9",
+        "path": "crates/spur-graph/src/panic_evidence/build_identity.rs"
+      },
+      {
+        "build_inventory_sha256": "cf423677a3d15abc951836b0f01e878f8b63d01b91ac83e7899d0ebdd34a1804",
+        "current_sha256": "cf423677a3d15abc951836b0f01e878f8b63d01b91ac83e7899d0ebdd34a1804",
+        "path": "crates/spur-graph/src/panic_evidence/cga.rs"
+      },
+      {
+        "build_inventory_sha256": "f03dcca02df07fc38949383e14ecf53bb1c404b7f3be174d2d1b4f68b34892cc",
+        "current_sha256": "f03dcca02df07fc38949383e14ecf53bb1c404b7f3be174d2d1b4f68b34892cc",
+        "path": "crates/spur-graph/src/panic_evidence/method_sites.rs"
+      },
+      {
+        "build_inventory_sha256": "b12553daac01b06b30029e3bf5c32122741662e97123afe7061a4c48058ceb11",
+        "current_sha256": "b12553daac01b06b30029e3bf5c32122741662e97123afe7061a4c48058ceb11",
+        "path": "crates/spur-graph/src/panic_evidence/mod.rs"
+      },
+      {
+        "build_inventory_sha256": "443a11e7bcb16f8405d87def0bee737558e05f12568700aa64c1efd5ec272d39",
+        "current_sha256": "443a11e7bcb16f8405d87def0bee737558e05f12568700aa64c1efd5ec272d39",
+        "path": "crates/spur-graph/src/query_client.rs"
+      },
+      {
+        "build_inventory_sha256": "945211900063993a42a6a2f4a1e7c5d04645087841e35a32caa3652f46ff74ea",
+        "current_sha256": "945211900063993a42a6a2f4a1e7c5d04645087841e35a32caa3652f46ff74ea",
+        "path": "crates/spur-graph/src/query_hot_index.rs"
+      },
+      {
+        "build_inventory_sha256": "6110f15eed9ebfada400448bc8fc281e907191147ce1190e62803a6006e1155d",
+        "current_sha256": "6110f15eed9ebfada400448bc8fc281e907191147ce1190e62803a6006e1155d",
+        "path": "crates/spur-graph/src/schema.rs"
+      },
+      {
+        "build_inventory_sha256": "7345e0f5cab8071ae188ceb19d677646679a9c51e706ef1bd697a50ac0e4209b",
+        "current_sha256": "7345e0f5cab8071ae188ceb19d677646679a9c51e706ef1bd697a50ac0e4209b",
+        "path": "crates/spur-graph/src/search.rs"
+      },
+      {
+        "build_inventory_sha256": "13aaeb3d78a0af44992eceedec45dd060ff8d8c8622093366d4ee10e872cc8a6",
+        "current_sha256": "13aaeb3d78a0af44992eceedec45dd060ff8d8c8622093366d4ee10e872cc8a6",
+        "path": "crates/spur-graph/src/selector.rs"
+      },
+      {
+        "build_inventory_sha256": "a5278e3ae6a2917a50c4d51aba1c33d45206e7335a48765a30c7924471260739",
+        "current_sha256": "a5278e3ae6a2917a50c4d51aba1c33d45206e7335a48765a30c7924471260739",
+        "path": "crates/spur-graph/src/store/artifact_staging.rs"
+      },
+      {
+        "build_inventory_sha256": "90595279c6b3234601972d8bfc683832b45727b9d9fdde7bd0067dbb4ebf4aa4",
+        "current_sha256": "90595279c6b3234601972d8bfc683832b45727b9d9fdde7bd0067dbb4ebf4aa4",
+        "path": "crates/spur-graph/src/store/build.rs"
+      },
+      {
+        "build_inventory_sha256": "bf0f557a9fb1ef5f42ab7e53494f3bdb3061830525fb2e267702ca682eba86e9",
+        "current_sha256": "bf0f557a9fb1ef5f42ab7e53494f3bdb3061830525fb2e267702ca682eba86e9",
+        "path": "crates/spur-graph/src/store/cache.rs"
+      },
+      {
+        "build_inventory_sha256": "99afa255a1b9dc16460be6ccf89696a4f62d9247512e391d1a5614bb71c7327b",
+        "current_sha256": "99afa255a1b9dc16460be6ccf89696a4f62d9247512e391d1a5614bb71c7327b",
+        "path": "crates/spur-graph/src/store/canonical_hash.rs"
+      },
+      {
+        "build_inventory_sha256": "d1f89b73b600ecadd62a6ab2fc119c7dd0063eadcd890df49f19a1de0f7fb895",
+        "current_sha256": "d1f89b73b600ecadd62a6ab2fc119c7dd0063eadcd890df49f19a1de0f7fb895",
+        "path": "crates/spur-graph/src/store/commit_index.rs"
+      },
+      {
+        "build_inventory_sha256": "22fa3710485c8354ca30e039c1a58cac85e132ee9fe47e43a5f2a528506f9086",
+        "current_sha256": "22fa3710485c8354ca30e039c1a58cac85e132ee9fe47e43a5f2a528506f9086",
+        "path": "crates/spur-graph/src/store/lance_sections.rs"
+      },
+      {
+        "build_inventory_sha256": "45163eb560039fcfdc7a9868a9e2e8865f7b0ebc815b6b690fb806cdb0926733",
+        "current_sha256": "45163eb560039fcfdc7a9868a9e2e8865f7b0ebc815b6b690fb806cdb0926733",
+        "path": "crates/spur-graph/src/store/macro_invocations.rs"
+      },
+      {
+        "build_inventory_sha256": "6483b563cfbf490f784fbd5ab48f24731c3e55c55f8ba34a9ab5362f759ebdec",
+        "current_sha256": "6483b563cfbf490f784fbd5ab48f24731c3e55c55f8ba34a9ab5362f759ebdec",
+        "path": "crates/spur-graph/src/store/mod.rs"
+      },
+      {
+        "build_inventory_sha256": "6edfd27a6b059b997e012a4ef082f5ec7fcc48976d27aa38d91b2ffbc1f1a886",
+        "current_sha256": "6edfd27a6b059b997e012a4ef082f5ec7fcc48976d27aa38d91b2ffbc1f1a886",
+        "path": "crates/spur-graph/src/store/parquet.rs"
+      },
+      {
+        "build_inventory_sha256": "b0abe3aa8bd992e0ec57293ac657a506302fa6959a2d03cd23affa2b4facc713",
+        "current_sha256": "b0abe3aa8bd992e0ec57293ac657a506302fa6959a2d03cd23affa2b4facc713",
+        "path": "crates/spur-graph/src/store/pointer.rs"
+      },
+      {
+        "build_inventory_sha256": "5c73c5595684db328dfcab4d874a135e7934ab53ef11c48d57b6dcd28728c15a",
+        "current_sha256": "5c73c5595684db328dfcab4d874a135e7934ab53ef11c48d57b6dcd28728c15a",
+        "path": "crates/spur-graph/src/store/shard_writer.rs"
+      },
+      {
+        "build_inventory_sha256": "8ca7de4a0d5005559e1cfe7c06e87c95352ec9f800f284d3510189a6d9ba6df6",
+        "current_sha256": "8ca7de4a0d5005559e1cfe7c06e87c95352ec9f800f284d3510189a6d9ba6df6",
+        "path": "crates/spur-graph/src/store/snapshot.rs"
+      },
+      {
+        "build_inventory_sha256": "dcf6bb28210c5e6d266ac17bf040de36ea587391e140f556202a827ee629958a",
+        "current_sha256": "dcf6bb28210c5e6d266ac17bf040de36ea587391e140f556202a827ee629958a",
+        "path": "crates/spur-graph/src/store/temporal_shards.rs"
+      },
+      {
+        "build_inventory_sha256": "4846152ba9f323c88b0c61a29ffd05628272916907b9ceeb6a43f7c391dd75de",
+        "current_sha256": "4846152ba9f323c88b0c61a29ffd05628272916907b9ceeb6a43f7c391dd75de",
+        "path": "crates/spur-graph/src/temporal.rs"
+      },
+      {
+        "build_inventory_sha256": "00261c048f4cb9595f63245f0367b76f1f58521ab64114b63d9f6efd3502a4c7",
+        "current_sha256": "00261c048f4cb9595f63245f0367b76f1f58521ab64114b63d9f6efd3502a4c7",
+        "path": "crates/spur-graph/src/traversal.rs"
+      },
+      {
+        "build_inventory_sha256": "62f169c8a85c00a776018b4a8cbcea52700efc0976fa60a024e730e89810133a",
+        "current_sha256": "62f169c8a85c00a776018b4a8cbcea52700efc0976fa60a024e730e89810133a",
+        "path": "crates/spur-graph/src/validation.rs"
+      },
+      {
+        "build_inventory_sha256": "669fd8bb6c9e5bda8e6b0f413cf9460378b763b8c1f2dfcbea68c689713b8e6e",
+        "current_sha256": "669fd8bb6c9e5bda8e6b0f413cf9460378b763b8c1f2dfcbea68c689713b8e6e",
+        "path": "crates/spur-graph/src/worktree.rs"
+      }
+    ],
+    "other_local_dependency_mismatches": [
+      {
+        "build_inventory_sha256": "33b2d5cee3dc7fd55803b0f9942109509c58456e43927a50d77ffbfb2bdaa159",
+        "current_sha256": "b37d6dd9af90df6b7a22ef69b9b6f7ffa5aee6529edf7310e437c2e519ca32bf",
+        "path": "crates/spur-acp/src/adapter/codex.rs"
+      },
+      {
+        "build_inventory_sha256": "b2286fb7940b4b34060b11b6c4a3668d90fe177ec1f5625f5af9808873f8eabb",
+        "current_sha256": "b97dea961387113e4a8723a16d0bde7867aa1abc09fc61071c9e538458d792bd",
+        "path": "crates/spur-acp/src/adapter/mod.rs"
+      }
+    ],
+    "scope": "100 listed spur-graph compiled source/query inputs; no full application freshness claim"
+  }
+}
