@@ -75,6 +75,35 @@ fn stage_windows_keep_selected_title_and_heading_readable() {
     for width in [90, 120, 200] {
         for selected in [0, 9, 17] {
             let text = render(&plan, width, 20, selected);
+            let header_y = text.lines().position(|line| line.starts_with('┌')).unwrap();
+            let header = text.lines().nth(header_y).unwrap();
+            let starts: Vec<_> = header
+                .chars()
+                .enumerate()
+                .filter_map(|(x, ch)| (ch == '┌').then_some(x))
+                .collect();
+            let ends: Vec<_> = header
+                .chars()
+                .enumerate()
+                .filter_map(|(x, ch)| (ch == '┐').then_some(x))
+                .collect();
+            let rectangles: Vec<_> = starts
+                .iter()
+                .zip(&ends)
+                .map(|(&x, &end)| {
+                    assert!(
+                        end + 1 - x >= 16,
+                        "lane loses the solved minimum title budget"
+                    );
+                    serde_json::json!({"x":x,"y":header_y,"width":end+1-x,"height":20-header_y})
+                })
+                .collect();
+            if selected == 17 {
+                println!(
+                    "I1_GEOMETRY {}",
+                    serde_json::json!({"width":width,"height":20,"rectangles":rectangles})
+                );
+            }
             assert!(
                 text.contains(&format!("label-{selected:04}")),
                 "selected title lost:\n{text}"

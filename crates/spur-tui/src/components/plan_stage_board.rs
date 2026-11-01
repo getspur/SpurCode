@@ -6,11 +6,14 @@ use ratatui::{
     Frame,
 };
 use std::time::SystemTime;
+use unicode_segmentation::UnicodeSegmentation;
 
 use crate::theme::{resolve_token, ColorDepth, Theme};
 use spur_core::{ExecutorLineage, ExecutorNode, LifecycleState, TrackedPlan, TrackedTask};
 
 const BLOCKED_ON_SETUP_CONFLICT_STATUS: &str = "blocked_on_setup_conflict";
+// Ten readable title cells, four cursor/status cells, and two borders.
+const MIN_STAGE_LANE_WIDTH: u16 = 10 + 4 + 2;
 
 fn token(theme: &Theme, name: &str) -> ratatui::style::Color {
     resolve_token(theme, name, ColorDepth::Truecolor)
@@ -25,11 +28,45 @@ pub fn render_stage_board(
     lineage: &ExecutorLineage,
     theme: &Theme,
 ) {
+    if area.width == 0 || area.height == 0 {
+        return;
+    }
     let stage_count = max_stage(plan) + 1;
-    let constraints = vec![Constraint::Ratio(1, stage_count as u32); stage_count];
-    let areas = Layout::horizontal(constraints).split(area);
+    let visible_count = stage_count.min(usize::from(area.width / MIN_STAGE_LANE_WIDTH).max(1));
+    let first_stage = selected_stage_idx
+        .min(stage_count - 1)
+        .saturating_sub(visible_count / 2)
+        .min(stage_count - visible_count);
+    let lane_area = if visible_count < stage_count {
+        frame.render_widget(
+            Paragraph::new(format!(
+                "Stages {}-{}/{}{}{}",
+                first_stage,
+                first_stage + visible_count - 1,
+                stage_count,
+                if first_stage > 0 { " ←" } else { "" },
+                if first_stage + visible_count < stage_count {
+                    " →"
+                } else {
+                    ""
+                },
+            )),
+            Rect::new(area.x, area.y, area.width, 1),
+        );
+        Rect::new(
+            area.x,
+            area.y.saturating_add(1),
+            area.width,
+            area.height.saturating_sub(1),
+        )
+    } else {
+        area
+    };
+    let constraints = vec![Constraint::Ratio(1, visible_count as u32); visible_count];
+    let areas = Layout::horizontal(constraints).split(lane_area);
 
-    for (stage_idx, stage_area) in areas.iter().enumerate() {
+    for (lane_idx, stage_area) in areas.iter().enumerate() {
+        let stage_idx = first_stage + lane_idx;
         let tasks = tasks_in_stage(plan, stage_idx);
         let mut lines = Vec::new();
 
@@ -54,7 +91,10 @@ pub fn render_stage_board(
                         status_style(theme, &task.status),
                     ),
                     Span::raw(" "),
-                    Span::raw(task.issue_title.as_ref().unwrap_or(&task.task_name).clone()),
+                    Span::raw(fit_stage_label(
+                        task.issue_title.as_ref().unwrap_or(&task.task_name),
+                        stage_area.width.saturating_sub(6) as usize,
+                    )),
                 ];
                 lines.push(Line::from(title_line));
 
@@ -91,6 +131,27 @@ pub fn render_stage_board(
             });
         frame.render_widget(Paragraph::new(lines).block(block), *stage_area);
     }
+}
+
+fn fit_stage_label(value: &str, width: usize) -> String {
+    if Span::raw(value).width() <= width {
+        return value.to_string();
+    }
+    if width == 0 {
+        return String::new();
+    }
+    let mut result = String::new();
+    let mut used = 0;
+    for grapheme in value.graphemes(true) {
+        let cells = Span::raw(grapheme).width();
+        if used + cells > width - 1 {
+            break;
+        }
+        result.push_str(grapheme);
+        used += cells;
+    }
+    result.push('…');
+    result
 }
 
 pub fn render_stacked_stage_groups(
