@@ -277,6 +277,7 @@ impl PlanInspectorView {
 
         self.open_issue_id = Some(issue_id.to_string());
         self.task_detail_scroll = 0;
+        self.task_detail_to_bottom = false;
         let needs_request = !matches!(
             self.issue_states.get(issue_id),
             Some(TaskIssueState::Loaded(_))

@@ -3,7 +3,7 @@ use ratatui::{
     layout::Rect,
     style::{Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Paragraph, Wrap},
+    widgets::{Block, Borders, Paragraph},
     Frame,
 };
 use spur_core::{ExecutorNode, TrackedPlan, TrackedTask};
@@ -147,14 +147,18 @@ pub fn render_task_detail(
     }
 
     let visible_lines = area.height.saturating_sub(2) as usize;
-    let paragraph = Paragraph::new(lines).wrap(Wrap { trim: false });
-    let total_lines = paragraph.line_count(content_width as u16);
+    // Virtual rows use usize; only the visible slice reaches the u16 widget.
+    let source: Vec<String> = lines.iter().map(ToString::to_string).collect();
+    let layout = (content_width > 0).then(|| {
+        super::input_bar_wrap::wrap_with_cell_width(&source, content_width as u16, |grapheme| {
+            Span::raw(grapheme).width() as u8
+        })
+    });
+    let total_lines = layout.as_ref().map(|layout| layout.rows.len()).unwrap_or(0);
     let max_scroll = if visible_lines == 0 || content_width == 0 {
         0
     } else {
-        total_lines
-            .saturating_sub(visible_lines)
-            .min(u16::MAX as usize)
+        total_lines.saturating_sub(visible_lines)
     };
     let scroll_offset = scroll_offset.min(max_scroll);
 
@@ -171,10 +175,35 @@ pub fn render_task_detail(
         format!("Task detail ({start_line}-{end_line}/{total_lines}) {percent}%")
     };
 
+    let visible: Vec<Line<'static>> = layout
+        .into_iter()
+        .flat_map(|layout| layout.rows.into_iter())
+        .skip(scroll_offset)
+        .take(visible_lines)
+        .map(|row| {
+            let original = &lines[row.logical_row];
+            let mut byte = 0;
+            let spans = original
+                .spans
+                .iter()
+                .filter_map(|span| {
+                    let span_start = byte;
+                    byte += span.content.len();
+                    let start = row.byte_start.max(span_start);
+                    let end = row.byte_end.min(byte);
+                    (start < end).then(|| {
+                        Span::styled(
+                            span.content[start - span_start..end - span_start].to_string(),
+                            original.style.patch(span.style),
+                        )
+                    })
+                })
+                .collect::<Vec<_>>();
+            Line::from(spans).style(original.style)
+        })
+        .collect();
     frame.render_widget(
-        paragraph
-            .scroll((scroll_offset as u16, 0))
-            .block(Block::default().borders(Borders::ALL).title(title)),
+        Paragraph::new(visible).block(Block::default().borders(Borders::ALL).title(title)),
         area,
     );
     TaskDetailScroll {

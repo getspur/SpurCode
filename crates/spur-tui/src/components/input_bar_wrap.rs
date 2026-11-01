@@ -107,6 +107,14 @@ fn grapheme_cells(g: &str) -> u8 {
 
 /// Wrap `lines` to `width` cells. Pure function.
 pub fn wrap(lines: &[String], width: u16) -> WrapLayout {
+    wrap_with_cell_width(lines, width, grapheme_cells)
+}
+
+pub(crate) fn wrap_with_cell_width(
+    lines: &[String],
+    width: u16,
+    cell_width: impl Fn(&str) -> u8,
+) -> WrapLayout {
     assert!(width > 0, "wrap width must be positive");
 
     let mut rows: Vec<VisualRow> = Vec::new();
@@ -118,7 +126,7 @@ pub fn wrap(lines: &[String], width: u16) -> WrapLayout {
             .map(|(byte_start, g)| Grapheme {
                 byte_start,
                 byte_end: byte_start + g.len(),
-                width: grapheme_cells(g),
+                width: cell_width(g),
             })
             .collect();
 
