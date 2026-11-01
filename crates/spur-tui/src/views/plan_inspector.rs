@@ -1731,9 +1731,19 @@ fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
     let blocked = plan
         .tasks
         .iter()
-        .filter(|task| !task.blocked_by.is_empty())
+        .filter(|task| !task.blocked_by.is_empty() || task.status == "blocked_on_setup_conflict")
         .count() as u32;
     push_count(blocked, "blocked", "plan_inspector.header.count.blocked.fg");
+    let setup_conflicts = plan
+        .tasks
+        .iter()
+        .filter(|task| task.status == "blocked_on_setup_conflict")
+        .count() as u32;
+    push_count(
+        setup_conflicts,
+        "setup conflict",
+        "plan_inspector.header.count.blocked.fg",
+    );
     push_count(
         plan.counts.cancelled,
         "cancelled",

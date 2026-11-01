@@ -212,7 +212,10 @@ fn hero_line(task: &TrackedTask, live_node: Option<&ExecutorNode>, theme: &Theme
 }
 
 fn task_is_blocked(task: &TrackedTask) -> bool {
-    task.status == "blocked" || !task.blocked_by.is_empty()
+    matches!(
+        task.status.as_str(),
+        "blocked" | "blocked_on_setup_conflict"
+    ) || !task.blocked_by.is_empty()
 }
 
 fn blocked_banner(
@@ -221,7 +224,9 @@ fn blocked_banner(
     content_width: usize,
     theme: &Theme,
 ) -> Line<'static> {
-    let refs = if task.blocked_by.is_empty() {
+    let refs = if task.status == "blocked_on_setup_conflict" {
+        "setup conflict".to_string()
+    } else if task.blocked_by.is_empty() {
         task.status.clone()
     } else {
         task.blocked_by
