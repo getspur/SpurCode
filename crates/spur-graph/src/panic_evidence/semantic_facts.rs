@@ -1,9 +1,8 @@
 //! Typed, bounded semantic evidence, separate from graph schema v11.
 //!
 //! Validation establishes source identity and structural consistency of a
-//! supplied translation. It does not prove that translation faithful to Rust.
-//! A canonical producer and a consumer's independently expected build identity
-//! are still required. Missing information must use an explicit obligation.
+//! supplied translation. Automatic source evidence additionally requires
+//! `validate_canonical` and an independently expected build identity.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -232,6 +231,14 @@ pub enum PanicExpressionDerivation {
         left: String,
         right: String,
     },
+    U8AddFits {
+        left: String,
+        right: String,
+    },
+    U8ArrayIndex {
+        elements: Vec<u8>,
+        index: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -260,6 +267,8 @@ pub enum PanicValueOrigin {
     Assignment { assignment_id: String },
     Phi { inputs: Vec<PanicPhiInput> },
     Unknown { obligation_id: String },
+    CallResult { site_id: String },
+    LoopVariable { loop_id: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -329,6 +338,88 @@ pub enum PanicSiteSemantics {
     Unknown {
         obligation_id: String,
     },
+    /// Option<u8> is lowered to a presence bit and payload. The payload is
+    /// meaningful only when present; None uses canonical zero padding.
+    OptionConstructor {
+        is_some: String,
+        value: String,
+    },
+    OptionUnwrap {
+        is_some: String,
+        value: String,
+    },
+    OptionIsSome {
+        is_some: String,
+    },
+    CheckedAdd {
+        left: String,
+        right: String,
+        is_some: String,
+        value: String,
+    },
+    DirectCall {
+        callee_body_id: String,
+        arguments: Vec<String>,
+        result_value_id: String,
+    },
+}
+
+/// R5 producer-owned additions. R4 author-normalized structural fixtures have
+/// no extraction extension and can never pass canonical recollection.
+pub const PANIC_EXTRACTION_VERSION: &str = "rust-bool-u8-semantics-v1";
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PanicExtractedSemantics {
+    pub extractor_version: String,
+    pub returns: Vec<PanicBodyReturn>,
+    pub operations: Vec<PanicImplicitOperation>,
+    pub loops: Vec<PanicLiteralLoop>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PanicBodyReturn {
+    pub context: PanicFactContext,
+    pub expression_id: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum PanicImplicitOperationKind {
+    U8Add {
+        left: String,
+        right: String,
+        overflow_checks: bool,
+    },
+    Index {
+        elements: Vec<u8>,
+        index: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PanicImplicitOperation {
+    pub operation_id: String,
+    pub context: PanicFactContext,
+    pub result_expression_id: String,
+    pub operation: PanicImplicitOperationKind,
+}
+
+/// One symbolic iteration, never an assertion that the loop was fully explored.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PanicLiteralLoop {
+    pub loop_id: String,
+    pub context: PanicFactContext,
+    pub start: u8,
+    pub end: u8,
+    pub inclusive: bool,
+    pub induction_value_id: String,
+    pub iteration_entry_flow_id: String,
+    pub iteration_exit_flow_id: Option<String>,
+    pub obligation_id: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -418,9 +509,27 @@ pub struct PanicSemanticFacts {
     pub primitive_contracts: Vec<PanicPrimitiveContract>,
     pub unknown_obligations: Vec<PanicUnknownObligation>,
     pub exploration: PanicExplorationLimits,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extraction: Option<PanicExtractedSemantics>,
 }
 
 impl PanicSemanticFacts {
+    /// Authenticate automatic facts by recollecting all conclusions from the
+    /// exact graph, source bytes and independently supplied build declaration.
+    pub fn validate_canonical(
+        &self,
+        graph: &GraphIndexArtifact,
+        sources: &[PanicEvidenceSource<'_>],
+        expected: &PanicBuildConfig,
+    ) -> anyhow::Result<()> {
+        self.validate_for_build(expected)?;
+        let canonical = super::collect_panic_semantics(graph, sources, expected)?;
+        ensure!(
+            self == &canonical,
+            "semantic facts differ from canonical source recollection"
+        );
+        Ok(())
+    }
     /// Independently pin the intended build. `validate_against` alone detects
     /// inconsistent/stale hashes, not an attacker rehashing a replacement build.
     pub fn validate_for_build(&self, expected: &PanicBuildConfig) -> anyhow::Result<()> {
@@ -819,6 +928,20 @@ impl<'a> Validator<'a> {
                 PanicValueOrigin::Unknown { obligation_id } => {
                     self.obligation(obligation_id, &value.context.location)?;
                 }
+                PanicValueOrigin::CallResult { site_id } => {
+                    ensure!(self.facts.sites.iter().any(|s| s.site_id == *site_id && matches!(&s.semantics, PanicSiteSemantics::DirectCall { result_value_id, .. } if result_value_id == &value.value_id)), "detached call result");
+                }
+                PanicValueOrigin::LoopVariable { loop_id } => {
+                    ensure!(
+                        self.facts.extraction.as_ref().is_some_and(|e| e
+                            .loops
+                            .iter()
+                            .any(
+                                |l| l.loop_id == *loop_id && l.induction_value_id == value.value_id
+                            )),
+                        "detached loop variable"
+                    );
+                }
             }
         }
         for assignment in self.assignments.values() {
@@ -839,6 +962,7 @@ impl<'a> Validator<'a> {
         }
         self.validate_dependencies()?;
         self.validate_sites()?;
+        self.validate_extraction()?;
         let frontiers = index(&self.facts.exploration.frontiers, |f| &f.frontier_id)?;
         for frontier in frontiers.values() {
             self.context(&frontier.context)?;
@@ -855,6 +979,74 @@ impl<'a> Validator<'a> {
                 ),
                 "frontier obligation kind mismatch"
             );
+        }
+        Ok(())
+    }
+
+    fn validate_extraction(&self) -> anyhow::Result<()> {
+        let Some(extraction) = &self.facts.extraction else {
+            return Ok(());
+        };
+        ensure!(
+            extraction.extractor_version == PANIC_EXTRACTION_VERSION,
+            "unsupported semantic extractor"
+        );
+        for ret in &extraction.returns {
+            self.context(&ret.context)?;
+            self.expression(&ret.expression_id, &ret.context)?;
+        }
+        index(&extraction.operations, |op| &op.operation_id)?;
+        for op in &extraction.operations {
+            self.context(&op.context)?;
+            let result = self.expression(&op.result_expression_id, &op.context)?;
+            match &op.operation {
+                PanicImplicitOperationKind::U8Add {
+                    left,
+                    right,
+                    overflow_checks,
+                } => {
+                    ensure!(
+                        *overflow_checks == self.facts.build.overflow_checks
+                            && matches!(&result.derivation, PanicExpressionDerivation::U8Add { left:a, right:b } if a == left && b == right),
+                        "detached addition semantics/build"
+                    );
+                }
+                PanicImplicitOperationKind::Index { elements, index } => {
+                    ensure!(
+                        matches!(&result.derivation, PanicExpressionDerivation::U8ArrayIndex { elements:a, index:b } if a == elements && b == index),
+                        "detached bounded index"
+                    );
+                }
+            }
+        }
+        index(&extraction.loops, |l| &l.loop_id)?;
+        for template in &extraction.loops {
+            self.context(&template.context)?;
+            ensure!(
+                self.obligation(&template.obligation_id, &template.context.location)?
+                    .kind
+                    == PanicUnknownKind::LoopBound,
+                "missing loop exploration obligation"
+            );
+            let value = self
+                .values
+                .get(template.induction_value_id.as_str())
+                .context("missing induction value")?;
+            ensure!(
+                value.sort == PanicSort::U8
+                    && matches!(&value.origin, PanicValueOrigin::LoopVariable { loop_id } if loop_id == &template.loop_id),
+                "wrong induction origin"
+            );
+            for id in std::iter::once(&template.iteration_entry_flow_id)
+                .chain(template.iteration_exit_flow_id.iter())
+            {
+                ensure!(
+                    self.flow
+                        .get(id.as_str())
+                        .is_some_and(|f| f.location.body_id == template.context.location.body_id),
+                    "detached loop flow"
+                );
+            }
         }
         Ok(())
     }
@@ -901,7 +1093,8 @@ impl<'a> Validator<'a> {
             | Or { left, right }
             | Equal { left, right }
             | LessThan { left, right }
-            | U8Add { left, right } => {
+            | U8Add { left, right }
+            | U8AddFits { left, right } => {
                 let a = self.expression(left, &expr.context)?;
                 let b = self.expression(right, &expr.context)?;
                 let valid = match &expr.derivation {
@@ -921,9 +1114,23 @@ impl<'a> Validator<'a> {
                             && a.sort == PanicSort::U8
                             && b.sort == PanicSort::U8
                     }
+                    U8AddFits { .. } => {
+                        expr.sort == PanicSort::Bool
+                            && a.sort == PanicSort::U8
+                            && b.sort == PanicSort::U8
+                    }
                     _ => false,
                 };
                 ensure!(valid, "operator sort mismatch");
+            }
+            U8ArrayIndex { elements, index } => {
+                ensure!(
+                    !elements.is_empty()
+                        && elements.len() <= 255
+                        && expr.sort == PanicSort::U8
+                        && self.expression(index, &expr.context)?.sort == PanicSort::U8,
+                    "invalid bounded array index"
+                );
             }
         }
         Ok(())
@@ -962,6 +1169,78 @@ impl<'a> Validator<'a> {
             );
             self.context(&site.context)?;
             match &site.semantics {
+                PanicSiteSemantics::OptionConstructor { is_some, value }
+                | PanicSiteSemantics::OptionUnwrap { is_some, value } => {
+                    ensure!(
+                        self.expression(is_some, &site.context)?.sort == PanicSort::Bool
+                            && self.expression(value, &site.context)?.sort == PanicSort::U8,
+                        "invalid Option components"
+                    );
+                }
+                PanicSiteSemantics::OptionIsSome { is_some } => {
+                    ensure!(
+                        self.expression(is_some, &site.context)?.sort == PanicSort::Bool,
+                        "invalid Option presence"
+                    );
+                }
+                PanicSiteSemantics::CheckedAdd {
+                    left,
+                    right,
+                    is_some,
+                    value,
+                } => {
+                    for arg in [left, right, value] {
+                        ensure!(
+                            self.expression(arg, &site.context)?.sort == PanicSort::U8,
+                            "invalid checked_add operand"
+                        );
+                    }
+                    ensure!(
+                        self.expression(is_some, &site.context)?.sort == PanicSort::Bool,
+                        "invalid checked_add presence"
+                    );
+                }
+                PanicSiteSemantics::DirectCall {
+                    callee_body_id,
+                    arguments,
+                    result_value_id,
+                } => {
+                    ensure!(
+                        self.facts
+                            .bodies
+                            .iter()
+                            .any(|b| b.body_id == *callee_body_id),
+                        "missing direct helper body"
+                    );
+                    let mut params: Vec<_> = self
+                        .facts
+                        .values
+                        .iter()
+                        .filter_map(|v| match v.origin {
+                            PanicValueOrigin::Parameter { index }
+                                if v.context.location.body_id == *callee_body_id =>
+                            {
+                                Some((index, v))
+                            }
+                            _ => None,
+                        })
+                        .collect();
+                    params.sort_by_key(|p| p.0);
+                    ensure!(
+                        params.len() == arguments.len(),
+                        "helper argument arity mismatch"
+                    );
+                    for ((_, param), arg) in params.iter().zip(arguments) {
+                        ensure!(
+                            self.expression(arg, &site.context)?.sort == param.sort,
+                            "helper argument sort mismatch"
+                        );
+                    }
+                    ensure!(
+                        self.values.contains_key(result_value_id.as_str()),
+                        "missing helper result"
+                    );
+                }
                 PanicSiteSemantics::Unknown { obligation_id } => {
                     self.obligation(obligation_id, loc)?;
                 }
@@ -1005,7 +1284,9 @@ impl<'a> Validator<'a> {
                 | Or { left, right }
                 | Equal { left, right }
                 | LessThan { left, right }
-                | U8Add { left, right } => vec![format!("e:{left}"), format!("e:{right}")],
+                | U8Add { left, right }
+                | U8AddFits { left, right } => vec![format!("e:{left}"), format!("e:{right}")],
+                U8ArrayIndex { index, .. } => vec![format!("e:{index}")],
                 _ => vec![],
             };
             deps.insert(

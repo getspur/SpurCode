@@ -5,11 +5,13 @@ mod call_sites;
 mod cga;
 mod method_sites;
 mod semantic_facts;
+mod semantics;
 
 pub use build_identity::*;
 pub use call_sites::*;
 pub use cga::*;
 pub use semantic_facts::*;
+pub use semantics::*;
 
 use std::collections::BTreeSet;
 use std::path::{Component, Path};
