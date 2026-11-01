@@ -1592,6 +1592,13 @@ impl PlanInspectorView {
         if let Some(plan) = self.active_plan(ctx) {
             lines.push(Line::from(format!("Plan: {}", plan.plan_id)));
             lines.push(Line::from(format!("Status: {}", plan.status)));
+            lines.push(Line::from("Lifecycle counts (dependency counts overlap):"));
+            lines.extend(
+                header_count_spans(plan, ctx.theme)
+                    .into_iter()
+                    .filter(|span| span.content != " · ")
+                    .map(|span| Line::from(vec![span])),
+            );
             lines.push(Line::from(format!("Next: {}", plan.next_action)));
             lines.push(Line::from(format!(
                 "Summary: {}",
@@ -1774,76 +1781,44 @@ fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
             .filter(|task| task.status == status)
             .count() as u32
     };
-    let setup_conflicts = count_status("blocked_on_setup_conflict");
+    let setup = count_status("blocked_on_setup_conflict");
+    let lifecycle = [
+        (plan.counts.escalated, "escalated", "rejected"),
+        (setup, "setup conflict", "blocked"),
+        (plan.counts.failed, "failed", "failed"),
+        (plan.counts.rejected, "rejected", "rejected"),
+        (
+            plan.counts.pending.saturating_sub(setup),
+            "pending",
+            "pending",
+        ),
+        (plan.counts.ready, "ready", "ready"),
+        (plan.counts.dispatched, "dispatched", "dispatched"),
+        (
+            plan.counts.awaiting_review,
+            "awaiting_review",
+            "awaiting_review",
+        ),
+        (plan.counts.approved, "approved", "approved"),
+        (count_status("cancelled"), "cancelled", "cancelled"),
+        (count_status("superseded"), "superseded", "cancelled"),
+    ];
     let mut spans = Vec::new();
-    let mut push_count = |count: u32, label: &'static str, token_name: &'static str| {
+    for (count, label, color) in lifecycle {
         if count == 0 {
-            return;
+            continue;
         }
         if !spans.is_empty() {
             spans.push(Span::raw(" · "));
         }
         spans.push(Span::styled(
             format!("{count} {label}"),
-            Style::default().fg(token(theme, token_name)),
+            Style::default().fg(token(
+                theme,
+                &format!("plan_inspector.header.count.{color}.fg"),
+            )),
         ));
-    };
-
-    push_count(
-        plan.counts.pending.saturating_sub(setup_conflicts),
-        "pending",
-        "plan_inspector.header.count.pending.fg",
-    );
-    push_count(
-        plan.counts.ready,
-        "ready",
-        "plan_inspector.header.count.ready.fg",
-    );
-    push_count(
-        plan.counts.dispatched,
-        "dispatched",
-        "plan_inspector.header.count.dispatched.fg",
-    );
-    push_count(
-        plan.counts.awaiting_review,
-        "awaiting_review",
-        "plan_inspector.header.count.awaiting_review.fg",
-    );
-    push_count(
-        plan.counts.approved,
-        "approved",
-        "plan_inspector.header.count.approved.fg",
-    );
-    push_count(
-        plan.counts.rejected,
-        "rejected",
-        "plan_inspector.header.count.rejected.fg",
-    );
-    push_count(
-        plan.counts.failed,
-        "failed",
-        "plan_inspector.header.count.failed.fg",
-    );
-    push_count(
-        plan.counts.escalated,
-        "escalated",
-        "plan_inspector.header.count.rejected.fg",
-    );
-    push_count(
-        setup_conflicts,
-        "setup conflict",
-        "plan_inspector.header.count.blocked.fg",
-    );
-    push_count(
-        count_status("cancelled"),
-        "cancelled",
-        "plan_inspector.header.count.cancelled.fg",
-    );
-    push_count(
-        count_status("superseded"),
-        "superseded",
-        "plan_inspector.header.count.cancelled.fg",
-    );
+    }
     let dependency_blocked = plan
         .tasks
         .iter()
@@ -1855,7 +1830,6 @@ fn header_count_spans(plan: &TrackedPlan, theme: &Theme) -> Vec<Span<'static>> {
             Style::default().fg(token(theme, "plan_inspector.header.count.blocked.fg")),
         ));
     }
-
     spans
 }
 
