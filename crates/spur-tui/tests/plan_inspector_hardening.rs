@@ -1,5 +1,79 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 #[test]
+fn compact_header_protects_status_progress_and_selection_at_each_geometry() {
+    let tasks = (0..20)
+        .map(|i| task(&format!("selected-{i:02}"), "pending"))
+        .collect();
+    let mut state = snapshot(
+        tasks,
+        PlanSnapshotCounts {
+            pending: 20,
+            ..Default::default()
+        },
+    );
+    state.plan_id = "213e60f5-6427-4e53-bd64-7ad4ca6fe4c0".into();
+    let fixture = Fixture::new(state);
+    let mut view = fixture.view();
+    for (width, height) in [(80, 24), (89, 24), (90, 24), (120, 32), (200, 50), (90, 8)] {
+        fixture.render(&mut view, width, height);
+        fixture.key(&mut view, KeyCode::Char('G'));
+        let text = fixture.render(&mut view, width, height);
+        let header = text.lines().take(3).collect::<Vec<_>>().join("\n");
+        assert!(
+            header.contains("RUNNING"),
+            "status lost at {width}x{height}:\n{text}"
+        );
+        assert!(header.contains("0 / 20 approved"), "progress lost:\n{text}");
+        assert!(
+            header.contains("next: Review next task"),
+            "next action lost:\n{text}"
+        );
+        assert!(
+            !header.contains("213e60f5-6427-4e53-bd64-7ad4ca6fe4c0"),
+            "full UUID crowds primary header"
+        );
+        assert!(
+            text.contains("▶ ○ selected-19"),
+            "selected task lost during resize:\n{text}"
+        );
+        let lines: Vec<_> = text.lines().collect();
+        let mut rectangles = vec![];
+        for (y, line) in lines.iter().enumerate() {
+            let starts: Vec<_> = line
+                .chars()
+                .enumerate()
+                .filter_map(|(x, c)| (c == '┌').then_some(x))
+                .collect();
+            let ends: Vec<_> = line
+                .chars()
+                .enumerate()
+                .filter_map(|(x, c)| (c == '┐').then_some(x))
+                .collect();
+            for (&x, &end) in starts.iter().zip(&ends) {
+                let bottom = (y + 1..lines.len())
+                    .find(|&row| lines[row].chars().nth(x) == Some('└'))
+                    .unwrap();
+                rectangles
+                    .push(serde_json::json!({"x":x,"y":y,"width":end+1-x,"height":bottom+1-y}));
+            }
+        }
+        println!(
+            "I8_GEOMETRY {}",
+            serde_json::json!({"width":width,"height":height,"rectangles":rectangles})
+        );
+    }
+    fixture.key(&mut view, KeyCode::Char('?'));
+    let help = fixture.render(&mut view, 90, 24);
+    assert!(
+        help.contains("213e60f5-6427-4e53-bd64-7ad4ca6fe4c0"),
+        "full plan identity must remain inspectable:\n{help}"
+    );
+    assert!(
+        fixture.key(&mut view, KeyCode::Esc).is_none(),
+        "Esc should close help before leaving inspector"
+    );
+}
+#[test]
 fn next_action_survives_terminal_retry_history_at_wide_and_narrow_widths() {
     for status in ["approved", "cancelled", "superseded"] {
         let mut row = task("historical", status);
