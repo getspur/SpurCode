@@ -576,15 +576,27 @@ impl Fixture {
             .draw(|frame| view.render(frame, frame.area(), &self.ctx()))
             .unwrap();
         let buffer = terminal.backend().buffer();
-        (0..height)
-            .map(|y| {
-                (0..width)
-                    .map(|x| buffer[(x, y)].symbol())
-                    .collect::<String>()
-            })
-            .collect::<Vec<_>>()
-            .join("\n")
+        buffer_text(buffer, width, height)
     }
+    fn render_streams(&self, view: &mut PlanInspectorView, width: u16, height: u16) -> String {
+        let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
+        let mut streams = spur_tui::worker_streams::WorkerStreams::new();
+        terminal
+            .draw(|frame| {
+                view.render_with_worker_streams(frame, frame.area(), &mut streams, &self.ctx())
+            })
+            .unwrap();
+        buffer_text(terminal.backend().buffer(), width, height)
+    }
+    fn stream_key(&self, view: &mut PlanInspectorView, code: KeyCode) -> Option<Action> {
+        let mut streams = spur_tui::worker_streams::WorkerStreams::new();
+        view.handle_key_with_worker_streams(
+            KeyEvent::new(code, KeyModifiers::NONE),
+            &mut streams,
+            &self.ctx(),
+        )
+    }
+
     fn key(&self, view: &mut PlanInspectorView, key: KeyCode) -> Option<Action> {
         view.handle_key(KeyEvent::new(key, KeyModifiers::NONE), &self.ctx())
     }
@@ -718,6 +730,245 @@ fn short_mixed_attention_counts_stay_visible_and_full_counts_are_inspectable() {
         assert!(
             help.contains(label),
             "complete count missing from help: {label}\n{help}"
+        );
+    }
+}
+
+fn buffer_text(buffer: &ratatui::buffer::Buffer, width: u16, height: u16) -> String {
+    (0..height)
+        .map(|y| {
+            let mut row = String::new();
+            let mut x = 0;
+            while x < width {
+                let symbol = buffer[(x, y)].symbol();
+                row.push_str(symbol);
+                x += ratatui::text::Span::raw(symbol).width().max(1) as u16;
+            }
+            row
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+#[test]
+fn footer_matches_board_detail_issue_and_confirmation_ownership() {
+    let mut row = task("task-a", "pending");
+    row.issue_id = Some("bd-worker".into());
+    let fixture = Fixture::new(snapshot(
+        vec![row],
+        PlanSnapshotCounts {
+            pending: 1,
+            ..Default::default()
+        },
+    ));
+    for width in [40, 80, 160, 240] {
+        let mut view = fixture.view();
+        let text = fixture.render(&mut view, width, 24);
+        let footer = text.lines().last().unwrap();
+        assert!(
+            footer.contains("? help") && footer.contains("Esc"),
+            "essential hints missing:\n{text}"
+        );
+        assert!(
+            footer.contains("j/k: task"),
+            "board footer must describe task navigation:\n{text}"
+        );
+        fixture.key(&mut view, KeyCode::Tab);
+        let text = fixture.render(&mut view, width, 24);
+        let footer = text.lines().last().unwrap();
+        assert!(
+            footer.contains("j/k: scroll") && !footer.contains("j/k: task"),
+            "detail footer contradicts ownership:\n{text}"
+        );
+        assert!(text.contains("[focus]"), "focused detail must be visible");
+        fixture.key(&mut view, KeyCode::Enter);
+        let text = fixture.render(&mut view, width, 24);
+        let footer = text.lines().last().unwrap();
+        assert!(footer.contains("j/k: scroll") && !footer.contains("j/k: task"));
+        fixture.key(&mut view, KeyCode::Esc);
+        fixture.key(&mut view, KeyCode::Char('r'));
+        let text = fixture.render(&mut view, width, 24);
+        let footer = text.lines().last().unwrap();
+        assert!(
+            footer.contains("Enter") && footer.contains("Esc") && !footer.contains("j/k"),
+            "confirmation footer leaks browse commands:\n{text}"
+        );
+        for code in ['e', 'p', 'n', '?'] {
+            assert!(fixture.key(&mut view, KeyCode::Char(code)).is_none());
+        }
+        fixture.key(&mut view, KeyCode::Esc);
+        assert!(fixture.render(&mut view, width, 24).contains("[focus]"));
+    }
+}
+#[test]
+fn help_scrolls_the_complete_status_legend_and_restores_detail_focus() {
+    let fixture = Fixture::new(snapshot(
+        vec![task("task-a", "pending")],
+        PlanSnapshotCounts {
+            pending: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    fixture.render(&mut view, 80, 16);
+    fixture.key(&mut view, KeyCode::Tab);
+    fixture.key(&mut view, KeyCode::Char('?'));
+    let mut seen = String::new();
+    for _ in 0..80 {
+        seen.push_str(&fixture.render(&mut view, 80, 16));
+        fixture.key(&mut view, KeyCode::Down);
+    }
+    for label in [
+        "○ pending",
+        "◐ ready",
+        "◉ dispatched",
+        "◈ awaiting_review",
+        "✓ approved",
+        "⊘ rejected",
+        "✕ failed",
+        "⊝ cancelled",
+        "⇢ superseded",
+        "⦿ setup conflict",
+        "! escalated",
+    ] {
+        assert!(
+            seen.contains(label),
+            "status missing from scrollable legend: {label}"
+        );
+    }
+    for hint in ["Tab", "p/n", "e:", "stage", "Plan:"] {
+        assert!(seen.contains(hint), "help missing {hint}");
+    }
+    fixture.key(&mut view, KeyCode::Char('G'));
+    let bottom = fixture.render(&mut view, 80, 16);
+    fixture.key(&mut view, KeyCode::Up);
+    assert_ne!(bottom, fixture.render(&mut view, 80, 16));
+    assert!(fixture.key(&mut view, KeyCode::Esc).is_none());
+    assert!(fixture.render(&mut view, 80, 16).contains("[focus]"));
+    assert!(matches!(
+        fixture.key(&mut view, KeyCode::Down),
+        Some(Action::ScrollDown)
+    ));
+}
+#[test]
+fn stream_help_and_modal_dependency_keys_do_not_leak_into_browsing() {
+    let mut row = task("task-a", "dispatched");
+    row.issue_id = Some("bd-worker".into());
+    row.delegation_id = Some("audit-request".into());
+    row.unblocks = vec!["child".into()];
+    let mut child = task("child", "pending");
+    child.depends_on = vec!["task-a".into()];
+    let mut fixture = Fixture::new(snapshot(
+        vec![row, child],
+        PlanSnapshotCounts {
+            dispatched: 1,
+            pending: 1,
+            ..Default::default()
+        },
+    ));
+    add_worker(&mut fixture, spur_acp::LifecycleState::Running);
+    let mut view = fixture.view();
+    fixture.render(&mut view, 120, 24);
+    view.enter_stream_peek("audit-exec".into(), "task-a".into());
+    let text = fixture.render_streams(&mut view, 120, 24);
+    let footer = text.lines().last().unwrap();
+    assert!(
+        footer.contains("j/k: scroll") && !footer.contains("j/k: task"),
+        "stream footer leaks browsing:\n{text}"
+    );
+    for code in ['e', 'p', 'n'] {
+        assert!(fixture.stream_key(&mut view, KeyCode::Char(code)).is_none());
+    }
+    fixture.stream_key(&mut view, KeyCode::Char('?'));
+    assert!(fixture
+        .render_streams(&mut view, 120, 24)
+        .contains("Plan inspector help"));
+    fixture.stream_key(&mut view, KeyCode::Esc);
+    assert!(matches!(
+        view.mode(),
+        spur_tui::views::plan_inspector::PlanInspectorMode::StreamPeek { .. }
+    ));
+    fixture.stream_key(&mut view, KeyCode::Esc);
+    let text = fixture.render(&mut view, 120, 24);
+    assert!(!text.contains("Relationships (p parents"));
+    assert!(text.lines().last().unwrap().contains("j/k: task"));
+    fixture.key(&mut view, KeyCode::Enter);
+    for code in ['e', 'p', 'n'] {
+        assert!(fixture.key(&mut view, KeyCode::Char(code)).is_none());
+    }
+    fixture.key(&mut view, KeyCode::Esc);
+    assert!(!fixture
+        .render(&mut view, 120, 24)
+        .contains("Relationships (p parents"));
+    fixture.key(&mut view, KeyCode::Char('e'));
+    assert!(fixture
+        .render(&mut view, 120, 24)
+        .contains("Relationships (p parents"));
+    fixture.key(&mut view, KeyCode::Char('e'));
+    assert!(!fixture
+        .render(&mut view, 120, 24)
+        .contains("Relationships (p parents"));
+    fixture.key(&mut view, KeyCode::Char('e'));
+    fixture.key(&mut view, KeyCode::Char('n'));
+    let text = fixture.render(&mut view, 120, 24);
+    assert!(text.contains("task: child") && !text.contains("Relationships (p parents"));
+}
+#[test]
+fn long_next_action_shares_header_space_with_actionable_risk() {
+    let mut child = task("child", "pending");
+    child.depends_on = vec!["lint".into()];
+    child.blocked_by = child.depends_on.clone();
+    let mut state = snapshot(
+        vec![task("lint", "failed"), child],
+        PlanSnapshotCounts {
+            failed: 1,
+            pending: 1,
+            ..Default::default()
+        },
+    );
+    state.next_action = "Review the evidence and resolve the pending decision. ".repeat(8);
+    let fixture = Fixture::new(state);
+    let text = fixture.render(&mut fixture.view(), 80, 24);
+    let header = text.lines().nth(1).unwrap();
+    assert!(
+        header.contains("next: Review") && header.contains("risk: lint error"),
+        "long next action hides risk:\n{text}"
+    );
+}
+#[test]
+fn unicode_status_footer_preserves_essential_hints_within_cell_budget() {
+    let mut row = task("任务-é-👩‍💻", "pending");
+    row.depends_on = vec!["父任务-👩‍💻".into()];
+    row.blocked_by = row.depends_on.clone();
+    let fixture = Fixture::new(snapshot(
+        vec![row],
+        PlanSnapshotCounts {
+            pending: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::PlanCommandError {
+            operation: "RetryPlanTask".into(),
+            plan_id: Some("plan-audit".into()),
+            error: "漢字é👩‍💻".repeat(30),
+        }),
+        &fixture.ctx(),
+    );
+    for width in [20, 40, 80, 160] {
+        let text = fixture.render(&mut view, width, 24);
+        let footer = text.lines().last().unwrap();
+        assert!(
+            footer.contains("Esc") && footer.contains("? help"),
+            "Unicode status displaced essential controls:\n{text}"
+        );
+        assert!(ratatui::text::Span::raw(footer).width() <= width as usize);
+        for line in text.lines() {
+            assert!(ratatui::text::Span::raw(line).width() <= width as usize);
+        }
+        println!(
+            "I10_FOOTER {}",
+            serde_json::json!({"mode":"board","width":width,"cells":ratatui::text::Span::raw(footer).width()})
         );
     }
 }

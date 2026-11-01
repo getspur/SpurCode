@@ -2362,6 +2362,28 @@ mod tests {
     use crate::views::{View, ViewContext};
 
     use super::*;
+    #[test]
+    fn cell_budget_helpers_preserve_graphemes_and_include_ellipsis() {
+        for (input, width, expected) in [
+            ("abcdef", 0, ""),
+            ("abcdef", 1, "…"),
+            ("漢字", 2, "…"),
+            ("漢字", 3, "漢…"),
+            ("漢字", 4, "漢字"),
+            ("éx", 2, "éx"),
+            ("👩‍💻X", 3, "👩‍💻X"),
+        ] {
+            assert_eq!(
+                truncate_display(input, width),
+                expected,
+                "wrong display budget for {input:?}"
+            );
+            assert!(Span::raw(truncate_display(input, width)).width() <= width);
+        }
+        for width in 0..10 {
+            assert!(Span::raw(truncate_footer_status("漢字é👩‍💻", width)).width() <= width);
+        }
+    }
 
     fn key(code: KeyCode) -> KeyEvent {
         KeyEvent::new(code, KeyModifiers::NONE)

@@ -559,7 +559,7 @@ mod tests {
     use spur_acp::{PlanSnapshotCounts, SessionId};
     use spur_core::{TrackedPlan, TrackedTask};
 
-    use super::dependency_strip;
+    use super::{dependency_strip, pad_column, truncate_to_width};
     use crate::theme::{load_built_in, Theme};
 
     fn task(task_id: &str) -> TrackedTask {
@@ -627,6 +627,17 @@ mod tests {
             .expect("render dependency strip");
 
         rendered_buffer_text(&terminal)
+    }
+
+    #[test]
+    fn cell_width_dependency_columns_keep_wide_graphemes_inside_their_budget() {
+        assert_eq!(truncate_to_width("漢字", 2), "…");
+        assert_eq!(truncate_to_width("éx", 2), "éx");
+        assert_eq!(truncate_to_width("👩‍💻X", 3), "👩‍💻X");
+        assert_eq!(pad_column("界", 3), "界 ");
+        for width in 0..10 {
+            assert!(ratatui::text::Span::raw(pad_column("漢字é👩‍💻", width)).width() <= width);
+        }
     }
 
     #[test]
