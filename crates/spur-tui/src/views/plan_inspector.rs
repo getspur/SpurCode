@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
@@ -1773,6 +1773,7 @@ fn operator_summary(
     lineage: &spur_core::ExecutorLineage,
 ) -> (&'static str, String) {
     let mut fragments = Vec::new();
+    let mut reported = HashSet::new();
     let task_by_id: HashMap<&str, &spur_core::TrackedTask> = plan
         .tasks
         .iter()
@@ -1786,18 +1787,13 @@ fn operator_summary(
             let Some(blocker) = task_by_id.get(blocker_id.as_str()) else {
                 continue;
             };
-            if matches!(blocker.status.as_str(), "rejected" | "failed" | "error") {
+            if matches!(blocker.status.as_str(), "rejected" | "failed" | "error")
+                && reported.insert(blocker.task_id.as_str())
+            {
                 fragments.push(format!(
-                    "{} {} {} ago",
+                    "{} {}",
                     blocker.task_id,
                     operator_status_label(&blocker.status),
-                    format_age(
-                        plan.updated_at
-                            .elapsed()
-                            .ok()
-                            .map(|d| d.as_secs())
-                            .unwrap_or(0)
-                    )
                 ));
             }
         }
@@ -1807,21 +1803,18 @@ fn operator_summary(
         if !matches!(task.status.as_str(), "dispatched" | "running" | "active") {
             continue;
         }
-        let elapsed_secs = task
+        let Some(elapsed_secs) = task
             .issue_id
             .as_deref()
             .and_then(|issue_id| {
                 crate::components::plan_stage_board::preferred_live_node(lineage, issue_id)
             })
+            .filter(|node| !is_terminal_phase(node.phase))
             .map(|node| node.elapsed_secs())
-            .unwrap_or_else(|| {
-                plan.updated_at
-                    .elapsed()
-                    .ok()
-                    .map(|d| d.as_secs())
-                    .unwrap_or(0)
-            });
-        if elapsed_secs >= 10 * 60 {
+        else {
+            continue;
+        };
+        if elapsed_secs >= 10 * 60 && reported.insert(task.task_id.as_str()) {
             fragments.push(format!(
                 "{} running {}",
                 task.task_id,
@@ -1831,7 +1824,13 @@ fn operator_summary(
     }
 
     for task in &plan.tasks {
-        if task.attempt > 1 {
+        if task.attempt > 1
+            && !matches!(
+                task.status.as_str(),
+                "approved" | "cancelled" | "superseded"
+            )
+            && reported.insert(task.task_id.as_str())
+        {
             fragments.push(format!(
                 "{} retry {}/{}",
                 task.task_id, task.attempt, task.max_attempts
@@ -1842,7 +1841,10 @@ fn operator_summary(
     if fragments.is_empty() {
         (" next: ", plan.next_action.clone())
     } else {
-        (" risk: ", fragments.join(" · "))
+        (
+            " next: ",
+            format!("{} | risk: {}", plan.next_action, fragments.join(" · ")),
+        )
     }
 }
 
