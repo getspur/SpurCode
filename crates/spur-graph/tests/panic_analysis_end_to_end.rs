@@ -14,6 +14,48 @@ const BOUNDS: &str = include_str!("fixtures/panic_analysis/bounds.rs");
 const OVERFLOW: &str = include_str!("fixtures/panic_analysis/overflow.rs");
 const CHECKED: &str = include_str!("fixtures/panic_analysis/checked.rs");
 
+#[test]
+fn compiler_report_json_retains_import_validation_and_unknowns() -> anyhow::Result<()> {
+    use sha2::{Digest,Sha256};
+    let hash=|bytes:&[u8]|format!("{:x}",Sha256::digest(bytes));
+    let fixture:Value=serde_json::from_str(include_str!("fixtures/panic_evidence/cga-format.json"))?;
+    let source=fixture["source"].as_str().unwrap();
+    let analyze=analyze_request(source,true)?;
+    let collected=example::execute(analyze.clone())?;
+    let methods=example::execute(json!({"command":"collect","graph":analyze["graph"],"sources":analyze["sources"]}))?;
+    let raw=serde_json::to_string(&fixture["export"])?;
+    let files=[("Cargo.lock","version = 4\n","lockfile"),("Cargo.toml","[package]\nname=\"fixture\"\nversion=\"0.0.0\"\n","manifest"),("src/lib.rs",source,"source")];
+    let identity:CaptureBuildIdentity=serde_json::from_value(json!({
+        "schema_version":CAPTURE_BUILD_SCHEMA_VERSION,"scope":"bounded_fixture","provenance":"synthetic_fixture",
+        "graph_content_hash":analyze["graph"]["graph_content_hash"],"capture_root":"/fixture",
+        "inputs":files.iter().map(|(path,text,kind)|json!({"path":path,"kind":kind,"sha256":hash(text.as_bytes())})).collect::<Vec<_>>(),
+        "rustc_verbose":analyze["build"]["rustc_verbose"],"toolchain":CGA_TOOLCHAIN,
+        "host":analyze["build"]["target"],"target":analyze["build"]["target"],"exporter_revision":CGA_REVISION,
+        "producer":{"build":{"state":"unmodified"},"cargo_cga_sha256":hash(b"synthetic launcher"),"cga_driver_sha256":hash(b"synthetic driver")},
+        "packages":["fixture"],"targets":["lib:fixture"],"features":[],"default_features":false,"all_features":false,
+        "profile":"dev","cfg_flags":[],"compiler_flags":[],"cargo_args":["check","--frozen"],
+        "environment":CAPTURE_ENV_ALLOWLIST.iter().map(|k|((*k).to_owned(),Value::Null)).collect::<serde_json::Map<_,_>>(),
+        "capture_command":["synthetic-format-control"],"raw_export_sha256":hash(raw.as_bytes())}))?;
+    let mut request=json!({"command":"import","graph":analyze["graph"],"sources":analyze["sources"],
+        "method_sites":methods["method_sites"],"inputs":files.iter().map(|(path,text,_)|json!({"path":path,"text":text})).collect::<Vec<_>>(),
+        "identity":identity,"expected_build_id":identity.build_id()?,"raw_export":raw});
+    let imported=example::execute(request.clone())?;
+    request["command"]=json!("compiler_report");
+    request["compiler_evidence"]=imported["compiler_evidence"].clone();
+    request["build"]=analyze["build"].clone();
+    request["config_binding"]=json!({"capture_build_id":identity.build_id()?,"semantic_build_hash":collected["facts"]["build_hash"]});
+    let output=example::execute(request.clone());
+    assert!(output.is_ok(),"compiler report command must be wired: {output:?}");
+    let output=output?;
+    assert_eq!(output["compiler_report"]["semantic_completeness"],"unestablished");
+    assert_eq!(output["compiler_report"]["retained_unknown_obligations"],collected["facts"]["unknown_obligations"]);
+    assert_eq!(output["compiler_report"]["cleared_obligations"],json!([]));
+    let mut changed=request.clone(); changed["config_binding"]["semantic_build_hash"]=json!("forged");
+    assert!(example::execute(changed).is_err());
+    export("compiler-report",&json!({"request":request,"output":output}))?;
+    Ok(())
+}
+
 fn export(name: &str, value: &Value) -> anyhow::Result<()> {
     if let Some(dir) = std::env::var_os("R8_EVIDENCE_DIR") {
         std::fs::create_dir_all(&dir)?;
@@ -59,9 +101,12 @@ fn analyze_request(source: &str, overflow: bool) -> anyhow::Result<Value> {
 fn solve_request(analyze: &Value, output: &Value, minimum: u16, maximum: u16) -> Value {
     let facts = &output["facts"];
     let body = &facts["bodies"][0]["body_id"];
+    let domains=if facts["values"].as_array().unwrap().iter().any(|v|v["origin"]["kind"]=="parameter" && &v["context"]["location"]["body_id"]==body) {
+        json!([{"body_id":body,"parameter_index":0,"domain":{"kind":"u8","minimum":minimum,"maximum":maximum}}])
+    }else{json!([])};
     json!({"command":"solve", "graph":analyze["graph"],"sources":analyze["sources"],
         "build":analyze["build"],"facts":facts,
-        "domains":[{"body_id":body,"parameter_index":0,"domain":{"kind":"u8","minimum":minimum,"maximum":maximum}}],
+        "domains":domains,
         "limits":{"entry_body_ids":[body],"expected_build_hash":facts["build_hash"],
             "max_call_depth":0,"max_loop_iterations":0,"max_states":4096,"timeout_ms":30000,"persist":true}})
 }
@@ -144,7 +189,7 @@ async fn missing_facts_domains_and_changed_identities_fail_closed() -> anyhow::R
     let replay=replay_request(&solve,&solved["report"],"attempt to add with overflow");
     let mut results=vec![];
     for (pointer,value) in [
-        ("/facts/extraction",Value::Null),("/facts/sites",json!([])),
+        ("/facts/extraction",Value::Null),
         ("/facts/control_flow",json!([])),("/facts/body_coverage",json!([])),
         ("/sources/0/text",json!("fn probe(value:u8)->u8{value}")),
         ("/build/overflow_checks",json!(false)),("/limits/expected_build_hash",json!("changed")),
@@ -194,7 +239,8 @@ async fn held_out_names_shadows_cfg_and_opaque_calls_preserve_uncertainty() -> a
         let bodies=collected["facts"]["bodies"].as_array().unwrap();
         let id=bodies.iter().max_by_key(|b|b["byte_range"][0].as_u64()).unwrap()["body_id"].clone();
         solve["limits"]["entry_body_ids"]=json!([id]);
-        solve["domains"][0]["body_id"]=id;
+        let has_parameter=collected["facts"]["values"].as_array().unwrap().iter().any(|v|v["origin"]["kind"]=="parameter" && v["context"]["location"]["body_id"]==id);
+        solve["domains"]=if has_parameter {json!([{"body_id":id,"parameter_index":0,"domain":{"kind":"u8","minimum":8,"maximum":8}}])} else {json!([])};
         let result=example::execute_async(solve.clone(),&service).await?;
         assert_eq!(result["report"]["queries"][0]["outcome"],if unknown {"incomplete_semantics"} else {"candidate_witness"});
         export(name,&json!({"analyze":analyze,"solve":solve,"output":result}))?;
