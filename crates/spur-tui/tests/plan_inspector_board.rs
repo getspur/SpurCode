@@ -1,7 +1,7 @@
 use ratatui::{backend::TestBackend, Terminal};
 use spur_acp::{PlanSnapshotCounts, SessionId};
 use spur_core::{ExecutorLineage, TrackedPlan, TrackedTask};
-use spur_tui::components::plan_stage_board::render_stage_board;
+use spur_tui::components::plan_stage_board::{render_stacked_stage_groups, render_stage_board};
 
 fn task(index: usize) -> TrackedTask {
     TrackedTask {
@@ -44,19 +44,43 @@ fn plan(tasks: Vec<TrackedTask>) -> TrackedPlan {
     }
 }
 fn render(plan: &TrackedPlan, width: u16, height: u16, selected: usize) -> String {
+    render_mode(plan, width, height, selected, false)
+}
+fn render_mode(
+    plan: &TrackedPlan,
+    width: u16,
+    height: u16,
+    selected: usize,
+    stacked: bool,
+) -> String {
     let lineage = ExecutorLineage::new();
     let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
     terminal
         .draw(|frame| {
-            render_stage_board(
-                frame,
-                frame.area(),
-                plan,
-                &format!("T{selected}"),
-                selected,
-                &lineage,
-                spur_tui::theme::fallback_theme(),
-            )
+            if stacked {
+                render_stacked_stage_groups(
+                    frame,
+                    frame.area(),
+                    plan,
+                    &format!("T{selected}"),
+                    &lineage,
+                    spur_tui::theme::fallback_theme(),
+                );
+            } else {
+                render_stage_board(
+                    frame,
+                    frame.area(),
+                    plan,
+                    &format!("T{selected}"),
+                    plan.tasks
+                        .iter()
+                        .find(|task| task.task_id == format!("T{selected}"))
+                        .unwrap()
+                        .stage_idx,
+                    &lineage,
+                    spur_tui::theme::fallback_theme(),
+                )
+            }
         })
         .unwrap();
     let buffer = terminal.backend().buffer();
@@ -131,4 +155,56 @@ fn long_stage_titles_show_visible_elision() {
         render(&plan, 16, 6, 0).contains('…'),
         "clipping must show an ellipsis"
     );
+}
+
+#[test]
+fn crowded_lane_keeps_selected_title_and_metadata_visible_after_resize() {
+    let tasks = (0..20)
+        .map(|index| {
+            let mut row = task(index);
+            row.stage_idx = 0;
+            row.attempt = 2;
+            row
+        })
+        .collect();
+    let plan = plan(tasks);
+    for height in [8, 5] {
+        for selected in [0, 10, 19] {
+            let text = render(&plan, 90, height, selected);
+            let title_y = text
+                .lines()
+                .position(|line| line.contains(&format!("▶ ○ label-{selected:04}")))
+                .unwrap_or_else(|| panic!("selected row outside lane:\n{text}"));
+            assert!(
+                text.lines().nth(title_y + 1).unwrap().contains("retry 2/3"),
+                "selected metadata clipped:\n{text}"
+            );
+            println!(
+                "I2_GEOMETRY {}",
+                serde_json::json!({"mode":"wide","height":height,"selected":selected,"y":title_y,"rows":2})
+            );
+        }
+    }
+}
+
+#[test]
+fn stacked_board_keeps_selected_stage_and_task_visible_after_resize() {
+    let plan = plan((0..20).map(task).collect());
+    for height in [8, 5] {
+        for selected in [0, 10, 19] {
+            let text = render_mode(&plan, 80, height, selected, true);
+            let title_y = text
+                .lines()
+                .position(|line| line.contains(&format!("▶ ○ label-{selected:04}")))
+                .unwrap_or_else(|| panic!("selected row outside stacked viewport:\n{text}"));
+            assert!(
+                text.contains(&format!("Stage {selected}")),
+                "selected stage heading clipped:\n{text}"
+            );
+            println!(
+                "I2_GEOMETRY {}",
+                serde_json::json!({"mode":"stacked","height":height,"selected":selected,"y":title_y,"rows":1})
+            );
+        }
+    }
 }
