@@ -12,7 +12,7 @@ dist = false
 
 [features]
 default = ["embed"]
-embed = ["dep:fastembed", "dep:hf-hub"]
+embed = ["dep:fastembed", "dep:hf-hub", "dep:ort"]
 perf-gates = ["test-support"]
 test-support = []
 
@@ -42,7 +42,7 @@ base64 = "0.22"
 # 5.8.0 includes NomicEmbedTextV15 and JinaEmbeddingsV2BaseCode. CodeRankEmbed
 # uses the user-defined ONNX path. Newer 5.x releases pull ORT
 # rc.11/rc.12 binaries that require newer Linux runtime symbols on the build VM.
-fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries"], optional = true }
+fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls"], optional = true }
 hf-hub = { version = "=0.4.3", default-features = false, features = ["native-tls", "ureq"], optional = true }
 parquet = { workspace = true, features = ["arrow", "async"] }
 petgraph = { workspace = true }
@@ -77,6 +77,19 @@ tree-sitter-yaml = "0.7.2"
 tree-sitter-mermaid = { path = "../tree-sitter-mermaid" }
 tracing = { workspace = true }
 watchman_client = "=0.9.0"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+fastembed = { version = "=5.8.0", default-features = false, features = ["ort-load-dynamic"], optional = true }
+ort = { version = "=2.0.0-rc.10", default-features = false, features = ["load-dynamic"], optional = true }
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+fastembed = { version = "=5.8.0", default-features = false, features = ["ort-download-binaries"], optional = true }
+
+[build-dependencies]
+sha2 = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dev-dependencies]
+duckdb = { workspace = true, features = ["bundled"] }
 
 [dev-dependencies]
 bytes = "1"

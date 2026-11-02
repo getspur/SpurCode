@@ -2117,6 +2117,9 @@ pub fn load_embedding_model(
     embedding_model: EmbeddingModelSelection,
     show_download_progress: bool,
 ) -> Result<TextEmbedding> {
+    #[cfg(target_os = "macos")]
+    super::ort_runtime::ensure_ort_runtime().context("initialize bundled ONNX Runtime")?;
+
     if embedding_model == EmbeddingModelSelection::CodeRankEmbed {
         return load_code_rank_embed_model(show_download_progress);
     }

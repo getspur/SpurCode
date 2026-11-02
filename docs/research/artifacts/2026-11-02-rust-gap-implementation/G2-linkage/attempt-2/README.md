@@ -1,0 +1,21 @@
+# R0 retry 2: controlled shared-runtime investigation (incomplete)
+
+Issue `bd-25er`, delegation `04508f7fc3d9459a`, dispatched base `694b29c77da831cb0c03efd80adacb33b7c15aee`. This is evidence only; no repository repair or acceptance is claimed. Prior protected refs remain unchanged. Source test SHA-256 `64d3e177932c88a9fec459d2f6129581ae5ca4414a5371ec7e0cd4e0d66a69b8`, Cargo.lock `bd4df1d2a20d9ba84d5514e500762088ce8d34f28c6a01b3a34a305a3697386d`.
+
+Fresh configuration catalog PRE `sol_c2ee2f3f16ae4554` was persisted, pinned and reloaded before these edits; `pre-projection.json` and audit `c15e33db-7302-4167-9a73-565dc93bf704` include complete envelopes. SAT describes only declared finite Boolean capabilities and exclusions; it does not prove runtime, packaging or inference.
+
+## Ordinary RED
+
+The exact task command ran with the shared target and unchanged test, exit 101, 0 passed, 1 failed, 13 filtered. It reached the runtime query and panicked with `prepare is null`. Complete output: `original-red.log`. Fresh executable SHA-256 `ea752474aae44c968bc85bd62b531c4663076cef5ecd1eb7bf72eec753807dc0`.
+
+`linker-attribution.txt` retains selected actual prior map lines. Full map SHA-256 `5788626bde776eff772d2e9ea3b258feb3d1ce84cfdb660d583472b5940e5f33`; ORT rlib SHA-256 `e5a8cea427fae8a5abee88e148b75bee0415bdbb6148f3c6d29a8ddf094c1595`. Member `IOBinding.cc.o` supplies private standard exception RTTI. The earlier CAPI crash was invalid-result probe access, not a demonstrated `duckdb_query` crash.
+
+## Dynamic control, not a repair
+
+The isolated target `/private/tmp/rust-gap-g2-linkage-ab-target` used the same default features and command as the original, replacing its target and adding `ORT_LIB_LOCATION=/private/tmp/spur-ort1220-shared-15wy4vky/unpacked/onnxruntime-osx-arm64-1.22.0/lib`, `ORT_PREFER_DYNAMIC_LINK=1` and `DYLD_LIBRARY_PATH` pointing there. Cargo compiled successfully, but its child launch exited 101 due to dyld not finding the library (`dynamic-cargo-loader-failure.log`); this is setup failure, not a runtime query result. Cargo replaced the loader path. The freshly linked executable SHA-256 `9ca4d1f595eb4c9ed06c5c03f6b77155b34c1ce4bc7899bac1b9ac677bbb3199` was then invoked directly with the same exact test filter and `DYLD_LIBRARY_PATH` set to the same directory, update/bless/injection variables unset: exit 0, 1 passed, 13 filtered (`dynamic-direct.log.gz`). The retained dependency/symbol files show the binary imports ORT from the dylib and standard exception RTTI from libc++. This supports the linkage hypothesis but neither establishes a deployable lookup method nor counts as final GREEN.
+
+The official arm64 release archive/dylib provenance and prior API smoke are retained in `ort-arm64-provenance.json` and `ort-api-smoke.json`. The official x86_64 archive at `https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-osx-x86_64-1.22.0.tgz` downloaded with curl exit 0: SHA-256 `e4ec94a7696de74fb1b12846569aa94e499958af6ffa186022cfde16c9d617f0`; extracted dylib SHA-256 `283e595e61cf65df7a6b1d59a1616cbd35c8b6399dd90d799d99b71a3ff83160`. This records artifact hashes, not x86_64 runtime verification.
+
+In a separate C process linked to the same arm64 dylib, `ort-env-control.c` created an environment and session options. `ort-inference-control.c` created a session and executed upstream `onnxruntime/test/testdata/mul_1.onnx` from the exact `v1.22.0` tag; its 130 bytes are preserved as base64, SHA-256 `71f431c4e9321ec6fbeb158d02ed240459a7dcc98673fa79a4f439ce42efaf10`. Command: compile with `clang -I<official-include> ort-inference-control.c -L<official-lib> -lonnxruntime -Wl,-rpath,<official-lib> -o /private/tmp/r0-ort-infer`, then `/private/tmp/r0-ort-infer /private/tmp/r0-ort-mul_1.onnx`. Exit 0; output in `ort-inference-control.log`: input `[1,2,3,4,5,6]`, output `[1,4,9,16,25,36]`. This is a small ONNX inference control, not the application's embedding model or ORT/PGQ co-initialization in one process.
+
+Unresolved: implement and test a reproducible macOS runtime distribution/discovery solution preserving single-binary install and both architectures; verify actual app embedding/model and same-process coexistence; run all requested suites, checks, POST controls and final audit. No production/test/fix commit or acceptance is claimed.

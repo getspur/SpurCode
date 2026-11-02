@@ -5,6 +5,8 @@ pub mod canonical_hash;
 pub mod commit_index;
 pub mod lance_sections;
 pub mod macro_invocations;
+#[cfg(all(target_os = "macos", feature = "embed"))]
+mod ort_runtime;
 pub mod parquet;
 pub mod pointer;
 pub mod shard_writer;
