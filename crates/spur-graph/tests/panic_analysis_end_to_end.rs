@@ -13,6 +13,35 @@ mod example;
 const BOUNDS: &str = include_str!("fixtures/panic_analysis/bounds.rs");
 const OVERFLOW: &str = include_str!("fixtures/panic_analysis/overflow.rs");
 const CHECKED: &str = include_str!("fixtures/panic_analysis/checked.rs");
+const ASSERTION: &str = include_str!("fixtures/panic_analysis/assertion.rs");
+
+#[tokio::test]
+async fn source_assertion_witnesses_are_canonical_and_replayed() -> anyhow::Result<()> {
+    let storage = tempfile::tempdir()?;
+    let service = SolverService::new().with_repo_root(storage.path());
+    for overflow in [false, true] {
+        let analyze = analyze_request(ASSERTION, overflow)?;
+        let collected = example::execute(analyze.clone())?;
+        assert!(collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(),
+            "bounded standard assertion must be collected from its actual source: {collected}");
+        // A macro is an implicit operation, never a fabricated ordinary call.
+        assert_eq!(collected["facts"]["sites"], json!([]));
+        let operations = collected["facts"]["extraction"]["operations"].as_array().unwrap();
+        assert_eq!(operations.len(), 1);
+        assert_eq!(operations[0]["operation"]["kind"], "assert_bool");
+        assert_eq!(operations[0]["operation"]["message"], "held-out assertion");
+        let range = &operations[0]["context"]["location"]["byte_range"];
+        assert_eq!(&ASSERTION[range[0].as_u64().unwrap() as usize..range[1].as_u64().unwrap() as usize],
+            "assert!(value != 17, \"held-out assertion\")");
+        let solve = solve_request(&analyze, &collected, 17, 17);
+        let output = example::execute_async(solve.clone(), &service).await?;
+        assert_eq!(output["report"]["queries"][0]["outcome"], "candidate_witness");
+        let replay = example::execute_async(replay_request(&solve, &output["report"], "held-out assertion"), &service).await?;
+        assert_eq!(replay["replay"]["runtime_reproduced"], true);
+        export(&format!("assertion-{overflow}"), &json!({"analyze":analyze,"collected":collected,"solve":solve,"output":output,"replay":replay}))?;
+    }
+    Ok(())
+}
 
 #[test]
 fn compiler_report_json_retains_import_validation_and_unknowns() -> anyhow::Result<()> {
