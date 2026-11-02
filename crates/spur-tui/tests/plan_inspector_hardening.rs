@@ -1096,3 +1096,68 @@ fn command_errors_remain_visible_at_compact_sizes() {
         "confirmed command retained a stale failure"
     );
 }
+
+#[test]
+fn compact_footer_keeps_pane_switch_and_return_controls_visible() {
+    let mut row = task("pane-task", "failed");
+    row.issue_id = Some("bd-pane".into());
+    let fixture = Fixture::new(snapshot(
+        vec![row],
+        PlanSnapshotCounts {
+            failed: 1,
+            ..Default::default()
+        },
+    ));
+    for width in [40, 80] {
+        for height in [8, 24] {
+            let mut view = fixture.view();
+            view.handle_spur_event(
+                &SpurEvent::now(SpurEventBody::LoopPaused {
+                    loop_id: "long-loop-name".into(),
+                    by: "operator".into(),
+                }),
+                &fixture.ctx(),
+            );
+            let board = fixture.render(&mut view, width, height);
+            let footer = board.lines().last().unwrap();
+            assert!(
+                footer.contains("Tab") && footer.contains("detail"),
+                "board hid its pane-switch control at {width}x{height}:\n{board}"
+            );
+            assert!(
+                footer.contains("Esc") && footer.contains("? help") && footer.contains("j/k: task")
+            );
+            println!(
+                "U3_GEOMETRY {}",
+                serde_json::json!({"mode":"board","width":width,"height":height,"cells":ratatui::text::Span::raw(footer.trim_end()).width()})
+            );
+            fixture.key(&mut view, KeyCode::Tab);
+            let detail = fixture.render(&mut view, width, height);
+            let footer = detail.lines().last().unwrap();
+            assert!(
+                footer.contains("Tab")
+                    && footer.contains("board")
+                    && footer.contains("j/k: scroll"),
+                "detail hid its return control:\n{detail}"
+            );
+            println!(
+                "U3_GEOMETRY {}",
+                serde_json::json!({"mode":"detail","width":width,"height":height,"cells":ratatui::text::Span::raw(footer.trim_end()).width()})
+            );
+            fixture.key(&mut view, KeyCode::Enter);
+            let issue = fixture.render(&mut view, width, height);
+            let footer = issue.lines().last().unwrap();
+            assert!(
+                footer.contains("Enter")
+                    && footer.contains("Esc")
+                    && footer.contains("? help")
+                    && footer.contains("j/k: scroll"),
+                "issue hid its return control:\n{issue}"
+            );
+            println!(
+                "U3_GEOMETRY {}",
+                serde_json::json!({"mode":"issue","width":width,"height":height,"cells":ratatui::text::Span::raw(footer.trim_end()).width()})
+            );
+        }
+    }
+}
