@@ -1161,3 +1161,234 @@ fn compact_footer_keeps_pane_switch_and_return_controls_visible() {
         }
     }
 }
+
+fn finder_tasks() -> Vec<PlanSnapshotTask> {
+    let mut origin = task("task-a", "approved");
+    origin.task_name = "origin".into();
+    origin.summary = Some("origin output ".repeat(500));
+    let mut kernel = task("task-b", "failed");
+    kernel.task_name = "Kernel preferences".into();
+    kernel.issue_id = Some("bd-kernel".into());
+    let mut buffer = task("task-c", "ready");
+    buffer.task_name = "界 kernel buffer".into();
+    buffer.issue_id = Some("bd-buffer".into());
+    vec![origin, kernel, buffer]
+}
+
+fn finder_fixture() -> Fixture {
+    Fixture::new(snapshot(
+        finder_tasks(),
+        PlanSnapshotCounts {
+            approved: 1,
+            failed: 1,
+            ready: 1,
+            ..Default::default()
+        },
+    ))
+}
+
+fn finder_type(fixture: &Fixture, view: &mut PlanInspectorView, query: &str) {
+    for ch in query.chars() {
+        assert!(
+            fixture.stream_key(view, KeyCode::Char(ch)).is_none(),
+            "finder query key {ch} leaked into an action"
+        );
+    }
+}
+
+#[test]
+fn task_finder_matches_names_and_ids_and_preserves_cancelled_detail() {
+    let fixture = finder_fixture();
+    let mut view = fixture.view();
+    fixture.render(&mut view, 100, 24);
+    fixture.key(&mut view, KeyCode::Tab);
+    fixture.key(&mut view, KeyCode::PageDown);
+    let before = fixture.render(&mut view, 100, 24);
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    for (width, height) in [(40, 8), (80, 24), (100, 24)] {
+        let finder = fixture.render_streams(&mut view, width, height);
+        assert!(
+            finder.contains("Find task"),
+            "slash did not open task finder:\n{finder}"
+        );
+        let footer = finder.lines().last().unwrap();
+        assert!(footer.contains("Esc cancel") && footer.contains("Enter"));
+        println!(
+            "U6_GEOMETRY {}",
+            serde_json::json!({"width":width,"height":height,"footer_cells":ratatui::text::Span::raw(footer).width()})
+        );
+    }
+    finder_type(&fixture, &mut view, "PREFERENCES");
+    let matches = fixture.render_streams(&mut view, 100, 24);
+    assert!(
+        matches.contains("task-b") && !matches.contains("task-c"),
+        "case-insensitive title matching failed:\n{matches}"
+    );
+    fixture.stream_key(&mut view, KeyCode::Esc);
+    assert_eq!(
+        before,
+        fixture.render(&mut view, 100, 24),
+        "cancelled finder changed detail focus or scroll"
+    );
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    finder_type(&fixture, &mut view, "BD-KERNEL");
+    fixture.stream_key(&mut view, KeyCode::Enter);
+    assert!(
+        fixture.render(&mut view, 100, 24).contains("task: task-b"),
+        "issue-ID match did not select the task"
+    );
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    finder_type(&fixture, &mut view, "task-c");
+    fixture.stream_key(&mut view, KeyCode::Enter);
+    assert!(
+        fixture.render(&mut view, 100, 24).contains("task: task-c"),
+        "task-ID match did not select the task"
+    );
+}
+
+#[test]
+fn task_finder_keeps_chosen_result_across_plan_updates() {
+    let mut fixture = finder_fixture();
+    let mut view = fixture.view();
+    fixture.render(&mut view, 100, 24);
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    finder_type(&fixture, &mut view, "kernel");
+    fixture.stream_key(&mut view, KeyCode::Down);
+    let mut tasks = finder_tasks();
+    let mut new_match = task("task-new", "pending");
+    new_match.task_name = "kernel newcomer".into();
+    tasks.insert(0, new_match);
+    fixture
+        .plans
+        .apply(&SpurEvent::now(SpurEventBody::PlanSnapshotUpdated {
+            session_id: SessionId("audit-brain".into()),
+            snapshot: Box::new(snapshot(
+                tasks,
+                PlanSnapshotCounts {
+                    approved: 1,
+                    failed: 1,
+                    ready: 1,
+                    pending: 1,
+                    ..Default::default()
+                },
+            )),
+        }));
+    let finder = fixture.render_streams(&mut view, 40, 8);
+    assert!(finder.contains("Find task"), "snapshot closed finder");
+    fixture.stream_key(&mut view, KeyCode::Enter);
+    assert!(
+        fixture.render(&mut view, 100, 24).contains("task: task-c"),
+        "plan update moved the chosen result to a different task"
+    );
+}
+
+#[test]
+fn task_finder_owns_unicode_input_and_other_modal_keys() {
+    let fixture = finder_fixture();
+    let mut view = fixture.view();
+    fixture.render(&mut view, 100, 24);
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    finder_type(&fixture, &mut view, "界é");
+    assert!(fixture
+        .render_streams(&mut view, 40, 8)
+        .contains("No matching tasks"));
+    assert!(
+        matches!(fixture.stream_key(&mut view, KeyCode::Enter), Some(Action::FlashHint { message }) if message.contains("No matching"))
+    );
+    fixture.stream_key(&mut view, KeyCode::Backspace);
+    finder_type(&fixture, &mut view, "rs?");
+    assert!(
+        fixture
+            .render_streams(&mut view, 40, 8)
+            .contains("Find task"),
+        "query keys opened help, retry or stream"
+    );
+    for _ in 0..3 {
+        fixture.stream_key(&mut view, KeyCode::Backspace);
+    }
+    fixture.stream_key(&mut view, KeyCode::Enter);
+    assert!(
+        fixture.render(&mut view, 100, 24).contains("task: task-c"),
+        "Backspace did not remove a complete grapheme"
+    );
+    fixture.key(&mut view, KeyCode::Char('r'));
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    assert!(
+        !fixture
+            .render_streams(&mut view, 100, 24)
+            .contains("Find task"),
+        "finder opened through confirmation"
+    );
+    fixture.key(&mut view, KeyCode::Esc);
+    fixture.key(&mut view, KeyCode::Enter);
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    assert!(
+        !fixture
+            .render_streams(&mut view, 100, 24)
+            .contains("Find task"),
+        "finder opened through linked issue"
+    );
+    fixture.key(&mut view, KeyCode::Esc);
+    view.enter_stream_peek("worker-for-modal-test".into(), "task-c".into());
+    fixture.stream_key(&mut view, KeyCode::Char('/'));
+    assert!(
+        !fixture
+            .render_streams(&mut view, 100, 24)
+            .contains("Find task"),
+        "finder opened through stream peek"
+    );
+}
+
+#[test]
+fn attention_shortcuts_cycle_current_tasks_and_skip_terminal_history() {
+    let mut approved = task("approved-a", "approved");
+    approved.blocked_by = vec!["old-blocker".into()];
+    let mut blocked = task("blocked-e", "pending");
+    blocked.blocked_by = vec!["external-parent".into()];
+    let mut cancelled = task("cancelled-f", "cancelled");
+    cancelled.blocked_by = vec!["old-blocker".into()];
+    let fixture = Fixture::new(snapshot(
+        vec![
+            approved,
+            task("failed-b", "failed"),
+            task("review-c", "awaiting_review"),
+            task("setup-d", "blocked_on_setup_conflict"),
+            blocked,
+            cancelled,
+        ],
+        PlanSnapshotCounts {
+            approved: 1,
+            failed: 1,
+            awaiting_review: 1,
+            pending: 2,
+            cancelled: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = fixture.view();
+    fixture.render(&mut view, 100, 24);
+    for id in ["failed-b", "review-c", "setup-d", "blocked-e", "failed-b"] {
+        fixture.stream_key(&mut view, KeyCode::Char(']'));
+        let text = fixture.render(&mut view, 100, 24);
+        assert!(
+            text.contains(&format!("task: {id}")),
+            "attention cycle selected the wrong task, expected {id}:\n{text}"
+        );
+    }
+    fixture.stream_key(&mut view, KeyCode::Char('['));
+    assert!(fixture
+        .render(&mut view, 100, 24)
+        .contains("task: blocked-e"));
+    let empty = Fixture::new(snapshot(
+        vec![task("done", "approved")],
+        PlanSnapshotCounts {
+            approved: 1,
+            ..Default::default()
+        },
+    ));
+    let mut view = empty.view();
+    empty.render(&mut view, 100, 24);
+    assert!(
+        matches!(empty.stream_key(&mut view, KeyCode::Char(']')), Some(Action::FlashHint { message }) if message.contains("No tasks need attention"))
+    );
+}
