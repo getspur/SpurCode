@@ -68,7 +68,8 @@ pub(crate) fn ensure_ort_runtime() -> Result<()> {
     ensure_ort_runtime_at(&base)
 }
 
-pub(crate) fn ensure_ort_runtime_at(base: &Path) -> Result<()> {
+#[doc(hidden)]
+pub fn ensure_ort_runtime_at(base: &Path) -> Result<()> {
     INIT.get_or_init(|| {
         let result = (|| -> Result<()> {
             let path = materialize_ort_runtime(base)?;

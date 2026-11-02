@@ -37,7 +37,12 @@ members = [
 #   cargo build -p spur-context-service --features worker --release
 exclude = [
     "crates/spur-context-service",
+    "vendor/ort",
 ]
+
+[patch.crates-io]
+ort = { path = "vendor/ort" }
+
 [workspace.package]
 version = "1.24.0"
 edition = "2021"

@@ -4010,14 +4010,17 @@ mod tests {
 
     #[test]
     fn coderank_loader_is_revision_pinned_to_fp32_onnx() {
+        #[cfg(feature = "embed")]
         assert_eq!(
             CODE_RANK_EMBED_ONNX_REPO,
             "jamie8johnson/CodeRankEmbed-onnx"
         );
+        #[cfg(feature = "embed")]
         assert_eq!(
             CODE_RANK_EMBED_ONNX_REVISION,
             "151669b173750250e611e1be00c812f112ea6020"
         );
+        #[cfg(feature = "embed")]
         assert_eq!(CODE_RANK_EMBED_ONNX_FILE, "onnx/model.onnx");
         assert_eq!(EmbeddingModelSelection::CodeRankEmbed.max_length(), 8192);
     }
@@ -4107,6 +4110,7 @@ mod tests {
             NOMIC_EMBED_TEXT_V15_MODEL_NAME
         );
         assert_eq!(EmbeddingModelSelection::NomicEmbedTextV15.dimensions(), 768);
+        #[cfg(feature = "embed")]
         assert_eq!(
             EmbeddingModelSelection::NomicEmbedTextV15.fastembed_model(),
             Some(EmbeddingModel::NomicEmbedTextV15)
@@ -4192,15 +4196,18 @@ mod tests {
             );
         }
 
+        #[cfg(feature = "embed")]
         assert_eq!(
             EmbeddingModelSelection::NomicEmbedTextV15.fastembed_model(),
             Some(EmbeddingModel::NomicEmbedTextV15)
         );
+        #[cfg(feature = "embed")]
         assert_eq!(
             EmbeddingModelSelection::CodeRankEmbed.fastembed_model(),
             None,
             "CodeRankEmbed uses the revision-pinned user-defined ONNX path"
         );
+        #[cfg(feature = "embed")]
         assert_eq!(
             EmbeddingModelSelection::JinaEmbeddingsV2BaseCode.fastembed_model(),
             Some(EmbeddingModel::JinaEmbeddingsV2BaseCode)
@@ -5070,6 +5077,7 @@ mod tests {
         assert!(!symbol_embedder.prepare_model_for_eligible_rows(1));
         assert!(!section_embedder.service.model_requested);
         assert!(!symbol_embedder.service.model_requested);
+        #[cfg(feature = "embed")]
         assert!(
             embed_model_cell(EmbeddingModelSelection::NomicEmbedTextV15)
                 .get()
