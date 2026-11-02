@@ -65,7 +65,7 @@ The header prioritizes plan status, **approved / total** progress, attention cou
 
 The detail pane puts task identity, status, next action, errors, and blocker reasons before long output. Press **e** to expand or collapse execution metadata, issue context, and full relationship IDs. Selecting another task collapses this information. **Enter** opens the linked issue at its own loading state or content. Closing it restores the task's previous scroll position. Multiline output and loaded issue bodies remain scrollable.
 
-Failed plan actions remain visible in the header, including on compact screens. Press **?** to read the full error. Unrelated loop updates do not erase it; confirming a subsequent command clears the previous error.
+Failed plan actions remain visible in the header, including on compact screens. Navigation feedback also appears in the header. Press **?** to inspect complete counts and messages. Unrelated loop updates do not erase a command error; confirming a subsequent command clears it.
 
 ### Controls and focus
 

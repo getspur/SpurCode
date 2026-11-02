@@ -1478,10 +1478,14 @@ impl View for PlanInspectorView {
                 header_cols[1],
             );
 
-            let (summary_label, summary_text) = self.command_error.as_ref().map_or_else(
-                || operator_summary(plan, ctx.lineage),
-                |error| ("Error: ", error.clone()),
-            );
+            let notice = ctx.transient_hint_override.as_ref().map(|hint| hint.full);
+            let (summary_label, summary_text) = if let Some(error) = self.command_error.as_ref() {
+                ("Error: ", error.clone())
+            } else if let Some(notice) = notice {
+                ("Notice: ", notice.to_string())
+            } else {
+                operator_summary(plan, ctx.lineage)
+            };
             let summary_color = if self.command_error.is_some() {
                 token(ctx.theme, "plan_inspector.header.count.failed.fg")
             } else {
@@ -1504,11 +1508,27 @@ impl View for PlanInspectorView {
                 header_rows[1],
             );
 
-            frame.render_widget(
-                Paragraph::new(Line::from(header_count_spans(plan, ctx.theme)))
-                    .wrap(Wrap { trim: false }),
-                header_rows[2],
-            );
+            if let Some(notice) = notice.filter(|_| self.command_error.is_some()) {
+                // Keep the persistent error and the current action's feedback
+                // visible together; complete counts remain available in help.
+                frame.render_widget(
+                    Paragraph::new(fit_to_cells(
+                        &format!("Notice: {notice}"),
+                        area.width as usize,
+                    ))
+                    .style(
+                        Style::default()
+                            .fg(token(ctx.theme, "plan_inspector.header.next_action.fg")),
+                    ),
+                    header_rows[2],
+                );
+            } else {
+                frame.render_widget(
+                    Paragraph::new(Line::from(header_count_spans(plan, ctx.theme)))
+                        .wrap(Wrap { trim: false }),
+                    header_rows[2],
+                );
+            }
 
             let epic_text = plan
                 .epic_id
@@ -1811,6 +1831,9 @@ impl PlanInspectorView {
         }
         if let Some(error) = self.command_error.as_ref() {
             lines.push(Line::from(format!("Error: {error}")));
+        }
+        if let Some(notice) = ctx.transient_hint_override.as_ref() {
+            lines.push(Line::from(format!("Notice: {}", notice.full)));
         }
         lines.extend([
             Line::raw(""),Line::from("Task states"),

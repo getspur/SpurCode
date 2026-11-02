@@ -62,6 +62,19 @@ through attention tasks with wraparound and explicit empty feedback.
 PRE/POST: finite workflow transition/safety/reachability models plus observed
 finder geometry. Existing stage and relative navigation remain covered.
 
+## Independent review follow-ups
+
+- **U6R1 / bd-8ug:** Verify finder/retry ownership through the real App dispatcher.
+  Add regression-first coverage for bare u, literal Option-character Unicode,
+  exact retry text and global quit/palette priority. Expose inspector text/modal
+  ownership to App; preserve literal input before navigation normalization.
+  PRE/POST use explicit finite input-ownership workflow traces.
+- **U6R2 / bd-2c3:** Verify rendered App feedback, not only a returned FlashHint.
+  The all-approved attention action must visibly report its empty result at
+  40x8/80x8, including alongside a command error. Reuse existing header rows,
+  preserve controls and expose complete counts/messages in help. PRE/POST check
+  declared and observed notice geometry.
+
 ## Final integration
 
 Run the inspector integration targets and relevant library tests, then the full
