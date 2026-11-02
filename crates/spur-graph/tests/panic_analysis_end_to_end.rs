@@ -80,6 +80,7 @@ async fn assertion_authority_and_source_ir_forgery_are_conservative() -> anyhow:
         ("glob", "use std::*; fn probe(x:u8){assert!(x != 17);}"),
         ("no_prelude", "#![no_implicit_prelude] fn probe(x:u8){assert!(x != 17);}"),
         ("primitive_alias", "#[allow(non_camel_case_types)] type u8 = u16; fn probe(x:u8){assert!(x != 17);}"),
+        ("trait_type_shadow", "#[allow(non_camel_case_types)] trait u8 {} fn probe(x:u8){assert!(x != 17);}"),
         ("local_alias", "fn probe(x:u8){type u8 = u16; let y:u8 = 17; assert!(y != 17);}"),
         ("module", "mod inner {macro_rules! assert {($($t:tt)*)=>{}} pub fn probe(x:u8){assert!(x != 17);}}"),
         ("external_module", "mod other; fn probe(x:u8){assert!(x != 17);}"),
