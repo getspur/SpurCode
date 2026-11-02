@@ -130,6 +130,11 @@ fn frozen_source_graph_and_byte_owners_agree() {
     assert_eq!(byte_fields, graph_fields);
     assert_eq!(
         byte_fields,
-        [([13, 17], Some("E::A")), ([25, 29], Some("E::B"))]
+        [
+            ([13, 17], Some("E::A")),
+            ([25, 29], Some("E::B")),
+            ([35, 37], Some("E::T")),
+            ([38, 40], Some("E::T")),
+        ]
     );
 }

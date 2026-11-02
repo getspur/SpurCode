@@ -43,6 +43,11 @@ Each later phase is planned against the approved interfaces of its predecessor a
 9. Emit scope/risk signals before extending production scope. Affected Rust corpus golden changes are allowed only when the new source-grounded ownership/field output explains them. For G1b, the required extractor-version bump also permits updating only the `extractor_version` field in otherwise unchanged non-Rust corpus goldens; prove the changed JSON paths and run the unblessed suite. Never bless a broad unrelated change. Leave the task `in_progress` for brain review; no merge or self-approval.
 10. Return **unified diff + one-sentence rationale**, commits, RED/GREEN commands and exits, PRE/POST IDs and meanings, limitations and the completion audit. No downstream dispatch outside the Plan Engine.
 
+Dispatch identity: the actual plan-map issues are G1a `bd-19f`, G1b
+`bd-leg`, and G1c `bd-16m`; source issues below record lineage only.
+Worker branch components identify the brain session and worker session, not
+the delegation ID. Verify the live issue and binding audit for each dispatch.
+
 ## Grounded inputs
 
 Baseline commit: `b098e5db8bf9a8477e68addeba8e4890e56093f8`.
