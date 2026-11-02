@@ -932,6 +932,9 @@ impl<'a> Compiler<'a> {
                 let guard = self.guard(frame, &operation.context.guard)?;
                 let active = and(vec![normal.clone(), guard]);
                 let condition = match operation.operation {
+                    PanicImplicitOperationKind::AssertBool { predicate, .. } => {
+                        not(self.expression(frame, &predicate)?)
+                    }
                     PanicImplicitOperationKind::U8Add {
                         left,
                         right,

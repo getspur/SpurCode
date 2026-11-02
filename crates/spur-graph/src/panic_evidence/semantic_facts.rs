@@ -366,7 +366,7 @@ pub enum PanicSiteSemantics {
 
 /// R5 producer-owned additions. R4 author-normalized structural fixtures have
 /// no extraction extension and can never pass canonical recollection.
-pub const PANIC_EXTRACTION_VERSION: &str = "rust-bool-u8-semantics-v1";
+pub const PANIC_EXTRACTION_VERSION: &str = "rust-bool-u8-semantics-v2";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -387,6 +387,11 @@ pub struct PanicBodyReturn {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum PanicImplicitOperationKind {
+    /// Physical standard assert! syntax; never an ordinary call-site identity.
+    AssertBool {
+        predicate: String,
+        message: Option<String>,
+    },
     U8Add {
         left: String,
         right: String,
@@ -988,7 +993,7 @@ impl<'a> Validator<'a> {
             return Ok(());
         };
         ensure!(
-            extraction.extractor_version == PANIC_EXTRACTION_VERSION,
+            matches!(extraction.extractor_version.as_str(), PANIC_EXTRACTION_VERSION | "rust-bool-u8-semantics-v1"),
             "unsupported semantic extractor"
         );
         for ret in &extraction.returns {
@@ -1000,6 +1005,11 @@ impl<'a> Validator<'a> {
             self.context(&op.context)?;
             let result = self.expression(&op.result_expression_id, &op.context)?;
             match &op.operation {
+                PanicImplicitOperationKind::AssertBool { predicate, .. } => {
+                    ensure!(extraction.extractor_version == PANIC_EXTRACTION_VERSION
+                        && predicate == &op.result_expression_id && result.sort == PanicSort::Bool,
+                        "detached assertion predicate or unsupported extractor version");
+                }
                 PanicImplicitOperationKind::U8Add {
                     left,
                     right,

@@ -633,8 +633,28 @@ Editions are `2015`, `2018`, `2021`, or `2024`; panic strategy is `unwind` or
 the intended model; collection and solving do not attest compiler execution.
 Cfg/parse collection uncertainty returns `unknown` with `{kind, detail}` and
 no facts. Opaque constructs that have a known body remain explicit obligations
-inside collected facts. In particular, macro expansion (including `assert!`)
-is unsupported by the source collector.
+inside collected facts. Macro expansion remains unsupported. A deliberately
+bounded physical `assert!(predicate)` / `assert!(predicate, "literal")` lane
+supports pure bool/u8 predicates (lexical scalar reads, literals, parentheses,
+`!`, comparisons, `&&`, `||`) and optional plain ASCII messages without escapes
+or format braces. It requires a single standalone crate-root Rust source,
+an empty feature/codegen flag inventory, and no imports, modules, macro
+definitions, competing primitive type names, nontrivial attributes, disabled
+prelude, or other macro invocations. Uncertain authority, effects, formatting,
+aliases, cfg and expansions retain obligations. An unsupported macro never
+globally enables primitive authority.
+
+Assertions are source-bound implicit operations, not ordinary method/call
+sites. Their full original macro range, source OID, owning body, flow order,
+guard, predicate and optional message are authenticated by canonical
+recollection. A failed predicate creates a panic event; only its true branch
+continues normally. The graph remains schema v11 and the outer semantic
+envelope remains `panic-semantic-facts-v1`; the producer extension is now
+`rust-bool-u8-semantics-v2`. Structural validation still accepts v1 extensions
+without assertions, while automatic analysis requires current canonical
+recollection. Old persisted requests/receipts remain historical evidence.
+Source assertion modeling does not establish compiler dispatch or expansion
+coverage, and does not strengthen CGA validation categories.
 
 Pass the unchanged `facts` returned by `analyze` to `solve`, alongside the same
 graph, source bytes, and independently expected build. Before narrowing any
