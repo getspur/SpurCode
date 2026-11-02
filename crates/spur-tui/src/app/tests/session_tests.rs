@@ -406,6 +406,130 @@ mod plan_projection_tests {
             Some("bd-1")
         );
     }
+
+    fn inspector_app_with_task(name: &str, status: &str) -> App {
+        let mut app = App::new_for_tests();
+        let session = SessionId("inspector-input-brain".into());
+        spawn_brain(&mut app, &session);
+        let mut event = sample_plan_snapshot_event(&session);
+        if let SpurEventBody::PlanSnapshotUpdated { snapshot, .. } = &mut event.body {
+            snapshot.tasks[0].task_name = name.into();
+            snapshot.tasks[0].status = status.into();
+            snapshot.counts = if status == "approved" {
+                PlanSnapshotCounts {
+                    approved: 1,
+                    ..Default::default()
+                }
+            } else {
+                PlanSnapshotCounts {
+                    failed: 1,
+                    ..Default::default()
+                }
+            };
+        }
+        app.handle_spur_event(event);
+        app.process_action(Action::NavigateTo(ViewId::PlanInspector(session)));
+        app.transient_hint = None;
+        app
+    }
+
+    fn inspector_app_key(app: &mut App, code: KeyCode) {
+        app.handle_crossterm_event(crossterm::event::Event::Key(KeyEvent::new(
+            code,
+            KeyModifiers::NONE,
+        )));
+    }
+
+    fn render_inspector_app(app: &mut App, width: u16, height: u16) -> String {
+        let mut terminal =
+            ratatui::Terminal::new(ratatui::backend::TestBackend::new(width, height)).unwrap();
+        terminal.draw(|frame| app.render(frame)).unwrap();
+        let buffer = terminal.backend().buffer();
+        (0..height)
+            .map(|y| {
+                let mut row = String::new();
+                let mut x = 0;
+                while x < width {
+                    let symbol = buffer[(x, y)].symbol();
+                    row.push_str(symbol);
+                    x += ratatui::text::Span::raw(symbol).width().max(1) as u16;
+                }
+                row
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    #[test]
+    fn inspector_finder_app_dispatch_preserves_bare_u() {
+        let mut app = inspector_app_with_task("buffer", "approved");
+        inspector_app_key(&mut app, KeyCode::Char('/'));
+        for ch in "buffer".chars() {
+            inspector_app_key(&mut app, KeyCode::Char(ch));
+        }
+        let text = render_inspector_app(&mut app, 40, 8);
+        assert!(
+            text.contains("/ buffer"),
+            "global undo consumed finder input:\n{text}"
+        );
+        assert!(
+            app.transient_hint.is_none(),
+            "query triggered a global hint/action"
+        );
+    }
+
+    #[tokio::test]
+    async fn inspector_app_dispatch_preserves_literal_unicode_in_text_modals() {
+        let query = "façade å © ø ß u";
+        for retry in [false, true] {
+            let mut app = inspector_app_with_task(query, "failed");
+            let (tx, mut rx) = tokio::sync::mpsc::channel(8);
+            app.user_input_tx = Some(tx);
+            inspector_app_key(&mut app, KeyCode::Char(if retry { 'R' } else { '/' }));
+            for ch in query.chars() {
+                inspector_app_key(&mut app, KeyCode::Char(ch));
+                assert!(
+                    matches!(app.current_view(), ViewId::PlanInspector(_)),
+                    "literal Unicode navigated away from inspector"
+                );
+            }
+            if retry {
+                inspector_app_key(&mut app, KeyCode::Enter);
+                assert!(
+                    matches!(rx.try_recv(), Ok(UserInput::RetryPlanTask { append_prompt: Some(prompt), .. }) if prompt == query),
+                    "retry text was normalized or consumed before submission"
+                );
+            } else {
+                let text = render_inspector_app(&mut app, 80, 24);
+                assert!(
+                    text.contains(&format!("/ {query}")) && !text.contains("No matching tasks"),
+                    "literal query was changed:\n{text}"
+                );
+                assert!(
+                    rx.try_recv().is_err(),
+                    "finder text dispatched backend input"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn inspector_finder_preserves_global_quit_and_palette_priority() {
+        let mut app = inspector_app_with_task("buffer", "approved");
+        inspector_app_key(&mut app, KeyCode::Char('/'));
+        app.handle_crossterm_event(crossterm::event::Event::Key(KeyEvent::new(
+            KeyCode::Char('k'),
+            KeyModifiers::CONTROL,
+        )));
+        assert!(app.palette_visible);
+        inspector_app_key(&mut app, KeyCode::Esc);
+        assert!(render_inspector_app(&mut app, 40, 8).contains("Find task"));
+        app.handle_crossterm_event(crossterm::event::Event::Key(KeyEvent::new(
+            KeyCode::Char('q'),
+            KeyModifiers::CONTROL,
+        )));
+        assert!(app.quit_confirm_visible);
+    }
 }
 
 #[cfg(test)]
