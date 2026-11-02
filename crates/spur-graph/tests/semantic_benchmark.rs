@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use pretty_assertions::assert_eq;
 use spur_graph::extract::GraphFacts;
-use spur_graph::{build_facts, GraphEdge, GraphEdgeKind, NodeId, RelationKind};
+use spur_graph::{build_facts, GraphEdge, GraphEdgeKind, NodeId, NodeKind, RelationKind};
 
 #[derive(Debug, Clone, Copy)]
 struct EdgeExpectation {
@@ -47,7 +47,7 @@ fn benchmark_cases() -> Vec<BenchmarkCase> {
             name: "rust",
             fixture_dir: "rust",
             node_kind_counts: vec![
-                ("Field", 1),
+                ("Field", 2),
                 ("File", 2),
                 ("Function", 9),
                 ("Impl", 3),
@@ -59,8 +59,8 @@ fn benchmark_cases() -> Vec<BenchmarkCase> {
             relation_counts: vec![
                 ("Calls", 11),
                 ("Constructs", 2),
-                ("Contains", 24),
-                ("Defines", 7),
+                ("Contains", 25),
+                ("Defines", 8),
                 ("Extends", 1),
                 ("Implements", 2),
                 ("Imports", 1),
@@ -82,6 +82,9 @@ fn benchmark_cases() -> Vec<BenchmarkCase> {
                 edge(RelationKind::Implements, "Runner for Worker", "Runner"),
                 edge(RelationKind::Extends, "Runner", "Labeled"),
                 edge(RelationKind::Constructs, "build_worker", "Worker"),
+                edge(RelationKind::Contains, "Worker", "0"),
+                edge(RelationKind::Defines, "Worker", "0"),
+                edge(RelationKind::Contains, "Config", "id"),
                 edge(RelationKind::Defines, "Config", "id"),
                 edge(RelationKind::Contains, "src/lib.rs", "run_direct"),
             ],
@@ -438,6 +441,12 @@ fn assert_benchmark_case(case: &BenchmarkCase, dump: bool) {
         case.name
     );
 
+    if case.name == "rust" {
+        let source = std::fs::read_to_string(root.join("src/lib.rs")).unwrap();
+        assert_rust_field(&facts, &source, "Worker", "0", "pub u32");
+        assert_rust_field(&facts, &source, "Config", "id", "pub id: u32");
+    }
+
     for expected in &case.must_have {
         assert!(
             has_edge(&facts, expected),
@@ -455,6 +464,53 @@ fn assert_benchmark_case(case: &BenchmarkCase, dump: bool) {
             case.name,
             forbidden,
             format_edges(&facts)
+        );
+    }
+}
+
+fn assert_rust_field(facts: &GraphFacts, source: &str, owner: &str, name: &str, text: &str) {
+    let owners: Vec<_> = facts
+        .nodes
+        .iter()
+        .filter(|n| n.kind == NodeKind::Struct && n.label == owner)
+        .collect();
+    let fields: Vec<_> = facts
+        .nodes
+        .iter()
+        .filter(|n| n.kind == NodeKind::Field && n.label == name)
+        .collect();
+    assert_eq!(owners.len(), 1, "unique struct {owner}");
+    assert_eq!(fields.len(), 1, "unique field {name}");
+    let field = fields[0];
+    let source_file = facts
+        .nodes
+        .iter()
+        .find(|n| n.kind == NodeKind::File && n.label == "src/lib.rs")
+        .expect("Rust fixture source file");
+    assert_eq!(field.file_id, source_file.file_id, "{owner}::{name} file");
+    let span = facts
+        .spans
+        .iter()
+        .find(|s| Some(s.span_id) == field.source_span_id)
+        .expect("field span");
+    assert_eq!(field.file_id, Some(span.file_id));
+    let start = source.find(text).expect("fixture field text");
+    assert_eq!(
+        (span.start_byte as usize, span.end_byte as usize),
+        (start, start + text.len()),
+        "{owner}::{name} span"
+    );
+    for relation in [RelationKind::Contains, RelationKind::Defines] {
+        let owners_for_field: Vec<_> = facts
+            .edges
+            .iter()
+            .filter(|e| e.relation == relation && e.target_node_id == Some(field.node_id))
+            .map(|e| e.source_node_id)
+            .collect();
+        assert_eq!(
+            owners_for_field,
+            vec![owners[0].node_id],
+            "{relation:?} direct owner of {owner}::{name}"
         );
     }
 }
