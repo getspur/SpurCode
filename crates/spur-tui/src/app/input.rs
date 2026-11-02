@@ -6,12 +6,18 @@ impl App {
     pub fn handle_crossterm_event(&mut self, event: Event) {
         match event {
             Event::Key(key) => {
-                // Normalize macOS Option-key Unicode chars (e.g. `å` → Alt+a)
-                // BEFORE any handler runs, so global chord checks like the
-                // Alt+a Insights bypass see the resolved KeyEvent rather than
-                // raw Option-character codepoints. View-level callers also
-                // invoke this; the function is idempotent.
-                let key = crate::views::normalize_macos_option(key);
+                // Inspector text editors own literal Unicode. Navigation mode
+                // still resolves macOS Option characters into global chords.
+                let inspector_text_input = matches!(self.current_view, ViewId::PlanInspector(_))
+                    && self
+                        .plan_inspector
+                        .as_ref()
+                        .is_some_and(PlanInspectorView::text_input_active);
+                let key = if inspector_text_input {
+                    key
+                } else {
+                    crate::views::normalize_macos_option(key)
+                };
 
                 if self.record_panic_esc(key) {
                     return;
@@ -482,6 +488,10 @@ impl App {
 
     fn view_text_input_active(&self) -> bool {
         match self.current_view {
+            ViewId::PlanInspector(_) => self
+                .plan_inspector
+                .as_ref()
+                .is_some_and(PlanInspectorView::modal_input_active),
             ViewId::SessionPicker => self.session_picker.as_ref().is_some_and(|picker| {
                 picker.is_rename_active()
                     || picker.is_search_focused()

@@ -177,6 +177,19 @@ impl PlanInspectorView {
         &self.mode
     }
 
+    pub fn text_input_active(&self) -> bool {
+        self.search.is_some()
+            || matches!(self.confirm, Some(PlanInspectorConfirm::RetryTask { .. }))
+    }
+
+    pub fn modal_input_active(&self) -> bool {
+        self.confirm.is_some()
+            || self.help_open
+            || self.search.is_some()
+            || self.open_issue_id.is_some()
+            || matches!(self.mode, PlanInspectorMode::StreamPeek { .. })
+    }
+
     pub fn enter_stream_peek(&mut self, executor_id: String, task_id: String) {
         self.mode = PlanInspectorMode::StreamPeek {
             executor_id,
@@ -1071,7 +1084,11 @@ fn is_terminal_phase(phase: LifecycleState) -> bool {
 
 impl View for PlanInspectorView {
     fn handle_key(&mut self, key: KeyEvent, ctx: &super::ViewContext) -> Option<Action> {
-        let key = super::normalize_macos_option(key);
+        let key = if self.text_input_active() {
+            key
+        } else {
+            super::normalize_macos_option(key)
+        };
         if matches!(self.confirm, Some(PlanInspectorConfirm::RetryTask { .. })) {
             return self.handle_prompt_confirm_key(key);
         }
