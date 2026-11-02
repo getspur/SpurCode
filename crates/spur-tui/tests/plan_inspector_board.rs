@@ -86,9 +86,14 @@ fn render_mode(
     let buffer = terminal.backend().buffer();
     (0..height)
         .map(|y| {
-            (0..width)
-                .map(|x| buffer[(x, y)].symbol())
-                .collect::<String>()
+            let mut row = String::new();
+            let mut x = 0;
+            while x < width {
+                let symbol = buffer[(x, y)].symbol();
+                row.push_str(symbol);
+                x += ratatui::text::Span::raw(symbol).width().max(1) as u16;
+            }
+            row
         })
         .collect::<Vec<_>>()
         .join("\n")
@@ -207,4 +212,45 @@ fn stacked_board_keeps_selected_stage_and_task_visible_after_resize() {
             );
         }
     }
+}
+
+#[test]
+fn stacked_titles_keep_retry_metadata_visible() {
+    for title in ["a long task title ".repeat(20), "界é👩‍💻 ".repeat(40)] {
+        let mut row = task(0);
+        row.task_name = title;
+        row.attempt = 2;
+        let plan = plan(vec![row]);
+        for width in [40, 80] {
+            let text = render_mode(&plan, width, 5, 0, true);
+            let selected = text.lines().find(|line| line.contains('▶')).unwrap();
+            assert!(
+                selected.contains("retry 2/3") && selected.contains('…'),
+                "long task title hid metadata or clipped silently at width {width}:\n{text}"
+            );
+            let cells = ratatui::text::Span::raw(selected).width();
+            assert!(cells <= width as usize);
+            println!(
+                "U4_GEOMETRY {}",
+                serde_json::json!({"width":width,"height":5,"cells":cells})
+            );
+        }
+    }
+}
+
+#[test]
+fn stacked_rows_prioritize_blocker_and_retry_chips() {
+    let mut row = task(0);
+    row.task_name = "a task with a long display name ".repeat(10);
+    row.blocked_by = vec!["T1".into()];
+    row.depends_on = vec!["T1".into()];
+    row.attempt = 2;
+    let plan = plan(vec![row]);
+    let text = render_mode(&plan, 40, 5, 0, true);
+    let selected = text.lines().find(|line| line.contains('▶')).unwrap();
+    assert!(
+        selected.contains("blocked:T1") && selected.contains("retry 2/3"),
+        "priority chips lost to title or dependency history:\n{text}"
+    );
+    assert!(selected.contains('…'));
 }
