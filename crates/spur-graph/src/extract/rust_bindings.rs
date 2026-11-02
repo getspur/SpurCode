@@ -210,7 +210,21 @@ pub(super) fn receiver_scope(call: Node<'_>, source: &str) -> Option<String> {
     if callee.kind() != "field_expression" {
         return None;
     }
-    let ty = value_type(callee.child_by_field_name("value")?, source)?;
+    let value = callee.child_by_field_name("value")?;
+    let Some(ty) = value_type(value, source) else {
+        // Preserve the lexical type spelling even when it does not establish
+        // a local nominal identity (Option<T>, dyn Trait, aliases, ...). This
+        // metadata must never be used to grant dispatch authority. Use exactly
+        // the same shadow/interval lookup as nominal resolution.
+        if value.kind() != "identifier" {
+            return None;
+        }
+        let mut annotation = binding_type_inner(value, text(value, source)?, source, true, false)?;
+        while annotation.kind() == "reference_type" {
+            annotation = annotation.child_by_field_name("type")?;
+        }
+        return Some(text(annotation, source)?.to_owned());
+    };
     let mut path = vec![text(ty.child_by_field_name("name")?, source)?];
     let mut parent = ty.parent();
     while let Some(node) = parent {
@@ -525,6 +539,16 @@ fn binding_type<'tree>(
     source: &str,
     allow_references: bool,
 ) -> Option<Node<'tree>> {
+    binding_type_inner(value, name, source, allow_references, true)
+}
+
+fn binding_type_inner<'tree>(
+    value: Node<'tree>,
+    name: &str,
+    source: &str,
+    allow_references: bool,
+    nominal: bool,
+) -> Option<Node<'tree>> {
     let mut scope = value.parent()?;
     loop {
         match scope.kind() {
@@ -549,15 +573,19 @@ fn binding_type<'tree>(
                     return if let Some(ty) = binding.child_by_field_name("type") {
                         if !allow_references && ty.kind() == "reference_type" {
                             None
-                        } else {
+                        } else if nominal {
                             nominal_type(ty, source)
+                        } else {
+                            Some(ty)
                         }
-                    } else {
+                    } else if nominal {
                         value_type_inner(
                             binding.child_by_field_name("value")?,
                             source,
                             allow_references,
                         )
+                    } else {
+                        None
                     };
                 }
             }
@@ -576,7 +604,11 @@ fn binding_type<'tree>(
                         if !allow_references && ty.kind() == "reference_type" {
                             return None;
                         }
-                        return nominal_type(ty, source);
+                        return if nominal {
+                            nominal_type(ty, source)
+                        } else {
+                            Some(ty)
+                        };
                     }
                 }
                 if scope.kind() == "function_item" {
@@ -619,6 +651,9 @@ fn binding_type<'tree>(
             _ => {}
         }
         scope = scope.parent()?;
+    }
+    if !nominal {
+        return None;
     }
     let ty = local_type(value, name, source)?;
     // A bare unit constructor is exact only without a competing value item.
