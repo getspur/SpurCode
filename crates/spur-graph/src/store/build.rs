@@ -30,7 +30,7 @@ use crate::{
 };
 
 pub const SCHEMA_VERSION: &str = "spur-graph-schema-v11";
-pub const EXTRACTOR_VERSION: &str = "2026-10-31-physical-rust-macro-evidence-v1";
+pub const EXTRACTOR_VERSION: &str = "2026-11-02-rust-variant-field-ownership-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
 pub const RESOLVER_VERSION: &str = "2026-11-02-rust-receiver-rebind-v2";
 

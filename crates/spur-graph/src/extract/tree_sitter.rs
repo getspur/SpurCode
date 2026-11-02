@@ -3490,7 +3490,21 @@ pub(crate) fn extract_file_contents_from_tree(
     if matches!(language_label, "json" | "yaml") && source.len() > MAX_STRUCTURED_EXTRACT_BYTES {
         return Ok(());
     }
-    let tag_captures = run_query(&queries.tags, root_node, source);
+    let mut tag_captures = run_query(&queries.tags, root_node, source);
+    let edge_captures = queries
+        .spur_edges
+        .as_ref()
+        .map(|query| run_query(query, root_node, source));
+    if language_label == "rust" {
+        // Variant definitions come from the edge query. Include them before
+        // naming tag definitions so payload fields see their direct owner.
+        if let Some(captures) = &edge_captures {
+            tag_captures.extend(captures.iter().cloned().map(|mut capture| {
+                capture.pattern_index += queries.tags.pattern_count();
+                capture
+            }));
+        }
+    }
     let mut definitions = emit_definitions(
         config,
         builder,
@@ -3511,19 +3525,20 @@ pub(crate) fn extract_file_contents_from_tree(
             &definitions,
         );
     }
-    if let Some(spur_edges) = queries.spur_edges.as_ref() {
-        let edge_captures = run_query(spur_edges, root_node, source);
-        let edge_definitions = emit_definitions_with_parents(
-            config,
-            builder,
-            relative_path,
-            file_id,
-            file_node,
-            source,
-            &edge_captures,
-            &definitions,
-        );
-        definitions.extend(edge_definitions);
+    if let Some(edge_captures) = edge_captures {
+        if language_label != "rust" {
+            let edge_definitions = emit_definitions_with_parents(
+                config,
+                builder,
+                relative_path,
+                file_id,
+                file_node,
+                source,
+                &edge_captures,
+                &definitions,
+            );
+            definitions.extend(edge_definitions);
+        }
         // Phase-one macro evidence uses physical file bytes and coordinates.
         // Notebook cells keep normal definitions/edges until a cell source
         // contract exists; their virtual paths cannot identify physical files.
