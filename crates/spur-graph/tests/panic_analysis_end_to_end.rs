@@ -22,23 +22,42 @@ async fn source_assertion_witnesses_are_canonical_and_replayed() -> anyhow::Resu
     for overflow in [false, true] {
         let analyze = analyze_request(ASSERTION, overflow)?;
         let collected = example::execute(analyze.clone())?;
-        assert!(collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(),
-            "bounded standard assertion must be collected from its actual source: {collected}");
+        assert!(
+            collected["facts"]["unknown_obligations"]
+                .as_array()
+                .unwrap()
+                .is_empty(),
+            "bounded standard assertion must be collected from its actual source: {collected}"
+        );
         // A macro is an implicit operation, never a fabricated ordinary call.
         assert_eq!(collected["facts"]["sites"], json!([]));
-        let operations = collected["facts"]["extraction"]["operations"].as_array().unwrap();
+        let operations = collected["facts"]["extraction"]["operations"]
+            .as_array()
+            .unwrap();
         assert_eq!(operations.len(), 1);
         assert_eq!(operations[0]["operation"]["kind"], "assert_bool");
         assert_eq!(operations[0]["operation"]["message"], "held-out assertion");
         let range = &operations[0]["context"]["location"]["byte_range"];
-        assert_eq!(&ASSERTION[range[0].as_u64().unwrap() as usize..range[1].as_u64().unwrap() as usize],
-            "assert!(value != 17, \"held-out assertion\")");
+        assert_eq!(
+            &ASSERTION[range[0].as_u64().unwrap() as usize..range[1].as_u64().unwrap() as usize],
+            "assert!(value != 17, \"held-out assertion\")"
+        );
         let solve = solve_request(&analyze, &collected, 17, 17);
         let output = example::execute_async(solve.clone(), &service).await?;
-        assert_eq!(output["report"]["queries"][0]["outcome"], "candidate_witness");
-        let replay = example::execute_async(replay_request(&solve, &output["report"], "held-out assertion"), &service).await?;
+        assert_eq!(
+            output["report"]["queries"][0]["outcome"],
+            "candidate_witness"
+        );
+        let replay = example::execute_async(
+            replay_request(&solve, &output["report"], "held-out assertion"),
+            &service,
+        )
+        .await?;
         assert_eq!(replay["replay"]["runtime_reproduced"], true);
-        export(&format!("assertion-{overflow}"), &json!({"analyze":analyze,"collected":collected,"solve":solve,"output":output,"replay":replay}))?;
+        export(
+            &format!("assertion-{overflow}"),
+            &json!({"analyze":analyze,"collected":collected,"solve":solve,"output":output,"replay":replay}),
+        )?;
     }
     Ok(())
 }
@@ -98,10 +117,19 @@ async fn assertion_authority_and_source_ir_forgery_are_conservative() -> anyhow:
     ] {
         let analyze = analyze_request(source, true)?;
         let collected = example::execute(analyze.clone())?;
-        if collected["status"] == "unknown" { continue; }
+        if collected["status"] == "unknown" {
+            export(&format!("assertion-unknown-{name}"), &json!({"analyze":analyze,"collected":collected}))?;
+            continue;
+        }
         assert!(!collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(), "unjustified authority: {name}");
         assert!(collected["facts"]["extraction"]["operations"].as_array().unwrap().iter().all(|op|op["operation"]["kind"] != "assert_bool"), "{name}");
-        export(&format!("assertion-unknown-{name}"), &json!({"analyze":analyze,"collected":collected}))?;
+        let mut solve = solve_request(&analyze, &collected, 0, 255);
+        let body = collected["facts"]["bodies"].as_array().unwrap().iter().max_by_key(|b|b["byte_range"][0].as_u64()).unwrap()["body_id"].clone();
+        solve["limits"]["entry_body_ids"] = json!([body]);
+        solve["domains"] = json!([]);
+        let output = example::execute_async(solve.clone(), &service).await?;
+        assert_eq!(output["report"]["queries"][0]["outcome"], "incomplete_semantics", "{name}");
+        export(&format!("assertion-unknown-{name}"), &json!({"analyze":analyze,"collected":collected,"solve":solve,"output":output}))?;
     }
     Ok(())
 }
@@ -509,6 +537,9 @@ async fn enumerate_every_u8_with_real_solver_and_ordinary_rustc() -> anyhow::Res
             ("overflow", OVERFLOW),
             ("checked", CHECKED),
             ("assertion", ASSERTION),
+            ("assertion_guard", "fn probe(value:u8){if value > 17 {assert!(value != 17, \"unreachable\");}}"),
+            ("assertion_sequence", "fn probe(value:u8){assert!(value != 17, \"first\"); assert!(value != 18, \"second\");}"),
+            ("assertion_continuation", "fn probe(value:u8){assert!(value < 3, \"first\"); let a=[1u8,2,3]; let _=a[value as usize];}"),
         ] {
             let analyze = analyze_request(source, overflow)?;
             let collected = example::execute(analyze.clone())?;
@@ -552,6 +583,9 @@ async fn enumerate_every_u8_with_real_solver_and_ordinary_rustc() -> anyhow::Res
                     "bounds" => [11u8, 22, 33].get(x as usize).is_none(),
                     "overflow" => overflow && x.overflowing_add(1).1,
                     "assertion" => x == 17,
+                    "assertion_guard" => false,
+                    "assertion_sequence" => x == 17 || x == 18,
+                    "assertion_continuation" => x >= 3,
                     _ => x.checked_add(1).is_none(),
                 })
                 .collect();

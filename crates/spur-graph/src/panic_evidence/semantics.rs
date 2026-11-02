@@ -99,13 +99,24 @@ pub fn collect_panic_semantics(
         // macro/type definitions outside the physical AST. Absence of a visible
         // `macro_rules! assert` alone is insufficient authority.
         let assert_authority = sources.len() == 1
-            && matches!(source.file_path, "src/lib.rs" | "src/main.rs" | "lib.rs" | "main.rs")
-            && graph.files.iter().filter(|f| f.file_path.ends_with(".rs")).count() == 1
+            && matches!(
+                source.file_path,
+                "src/lib.rs" | "src/main.rs" | "lib.rs" | "main.rs"
+            )
+            && graph
+                .files
+                .iter()
+                .filter(|f| f.file_path.ends_with(".rs"))
+                .count()
+                == 1
             && build.codegen_flags.is_empty()
             && build.features.is_empty()
             && !text.contains("no_implicit_prelude")
             && !nodes.iter().any(|n| match n.kind() {
-                "use_declaration" | "extern_crate_declaration" | "macro_definition" | "mod_item" => true,
+                "use_declaration"
+                | "extern_crate_declaration"
+                | "macro_definition"
+                | "mod_item" => true,
                 "attribute_item" | "inner_attribute_item" => !benign_attribute(*n, text),
                 "macro_invocation" => assertion_syntax(*n, text).is_none(),
                 _ => false,
@@ -113,14 +124,18 @@ pub fn collect_panic_semantics(
         let primitive_types = !nodes.iter().any(|n| {
             matches!(
                 n.kind(),
-                "use_declaration"
-                    | "extern_crate_declaration"
-                    | "macro_definition"
-            ) || (n.kind() == "macro_invocation" && !assert_authority) || (matches!(
-                n.kind(),
-                "struct_item" | "enum_item" | "union_item" | "type_item" | "mod_item" | "trait_item"
-            ) && field_text(*n, "name", text)
-                .is_some_and(|s| matches!(ident(s), "bool" | "u8" | "usize")))
+                "use_declaration" | "extern_crate_declaration" | "macro_definition"
+            ) || (n.kind() == "macro_invocation" && !assert_authority)
+                || (matches!(
+                    n.kind(),
+                    "struct_item"
+                        | "enum_item"
+                        | "union_item"
+                        | "type_item"
+                        | "mod_item"
+                        | "trait_item"
+                ) && field_text(*n, "name", text)
+                    .is_some_and(|s| matches!(ident(s), "bool" | "u8" | "usize")))
         });
         let mut helpers = BTreeMap::new();
         for function in nodes.iter().filter(|n| {
@@ -410,57 +425,108 @@ fn has_unsupported_attributes(n: Node<'_>, text: &str) -> bool {
 
 fn benign_attribute(n: Node<'_>, text: &str) -> bool {
     let t = &text[n.byte_range()];
-    t.starts_with("#[allow(") || t.starts_with("#![allow(")
-        || t.starts_with("#[doc =") || t.starts_with("#![doc =")
+    t.starts_with("#[allow(")
+        || t.starts_with("#![allow(")
+        || t.starts_with("#[doc =")
+        || t.starts_with("#![doc =")
 }
 
 /// Parse only a pure predicate and an optional plain ASCII literal message.
 /// The parser view masks the macro prefix/message with same-length whitespace;
 /// predicate bytes, offsets, body and original source OID are never replaced.
 /// No normalized fixture, macro expansion or synthetic call site is collected.
-fn assertion_syntax(n: Node<'_>, text: &str) -> Option<(tree_sitter::Tree, [usize; 2], Option<String>)> {
+fn assertion_syntax(
+    n: Node<'_>,
+    text: &str,
+) -> Option<(tree_sitter::Tree, [usize; 2], Option<String>)> {
     if n.kind() != "macro_invocation" || field_text(n, "macro", text)? != "assert" {
         return None;
     }
     let tokens = children(n).into_iter().find(|n| n.kind() == "token_tree")?;
     let token_bytes = &text.as_bytes()[tokens.byte_range()];
-    if token_bytes.first() != Some(&b'(') || token_bytes.last() != Some(&b')') { return None; }
+    if token_bytes.first() != Some(&b'(') || token_bytes.last() != Some(&b')') {
+        return None;
+    }
     let mut cursor = tokens.walk();
-    let commas: Vec<_> = tokens.children(&mut cursor).filter(|n| n.kind() == ",").collect();
-    if commas.len() > 2 { return None; }
-    let predicate_end = commas.first().map_or(tokens.end_byte()-1, |c|c.start_byte());
+    let commas: Vec<_> = tokens
+        .children(&mut cursor)
+        .filter(|n| n.kind() == ",")
+        .collect();
+    if commas.len() > 2 {
+        return None;
+    }
+    let predicate_end = commas
+        .first()
+        .map_or(tokens.end_byte() - 1, |c| c.start_byte());
     let message = if let Some(comma) = commas.first() {
-        let end = commas.get(1).map_or(tokens.end_byte()-1, |c|c.start_byte());
+        let end = commas
+            .get(1)
+            .map_or(tokens.end_byte() - 1, |c| c.start_byte());
         let message = text[comma.end_byte()..end].trim();
-        if commas.get(1).is_some_and(|c| !text[c.end_byte()..tokens.end_byte()-1].trim().is_empty()) { return None; }
-        if message.is_empty() && commas.len() == 1 { None } else {
+        if commas
+            .get(1)
+            .is_some_and(|c| !text[c.end_byte()..tokens.end_byte() - 1].trim().is_empty())
+        {
+            return None;
+        }
+        if message.is_empty() && commas.len() == 1 {
+            None
+        } else {
             let inner = message.strip_prefix('"')?.strip_suffix('"')?;
             if !inner.bytes().all(|c| c.is_ascii_graphic() || c == b' ')
-                || inner.contains(['\\', '"', '{', '}']) { return None; }
+                || inner.contains(['\\', '"', '{', '}'])
+            {
+                return None;
+            }
             Some(inner.to_owned())
         }
-    } else { None };
+    } else {
+        None
+    };
     let mut view = text.as_bytes().to_vec();
-    for byte in &mut view[n.start_byte()..tokens.start_byte()] { *byte = b' '; }
-    for byte in &mut view[predicate_end..tokens.end_byte()-1] { *byte = b' '; }
+    for byte in &mut view[n.start_byte()..tokens.start_byte()] {
+        *byte = b' ';
+    }
+    for byte in &mut view[predicate_end..tokens.end_byte() - 1] {
+        *byte = b' ';
+    }
     let mut parser = Parser::new();
-    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).ok()?;
+    parser
+        .set_language(&tree_sitter_rust::LANGUAGE.into())
+        .ok()?;
     let tree = parser.parse(&view, None)?;
-    if tree.root_node().has_error() { return None; }
-    let predicate = descendants(tree.root_node()).into_iter().find(|node|
-        node.kind() == "parenthesized_expression" && range(*node) == range(tokens))?;
-    if !pure_assertion_predicate(predicate, text) { return None; }
+    if tree.root_node().has_error() {
+        return None;
+    }
+    let predicate = descendants(tree.root_node())
+        .into_iter()
+        .find(|node| node.kind() == "parenthesized_expression" && range(*node) == range(tokens))?;
+    if !pure_assertion_predicate(predicate, text) {
+        return None;
+    }
     Some((tree, range(tokens), message))
 }
 
 fn pure_assertion_predicate(n: Node<'_>, text: &str) -> bool {
     match n.kind() {
         "identifier" | "integer_literal" | "boolean_literal" => true,
-        "parenthesized_expression" => children(n).into_iter().all(|n| pure_assertion_predicate(n, text)),
-        "unary_expression" => text[n.byte_range()].trim_start().starts_with('!')
-            && children(n).into_iter().all(|n| pure_assertion_predicate(n, text)),
-        "binary_expression" => matches!(field_text(n,"operator",text), Some("=="|"!="|"<"|">"|"<="|">="|"&&"|"||"))
-            && children(n).into_iter().all(|n| pure_assertion_predicate(n, text)),
+        "parenthesized_expression" => children(n)
+            .into_iter()
+            .all(|n| pure_assertion_predicate(n, text)),
+        "unary_expression" => {
+            text[n.byte_range()].trim_start().starts_with('!')
+                && children(n)
+                    .into_iter()
+                    .all(|n| pure_assertion_predicate(n, text))
+        }
+        "binary_expression" => {
+            matches!(
+                field_text(n, "operator", text),
+                Some("==" | "!=" | "<" | ">" | "<=" | ">=" | "&&" | "||")
+            ) && children(n)
+                .into_iter()
+                .all(|n| pure_assertion_predicate(n, text))
+        }
         _ => false,
     }
 }
@@ -1314,8 +1380,11 @@ impl<'a> Collector<'a> {
     fn assertion(&mut self, n: Node<'_>) -> anyhow::Result<Eval> {
         if self.assert_authority {
             if let Some((tree, predicate_range, message)) = assertion_syntax(n, self.text) {
-                let predicate = descendants(tree.root_node()).into_iter()
-                    .find(|node| node.kind() == "parenthesized_expression" && range(*node) == predicate_range)
+                let predicate = descendants(tree.root_node())
+                    .into_iter()
+                    .find(|node| {
+                        node.kind() == "parenthesized_expression" && range(*node) == predicate_range
+                    })
                     .unwrap();
                 if let Some(predicate) = self.scalar(predicate, Some(PanicSort::Bool))? {
                     // Evaluation happens first. The operation retains the full
@@ -1323,15 +1392,25 @@ impl<'a> Collector<'a> {
                     self.step(n);
                     let operation_id = self.id("assertion");
                     let context = self.context(n);
-                    self.facts.extraction.as_mut().unwrap().operations.push(PanicImplicitOperation {
-                        operation_id, context, result_expression_id: predicate.clone(),
-                        operation: PanicImplicitOperationKind::AssertBool {predicate, message},
-                    });
+                    self.facts.extraction.as_mut().unwrap().operations.push(
+                        PanicImplicitOperation {
+                            operation_id,
+                            context,
+                            result_expression_id: predicate.clone(),
+                            operation: PanicImplicitOperationKind::AssertBool {
+                                predicate,
+                                message,
+                            },
+                        },
+                    );
                     return Ok(Eval::Unit);
                 }
             }
         }
-        self.taint(n, "assertion macro/type authority, predicate, message or effects are unsupported");
+        self.taint(
+            n,
+            "assertion macro/type authority, predicate, message or effects are unsupported",
+        );
         Ok(Eval::Unknown)
     }
 

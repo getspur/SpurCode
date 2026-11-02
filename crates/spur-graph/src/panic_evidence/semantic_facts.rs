@@ -993,7 +993,10 @@ impl<'a> Validator<'a> {
             return Ok(());
         };
         ensure!(
-            matches!(extraction.extractor_version.as_str(), PANIC_EXTRACTION_VERSION | "rust-bool-u8-semantics-v1"),
+            matches!(
+                extraction.extractor_version.as_str(),
+                PANIC_EXTRACTION_VERSION | "rust-bool-u8-semantics-v1"
+            ),
             "unsupported semantic extractor"
         );
         for ret in &extraction.returns {
@@ -1006,9 +1009,12 @@ impl<'a> Validator<'a> {
             let result = self.expression(&op.result_expression_id, &op.context)?;
             match &op.operation {
                 PanicImplicitOperationKind::AssertBool { predicate, .. } => {
-                    ensure!(extraction.extractor_version == PANIC_EXTRACTION_VERSION
-                        && predicate == &op.result_expression_id && result.sort == PanicSort::Bool,
-                        "detached assertion predicate or unsupported extractor version");
+                    ensure!(
+                        extraction.extractor_version == PANIC_EXTRACTION_VERSION
+                            && predicate == &op.result_expression_id
+                            && result.sort == PanicSort::Bool,
+                        "detached assertion predicate or unsupported extractor version"
+                    );
                 }
                 PanicImplicitOperationKind::U8Add {
                     left,
