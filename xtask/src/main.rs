@@ -462,6 +462,12 @@ fn zigbuild_install_fetch_command(workspace_root: &Path, triple: &str, debug: bo
     let profile = if debug { "debug" } else { "release" };
     let artifact = format!("target/{triple}/{profile}/spur");
     let mut cmd = Command::new(workspace_root.join("scripts/cloud-build/fetch.sh"));
+    // Match spur-cargo's namespace so fetch finds both the artifact and its
+    // recorded builder, even when the checkout directory has another name.
+    let namespace = env::var_os("SPUR_REMOTE_NAMESPACE")
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| "spur".into());
+    cmd.env("SPUR_REMOTE_NAMESPACE", namespace);
     cmd.arg("--via-s3")
         .arg("--to")
         .arg(workspace_root.join(&artifact))
