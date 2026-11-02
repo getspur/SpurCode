@@ -530,6 +530,57 @@ mod plan_projection_tests {
         )));
         assert!(app.quit_confirm_visible);
     }
+
+    #[test]
+    fn inspector_attention_feedback_is_visible_through_app_render() {
+        for width in [40, 80] {
+            for with_error in [false, true] {
+                let mut app = inspector_app_with_task("done", "approved");
+                if with_error {
+                    app.handle_spur_event(wrap(SpurEventBody::PlanCommandError {
+                        operation: "ResumePlan".into(),
+                        plan_id: Some("p-1".into()),
+                        error: "test command failure".into(),
+                    }));
+                }
+                inspector_app_key(&mut app, KeyCode::Char(']'));
+                let text = render_inspector_app(&mut app, width, 8);
+                assert!(
+                    text.contains("No tasks need attention"),
+                    "App delivered an invisible navigation result at {width}x8:\n{text}"
+                );
+                assert!(
+                    text.contains("▶ ✓ done"),
+                    "notice displaced task selection:\n{text}"
+                );
+                let footer = text.lines().last().unwrap();
+                assert!(
+                    footer.contains("Tab") && footer.contains("Esc") && footer.contains("? help")
+                );
+                if with_error {
+                    assert!(
+                        text.contains("Error:"),
+                        "notice erased persistent command failure"
+                    );
+                }
+                let y = text
+                    .lines()
+                    .position(|line| line.contains("No tasks need attention"))
+                    .unwrap();
+                let cells =
+                    ratatui::text::Span::raw(text.lines().nth(y).unwrap().trim_end()).width();
+                println!(
+                    "R2_GEOMETRY {}",
+                    serde_json::json!({"width":width,"height":8,"with_error":with_error,"notice":{"x":0,"y":y,"width":cells,"height":1}})
+                );
+                inspector_app_key(&mut app, KeyCode::Char('?'));
+                assert!(
+                    render_inspector_app(&mut app, 100, 40).contains("No tasks need attention"),
+                    "active notice missing from help"
+                );
+            }
+        }
+    }
 }
 
 #[cfg(test)]
