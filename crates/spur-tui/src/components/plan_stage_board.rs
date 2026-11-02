@@ -1,4 +1,4 @@
-use super::plan_text::fit_to_cells;
+use super::plan_text::{display_cells, fit_to_cells};
 use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::{Modifier, Style},
@@ -7,6 +7,7 @@ use ratatui::{
     Frame,
 };
 use std::time::SystemTime;
+use unicode_segmentation::UnicodeSegmentation;
 
 use crate::theme::{resolve_token, ColorDepth, Theme};
 use spur_core::{ExecutorLineage, ExecutorNode, LifecycleState, TrackedPlan, TrackedTask};
@@ -100,10 +101,11 @@ pub fn render_stage_board(
                 ];
                 lines.push(Line::from(title_line));
 
-                let meta = task_meta_chips(task, lineage, theme);
+                let mut meta = task_meta_chips(task, lineage, theme);
+                meta.sort_by_key(|(kind, _)| *kind);
                 if !meta.is_empty() {
                     let mut meta_line = vec![Span::raw("    ")];
-                    for (i, span) in meta.into_iter().enumerate() {
+                    for (i, (_, span)) in meta.into_iter().enumerate() {
                         if i > 0 {
                             meta_line.push(Span::raw("  "));
                         }
@@ -179,6 +181,26 @@ pub fn render_stacked_stage_groups(
         for task in tasks_in_stage(plan, stage_idx) {
             let selected = task.task_id == selected_task_id;
             let start_row = lines.len();
+            let content_width = area.width.saturating_sub(2) as usize;
+            let prefix_width = display_cells("▶ ○ ");
+            let gap_width = display_cells("  ");
+            let minimum_title_width = MIN_STAGE_LANE_WIDTH as usize - 2 - prefix_width;
+            let meta = fit_meta_chips(
+                task_meta_chips(task, lineage, theme)
+                    .into_iter()
+                    .map(|(_, span)| span)
+                    .collect(),
+                content_width.saturating_sub(prefix_width + minimum_title_width + gap_width),
+            );
+            let meta_width: usize = meta.iter().map(|span| display_cells(&span.content)).sum();
+            let title_width = content_width.saturating_sub(
+                prefix_width
+                    + if meta.is_empty() {
+                        0
+                    } else {
+                        gap_width + meta_width
+                    },
+            );
             let mut task_line = vec![
                 Span::styled(
                     if selected { "▶ " } else { "  " },
@@ -195,17 +217,11 @@ pub fn render_stacked_stage_groups(
                     status_style(theme, &task.status),
                 ),
                 Span::raw(" "),
-                Span::raw(task.task_name.clone()),
+                Span::raw(fit_to_cells(&task.task_name, title_width)),
             ];
-            let meta = task_meta_chips(task, lineage, theme);
             if !meta.is_empty() {
                 task_line.push(Span::raw("  "));
-                for (i, span) in meta.into_iter().enumerate() {
-                    if i > 0 {
-                        task_line.push(Span::raw("  "));
-                    }
-                    task_line.push(span);
-                }
+                task_line.extend(meta);
             }
             lines.push(Line::from(task_line));
             if selected {
@@ -230,6 +246,50 @@ pub fn render_stacked_stage_groups(
         ),
         area,
     );
+}
+
+fn fit_meta_chips<'a>(chips: Vec<Span<'a>>, width: usize) -> Vec<Span<'a>> {
+    if width == 0 {
+        return Vec::new();
+    }
+    let mut spans = Vec::new();
+    for (index, chip) in chips.into_iter().enumerate() {
+        if index > 0 {
+            spans.push(Span::raw("  "));
+        }
+        spans.push(chip);
+    }
+    if spans
+        .iter()
+        .map(|span| display_cells(&span.content))
+        .sum::<usize>()
+        <= width
+    {
+        return spans;
+    }
+    let mut fitted = Vec::new();
+    let mut used = 0;
+    for span in spans {
+        let mut content = String::new();
+        let mut full = true;
+        for grapheme in span.content.graphemes(true) {
+            let cells = display_cells(grapheme);
+            if used + cells > width - 1 {
+                full = false;
+                break;
+            }
+            content.push_str(grapheme);
+            used += cells;
+        }
+        if !content.is_empty() {
+            fitted.push(Span::styled(content, span.style));
+        }
+        if !full {
+            break;
+        }
+    }
+    fitted.push(Span::raw("…"));
+    fitted
 }
 
 fn selection_offset(selected_rows: Option<(usize, usize)>, visible_rows: usize) -> usize {
@@ -325,31 +385,22 @@ fn status_style(theme: &Theme, status: &str) -> Style {
     }
 }
 
+// Wide lanes retain their established worker-first order. Stacked rows use
+// the attention-first construction order below before fitting the chip spans.
+#[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
+enum MetaKind {
+    Worker,
+    Blocker,
+    Dependency,
+    Retry,
+}
+
 fn task_meta_chips<'a>(
     task: &TrackedTask,
     lineage: &ExecutorLineage,
     theme: &Theme,
-) -> Vec<Span<'a>> {
+) -> Vec<(MetaKind, Span<'a>)> {
     let mut chips = Vec::new();
-
-    // Live worker link (agent + phase)
-    if let Some(issue_id) = task.issue_id.as_deref() {
-        if let Some(node) = preferred_live_node(lineage, issue_id) {
-            chips.push(Span::styled(
-                format!(
-                    "{}{}:{}",
-                    if is_live_phase(node.phase) {
-                        ""
-                    } else {
-                        "last "
-                    },
-                    node.agent,
-                    phase_label(node.phase)
-                ),
-                Style::default().fg(token(theme, "plan_inspector.chip.live.fg")),
-            ));
-        }
-    }
 
     // Blocked indicator
     if !task.blocked_by.is_empty() {
@@ -358,37 +409,69 @@ fn task_meta_chips<'a>(
         } else {
             format!("blocked:{} deps", task.blocked_by.len())
         };
-        chips.push(Span::styled(
-            label,
-            Style::default().fg(token(theme, "plan_inspector.chip.blocked.fg")),
+        chips.push((
+            MetaKind::Blocker,
+            Span::styled(
+                label,
+                Style::default().fg(token(theme, "plan_inspector.chip.blocked.fg")),
+            ),
         ));
     }
 
     if let Some(label) = setup_conflict_label(task) {
-        chips.push(Span::styled(
-            label,
-            Style::default().fg(token(theme, "plan_inspector.chip.blocked.fg")),
+        chips.push((
+            MetaKind::Blocker,
+            Span::styled(
+                label,
+                Style::default().fg(token(theme, "plan_inspector.chip.blocked.fg")),
+            ),
         ));
     }
 
-    // Dependency hint
+    // Attempt / retry indicator
+    if task.attempt > 1 {
+        chips.push((
+            MetaKind::Retry,
+            Span::styled(
+                format!("retry {}/{}", task.attempt, task.max_attempts),
+                Style::default().fg(token(theme, "plan_inspector.chip.retry.fg")),
+            ),
+        ));
+    }
+
+    // Current blockers and attempts precede worker/dependency history.
+    if let Some(issue_id) = task.issue_id.as_deref() {
+        if let Some(node) = preferred_live_node(lineage, issue_id) {
+            chips.push((
+                MetaKind::Worker,
+                Span::styled(
+                    format!(
+                        "{}{}:{}",
+                        if is_live_phase(node.phase) {
+                            ""
+                        } else {
+                            "last "
+                        },
+                        node.agent,
+                        phase_label(node.phase)
+                    ),
+                    Style::default().fg(token(theme, "plan_inspector.chip.live.fg")),
+                ),
+            ));
+        }
+    }
     if !task.depends_on.is_empty() {
         let label = if task.depends_on.len() == 1 {
             format!("↑{}", task.depends_on[0])
         } else {
             format!("↑{} deps", task.depends_on.len())
         };
-        chips.push(Span::styled(
-            label,
-            Style::default().fg(token(theme, "plan_inspector.chip.depends.fg")),
-        ));
-    }
-
-    // Attempt / retry indicator
-    if task.attempt > 1 {
-        chips.push(Span::styled(
-            format!("retry {}/{}", task.attempt, task.max_attempts),
-            Style::default().fg(token(theme, "plan_inspector.chip.retry.fg")),
+        chips.push((
+            MetaKind::Dependency,
+            Span::styled(
+                label,
+                Style::default().fg(token(theme, "plan_inspector.chip.depends.fg")),
+            ),
         ));
     }
 
