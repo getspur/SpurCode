@@ -2348,7 +2348,7 @@ fn footer_hint_tiers(
     review_hint: &str,
     scroll_hint: &str,
     show_start: bool,
-) -> [String; 3] {
+) -> Vec<String> {
     if !scroll_hint.is_empty() {
         let essential = "Esc close  ? help  j/k: scroll";
         let issue = enter_hint.contains("close issue");
@@ -2362,10 +2362,14 @@ fn footer_hint_tiers(
         } else {
             "  e: metadata  p/n: relatives"
         };
-        return [
+        return vec![
             format!("{essential}{focus}  g/G: top/btm  PgUp/PgDn: page{metadata}"),
             format!("{essential}{focus}"),
-            essential.into(),
+            if issue {
+                "Esc close ? help j/k: scroll Enter: back".into()
+            } else {
+                "Esc close ? help j/k: scroll Tab: board".into()
+            },
         ];
     }
     let essential = "Esc close  ? help  j/k: task";
@@ -2378,20 +2382,21 @@ fn footer_hint_tiers(
     };
     let full=format!("{essential}  Tab: detail  h/l: lane  b: blocker  {enter_hint}{start}{retry_hint}{stop_hint}{review_hint}{peek_hint}  e: metadata  p/n: relatives  g/G: ends  o: work item");
     let compact=format!("{essential}  Tab: detail  {enter_hint}{start}{retry_hint}{stop_hint}{compact_review}{peek_hint}");
-    let minimal = format!("{essential}{compact_start}{retry_hint}{stop_hint}{compact_review}");
-    [full, compact, minimal]
+    let essentials = "Esc close ? help j/k: task Tab: detail".to_string();
+    let minimal = format!("{essentials}{compact_start}{retry_hint}{stop_hint}{compact_review}");
+    vec![full, compact, minimal, essentials]
 }
 
-fn footer_hint_without_status(width: u16, tiers: &[String; 3]) -> String {
+fn footer_hint_without_status(width: u16, tiers: &[String]) -> String {
     let width = width as usize;
-    for tier in &tiers[..2] {
+    for tier in &tiers[..tiers.len() - 1] {
         if display_cells(tier) <= width {
             return tier.clone();
         }
     }
-    fit_to_cells(&tiers[2], width)
+    fit_to_cells(tiers.last().unwrap(), width)
 }
-fn footer_hint_with_status(width: u16, status: &str, tiers: &[String; 3]) -> String {
+fn footer_hint_with_status(width: u16, status: &str, tiers: &[String]) -> String {
     let width = width as usize;
     let separator = "  ";
     let gap = display_cells(separator);
@@ -2400,7 +2405,7 @@ fn footer_hint_with_status(width: u16, status: &str, tiers: &[String; 3]) -> Str
             return format!("{status}{separator}{tier}");
         }
     }
-    let minimal = &tiers[2];
+    let minimal = tiers.last().unwrap();
     let minimal_width = display_cells(minimal);
     if minimal_width + gap >= width {
         return fit_to_cells(minimal, width);
