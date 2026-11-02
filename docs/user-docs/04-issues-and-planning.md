@@ -57,13 +57,15 @@ The Plan Inspector shows task progress, dependencies, review state, and worker o
 
 ### Board and detail panes
 
-On wide terminals, stage lanes sit beside the selected task. Lanes show a readable window around the selected stage; the range and arrows indicate hidden stages. On narrow terminals, tasks form a stage-grouped list. The selected task stays visible as you navigate or resize. Very short terminals show the focused pane; use **Tab** to switch between board and detail.
+On wide terminals, stage lanes sit beside the selected task. Lanes show a readable window around the selected stage; the range and arrows indicate hidden stages. On narrow terminals, tasks form a stage-grouped list. Long titles show an ellipsis and leave room for priority blocker or retry information. The selected task stays visible as you navigate or resize. Very short terminals show the focused pane; use **Tab** to switch between board and detail. Compact footers keep the pane-switch or issue-return control visible.
 
 Stages group tasks by dependency depth. Each task waits for its own prerequisites; an unrelated task in an earlier stage does not create a global stage barrier.
 
 The header prioritizes plan status, **approved / total** progress, attention counts, and the next action. Escalated tasks count toward the total. Lifecycle counts are separate from the overlapping **deps blocked** count, and cancelled and superseded tasks have distinct counts. Press **?** to inspect the full plan ID, complete counts, source, owner, controls, and status legend.
 
-The detail pane puts task identity, status, next action, errors, and blocker reasons before long output. Press **e** to expand or collapse execution metadata, issue context, and full relationship IDs. Selecting another task collapses this information. Multiline output and loaded issue bodies remain scrollable.
+The detail pane puts task identity, status, next action, errors, and blocker reasons before long output. Press **e** to expand or collapse execution metadata, issue context, and full relationship IDs. Selecting another task collapses this information. **Enter** opens the linked issue at its own loading state or content. Closing it restores the task's previous scroll position. Multiline output and loaded issue bodies remain scrollable.
+
+Failed plan actions remain visible in the header, including on compact screens. Press **?** to read the full error. Unrelated loop updates do not erase it; confirming a subsequent command clears the previous error.
 
 ### Controls and focus
 
@@ -75,6 +77,8 @@ The detail pane puts task identity, status, next action, errors, and blocker rea
 | **Tab** | Switch board/detail focus when linked issue detail is closed |
 | **PgUp / PgDn** | Scroll a page in detail, issue, or help |
 | **b** | Cycle the selected task's actual blockers |
+| **/** | Find a task by name, task ID, or linked issue ID |
+| **[ / ]** | Previous / next task needing attention |
 | **p / n** | Cycle parents/children from the original task; missing external tasks show feedback |
 | **e** | Expand/collapse metadata and full relationships, and focus detail |
 | **Enter** | Open/close the linked issue; confirms an active confirmation dialog |
@@ -86,6 +90,10 @@ The detail pane puts task identity, status, next action, errors, and blocker rea
 | **Alt+P** | Close the inspector while browsing |
 
 The **[focus]** marker and highlighted detail border identify the pane that owns scrolling. The footer follows the current mode. Stream peek owns **j/k** scrolling and **f** follow; **Esc** returns. Confirmation dialogs own their keys until confirmed or cancelled.
+
+The task finder matches text without case sensitivity. Type a query, use **Up/Down** to choose a result, and press **Enter** to select it. **Backspace** removes a complete character cluster. **Esc** cancels and preserves the previous task, focus, and scroll position. Plan updates retain a chosen matching result while it still exists. Query text owns its keys, so typing **r**, **s**, or **?** does not start commands, open streams, or open help.
+
+Attention navigation cycles through tasks awaiting review, escalated tasks, failures or rejections, setup conflicts, and current dependency blockers. Approved, cancelled, and superseded history is skipped. If no task needs attention, the inspector says so.
 
 ### Task states and metadata
 

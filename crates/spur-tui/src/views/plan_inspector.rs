@@ -21,6 +21,8 @@ use crate::theme::{resolve_token, ColorDepth, Theme};
 use super::plan_provenance::loop_origin_badge;
 use super::View;
 
+mod navigation;
+
 #[derive(Debug)]
 pub enum PlanInspectorMode {
     Browse,
@@ -60,6 +62,7 @@ pub struct PlanInspectorView {
     confirm: Option<PlanInspectorConfirm>,
     command_error: Option<String>,
     loop_event_status: Option<String>,
+    search: Option<navigation::TaskSearch>,
 }
 
 #[derive(Debug)]
@@ -132,6 +135,7 @@ impl PlanInspectorView {
             confirm: None,
             command_error: None,
             loop_event_status: None,
+            search: None,
         }
     }
 
@@ -161,6 +165,7 @@ impl PlanInspectorView {
             confirm: None,
             command_error: None,
             loop_event_status: None,
+            search: None,
         }
     }
 
@@ -826,7 +831,11 @@ impl PlanInspectorView {
         ctx: &super::ViewContext,
     ) -> Option<Action> {
         let _ = worker_streams;
-        if self.confirm.is_some() || self.help_open || key.code == KeyCode::Char('?') {
+        if self.confirm.is_some()
+            || self.search.is_some()
+            || self.help_open
+            || key.code == KeyCode::Char('?')
+        {
             return <Self as View>::handle_key(self, key, ctx);
         }
 
@@ -1077,6 +1086,9 @@ impl View for PlanInspectorView {
             };
         }
 
+        if self.search.is_some() {
+            return self.handle_task_search_key(key, ctx);
+        }
         if self.help_open {
             self.handle_help_key(key);
             return None;
@@ -1134,6 +1146,15 @@ impl View for PlanInspectorView {
             }
 
             match key.code {
+                KeyCode::Char('/') if key.modifiers.is_empty() && self.open_issue_id.is_none() => {
+                    self.open_task_search();
+                }
+                KeyCode::Char(']') if key.modifiers.is_empty() && self.open_issue_id.is_none() => {
+                    return self.jump_to_attention(plan, true);
+                }
+                KeyCode::Char('[') if key.modifiers.is_empty() && self.open_issue_id.is_none() => {
+                    return self.jump_to_attention(plan, false);
+                }
                 KeyCode::Char('h') | KeyCode::Left => self.move_lane(plan, -1),
                 KeyCode::Char('l') | KeyCode::Right => self.move_lane(plan, 1),
                 KeyCode::Char('j') | KeyCode::Down => self.move_task(plan, 1),
@@ -1321,6 +1342,10 @@ impl View for PlanInspectorView {
     }
 
     fn render(&mut self, frame: &mut Frame, area: Rect, ctx: &super::ViewContext) {
+        if self.search.is_some() {
+            self.render_task_search(frame, area, ctx);
+            return;
+        }
         // Three readable lanes; detail fits the longest status/attempt line and borders.
         let minimum_board_width = 3 * crate::components::plan_stage_board::MIN_STAGE_LANE_WIDTH;
         let minimum_detail_width =
@@ -1777,6 +1802,8 @@ impl PlanInspectorView {
             Line::from("⇢ superseded"),Line::from("⦿ setup conflict (blocked_on_setup_conflict)"),Line::from("! escalated_to_brain"),
             Line::raw(""),Line::from("Board and relationships"),
             Line::from("h/l: change stage; j/k: select task; g/G: first/last task in stage."),
+            Line::from("/: find task by name, task ID or issue ID; Up/Down choose; Enter select; Esc cancel."),
+            Line::from("[/]: previous/next task needing attention; terminal history is skipped."),
             Line::from("Lanes show a readable stage window; arrows and range indicate hidden stages."),
             Line::from("Stages group dependency depth. Each task waits for its own prerequisites."),
             Line::from("b: cycle blockers; p/n: cycle parents / children from the original task."),
@@ -2380,11 +2407,12 @@ fn footer_hint_tiers(
     } else {
         "  a/d/c: review"
     };
-    let full=format!("{essential}  Tab: detail  h/l: lane  b: blocker  {enter_hint}{start}{retry_hint}{stop_hint}{review_hint}{peek_hint}  e: metadata  p/n: relatives  g/G: ends  o: work item");
-    let compact=format!("{essential}  Tab: detail  {enter_hint}{start}{retry_hint}{stop_hint}{compact_review}{peek_hint}");
+    let full=format!("{essential}  Tab: detail  h/l: lane  b: blocker  {enter_hint}{start}{retry_hint}{stop_hint}{review_hint}{peek_hint}  e: metadata  p/n: relatives  g/G: ends  o: work item  /: find  [ ]: attention");
+    let compact=format!("{essential}  Tab: detail  {enter_hint}{start}{retry_hint}{stop_hint}{compact_review}{peek_hint}  /: find  [ ]: attention");
     let essentials = "Esc close ? help j/k: task Tab: detail".to_string();
     let minimal = format!("{essentials}{compact_start}{retry_hint}{stop_hint}{compact_review}");
-    vec![full, compact, minimal, essentials]
+    let navigation = format!("{minimal}  / find  ] next");
+    vec![full, compact, navigation, minimal, essentials]
 }
 
 fn footer_hint_without_status(width: u16, tiers: &[String]) -> String {
