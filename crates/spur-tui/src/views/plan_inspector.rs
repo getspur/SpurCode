@@ -57,7 +57,8 @@ pub struct PlanInspectorView {
     task_detail_page_rows: usize,
     mode: PlanInspectorMode,
     confirm: Option<PlanInspectorConfirm>,
-    loop_event_status: Option<PlanInspectorEventStatus>,
+    command_error: Option<String>,
+    loop_event_status: Option<String>,
 }
 
 #[derive(Debug)]
@@ -65,20 +66,6 @@ enum TaskIssueState {
     Loading,
     Loaded(Box<spur_pm::Issue>),
     Error(String),
-}
-
-#[derive(Debug)]
-enum PlanInspectorEventStatus {
-    CommandError(String),
-    Loop(String),
-}
-
-impl PlanInspectorEventStatus {
-    fn message(&self) -> &str {
-        match self {
-            Self::CommandError(message) | Self::Loop(message) => message,
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -141,6 +128,7 @@ impl PlanInspectorView {
             task_detail_page_rows: 1,
             mode: PlanInspectorMode::Browse,
             confirm: None,
+            command_error: None,
             loop_event_status: None,
         }
     }
@@ -168,6 +156,7 @@ impl PlanInspectorView {
             task_detail_page_rows: 1,
             mode: PlanInspectorMode::Browse,
             confirm: None,
+            command_error: None,
             loop_event_status: None,
         }
     }
@@ -718,6 +707,7 @@ impl PlanInspectorView {
 
     fn confirm_action(&mut self) -> Option<Action> {
         let confirm = self.confirm.take()?;
+        self.command_error = None;
         match confirm {
             PlanInspectorConfirm::Start { plan_id } => Some(Action::ResumePlan { plan_id }),
             PlanInspectorConfirm::RetryTask {
@@ -725,19 +715,11 @@ impl PlanInspectorView {
                 issue_id,
                 append_prompt,
                 ..
-            } => {
-                if matches!(
-                    self.loop_event_status.as_ref(),
-                    Some(PlanInspectorEventStatus::CommandError(_))
-                ) {
-                    self.loop_event_status = None;
-                }
-                Some(Action::RetryPlanTask {
-                    plan_id: Some(plan_id),
-                    issue_id,
-                    append_prompt: non_empty_prompt(append_prompt),
-                })
-            }
+            } => Some(Action::RetryPlanTask {
+                plan_id: Some(plan_id),
+                issue_id,
+                append_prompt: non_empty_prompt(append_prompt),
+            }),
             PlanInspectorConfirm::StopTask { delegation_id, .. } => {
                 Some(Action::CancelDelegation { delegation_id })
             }
@@ -1288,31 +1270,24 @@ impl View for PlanInspectorView {
                         }
                     })
                     .unwrap_or(error.as_str());
-                let message = match plan_id {
-                    Some(plan_id) => {
-                        format!("{operation} blocked for {plan_id}: {display_error}")
-                    }
-                    None => format!("{operation} blocked: {display_error}"),
-                };
-                self.loop_event_status = Some(PlanInspectorEventStatus::CommandError(message));
+                self.command_error = Some(format!("{operation} blocked: {display_error}"));
             }
             spur_acp::SpurEventBody::LoopArmed {
                 loop_id,
                 generation,
                 next_run,
             } => {
-                self.loop_event_status = Some(PlanInspectorEventStatus::Loop(format!(
+                self.loop_event_status = Some(format!(
                     "loop {loop_id} gen {generation}: armed next {next_run}"
-                )));
+                ));
             }
             spur_acp::SpurEventBody::LoopGenerationStarted {
                 loop_id,
                 generation,
                 plan_id,
             } => {
-                self.loop_event_status = Some(PlanInspectorEventStatus::Loop(format!(
-                    "loop {loop_id} gen {generation}: plan {plan_id}"
-                )));
+                self.loop_event_status =
+                    Some(format!("loop {loop_id} gen {generation}: plan {plan_id}"));
             }
             spur_acp::SpurEventBody::LoopRunRecorded {
                 loop_id,
@@ -1320,14 +1295,12 @@ impl View for PlanInspectorView {
                 outcome,
                 cost_micros,
             } => {
-                self.loop_event_status = Some(PlanInspectorEventStatus::Loop(format!(
+                self.loop_event_status = Some(format!(
                     "loop {loop_id} gen {generation}: [{outcome}] {cost_micros} micros"
-                )));
+                ));
             }
             spur_acp::SpurEventBody::LoopPaused { loop_id, by } => {
-                self.loop_event_status = Some(PlanInspectorEventStatus::Loop(format!(
-                    "loop {loop_id}: {by}"
-                )));
+                self.loop_event_status = Some(format!("loop {loop_id}: {by}"));
             }
             _ => {}
         }
@@ -1449,7 +1422,15 @@ impl View for PlanInspectorView {
                 header_cols[1],
             );
 
-            let (summary_label, summary_text) = operator_summary(plan, ctx.lineage);
+            let (summary_label, summary_text) = self.command_error.as_ref().map_or_else(
+                || operator_summary(plan, ctx.lineage),
+                |error| ("Error: ", error.clone()),
+            );
+            let summary_color = if self.command_error.is_some() {
+                token(ctx.theme, "plan_inspector.header.count.failed.fg")
+            } else {
+                token(ctx.theme, "plan_inspector.header.next_action.fg")
+            };
             let summary_width =
                 area.width
                     .saturating_sub(display_cells(summary_label) as u16) as usize;
@@ -1461,8 +1442,7 @@ impl View for PlanInspectorView {
                     ),
                     Span::styled(
                         fit_operator_summary(&summary_text, summary_width),
-                        Style::default()
-                            .fg(token(ctx.theme, "plan_inspector.header.next_action.fg")),
+                        Style::default().fg(summary_color),
                     ),
                 ])),
                 header_rows[1],
@@ -1679,9 +1659,9 @@ impl View for PlanInspectorView {
                 review_hint,
                 scroll_hint,
                 self.open_issue_id.is_none() && self.active_plan(ctx).is_some(),
-                self.loop_event_status
-                    .as_ref()
-                    .map(PlanInspectorEventStatus::message),
+                self.command_error
+                    .as_deref()
+                    .or(self.loop_event_status.as_deref()),
             )
         };
         frame.render_widget(
@@ -1771,7 +1751,10 @@ impl PlanInspectorView {
             )));
         }
         if let Some(status) = self.loop_event_status.as_ref() {
-            lines.push(Line::from(format!("Event: {}", status.message())));
+            lines.push(Line::from(format!("Event: {status}")));
+        }
+        if let Some(error) = self.command_error.as_ref() {
+            lines.push(Line::from(format!("Error: {error}")));
         }
         lines.extend([
             Line::raw(""),Line::from("Task states"),
@@ -4088,7 +4071,7 @@ mod tests {
             &ctx,
         );
 
-        assert!(view.loop_event_status.is_none());
+        assert!(view.command_error.is_none());
     }
 
     #[test]
@@ -4109,14 +4092,14 @@ mod tests {
             }),
             &ctx,
         );
-        assert!(view.loop_event_status.is_some());
+        assert!(view.command_error.is_some());
 
         assert!(view.handle_key(key_char('R'), &ctx).is_none());
         let action = view.handle_key(key(KeyCode::Enter), &ctx);
 
         assert!(matches!(action, Some(Action::RetryPlanTask { .. })));
         assert!(
-            view.loop_event_status.is_none(),
+            view.command_error.is_none(),
             "successful local retry confirmation must clear the prior command error"
         );
     }

@@ -1020,33 +1020,79 @@ fn command_errors_remain_visible_at_compact_sizes() {
     row.issue_id = Some("bd-failed".into());
     let fixture = Fixture::new(snapshot(
         vec![row],
-        PlanSnapshotCounts { failed: 1, ..Default::default() },
+        PlanSnapshotCounts {
+            failed: 1,
+            ..Default::default()
+        },
     ));
     let mut view = fixture.view();
-    let error = format!("retry_task: {}ERROR_TAIL", "resolve the conflicting file first; ".repeat(12));
-    view.handle_spur_event(&SpurEvent::now(SpurEventBody::PlanCommandError {
-        operation: "RetryPlanTask".into(), plan_id: Some("plan-audit".into()), error,
-    }), &fixture.ctx());
+    let error = format!(
+        "retry_task: {}ERROR_TAIL",
+        "resolve the conflicting file first; ".repeat(12)
+    );
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::PlanCommandError {
+            operation: "RetryPlanTask".into(),
+            plan_id: Some("plan-audit".into()),
+            error,
+        }),
+        &fixture.ctx(),
+    );
     for (width, height) in [(40, 8), (80, 8), (80, 24)] {
         let text = fixture.render(&mut view, width, height);
         let header = text.lines().nth(1).unwrap();
-        assert!(header.contains("Error:") && header.contains("RetryPlanTask"), "command failure is invisible at {width}x{height}:\n{text}");
-        assert!(text.contains("▶ ✕ failed-task"), "error displaced the selected task:\n{text}");
-        println!("U1_GEOMETRY {}", serde_json::json!({"width":width,"height":height,"error":{"x":0,"y":1,"width":ratatui::text::Span::raw(header.trim_end()).width(),"height":1}}));
+        assert!(
+            header.contains("Error:") && header.contains("RetryPlanTask"),
+            "command failure is invisible at {width}x{height}:\n{text}"
+        );
+        assert!(
+            text.contains("▶ ✕ failed-task"),
+            "error displaced the selected task:\n{text}"
+        );
+        println!(
+            "U1_GEOMETRY {}",
+            serde_json::json!({"width":width,"height":height,"error":{"x":0,"y":1,"width":ratatui::text::Span::raw(header.trim_end()).width(),"height":1}})
+        );
     }
-    view.handle_spur_event(&SpurEvent::now(SpurEventBody::LoopPaused {
-        loop_id: "unrelated-loop".into(), by: "operator".into(),
-    }), &fixture.ctx());
-    assert!(fixture.render(&mut view, 40, 8).lines().nth(1).unwrap().contains("Error:"), "loop event erased the command failure");
+    view.handle_spur_event(
+        &SpurEvent::now(SpurEventBody::LoopPaused {
+            loop_id: "unrelated-loop".into(),
+            by: "operator".into(),
+        }),
+        &fixture.ctx(),
+    );
+    assert!(
+        fixture
+            .render(&mut view, 40, 8)
+            .lines()
+            .nth(1)
+            .unwrap()
+            .contains("Error:"),
+        "loop event erased the command failure"
+    );
     fixture.key(&mut view, KeyCode::Char('?'));
     let mut help = String::new();
     for _ in 0..100 {
         help.push_str(&fixture.render(&mut view, 40, 8));
         fixture.key(&mut view, KeyCode::Down);
     }
-    assert!(help.contains("ERROR_TAIL"), "full command error is not reachable in help");
+    assert!(
+        help.contains("ERROR_TAIL"),
+        "full command error is not reachable in help"
+    );
     fixture.key(&mut view, KeyCode::Esc);
     fixture.key(&mut view, KeyCode::Char('r'));
-    assert!(matches!(fixture.key(&mut view, KeyCode::Enter), Some(Action::ResumePlan { .. })));
-    assert!(fixture.render(&mut view, 40, 8).lines().nth(1).unwrap().contains("next:"), "confirmed command retained a stale failure");
+    assert!(matches!(
+        fixture.key(&mut view, KeyCode::Enter),
+        Some(Action::ResumePlan { .. })
+    ));
+    assert!(
+        fixture
+            .render(&mut view, 40, 8)
+            .lines()
+            .nth(1)
+            .unwrap()
+            .contains("next:"),
+        "confirmed command retained a stale failure"
+    );
 }
