@@ -43,6 +43,68 @@ async fn source_assertion_witnesses_are_canonical_and_replayed() -> anyhow::Resu
     Ok(())
 }
 
+#[tokio::test]
+async fn assertion_authority_and_source_ir_forgery_are_conservative() -> anyhow::Result<()> {
+    let storage = tempfile::tempdir()?;
+    let service = SolverService::new().with_repo_root(storage.path());
+    for (name, source) in [
+        ("renamed", "fn renamed(renamed: u8) { assert!(renamed != 17, \"renamed payload\"); }"),
+        ("guarded", "fn probe(x: u8) { if x > 16 { assert!(x != 17, \"guarded payload\"); } }"),
+        ("changed_message", "fn probe(value: u8) { assert!(value != 17, \"changed payload\"); }"),
+        ("default_message", "fn probe(value: u8) { assert!(value != 17); }"),
+        ("continuation", "fn probe(value: u8) { assert!(value < 3, \"first\"); let a = [1u8, 2, 3]; let _ = a[value as usize]; }"),
+        ("bool_predicate", "fn probe(value: u8) { let b = value == 17; assert!(!b || value < 16, \"bool payload\"); }"),
+    ] {
+        for overflow in [false, true] {
+            let analyze = analyze_request(source, overflow)?;
+            let collected = example::execute(analyze.clone())?;
+            assert!(collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(), "{name}: {collected}");
+            let solve = solve_request(&analyze, &collected, 17, 17);
+            let output = example::execute_async(solve.clone(), &service).await?;
+            assert_eq!(output["report"]["queries"][0]["outcome"], "candidate_witness", "{name}");
+            let payload = match name {"renamed"=>"renamed payload", "guarded"=>"guarded payload", "changed_message"=>"changed payload", "default_message"=>"assertion failed: value != 17", "continuation"=>"first", _=>"bool payload"};
+            let replay = example::execute_async(replay_request(&solve, &output["report"], payload), &service).await?;
+            assert_eq!(replay["replay"]["runtime_reproduced"], true, "{name}");
+            for pointer in ["/facts/extraction/operations/0/operation/message", "/facts/extraction/operations/0/result_expression_id", "/facts/extraction/operations/0/context/location/source_oid", "/facts/extraction/operations/0/context/guard/kind", "/build/overflow_checks", "/sources/0/text"] {
+                let mut forged = solve.clone();
+                *forged.pointer_mut(pointer).unwrap() = if pointer == "/build/overflow_checks" {json!(!overflow)} else {json!("forged")};
+                assert!(example::execute_async(forged, &service).await.is_err(), "accepted {name} {pointer}");
+            }
+            export(&format!("assertion-{name}-{overflow}"), &json!({"analyze":analyze,"collected":collected,"solve":solve,"output":output,"replay":replay}))?;
+        }
+    }
+    for (name, source) in [
+        ("shadow_macro", "macro_rules! assert { ($($t:tt)*) => {} } fn probe(x:u8){assert!(x != 17, \"fake\");}"),
+        ("local_macro", "fn probe(x:u8){macro_rules! assert {($($t:tt)*)=>{}} assert!(x != 17);}"),
+        ("import", "use std::assert; fn probe(x:u8){assert!(x != 17);}"),
+        ("glob", "use std::*; fn probe(x:u8){assert!(x != 17);}"),
+        ("no_prelude", "#![no_implicit_prelude] fn probe(x:u8){assert!(x != 17);}"),
+        ("primitive_alias", "#[allow(non_camel_case_types)] type u8 = u16; fn probe(x:u8){assert!(x != 17);}"),
+        ("local_alias", "fn probe(x:u8){type u8 = u16; let y:u8 = 17; assert!(y != 17);}"),
+        ("module", "mod inner {macro_rules! assert {($($t:tt)*)=>{}} pub fn probe(x:u8){assert!(x != 17);}}"),
+        ("external_module", "mod other; fn probe(x:u8){assert!(x != 17);}"),
+        ("macro_use", "#[macro_use] extern crate other; fn probe(x:u8){assert!(x != 17);}"),
+        ("attribute", "#[expand] fn probe(x:u8){assert!(x != 17);}"),
+        ("expansion", "hidden!(); fn probe(x:u8){assert!(x != 17);}"),
+        ("hidden_type", "hidden!{type u8 = u16;} fn probe(x:u8){assert!(x != 17);}"),
+        ("qualified", "fn probe(x:u8){std::assert!(x != 17);}"),
+        ("format", "fn probe(x:u8){assert!(x != 17, \"value {}\", x);}"),
+        ("capture", "fn probe(x:u8){assert!(x != 17, \"{x}\");}"),
+        ("escape", "fn probe(x:u8){assert!(x != 17, \"escaped\\n\");}"),
+        ("effect_predicate", "fn probe(x:u8){assert!({let _ = x; false});}"),
+        ("call_predicate", "fn hidden()->bool{false} fn probe(x:u8){assert!(hidden());}"),
+        ("cfg", "#[cfg(hidden)] fn probe(x:u8){assert!(x != 17);}"),
+    ] {
+        let analyze = analyze_request(source, true)?;
+        let collected = example::execute(analyze.clone())?;
+        if collected["status"] == "unknown" { continue; }
+        assert!(!collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(), "unjustified authority: {name}");
+        assert!(collected["facts"]["extraction"]["operations"].as_array().unwrap().iter().all(|op|op["operation"]["kind"] != "assert_bool"), "{name}");
+        export(&format!("assertion-unknown-{name}"), &json!({"analyze":analyze,"collected":collected}))?;
+    }
+    Ok(())
+}
+
 #[test]
 fn compiler_report_json_retains_import_validation_and_unknowns() -> anyhow::Result<()> {
     use sha2::{Digest, Sha256};
@@ -353,7 +415,6 @@ async fn held_out_names_shadows_cfg_and_opaque_calls_preserve_uncertainty() -> a
     let service = SolverService::new().with_repo_root(storage.path());
     for (name,source,unknown) in [
         ("shadow",include_str!("fixtures/panic_analysis/shadow.rs"),false),
-        ("assertion",include_str!("fixtures/panic_analysis/assertion.rs"),true),
         ("opaque",include_str!("fixtures/panic_analysis/opaque.rs"),true),
         ("trait","trait Hidden {fn is_some(&self)->bool;} impl Hidden for Option<u8>{fn is_some(&self)->bool{None::<u8>.unwrap();true}} fn renamed(x:u8)->u8{let v=Some(x);if v.is_some(){0}else{0}}",true),
     ] {
@@ -446,6 +507,7 @@ async fn enumerate_every_u8_with_real_solver_and_ordinary_rustc() -> anyhow::Res
             ("bounds", BOUNDS),
             ("overflow", OVERFLOW),
             ("checked", CHECKED),
+            ("assertion", ASSERTION),
         ] {
             let analyze = analyze_request(source, overflow)?;
             let collected = example::execute(analyze.clone())?;
@@ -488,6 +550,7 @@ async fn enumerate_every_u8_with_real_solver_and_ordinary_rustc() -> anyhow::Res
                 .filter(|&x| match name {
                     "bounds" => [11u8, 22, 33].get(x as usize).is_none(),
                     "overflow" => overflow && x.overflowing_add(1).1,
+                    "assertion" => x == 17,
                     _ => x.checked_add(1).is_none(),
                 })
                 .collect();
