@@ -2307,6 +2307,7 @@ fn nearest_extracted_parent<'a, 'tree>(
 fn symbol_kind(kind: NodeKind) -> &'static str {
     match kind {
         NodeKind::Module => "module",
+        NodeKind::ExternBlock => "extern_block",
         NodeKind::Function => "function",
         NodeKind::Class => "class",
         NodeKind::Interface => "interface",

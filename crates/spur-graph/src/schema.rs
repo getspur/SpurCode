@@ -311,6 +311,7 @@ pub struct SourceSpan {
 #[serde(rename_all = "snake_case")]
 pub enum NodeKind {
     Module,
+    ExternBlock,
     Function,
     Class,
     Interface,
@@ -340,6 +341,7 @@ impl NodeKind {
             Self::File => "file",
             Self::External => "external",
             Self::Module => "module",
+            Self::ExternBlock => "extern_block",
             Self::Function => "function",
             Self::Class => "class",
             Self::Interface => "interface",
@@ -1145,6 +1147,7 @@ mod change_kind_tests {
     fn node_kind_from_discriminator_agrees_with_discriminators() {
         for kind in [
             NodeKind::Module,
+            NodeKind::ExternBlock,
             NodeKind::Function,
             NodeKind::Class,
             NodeKind::Interface,

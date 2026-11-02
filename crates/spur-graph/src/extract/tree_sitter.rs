@@ -2971,6 +2971,7 @@ fn is_import_resolution_type_like_candidate_kind(kind: NodeKind) -> bool {
 pub(crate) fn is_import_resolution_fallback_candidate_kind(kind: NodeKind) -> bool {
     match kind {
         NodeKind::Module => false,
+        NodeKind::ExternBlock => false,
         NodeKind::Function => false,
         NodeKind::Class => false,
         NodeKind::Interface => false,
@@ -4581,9 +4582,29 @@ mod tests {
     }
 
     #[test]
+    fn extern_container_is_not_a_resolution_target() {
+        let kind = NodeKind::from_discriminator("extern_block").expect("extern container kind");
+        assert!(!is_callable_target_kind(kind));
+        assert!(!constructs_target_kinds().contains(&kind));
+        assert!(!is_import_resolution_candidate_kind(kind));
+        assert!(!is_import_resolution_fallback_candidate_kind(kind));
+        eprintln!(
+            "G2A_ROLES={}",
+            serde_json::json!({
+                "kind": kind.discriminator(),
+                "callable": is_callable_target_kind(kind),
+                "constructor": constructs_target_kinds().contains(&kind),
+                "import": is_import_resolution_candidate_kind(kind),
+                "fallback": is_import_resolution_fallback_candidate_kind(kind),
+            })
+        );
+    }
+
+    #[test]
     fn import_resolution_fallback_candidate_kind_is_total_for_node_kinds() {
         for (kind, expected) in [
             (NodeKind::Module, false),
+            (NodeKind::ExternBlock, false),
             (NodeKind::Function, false),
             (NodeKind::Class, false),
             (NodeKind::Interface, false),

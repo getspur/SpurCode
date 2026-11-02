@@ -1,0 +1,18 @@
+# G2a verification record
+
+Base `7ca6462dd33561d16f6bc10273b84e8faf8fc56b`; test-first commit `3e5d6c9dd`; implementation commit `4d0144b8c`. The synthetic test extracts `fn synthetic() {}` from a temporary `lib.rs`, changes that node's kind in memory, and writes and reads the resulting artifact. Its stable ID is deliberately inherited from that synthetic node. It tests representation only, not Rust foreign syntax capture or foreign declaration evidence. `observed.log` contains the serialized round-trip symbol and writer manifest version; `roles.log` contains the real private predicate results. `source-sha256.txt` binds the implementation commit files; `changes.diff` is the unified diff against the base.
+
+All commands used `env -u INSTA_UPDATE -u SPUR_GRAPH_BLESS SPUR_REMOTE=0 CARGO_TARGET_DIR=/private/tmp/rust-gap-g1-acceptance-target TMPDIR=/private/tmp scripts/spur-cargo` followed by the arguments below. RED and GREEN outputs are retained with trailing blank lines normalized.
+
+- `test -p spur-graph --test rust_extern_kind`: RED exit 101, 0 passed, 2 failed at missing `extern_block` discriminator; GREEN exit 0, 2 passed.
+- `test -p spur-graph --lib extern_container_is_not_a_resolution_target -- --nocapture`: exit 0, 1 passed; all four callable, constructor, import and fallback predicates false.
+- `test -p spur-graph --lib node_kind -- --nocapture`: exit 0, 5 passed.
+- `test -p spur-graph --test extractor --test parquet_schema_invariants --test macro_invocation_parquet`: exit 0, 67 passed, 3 ignored.
+- `check -p spur-graph --all-targets`: exit 0.
+- `test -p spur-graph --lib canonical`: exit 0, 12 passed.
+
+`pre.json` contains the catalog-family request, complete response and persisted reload. `post.json` contains the actual serialized symbol and private predicate projection, requests, responses and reloaded results. PRE `sol_97aa6d71b60445ad` and fresh POST `sol_02223f6229ee48d1` are SAT/pass for the explicitly declared finite allowed kind/role and version pairs. Negative `sol_def0f007a8c742c6` rejects extern-block/callable; `sol_5c497fbeb1964c15` rejects v12/v11. The POST's reader version projection represents the current shared-constant reader, not an independently observed manifest emitted by the CLI; the CLI tests separately exercise the actual alias and mismatch guard. These checks do not prove behavior outside the declared finite pairs. The initial POST also produced a cached result, retained alongside the fresh reordered-equivalent solve.
+
+Final committed-source repeats: `observed-final.log` is the two-test Parquet and JSON round-trip (exit 0), `roles-final.log` is the private predicate test (exit 0), and `all-target-final.log` is a fresh all-target check (exit 0). `post-final.json` binds those outputs to commit `4d0144b8ca643bb6bd846e396fe9e3e1561fff6a`: uncached `sol_c1296fe1fc724ea5` is SAT/pass, forbidden callable `sol_1616cea898e24ddf` and mismatched schema `sol_6e16bc794b5c4008` are UNSAT/fail. The uncached pass additionally allows the finite module/non-executable pair; it does not establish source capture.
+
+The elevated `test -p spur-cli --test analyst_build_cli --test analyst_temporal_views` ran actual graph fixtures: the first target passed 7/7, the second passed 13/14 and the command exited 101. `analyst_build_emits_external_dependency_surface_views` failed preparing its `GRAPH_TABLE` query with `DuckDBFailure ... prepare is null`; the exact isolated rerun also exited 101. Backtrace places the failure at `analyst_temporal_views.rs:412`, after that test's earlier ordinary SQL assertions. The actual cause remains unverified; no production or test guard was changed to bypass it. This unmet acceptance is signaled on `bd-vg6`. Scoped `rustfmt --check` and `git diff --check` exited 0.
