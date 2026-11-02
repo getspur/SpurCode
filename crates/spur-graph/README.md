@@ -639,7 +639,8 @@ supports pure bool/u8 predicates (lexical scalar reads, literals, parentheses,
 `!`, comparisons, `&&`, `||`) and optional plain ASCII messages without escapes
 or format braces. It requires a single standalone crate-root Rust source,
 an empty feature/codegen flag inventory, and no imports, modules, macro
-definitions, competing primitive type names, nontrivial attributes, disabled
+definitions, competing primitive type names (including enclosing generic
+parameters), nontrivial attributes, disabled
 prelude, or other macro invocations. Uncertain authority, effects, formatting,
 aliases, cfg and expansions retain obligations. An unsupported macro never
 globally enables primitive authority.

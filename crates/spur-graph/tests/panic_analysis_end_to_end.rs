@@ -25,6 +25,11 @@ fn enclosing_generic_primitive_names_do_not_grant_assertion_authority() -> anyho
         let analyze = analyze_request(source, true)?;
         let collected = example::execute(analyze.clone())?;
         export(&format!("generic-authority-{name}"), &json!({"analyze":analyze,"collected":collected}))?;
+        if collected["status"] == "unknown" {
+            assert!(collected.get("facts").is_none());
+            assert_eq!(collected["obligation"]["kind"], "parse");
+            continue;
+        }
         assert!(collected["facts"]["extraction"]["operations"].as_array().unwrap().is_empty(),
             "enclosing generic {name} does not establish primitive identity: {collected}");
         assert!(!collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(), "{name}");

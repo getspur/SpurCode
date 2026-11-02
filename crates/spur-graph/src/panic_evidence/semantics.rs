@@ -134,6 +134,7 @@ pub fn collect_panic_semantics(
                         | "type_item"
                         | "mod_item"
                         | "trait_item"
+                        | "type_parameter"
                 ) && field_text(*n, "name", text)
                     .is_some_and(|s| matches!(ident(s), "bool" | "u8" | "usize")))
         });
