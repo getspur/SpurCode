@@ -376,12 +376,9 @@ fn linked_issue_opens_immediately_and_restores_task_position() {
             .lines()
             .position(|line| line.contains("ISSUE_FIRST_BODY_LINE"))
             .unwrap();
-        let x = issue
-            .lines()
-            .nth(y)
-            .unwrap()
-            .find("ISSUE_FIRST_BODY_LINE")
-            .unwrap();
+        let row = issue.lines().nth(y).unwrap();
+        let byte = row.find("ISSUE_FIRST_BODY_LINE").unwrap();
+        let x = ratatui::text::Span::raw(&row[..byte]).width();
         println!(
             "U2_GEOMETRY {}",
             serde_json::json!({"width":width,"height":24,"body":{"x":x,"y":y,"width":21,"height":1}})

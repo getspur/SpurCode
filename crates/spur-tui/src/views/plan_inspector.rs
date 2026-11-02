@@ -48,6 +48,7 @@ pub struct PlanInspectorView {
     task_detail_scroll: usize,
     task_detail_max_scroll: usize,
     task_detail_to_bottom: bool,
+    task_detail_return_position: Option<(usize, usize, bool)>,
     detail_focused: bool,
     help_open: bool,
     help_scroll: usize,
@@ -119,6 +120,7 @@ impl PlanInspectorView {
             task_detail_scroll: 0,
             task_detail_max_scroll: 0,
             task_detail_to_bottom: false,
+            task_detail_return_position: None,
             detail_focused: false,
             help_open: false,
             help_scroll: 0,
@@ -147,6 +149,7 @@ impl PlanInspectorView {
             task_detail_scroll: 0,
             task_detail_max_scroll: 0,
             task_detail_to_bottom: false,
+            task_detail_return_position: None,
             detail_focused: false,
             help_open: false,
             help_scroll: 0,
@@ -238,6 +241,7 @@ impl PlanInspectorView {
             self.task_detail_scroll = 0;
             self.task_detail_max_scroll = 0;
             self.task_detail_to_bottom = false;
+            self.task_detail_return_position = None;
             if previous_task_id.is_some()
                 && matches!(self.mode, PlanInspectorMode::StreamPeek { .. })
             {
@@ -248,9 +252,13 @@ impl PlanInspectorView {
     }
 
     fn close_issue_detail(&mut self) {
-        self.open_issue_id = None;
-        self.task_detail_scroll = 0;
-        self.task_detail_to_bottom = false;
+        if self.open_issue_id.take().is_some() {
+            let (offset, max_offset, to_bottom) =
+                self.task_detail_return_position.take().unwrap_or_default();
+            self.task_detail_scroll = offset;
+            self.task_detail_max_scroll = max_offset;
+            self.task_detail_to_bottom = to_bottom;
+        }
     }
 
     fn scroll_task_detail_up(&mut self, lines: usize) {
@@ -290,8 +298,14 @@ impl PlanInspectorView {
             return None;
         }
 
+        self.task_detail_return_position = Some((
+            self.task_detail_scroll,
+            self.task_detail_max_scroll,
+            self.task_detail_to_bottom,
+        ));
         self.open_issue_id = Some(issue_id.to_string());
         self.task_detail_scroll = 0;
+        self.task_detail_max_scroll = 0;
         self.task_detail_to_bottom = false;
         let needs_request = !matches!(
             self.issue_states.get(issue_id),
