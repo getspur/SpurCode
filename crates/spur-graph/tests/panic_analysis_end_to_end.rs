@@ -15,6 +15,23 @@ const OVERFLOW: &str = include_str!("fixtures/panic_analysis/overflow.rs");
 const CHECKED: &str = include_str!("fixtures/panic_analysis/checked.rs");
 const ASSERTION: &str = include_str!("fixtures/panic_analysis/assertion.rs");
 
+#[test]
+fn enclosing_generic_primitive_names_do_not_grant_assertion_authority() -> anyhow::Result<()> {
+    for (name, source) in [
+        ("trait_generic", "trait T<u8: PartialEq> { fn probe(x: u8, y: u8) { assert!(x != y); } }"),
+        ("impl_generic", "struct Holder<u8>(u8); impl<u8: PartialEq> Holder<u8> { fn probe(x: u8, y: u8) { assert!(x != y); } }"),
+        ("nested_generic", "fn outer<u8>() { fn probe(x: u8) { assert!(x != 17); } }"),
+    ] {
+        let analyze = analyze_request(source, true)?;
+        let collected = example::execute(analyze.clone())?;
+        export(&format!("generic-authority-{name}"), &json!({"analyze":analyze,"collected":collected}))?;
+        assert!(collected["facts"]["extraction"]["operations"].as_array().unwrap().is_empty(),
+            "enclosing generic {name} does not establish primitive identity: {collected}");
+        assert!(!collected["facts"]["unknown_obligations"].as_array().unwrap().is_empty(), "{name}");
+    }
+    Ok(())
+}
+
 #[tokio::test]
 async fn source_assertion_witnesses_are_canonical_and_replayed() -> anyhow::Result<()> {
     let storage = tempfile::tempdir()?;
