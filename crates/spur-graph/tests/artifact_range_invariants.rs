@@ -153,11 +153,33 @@ pub fn caller(panel: &Panel) {
         })
         .expect("same-crate method call edge");
 
-    let source = artifact.symbols.iter().find(|s|s.stable_symbol_id == edge.source_stable_symbol_id).unwrap();
-    let incompatible = artifact.edges.iter().find(|e|e.target_label.as_deref() == Some("repaint_panel") && artifact.symbols.iter().any(|s|s.stable_symbol_id == e.source_stable_symbol_id && s.entity_name == "caller")).unwrap();
+    let source = artifact
+        .symbols
+        .iter()
+        .find(|s| s.stable_symbol_id == edge.source_stable_symbol_id)
+        .unwrap();
+    let incompatible = artifact
+        .edges
+        .iter()
+        .find(|e| {
+            e.target_label.as_deref() == Some("repaint_panel")
+                && artifact.symbols.iter().any(|s| {
+                    s.stable_symbol_id == e.source_stable_symbol_id && s.entity_name == "caller"
+                })
+        })
+        .unwrap();
     assert_eq!(incompatible.target_stable_symbol_id, None);
     assert_eq!(incompatible.bind_method, None);
-    let compatible = artifact.edges.iter().find(|e|e.target_label.as_deref() == Some("repaint_panel") && artifact.symbols.iter().any(|s|s.stable_symbol_id == e.source_stable_symbol_id && s.entity_name == "compatible")).unwrap();
+    let compatible = artifact
+        .edges
+        .iter()
+        .find(|e| {
+            e.target_label.as_deref() == Some("repaint_panel")
+                && artifact.symbols.iter().any(|s| {
+                    s.stable_symbol_id == e.source_stable_symbol_id && s.entity_name == "compatible"
+                })
+        })
+        .unwrap();
     assert!(compatible.target_stable_symbol_id.is_some(), "{source:?}");
     assert_eq!(compatible.bind_method.as_deref(), Some("scope_match"));
 }

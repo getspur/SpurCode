@@ -167,48 +167,80 @@ fn uncertain_receiver_stays_unresolved_through_memory_parquet_and_incremental_re
     let source = r"
 pub struct GitPath(Vec<u8>);
 impl AsRef<[u8]> for GitPath { fn as_ref(&self)->&[u8] { &self.0 } }
-impl GitPath { pub fn grounded(&self) {} }
-pub fn caller(path: &GitPath) { let _ = path.as_ref(); path.grounded(); }
+pub fn caller(path: &GitPath) { let _ = path.as_ref(); }
 pub fn explicit(path: &GitPath) { let _ = <GitPath as AsRef<[u8]>>::as_ref(path); }
 ";
     let dir = tempfile::tempdir().unwrap();
     fs::create_dir(dir.path().join("src")).unwrap();
     fs::write(dir.path().join("src/lib.rs"), source).unwrap();
+    // Grounded inherent control has no competing trait/import/expansion in
+    // its physical source, as required by the conservative dispatch contract.
+    fs::write(dir.path().join("src/inherent.rs"), "struct Grounded; impl Grounded { fn grounded(&self) {} } fn inherent(x: &Grounded) { x.grounded(); }\n").unwrap();
     fs::write(dir.path().join("src/other.rs"), "pub fn unrelated() {}\n").unwrap();
     let facts = build_facts(dir.path(), None).unwrap().0;
-    let memory = facts.edges.iter().find(|e| e.relation == RelationKind::Calls && e.receiver_text.as_deref() == Some("path") && e.target_label.as_deref() == Some("as_ref")).unwrap();
+    let memory = facts
+        .edges
+        .iter()
+        .find(|e| {
+            e.relation == RelationKind::Calls
+                && e.receiver_text.as_deref() == Some("path")
+                && e.target_label.as_deref() == Some("as_ref")
+        })
+        .unwrap();
     assert_eq!(memory.target_node_id, None);
     assert_eq!(memory.bind_method, None);
     let artifact = artifact_from_facts(&facts, dir.path()).unwrap();
     let storage = tempfile::tempdir().unwrap();
-    spur_graph::write_artifact_parquet(&artifact, storage.path(), spur_graph::WriteOptions::default(), vec![]).unwrap();
+    spur_graph::write_artifact_parquet(
+        &artifact,
+        storage.path(),
+        spur_graph::WriteOptions::default(),
+        vec![],
+    )
+    .unwrap();
     let persisted = spur_graph::load_artifact(storage.path()).unwrap();
-    let (reused, _, _) = spur_graph::artifact_from_facts_incremental(&persisted, dir.path()).unwrap();
-    fs::write(dir.path().join("src/other.rs"), "pub fn unrelated_changed() {}\n").unwrap();
+    let (reused, _, _) =
+        spur_graph::artifact_from_facts_incremental(&persisted, dir.path()).unwrap();
+    fs::write(
+        dir.path().join("src/other.rs"),
+        "pub fn unrelated_changed() {}\n",
+    )
+    .unwrap();
     let (changed, _, _) = spur_graph::artifact_from_facts_incremental(&reused, dir.path()).unwrap();
     let mut exported = vec![];
-    for (name, graph) in [("artifact", artifact), ("persisted", persisted), ("reused", reused), ("changed", changed)] {
+    for (name, graph) in [
+        ("artifact", artifact),
+        ("persisted", persisted),
+        ("reused", reused),
+        ("changed", changed),
+    ] {
         let caller = symbol(&graph, "caller");
         let uncertain = call_edge(&graph, caller, "as_ref");
         assert_eq!(uncertain.target_stable_symbol_id, None, "{name}");
         assert_eq!(uncertain.bind_method, None, "{name}");
         assert_eq!(uncertain.scope_text.as_deref(), Some("GitPath"));
-        let grounded = call_edge(&graph, caller, "grounded");
+        let grounded = call_edge(&graph, symbol(&graph, "inherent"), "grounded");
         assert!(grounded.target_stable_symbol_id.is_some(), "{name}");
         assert_eq!(grounded.bind_method.as_deref(), Some("scope_match"));
-        let explicit = call_edge(&graph, symbol(&graph,"explicit"), "as_ref");
+        let explicit = call_edge(&graph, symbol(&graph, "explicit"), "as_ref");
         assert!(explicit.target_stable_symbol_id.is_some(), "{name}");
         exported.push(serde_json::json!({"path":name,"uncertain":uncertain,"grounded":grounded,"explicit":explicit}));
     }
     if let Some(path) = std::env::var_os("R8_EVIDENCE_DIR") {
         fs::create_dir_all(&path).unwrap();
-        fs::write(Path::new(&path).join("dispatch-paths.json"), serde_json::to_vec_pretty(&exported).unwrap()).unwrap();
+        fs::write(
+            Path::new(&path).join("dispatch-paths.json"),
+            serde_json::to_vec_pretty(&exported).unwrap(),
+        )
+        .unwrap();
     }
 }
 
 #[test]
 fn unresolved_receiver_preserves_generic_dynamic_and_nominal_scope_evidence() {
-    let graph = artifact_from_sources(&[("src/lib.rs", r"
+    let graph = artifact_from_sources(&[(
+        "src/lib.rs",
+        r"
 trait Runner { fn run(&self); }
 struct Local;
 fn generic(items: Option<i32>) { let _ = items.map(|x| x); }
@@ -216,19 +248,32 @@ fn dynamic(runner: &dyn Runner) { runner.run(); }
 fn nominal(local: &Local) { local.unknown(); }
 fn shadow(items: Option<i32>) { let items = unknown(); items.map(); }
 fn unknown() {}
-")]);
+",
+    )]);
     let mut exported = vec![];
-    for (owner, label, scope) in [("generic","map",Some("Option<i32>")), ("dynamic","run",Some("dyn Runner")), ("nominal","unknown",Some("Local")), ("shadow","map",None)] {
-        let edge = call_edge(&graph, symbol(&graph,owner), label);
+    for (owner, label, scope) in [
+        ("generic", "map", Some("Option<i32>")),
+        ("dynamic", "run", Some("dyn Runner")),
+        ("nominal", "unknown", Some("Local")),
+        ("shadow", "map", None),
+    ] {
+        let edge = call_edge(&graph, symbol(&graph, owner), label);
         assert_eq!(edge.scope_text.as_deref(), scope, "{owner}");
         assert_eq!(edge.target_stable_symbol_id, None);
         assert_eq!(edge.bind_method, None);
-        if scope.is_some() { assert_eq!(edge.confidence, Confidence::Heuristic); assert_eq!(edge.confidence_score,0.8); }
+        if scope.is_some() {
+            assert_eq!(edge.confidence, Confidence::Heuristic);
+            assert_eq!(edge.confidence_score, 0.8);
+        }
         exported.push(serde_json::json!({"owner":owner,"edge":edge}));
     }
     if let Some(path) = std::env::var_os("R8_EVIDENCE_DIR") {
         fs::create_dir_all(&path).unwrap();
-        fs::write(Path::new(&path).join("receiver-scopes.json"), serde_json::to_vec_pretty(&exported).unwrap()).unwrap();
+        fs::write(
+            Path::new(&path).join("receiver-scopes.json"),
+            serde_json::to_vec_pretty(&exported).unwrap(),
+        )
+        .unwrap();
     }
 }
 

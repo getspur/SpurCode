@@ -32,7 +32,7 @@ use crate::{
 pub const SCHEMA_VERSION: &str = "spur-graph-schema-v11";
 pub const EXTRACTOR_VERSION: &str = "2026-10-31-physical-rust-macro-evidence-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
-pub const RESOLVER_VERSION: &str = "2026-08-30-web-edge-resolution-v1";
+pub const RESOLVER_VERSION: &str = "2026-11-02-rust-receiver-rebind-v2";
 
 #[derive(Debug, Clone, Copy)]
 struct ManifestQueryBytes<'a> {
@@ -1842,6 +1842,19 @@ fn rebind_remaining_edges(
                     );
                 }
                 drop_dangling_stamped_target(edge, current_symbol_ids);
+                continue;
+            }
+            // Physical Rust receiver lookup already adjudicated this call.
+            // Nominal scope is evidence, not trait/autoderef authority. Neither
+            // a same-directory singleton nor an import license may resurrect
+            // a target rejected by that lookup. Grounded stamped targets above
+            // and explicit UFCS paths retain their established behavior.
+            if language_family(source_file_path) == Some("rust")
+                && edge.relation == RelationKind::Calls
+                && edge.receiver_text.is_some()
+            {
+                edge.target_stable_symbol_id = None;
+                edge.bind_method = None;
                 continue;
             }
             if edge.edge_kind == Some(GraphEdgeKind::ReferencesAddress) {
