@@ -114,17 +114,20 @@ pub fn caller() {
 }
 
 #[test]
-fn artifact_preserves_recovered_method_crate_singleton() {
+fn artifact_preserves_grounded_inherent_method_and_rejects_incompatible_receiver() {
     let dir = tempfile::tempdir().expect("tempdir");
     std::fs::create_dir_all(dir.path().join("crates/foo/src/sub")).expect("foo sub dir");
     std::fs::write(
         dir.path().join("crates/foo/src/a.rs"),
         r#"
 pub struct Widget;
+pub struct Panel;
 
 impl Widget {
     pub fn repaint_panel(&self) {}
 }
+
+pub fn compatible(widget: &Widget) { widget.repaint_panel(); }
 "#,
     )
     .expect("write foo a");
@@ -150,8 +153,13 @@ pub fn caller(panel: &Panel) {
         })
         .expect("same-crate method call edge");
 
-    assert!(edge.target_stable_symbol_id.is_some());
-    assert_eq!(edge.bind_method.as_deref(), Some("method_crate_singleton"));
+    let source = artifact.symbols.iter().find(|s|s.stable_symbol_id == edge.source_stable_symbol_id).unwrap();
+    let incompatible = artifact.edges.iter().find(|e|e.target_label.as_deref() == Some("repaint_panel") && artifact.symbols.iter().any(|s|s.stable_symbol_id == e.source_stable_symbol_id && s.entity_name == "caller")).unwrap();
+    assert_eq!(incompatible.target_stable_symbol_id, None);
+    assert_eq!(incompatible.bind_method, None);
+    let compatible = artifact.edges.iter().find(|e|e.target_label.as_deref() == Some("repaint_panel") && artifact.symbols.iter().any(|s|s.stable_symbol_id == e.source_stable_symbol_id && s.entity_name == "compatible")).unwrap();
+    assert!(compatible.target_stable_symbol_id.is_some(), "{source:?}");
+    assert_eq!(compatible.bind_method.as_deref(), Some("scope_match"));
 }
 
 #[test]
