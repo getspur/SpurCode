@@ -601,7 +601,7 @@ snapshot command is for a bounded standalone fixture; callers with an existing
 graph pass its artifact directly to `collect`/`import`.
 
 These command names and required JSON fields are the experimental v1 contract.
-Unknown fields and malformed requests are errors. The synchronous Rust
+Unknown command fields and malformed requests are errors. The synchronous Rust
 `execute(Value)` entrypoint remains available for all synchronous commands;
 `execute_async(Value, &SolverService)` also accepts `solve` and `replay`.
 The stdin runner uses the async entrypoint and persists requested solver receipts
