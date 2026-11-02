@@ -2312,6 +2312,107 @@ fi
     }
 
     #[test]
+    #[cfg(unix)]
+    fn macos_install_fetches_the_namespace_used_by_the_build() {
+        let source_root = workspace_root();
+        for (namespace, expected) in [
+            (None, "spur"),
+            (Some(""), "spur"),
+            (Some("custom"), "custom"),
+        ] {
+            let workspace = temp_test_dir("macos-install-namespace");
+            let scripts = workspace.join("scripts");
+            let cloud = scripts.join("cloud-build");
+            let remote = workspace.join("fake-remote");
+            let cargo_home = workspace.join("cargo-home");
+            fs::create_dir_all(&cloud).unwrap();
+            fs::create_dir_all(workspace.join("crates/spur-cli/assets/skills")).unwrap();
+
+            let wrapper = scripts.join("spur-cargo");
+            let source_wrapper = source_root.join("scripts/spur-cargo");
+            fs::copy(&source_wrapper, &wrapper)
+                .unwrap_or_else(|err| panic!("failed to copy {}: {err}", source_wrapper.display()));
+            let build = cloud.join("fake-build.sh");
+            fs::write(
+                &build,
+                r#"#!/usr/bin/env bash
+set -euo pipefail
+while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "--target" ]]; then triple="$2"; shift 2; else shift; fi
+done
+artifact="$FAKE_REMOTE_ROOT/$SPUR_REMOTE_NAMESPACE/main/$triple/release/spur"
+mkdir -p "$(dirname "$artifact")"
+printf 'fake Mach-O %s' "$SPUR_REMOTE_NAMESPACE" > "$artifact"
+"#,
+            )
+            .unwrap();
+            let fetch = cloud.join("fetch.sh");
+            fs::write(
+                &fetch,
+                r#"#!/usr/bin/env bash
+set -euo pipefail
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --to) destination="$2"; shift 2 ;;
+        --via-s3) shift ;;
+        *) artifact="$1"; shift ;;
+    esac
+done
+namespace="${SPUR_REMOTE_NAMESPACE:-$(basename "$PWD")}"
+source="$FAKE_REMOTE_ROOT/$namespace/main/${artifact#target/}"
+mkdir -p "$(dirname "$destination")"
+cp "$source" "$destination"
+"#,
+            )
+            .unwrap();
+            for path in [&build, &wrapper, &fetch] {
+                make_executable(path);
+            }
+
+            let mut child = Command::new(env::current_exe().unwrap());
+            child
+                .arg("tests::macos_install_namespace_child")
+                .arg("--exact")
+                .arg("--nocapture")
+                .env("SPUR_XTASK_MACOS_NAMESPACE_CHILD", "1")
+                .env("FAKE_WORKSPACE", &workspace)
+                .env("FAKE_REMOTE_ROOT", &remote)
+                .env("CARGO_HOME", &cargo_home)
+                .env("SPUR_CLOUD", "mock")
+                .env("SPUR_CLOUD_FALLBACK", "")
+                .env("SPUR_REMOTE", "1")
+                .env("SPUR_NO_LOCAL_FALLBACK", "1")
+                .env("SPUR_CLOUD_BUILD_SH", &build);
+            if let Some(value) = namespace {
+                child.env("SPUR_REMOTE_NAMESPACE", value);
+            } else {
+                child.env_remove("SPUR_REMOTE_NAMESPACE");
+            }
+            let output = child.output().unwrap();
+            assert!(
+                output.status.success(),
+                "namespace {namespace:?}:\nstdout:\n{}\nstderr:\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert_eq!(
+                fs::read_to_string(cargo_home.join("bin/spur")).unwrap(),
+                format!("fake Mach-O {expected}")
+            );
+        }
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn macos_install_namespace_child() {
+        if env::var_os("SPUR_XTASK_MACOS_NAMESPACE_CHILD").is_none() {
+            return;
+        }
+        let workspace = PathBuf::from(env::var_os("FAKE_WORKSPACE").unwrap());
+        install_macos_cli(&workspace, false, false, &[]).unwrap();
+    }
+
+    #[test]
     fn dist_options_default_to_all_platforms() {
         let options = parse_dist_options(Vec::new()).expect("no args parse");
         assert_eq!(
