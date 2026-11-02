@@ -175,10 +175,16 @@ fn issue_open_scrolls_all_wrapped_output_and_up_after_bottom() {
     let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
     render(&mut view, &ctx);
     key(&mut view, &ctx, KeyCode::Enter);
+    load_issue(
+        &mut view,
+        &ctx,
+        &format!("{}ISSUE_OUTPUT_TAIL", "wrapped issue output ".repeat(300)),
+    );
+    render(&mut view, &ctx);
     key(&mut view, &ctx, KeyCode::Char('G'));
     let bottom = render(&mut view, &ctx);
     assert!(
-        bottom.contains("Loading issue detail"),
+        bottom.contains("ISSUE_OUTPUT_TAIL"),
         "issue-open tail hidden by logical-line clamp:\n{bottom}"
     );
     key(&mut view, &ctx, KeyCode::Up);
@@ -314,8 +320,83 @@ fn opening_issue_clears_a_pending_bottom_request_before_the_next_draw() {
     key(&mut view, &ctx, KeyCode::Enter);
     let text = render(&mut view, &ctx);
     assert!(
-        text.contains("scroll-task · codex"),
+        text.contains("Loading issue detail"),
         "issue must open at top after a queued G:\n{text}"
+    );
+    key(&mut view, &ctx, KeyCode::Esc);
+    assert!(
+        render(&mut view, &ctx).contains("OUTPUT_TAIL"),
+        "closing issue lost the saved pending-bottom request"
+    );
+}
+
+#[test]
+fn linked_issue_opens_immediately_and_restores_task_position() {
+    let plans = projection(true);
+    let lineage = ExecutorLineage::new();
+    let synopsis = SessionSynopsisProjection::new();
+    let ctx = ViewContext {
+        lineage: &lineage,
+        plan_projection: &plans,
+        synopsis: &synopsis,
+        brain_status: &BrainStatus::Idle,
+        flag_summary: None,
+        tombstone: None,
+        transient_hint_override: None,
+        notebook_ready: false,
+        theme: spur_tui::theme::fallback_theme(),
+    };
+    let mut view = PlanInspectorView::new(SessionId("scroll-brain".into()));
+    render_size(&mut view, &ctx, 100, 24);
+    key(&mut view, &ctx, KeyCode::Tab);
+    key(&mut view, &ctx, KeyCode::PageDown);
+    let task_position = render_size(&mut view, &ctx, 100, 24);
+    key(&mut view, &ctx, KeyCode::Enter);
+    let loading = render_size(&mut view, &ctx, 100, 24);
+    assert!(
+        loading.contains("Loading issue detail"),
+        "opening issue hid its loading state under task output:\n{loading}"
+    );
+    load_issue(
+        &mut view,
+        &ctx,
+        "ISSUE_FIRST_BODY_LINE\nISSUE_SECOND_BODY_LINE",
+    );
+    for width in [80, 100] {
+        let issue = render_size(&mut view, &ctx, width, 24);
+        assert!(
+            issue.contains("title: loaded issue") && issue.contains("ISSUE_FIRST_BODY_LINE"),
+            "linked issue did not open at its content at width {width}:\n{issue}"
+        );
+        assert!(
+            !issue.contains("wrapped-output"),
+            "task output leaked into linked issue view"
+        );
+        let y = issue
+            .lines()
+            .position(|line| line.contains("ISSUE_FIRST_BODY_LINE"))
+            .unwrap();
+        let x = issue
+            .lines()
+            .nth(y)
+            .unwrap()
+            .find("ISSUE_FIRST_BODY_LINE")
+            .unwrap();
+        println!(
+            "U2_GEOMETRY {}",
+            serde_json::json!({"width":width,"height":24,"body":{"x":x,"y":y,"width":21,"height":1}})
+        );
+    }
+    key(&mut view, &ctx, KeyCode::Esc);
+    assert_eq!(
+        task_position,
+        render_size(&mut view, &ctx, 100, 24),
+        "closing issue lost the task viewport"
+    );
+    key(&mut view, &ctx, KeyCode::Enter);
+    assert!(
+        render_size(&mut view, &ctx, 100, 24).contains("ISSUE_FIRST_BODY_LINE"),
+        "cached issue reopened at the task scroll offset"
     );
 }
 
