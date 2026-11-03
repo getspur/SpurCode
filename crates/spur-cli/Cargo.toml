@@ -19,7 +19,8 @@ path = "src/lib.rs"
 dist = true
 
 [features]
-default = ["embed", "tui-default", "interactive-default"]
+default = ["embed", "tui-default", "interactive-default", "duckdb-bundled"]
+duckdb-bundled = ["spur-core/duckdb-bundled", "spur-context/duckdb-bundled"]
 duckdb = ["spur-context/duckdb"]
 embed = [
     "spur-analyst/embed",

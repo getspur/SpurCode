@@ -14,7 +14,7 @@ path = "src/lib.rs"
 anyhow = { workspace = true }
 arrow-array = { workspace = true }
 async-trait = { workspace = true }
-duckdb = { workspace = true, features = ["bundled"] }
+duckdb = { workspace = true }
 # 5.8.0 includes NomicEmbedTextV15 and JinaEmbeddingsV2BaseCode. CodeRankEmbed
 # is loaded centrally by spur-graph. Newer 5.x releases pull ORT
 # rc.11/rc.12 binaries that require newer Linux runtime symbols on the build VM.
@@ -31,7 +31,8 @@ tracing = { workspace = true }
 uuid = { workspace = true, features = ["v4", "serde"] }
 
 [features]
-default = ["embed"]
+default = ["embed", "duckdb-bundled"]
+duckdb-bundled = ["duckdb/bundled"]
 embed = [
     "dep:fastembed",
     "fastembed/hf-hub-native-tls",
@@ -40,7 +41,7 @@ embed = [
 ]
 
 [dev-dependencies]
-spur-cli = { path = "../spur-cli" }
+spur-cli = { path = "../spur-cli", default-features = false }
 tempfile = "3"
 
 [lints]
