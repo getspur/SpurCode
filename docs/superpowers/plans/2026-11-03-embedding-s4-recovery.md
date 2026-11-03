@@ -370,4 +370,3 @@ PRE DELIVERY: Root prepares fresh source-bound Jev PRE before upstream approval/
 ### Review of the revised plan
 
 The chain is acyclic and intentionally serial: the same worker files and one local cargo target are shared. Every original compatibility, no-native-host, lifecycle, external socket, packaging, measurement and fresh notebook acceptance requirement remains in S4A–S4C or S5–S8. G2 declaration and later G3–G5 work are still deferred until this runtime gate. Each task has scoped files, a real production/acceptance goal, test-first work and root PRE/POST gates. S4A does not claim product inference; S4B does not claim all three models; S4C requires all three. Known future end-to-end REDs remain preserved and explicit during earlier focused stages, then must pass before the complete contract is accepted.
-

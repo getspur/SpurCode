@@ -20,4 +20,3 @@ Verify:
 ```bash
 python3 docs/research/artifacts/2026-11-03-embedding-isolation/S4A/root-pre/verify.py
 ```
-
