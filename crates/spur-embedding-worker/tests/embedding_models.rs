@@ -265,3 +265,183 @@ fn hello_rejects_unverified_artifact_identity() {
         reply.reply
     );
 }
+
+// Each reference is a fresh process: managed ORT environments cannot be
+// initialized a second time after checked shutdown in the same process.
+#[cfg(all(target_os = "macos", feature = "test-support"))]
+#[test]
+fn all_product_models_match_legacy_loader_across_worker_lifecycles() {
+    use spur_embedding::{ClientPolicy, EmbeddingClient};
+    use std::{fs, path::PathBuf};
+    let output_dir =
+        PathBuf::from(std::env::var_os("SPUR_S4C_EXPORT").expect("SPUR_S4C_EXPORT required"));
+    fs::create_dir_all(&output_dir).unwrap();
+    let cases = [
+        (
+            "NomicEmbedTextV15",
+            "/Users/kevintruong/.spur/cache/fastembed",
+            "548026095",
+            vec![
+                "search_query: find a function that sorts numbers",
+                "search_document: title: sorting | text: Sort values in ascending order.",
+            ],
+        ),
+        (
+            "CodeRankEmbed",
+            "/private/tmp/spur-s4c-model-cache",
+            "548431020",
+            vec![
+                "Represent this query for searching relevant code: sort numbers",
+                "fn sort(values: &mut [i32]) { values.sort(); }",
+            ],
+        ),
+        (
+            "JinaEmbeddingsV2BaseCode",
+            "/private/tmp/spur-s4c-model-cache",
+            "644080771",
+            vec![
+                "find a function that sorts numbers",
+                "fn sort(values: &mut [i32]) { values.sort(); }",
+            ],
+        ),
+    ];
+    for (name, cache, budget, inputs) in cases {
+        let descriptor = Command::new(env!("CARGO_BIN_EXE_spur-embedding-worker"))
+            .args([
+                "--describe-model",
+                name,
+                budget,
+                "d32a3002-a3aa-4b1c-9ae7-ff0824970841",
+                "1",
+                "65536",
+                "2",
+                "4096",
+                "8192",
+                "768",
+                "256",
+                "1",
+            ])
+            .env("SPUR_MODEL_CACHE", cache)
+            .output()
+            .unwrap();
+        assert!(
+            descriptor.status.success(),
+            "{name}: {:?}",
+            descriptor.status
+        );
+        let reply: ReplyEnvelope =
+            read_frame(&mut std::io::Cursor::new(descriptor.stdout), &limits()).unwrap();
+        let identity = match reply.reply {
+            Reply::Ready { identity } => identity,
+            other => panic!("{name}: {other:?}"),
+        };
+        let inputs: Vec<String> = inputs.into_iter().map(str::to_owned).collect();
+        let inputs_path = output_dir.join(format!("{name}-inputs.json"));
+        let reference_path = output_dir.join(format!("{name}-reference.json"));
+        fs::write(&inputs_path, serde_json::to_vec(&inputs).unwrap()).unwrap();
+        let reference = Command::new(env!("CARGO_BIN_EXE_embedding-model-reference"))
+            .args([name, cache])
+            .arg(&inputs_path)
+            .arg(&reference_path)
+            .output()
+            .unwrap();
+        assert!(
+            reference.status.success(),
+            "{name} reference status {:?}: {}",
+            reference.status,
+            String::from_utf8_lossy(&reference.stderr)
+        );
+        println!("S4C {name} reference_status={:?}", reference.status);
+        let expected: Vec<Vec<f32>> =
+            serde_json::from_slice(&fs::read(&reference_path).unwrap()).unwrap();
+        std::env::set_var("SPUR_MODEL_CACHE", cache);
+        std::env::set_var(
+            "SPUR_ORT_CACHE",
+            "/private/tmp/spur-embedding-worker-native-test-cache",
+        );
+        let policy = ClientPolicy {
+            queue_capacity: 1,
+            max_restarts: 0,
+            startup_timeout: Duration::from_secs(120),
+            request_timeout: Duration::from_secs(120),
+            shutdown_timeout: Duration::from_secs(30),
+            shutdown_poll_interval: Duration::from_millis(20),
+        };
+        for cycle in 0..2 {
+            let client = EmbeddingClient::new(
+                env!("CARGO_BIN_EXE_spur-embedding-worker"),
+                ["65536", "2", "4096", "8192", "768", "256", "1", budget]
+                    .into_iter()
+                    .map(Into::into)
+                    .collect(),
+                identity.clone(),
+                limits(),
+                policy.clone(),
+            )
+            .unwrap();
+            let first = client
+                .embed(inputs.clone(), Instant::now() + Duration::from_secs(120))
+                .unwrap();
+            let second = client
+                .embed(inputs.clone(), Instant::now() + Duration::from_secs(120))
+                .unwrap();
+            client
+                .shutdown(Instant::now() + Duration::from_secs(30))
+                .unwrap();
+            fs::write(
+                output_dir.join(format!("{name}-cycle-{cycle}.json")),
+                serde_json::to_vec(&[&first, &second]).unwrap(),
+            )
+            .unwrap();
+            println!(
+                "S4C {name} cycle={cycle} identity={identity:?} events={:?}",
+                client
+                    .test_events()
+                    .iter()
+                    .map(|event| (event.kind, &event.pid, &event.generation, &event.status))
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(first.len(), expected.len());
+            assert_eq!(first.len(), inputs.len());
+            for ((actual, repeat), reference) in first.iter().zip(&second).zip(&expected) {
+                assert_eq!(actual.len(), 768);
+                assert_eq!(repeat.len(), 768);
+                assert_eq!(reference.len(), 768);
+                assert!(actual.iter().all(|v| v.is_finite()));
+                let norm = actual.iter().map(|x| x * x).sum::<f32>().sqrt();
+                let delta = actual
+                    .iter()
+                    .zip(reference)
+                    .map(|(a, b)| (a - b).abs())
+                    .fold(0.0_f32, f32::max);
+                let repeat_delta = actual
+                    .iter()
+                    .zip(repeat)
+                    .map(|(a, b)| (a - b).abs())
+                    .fold(0.0_f32, f32::max);
+                println!("S4C {name} cycle={cycle} norm={norm} delta={delta} repeat_delta={repeat_delta}");
+                assert!((norm - 1.0).abs() < 1e-4);
+                assert!(delta < 1e-4);
+                assert!(repeat_delta < 1e-4);
+            }
+            let events = client.test_events();
+            assert_eq!(
+                events
+                    .iter()
+                    .filter(|event| event.kind == "spawned")
+                    .count(),
+                1
+            );
+            assert_eq!(
+                events
+                    .iter()
+                    .filter(|event| event.kind == "reply_validated"
+                        && event.status.as_deref() == Some("embeddings"))
+                    .count(),
+                2
+            );
+            assert!(events.iter().any(|event| event.kind == "reaped"
+                && event.status.as_deref() == Some("ExitStatus(unix_wait_status(0))")));
+        }
+    }
+}

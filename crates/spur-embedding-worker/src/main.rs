@@ -81,18 +81,23 @@ fn run() -> Result<(), Box<dyn Error>> {
                 return Ok(());
             }
         };
-        if args[1] != "NomicEmbedTextV15" {
-            reply_error(
-                &mut output,
-                &limits,
-                generation,
-                request_id,
-                ErrorCode::Unavailable,
-                "model unavailable",
-            )?;
-            return Ok(());
-        }
-        let resolved = match model_artifacts::resolve(budget) {
+        let model_id = match args[1].as_str() {
+            "NomicEmbedTextV15" => ModelId::NomicEmbedTextV15,
+            "CodeRankEmbed" => ModelId::CodeRankEmbed,
+            "JinaEmbeddingsV2BaseCode" => ModelId::JinaEmbeddingsV2BaseCode,
+            _ => {
+                reply_error(
+                    &mut output,
+                    &limits,
+                    generation,
+                    request_id,
+                    ErrorCode::Unavailable,
+                    "model unavailable",
+                )?;
+                return Ok(());
+            }
+        };
+        let resolved = match model_artifacts::resolve(model_id, budget) {
             Ok(value) => value,
             Err(_) => {
                 reply_error(
@@ -142,18 +147,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     };
     let mut session = Session::new(hello.generation, identity.clone(), limits.clone())?;
     session.validate_request(&hello)?;
-    if identity.model != ModelId::NomicEmbedTextV15 {
-        reply_error(
-            &mut output,
-            &limits,
-            hello.generation,
-            hello.request_id,
-            ErrorCode::Unavailable,
-            "model unavailable",
-        )?;
-        return Ok(());
-    }
-    let resolved = match model_artifacts::resolve(budget) {
+    let resolved = match model_artifacts::resolve(identity.model, budget) {
         Ok(value) => value,
         Err(_) => {
             reply_error(

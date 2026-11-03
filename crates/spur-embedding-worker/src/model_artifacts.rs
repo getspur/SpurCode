@@ -1,3 +1,4 @@
+use hf_hub::{api::sync::ApiBuilder, Repo, RepoType};
 use sha2::{Digest, Sha256};
 use spur_embedding::{ModelId, ModelIdentity};
 use std::{
@@ -20,6 +21,8 @@ const FILES: [&str; 5] = [
 // FastEmbed 5.8.0 selects Mean for Nomic and normalizes its output. Graph
 // supplies preformatted inputs and sets the tokenizer maximum to 8192.
 const PROFILE: &str = "model=NomicEmbedTextV15;dimensions=768;max_length=8192;pooling=mean;normalization=unit;input=legacy_preformatted;loader=fastembed-5.8.0-user-defined-memory;quantization=none;output_key=none";
+const CODE_RANK_PROFILE: &str = "model=CodeRankEmbed;repo=jamie8johnson/CodeRankEmbed-onnx;revision=151669b173750250e611e1be00c812f112ea6020;dimensions=768;max_length=8192;pooling=mean;normalization=unit;input=legacy_preformatted;loader=fastembed-5.8.0-user-defined-memory;quantization=none;output_key=none";
+const JINA_PROFILE: &str = "model=JinaEmbeddingsV2BaseCode;repo=jinaai/jina-embeddings-v2-base-code;dimensions=768;max_length=8192;pooling=mean;normalization=unit;input=legacy_preformatted;loader=fastembed-5.8.0-user-defined-memory;quantization=none;output_key=none";
 
 pub struct ResolvedArtifacts {
     pub files: Vec<(PathBuf, File)>,
@@ -120,12 +123,48 @@ fn part(hash: &mut Sha256, name: &str, value: &[u8]) -> io::Result<()> {
     Ok(())
 }
 
-pub fn resolve(budget: u64) -> io::Result<ResolvedArtifacts> {
-    let repo = cache()?.join(REPO);
-    let revision = fs::read_to_string(repo.join("refs/main"))?;
+pub fn resolve(model_id: ModelId, budget: u64) -> io::Result<ResolvedArtifacts> {
+    let (repo_name, profile, pinned_revision) = match model_id {
+        ModelId::NomicEmbedTextV15 => (REPO, PROFILE, None),
+        ModelId::CodeRankEmbed => (
+            "models--jamie8johnson--CodeRankEmbed-onnx",
+            CODE_RANK_PROFILE,
+            Some("151669b173750250e611e1be00c812f112ea6020"),
+        ),
+        ModelId::JinaEmbeddingsV2BaseCode => (
+            "models--jinaai--jina-embeddings-v2-base-code",
+            JINA_PROFILE,
+            None,
+        ),
+    };
+    let repo = cache()?.join(repo_name);
+    let revision = match pinned_revision {
+        Some(revision) => revision.to_owned(),
+        None => fs::read_to_string(repo.join("refs/main"))?,
+    };
     let revision = revision.trim();
     if revision.len() != 40 || !revision.bytes().all(|c| c.is_ascii_hexdigit()) {
         return Err(fail("invalid model revision"));
+    }
+    if model_id == ModelId::CodeRankEmbed
+        && FILES
+            .iter()
+            .any(|name| !repo.join("snapshots").join(revision).join(name).is_file())
+    {
+        let source = ApiBuilder::from_env()
+            .with_cache_dir(cache()?)
+            .with_progress(true)
+            .with_retries(3)
+            .build()
+            .map_err(io::Error::other)?
+            .repo(Repo::with_revision(
+                "jamie8johnson/CodeRankEmbed-onnx".to_owned(),
+                RepoType::Model,
+                revision.to_owned(),
+            ));
+        for name in FILES {
+            source.get(name).map_err(io::Error::other)?;
+        }
     }
     let snapshot = repo.join("snapshots").join(revision).canonicalize()?;
     let snapshots = repo.join("snapshots").canonicalize()?;
@@ -172,8 +211,8 @@ pub fn resolve(budget: u64) -> io::Result<ResolvedArtifacts> {
     let mut tokenizer = Sha256::new();
     model.update(b"spur-embedding-model-v1\0");
     tokenizer.update(b"spur-embedding-tokenizer-v1\0");
-    part(&mut model, "profile", PROFILE.as_bytes())?;
-    part(&mut tokenizer, "profile", PROFILE.as_bytes())?;
+    part(&mut model, "profile", profile.as_bytes())?;
+    part(&mut tokenizer, "profile", profile.as_bytes())?;
     for (i, (_, file)) in files.iter_mut().enumerate() {
         let expected = sizes[i];
         if file.metadata()?.len() != expected {
@@ -209,9 +248,9 @@ pub fn resolve(budget: u64) -> io::Result<ResolvedArtifacts> {
     Ok(ResolvedArtifacts {
         files,
         total_bytes: total,
-        profile: PROFILE,
+        profile,
         identity: ModelIdentity {
-            model: ModelId::NomicEmbedTextV15,
+            model: model_id,
             dimensions: 768,
             model_fingerprint: format!("{:x}", model.finalize()),
             tokenizer_fingerprint: format!("{:x}", tokenizer.finalize()),
