@@ -13,3 +13,11 @@ uuid.workspace = true
 
 [lints]
 workspace = true
+
+[features]
+test-support = []
+
+[[bin]]
+name = "embedding-fault-worker"
+path = "tests/support/fault_worker.rs"
+required-features = ["test-support"]
