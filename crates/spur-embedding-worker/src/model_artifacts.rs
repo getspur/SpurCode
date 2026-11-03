@@ -19,13 +19,64 @@ const FILES: [&str; 5] = [
 
 // FastEmbed 5.8.0 selects Mean for Nomic and normalizes its output. Graph
 // supplies preformatted inputs and sets the tokenizer maximum to 8192.
-const PROFILE: &str = "model=NomicEmbedTextV15;dimensions=768;max_length=8192;pooling=mean;normalization=unit;input=legacy_preformatted";
+const PROFILE: &str = "model=NomicEmbedTextV15;dimensions=768;max_length=8192;pooling=mean;normalization=unit;input=legacy_preformatted;loader=fastembed-5.8.0-user-defined-memory;quantization=none;output_key=none";
 
 pub struct ResolvedArtifacts {
     pub files: Vec<(PathBuf, File)>,
     pub total_bytes: u64,
     pub profile: &'static str,
     pub identity: ModelIdentity,
+}
+
+impl ResolvedArtifacts {
+    // Read from the already opened handles, then verify the very bytes handed to
+    // FastEmbed. Neither path replacement nor an in-place edit can substitute
+    // unverified content after the descriptor was computed.
+    pub fn verified_bytes(mut self) -> io::Result<Vec<Vec<u8>>> {
+        let mut model = Sha256::new();
+        let mut tokenizer = Sha256::new();
+        model.update(b"spur-embedding-model-v1\0");
+        tokenizer.update(b"spur-embedding-tokenizer-v1\0");
+        part(&mut model, "profile", self.profile.as_bytes())?;
+        part(&mut tokenizer, "profile", self.profile.as_bytes())?;
+        let mut remaining = self.total_bytes;
+        let mut result = Vec::with_capacity(FILES.len());
+        for (i, (_, file)) in self.files.iter_mut().enumerate() {
+            let length = file.metadata()?.len();
+            remaining = remaining
+                .checked_sub(length)
+                .ok_or_else(|| fail("artifact size changed"))?;
+            let size = usize::try_from(length).map_err(|_| fail("artifact too large"))?;
+            let mut bytes = Vec::new();
+            bytes
+                .try_reserve_exact(size)
+                .map_err(|_| fail("artifact allocation failed"))?;
+            file.rewind()?;
+            file.take(
+                length
+                    .checked_add(1)
+                    .ok_or_else(|| fail("artifact size overflow"))?,
+            )
+            .read_to_end(&mut bytes)?;
+            if bytes.len() != size {
+                return Err(fail("artifact size changed"));
+            }
+            let digest = Sha256::digest(&bytes);
+            part(
+                if i == 0 { &mut model } else { &mut tokenizer },
+                FILES[i],
+                &digest,
+            )?;
+            result.push(bytes);
+        }
+        if remaining != 0
+            || format!("{:x}", model.finalize()) != self.identity.model_fingerprint
+            || format!("{:x}", tokenizer.finalize()) != self.identity.tokenizer_fingerprint
+        {
+            return Err(fail("artifact identity changed"));
+        }
+        Ok(result)
+    }
 }
 
 fn fail(message: &'static str) -> io::Error {
@@ -173,6 +224,65 @@ pub fn resolve(budget: u64) -> io::Result<ResolvedArtifacts> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn verified_bytes_reject_in_place_mutation_and_bind_open_files() {
+        use super::*;
+        fn fixture() -> (PathBuf, ResolvedArtifacts) {
+            let dir = std::env::temp_dir().join(format!(
+                "spur-verified-{}-{}",
+                std::process::id(),
+                uuid::Uuid::new_v4()
+            ));
+            fs::create_dir_all(&dir).unwrap();
+            let mut model = Sha256::new();
+            let mut tokenizer = Sha256::new();
+            model.update(b"spur-embedding-model-v1\0");
+            tokenizer.update(b"spur-embedding-tokenizer-v1\0");
+            part(&mut model, "profile", PROFILE.as_bytes()).unwrap();
+            part(&mut tokenizer, "profile", PROFILE.as_bytes()).unwrap();
+            let mut files = Vec::new();
+            for (i, name) in FILES.iter().enumerate() {
+                let bytes = [i as u8; 4];
+                let path = dir.join(i.to_string());
+                fs::write(&path, bytes).unwrap();
+                part(
+                    if i == 0 { &mut model } else { &mut tokenizer },
+                    name,
+                    &Sha256::digest(bytes),
+                )
+                .unwrap();
+                files.push((path.clone(), File::open(path).unwrap()));
+            }
+            let identity = ModelIdentity {
+                model: ModelId::NomicEmbedTextV15,
+                dimensions: 768,
+                model_fingerprint: format!("{:x}", model.finalize()),
+                tokenizer_fingerprint: format!("{:x}", tokenizer.finalize()),
+                pooling: "mean".into(),
+                normalization: "unit".into(),
+                prefix: "legacy_preformatted".into(),
+            };
+            (
+                dir,
+                ResolvedArtifacts {
+                    files,
+                    total_bytes: 20,
+                    profile: PROFILE,
+                    identity,
+                },
+            )
+        }
+        let (dir, artifacts) = fixture();
+        fs::write(dir.join("0"), [9u8; 4]).unwrap();
+        assert!(artifacts.verified_bytes().is_err());
+        fs::remove_dir_all(dir).unwrap();
+        let (dir, artifacts) = fixture();
+        fs::write(dir.join("replacement"), [9u8; 4]).unwrap();
+        fs::rename(dir.join("replacement"), dir.join("0")).unwrap();
+        assert_eq!(artifacts.verified_bytes().unwrap()[0], [0u8; 4]);
+        fs::remove_dir_all(dir).unwrap();
+    }
+
     #[test]
     fn artifact_length_addition_rejects_overflow() {
         assert_eq!(super::add_length(u64::MAX - 1, 1).unwrap(), u64::MAX);

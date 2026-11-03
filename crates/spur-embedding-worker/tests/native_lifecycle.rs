@@ -161,7 +161,7 @@ fn envelope(id: u64, request: Request) -> RequestEnvelope {
 }
 
 #[test]
-fn protocol_reports_product_embeddings_unavailable_and_closes_cleanly() {
+fn product_cache_is_reused_and_dropped_before_environment_release() {
     let identity = actual_identity();
     let mut child = worker(
         "256",
@@ -181,7 +181,14 @@ fn protocol_reports_product_embeddings_unavailable_and_closes_cleanly() {
                 texts: vec!["hello".into()],
             },
         ),
-        (3, Request::Shutdown),
+        (
+            3,
+            Request::Embed {
+                identity: identity.clone(),
+                texts: vec!["hello again".into()],
+            },
+        ),
+        (4, Request::Shutdown),
     ] {
         write_frame(
             child.stdin.as_mut().unwrap(),
@@ -194,19 +201,77 @@ fn protocol_reports_product_embeddings_unavailable_and_closes_cleanly() {
         assert_eq!(response.request_id, id);
         match (id, response.reply) {
             (1, Reply::Ready { identity: returned }) => assert_eq!(returned, identity),
-            (
-                2,
-                Reply::Error {
-                    code: ErrorCode::Unavailable,
-                    ..
-                },
-            )
-            | (3, Reply::Closed) => {}
+            (2 | 3, Reply::Embeddings { rows: vectors, .. }) => {
+                assert_eq!(vectors.len(), 1);
+                assert_eq!(vectors[0].len(), 768);
+                assert!(vectors[0].iter().all(|x| x.is_finite()));
+            }
+            (4, Reply::Closed) => {}
             (_, other) => panic!("unexpected reply {other:?}"),
         }
     }
     drop(child.stdin.take());
-    assert!(child.wait().unwrap().success());
+    let output = child.wait_with_output().unwrap();
+    assert!(output.status.success(), "{:?}", output);
+    let trace = String::from_utf8_lossy(&output.stderr);
+    assert_eq!(trace.matches("phase: model_loaded").count(), 1, "{trace}");
+    assert_eq!(trace.matches("phase: model_reused").count(), 1, "{trace}");
+    let joined = trace.find("phase: jobs_joined").unwrap();
+    let dropped = trace.find("phase: model_dropped").unwrap();
+    let released = trace.find("phase: environment_released").unwrap();
+    assert!(joined < dropped && dropped < released, "{trace}");
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::ExitStatusExt;
+        println!("ROOT_PRODUCT_RAW_WAIT {}", output.status.into_raw());
+    }
+    println!("ROOT_PRODUCT_TRACE {trace}");
+}
+
+#[test]
+fn eof_drops_loaded_model_before_environment_release() {
+    let identity = actual_identity();
+    let mut child = worker(
+        "256",
+        "/private/tmp/spur-embedding-worker-native-test-cache",
+    );
+    for (id, request) in [
+        (
+            1,
+            Request::Hello {
+                identity: identity.clone(),
+            },
+        ),
+        (
+            2,
+            Request::Embed {
+                identity,
+                texts: vec!["already formatted".into()],
+            },
+        ),
+    ] {
+        write_frame(
+            child.stdin.as_mut().unwrap(),
+            &envelope(id, request),
+            &limits(256),
+        )
+        .unwrap();
+        let reply: ReplyEnvelope =
+            read_frame(child.stdout.as_mut().unwrap(), &limits(256)).unwrap();
+        assert!(matches!(
+            reply.reply,
+            Reply::Ready { .. } | Reply::Embeddings { .. }
+        ));
+    }
+    drop(child.stdin.take());
+    let output = child.wait_with_output().unwrap();
+    assert!(!output.status.success());
+    let trace = String::from_utf8_lossy(&output.stderr);
+    let joined = trace.find("phase: jobs_joined").unwrap();
+    let dropped = trace.find("phase: model_dropped").unwrap();
+    let released = trace.find("phase: environment_released").unwrap();
+    assert!(joined < dropped && dropped < released, "{trace}");
+    println!("ROOT_EOF_TRACE {trace}");
 }
 
 #[test]

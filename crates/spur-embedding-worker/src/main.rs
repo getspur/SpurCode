@@ -1,4 +1,5 @@
 mod model_artifacts;
+mod models;
 mod runtime;
 use runtime::RuntimeOwner;
 use spur_embedding::{
@@ -212,14 +213,24 @@ fn run() -> Result<(), Box<dyn Error>> {
             return Err(error.into());
         }
     };
-    let result = serve(&limits, &mut owner, &mut input, &mut output, session, hello);
-    let close = owner.close();
+    let mut model_cache = models::ModelCache::new(resolved);
+    let result = serve(
+        &limits,
+        &mut owner,
+        &mut model_cache,
+        &mut input,
+        &mut output,
+        session,
+        hello,
+    );
+    let close = owner.close_after_join(|| model_cache.clear());
     close?;
     result
 }
 fn serve(
     limits: &ProtocolLimits,
     owner: &mut RuntimeOwner,
+    model_cache: &mut models::ModelCache,
     input: &mut impl Read,
     output: &mut impl Write,
     mut session: Session,
@@ -238,15 +249,21 @@ fn serve(
             Request::Hello { identity } => Reply::Ready {
                 identity: identity.clone(),
             },
-            Request::Embed { .. } => Reply::Error {
-                code: ErrorCode::Unavailable,
-                message: "product model loading is unavailable"
-                    .chars()
-                    .take(limits.max_identity_bytes)
-                    .collect(),
+            Request::Embed { identity, texts } => match model_cache.embed(texts) {
+                Ok(rows) => Reply::Embeddings {
+                    identity: identity.clone(),
+                    rows,
+                },
+                Err(_) => Reply::Error {
+                    code: ErrorCode::Unavailable,
+                    message: "model inference failed"
+                        .chars()
+                        .take(limits.max_identity_bytes)
+                        .collect(),
+                },
             },
             Request::Shutdown => {
-                owner.close()?;
+                owner.close_after_join(|| model_cache.clear())?;
                 Reply::Closed
             }
         };

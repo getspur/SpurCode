@@ -151,13 +151,20 @@ impl RuntimeOwner {
         Ok(())
     }
     pub fn close(&mut self) -> Result<(), RuntimeError> {
-        self.close_inner(|| {})
+        self.close_inner(|| {}, || {})
     }
     #[cfg(feature = "test-support")]
     pub fn close_with_hook(&mut self, hook: impl FnOnce()) -> Result<(), RuntimeError> {
-        self.close_inner(hook)
+        self.close_inner(hook, || {})
     }
-    fn close_inner(&mut self, hook: impl FnOnce()) -> Result<(), RuntimeError> {
+    pub fn close_after_join(&mut self, cleanup: impl FnOnce()) -> Result<(), RuntimeError> {
+        self.close_inner(|| {}, cleanup)
+    }
+    fn close_inner(
+        &mut self,
+        hook: impl FnOnce(),
+        cleanup: impl FnOnce(),
+    ) -> Result<(), RuntimeError> {
         if self.closed {
             return Ok(());
         }
@@ -171,6 +178,7 @@ impl RuntimeOwner {
         }
         #[cfg(feature = "test-support")]
         eprintln!("phase: jobs_joined");
+        cleanup();
         if ort::environment::try_shutdown().is_err() {
             #[cfg(feature = "test-support")]
             eprintln!("phase: environment_busy");

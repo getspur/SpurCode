@@ -125,7 +125,7 @@ fn product_nomic_matches_registered_reference_and_closes() {
         shutdown_timeout: Duration::from_secs(30),
         shutdown_poll_interval: Duration::from_millis(20),
     };
-    for _ in 0..2 {
+    for cycle in 0..2 {
         let client = EmbeddingClient::new(
             env!("CARGO_BIN_EXE_spur-embedding-worker"),
             ["65536", "2", "4096", "8192", "768", "256", "1", "548026095"]
@@ -167,6 +167,24 @@ fn product_nomic_matches_registered_reference_and_closes() {
             .iter()
             .any(|event| event.kind == "reaped" && event.pid == spawned[0].pid));
 
+        println!(
+            "ROOT_CLIENT_CYCLE {cycle} events={:?}",
+            events
+                .iter()
+                .map(|event| (event.kind, &event.pid, &event.generation, &event.status))
+                .collect::<Vec<_>>()
+        );
+        if let Some(dir) = std::env::var_os("SPUR_S4B_VECTOR_EXPORT") {
+            let path = std::path::PathBuf::from(dir).join(format!("vectors-cycle-{cycle}.json"));
+            std::fs::write(
+                path,
+                format!(
+                    "{{\"first\":{:?},\"second\":{:?},\"reference\":{:?}}}\n",
+                    first, second, expected
+                ),
+            )
+            .unwrap();
+        }
         assert_eq!(first.len(), expected.len());
         assert_eq!(first.len(), 2);
         for ((actual, again), reference) in first.iter().zip(&second).zip(&expected) {
@@ -175,6 +193,22 @@ fn product_nomic_matches_registered_reference_and_closes() {
             assert!(actual.iter().all(|x| x.is_finite()));
             let norm = actual.iter().map(|x| x * x).sum::<f32>().sqrt();
             assert!((norm - 1.0).abs() < 1e-4, "norm {norm}");
+            let reference_delta = actual
+                .iter()
+                .zip(reference)
+                .map(|(a, b)| (a - b).abs())
+                .fold(0.0f32, f32::max);
+            let reuse_delta = actual
+                .iter()
+                .zip(again)
+                .map(|(a, b)| (a - b).abs())
+                .fold(0.0f32, f32::max);
+            use sha2::{Digest, Sha256};
+            let mut hash = Sha256::new();
+            for value in actual {
+                hash.update(value.to_le_bytes());
+            }
+            println!("ROOT_VECTOR cycle={cycle} dimensions={} norm={norm} reference_max_delta={reference_delta} reuse_max_delta={reuse_delta} sha256={:x}", actual.len(), hash.finalize());
             for ((a, b), expected) in actual.iter().zip(again).zip(reference) {
                 assert!((a - expected).abs() < 1e-4, "worker/reference mismatch");
                 assert!((a - b).abs() < 1e-4, "repeated batch mismatch");

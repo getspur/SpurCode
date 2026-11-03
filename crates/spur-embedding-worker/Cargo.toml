@@ -33,6 +33,7 @@ features = ["managed-environment"]
 
 [target.'cfg(target_os = "macos")'.dependencies]
 ort = { version = "=2.0.0-rc.10", default-features = false, features = ["load-dynamic", "managed-environment"] }
+fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls", "ort-load-dynamic"] }
 
 [target.'cfg(not(target_os = "macos"))'.dependencies]
 fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries"] }
