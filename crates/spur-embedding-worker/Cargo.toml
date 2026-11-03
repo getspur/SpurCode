@@ -1,0 +1,40 @@
+[package]
+name = "spur-embedding-worker"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+spur-embedding = { path = "../spur-embedding" }
+
+[features]
+test-support = []
+
+[[bin]]
+name = "embedding-native-probe"
+path = "tests/support/native_probe.rs"
+required-features = ["test-support"]
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.sha2]
+workspace = true
+
+[dependencies.ort]
+version = "=2.0.0-rc.10"
+default-features = false
+features = ["managed-environment"]
+
+[target.'cfg(target_os = "macos")'.dependencies]
+ort = { version = "=2.0.0-rc.10", default-features = false, features = ["load-dynamic", "managed-environment"] }
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries"] }
+
+[build-dependencies]
+sha2.workspace = true
