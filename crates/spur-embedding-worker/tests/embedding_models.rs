@@ -187,7 +187,7 @@ fn product_nomic_matches_registered_reference_and_closes() {
 fn hello_rejects_unverified_artifact_identity() {
     use spur_embedding::{write_frame, ModelIdentity, Request, RequestEnvelope, PROTOCOL_VERSION};
     let mut child = Command::new(env!("CARGO_BIN_EXE_spur-embedding-worker"))
-        .args(["65536", "2", "4096", "8192", "768", "256", "1"])
+        .args(["65536", "2", "4096", "8192", "768", "256", "1", "548026095"])
         .env(
             "SPUR_ORT_CACHE",
             "/private/tmp/spur-embedding-worker-native-test-cache",
