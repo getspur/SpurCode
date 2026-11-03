@@ -54,6 +54,22 @@ pub use self::{
 	run_options::{HasSelectedOutputs, NoSelectedOutputs, RunOptions, SelectedOutputMarker},
 };
 
+// The runtime allocates initializer names with the allocator passed to its
+// getter. Keep that exact allocator until the copied name no longer needs the
+// native buffer, including during unwinding.
+struct AllocatedInitializerName<'a> {
+	ptr: *mut c_char,
+	allocator: &'a Allocator
+}
+
+impl Drop for AllocatedInitializerName<'_> {
+	fn drop(&mut self) {
+		if !self.ptr.is_null() {
+			unsafe { self.allocator.free(self.ptr) };
+		}
+	}
+}
+
 /// Holds onto an [`ort_sys::OrtSession`] pointer and its associated allocator.
 ///
 /// Internally, this is wrapped in an [`Arc`] and shared between a [`Session`] and any [`Value`]s created as a result
@@ -183,7 +199,8 @@ impl Session {
 			.map(|i| {
 				let mut name: *mut c_char = ptr::null_mut();
 				ortsys![unsafe SessionGetOverridableInitializerName(self.ptr(), i, allocator.ptr().cast_mut(), &mut name).expect("infallible")];
-				let name = unsafe { CStr::from_ptr(name) }.to_string_lossy().into_owned();
+				let name_buffer = AllocatedInitializerName { ptr: name, allocator: &allocator };
+				let name = unsafe { CStr::from_ptr(name_buffer.ptr) }.to_string_lossy().into_owned();
 				let mut typeinfo_ptr: *mut ort_sys::OrtTypeInfo = ptr::null_mut();
 				ortsys![unsafe SessionGetOverridableInitializerTypeInfo(self.ptr(), i, &mut typeinfo_ptr).expect("infallible"); nonNull(typeinfo_ptr)];
 				let dtype = unsafe { ValueType::from_type_info(typeinfo_ptr) };

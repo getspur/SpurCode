@@ -119,19 +119,23 @@ impl DynTensor {
 			)?;
 			nonNull(value_ptr)
 		];
+		#[cfg(feature = "managed-environment")]
+		let mut pending = crate::value::PendingValue::new(value_ptr);
 
 		// `CreateTensorAsOrtValue` actually does not guarantee that the data allocated is zero'd out, so if we can, we should
 		// do it manually.
 		let memory_info = unsafe { MemoryInfo::from_value(value_ptr) }.expect("CreateTensorAsOrtValue returned non-tensor");
 		if memory_info.is_cpu_accessible() && data_type != TensorElementType::String {
 			let mut buffer_ptr: *mut ort_sys::c_void = ptr::null_mut();
+			#[cfg(feature = "owner-test-hooks")]
+			crate::owner_test_hooks::fail_if_requested(1)?;
 			ortsys![unsafe GetTensorMutableData(value_ptr.as_ptr(), &mut buffer_ptr)?];
 			if !buffer_ptr.is_null() {
 				unsafe { buffer_ptr.write_bytes(0, data_type.byte_size(shape.num_elements())) };
 			}
 		}
 
-		Ok(Value {
+		let value = Value {
 			inner: Arc::new(ValueInner {
 				ptr: value_ptr,
 				dtype: ValueType::Tensor {
@@ -146,7 +150,10 @@ impl DynTensor {
 				_environment: Some(env),
 			}),
 			_markers: PhantomData,
-		})
+		};
+		#[cfg(feature = "managed-environment")]
+		pending.disarm();
+		Ok(value)
 	}
 }
 

@@ -90,6 +90,7 @@ sha2 = { workspace = true }
 
 [target.'cfg(target_os = "macos")'.dev-dependencies]
 duckdb = { workspace = true, features = ["bundled"] }
+ort = { version = "=2.0.0-rc.10", default-features = false, features = ["load-dynamic", "owner-test-hooks"] }
 
 [dev-dependencies]
 bytes = "1"

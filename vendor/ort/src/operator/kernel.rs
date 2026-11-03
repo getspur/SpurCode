@@ -31,6 +31,8 @@ where
 	}
 }
 
+/// A borrowed view of kernel information. Cloning is unavailable with
+/// `managed-environment` because the native copy does not own its session prerequisites.
 pub struct KernelAttributes {
 	ptr: NonNull<ort_sys::OrtKernelInfo>,
 	should_release: bool
@@ -106,10 +108,19 @@ impl KernelAttributes {
 		Ok(CString::from_vec_with_nul(name)?.into_string()?)
 	}
 
+	/// Custom-operator allocators are unavailable with `managed-environment` because their native owner is not retained.
 	pub fn allocator(&self, mem_type: MemoryType) -> Result<Allocator> {
-		let mut ptr: *mut ort_sys::OrtAllocator = ptr::null_mut();
-		ortsys![unsafe KernelInfoGetAllocator(self.ptr.as_ptr(), mem_type.into(), &mut ptr)?; nonNull(ptr)];
-		Ok(unsafe { Allocator::from_raw(ptr) })
+		#[cfg(feature = "managed-environment")]
+		{
+			let _ = mem_type;
+			Err(Error::new("custom-operator allocators are unsupported with managed-environment"))
+		}
+		#[cfg(not(feature = "managed-environment"))]
+		{
+			let mut ptr: *mut ort_sys::OrtAllocator = ptr::null_mut();
+			ortsys![unsafe KernelInfoGetAllocator(self.ptr.as_ptr(), mem_type.into(), &mut ptr)?; nonNull(ptr)];
+			Ok(unsafe { Allocator::from_raw(ptr) })
+		}
 	}
 
 	pub fn logger(&self) -> Result<Logger<'_>> {
@@ -119,6 +130,7 @@ impl KernelAttributes {
 	}
 }
 
+#[cfg(not(feature = "managed-environment"))]
 impl Clone for KernelAttributes {
 	fn clone(&self) -> Self {
 		let mut out = ptr::null_mut();
@@ -214,10 +226,19 @@ impl KernelContext {
 		Ok(num)
 	}
 
+	/// Custom-operator allocators are unavailable with `managed-environment` because their native owner is not retained.
 	pub fn allocator(&self, memory_info: &MemoryInfo) -> Result<Allocator> {
-		let mut allocator_ptr = ptr::null_mut();
-		ortsys![unsafe KernelContext_GetAllocator(self.ptr.as_ptr(), memory_info.ptr(), &mut allocator_ptr)?; nonNull(allocator_ptr)];
-		Ok(unsafe { Allocator::from_raw(allocator_ptr) })
+		#[cfg(feature = "managed-environment")]
+		{
+			let _ = memory_info;
+			Err(Error::new("custom-operator allocators are unsupported with managed-environment"))
+		}
+		#[cfg(not(feature = "managed-environment"))]
+		{
+			let mut allocator_ptr = ptr::null_mut();
+			ortsys![unsafe KernelContext_GetAllocator(self.ptr.as_ptr(), memory_info.ptr(), &mut allocator_ptr)?; nonNull(allocator_ptr)];
+			Ok(unsafe { Allocator::from_raw(allocator_ptr) })
+		}
 	}
 
 	pub fn get_resource(&self, id: ort_sys::c_int, version: ort_sys::c_int) -> Result<Option<NonNull<ort_sys::c_void>>> {

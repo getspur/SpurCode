@@ -1,4 +1,6 @@
-use alloc::{ffi::CString, sync::Arc};
+use alloc::ffi::CString;
+#[cfg(not(feature = "managed-environment"))]
+use alloc::sync::Arc;
 use core::{
 	ffi::c_char,
 	mem::{self, ManuallyDrop},
@@ -83,6 +85,8 @@ impl Drop for Outlet {
 pub struct Node(NonNull<ort_sys::OrtNode>);
 
 impl Node {
+	/// With `managed-environment`, nodes with attributes are unsupported:
+	/// the native editor consumes attributes supplied as borrowed Rust values.
 	pub fn new<I: AsRef<str>, O: AsRef<str>>(
 		operator_name: impl AsRef<str>,
 		domain_name: impl AsRef<str>,
@@ -91,13 +95,22 @@ impl Node {
 		outputs: impl AsRef<[O]>,
 		attributes: impl AsRef<[Attribute]>
 	) -> Result<Self> {
+		#[cfg(feature = "managed-environment")]
+		let attributes = attributes.as_ref();
+		#[cfg(feature = "managed-environment")]
+		if !attributes.is_empty() {
+			return Err(Error::new("editor node attributes are unsupported with managed-environment"));
+		}
 		// This code is garbage and we should probably just be allocating.
 		with_cstr(operator_name.as_ref().as_bytes(), &|operator_name| {
 			with_cstr(domain_name.as_ref().as_bytes(), &|domain_name| {
 				with_cstr(node_name.as_ref().as_bytes(), &|node_name| {
 					with_cstr_ptr_array(inputs.as_ref(), &|inputs| {
 						with_cstr_ptr_array(outputs.as_ref(), &|outputs| {
+							#[cfg(not(feature = "managed-environment"))]
 							let attributes = attributes.as_ref();
+							#[cfg(feature = "owner-test-hooks")]
+							crate::owner_test_hooks::fail_if_requested(3)?;
 							let mut out = ptr::null_mut();
 							ortsys![@editor:
 								unsafe CreateNode(
@@ -169,6 +182,13 @@ impl Graph {
 		Ok(())
 	}
 
+	/// Initializer ownership transfer is unsupported with `managed-environment`.
+	#[cfg(feature = "managed-environment")]
+	pub fn add_initializer<T: TensorValueTypeMarker>(&mut self, _name: impl AsRef<str>, _initializer: Value<T>, _as_external: bool) -> Result<()> {
+		Err(Error::new("graph initializer transfer is unsupported with managed-environment"))
+	}
+
+	#[cfg(not(feature = "managed-environment"))]
 	pub fn add_initializer<T: TensorValueTypeMarker>(&mut self, name: impl AsRef<str>, mut initializer: Value<T>, as_external: bool) -> Result<()> {
 		let Some(value_inner) = Arc::get_mut(&mut initializer.inner) else {
 			return Err(Error::new("Initializers must be unique"))?;
@@ -258,7 +278,7 @@ impl Model {
 			)?;
 			nonNull(session_ptr)
 		];
-		options.commit_finalize(session_ptr)
+		options.commit_finalize_with_env(session_ptr, env)
 	}
 }
 

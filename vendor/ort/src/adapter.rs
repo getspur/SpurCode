@@ -31,6 +31,7 @@ impl Drop for AdapterInner {
 /// [`Adapter`] essentially acts as a collection of predefined inputs allocated on a specific device that can easily be
 /// swapped out between session runs via [`RunOptions::add_adapter`]. With slight modifications to the session
 /// graph, [`Adapter`]s can be used as low-rank adapters (LoRAs) or as containers of style embeddings.
+/// With `managed-environment`, supplying a device allocator is unsupported.
 ///
 /// # Example
 /// ```
@@ -90,6 +91,10 @@ impl Adapter {
 	#[cfg(feature = "std")]
 	#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 	pub fn from_file(path: impl AsRef<Path>, allocator: Option<&Allocator>) -> Result<Self> {
+		#[cfg(feature = "managed-environment")]
+		if allocator.is_some() {
+			return Err(crate::Error::new("device allocator adapters are unsupported with managed-environment"));
+		}
 		let path = crate::util::path_to_os_char(path);
 		let allocator_ptr = allocator.map(|c| c.ptr().cast_mut()).unwrap_or_else(ptr::null_mut);
 		let mut ptr = ptr::null_mut();
@@ -134,6 +139,10 @@ impl Adapter {
 	/// # }
 	/// ```
 	pub fn from_memory(bytes: &[u8], allocator: Option<&Allocator>) -> Result<Self> {
+		#[cfg(feature = "managed-environment")]
+		if allocator.is_some() {
+			return Err(crate::Error::new("device allocator adapters are unsupported with managed-environment"));
+		}
 		let allocator_ptr = allocator.map(|c| c.ptr().cast_mut()).unwrap_or_else(ptr::null_mut);
 		let mut ptr = ptr::null_mut();
 		ortsys![unsafe CreateLoraAdapterFromArray(bytes.as_ptr().cast(), bytes.len(), allocator_ptr, &mut ptr)?; nonNull(ptr)];

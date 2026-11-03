@@ -66,6 +66,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [features]
 managed-environment = ["std"]
+owner-test-hooks = ["managed-environment"]
 acl = ["ort-sys/acl"]
 alternative-backend = ["ort-sys/disable-linking"]
 armnn = ["ort-sys/armnn"]

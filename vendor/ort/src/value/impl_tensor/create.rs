@@ -53,8 +53,7 @@ impl Tensor<String> {
 		let (shape, data, _guard) = input.ref_parts()?;
 		let shape_ptr: *const i64 = shape.as_ptr();
 		let shape_len = shape.len();
-
-		// create tensor without data -- data is filled in later
+		#[cfg(not(feature = "managed-environment"))]
 		ortsys![
 			unsafe CreateTensorAsOrtValue(Allocator::default().ptr_mut(), shape_ptr, shape_len, TensorElementType::String.into(), &mut value_ptr)?;
 			nonNull(value_ptr)
@@ -71,9 +70,20 @@ impl Tensor<String> {
 
 		let string_pointers = null_terminated_copies.iter().map(|cstring| cstring.as_ptr()).collect::<Vec<_>>();
 
+		// create tensor without data -- data is filled in later
+		#[cfg(feature = "managed-environment")]
+		ortsys![
+			unsafe CreateTensorAsOrtValue(Allocator::default().ptr_mut(), shape_ptr, shape_len, TensorElementType::String.into(), &mut value_ptr)?;
+			nonNull(value_ptr)
+		];
+		#[cfg(feature = "managed-environment")]
+		let mut pending = crate::value::PendingValue::new(value_ptr);
+
+		#[cfg(feature = "owner-test-hooks")]
+		crate::owner_test_hooks::fail_if_requested(2)?;
 		ortsys![unsafe FillStringTensor(value_ptr.as_ptr(), string_pointers.as_ptr(), string_pointers.len())?];
 
-		Ok(Value {
+		let value = Value {
 			inner: Arc::new(ValueInner {
 				ptr: value_ptr,
 				dtype: ValueType::Tensor {
@@ -88,7 +98,10 @@ impl Tensor<String> {
 				_environment: Some(env),
 			}),
 			_markers: PhantomData,
-		})
+		};
+		#[cfg(feature = "managed-environment")]
+		pending.disarm();
+		Ok(value)
 	}
 }
 

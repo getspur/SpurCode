@@ -43,7 +43,27 @@ pub fn compile_api() -> Result<&'static ort_sys::OrtCompileApi> {
 pub struct ModelCompiler<'i> {
 	ptr: NonNull<ort_sys::OrtModelCompilationOptions>,
 	_session_options: SessionBuilder,
+	#[cfg(feature = "managed-environment")]
+	_environment: crate::environment::EnvironmentLease,
 	_p: PhantomData<&'i ()>
+}
+
+// CompileModel may publish the output before a later initialization failure.
+#[cfg(feature = "managed-environment")]
+struct PendingCompiledBuffer<'a> {
+	ptr: *mut c_void,
+	allocator: &'a Allocator
+}
+
+#[cfg(feature = "managed-environment")]
+impl Drop for PendingCompiledBuffer<'_> {
+	fn drop(&mut self) {
+		if !self.ptr.is_null() {
+			unsafe { self.allocator.free(self.ptr) };
+			#[cfg(feature = "owner-test-hooks")]
+			crate::owner_test_hooks::record_compiler_buffer_free();
+		}
+	}
 }
 
 impl<'i> ModelCompiler<'i> {
@@ -61,6 +81,8 @@ impl<'i> ModelCompiler<'i> {
 		Ok(Self {
 			ptr,
 			_session_options: options,
+			#[cfg(feature = "managed-environment")]
+			_environment: env,
 			_p: PhantomData
 		})
 	}
@@ -130,18 +152,40 @@ impl<'i> ModelCompiler<'i> {
 
 	pub fn compile_to_buffer(&self) -> Result<CompiledModel> {
 		let env = get_environment()?;
+		#[cfg(feature = "managed-environment")]
+		let allocator = Allocator::default();
+		#[cfg(not(feature = "managed-environment"))]
 		let mut allocator = Allocator::default();
+		#[cfg(feature = "managed-environment")]
+		let allocator_ptr = allocator.ptr().cast_mut();
+		#[cfg(not(feature = "managed-environment"))]
+		let allocator_ptr = allocator.ptr_mut();
+		#[cfg(not(feature = "managed-environment"))]
 		let mut ptr = ptr::null_mut();
+		#[cfg(feature = "managed-environment")]
+		let mut pending = PendingCompiledBuffer { ptr: ptr::null_mut(), allocator: &allocator };
+		#[cfg(feature = "managed-environment")]
+		let output_ptr = &mut pending.ptr;
+		#[cfg(not(feature = "managed-environment"))]
+		let output_ptr = &mut ptr;
 		let mut size = 0;
 		ortsys![@compile:
 			unsafe ModelCompilationOptions_SetOutputModelBuffer(
 				self.ptr.as_ptr(),
-				allocator.ptr_mut(),
-				&mut ptr,
+				allocator_ptr,
+				output_ptr,
 				&mut size
 			)?
 		];
 		ortsys![@compile: unsafe CompileModel(env.ptr(), self.ptr.as_ptr())?];
+		#[cfg(feature = "owner-test-hooks")]
+		if !output_ptr.is_null() {
+			crate::owner_test_hooks::fail_if_requested(4)?;
+		}
+		#[cfg(feature = "managed-environment")]
+		let ptr = core::mem::replace(&mut pending.ptr, ptr::null_mut());
+		#[cfg(feature = "managed-environment")]
+		drop(pending);
 		Ok(CompiledModel { ptr, size, allocator })
 	}
 }

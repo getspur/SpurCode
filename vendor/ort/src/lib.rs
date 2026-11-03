@@ -35,6 +35,9 @@ pub mod logging;
 pub mod memory;
 pub mod metadata;
 pub mod operator;
+#[cfg(feature = "owner-test-hooks")]
+#[doc(hidden)]
+pub mod owner_test_hooks;
 pub mod session;
 pub mod tensor;
 #[cfg(all(feature = "training", feature = "managed-environment"))]

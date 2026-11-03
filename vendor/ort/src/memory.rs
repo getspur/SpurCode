@@ -97,6 +97,8 @@ struct AllocatorOwner {
 impl Drop for AllocatorOwner {
 	fn drop(&mut self) {
 		ortsys![unsafe ReleaseAllocator(self.ptr.as_ptr())];
+		#[cfg(feature = "owner-test-hooks")]
+		crate::owner_test_hooks::record_allocator_release();
 	}
 }
 
@@ -105,6 +107,12 @@ unsafe impl Send for Allocator {}
 // threads. CPU allocator doesn't seem to be affected though.
 
 impl Allocator {
+	#[cfg(feature = "owner-test-hooks")]
+	#[doc(hidden)]
+	pub fn owner_test_backing_count(&self) -> usize {
+		self.shared_owner.as_ref().map_or(0, Arc::strong_count)
+	}
+
 	pub(crate) fn session_backing(&self) -> Option<alloc::boxed::Box<dyn core::any::Any>> {
 		#[cfg(feature = "managed-environment")]
 		if let Some(owner) = &self.shared_owner {
@@ -126,8 +134,8 @@ impl Allocator {
 		Allocator {
 			ptr,
 			is_default: false,
-			// currently, this function is only ever used in session creation, where we call `CreateAllocator` manually and store the allocator resulting from
-			// this function in the `SharedSessionInner` - we don't need to hold onto the session, because the session is holding onto us.
+			// The session builder stores its allocator in SharedSessionInner. Custom-operator callers
+			// have no such owner and are excluded when managed-environment is enabled.
 			_session_inner: None,
 			_info: None,
 			#[cfg(feature = "managed-environment")]
@@ -184,6 +192,8 @@ impl Allocator {
 	/// ```
 	pub unsafe fn free<T>(&self, ptr: *mut T) {
 		unsafe { self.ptr.as_ref().Free.unwrap_or_else(|| unreachable!("Allocator method `Free` is null"))(self.ptr.as_ptr(), ptr.cast()) };
+		#[cfg(feature = "owner-test-hooks")]
+		crate::owner_test_hooks::record_allocator_free();
 	}
 
 	/// Returns the [`MemoryInfo`] describing this allocator.
@@ -192,6 +202,17 @@ impl Allocator {
 		let Some(memory_info_ptr) = NonNull::new(memory_info_ptr.cast_mut()) else {
 			panic!("expected `memory_info_ptr` to not be null");
 		};
+		#[cfg(feature = "managed-environment")]
+		{
+			let mut info = MemoryInfo::from_raw(memory_info_ptr, false);
+			info._backing = Some(MemoryInfoBacking {
+				_allocator: self.shared_owner.as_ref().map(Arc::clone),
+				_session: self.session_weak.get().and_then(alloc::sync::Weak::upgrade)
+					.or_else(|| self._session_inner.as_ref().map(Arc::clone)),
+			});
+			info
+		}
+		#[cfg(not(feature = "managed-environment"))]
 		MemoryInfo::from_raw(memory_info_ptr, false)
 	}
 
@@ -440,6 +461,15 @@ impl From<ort_sys::OrtMemoryInfoDeviceType> for DeviceType {
 pub struct MemoryInfo {
 	ptr: NonNull<ort_sys::OrtMemoryInfo>,
 	should_release: bool,
+	#[cfg(feature = "managed-environment")]
+	_backing: Option<MemoryInfoBacking>,
+}
+
+#[cfg(feature = "managed-environment")]
+#[derive(Debug)]
+struct MemoryInfoBacking {
+	_allocator: Option<Arc<AllocatorOwner>>,
+	_session: Option<Arc<SharedSessionInner>>,
 }
 
 impl MemoryInfo {
@@ -470,6 +500,8 @@ impl MemoryInfo {
 		Ok(Self {
 			ptr: memory_info_ptr,
 			should_release: true,
+			#[cfg(feature = "managed-environment")]
+			_backing: None,
 		})
 	}
 
@@ -487,7 +519,12 @@ impl MemoryInfo {
 	}
 
 	pub(crate) fn from_raw(ptr: NonNull<ort_sys::OrtMemoryInfo>, should_release: bool) -> Self {
-		MemoryInfo { ptr, should_release }
+		MemoryInfo {
+			ptr,
+			should_release,
+			#[cfg(feature = "managed-environment")]
+			_backing: None,
+		}
 	}
 
 	// All getter functions are (at least currently) infallible - they simply just dereference the corresponding fields,

@@ -61,6 +61,34 @@ pub(crate) struct ValueInner {
 	pub(crate) _environment: Option<crate::environment::EnvironmentGuard>,
 }
 
+// Own a newly created native value until it has been installed in ValueInner.
+// This guard is declared after its environment and allocator prerequisites so
+// native release runs while those prerequisites are still alive.
+#[cfg(feature = "managed-environment")]
+pub(crate) struct PendingValue(Option<NonNull<ort_sys::OrtValue>>);
+
+#[cfg(feature = "managed-environment")]
+impl PendingValue {
+	pub(crate) fn new(ptr: NonNull<ort_sys::OrtValue>) -> Self {
+		Self(Some(ptr))
+	}
+
+	pub(crate) fn disarm(&mut self) {
+		self.0 = None;
+	}
+}
+
+#[cfg(feature = "managed-environment")]
+impl Drop for PendingValue {
+	fn drop(&mut self) {
+		if let Some(ptr) = self.0.take() {
+			ortsys![unsafe ReleaseValue(ptr.as_ptr())];
+			#[cfg(feature = "owner-test-hooks")]
+			crate::owner_test_hooks::record_native_release();
+		}
+	}
+}
+
 impl AsPointer for ValueInner {
 	type Sys = ort_sys::OrtValue;
 

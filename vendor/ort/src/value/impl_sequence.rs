@@ -86,7 +86,16 @@ impl<Type: SequenceValueTypeMarker + Sized> Value<Type> {
 					let mut value_ptr = ptr::null_mut();
 					ortsys![unsafe GetValue(self.ptr(), i as _, allocator.ptr().cast_mut(), &mut value_ptr)?; nonNull(value_ptr)];
 
-					let mut value = ValueRef::new(unsafe { Value::from_ptr(value_ptr, None) });
+					let owned = unsafe { Value::from_ptr(value_ptr, None) };
+					#[cfg(feature = "managed-environment")]
+					let owned = {
+						let mut owned = owned;
+						// GetValue copies sequence tensors using the supplied allocator;
+						// their native deleter retains its raw pointer.
+						Arc::get_mut(&mut owned.inner).expect("new value is unique")._backing = allocator.session_backing();
+						owned
+					};
+					let mut value = ValueRef::new(owned);
 					value.upgradable = false;
 
 					let value_type = value.dtype();
