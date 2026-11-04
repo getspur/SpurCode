@@ -2,6 +2,23 @@
 use spur_embedding::{ClientError, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits};
 use std::time::{Duration, Instant};
 
+// Model the existing file-existence gate so the regression exercises the race.
+fn read_descriptor_pid(path: &std::path::Path) -> Option<String> {
+    std::fs::read_to_string(path).ok()
+}
+
+#[test]
+fn descriptor_pid_file_requires_a_positive_numeric_pid() {
+    let path = std::env::temp_dir().join(format!("spur-pid-validation-{}", uuid::Uuid::new_v4()));
+    for invalid in ["", "0", "-1", "garbage"] {
+        std::fs::write(&path, invalid).unwrap();
+        assert!(read_descriptor_pid(&path).is_none(), "accepted {invalid:?}");
+    }
+    std::fs::write(&path, "123").unwrap();
+    assert_eq!(read_descriptor_pid(&path).as_deref(), Some("123"));
+    std::fs::remove_file(path).unwrap();
+}
+
 fn describe(mode: &str, timeout: Duration) -> Result<spur_embedding::ModelIdentity, ClientError> {
     let limits = ProtocolLimits {
         max_frame_bytes: 65536,
