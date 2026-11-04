@@ -84,7 +84,7 @@ fn cancellation_interrupts_hung_descriptor_discovery() {
         startup_timeout: timeout,
         request_timeout: timeout,
         shutdown_timeout: timeout,
-        shutdown_poll_interval: Duration::from_millis(2),
+        shutdown_poll_interval: timeout,
     };
     let cancel = Cancellation::new();
     let trigger = cancel.clone();
