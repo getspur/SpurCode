@@ -32,6 +32,7 @@ def main():
         identity["model"] = args[1]
         record("describe " + args[1])
         if os.environ.get("SPUR_GRAPH_TEST_WORKER_FAULT") == "descriptor_hang":
+            record("descriptor_pid " + str(os.getpid()))
             threading.Event().wait()
         send({"version": 2, "generation": args[3], "request_id": int(args[4]),
               "reply": {"type": "Ready", "identity": identity}})

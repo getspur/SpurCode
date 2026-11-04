@@ -1,8 +1,9 @@
 #![cfg(all(unix, feature = "embed"))]
 
-use spur_embedding::Cancellation;
-use spur_graph::{load_embedding_model_cancellable, EmbeddingModelSelection};
+use spur_embedding::{Cancellation, CleanupOwner};
+use spur_graph::{load_embedding_model_cancellable_with_cleanup, EmbeddingModelSelection};
 use std::process::Command;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 #[test]
@@ -16,13 +17,18 @@ fn graph_model_discovery_observes_owner_cancellation() {
             trigger.cancel();
         });
         let start = Instant::now();
-        let result = load_embedding_model_cancellable(
+        let cleanup = Arc::new(CleanupOwner::new(Duration::from_millis(10)).unwrap());
+        let result = load_embedding_model_cancellable_with_cleanup(
             EmbeddingModelSelection::NomicEmbedTextV15,
             false,
             cancel,
             start + Duration::from_secs(10),
+            Arc::clone(&cleanup),
         );
         job.join().unwrap();
+        cleanup
+            .wait_for_cleanup(Instant::now() + Duration::from_secs(10))
+            .expect("join descriptor cleanup");
         let error = result.err().expect("cancelled discovery returned a model");
         assert!(format!("{error:#}").contains("cancelled"), "{error:#}");
         assert!(
@@ -66,6 +72,18 @@ fn graph_model_discovery_observes_owner_cancellation() {
     assert!(
         !log.contains("service"),
         "cancelled discovery published a service: {log}"
+    );
+    let pid = log
+        .lines()
+        .find_map(|line| line.strip_prefix("descriptor_pid "))
+        .expect("descriptor PID recorded");
+    let status = Command::new("/bin/kill")
+        .args(["-0", pid])
+        .status()
+        .unwrap();
+    assert!(
+        !status.success(),
+        "descriptor process {pid} survived owner cleanup"
     );
 }
 
