@@ -2,4 +2,4 @@
 mod protocol;
 pub use protocol::*;
 mod client;
-pub use client::{Cancellation, ClientError, ClientPolicy, EmbeddingClient};
+pub use client::{Cancellation, CleanupOwner, ClientError, ClientPolicy, EmbeddingClient};

@@ -121,6 +121,56 @@ struct Launch {
     abandoned: bool,
     result: Option<Result<Child, String>>,
 }
+
+/// Caller-owned cleanup scope shared by descriptor discovery and its client.
+pub struct CleanupOwner {
+    jobs: Mutex<Vec<JoinHandle<()>>>,
+    poll_interval: Duration,
+}
+
+impl CleanupOwner {
+    pub fn new(poll_interval: Duration) -> Result<Self, ClientError> {
+        if poll_interval.is_zero() || Instant::now().checked_add(poll_interval).is_none() {
+            return Err(ClientError::InvalidPolicy(
+                "invalid cleanup poll interval".into(),
+            ));
+        }
+        Ok(Self {
+            jobs: Mutex::new(Vec::new()),
+            poll_interval,
+        })
+    }
+
+    fn track(&self, job: JoinHandle<()>) {
+        self.jobs.lock().unwrap().push(job);
+    }
+
+    /// Join cleanup after admission is closed and all request jobs have been joined.
+    pub fn wait_for_cleanup(&self, deadline: Instant) -> Result<(), ClientError> {
+        loop {
+            let completed = {
+                let mut jobs = self.jobs.lock().unwrap();
+                jobs.iter()
+                    .position(JoinHandle::is_finished)
+                    .map(|index| jobs.swap_remove(index))
+            };
+            if let Some(job) = completed {
+                job.join()
+                    .map_err(|_panic| ClientError::Transport("cleanup task panicked".into()))?;
+                continue;
+            }
+            if self.jobs.lock().unwrap().is_empty() {
+                return Ok(());
+            }
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                return Err(ClientError::Timeout);
+            }
+            thread::park_timeout(remaining.min(self.poll_interval));
+        }
+    }
+}
+
 pub struct EmbeddingClient {
     program: OsString,
     args: Vec<OsString>,
@@ -130,7 +180,7 @@ pub struct EmbeddingClient {
     wake: Arc<Wake>,
     state: Arc<Mutex<State>>,
     trace: Arc<Trace>,
-    cleanup: Mutex<Vec<JoinHandle<()>>>,
+    cleanup: Arc<CleanupOwner>,
 }
 
 type IoResult = (Result<ReplyEnvelope, String>, ChildStdin, ChildStdout);
@@ -248,6 +298,35 @@ impl EmbeddingClient {
     )]
     pub fn describe_model_cancellable(
         program: impl Into<OsString>,
+        args: Vec<OsString>,
+        model: ModelId,
+        artifact_budget: u64,
+        limits: ProtocolLimits,
+        policy: ClientPolicy,
+        caller_deadline: Instant,
+        cancel: Cancellation,
+    ) -> Result<ModelIdentity, ClientError> {
+        let cleanup = Arc::new(CleanupOwner::new(policy.shutdown_poll_interval)?);
+        Self::describe_model_cancellable_with_cleanup(
+            program,
+            args,
+            model,
+            artifact_budget,
+            limits,
+            policy,
+            caller_deadline,
+            cancel,
+            cleanup,
+        )
+    }
+
+    /// Discover an identity with cleanup retained by the caller on failure.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "extends descriptor inputs with owner cancellation and cleanup"
+    )]
+    pub fn describe_model_cancellable_with_cleanup(
+        program: impl Into<OsString>,
         mut args: Vec<OsString>,
         model: ModelId,
         artifact_budget: u64,
@@ -255,6 +334,7 @@ impl EmbeddingClient {
         policy: ClientPolicy,
         caller_deadline: Instant,
         cancel: Cancellation,
+        cleanup: Arc<CleanupOwner>,
     ) -> Result<ModelIdentity, ClientError> {
         let generation = Uuid::new_v4();
         let model_name = match model {
@@ -285,7 +365,14 @@ impl EmbeddingClient {
             normalization: "-".into(),
             prefix: "-".into(),
         };
-        let client = Self::new(program, args, placeholder, limits.clone(), policy.clone())?;
+        let client = Self::new_with_cleanup(
+            program,
+            args,
+            placeholder,
+            limits.clone(),
+            policy.clone(),
+            cleanup,
+        )?;
         let deadline = Self::effective(caller_deadline, policy.startup_timeout)?;
         cancel.register(&client.wake);
         let mut child = client.launch(generation, deadline, &cancel)?;
@@ -445,6 +532,7 @@ impl EmbeddingClient {
             ));
         }
         let restarts_left = policy.max_restarts;
+        let cleanup = Arc::new(CleanupOwner::new(policy.shutdown_poll_interval)?);
         Ok(Self {
             program: program.into(),
             args,
@@ -458,38 +546,32 @@ impl EmbeddingClient {
                 restarts_left,
             })),
             trace: Arc::new(Trace::new()),
-            cleanup: Mutex::new(Vec::new()),
+            cleanup,
         })
     }
 
+    /// Construct a client that retains cleanup in a caller-owned scope.
+    pub fn new_with_cleanup(
+        program: impl Into<OsString>,
+        args: Vec<OsString>,
+        identity: ModelIdentity,
+        limits: ProtocolLimits,
+        policy: ClientPolicy,
+        cleanup: Arc<CleanupOwner>,
+    ) -> Result<Self, ClientError> {
+        let mut client = Self::new(program, args, identity, limits, policy)?;
+        client.cleanup = cleanup;
+        Ok(client)
+    }
+
     fn track_cleanup(&self, job: JoinHandle<()>) {
-        self.cleanup.lock().unwrap().push(job);
+        self.cleanup.track(job);
     }
 
     /// Join cleanup work after callers have stopped submitting and joined requests.
     /// A timeout retains unfinished jobs for a subsequent call.
     pub fn wait_for_cleanup(&self, deadline: Instant) -> Result<(), ClientError> {
-        loop {
-            let completed = {
-                let mut jobs = self.cleanup.lock().unwrap();
-                jobs.iter()
-                    .position(JoinHandle::is_finished)
-                    .map(|index| jobs.swap_remove(index))
-            };
-            if let Some(job) = completed {
-                job.join()
-                    .map_err(|_panic| ClientError::Transport("cleanup task panicked".into()))?;
-                continue;
-            }
-            if self.cleanup.lock().unwrap().is_empty() {
-                return Ok(());
-            }
-            let remaining = deadline.saturating_duration_since(Instant::now());
-            if remaining.is_zero() {
-                return Err(ClientError::Timeout);
-            }
-            thread::park_timeout(remaining.min(self.policy.shutdown_poll_interval));
-        }
+        self.cleanup.wait_for_cleanup(deadline)
     }
     #[cfg(feature = "test-support")]
     pub fn test_events(&self) -> Vec<TestEvent> {
