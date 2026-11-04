@@ -2,9 +2,9 @@
 use spur_embedding::{ClientError, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits};
 use std::time::{Duration, Instant};
 
-// Model the existing file-existence gate so the regression exercises the race.
-fn read_descriptor_pid(path: &std::path::Path) -> Option<String> {
-    std::fs::read_to_string(path).ok()
+fn read_descriptor_pid(path: &std::path::Path) -> Option<i32> {
+    let pid = std::fs::read_to_string(path).ok()?.trim().parse().ok()?;
+    (pid > 0).then_some(pid)
 }
 
 #[test]
@@ -15,7 +15,7 @@ fn descriptor_pid_file_requires_a_positive_numeric_pid() {
         assert!(read_descriptor_pid(&path).is_none(), "accepted {invalid:?}");
     }
     std::fs::write(&path, "123").unwrap();
-    assert_eq!(read_descriptor_pid(&path).as_deref(), Some("123"));
+    assert_eq!(read_descriptor_pid(&path), Some(123));
     std::fs::remove_file(path).unwrap();
 }
 
@@ -157,11 +157,23 @@ fn owner_can_join_cancelled_descriptor_process() {
     let trigger = cancel.clone();
     let job = std::thread::spawn(move || {
         let until = Instant::now() + timeout;
-        while !watch.exists() {
+        let pid = loop {
+            if let Some(pid) = read_descriptor_pid(&watch) {
+                break pid;
+            }
             assert!(Instant::now() < until, "descriptor process never started");
             std::thread::yield_now();
-        }
+        };
+        let probe = std::process::Command::new("/bin/kill")
+            .args(["-0", &pid.to_string()])
+            .output()
+            .unwrap();
+        assert!(
+            probe.status.success(),
+            "valid child probe failed: {probe:?}"
+        );
         trigger.cancel();
+        pid
     });
     let result = EmbeddingClient::describe_model_cancellable_with_cleanup(
         "/bin/sh",
@@ -179,19 +191,20 @@ fn owner_can_join_cancelled_descriptor_process() {
         cancel,
         Arc::clone(&cleanup),
     );
-    job.join().unwrap();
+    let pid = job.join().unwrap();
     assert!(matches!(result, Err(ClientError::Cancelled)), "{result:?}");
     cleanup
         .wait_for_cleanup(Instant::now() + timeout)
         .expect("join descriptor cleanup");
-    let pid = std::fs::read_to_string(&path).unwrap();
-    let status = std::process::Command::new("/bin/kill")
-        .args(["-0", &pid])
-        .status()
+    let probe = std::process::Command::new("/bin/kill")
+        .env("LC_ALL", "C")
+        .args(["-0", &pid.to_string()])
+        .output()
         .unwrap();
     assert!(
-        !status.success(),
-        "descriptor process {pid} survived cleanup"
+        probe.status.code() == Some(1)
+            && String::from_utf8_lossy(&probe.stderr).contains("No such process"),
+        "descriptor process {pid} did not yield a valid absence probe: {probe:?}"
     );
     std::fs::remove_file(path).unwrap();
 }
