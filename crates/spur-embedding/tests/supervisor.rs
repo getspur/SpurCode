@@ -514,3 +514,34 @@ fn acknowledged_shutdown_hang_times_out_and_reaps_child() {
         serde_json::json!({"case":"shutdown_hang", "outcome":format!("{outcome:?}"), "events":c.test_events()})
     );
 }
+
+#[test]
+fn owner_can_wait_for_abandoned_launch_cleanup() {
+    let mut policy = test_policy();
+    policy.startup_timeout = Duration::from_secs(1);
+    policy.request_timeout = Duration::from_secs(5);
+    let client = custom_client("normal", policy, large_limits()).unwrap();
+    client.test_hold_spawn(Duration::from_secs(2));
+    let started = Instant::now();
+    assert!(matches!(
+        client.embed(vec!["hello".into()], started + Duration::from_secs(5)),
+        Err(ClientError::Timeout)
+    ));
+    assert!(
+        matches!(
+            client.wait_for_cleanup(Instant::now() + Duration::from_millis(100)),
+            Err(ClientError::Timeout)
+        ),
+        "cleanup must report unfinished launch"
+    );
+    client
+        .wait_for_cleanup(Instant::now() + Duration::from_secs(3))
+        .expect("abandoned launch must be joined");
+    assert!(
+        !client
+            .test_events()
+            .iter()
+            .any(|event| event.kind == "spawned"),
+        "abandoned launch must not start a child"
+    );
+}
