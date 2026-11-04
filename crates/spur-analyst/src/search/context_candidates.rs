@@ -4,7 +4,8 @@ use anyhow::{anyhow, Context as _, Result};
 
 use crate::{
     db::{
-        connection::open_analyst_connection_read_only, extensions::load_analyst_icu_extension,
+        connection::open_analyst_connection_read_only,
+        extensions::{analyst_extension_load_sql, load_analyst_icu_extension},
         sql::sql_escape_literal,
     },
     search::hybrid::format_query_vec_sql,
@@ -21,6 +22,8 @@ pub fn query_context_candidates(
 ) -> Result<KnowledgeQueryResult> {
     let conn = open_analyst_connection_read_only(db_path)?;
     load_analyst_icu_extension(&conn);
+    conn.execute_batch(&analyst_extension_load_sql("fts"))
+        .context("failed to load FTS extension for context candidate query")?;
     query_context_candidates_with_conn(&conn, db_path, query, scope, options)
 }
 
