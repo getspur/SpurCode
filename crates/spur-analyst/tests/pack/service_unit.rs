@@ -3049,9 +3049,6 @@ async fn knowledge_context_pack_marks_popular_sink_without_expanding_neighbors()
 #[tokio::test]
 async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
     let fixture = build_hybrid_confidence_fixture();
-    let conn = crate::db::connection::open_analyst_connection_read_only(&fixture.db_path)
-        .expect("open fixture query connection");
-    load_pack_extensions(&conn);
 
     let strong_request = KnowledgeContextPackRequest::parse(&json!({
         "query": "ranking beacon",
@@ -3059,8 +3056,7 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
         "limit": 3
     }))
     .expect("request");
-    let strong_result = query_context_candidates_with_conn(
-        &conn,
+    let strong_result = crate::query_context_candidates(
         &fixture.db_path,
         "ranking beacon",
         KnowledgeSearchScope::All,
@@ -3123,8 +3119,7 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
         "limit": 3
     }))
     .expect("request");
-    let weak_result = query_context_candidates_with_conn(
-        &conn,
+    let weak_result = crate::query_context_candidates(
         &fixture.db_path,
         "private lexical-only weakness signal",
         KnowledgeSearchScope::Docs,
