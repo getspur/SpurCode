@@ -7,7 +7,7 @@ use spur_graph::EMBEDDING_VECTOR_DIMENSIONS;
 
 use super::{in_process, mode::AnalystEmbedMode};
 
-const EMBED_INFERENCE_TIMEOUT: Duration = Duration::from_millis(1500);
+pub(super) const EMBED_INFERENCE_TIMEOUT: Duration = Duration::from_millis(1500);
 const AUTO_SIDECAR_PING_TIMEOUT: Duration = Duration::from_millis(100);
 const AUTO_SIDECAR_UNAVAILABLE_TTL: Duration = Duration::from_secs(3);
 
@@ -183,7 +183,7 @@ pub(crate) fn reset_auto_sidecar_probe_for_test() {
     *cache = None;
 }
 
-async fn auto_sidecar_reachable() -> bool {
+pub(super) async fn auto_sidecar_reachable() -> bool {
     // Cache policy: a reachable sidecar is sticky for the process so serving
     // processes keep sharing it and never fall back to loading their own model.
     // Misses are cached briefly to avoid adding a socket probe to every BM25

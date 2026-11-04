@@ -5,9 +5,9 @@ use std::{
     time::Instant,
 };
 
-use spur_graph::EMBEDDING_VECTOR_DIMENSIONS;
 #[cfg(feature = "embed")]
 use spur_graph::store::lance_sections::EmbeddingModelHandle;
+use spur_graph::EMBEDDING_VECTOR_DIMENSIONS;
 #[cfg(feature = "embed")]
 use spur_graph::{
     embedding_query_text_for_model, load_embedding_model, EmbeddingModelSelection, EMBED_MODEL_ENV,

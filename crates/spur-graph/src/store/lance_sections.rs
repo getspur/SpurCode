@@ -2135,6 +2135,11 @@ fn checked_deadline(timeout: Duration) -> Result<Instant> {
 
 #[cfg(feature = "embed")]
 impl EmbeddingModelHandle {
+    #[cfg(feature = "test-support")]
+    pub fn test_inject_reap_failure(&self) {
+        self.client.test_inject_reap_failure();
+    }
+
     pub fn close(&mut self) -> Result<()> {
         if let Some(clean) = self.close_result {
             if clean {

@@ -10,7 +10,15 @@ fn default_product_embedding_closure_has_no_native_inference_dependencies() {
     for package in ["spur-graph", "spur-analyst", "spur-core", "spur-cli"] {
         let output = Command::new(root.join("scripts/spur-cargo"))
             .current_dir(root)
-            .args(["tree", "-p", package, "--edges", "normal,build", "--prefix", "none"])
+            .args([
+                "tree",
+                "-p",
+                package,
+                "--edges",
+                "normal,build",
+                "--prefix",
+                "none",
+            ])
             .output()
             .expect("run dependency tree");
         assert!(

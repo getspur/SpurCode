@@ -1,6 +1,7 @@
 mod in_process;
 mod mode;
 mod model_cache;
+mod owned_runtime;
 mod protocol;
 mod runtime;
 pub(crate) mod sidecar_client;
@@ -18,6 +19,7 @@ pub(crate) use mode::AnalystEmbedMode;
 pub(crate) use model_cache::embed_model_cell;
 #[cfg(all(test, feature = "embed"))]
 pub(crate) use model_cache::EmbedModelCell;
+pub use owned_runtime::OwnedEmbeddingRuntime;
 #[cfg(test)]
 pub(crate) use runtime::reset_auto_sidecar_probe_for_test;
 pub use runtime::{warm_embed_model, EmbeddingRuntime};
