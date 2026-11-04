@@ -2,14 +2,14 @@
 use std::sync::{Arc, Mutex, OnceLock};
 
 #[cfg(feature = "embed")]
-use spur_graph::EmbeddingModelSelection;
+use spur_graph::{store::lance_sections::EmbeddingModelHandle, EmbeddingModelSelection};
 
 #[cfg(feature = "embed")]
-static NOMIC_EMBED_TEXT_V15_MODEL: EmbedModelCell<fastembed::TextEmbedding> = EmbedModelCell::new();
+static NOMIC_EMBED_TEXT_V15_MODEL: EmbedModelCell<EmbeddingModelHandle> = EmbedModelCell::new();
 #[cfg(feature = "embed")]
-static CODE_RANK_EMBED_MODEL: EmbedModelCell<fastembed::TextEmbedding> = EmbedModelCell::new();
+static CODE_RANK_EMBED_MODEL: EmbedModelCell<EmbeddingModelHandle> = EmbedModelCell::new();
 #[cfg(feature = "embed")]
-static JINA_EMBEDDINGS_V2_BASE_CODE_MODEL: EmbedModelCell<fastembed::TextEmbedding> =
+static JINA_EMBEDDINGS_V2_BASE_CODE_MODEL: EmbedModelCell<EmbeddingModelHandle> =
     EmbedModelCell::new();
 
 #[cfg(feature = "embed")]
@@ -112,7 +112,7 @@ impl<M> Drop for EmbedLoadPermit<'_, M> {
 #[cfg(feature = "embed")]
 pub(crate) fn embed_model_cell(
     embedding_model: EmbeddingModelSelection,
-) -> &'static EmbedModelCell<fastembed::TextEmbedding> {
+) -> &'static EmbedModelCell<EmbeddingModelHandle> {
     match embedding_model {
         EmbeddingModelSelection::NomicEmbedTextV15 => &NOMIC_EMBED_TEXT_V15_MODEL,
         EmbeddingModelSelection::CodeRankEmbed => &CODE_RANK_EMBED_MODEL,
