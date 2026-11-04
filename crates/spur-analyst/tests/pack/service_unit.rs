@@ -20,9 +20,7 @@ use crate::embedding::{
     reset_auto_sidecar_probe_for_test, set_analyst_embed_mode_for_test, warm_embed_model,
     AnalystEmbedMode, EmbeddingRuntime,
 };
-use crate::{
-    query_context_candidates, KnowledgeCandidate, KnowledgeQueryIntent, KnowledgeSearchScope,
-};
+use crate::{KnowledgeCandidate, KnowledgeQueryIntent, KnowledgeSearchScope};
 use duckdb::Connection;
 use tokio::io::{AsyncBufReadExt as _, AsyncWriteExt as _, BufReader};
 use tokio::net::{UnixListener, UnixStream};
@@ -3051,6 +3049,9 @@ async fn knowledge_context_pack_marks_popular_sink_without_expanding_neighbors()
 #[tokio::test]
 async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
     let fixture = build_hybrid_confidence_fixture();
+    let conn = crate::db::connection::open_analyst_connection_read_only(&fixture.db_path)
+        .expect("open fixture query connection");
+    load_pack_extensions(&conn);
 
     let strong_request = KnowledgeContextPackRequest::parse(&json!({
         "query": "ranking beacon",
@@ -3058,7 +3059,8 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
         "limit": 3
     }))
     .expect("request");
-    let strong_result = query_context_candidates(
+    let strong_result = query_context_candidates_with_conn(
+        &conn,
         &fixture.db_path,
         "ranking beacon",
         KnowledgeSearchScope::All,
@@ -3121,7 +3123,8 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
         "limit": 3
     }))
     .expect("request");
-    let weak_result = query_context_candidates(
+    let weak_result = query_context_candidates_with_conn(
+        &conn,
         &fixture.db_path,
         "private lexical-only weakness signal",
         KnowledgeSearchScope::Docs,
