@@ -256,6 +256,7 @@ pub fn unlicensed_feature_gate() -> Arc<FeatureGate> {
 /// delegation lifecycle handles — are orchestration-domain state that moves to
 /// `spur-core`. The accessors below expose that subset for the staged move.
 pub struct McpCallbackServer {
+    pub(crate) embedding_runtime: spur_analyst::embedding::OwnedEmbeddingRuntime,
     /// Channel to send delegation requests to the orchestrator.
     pub(crate) delegation_tx: mpsc::Sender<DelegationRequest>,
     /// Available worker agents (set once at creation).
@@ -498,6 +499,7 @@ impl McpCallbackServer {
         let materializer = OutcomeMaterializer::new(outcome_store.clone());
 
         let server = Self {
+            embedding_runtime: spur_analyst::embedding::OwnedEmbeddingRuntime::new(),
             delegation_tx: req_tx,
             workers: Vec::new(),
             brain_session_id: {
@@ -1136,8 +1138,13 @@ impl McpCallbackServer {
             }
         };
 
-        let (startup_forced, reconciler_forced, root_forced, tracker_forced) =
-            tokio::join!(startup, reconciler, root, tracked);
+        let embedding = async {
+            if let Err(error) = self.embedding_runtime.shutdown().await {
+                tracing::error!(%error, "callback embedding shutdown failed");
+            }
+        };
+        let (startup_forced, reconciler_forced, root_forced, tracker_forced, ()) =
+            tokio::join!(startup, reconciler, root, tracked, embedding);
         self.root_abort_handle.lock().unwrap().take();
         startup_forced
             || reconciler_forced
@@ -1266,8 +1273,6 @@ impl McpCallbackServer {
     /// Returns the MCP endpoint URL (e.g. `http://127.0.0.1:12345/mcp`) and
     /// a `JoinHandle`.
     pub async fn start(self: Arc<Self>) -> Result<(String, AbortOnDropHandle<()>)> {
-        spur_analyst::mcp::warm_embed_model();
-
         // Extract data needed by beads-backed startup tasks before moving self
         // into the async block.
         let repo_root = self.repo_root.clone();
@@ -1302,6 +1307,13 @@ impl McpCallbackServer {
             )
             .await?
         };
+
+        let embedding_runtime = self.embedding_runtime.clone();
+        self.task_tracker.spawn(async move {
+            if let Err(error) = embedding_runtime.warm().await {
+                tracing::warn!(%error, "callback embedding warm failed");
+            }
+        });
 
         let mut signal_watcher_cancel_tx: Option<tokio::sync::oneshot::Sender<()>> = None;
         let signal_watcher_task = if let Some(pm) = self.pm_service.as_ref() {

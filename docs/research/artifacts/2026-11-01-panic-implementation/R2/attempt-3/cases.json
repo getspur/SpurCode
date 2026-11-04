@@ -1,0 +1,170 @@
+[
+  {
+    "case": "derive_clone",
+    "source": "#[derive(Clone)]\nstruct Alpha(u8);\nimpl Alpha { fn clone(&mut self) -> Alpha { Alpha(1) } }\nfn caller(mut value: Alpha) -> Alpha { value.clone() }",
+    "receiver": "Alpha",
+    "method": "clone",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha(0)).0, 0);"
+  },
+  {
+    "case": "derive_renamed_borrowed",
+    "source": "#[derive(Clone)]\nstruct Ember(u8);\nimpl Ember { fn clone(&mut self) -> Ember { Ember(1) } }\nfn caller(mut value: &Ember) -> Ember { value.clone() }",
+    "receiver": "Ember",
+    "method": "clone",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(&Ember(0)).0, 0);"
+  },
+  {
+    "case": "macro_top",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nmacro_rules! implement_mark { ($t:ty) => { impl Mark for $t { fn mark(&self) -> u8 { 2 } } }; }\nimplement_mark!(Alpha);\nfn caller(mut value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha), 2);"
+  },
+  {
+    "case": "macro_statement",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nmacro_rules! implement_mark { ($t:ty) => { impl Mark for $t { fn mark(&self) -> u8 { 2 } } }; }\nfn caller(mut value: Alpha) -> u8 { implement_mark!(Alpha); value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha), 2);"
+  },
+  {
+    "case": "macro_braced_statement",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nmacro_rules! implement_mark { ($t:ty) => { impl Mark for $t { fn mark(&self) -> u8 { 2 } } }; }\nfn caller(mut value: Alpha) -> u8 { implement_mark!{Alpha} value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha), 2);"
+  },
+  {
+    "case": "macro_nested_block",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nmacro_rules! implement_mark { ($t:ty) => { impl Mark for $t { fn mark(&self) -> u8 { 2 } } }; }\nfn caller(mut value: Alpha) -> u8 { { implement_mark!(Alpha); } value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha), 2);"
+  },
+  {
+    "case": "macro_renamed",
+    "source": "struct Cinder;\nimpl Cinder { fn pulse(&mut self) -> u8 { 1 } }\ntrait Pulse { fn pulse(&self) -> u8; }\nmacro_rules! implement_pulse { ($t:ty) => { impl Pulse for $t { fn pulse(&self) -> u8 { 2 } } }; }\nimplement_pulse!(Cinder);\nfn caller(mut value: Cinder) -> u8 { value.pulse() }",
+    "receiver": "Cinder",
+    "method": "pulse",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Cinder), 2);"
+  },
+  {
+    "case": "macro_expression",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nmacro_rules! emit { () => {{ impl Mark for Alpha { fn mark(&self) -> u8 { 2 } } }}; }\nfn caller(mut value: Alpha) -> u8 { let _ = emit!(); value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha), 2);"
+  },
+  {
+    "case": "include_top",
+    "source": "include!(\"generated.rs\");\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "include_statement",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { include!(\"generated.rs\"); value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "procedural_type",
+    "source": "#[supply_dispatch]\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "procedural_impl",
+    "source": "struct Alpha;\n#[supply_dispatch]\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "procedural_caller",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\n#[supply_dispatch]\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "procedural_module",
+    "source": "#[supply_dispatch]\nmod generated {}\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "qualified_attribute",
+    "source": "#[tool::allow(dead_code)]\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "conditional_derive",
+    "source": "#[cfg_attr(all(), derive(Clone))]\nstruct Alpha(u8);\nimpl Alpha { fn clone(&mut self) -> Alpha { Alpha(1) } }\nfn caller(mut value: Alpha) -> Alpha { value.clone() }",
+    "receiver": "Alpha",
+    "method": "clone",
+    "target": "unresolved",
+    "runtime": "assert_eq!(caller(Alpha(0)).0, 0);"
+  },
+  {
+    "case": "inner_attribute",
+    "source": "#![supply_dispatch]\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "unresolved",
+    "runtime": null
+  },
+  {
+    "case": "safe_allow",
+    "source": "#![allow(dead_code)]\n#[allow(unused)]\nstruct Alpha;\nimpl Alpha { #[allow(dead_code)] fn mark(&self) -> u8 { 1 } }\n#[allow(unused_variables)] fn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "Alpha::mark",
+    "runtime": "assert_eq!(caller(Alpha), 1);"
+  },
+  {
+    "case": "safe_doc",
+    "source": "#[doc = \"derive(Clone), include!(nothing), #[unknown]\"]\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "Alpha::mark",
+    "runtime": "assert_eq!(caller(Alpha), 1);"
+  },
+  {
+    "case": "safe_macro_definition",
+    "source": "macro_rules! never_invoked { () => { #[derive(Clone)] struct Hidden; impl Missing for Alpha {} }; }\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "Alpha::mark",
+    "runtime": "assert_eq!(caller(Alpha), 1);"
+  },
+  {
+    "case": "safe_lint_levels",
+    "source": "#![warn(dead_code)]\n#![deny(unused_must_use)]\n#![forbid(unsafe_code)]\nstruct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\nfn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "method": "mark",
+    "target": "Alpha::mark",
+    "runtime": "assert_eq!(caller(Alpha), 1);"
+  }
+]

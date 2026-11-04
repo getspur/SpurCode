@@ -29,10 +29,10 @@ use crate::{
     GraphSymbolArtifact, GraphTombstoneEntry, NodeId, NodeKind, RelationKind, SourceSpan,
 };
 
-pub const SCHEMA_VERSION: &str = "spur-graph-schema-v11";
-pub const EXTRACTOR_VERSION: &str = "2026-10-31-physical-rust-macro-evidence-v1";
+pub const SCHEMA_VERSION: &str = "spur-graph-schema-v12";
+pub const EXTRACTOR_VERSION: &str = "2026-11-02-rust-tuple-fields-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
-pub const RESOLVER_VERSION: &str = "2026-08-30-web-edge-resolution-v1";
+pub const RESOLVER_VERSION: &str = "2026-11-02-rust-receiver-rebind-v2";
 
 #[derive(Debug, Clone, Copy)]
 struct ManifestQueryBytes<'a> {
@@ -771,6 +771,7 @@ fn buckets_from_facts(
                 }
             }
             NodeKind::Module
+            | NodeKind::ExternBlock
             | NodeKind::Function
             | NodeKind::Class
             | NodeKind::Interface
@@ -1842,6 +1843,19 @@ fn rebind_remaining_edges(
                     );
                 }
                 drop_dangling_stamped_target(edge, current_symbol_ids);
+                continue;
+            }
+            // Physical Rust receiver lookup already adjudicated this call.
+            // Nominal scope is evidence, not trait/autoderef authority. Neither
+            // a same-directory singleton nor an import license may resurrect
+            // a target rejected by that lookup. Grounded stamped targets above
+            // and explicit UFCS paths retain their established behavior.
+            if language_family(source_file_path) == Some("rust")
+                && edge.relation == RelationKind::Calls
+                && edge.receiver_text.is_some()
+            {
+                edge.target_stable_symbol_id = None;
+                edge.bind_method = None;
                 continue;
             }
             if edge.edge_kind == Some(GraphEdgeKind::ReferencesAddress) {
@@ -3112,6 +3126,7 @@ mod tests {
     fn import_rebind_fallback_candidate_kind_agrees_with_node_kind_discriminators() {
         for (kind, expected) in [
             (NodeKind::Module, false),
+            (NodeKind::ExternBlock, false),
             (NodeKind::Function, false),
             (NodeKind::Class, false),
             (NodeKind::Interface, false),
@@ -3150,7 +3165,7 @@ mod tests {
 
     #[test]
     fn schema_version_carries_phase_1b_vocabulary() {
-        assert_eq!(super::SCHEMA_VERSION, "spur-graph-schema-v11");
+        assert_eq!(super::SCHEMA_VERSION, "spur-graph-schema-v12");
     }
 
     #[test]

@@ -1,11 +1,21 @@
 //! Experimental source-bound evidence, independent of the canonical graph schema.
 
+mod analysis;
 mod build_identity;
+mod call_sites;
 mod cga;
+mod compiler_validation;
 mod method_sites;
+mod semantic_facts;
+mod semantics;
 
+pub use analysis::*;
 pub use build_identity::*;
+pub use call_sites::*;
 pub use cga::*;
+pub use compiler_validation::*;
+pub use semantic_facts::*;
+pub use semantics::*;
 
 use std::collections::BTreeSet;
 use std::path::{Component, Path};

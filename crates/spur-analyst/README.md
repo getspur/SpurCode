@@ -41,7 +41,7 @@ src/
 ├── api.rs          # Public DTOs: scopes, intents, candidates, paths, risk/community rows
 ├── db/             # Read-only connections, paths, freshness, extensions, SQL row serialization
 ├── search/         # Context candidates (BM25/hybrid), graph candidates, confidence helpers
-├── embedding/      # Embed mode, model cache, sidecar / in-process runtime (feature `embed`)
+├── embedding/      # Owned helper runtime, mode selection and sidecar protocol (feature `embed`)
 ├── pack/           # Evidence-pack assembly: request parse, staleness, impact, graph reasoning
 ├── paths/          # DuckPGQ/recursive path queries + risk/community enrichment
 ├── doc_nav/        # Documentation section artifact open + FTS / tree navigation
@@ -64,9 +64,10 @@ src/
 
 ### `embedding` (feature `embed`, default on)
 
-- `EmbeddingRuntime` embeds the pack query for vector re-rank when available.
-- Modes: in-process (`fastembed`) or sidecar service; unavailable/timeout → BM25-only degradation.
-- `warm_embed_model()` can pre-load the model at process start.
+- `OwnedEmbeddingRuntime` owns and reuses a supervised helper; hosts explicitly await `shutdown`.
+- `SPUR_ANALYST_EMBED_MODE=auto` uses a reachable external sidecar and otherwise the local helper; `sidecar` uses the external service only; `off` skips embeddings. Unavailable embeddings fall back to BM25.
+- `inprocess` is a compatibility alias for the local supervised helper. It does not load the native model into the analyst host.
+- `warm_embed_model(&runtime).await` warms an explicit owned scope. The stateless compatibility query facade uses a bounded scope per call.
 
 ### `pack`
 

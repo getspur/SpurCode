@@ -12,9 +12,9 @@ dist = false
 
 [features]
 default = ["embed"]
-embed = ["dep:fastembed", "dep:hf-hub"]
+embed = ["dep:spur-embedding"]
 perf-gates = ["test-support"]
-test-support = []
+test-support = ["spur-embedding?/test-support"]
 
 [lib]
 bench = false
@@ -39,11 +39,7 @@ arrow-buffer = { workspace = true }
 arrow-schema = { workspace = true }
 arrow-select = "58"
 base64 = "0.22"
-# 5.8.0 includes NomicEmbedTextV15 and JinaEmbeddingsV2BaseCode. CodeRankEmbed
-# uses the user-defined ONNX path. Newer 5.x releases pull ORT
-# rc.11/rc.12 binaries that require newer Linux runtime symbols on the build VM.
-fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries"], optional = true }
-hf-hub = { version = "=0.4.3", default-features = false, features = ["native-tls", "ureq"], optional = true }
+spur-embedding = { path = "../spur-embedding", optional = true }
 parquet = { workspace = true, features = ["arrow", "async"] }
 petgraph = { workspace = true }
 reqwest = { workspace = true }
@@ -52,6 +48,7 @@ serde_json = { workspace = true }
 sha1 = "0.10"
 sha2 = { workspace = true }
 spur-mcp = { workspace = true }
+spur-solver = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 toml = { workspace = true }

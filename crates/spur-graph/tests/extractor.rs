@@ -238,10 +238,10 @@ fn find_symbol_json<'a>(
 }
 
 #[test]
-fn graph_store_schema_version_is_v11() {
+fn graph_store_schema_version_is_v12() {
     assert_eq!(
         spur_graph::store::build::SCHEMA_VERSION,
-        "spur-graph-schema-v11"
+        "spur-graph-schema-v12"
     );
 }
 
@@ -1269,7 +1269,7 @@ fn rust_extractor_tags_edge_confidence_by_relation_semantics() {
         .edges
         .iter()
         .find(|edge| {
-            edge.relation == RelationKind::Calls && edge.edge_kind != Some(GraphEdgeKind::CallsDyn)
+            edge.relation == RelationKind::Calls && edge.target_label.as_deref() == Some("helper")
         })
         .expect("fixture has calls edge");
 
@@ -1279,6 +1279,25 @@ fn rust_extractor_tags_edge_confidence_by_relation_semantics() {
     assert_eq!(imports_edge.confidence_score, 0.8);
     assert_eq!(calls_edge.confidence, Confidence::SyntaxExact);
     assert_eq!(calls_edge.confidence_score, 1.0);
+    // A declared receiver type retains heuristic scope evidence even when
+    // method dispatch cannot be established. Selection by iteration order
+    // previously conflated this edge with an ordinary free-function call.
+    for (label, scope) in [("map", "Option<i32>"), ("run", "dyn Runner")] {
+        let receiver = facts
+            .edges
+            .iter()
+            .find(|edge| {
+                edge.relation == RelationKind::Calls
+                    && matches!(edge.edge_kind, None | Some(GraphEdgeKind::Calls))
+                    && edge.target_label.as_deref() == Some(label)
+                    && edge.scope_text.as_deref() == Some(scope)
+            })
+            .expect("typed unresolved receiver");
+        assert_eq!(receiver.target_node_id, None);
+        assert_eq!(receiver.bind_method, None);
+        assert_eq!(receiver.confidence, Confidence::Heuristic);
+        assert_eq!(receiver.confidence_score, 0.8);
+    }
 }
 
 #[test]

@@ -10,6 +10,10 @@
 (enum_variant
   name: (identifier) @name) @definition.enum_variant
 
+; Only direct type children are tuple entries; descendants are types, not fields.
+(ordered_field_declaration_list
+  type: (_) @definition.tuple_field)
+
 (use_declaration
   argument: (identifier) @import.name) @import
 

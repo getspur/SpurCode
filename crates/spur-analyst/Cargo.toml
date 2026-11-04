@@ -15,15 +15,12 @@ anyhow = { workspace = true }
 arrow-array = { workspace = true }
 async-trait = { workspace = true }
 duckdb = { workspace = true, features = ["bundled"] }
-# 5.8.0 includes NomicEmbedTextV15 and JinaEmbeddingsV2BaseCode. CodeRankEmbed
-# is loaded centrally by spur-graph. Newer 5.x releases pull ORT
-# rc.11/rc.12 binaries that require newer Linux runtime symbols on the build VM.
-fastembed = { version = "=5.8.0", default-features = false, optional = true }
 futures = { workspace = true }
 globset = "0.4"
 serde = { workspace = true }
 serde_json = { workspace = true }
 spur-graph = { workspace = true }
+spur-embedding = { path = "../spur-embedding", optional = true }
 spur-mcp = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
@@ -32,16 +29,13 @@ uuid = { workspace = true, features = ["v4", "serde"] }
 
 [features]
 default = ["embed"]
-embed = [
-    "dep:fastembed",
-    "fastembed/hf-hub-native-tls",
-    "fastembed/ort-download-binaries",
-    "spur-graph/embed",
-]
+embed = ["spur-graph/embed", "dep:spur-embedding"]
 
 [dev-dependencies]
 spur-cli = { path = "../spur-cli" }
+spur-graph = { workspace = true, features = ["test-support"] }
 tempfile = "3"
+tracing-subscriber = { workspace = true }
 
 [lints]
 workspace = true

@@ -1,0 +1,29 @@
+[workspace]
+
+[package]
+name = "spur-ort-wrapper-regressions"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "spur_graph"
+
+[features]
+default = ["embed"]
+embed = []
+
+[dependencies]
+anyhow = "1"
+sha2 = "0.10"
+ort = { version = "=2.0.0-rc.10", default-features = false, features = ["load-dynamic", "owner-test-hooks", "ndarray"] }
+
+[dev-dependencies]
+tempfile = "3"
+duckdb = { version = "=1.4.4", features = ["vtab", "bundled"] }
+
+[build-dependencies]
+sha2 = "0.10"
+
+[patch.crates-io]
+ort = { path = "../../../../vendor/ort" }

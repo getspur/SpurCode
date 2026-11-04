@@ -463,6 +463,7 @@ pub(crate) fn rust_config() -> LanguageConfig {
             ("definition.struct", NodeKind::Struct),
             ("definition.enum", NodeKind::Enum),
             ("definition.enum_variant", NodeKind::EnumVariant),
+            ("definition.tuple_field", NodeKind::Field),
             ("definition.field", NodeKind::Field),
             ("definition.trait", NodeKind::Trait),
             ("definition.impl", NodeKind::Impl),
@@ -1293,7 +1294,7 @@ pub(crate) fn emit_definitions_with_parents<'tree>(
 
     let mut bindings = parent_bindings.to_vec();
     let mut emitted = Vec::new();
-    for (kind, node, label) in definitions {
+    for (kind, node, label, range) in definitions {
         let Some(label) = label else {
             continue;
         };
@@ -1309,7 +1310,8 @@ pub(crate) fn emit_definitions_with_parents<'tree>(
             .or(parent.fqn)
             .unwrap_or("");
         let fqn = scoped_name(fqn_prefix, &fqn_segment(kind, &label));
-        let node_id = builder.add_node(relative_path, label, fqn.clone(), kind, file_id, node);
+        let node_id =
+            builder.add_node_with_range(relative_path, label, fqn.clone(), kind, file_id, range);
         builder.add_edge(parent.node_id, Some(node_id), RelationKind::Contains, None);
         if parent.node_id != file_node_id {
             builder.add_edge(parent.node_id, Some(node_id), RelationKind::Defines, None);
@@ -1330,7 +1332,7 @@ pub(crate) fn extracted_symbols<'tree>(
     let mut bindings: Vec<ExtractedDefinitionBinding<'tree>> = Vec::new();
     let mut symbols = Vec::new();
 
-    for (kind, node, label) in definitions {
+    for (kind, node, label, range) in definitions {
         let Some(label) = label else {
             continue;
         };
@@ -1344,8 +1346,7 @@ pub(crate) fn extracted_symbols<'tree>(
             .or_else(|| parent.map(|parent| parent.fqn.as_str()))
             .unwrap_or("");
         let fqn = scoped_name(fqn_prefix, &fqn_segment(kind, &label));
-        let range = node.range();
-        let symbol_text = child_text(node, source);
+        let symbol_text = &source[range.start_byte..range.end_byte];
         symbols.push(ExtractedSymbol {
             entity_name: symbol_entity_name(&label),
             symbol_kind: symbol_kind(kind).to_owned(),
@@ -1880,7 +1881,7 @@ fn definition_candidates<'tree>(
     config: &LanguageConfig,
     source: &str,
     captures: &[CaptureHit<'tree>],
-) -> Vec<(NodeKind, Node<'tree>, Option<String>)> {
+) -> Vec<(NodeKind, Node<'tree>, Option<String>, tree_sitter::Range)> {
     let mut definitions: Vec<_> = captures
         .iter()
         .filter_map(|capture| {
@@ -1889,12 +1890,17 @@ fn definition_candidates<'tree>(
                     kind,
                     capture.node,
                     definition_name(kind, capture, source, captures),
+                    if capture.name == "definition.tuple_field" {
+                        tuple_field_range(capture.node)
+                    } else {
+                        capture.node.range()
+                    },
                 )
             })
         })
         .collect();
 
-    definitions.sort_by_key(|(kind, node, _)| {
+    definitions.sort_by_key(|(kind, node, _, _)| {
         (node.start_byte(), node.end_byte(), definition_rank(*kind))
     });
     definitions.dedup_by(|left, right| {
@@ -1903,6 +1909,40 @@ fn definition_candidates<'tree>(
             && left.1.kind() == right.1.kind()
     });
     definitions
+}
+
+fn tuple_field_range(node: Node<'_>) -> tree_sitter::Range {
+    let mut range = node.range();
+    let mut previous = node.prev_sibling();
+    while let Some(sibling) = previous {
+        if sibling.kind() == "," || sibling.kind() == "(" {
+            break;
+        }
+        if matches!(sibling.kind(), "attribute_item" | "visibility_modifier")
+            || (matches!(sibling.kind(), "line_comment" | "block_comment")
+                && sibling.child_by_field_name("outer").is_some())
+        {
+            range.start_byte = sibling.start_byte();
+            range.start_point = sibling.start_position();
+        }
+        previous = sibling.prev_sibling();
+    }
+    range
+}
+
+fn tuple_field_ordinal(node: Node<'_>) -> Option<usize> {
+    let parent = node.parent()?;
+    let mut ordinal = 0;
+    for i in 0..parent.child_count() {
+        let child = parent.child(i as u32)?;
+        if parent.field_name_for_child(i as u32) == Some("type") {
+            if child == node {
+                return Some(ordinal);
+            }
+            ordinal += 1;
+        }
+    }
+    None
 }
 
 fn definition_name(
@@ -1925,6 +1965,7 @@ fn definition_name(
     }
 
     match definition.name.as_str() {
+        "definition.tuple_field" => tuple_field_ordinal(definition.node).map(|n| n.to_string()),
         "definition.resource" if is_hcl_provider_block(definition, source, captures) => {
             hcl_provider_address(definition, source, captures)
         }
@@ -2266,6 +2307,7 @@ fn nearest_extracted_parent<'a, 'tree>(
 fn symbol_kind(kind: NodeKind) -> &'static str {
     match kind {
         NodeKind::Module => "module",
+        NodeKind::ExternBlock => "extern_block",
         NodeKind::Function => "function",
         NodeKind::Class => "class",
         NodeKind::Interface => "interface",

@@ -20,9 +20,7 @@ use crate::embedding::{
     reset_auto_sidecar_probe_for_test, set_analyst_embed_mode_for_test, warm_embed_model,
     AnalystEmbedMode, EmbeddingRuntime,
 };
-use crate::{
-    query_context_candidates, KnowledgeCandidate, KnowledgeQueryIntent, KnowledgeSearchScope,
-};
+use crate::{KnowledgeCandidate, KnowledgeQueryIntent, KnowledgeSearchScope};
 use duckdb::Connection;
 use tokio::io::{AsyncBufReadExt as _, AsyncWriteExt as _, BufReader};
 use tokio::net::{UnixListener, UnixStream};
@@ -334,7 +332,9 @@ async fn off_embed_mode_never_starts_in_process_model_load() {
         "test assumes no previous load is running"
     );
 
-    warm_embed_model();
+    let runtime = crate::embedding::OwnedEmbeddingRuntime::new();
+    warm_embed_model(&runtime).await.expect("owned warm");
+    runtime.shutdown().await.expect("joined warm");
 
     assert!(
         !model_cell.is_ready(),
@@ -512,7 +512,9 @@ async fn auto_warm_embed_model_pings_reachable_sidecar_without_starting_in_proce
         .begin_load()
         .expect("test should hold the in-process load gate");
 
-    warm_embed_model();
+    let runtime = crate::embedding::OwnedEmbeddingRuntime::new();
+    warm_embed_model(&runtime).await.expect("owned warm");
+    runtime.shutdown().await.expect("joined warm");
     for _ in 0..20 {
         if pinged.load(Ordering::SeqCst) {
             break;
@@ -536,25 +538,35 @@ async fn auto_warm_embed_model_pings_reachable_sidecar_without_starting_in_proce
 
 #[cfg(feature = "embed")]
 #[tokio::test]
-async fn auto_embed_mode_without_sidecar_falls_back_to_in_process_gate() {
+async fn auto_embed_mode_without_sidecar_uses_supervised_helper() {
     let _lock = async_env_lock().await;
     reset_auto_sidecar_probe_for_test();
     let temp_dir = tempfile::tempdir().expect("socket tempdir");
     let missing_socket = temp_dir.path().join("missing.sock");
     let _socket_guard = set_env_var_for_test(SPUR_EMBED_SOCKET_ENV, &missing_socket);
     let _mode_guard = set_analyst_embed_mode_for_test(AnalystEmbedMode::Auto);
-    let model_cell = embed_model_cell(EmbeddingModelSelection::NomicEmbedTextV15);
-    let _permit = model_cell
-        .begin_load()
-        .expect("test should hold the in-process load gate");
-
-    let embedding = embed_query("ranking beacon").await;
-
-    assert!(embedding.is_none());
-    assert!(
-        model_cell.is_loading_for_test(),
-        "auto mode without sidecar should reach the in-process load gate"
+    let script = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../spur-graph/tests/fixtures/embedding_fault_worker.py");
+    let log = temp_dir.path().join("worker.log");
+    let config = json!({
+        "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let _config = set_env_var_for_test("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string());
+    let _log = set_env_var_for_test("SPUR_GRAPH_TEST_WORKER_LOG", &log);
+    let runtime = crate::embedding::OwnedEmbeddingRuntime::new();
+    assert!(runtime.embed_query("ranking beacon").await.is_some());
+    runtime.shutdown().await.expect("joined fallback helper");
+    let events = std::fs::read_to_string(log).unwrap();
+    assert_eq!(
+        events.lines().filter(|line| *line == "service").count(),
+        1,
+        "{events}"
     );
+    assert_eq!(events.lines().last(), Some("shutdown"), "{events}");
 }
 
 #[test]
@@ -833,6 +845,7 @@ fn kcp2_fixture_repo(include_graph_reasoning_views: bool) -> (tempfile::TempDir,
     fs::create_dir_all(repo.join(".spur")).expect("create .spur");
     let db_path = repo.join(".spur").join("analyst.duckdb");
     let conn = Connection::open(&db_path).expect("open fixture db");
+    configure_fixture_extension_directory(&conn);
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load fixture extensions");
     conn.execute_batch(
@@ -1026,6 +1039,7 @@ pub fn dispatch_approval_evidence() -> &'static str {
 
 fn seed_overlay_pack_analyst_db(db_path: &Path, artifact_dir: &Path, graph_hash: &str) {
     let conn = Connection::open(db_path).expect("open overlay pack fixture db");
+    configure_fixture_extension_directory(&conn);
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load overlay pack fixture extensions");
     let artifact_dir = sql_escape_path(artifact_dir);
@@ -1311,6 +1325,7 @@ println!("lexical fallback utility");
 
     let db_path = temp_dir.path().join("analyst.duckdb");
     let conn = Connection::open(&db_path).expect("open fixture db");
+    configure_fixture_extension_directory(&conn);
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load fixture extensions");
     let sections_parquet = sql_escape_path(&artifact_dir.join(SECTIONS_PARQUET));
@@ -1405,6 +1420,14 @@ println!("lexical fallback utility");
         _temp_dir: temp_dir,
         db_path,
         query_vec,
+    }
+}
+
+fn configure_fixture_extension_directory(conn: &Connection) {
+    if let Ok(directory) = std::env::var("SPUR_DUCKDB_EXTENSION_DIR") {
+        let escaped = directory.replace('\'', "''");
+        conn.execute_batch(&format!("SET extension_directory = '{escaped}'"))
+            .expect("set isolated fixture extension directory");
     }
 }
 
@@ -3033,7 +3056,7 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
         "limit": 3
     }))
     .expect("request");
-    let strong_result = query_context_candidates(
+    let strong_result = crate::query_context_candidates(
         &fixture.db_path,
         "ranking beacon",
         KnowledgeSearchScope::All,
@@ -3096,7 +3119,7 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
         "limit": 3
     }))
     .expect("request");
-    let weak_result = query_context_candidates(
+    let weak_result = crate::query_context_candidates(
         &fixture.db_path,
         "private lexical-only weakness signal",
         KnowledgeSearchScope::Docs,
@@ -3141,4 +3164,58 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
     );
     assert_eq!(weak_grounding, "bm25-doc");
     assert_eq!(weak_pack["confidence"], "low");
+}
+
+/// Explicit acceptance path: a real owned helper supplies the pack query.
+#[cfg(feature = "embed")]
+#[tokio::test]
+#[ignore = "requires explicitly configured real model helper and DuckDB extensions"]
+async fn real_owned_helper_returns_indexed_context_pack() {
+    let fixture = build_hybrid_confidence_fixture();
+    let repo = fixture._temp_dir.path().join("repo");
+    let spur_dir = repo.join(".spur");
+    fs::create_dir_all(&spur_dir).unwrap();
+    fs::copy(&fixture.db_path, spur_dir.join("analyst.duckdb")).unwrap();
+    let runtime = OwnedEmbeddingRuntime::new();
+    runtime.warm().await.expect("real helper warm inference");
+    let pack = spur_graph::mcp::with_worktree_root_for_request(repo, async {
+        let request = KnowledgeContextPackRequest::parse(&json!({
+            "query": "ranking beacon", "scope": "all", "limit": 3
+        }))
+        .unwrap();
+        knowledge_context_pack_with_runtime(request, &runtime).await
+    })
+    .await
+    .expect("indexed pack with real owned helper");
+    runtime
+        .shutdown()
+        .await
+        .expect("checked owned helper shutdown");
+    println!("S6C_REAL_PACK {}", serde_json::to_string(&pack).unwrap());
+    assert_eq!(pack["answerable"], true, "{pack}");
+    assert!(
+        pack["primary_evidence"]
+            .as_array()
+            .is_some_and(|rows| !rows.is_empty()),
+        "{pack}"
+    );
+}
+
+/// Keep the indexed fixture alive while a real CLI host serves a pack request.
+#[cfg(feature = "embed")]
+#[test]
+#[ignore = "requires an explicitly configured CLI, real helper and DuckDB extensions"]
+fn real_cli_host_serves_indexed_context_pack() {
+    let fixture = build_hybrid_confidence_fixture();
+    let repo = fixture._temp_dir.path().join("repo");
+    let spur_dir = repo.join(".spur");
+    fs::create_dir_all(&spur_dir).unwrap();
+    fs::copy(&fixture.db_path, spur_dir.join("analyst.duckdb")).unwrap();
+    let driver = std::env::var_os("SPUR_S6C_HOST_DRIVER").expect("explicit host driver");
+    let status = Command::new("/usr/bin/python3")
+        .arg(driver)
+        .env("SPUR_S6C_HOST_ROOT", repo)
+        .status()
+        .expect("start host driver");
+    assert!(status.success(), "real CLI host driver failed: {status}");
 }

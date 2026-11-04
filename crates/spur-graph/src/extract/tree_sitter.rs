@@ -2971,6 +2971,7 @@ fn is_import_resolution_type_like_candidate_kind(kind: NodeKind) -> bool {
 pub(crate) fn is_import_resolution_fallback_candidate_kind(kind: NodeKind) -> bool {
     match kind {
         NodeKind::Module => false,
+        NodeKind::ExternBlock => false,
         NodeKind::Function => false,
         NodeKind::Class => false,
         NodeKind::Interface => false,
@@ -3490,7 +3491,21 @@ pub(crate) fn extract_file_contents_from_tree(
     if matches!(language_label, "json" | "yaml") && source.len() > MAX_STRUCTURED_EXTRACT_BYTES {
         return Ok(());
     }
-    let tag_captures = run_query(&queries.tags, root_node, source);
+    let mut tag_captures = run_query(&queries.tags, root_node, source);
+    let edge_captures = queries
+        .spur_edges
+        .as_ref()
+        .map(|query| run_query(query, root_node, source));
+    if language_label == "rust" {
+        // Variant definitions come from the edge query. Include them before
+        // naming tag definitions so payload fields see their direct owner.
+        if let Some(captures) = &edge_captures {
+            tag_captures.extend(captures.iter().cloned().map(|mut capture| {
+                capture.pattern_index += queries.tags.pattern_count();
+                capture
+            }));
+        }
+    }
     let mut definitions = emit_definitions(
         config,
         builder,
@@ -3511,19 +3526,20 @@ pub(crate) fn extract_file_contents_from_tree(
             &definitions,
         );
     }
-    if let Some(spur_edges) = queries.spur_edges.as_ref() {
-        let edge_captures = run_query(spur_edges, root_node, source);
-        let edge_definitions = emit_definitions_with_parents(
-            config,
-            builder,
-            relative_path,
-            file_id,
-            file_node,
-            source,
-            &edge_captures,
-            &definitions,
-        );
-        definitions.extend(edge_definitions);
+    if let Some(edge_captures) = edge_captures {
+        if language_label != "rust" {
+            let edge_definitions = emit_definitions_with_parents(
+                config,
+                builder,
+                relative_path,
+                file_id,
+                file_node,
+                source,
+                &edge_captures,
+                &definitions,
+            );
+            definitions.extend(edge_definitions);
+        }
         // Phase-one macro evidence uses physical file bytes and coordinates.
         // Notebook cells keep normal definitions/edges until a cell source
         // contract exists; their virtual paths cannot identify physical files.
@@ -3543,6 +3559,98 @@ pub(crate) fn extract_file_contents_from_tree(
                 &edge_captures,
             )?;
         }
+        // Resolve ordinary Rust calls while physical lexical intervals are
+        // still available. PendingEdge deliberately remains schema-compatible.
+        let edge_captures = if language_label == "rust" {
+            edge_captures
+                .into_iter()
+                .filter(|capture| {
+                    if capture.name != "call" {
+                        return true;
+                    }
+                    let Some(target) = crate::extract::rust_bindings::resolve(
+                        capture.node,
+                        source,
+                        &definitions,
+                        relative_path,
+                    ) else {
+                        // Generic captures are a Rust lexical supplement.
+                        // Unsupported associated/type paths keep the existing
+                        // extractor behavior rather than entering a new path.
+                        return !capture
+                            .node
+                            .child_by_field_name("function")
+                            .is_some_and(|callee| callee.kind() == "generic_function");
+                    };
+                    let Some(callee) = crate::extract::rust_bindings::callee(capture.node) else {
+                        return true;
+                    };
+                    let name = callee
+                        .child_by_field_name("name")
+                        .or_else(|| callee.child_by_field_name("field"))
+                        .unwrap_or(callee);
+                    let Ok(name) = name.utf8_text(source.as_bytes()) else {
+                        return true;
+                    };
+                    let owner = definitions
+                        .iter()
+                        .rev()
+                        .find(|d| {
+                            d.node.start_byte() <= capture.node.start_byte()
+                                && capture.node.end_byte() <= d.node.end_byte()
+                        })
+                        .map_or(file_node, |d| d.node_id);
+                    // Preserve the established singleton path and provenance
+                    // for ordinary nonrecursive calls without local homonyms.
+                    if callee.kind() == "identifier"
+                        && target.is_some_and(|target| target != owner)
+                        && definitions
+                            .iter()
+                            .filter(|d| {
+                                d.node.kind() == "function_item"
+                                    && d.node.child_by_field_name("name").is_some_and(|n| {
+                                        n.utf8_text(source.as_bytes()).ok() == Some(name)
+                                    })
+                            })
+                            .count()
+                            == 1
+                    {
+                        return true;
+                    }
+                    let edge = PendingEdge {
+                        source: owner,
+                        target_name: name.to_owned(),
+                        import_path: None,
+                        relation: RelationKind::Calls,
+                        edge_kind: None,
+                        origin: CallOrigin::Expression,
+                        receiver_text: (callee.kind() == "field_expression")
+                            .then(|| callee.child_by_field_name("value"))
+                            .flatten()
+                            .and_then(|value| value.utf8_text(source.as_bytes()).ok())
+                            .map(str::to_owned),
+                        scope_text: callee
+                            .child_by_field_name("path")
+                            .and_then(|p| p.utf8_text(source.as_bytes()).ok())
+                            .map(str::to_owned)
+                            .or_else(|| {
+                                crate::extract::rust_bindings::receiver_scope(capture.node, source)
+                            }),
+                    };
+                    let bind_method = target.map(|_| {
+                        if edge.receiver_text.is_none() && edge.scope_text.is_some() {
+                            "fqn"
+                        } else {
+                            "scope_match"
+                        }
+                    });
+                    builder.add_pending_edge_with_bind_method(&edge, target, bind_method);
+                    false
+                })
+                .collect()
+        } else {
+            edge_captures
+        };
         emit_edges(
             config,
             builder,
@@ -3589,7 +3697,15 @@ pub(crate) fn compile_queries(
                 })?);
             }
             "spur-edges" => {
-                spur_edges = Some(Query::new(&config.language, source).with_context(|| {
+                let source = if language == Language::Rust {
+                    std::borrow::Cow::Owned(format!(
+                        "{source}\n{}",
+                        crate::extract::rust_bindings::GENERIC_FREE_CALLS
+                    ))
+                } else {
+                    std::borrow::Cow::Borrowed(*source)
+                };
+                spur_edges = Some(Query::new(&config.language, &source).with_context(|| {
                     format!("failed to compile tree-sitter query `{name}` for `{language_label}`")
                 })?);
             }
@@ -4466,9 +4582,29 @@ mod tests {
     }
 
     #[test]
+    fn extern_container_is_not_a_resolution_target() {
+        let kind = NodeKind::from_discriminator("extern_block").expect("extern container kind");
+        assert!(!is_callable_target_kind(kind));
+        assert!(!constructs_target_kinds().contains(&kind));
+        assert!(!is_import_resolution_candidate_kind(kind));
+        assert!(!is_import_resolution_fallback_candidate_kind(kind));
+        eprintln!(
+            "G2A_ROLES={}",
+            serde_json::json!({
+                "kind": kind.discriminator(),
+                "callable": is_callable_target_kind(kind),
+                "constructor": constructs_target_kinds().contains(&kind),
+                "import": is_import_resolution_candidate_kind(kind),
+                "fallback": is_import_resolution_fallback_candidate_kind(kind),
+            })
+        );
+    }
+
+    #[test]
     fn import_resolution_fallback_candidate_kind_is_total_for_node_kinds() {
         for (kind, expected) in [
             (NodeKind::Module, false),
+            (NodeKind::ExternBlock, false),
             (NodeKind::Function, false),
             (NodeKind::Class, false),
             (NodeKind::Interface, false),
@@ -4936,7 +5072,7 @@ pub fn same_file_helper() {}
     }
 
     #[test]
-    fn method_crate_singleton_recovers_cross_module_same_crate() {
+    fn rust_method_spelling_cannot_substitute_an_incompatible_receiver() {
         let dir = tempfile::tempdir().expect("tempdir");
         std::fs::create_dir_all(dir.path().join("crates/foo/src/sub")).expect("foo sub dir");
         std::fs::create_dir_all(dir.path().join("crates/bar/src")).expect("bar crate dir");
@@ -4988,11 +5124,9 @@ impl ExternalPanel {
         };
 
         let same_crate = call("repaint_panel");
-        assert!(same_crate.target_node_id.is_some());
-        assert_eq!(
-            same_crate.bind_method.as_deref(),
-            Some("method_crate_singleton")
-        );
+        // Panel is not Widget; crate membership cannot establish its method.
+        assert_eq!(same_crate.target_node_id, None);
+        assert_eq!(same_crate.bind_method.as_deref(), None);
 
         let cross_crate = call("repaint_from_bar");
         assert_eq!(cross_crate.target_node_id, None);
@@ -6818,7 +6952,7 @@ pub fn caller() {
     }
 
     #[test]
-    fn pending_edges_group_receivers_by_query_match() {
+    fn rust_edges_group_receivers_by_query_match() {
         let dir = tempfile::tempdir().expect("tempdir");
         let root = dir.path();
         fs::create_dir_all(root.join("src")).expect("mkdir src");
@@ -6868,16 +7002,21 @@ pub fn caller() {
             .find(|node| node.label == "caller" && node.kind == NodeKind::Function)
             .expect("caller function");
         let outer_edge = builder
-            .pending_edges
+            .facts
+            .edges
             .iter()
-            .find(|edge| edge.source == caller.node_id && edge.target_name == "foo")
+            .find(|edge| {
+                edge.source_node_id == caller.node_id && edge.target_label.as_deref() == Some("foo")
+            })
             .expect("outer foo edge");
 
         assert_eq!(outer_edge.receiver_text.as_deref(), Some("outer"));
         assert_ne!(outer_edge.receiver_text.as_deref(), Some("inner"));
         assert!(!builder
-            .pending_edges
+            .facts
+            .edges
             .iter()
-            .any(|edge| edge.source == caller.node_id && edge.target_name == "bar"));
+            .any(|edge| edge.source_node_id == caller.node_id
+                && edge.target_label.as_deref() == Some("bar")));
     }
 }

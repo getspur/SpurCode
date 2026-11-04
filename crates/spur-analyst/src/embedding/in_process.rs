@@ -5,6 +5,8 @@ use std::{
     time::Instant,
 };
 
+#[cfg(feature = "embed")]
+use spur_graph::store::lance_sections::EmbeddingModelHandle;
 use spur_graph::EMBEDDING_VECTOR_DIMENSIONS;
 #[cfg(feature = "embed")]
 use spur_graph::{
@@ -24,7 +26,7 @@ static DISABLE_EMBED_QUERY_FOR_TESTS: std::sync::atomic::AtomicBool =
 #[cfg(feature = "embed")]
 pub(crate) fn load_embed_model(
     embedding_model: EmbeddingModelSelection,
-) -> Result<fastembed::TextEmbedding, String> {
+) -> Result<EmbeddingModelHandle, String> {
     tracing::info!(
         model = embedding_model.model_name(),
         "Loading embedding model for knowledge_context_pack hybrid search"
@@ -112,13 +114,13 @@ pub(crate) fn embed_texts_in_process(
     let mut model = model
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
-    model.embed(refs, None).map_err(|error| error.to_string())
+    model.embed(&refs, None).map_err(|error| error.to_string())
 }
 
 #[cfg(feature = "embed")]
 fn ready_or_load_model(
     embedding_model: EmbeddingModelSelection,
-) -> Result<Arc<Mutex<fastembed::TextEmbedding>>, String> {
+) -> Result<Arc<Mutex<EmbeddingModelHandle>>, String> {
     let cell = embed_model_cell(embedding_model);
     loop {
         if let Some(model) = cell.ready() {
@@ -205,7 +207,7 @@ async fn embed_query_with_ready_model(
             let mut model = model
                 .lock()
                 .unwrap_or_else(|poisoned| poisoned.into_inner());
-            let embeddings = model.embed(vec![query.as_ref()], None).ok()?;
+            let embeddings = model.embed(&[query.as_ref()], None).ok()?;
             let embedding = embeddings.into_iter().next()?;
             embedding.try_into().ok()
         },

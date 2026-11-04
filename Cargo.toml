@@ -25,6 +25,8 @@ members = [
     "crates/spur-context-auth",
     "crates/spur-code-eval",
     "crates/spur-graph",
+    "crates/spur-embedding",
+    "crates/spur-embedding-worker",
     "crates/spur-utilities/facade",
     "crates/spur-utilities/mentions",
     "crates/spur-utilities/commands",
@@ -37,7 +39,12 @@ members = [
 #   cargo build -p spur-context-service --features worker --release
 exclude = [
     "crates/spur-context-service",
+    "vendor/ort",
 ]
+
+[patch.crates-io]
+ort = { path = "vendor/ort" }
+
 [workspace.package]
 version = "1.24.0"
 edition = "2021"

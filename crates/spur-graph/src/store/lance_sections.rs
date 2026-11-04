@@ -4,8 +4,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Arc;
-#[cfg(feature = "embed")]
-use std::sync::{Mutex, OnceLock};
 
 use anyhow::{bail, Context as _, Result};
 use arrow_array::{
@@ -14,15 +12,14 @@ use arrow_array::{
 };
 use arrow_buffer::NullBuffer;
 use arrow_schema::{DataType, Field, Schema};
-#[cfg(feature = "embed")]
-use fastembed::{
-    EmbeddingModel, InitOptions, InitOptionsUserDefined, Pooling, TextEmbedding, TokenizerFiles,
-    UserDefinedEmbeddingModel,
-};
-#[cfg(feature = "embed")]
-use hf_hub::{api::sync::ApiBuilder as HfApiBuilder, Repo, RepoType};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use parquet::arrow::ArrowWriter;
+#[cfg(feature = "embed")]
+use spur_embedding::{
+    Cancellation, CleanupOwner, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits,
+};
+#[cfg(feature = "embed")]
+use std::time::{Duration, Instant};
 
 use crate::content_hash::blake3_hex;
 use crate::store::parquet::GraphArtifactSidecarRowCounts;
@@ -62,24 +59,17 @@ const JINA_EMBEDDINGS_V2_BASE_CODE_SECTION_TEXT_VERSION: &str =
     "v1-jina-embeddings-v2-base-code-raw";
 const JINA_EMBEDDINGS_V2_BASE_CODE_SYMBOL_TEXT_VERSION: &str =
     "v1-jina-embeddings-v2-base-code-raw";
-#[cfg(feature = "embed")]
+#[cfg(all(test, feature = "embed"))]
 const CODE_RANK_EMBED_ONNX_REPO: &str = "jamie8johnson/CodeRankEmbed-onnx";
-#[cfg(feature = "embed")]
+#[cfg(all(test, feature = "embed"))]
 const CODE_RANK_EMBED_ONNX_REVISION: &str = "151669b173750250e611e1be00c812f112ea6020";
-#[cfg(feature = "embed")]
+#[cfg(all(test, feature = "embed"))]
 const CODE_RANK_EMBED_ONNX_FILE: &str = "onnx/model.onnx";
 const EMBEDDING_INPUT_HASH_COLUMN: &str = "embedding_input_hash";
 const EMBEDDING_MODEL_COLUMN: &str = "embedding_model";
 // Integration tests spawn the debug-built CLI; keep this hook out of release builds.
 #[cfg(debug_assertions)]
 const SECTION_SIDECAR_TEST_FAIL_ENV: &str = "SPUR_GRAPH_TEST_FAIL_SECTION_SIDECAR";
-
-#[cfg(feature = "embed")]
-static NOMIC_EMBED_TEXT_V15_MODEL: OnceLock<Option<Mutex<TextEmbedding>>> = OnceLock::new();
-#[cfg(feature = "embed")]
-static CODE_RANK_EMBED_MODEL: OnceLock<Option<Mutex<TextEmbedding>>> = OnceLock::new();
-#[cfg(feature = "embed")]
-static JINA_EMBEDDINGS_V2_BASE_CODE_MODEL: OnceLock<Option<Mutex<TextEmbedding>>> = OnceLock::new();
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EmbeddingModelSelection {
@@ -143,11 +133,11 @@ impl EmbeddingModelSelection {
     }
 
     #[cfg(feature = "embed")]
-    pub fn fastembed_model(self) -> Option<EmbeddingModel> {
+    pub fn model_id(self) -> ModelId {
         match self {
-            Self::NomicEmbedTextV15 => Some(EmbeddingModel::NomicEmbedTextV15),
-            Self::CodeRankEmbed => None,
-            Self::JinaEmbeddingsV2BaseCode => Some(EmbeddingModel::JinaEmbeddingsV2BaseCode),
+            Self::NomicEmbedTextV15 => ModelId::NomicEmbedTextV15,
+            Self::CodeRankEmbed => ModelId::CodeRankEmbed,
+            Self::JinaEmbeddingsV2BaseCode => ModelId::JinaEmbeddingsV2BaseCode,
         }
     }
 
@@ -819,6 +809,7 @@ async fn write_sections_dataset_async_with_embedding_model(
         artifact_dir,
         &options,
         embedding_model,
+        embedder.service,
         progress,
     )
     .await?;
@@ -834,6 +825,7 @@ async fn write_symbol_rows_dataset_async(
     artifact_dir: &Path,
     options: &SectionSidecarOptions,
     embedding_model: EmbeddingModelSelection,
+    mut service: TextEmbeddingService,
     progress: Option<&SectionSidecarProgressCallback<'_>>,
 ) -> Result<usize> {
     let write_batch_size = options.write_batch_size;
@@ -873,7 +865,8 @@ async fn write_symbol_rows_dataset_async(
             row_scope,
         },
     );
-    let mut embedder = SymbolEmbedder::new(embedding_options, embedding_model);
+    service.skip_embeddings = embedding_options.skip_code_symbol_embeddings;
+    let mut embedder = SymbolEmbedder { service };
     let mut batches = Vec::new();
     if !retained_rows.is_empty() {
         batches.push(symbol_rows_to_batch(retained_rows, schema.clone())?);
@@ -1585,6 +1578,8 @@ struct TextEmbeddingService {
     skip_embeddings: bool,
     embedding_model: EmbeddingModelSelection,
     model_requested: bool,
+    #[cfg(feature = "embed")]
+    model: Option<EmbeddingModelHandle>,
 }
 
 #[derive(Clone)]
@@ -1760,21 +1755,13 @@ impl TextEmbeddingService {
             skip_embeddings,
             embedding_model,
             model_requested: false,
+            #[cfg(feature = "embed")]
+            model: None,
         }
     }
 
     fn needs_model_init(&self) -> bool {
-        if self.skip_embeddings || self.model_requested {
-            return false;
-        }
-        #[cfg(feature = "embed")]
-        {
-            embed_model_cell(self.embedding_model).get().is_none()
-        }
-        #[cfg(not(feature = "embed"))]
-        {
-            false
-        }
+        !self.skip_embeddings && !self.model_requested && cfg!(feature = "embed")
     }
 
     fn prepare_model(&mut self, embedding_kind: &'static str) -> bool {
@@ -1878,9 +1865,17 @@ impl TextEmbeddingService {
     }
 
     #[cfg(feature = "embed")]
-    fn model(&mut self, embedding_kind: &'static str) -> Option<&'static Mutex<TextEmbedding>> {
-        self.model_requested = true;
-        shared_embed_model(self.embedding_model, embedding_kind)
+    fn model(&mut self, embedding_kind: &'static str) -> Option<&mut EmbeddingModelHandle> {
+        if !self.model_requested {
+            self.model_requested = true;
+            match load_embedding_model(self.embedding_model, true) {
+                Ok(model) => self.model = Some(model),
+                Err(error) => {
+                    tracing::warn!(error = %error, embedding_kind, model = self.embedding_model.model_name(), "supervised embedding model unavailable")
+                }
+            }
+        }
+        self.model.as_mut()
     }
 
     #[cfg(feature = "embed")]
@@ -1889,17 +1884,9 @@ impl TextEmbeddingService {
         texts: &[&str],
         embedding_kind: &'static str,
     ) -> Result<Vec<Vec<f32>>> {
-        tracing::info!(
-            embedding_kind,
-            model = self.embedding_model.model_name(),
-            "Using local fastembed"
-        );
-        let Some(model) = self.model(embedding_kind) else {
-            return Ok(Vec::new());
-        };
-        let mut model = model
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        let model = self
+            .model(embedding_kind)
+            .context("supervised embedding model unavailable")?;
         model.embed(texts, None)
     }
 
@@ -2102,107 +2089,231 @@ where
 }
 
 #[cfg(feature = "embed")]
-fn embed_model_cell(
-    embedding_model: EmbeddingModelSelection,
-) -> &'static OnceLock<Option<Mutex<TextEmbedding>>> {
-    match embedding_model {
-        EmbeddingModelSelection::NomicEmbedTextV15 => &NOMIC_EMBED_TEXT_V15_MODEL,
-        EmbeddingModelSelection::CodeRankEmbed => &CODE_RANK_EMBED_MODEL,
-        EmbeddingModelSelection::JinaEmbeddingsV2BaseCode => &JINA_EMBEDDINGS_V2_BASE_CODE_MODEL,
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct HelperLimits {
+    max_frame_bytes: u32,
+    max_texts: usize,
+    max_text_bytes: usize,
+    max_total_text_bytes: usize,
+    max_dimensions: usize,
+    max_identity_bytes: usize,
+    max_pending: usize,
+}
+
+#[cfg(feature = "embed")]
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct HelperConfig {
+    executable: PathBuf,
+    args: Vec<String>,
+    artifact_budget: u64,
+    limits: HelperLimits,
+    queue_capacity: usize,
+    max_restarts: usize,
+    startup_timeout_ms: u64,
+    request_timeout_ms: u64,
+    shutdown_timeout_ms: u64,
+    shutdown_poll_interval_ms: u64,
+}
+
+/// Owned supervised model. Dropping it performs checked helper shutdown.
+#[cfg(feature = "embed")]
+pub struct EmbeddingModelHandle {
+    client: EmbeddingClient,
+    request_timeout: Duration,
+    shutdown_timeout: Duration,
+    close_result: Option<bool>,
+}
+
+#[cfg(feature = "embed")]
+fn checked_deadline(timeout: Duration) -> Result<Instant> {
+    Instant::now()
+        .checked_add(timeout)
+        .context("embedding deadline overflow")
+}
+
+#[cfg(feature = "embed")]
+impl EmbeddingModelHandle {
+    #[cfg(feature = "test-support")]
+    pub fn test_inject_reap_failure(&self) {
+        self.client.test_inject_reap_failure();
+    }
+
+    pub fn close(&mut self) -> Result<()> {
+        if let Some(clean) = self.close_result {
+            if clean {
+                return Ok(());
+            }
+            bail!("supervised embedding shutdown previously failed");
+        }
+        let result = checked_deadline(self.shutdown_timeout).and_then(|deadline| {
+            self.client
+                .shutdown(deadline)
+                .context("supervised embedding shutdown")
+        });
+        self.close_result = Some(result.is_ok());
+        result
+    }
+
+    pub fn embed<T: AsRef<str>>(
+        &mut self,
+        texts: &[T],
+        _batch_size: Option<usize>,
+    ) -> Result<Vec<Vec<f32>>> {
+        let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
+        self.client
+            .embed(texts, checked_deadline(self.request_timeout)?)
+            .context("supervised embedding request")
+    }
+
+    /// Run an embedding request with a caller deadline and cancellation token.
+    pub fn embed_cancellable<T: AsRef<str>>(
+        &self,
+        texts: &[T],
+        deadline: Instant,
+        cancel: Cancellation,
+    ) -> Result<Vec<Vec<f32>>> {
+        let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
+        self.client
+            .embed_cancellable(texts, deadline, cancel)
+            .context("supervised embedding request")
     }
 }
 
+#[cfg(feature = "embed")]
+impl Drop for EmbeddingModelHandle {
+    fn drop(&mut self) {
+        if let Err(error) = self.close() {
+            tracing::warn!(error = %error, "embedding helper did not close cleanly");
+        }
+    }
+}
+
+/// Construct a model using the explicitly configured companion and limits.
 #[cfg(feature = "embed")]
 pub fn load_embedding_model(
     embedding_model: EmbeddingModelSelection,
-    show_download_progress: bool,
-) -> Result<TextEmbedding> {
-    if embedding_model == EmbeddingModelSelection::CodeRankEmbed {
-        return load_code_rank_embed_model(show_download_progress);
-    }
-
-    let registered_model = embedding_model
-        .fastembed_model()
-        .context("registered FastEmbed model missing")?;
-    let mut init_options = InitOptions::new(registered_model)
-        .with_max_length(embedding_model.max_length())
-        .with_show_download_progress(show_download_progress);
-
-    if let Some(cache_dir) = fastembed_cache_dir() {
-        init_options = init_options.with_cache_dir(cache_dir);
-    }
-
-    TextEmbedding::try_new(init_options)
+    _show_download_progress: bool,
+) -> Result<EmbeddingModelHandle> {
+    load_embedding_model_impl(embedding_model, None, None)
 }
 
+/// Construct a supervised model while observing the owner's cancellation and deadline.
 #[cfg(feature = "embed")]
-fn load_code_rank_embed_model(show_download_progress: bool) -> Result<TextEmbedding> {
-    let mut api_builder = HfApiBuilder::from_env()
-        .with_progress(show_download_progress)
-        .with_retries(3);
-    if let Some(cache_dir) = fastembed_cache_dir() {
-        api_builder = api_builder.with_cache_dir(cache_dir);
-    }
-    let model_repo = api_builder
-        .build()
-        .context("build Hugging Face client for CodeRankEmbed")?
-        .repo(Repo::with_revision(
-            CODE_RANK_EMBED_ONNX_REPO.to_owned(),
-            RepoType::Model,
-            CODE_RANK_EMBED_ONNX_REVISION.to_owned(),
-        ));
-
-    let read_model_file = |file_name: &str| -> Result<Vec<u8>> {
-        let file_path = model_repo
-            .get(file_name)
-            .with_context(|| format!("download CodeRankEmbed file `{file_name}`"))?;
-        fs::read(&file_path).with_context(|| {
-            format!(
-                "read CodeRankEmbed file `{}` from `{}`",
-                file_name,
-                file_path.display()
-            )
-        })
-    };
-    let tokenizer_files = TokenizerFiles {
-        tokenizer_file: read_model_file("tokenizer.json")?,
-        config_file: read_model_file("config.json")?,
-        special_tokens_map_file: read_model_file("special_tokens_map.json")?,
-        tokenizer_config_file: read_model_file("tokenizer_config.json")?,
-    };
-    let model = UserDefinedEmbeddingModel::new(
-        read_model_file(CODE_RANK_EMBED_ONNX_FILE)?,
-        tokenizer_files,
-    )
-    .with_pooling(Pooling::Mean);
-
-    TextEmbedding::try_new_from_user_defined(
-        model,
-        InitOptionsUserDefined::new()
-            .with_max_length(EmbeddingModelSelection::CodeRankEmbed.max_length()),
-    )
-    .context("initialize revision-pinned CodeRankEmbed FP32 ONNX model")
-}
-
-#[cfg(feature = "embed")]
-fn shared_embed_model(
+pub fn load_embedding_model_cancellable(
     embedding_model: EmbeddingModelSelection,
-    embedding_kind: &'static str,
-) -> Option<&'static Mutex<TextEmbedding>> {
-    embed_model_cell(embedding_model)
-        .get_or_init(|| match load_embedding_model(embedding_model, true) {
-            Ok(model) => Some(Mutex::new(model)),
-            Err(error) => {
-                tracing::warn!(
-                    error = %error,
-                    embedding_kind,
-                    model = embedding_model.model_name(),
-                    "fastembed model unavailable; skipping embeddings"
-                );
-                None
-            }
-        })
-        .as_ref()
+    _show_download_progress: bool,
+    cancel: Cancellation,
+    deadline: Instant,
+) -> Result<EmbeddingModelHandle> {
+    load_embedding_model_impl(embedding_model, Some((cancel, deadline)), None)
+}
+
+/// Construct a supervised model with caller-owned descriptor and client cleanup.
+#[cfg(feature = "embed")]
+pub fn load_embedding_model_cancellable_with_cleanup(
+    embedding_model: EmbeddingModelSelection,
+    _show_download_progress: bool,
+    cancel: Cancellation,
+    deadline: Instant,
+    cleanup: Arc<CleanupOwner>,
+) -> Result<EmbeddingModelHandle> {
+    load_embedding_model_impl(embedding_model, Some((cancel, deadline)), Some(cleanup))
+}
+
+#[cfg(feature = "embed")]
+fn load_embedding_model_impl(
+    embedding_model: EmbeddingModelSelection,
+    cancellation: Option<(Cancellation, Instant)>,
+    cleanup: Option<Arc<CleanupOwner>>,
+) -> Result<EmbeddingModelHandle> {
+    let raw = std::env::var("SPUR_EMBEDDING_HELPER_CONFIG").context(
+        "SPUR_EMBEDDING_HELPER_CONFIG is required until helper packaging supplies configuration",
+    )?;
+    let config: HelperConfig =
+        serde_json::from_str(&raw).context("invalid embedding helper configuration")?;
+    if config.executable.as_os_str().is_empty() || config.artifact_budget == 0 {
+        bail!("embedding helper executable and artifact budget must be nonzero");
+    }
+    let limits = ProtocolLimits {
+        max_frame_bytes: config.limits.max_frame_bytes,
+        max_texts: config.limits.max_texts,
+        max_text_bytes: config.limits.max_text_bytes,
+        max_total_text_bytes: config.limits.max_total_text_bytes,
+        max_dimensions: config.limits.max_dimensions,
+        max_identity_bytes: config.limits.max_identity_bytes,
+        max_pending: config.limits.max_pending,
+    };
+    limits
+        .validate()
+        .context("invalid embedding protocol limits")?;
+    let policy = ClientPolicy {
+        queue_capacity: config.queue_capacity,
+        max_restarts: config.max_restarts,
+        startup_timeout: Duration::from_millis(config.startup_timeout_ms),
+        request_timeout: Duration::from_millis(config.request_timeout_ms),
+        shutdown_timeout: Duration::from_millis(config.shutdown_timeout_ms),
+        shutdown_poll_interval: Duration::from_millis(config.shutdown_poll_interval_ms),
+    };
+    let executable = config.executable.into_os_string();
+    let prefix: Vec<std::ffi::OsString> = config.args.into_iter().map(Into::into).collect();
+    let cleanup = match cleanup {
+        Some(cleanup) => cleanup,
+        None => Arc::new(CleanupOwner::new(policy.shutdown_poll_interval)?),
+    };
+    let (cancel, deadline) = match cancellation {
+        Some((cancel, deadline)) => (cancel, deadline),
+        None => (
+            Cancellation::new(),
+            checked_deadline(policy.startup_timeout)?,
+        ),
+    };
+    let identity = EmbeddingClient::describe_model_cancellable_with_cleanup(
+        executable.clone(),
+        prefix.clone(),
+        embedding_model.model_id(),
+        config.artifact_budget,
+        limits.clone(),
+        policy.clone(),
+        deadline,
+        cancel,
+        Arc::clone(&cleanup),
+    )
+    .context("describe supervised embedding model")?;
+    if identity.dimensions != EMBEDDING_VECTOR_DIMENSIONS {
+        bail!("embedding helper returned unexpected dimensions");
+    }
+    let mut args = prefix;
+    args.extend(
+        [
+            limits.max_frame_bytes.to_string(),
+            limits.max_texts.to_string(),
+            limits.max_text_bytes.to_string(),
+            limits.max_total_text_bytes.to_string(),
+            limits.max_dimensions.to_string(),
+            limits.max_identity_bytes.to_string(),
+            limits.max_pending.to_string(),
+            config.artifact_budget.to_string(),
+        ]
+        .into_iter()
+        .map(Into::into),
+    );
+    let client = EmbeddingClient::new_with_cleanup(
+        executable,
+        args,
+        identity,
+        limits,
+        policy.clone(),
+        cleanup,
+    )
+    .context("configure supervised embedding client")?;
+    Ok(EmbeddingModelHandle {
+        client,
+        request_timeout: policy.request_timeout,
+        shutdown_timeout: policy.shutdown_timeout,
+        close_result: None,
+    })
 }
 
 fn is_embedding_eligible(row: &SectionRow) -> bool {
@@ -2285,20 +2396,19 @@ async fn backfill_missing_vectors_async(
     options: SectionEmbeddingOptions,
 ) -> Result<VectorBackfillStats> {
     let embedding_model = EmbeddingModelSelection::from_env();
-    let mut section_service =
-        TextEmbeddingService::new(options, options.skip_section_embeddings, embedding_model);
-    let mut symbol_service = TextEmbeddingService::new(
-        options,
-        options.skip_code_symbol_embeddings,
-        embedding_model,
-    );
+    let mut service = TextEmbeddingService::new(options, false, embedding_model);
     backfill_missing_vectors_async_with_embedding_model_and_embedder(
         artifact_dir,
         options,
         embedding_model,
-        |phase, texts| match phase {
-            SidecarPhase::Sections => section_service.embed_texts_locally(texts, "section"),
-            SidecarPhase::CodeSymbols => symbol_service.embed_texts_locally(texts, "code symbol"),
+        |phase, texts| {
+            service.embed_texts_locally(
+                texts,
+                match phase {
+                    SidecarPhase::Sections => "section",
+                    SidecarPhase::CodeSymbols => "code symbol",
+                },
+            )
         },
     )
     .await
@@ -3970,6 +4080,584 @@ mod tests {
         ENV_LOCK.lock().expect("env lock")
     }
 
+    #[cfg(feature = "embed")]
+    struct GraphHelperFixture {
+        _guards: Vec<EnvGuard>,
+        dir: tempfile::TempDir,
+    }
+
+    #[cfg(feature = "embed")]
+    impl GraphHelperFixture {
+        fn new(fault: &str) -> Self {
+            let dir = tempfile::tempdir().unwrap();
+            let script = Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("tests/fixtures/embedding_fault_worker.py");
+            let config = serde_json::json!({
+                "executable": "/usr/bin/python3", "args": [script],
+                "artifact_budget": 10000,
+                "limits": {"max_frame_bytes": 65536, "max_texts": 2,
+                    "max_text_bytes": 8192, "max_total_text_bytes": 16384,
+                    "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+                "queue_capacity": 1, "max_restarts": 0,
+                "startup_timeout_ms": 10000, "request_timeout_ms": 10000,
+                "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+            });
+            let log = dir.path().join("worker.log");
+            let guards = vec![
+                EnvGuard::set("HOME", dir.path().to_str().unwrap()),
+                EnvGuard::set("HF_ENDPOINT", "http://127.0.0.1:9"),
+                EnvGuard::set("SPUR_EMBEDDING_HELPER_CONFIG", &config.to_string()),
+                EnvGuard::set("SPUR_GRAPH_TEST_WORKER_LOG", log.to_str().unwrap()),
+                EnvGuard::set("SPUR_GRAPH_TEST_WORKER_FAULT", fault),
+            ];
+            Self {
+                _guards: guards,
+                dir,
+            }
+        }
+        fn log(&self) -> String {
+            fs::read_to_string(self.dir.path().join("worker.log")).unwrap_or_default()
+        }
+        fn input_batches(&self) -> Vec<Vec<String>> {
+            fs::read_to_string(self.dir.path().join("worker.log.inputs"))
+                .unwrap_or_default()
+                .lines()
+                .map(|line| serde_json::from_str(line).unwrap())
+                .collect()
+        }
+        fn export(&self, case: &str) {
+            if let Some(root) = std::env::var_os("SPUR_S5_TEST_EXPORT") {
+                let destination = PathBuf::from(root).join(case);
+                fs::create_dir_all(&destination).unwrap();
+                fs::write(destination.join("worker.log"), self.log()).unwrap();
+                fs::write(
+                    destination.join("input-batches.json"),
+                    serde_json::to_vec_pretty(&self.input_batches()).unwrap(),
+                )
+                .unwrap();
+                for name in [SECTIONS_PARQUET, CODE_SYMBOLS_PARQUET, "client-events.json"] {
+                    let source = self.dir.path().join(name);
+                    if source.is_file() {
+                        fs::copy(source, destination.join(name)).unwrap();
+                    }
+                }
+            }
+        }
+    }
+
+    #[cfg(feature = "embed")]
+    #[test]
+    fn graph_client_batches_and_persists_validated_vectors() {
+        let _guard = env_lock();
+        let fixture = GraphHelperFixture::new("");
+        let options = SectionEmbeddingOptions {
+            batch_size: 2,
+            ..SectionEmbeddingOptions::default()
+        };
+        let mut rows: Vec<_> = (0..3)
+            .map(|i| {
+                let mut row = section_row_fixture(2, format!("body {i}"));
+                row.stable_symbol_id = format!("id-{i}");
+                row
+            })
+            .collect();
+        let expected_texts: Vec<_> =
+            section_embedding_inputs(&rows, EmbeddingModelSelection::NomicEmbedTextV15)
+                .iter()
+                .map(|input| input.text.to_string())
+                .collect();
+        let expected: Vec<_> = rows
+            .iter()
+            .map(|row| {
+                (
+                    row.stable_symbol_id.clone(),
+                    row.embedding_input_hash.clone(),
+                    row.embedding_model.clone(),
+                )
+            })
+            .collect();
+        let mut embedder =
+            SectionEmbedder::new(options, EmbeddingModelSelection::NomicEmbedTextV15);
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        runtime.block_on(embedder.embed_rows_with_progress(&mut rows, |_| {}));
+        assert!(rows.iter().all(|row| row
+            .vector
+            .as_ref()
+            .is_some_and(|v| v.len() == 768 && v.iter().all(|x| x.is_finite()))));
+        assert_eq!(
+            rows.iter()
+                .map(|row| (
+                    row.stable_symbol_id.clone(),
+                    row.embedding_input_hash.clone(),
+                    row.embedding_model.clone()
+                ))
+                .collect::<Vec<_>>(),
+            expected
+        );
+        let path = fixture.dir.path().join(SECTIONS_PARQUET);
+        write_record_batches_parquet(
+            &path,
+            sections_schema(),
+            vec![rows_to_batch(rows, sections_schema()).unwrap()],
+        )
+        .unwrap();
+        let stored = runtime.block_on(read_stored_section_rows(fixture.dir.path()));
+        assert_eq!(stored.len(), 3);
+        assert!(stored
+            .iter()
+            .all(|row| row.has_vector && row.embedding_model == NOMIC_EMBED_TEXT_V15_MODEL_NAME));
+        drop(embedder);
+        assert_eq!(
+            fixture.log().lines().collect::<Vec<_>>(),
+            [
+                "describe NomicEmbedTextV15",
+                "service",
+                "hello NomicEmbedTextV15",
+                "embed 2",
+                "embed 1",
+                "shutdown"
+            ]
+        );
+        assert_eq!(
+            fixture
+                .input_batches()
+                .into_iter()
+                .flatten()
+                .collect::<Vec<_>>(),
+            expected_texts
+        );
+        fixture.export("section-valid");
+    }
+
+    #[cfg(feature = "embed")]
+    #[test]
+    fn graph_disabled_flag_does_not_start_helper() {
+        let _guard = env_lock();
+        let fixture = GraphHelperFixture::new("");
+        let options = SectionEmbeddingOptions {
+            skip_section_embeddings: true,
+            ..SectionEmbeddingOptions::default()
+        };
+        let mut embedder =
+            SectionEmbedder::new(options, EmbeddingModelSelection::NomicEmbedTextV15);
+        let mut rows = vec![section_row_fixture(2, "body".into())];
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        runtime.block_on(embedder.embed_rows_with_progress(&mut rows, |_| {}));
+        drop(embedder);
+        assert!(rows[0].vector.is_none());
+        assert!(fixture.log().is_empty());
+        fixture.export("section-disabled");
+    }
+
+    #[cfg(feature = "embed")]
+    #[test]
+    fn graph_rejects_failed_pending_batch_and_keeps_prior_reply() {
+        let _guard = env_lock();
+        for fault in ["error", "death", "wrong_identity", "nonfinite", "truncated"] {
+            let fixture = GraphHelperFixture::new(fault);
+            let options = SectionEmbeddingOptions {
+                batch_size: 2,
+                ..SectionEmbeddingOptions::default()
+            };
+            let mut rows: Vec<_> = (0..3)
+                .map(|i| section_row_fixture(2, format!("body {i}")))
+                .collect();
+            let identities: Vec<_> = rows
+                .iter()
+                .map(|row| {
+                    (
+                        row.stable_symbol_id.clone(),
+                        row.embedding_input_hash.clone(),
+                        row.embedding_model.clone(),
+                    )
+                })
+                .collect();
+            let mut embedder =
+                SectionEmbedder::new(options, EmbeddingModelSelection::NomicEmbedTextV15);
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            runtime.block_on(embedder.embed_rows_with_progress(&mut rows, |_| {}));
+            assert!(
+                rows[0].vector.is_some() && rows[1].vector.is_some(),
+                "{fault}"
+            );
+            assert!(rows[2].vector.is_none(), "{fault}");
+            assert_eq!(
+                rows.iter()
+                    .map(|row| (
+                        row.stable_symbol_id.clone(),
+                        row.embedding_input_hash.clone(),
+                        row.embedding_model.clone()
+                    ))
+                    .collect::<Vec<_>>(),
+                identities,
+                "{fault}"
+            );
+            write_record_batches_parquet(
+                &fixture.dir.path().join(SECTIONS_PARQUET),
+                sections_schema(),
+                vec![rows_to_batch(rows, sections_schema()).unwrap()],
+            )
+            .unwrap();
+            let persisted = runtime.block_on(read_stored_section_rows(fixture.dir.path()));
+            assert!(
+                persisted[0].has_vector && persisted[1].has_vector && !persisted[2].has_vector,
+                "{fault}"
+            );
+            {
+                let model = embedder.service.model.as_mut().expect("owned model");
+                if fault == "error" {
+                    model.close().expect("error reply followed by clean exit");
+                } else {
+                    assert!(model.close().is_err(), "{fault} shutdown must fail");
+                    assert!(
+                        model.close().is_err(),
+                        "{fault} repeated shutdown must fail"
+                    );
+                }
+                #[cfg(feature = "test-support")]
+                {
+                    let deadline = Instant::now() + Duration::from_secs(5);
+                    while !model
+                        .client
+                        .test_events()
+                        .iter()
+                        .any(|event| event.kind == "reaped")
+                    {
+                        assert!(Instant::now() < deadline, "{fault} child was not reaped");
+                        std::thread::sleep(Duration::from_millis(10));
+                    }
+                    let events = model.client.test_events();
+                    let wait = events
+                        .iter()
+                        .find(|event| event.kind == "reaped")
+                        .and_then(|event| event.status.as_deref())
+                        .expect("wait status");
+                    #[cfg(unix)]
+                    if fault == "error" {
+                        assert_eq!(wait, "ExitStatus(unix_wait_status(0))");
+                    }
+                    fs::write(fixture.dir.path().join("client-events.json"),
+                        serde_json::to_vec_pretty(&events.iter().map(|event| serde_json::json!({
+                            "kind": event.kind, "status": event.status, "pid": event.pid,
+                            "generation": event.generation, "request_id": event.request_id
+                        })).collect::<Vec<_>>()).unwrap()).unwrap();
+                }
+            }
+            drop(embedder);
+            fixture.export(&format!("fault-{fault}"));
+        }
+    }
+
+    #[cfg(feature = "embed")]
+    #[test]
+    fn graph_symbol_client_preserves_model_identity_and_persists_batches() {
+        let _guard = env_lock();
+        for selection in [
+            EmbeddingModelSelection::NomicEmbedTextV15,
+            EmbeddingModelSelection::CodeRankEmbed,
+            EmbeddingModelSelection::JinaEmbeddingsV2BaseCode,
+        ] {
+            let fixture = GraphHelperFixture::new("");
+            let options = SectionEmbeddingOptions {
+                batch_size: 2,
+                ..SectionEmbeddingOptions::default()
+            };
+            let mut rows: Vec<_> = (0..3)
+                .map(|i| {
+                    let mut row =
+                        symbol_row_fixture(&format!("id-{i}"), &format!("fn item_{i}() {{}}"));
+                    row.embedding_model = selection.model_name().to_owned();
+                    row.embedding_input_hash =
+                        symbol_embedding_input_hash_for_model(&row.embed_text, false, selection);
+                    row
+                })
+                .collect();
+            let expected_texts: Vec<_> = symbol_embedding_inputs(&rows, selection)
+                .iter()
+                .map(|input| input.text.to_string())
+                .collect();
+            let identities: Vec<_> = rows
+                .iter()
+                .map(|row| {
+                    (
+                        row.stable_symbol_id.clone(),
+                        row.embedding_input_hash.clone(),
+                        row.embedding_model.clone(),
+                    )
+                })
+                .collect();
+            let mut embedder = SymbolEmbedder::new(options, selection);
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            runtime.block_on(embedder.embed_rows_with_progress(&mut rows, |_| {}));
+            assert!(rows.iter().all(|row| row
+                .vector
+                .as_ref()
+                .is_some_and(|v| v.len() == 768 && v.iter().all(|x| x.is_finite()))));
+            assert_eq!(
+                rows.iter()
+                    .map(|row| (
+                        row.stable_symbol_id.clone(),
+                        row.embedding_input_hash.clone(),
+                        row.embedding_model.clone()
+                    ))
+                    .collect::<Vec<_>>(),
+                identities
+            );
+            write_record_batches_parquet(
+                &fixture.dir.path().join(CODE_SYMBOLS_PARQUET),
+                symbol_rows_schema(),
+                vec![symbol_rows_to_batch(rows, symbol_rows_schema()).unwrap()],
+            )
+            .unwrap();
+            let stored = runtime.block_on(read_stored_symbol_rows(fixture.dir.path()));
+            assert_eq!(stored.len(), 3);
+            assert!(stored
+                .iter()
+                .all(|row| row.has_vector && row.embedding_model == selection.model_name()));
+            drop(embedder);
+            assert_eq!(
+                fixture.log().lines().collect::<Vec<_>>(),
+                [
+                    format!("describe {}", selection.model_name()),
+                    "service".into(),
+                    format!("hello {}", selection.model_name()),
+                    "embed 2".into(),
+                    "embed 1".into(),
+                    "shutdown".into()
+                ]
+            );
+            assert_eq!(
+                fixture
+                    .input_batches()
+                    .into_iter()
+                    .flatten()
+                    .collect::<Vec<_>>(),
+                expected_texts
+            );
+            fixture.export(&format!("symbol-{}", selection.model_name()));
+        }
+    }
+
+    #[cfg(feature = "embed")]
+    #[test]
+    fn graph_disabled_symbol_flag_does_not_start_helper() {
+        let _guard = env_lock();
+        let fixture = GraphHelperFixture::new("");
+        let options = SectionEmbeddingOptions {
+            skip_code_symbol_embeddings: true,
+            ..SectionEmbeddingOptions::default()
+        };
+        let mut embedder = SymbolEmbedder::new(options, EmbeddingModelSelection::CodeRankEmbed);
+        let mut rows = vec![symbol_row_fixture("id", "fn f() {}")];
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        runtime.block_on(embedder.embed_rows_with_progress(&mut rows, |_| {}));
+        drop(embedder);
+        assert!(rows[0].vector.is_none());
+        assert!(fixture.log().is_empty());
+        fixture.export("symbol-disabled");
+    }
+
+    #[cfg(all(feature = "embed", feature = "test-support", target_os = "macos"))]
+    #[test]
+    fn graph_real_worker_matches_legacy_reference_and_exports_sidecars() {
+        let _guard = env_lock();
+        let output = PathBuf::from(
+            std::env::var_os("SPUR_S5_GRAPH_EXPORT").expect("explicit export directory"),
+        );
+        let worker = PathBuf::from(
+            std::env::var_os("SPUR_S5_GRAPH_WORKER").expect("explicit worker binary"),
+        );
+        let reference = PathBuf::from(
+            std::env::var_os("SPUR_S5_GRAPH_REFERENCE").expect("explicit reference binary"),
+        );
+        fs::create_dir_all(&output).unwrap();
+        let cases = [
+            (
+                EmbeddingModelSelection::NomicEmbedTextV15,
+                "SPUR_S5_NOMIC_CACHE",
+                548026095u64,
+            ),
+            (
+                EmbeddingModelSelection::CodeRankEmbed,
+                "SPUR_S5_CODERANK_CACHE",
+                548431020u64,
+            ),
+            (
+                EmbeddingModelSelection::JinaEmbeddingsV2BaseCode,
+                "SPUR_S5_JINA_CACHE",
+                644080771u64,
+            ),
+        ];
+        let mut observations = Vec::new();
+        for (selection, cache_var, budget) in cases {
+            let cache = PathBuf::from(std::env::var_os(cache_var).expect("explicit model cache"));
+            let case = output.join(selection.model_name());
+            fs::create_dir_all(&case).unwrap();
+            let runtime_cache = case.join("runtime-cache");
+            let config = serde_json::json!({
+                "executable": worker, "args": [], "artifact_budget": budget,
+                "limits": {"max_frame_bytes": 65536, "max_texts": 2,
+                    "max_text_bytes": 4096, "max_total_text_bytes": 8192,
+                    "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+                "queue_capacity": 1, "max_restarts": 0,
+                "startup_timeout_ms": 120000, "request_timeout_ms": 120000,
+                "shutdown_timeout_ms": 30000, "shutdown_poll_interval_ms": 20
+            });
+            let _config = EnvGuard::set("SPUR_EMBEDDING_HELPER_CONFIG", &config.to_string());
+            let _cache = EnvGuard::set("SPUR_MODEL_CACHE", cache.to_str().unwrap());
+            let _runtime_cache = EnvGuard::set("SPUR_ORT_CACHE", runtime_cache.to_str().unwrap());
+            let options = SectionEmbeddingOptions {
+                batch_size: 2,
+                ..SectionEmbeddingOptions::default()
+            };
+            let mut sections = vec![section_row_fixture(
+                2,
+                "Sort values in ascending order.".into(),
+            )];
+            sections[0].embedding_model = selection.model_name().to_owned();
+            sections[0].embedding_input_hash = section_embedding_input_hash_for_model(
+                &sections[0].qualified_name,
+                &sections[0].body_text,
+                selection,
+            );
+            let mut symbols = vec![symbol_row_fixture(
+                "sort",
+                "fn sort(values: &mut [i32]) { values.sort(); }",
+            )];
+            symbols[0].embedding_model = selection.model_name().to_owned();
+            symbols[0].embedding_input_hash =
+                symbol_embedding_input_hash_for_model(&symbols[0].embed_text, false, selection);
+            let inputs = vec![
+                section_embedding_inputs(&sections, selection)[0]
+                    .text
+                    .to_string(),
+                symbol_embedding_inputs(&symbols, selection)[0]
+                    .text
+                    .to_string(),
+            ];
+            let input_path = case.join("inputs.json");
+            let expected_path = case.join("reference.json");
+            fs::write(&input_path, serde_json::to_vec_pretty(&inputs).unwrap()).unwrap();
+            let reference_output = Command::new(&reference)
+                .arg(selection.model_name())
+                .arg(&cache)
+                .arg(&input_path)
+                .arg(&expected_path)
+                .output()
+                .unwrap();
+            assert!(
+                reference_output.status.success(),
+                "{} reference {:?}: {}",
+                selection.model_name(),
+                reference_output.status,
+                String::from_utf8_lossy(&reference_output.stderr)
+            );
+            let expected: Vec<Vec<f32>> =
+                serde_json::from_slice(&fs::read(&expected_path).unwrap()).unwrap();
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            let mut section_embedder = SectionEmbedder::new(options, selection);
+            runtime.block_on(section_embedder.embed_rows_with_progress(&mut sections, |_| {}));
+            let mut service = section_embedder.service;
+            service.skip_embeddings = options.skip_code_symbol_embeddings;
+            let mut symbol_embedder = SymbolEmbedder { service };
+            runtime.block_on(symbol_embedder.embed_rows_with_progress(&mut symbols, |_| {}));
+            let section_vector = sections[0].vector.as_ref().expect("section vector");
+            let symbol_vector = symbols[0].vector.as_ref().expect("symbol vector");
+            let actual = vec![section_vector.clone(), symbol_vector.clone()];
+            assert_eq!(expected.len(), 2);
+            let mut max_delta = 0.0f32;
+            for (row, reference_row) in actual.iter().zip(&expected) {
+                assert_eq!(row.len(), 768);
+                assert_eq!(reference_row.len(), 768);
+                for (value, reference_value) in row.iter().zip(reference_row) {
+                    assert!(value.is_finite());
+                    max_delta = max_delta.max((value - reference_value).abs());
+                }
+            }
+            assert!(
+                max_delta < 1e-4,
+                "{} delta {max_delta}",
+                selection.model_name()
+            );
+            fs::write(
+                case.join("actual.json"),
+                serde_json::to_vec_pretty(&actual).unwrap(),
+            )
+            .unwrap();
+            write_record_batches_parquet(
+                &case.join(SECTIONS_PARQUET),
+                sections_schema(),
+                vec![rows_to_batch(sections, sections_schema()).unwrap()],
+            )
+            .unwrap();
+            write_record_batches_parquet(
+                &case.join(CODE_SYMBOLS_PARQUET),
+                symbol_rows_schema(),
+                vec![symbol_rows_to_batch(symbols, symbol_rows_schema()).unwrap()],
+            )
+            .unwrap();
+            let stored_sections = runtime.block_on(read_stored_section_rows(&case));
+            let stored_symbols = runtime.block_on(read_stored_symbol_rows(&case));
+            assert!(stored_sections[0].has_vector && stored_symbols[0].has_vector);
+            assert_eq!(stored_sections[0].embedding_model, selection.model_name());
+            assert_eq!(stored_symbols[0].embedding_model, selection.model_name());
+            let model = symbol_embedder
+                .service
+                .model
+                .as_mut()
+                .expect("owned client");
+            model.close().expect("checked helper shutdown");
+            let events = model.client.test_events();
+            let wait = events
+                .iter()
+                .find(|event| event.kind == "reaped")
+                .and_then(|event| event.status.clone())
+                .expect("worker wait status");
+            assert!(wait.contains("(0)"), "{wait}");
+            assert_eq!(
+                events
+                    .iter()
+                    .filter(|event| event.kind == "spawned")
+                    .count(),
+                1
+            );
+            assert_eq!(
+                events
+                    .iter()
+                    .filter(|event| event.kind == "reply_validated"
+                        && event.status.as_deref() == Some("embeddings"))
+                    .count(),
+                2
+            );
+            assert!(events.iter().any(|event| event.kind == "reply_validated"
+                && event.status.as_deref() == Some("closed")));
+            observations.push(serde_json::json!({"model": selection.model_name(), "max_reference_delta": max_delta, "rows": 2, "dimensions": 768, "worker_wait": wait, "client_events": events.iter().map(|event| serde_json::json!({"kind": event.kind, "status": event.status, "pid": event.pid, "generation": event.generation, "request_id": event.request_id})).collect::<Vec<_>>() }));
+        }
+        fs::write(
+            output.join("observations.json"),
+            serde_json::to_vec_pretty(&observations).unwrap(),
+        )
+        .unwrap();
+    }
+
     #[test]
     fn sections_schema_includes_nullable_vector_column() {
         let schema = sections_schema();
@@ -4007,14 +4695,17 @@ mod tests {
 
     #[test]
     fn coderank_loader_is_revision_pinned_to_fp32_onnx() {
+        #[cfg(feature = "embed")]
         assert_eq!(
             CODE_RANK_EMBED_ONNX_REPO,
             "jamie8johnson/CodeRankEmbed-onnx"
         );
+        #[cfg(feature = "embed")]
         assert_eq!(
             CODE_RANK_EMBED_ONNX_REVISION,
             "151669b173750250e611e1be00c812f112ea6020"
         );
+        #[cfg(feature = "embed")]
         assert_eq!(CODE_RANK_EMBED_ONNX_FILE, "onnx/model.onnx");
         assert_eq!(EmbeddingModelSelection::CodeRankEmbed.max_length(), 8192);
     }
@@ -4104,9 +4795,10 @@ mod tests {
             NOMIC_EMBED_TEXT_V15_MODEL_NAME
         );
         assert_eq!(EmbeddingModelSelection::NomicEmbedTextV15.dimensions(), 768);
+        #[cfg(feature = "embed")]
         assert_eq!(
-            EmbeddingModelSelection::NomicEmbedTextV15.fastembed_model(),
-            Some(EmbeddingModel::NomicEmbedTextV15)
+            EmbeddingModelSelection::NomicEmbedTextV15.model_id(),
+            ModelId::NomicEmbedTextV15
         );
     }
 
@@ -4189,18 +4881,20 @@ mod tests {
             );
         }
 
+        #[cfg(feature = "embed")]
         assert_eq!(
-            EmbeddingModelSelection::NomicEmbedTextV15.fastembed_model(),
-            Some(EmbeddingModel::NomicEmbedTextV15)
+            EmbeddingModelSelection::NomicEmbedTextV15.model_id(),
+            ModelId::NomicEmbedTextV15
         );
+        #[cfg(feature = "embed")]
         assert_eq!(
-            EmbeddingModelSelection::CodeRankEmbed.fastembed_model(),
-            None,
-            "CodeRankEmbed uses the revision-pinned user-defined ONNX path"
+            EmbeddingModelSelection::CodeRankEmbed.model_id(),
+            ModelId::CodeRankEmbed
         );
+        #[cfg(feature = "embed")]
         assert_eq!(
-            EmbeddingModelSelection::JinaEmbeddingsV2BaseCode.fastembed_model(),
-            Some(EmbeddingModel::JinaEmbeddingsV2BaseCode)
+            EmbeddingModelSelection::JinaEmbeddingsV2BaseCode.model_id(),
+            ModelId::JinaEmbeddingsV2BaseCode
         );
     }
 
@@ -5067,12 +5761,11 @@ mod tests {
         assert!(!symbol_embedder.prepare_model_for_eligible_rows(1));
         assert!(!section_embedder.service.model_requested);
         assert!(!symbol_embedder.service.model_requested);
-        assert!(
-            embed_model_cell(EmbeddingModelSelection::NomicEmbedTextV15)
-                .get()
-                .is_none(),
-            "skipped embeddings must not initialize the shared FastEmbed model"
-        );
+        #[cfg(feature = "embed")]
+        {
+            assert!(section_embedder.service.model.is_none());
+            assert!(symbol_embedder.service.model.is_none());
+        }
     }
 
     #[test]

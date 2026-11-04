@@ -1,0 +1,146 @@
+[
+  {
+    "case": "owned_mut",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nimpl Mark for Alpha { fn mark(&self) -> u8 { 2 } }\nfn caller(mut value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "borrowed_mut",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&mut self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nimpl Mark for Alpha { fn mark(&self) -> u8 { 2 } }\nfn caller(mut value: &Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "&Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "owned_value",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\ntrait Mark { fn mark(self) -> u8; }\nimpl Mark for Alpha { fn mark(self) -> u8 { 2 } }\nfn caller(mut value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "double_ref",
+    "source": "struct Alpha;\nimpl Alpha { fn mark(&self) -> u8 { 1 } }\ntrait Mark { fn mark(&self) -> u8; }\nimpl Mark for &Alpha { fn mark(&self) -> u8 { 2 } }\nfn caller(mut value: &&Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "&&Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "renamed_owned_mut",
+    "source": "struct Ember;\nimpl Ember { fn stamp(&mut self) -> u8 { 1 } }\ntrait Stamp { fn stamp(&self) -> u8; }\nimpl Stamp for Ember { fn stamp(&self) -> u8 { 2 } }\nfn caller(mut value: Ember) -> u8 { value.stamp() }",
+    "receiver": "Ember",
+    "form": "Ember",
+    "method": "stamp",
+    "target": "unresolved"
+  },
+  {
+    "case": "renamed_borrowed_mut",
+    "source": "struct Quartz;\nimpl Quartz { fn stamp(&mut self) -> u8 { 1 } }\ntrait Stamp { fn stamp(&self) -> u8; }\nimpl Stamp for Quartz { fn stamp(&self) -> u8 { 2 } }\nfn caller(mut value: &Quartz) -> u8 { value.stamp() }",
+    "receiver": "Quartz",
+    "form": "&Quartz",
+    "method": "stamp",
+    "target": "unresolved"
+  },
+  {
+    "case": "renamed_owned_value",
+    "source": "struct Copper;\nimpl Copper { fn stamp(&self) -> u8 { 1 } }\ntrait Stamp { fn stamp(self) -> u8; }\nimpl Stamp for Copper { fn stamp(self) -> u8 { 2 } }\nfn caller(mut value: Copper) -> u8 { value.stamp() }",
+    "receiver": "Copper",
+    "form": "Copper",
+    "method": "stamp",
+    "target": "unresolved"
+  },
+  {
+    "case": "renamed_double_ref",
+    "source": "struct Onyx;\nimpl Onyx { fn stamp(&self) -> u8 { 1 } }\ntrait Stamp { fn stamp(&self) -> u8; }\nimpl Stamp for &Onyx { fn stamp(&self) -> u8 { 2 } }\nfn caller(mut value: &&Onyx) -> u8 { value.stamp() }",
+    "receiver": "Onyx",
+    "form": "&&Onyx",
+    "method": "stamp",
+    "target": "unresolved"
+  },
+  {
+    "case": "bounded_blanket",
+    "source": "struct Alpha; trait Bound {} impl Bound for Alpha {} impl Alpha { fn mark(&self) -> u8 { 1 } } trait Mark { fn mark(self) -> u8; } impl<T: Bound> Mark for T { fn mark(self) -> u8 { 2 } } fn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "bounded_reference",
+    "source": "struct Alpha; trait Bound {} impl Bound for Alpha {} impl Alpha { fn mark(&self) -> u8 { 1 } } trait Mark { fn mark(&self) -> u8; } impl<T: Bound> Mark for &T { fn mark(&self) -> u8 { 2 } } fn caller(value: &&Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "&&Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "default_trait",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } trait Mark: Sized { fn mark(self) -> u8 { 2 } } impl Mark for Alpha {} fn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "imported_trait",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } mod extension { pub trait Mark { fn mark(self) -> u8; } impl Mark for super::Alpha { fn mark(self) -> u8 { 2 } } } use extension::Mark; fn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "local_constructor_trait",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } trait Mark { fn mark(self) -> u8; } impl Mark for Alpha { fn mark(self) -> u8 { 2 } } fn caller() -> u8 { let value = Alpha; value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "borrowed_constructor_trait",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } trait Mark { fn mark(&self) -> u8; } impl Mark for &Alpha { fn mark(&self) -> u8 { 2 } } fn caller() -> u8 { let a = Alpha; let b = &a; let value = &b; value.mark() }",
+    "receiver": "Alpha",
+    "form": "&&Alpha",
+    "method": "mark",
+    "target": "unresolved"
+  },
+  {
+    "case": "inherent_owned",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } fn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "Alpha::mark"
+  },
+  {
+    "case": "inherent_borrowed",
+    "source": "struct Beta; impl Beta { fn mark(&self) -> u8 { 1 } } fn caller(value: &Beta) -> u8 { value.mark() }",
+    "receiver": "Beta",
+    "form": "&Beta",
+    "method": "mark",
+    "target": "Beta::mark"
+  },
+  {
+    "case": "inherent_double_ref",
+    "source": "struct Alpha; impl Alpha { fn mark(&self) -> u8 { 1 } } fn caller(value: &&Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "&&Alpha",
+    "method": "mark",
+    "target": "Alpha::mark"
+  },
+  {
+    "case": "unrelated_trait",
+    "source": "struct Alpha; struct Other; impl Alpha { fn mark(&self) -> u8 { 1 } } trait Mark { fn mark(self) -> u8; } impl Mark for Other { fn mark(self) -> u8 { 2 } } fn caller(value: Alpha) -> u8 { value.mark() }",
+    "receiver": "Alpha",
+    "form": "Alpha",
+    "method": "mark",
+    "target": "Alpha::mark"
+  }
+]

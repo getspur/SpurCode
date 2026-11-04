@@ -1,0 +1,15 @@
+# S6 retry: restore infrastructure and complete migration
+
+Attempt 1 is not approved. It committed a real dependency assertion RED, but made no production change and interrupted the full analyst test compilation before execution (exit 130). The preserved authored tip is `a77bcce17b93fd6e6889b21b56391196a7c522da` on `spur/review-evidence/embedding-s6-attempt1`, containing import `7ba67e8282601c409038e0aa0dac01abf2d277c2`, test `060ff939317f0d4b5ec0a87fd7ddfcf96b7b8056` and evidence. The engine snapshot is `d2a875e7acec20e6136fde34576e3a9b3416cc7f`.
+
+The prescribed archive inside an old Cargo build output was absent. Root downloaded the same official Microsoft ONNX Runtime 1.22.0 archive into `/private/tmp/spur-embedding-isolation-assets/onnxruntime-osx-arm64-1.22.0.tgz`, outside Cargo's target. Both approved checksums match: archive `cab6dcbd77e7ec775390e7b73a8939d45fec3379b017c7cb74f5b204c1a1cc07`, contained dylib `2b885992d3d6fa4130d39ec84a80d7504ff52750027c547bb22c86165f19406a`. The source URL, size, completed download exit and exact checks are in `asset-restoration.json`. No model/runtime version or inference behavior changed. Keep global caches untouched.
+
+Use this new `SPUR_ORT_ARCHIVE` value. The existing single-writer `CARGO_TARGET_DIR=/private/tmp/rust-gap-g1-acceptance-target` may be cold; a cache miss is not a product failure. Continue implementation while short-yield build commands run, then poll them to completion. Do not interrupt compilation merely to return a test-only handoff. Commit progress before long commands.
+
+The existing S6 PRE is still applicable: the production sources and route/lifecycle requirements are unchanged. All sixteen receipts were already reloaded by attempt 1; the archive remains in `../root-pre/`. PRE is not GREEN or root POST. Preserve the standalone dependency RED as evidence and add focused behavioral tests before corresponding production fixes.
+
+In a newly assigned worktree whose dispatch source matches `38f6838c07770dd5f1631a3a363896dff94ef7e0`, replay the three original commits in order, preserving test-before-fix history. Import only this recovery directory from the root recovery commit. Do not reset the main checkout or treat the snapshot wrapper commit as proof of missing authored history.
+
+Complete the existing S6 goal: migrate analyst native caches/loader types to the supervised owned client/model handle, remove native normal/build dependencies, preserve Auto/Sidecar/Off and socket v1 translation, and exercise valid/error/abort/mismatch/cancel/reuse/teardown with actual subprocesses. Use the user-approved TDD flow, then deliver actual GREEN and independent root POST candidates. Missing cache assets can be restored in isolated temporary directories with the same recorded checksums; they do not justify abandoning unrelated implementation.
+
+Leave `bd-3cu4` in progress for root review. The eight legacy native abort cases remain separately preserved and baselined; do not reopen that ownership audit or count them as passing.

@@ -6666,9 +6666,8 @@ dependencies = [
 [[package]]
 name = "ort"
 version = "2.0.0-rc.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fa7e49bd669d32d7bc2a15ec540a527e7764aec722a45467814005725bcd721"
 dependencies = [
+ "libloading",
  "ndarray",
  "ort-sys",
  "smallvec 2.0.0-alpha.10",
@@ -9024,18 +9023,19 @@ dependencies = [
  "arrow-array 58.1.0",
  "async-trait",
  "duckdb",
- "fastembed",
  "futures 0.3.32",
  "globset",
  "serde",
  "serde_json",
  "spur-cli",
+ "spur-embedding",
  "spur-graph",
  "spur-mcp",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
+ "tracing-subscriber",
  "uuid",
 ]
 
@@ -9091,6 +9091,7 @@ dependencies = [
  "indicatif 0.18.4",
  "nix 0.29.0",
  "reqwest 0.12.28",
+ "rmcp",
  "rustls 0.23.38",
  "secrecy",
  "semver",
@@ -9116,6 +9117,7 @@ dependencies = [
  "spur-worktree",
  "tempfile",
  "tokio",
+ "tokio-util 0.7.18",
  "toml 0.8.2",
  "tracing",
  "tracing-appender",
@@ -9305,6 +9307,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "spur-embedding"
+version = "1.24.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "uuid",
+]
+
+[[package]]
+name = "spur-embedding-worker"
+version = "1.24.0"
+dependencies = [
+ "anyhow",
+ "fastembed",
+ "hf-hub",
+ "ort",
+ "serde_json",
+ "sha2 0.10.9",
+ "spur-embedding",
+ "thiserror 2.0.18",
+ "uuid",
+]
+
+[[package]]
 name = "spur-graph"
 version = "1.24.0"
 dependencies = [
@@ -9321,12 +9348,10 @@ dependencies = [
  "chrono",
  "clap",
  "criterion",
- "fastembed",
  "fs2",
  "futures 0.3.32",
  "gix",
  "globset",
- "hf-hub",
  "ignore",
  "indicatif 0.18.4",
  "insta",
@@ -9341,7 +9366,9 @@ dependencies = [
  "serde_json",
  "sha1 0.10.6",
  "sha2 0.10.9",
+ "spur-embedding",
  "spur-mcp",
+ "spur-solver",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",

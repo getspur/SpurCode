@@ -4,14 +4,16 @@ use std::{
     sync::{Arc, Mutex, MutexGuard, OnceLock},
 };
 
-use crate::embedding::EmbeddingRuntime;
+use crate::embedding::OwnedEmbeddingRuntime;
 use crate::search::graph_candidates::merge_graph_candidates;
 #[cfg(test)]
 use crate::search::hybrid::confidence_score_thresholds;
 use crate::{
     db::{
         connection::open_analyst_connection_read_only,
-        extensions::load_analyst_icu_extension,
+        extensions::{
+            analyst_extension_directory, analyst_extension_load_sql, load_analyst_icu_extension,
+        },
         paths::{analyst_db_path, current_repo_root},
     },
     query_context_candidates_with_conn, query_graph_candidates_with_conn, KnowledgeQueryOptions,
@@ -48,15 +50,24 @@ static PACK_CONNECTION_POOL: OnceLock<Mutex<HashMap<PathBuf, PooledPackConnectio
 pub(crate) async fn knowledge_context_pack(
     request: KnowledgeContextPackRequest,
 ) -> Result<Value, McpHandlerError> {
+    let runtime = OwnedEmbeddingRuntime::new();
+    let result = knowledge_context_pack_with_runtime(request, &runtime).await;
+    if let Err(error) = runtime.shutdown().await {
+        tracing::error!(%error, "embedding compatibility shutdown failed");
+    }
+    result
+}
+
+pub(crate) async fn knowledge_context_pack_with_runtime(
+    request: KnowledgeContextPackRequest,
+    runtime: &OwnedEmbeddingRuntime,
+) -> Result<Value, McpHandlerError> {
     let db_path = analyst_db_path()?;
     if !db_path.exists() {
         return Ok(unavailable_pack(&request, &db_path));
     }
 
-    let query_vec = EmbeddingRuntime::global()
-        .embed_query(&request.query)
-        .await
-        .map(Vec::from);
+    let query_vec = runtime.embed_query(&request.query).await.map(Vec::from);
     let query_result = {
         let conn = open_pack_connection(&db_path, "knowledge_context_pack")?;
         let conn = conn.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
@@ -76,12 +87,24 @@ pub(crate) async fn knowledge_context_pack(
 pub(crate) async fn knowledge_context_pack_2(
     request: KnowledgeContextPackV2Request,
 ) -> Result<Value, McpHandlerError> {
+    let runtime = OwnedEmbeddingRuntime::new();
+    let result = knowledge_context_pack_2_with_runtime(request, &runtime).await;
+    if let Err(error) = runtime.shutdown().await {
+        tracing::error!(%error, "embedding compatibility shutdown failed");
+    }
+    result
+}
+
+pub(crate) async fn knowledge_context_pack_2_with_runtime(
+    request: KnowledgeContextPackV2Request,
+    runtime: &OwnedEmbeddingRuntime,
+) -> Result<Value, McpHandlerError> {
     let db_path = analyst_db_path()?;
     if !db_path.exists() {
         return Ok(unavailable_pack_v2(&request, &db_path));
     }
 
-    let query_vec = EmbeddingRuntime::global()
+    let query_vec = runtime
         .embed_query(&request.base.query)
         .await
         .map(Vec::from);
@@ -146,7 +169,7 @@ fn open_pack_connection(
             db_path.display()
         ))
     })?;
-    load_analyst_icu_extension(&conn);
+    load_pack_extensions(&conn);
     let conn = Arc::new(Mutex::new(conn));
     pool.insert(db_path.to_path_buf(), Arc::clone(&conn));
     Ok(conn)
@@ -187,7 +210,7 @@ async fn open_pack_connection_with_overlay(
     }) {
         Some((base_path, delta_dir)) => match open_worktree_overlay(base_path, delta_dir) {
             Ok(conn) => {
-                load_analyst_icu_extension(&conn);
+                load_pack_extensions(&conn);
                 staleness = overlay_session
                     .as_ref()
                     .map(|session| PackStaleness {
@@ -223,6 +246,17 @@ async fn open_pack_connection_with_overlay(
         overlay_conn,
         staleness,
     })
+}
+
+fn load_pack_extensions(conn: &duckdb::Connection) {
+    load_analyst_icu_extension(conn);
+    // A configured extension directory disables DuckDB's autoload; pack
+    // search macros still require FTS on each newly opened connection.
+    if analyst_extension_directory().is_some() {
+        if let Err(error) = conn.execute_batch(&analyst_extension_load_sql("fts")) {
+            tracing::warn!(%error, "failed to load pack FTS extension");
+        }
+    }
 }
 
 async fn overlay_session_for_current_worktree(

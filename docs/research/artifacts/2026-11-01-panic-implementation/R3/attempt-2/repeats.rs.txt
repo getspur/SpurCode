@@ -1,0 +1,14 @@
+const fn length() -> usize { 2 }
+fn value() -> u8 { 1 }
+fn generic<const N: usize>() {}
+fn demo() {
+    let _runtime = /*site:runtime_const*/ length();
+    let _array = [/*site:element*/ value(); /*body:count*/ /*site:count*/ length()];
+    let _compound = [/*site:compound_element*/ value(); /*body:compound*/ /*site:left*/ length() + /*site:right*/ length()];
+    let _closure = || /*body:closure*/ { let _ = [/*site:closure_element*/ value(); /*body:closure_count*/ /*site:closure_count*/ length()]; };
+    let _async = async /*body:async*/ { let _ = [/*site:async_element*/ value(); /*body:async_count*/ { /*site:async_left*/ length() + /*site:async_right*/ length() }]; };
+    let _deferred = async || /*body:deferred*/ { let _ = [/*site:deferred_element*/ value(); /*body:deferred_count*/ /*site:deferred_count*/ length()]; };
+    let _: [u8; /*body:type_count*/ /*site:type_count*/ length()];
+    /*site:generic_call*/ generic::<{ /*body:generic_count*/ /*site:generic_count*/ length() }>();
+    const ITEM: usize = /*body:item*/ /*site:item*/ length();
+}

@@ -1,0 +1,13 @@
+# Recovered analyst checkpoint and graph-query repair PRE
+
+The third C delegation expired, but authored checkpoint `38051998648e0aa6e7ff622b46c4ce654c208588` preserves its commits and evidence. The old execution is not approved. The recovery continues from these bytes rather than repeating its completed work.
+
+The checkpoint verifier passes: context-query FTS RED/GREEN, valid PID regression/fix and 40 client passes, exact moved test body and 289-line service, preserved three-model C2 captures, and the moved real Nomic replay. The saved indexed CLI replay is successful. These are source-bound historical observations; they are not a fresh root run of every application path.
+
+The remaining full-suite failure is `context_candidates::graph_candidates_return_primary_and_neighbor_rows`: the separate public `query_graph_candidates` connection loads ICU but omits FTS, and local extension configuration disables autoload. The saved socket-enabled suite had library 107 passes, embedding 29, overlay 6, pack 27, then search 23 passes/one failure. A later accounted run skipped that graph failure and the separately run real confidence fixture; its zero exit is not complete acceptance. Scope signal `db0b6648-df77-4ae0-a8b0-b326d25e6f82` is addressed by explicitly authorizing the graph-query file in a focused replacement task.
+
+Fresh graph-query PRE uses `data_integrity.mutually_consistent` plus uniqueness/cardinality. Jev opened its gate; `sol_be6bf622604848b1` accepts the declared two-route explicit-FTS contract. Missing FTS, enabling autoload, missing graph coverage, and the actual checkpoint failure reject. Exact interpretation, requests, solver responses and pinned/reloaded lowerings are in `graph-pre.json.gz`. This checks a finite initialization contract, not native safety or all program behavior.
+
+Recovery DAG: graph-query FTS repair, then final analyst acceptance. Workers remain codex/profile codex/model gpt-6.1-terra/effort xhigh. The first task modifies only the graph-query initialization, its focused regression if needed, and evidence. The second validates final source without silently skipping the graph regression; root supplies its fresh PRE before releasing it and runs POST before approval. Packaging must depend on the new final acceptance execution issue before the exhausted old issue is abandoned.
+
+All prior source histories, model references and failed logs remain preserved. Six superseded C2 cache pins were released only after their complete receipts had been archived at `2d34149ed0cfcdd647dd4e9cd00dd2b16050233d`; active PRE receipts remain pinned. Windows, the direct-native graph baseline failures, packaging and the notebook experiment remain outside passing claims.

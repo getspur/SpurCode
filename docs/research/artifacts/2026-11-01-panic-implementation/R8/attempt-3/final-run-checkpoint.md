@@ -1,0 +1,7 @@
+# Isolated final regression checkpoint
+
+Production tip: `8b2efe2e3`. The generic-name regression was committed before execution (`1e243175a`), failed at the intended primitive-authority assertion (red-generic-authority), and now passes (green-generic-corrected). The first GREEN attempt exposed a test assumption: a valid Rust generic impl produces R3 parse uncertainty, so no facts exist. The corrected test accepts only explicit parse-unknown with no facts, or canonical facts with no assertion operations and open obligations. Native rustc compiled both trait/impl generic-u8 controls and exhaustively executed eight bool pairs. New generic source JSON requests all remain incomplete_semantics, with three exact preflighted/persisted/reloaded POST requests.
+
+The intermediate complete run finished 98 targets: 1,290 passed, one doctest failed, 19 existing ignores. The doctest referenced an absent prior rlib while targeted Cargo rebuilds overlapped the run. This is a retained failure, not acceptance; no doctest or production expectation was changed. The final run will execute after all other Cargo processes belonging to this attempt have completed, without overlapping Cargo commands or source edits.
+
+All-target check, scoped fmt check, both assertion CLI/native replays, all six CLI identity negatives, native resolver controls and canonical generic JSON controls have finished successfully. Final-suite acceptance remains pending. About 34 GiB remains free. Historical StorageFull evidence remains untouched.

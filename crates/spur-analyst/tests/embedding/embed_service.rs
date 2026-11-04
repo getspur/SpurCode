@@ -48,6 +48,93 @@ where
     (tempdir, handle)
 }
 
+#[tokio::test]
+async fn socket_shutdown_joins_blocking_embedder_after_request_cancelled() {
+    let tempdir = tempfile::tempdir().unwrap();
+    let socket = tempdir.path().join("embed.sock");
+    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+    let started = Mutex::new(Some(started_tx));
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let release = Mutex::new(release_rx);
+    let service = EmbedService::new(
+        "stub-model",
+        || true,
+        move |_texts| {
+            started.lock().unwrap().take().unwrap().send(()).unwrap();
+            release.lock().unwrap().recv().unwrap();
+            Ok(vec![vector(1.0)])
+        },
+    );
+    let (stop, stopped) = tokio::sync::oneshot::channel();
+    let mut server = tokio::spawn(service.serve_socket_until(socket.clone(), async {
+        let _ = stopped.await;
+    }));
+    wait_for_socket(&socket).await;
+    let client_socket = socket.clone();
+    let client = tokio::spawn(async move {
+        let mut stream = UnixStream::connect(client_socket).await.unwrap();
+        stream
+            .write_all(b"{\"v\":1,\"id\":1,\"op\":\"embed\",\"texts\":[\"query\"]}\n")
+            .await
+            .unwrap();
+        let mut line = String::new();
+        BufReader::new(stream).read_line(&mut line).await.unwrap()
+    });
+    started_rx.await.expect("embedder started");
+    stop.send(()).unwrap();
+    let premature = tokio::time::timeout(Duration::from_millis(100), &mut server).await;
+    release_tx.send(()).unwrap();
+    if premature.is_err() {
+        server.await.unwrap().unwrap();
+    }
+    assert_eq!(
+        client.await.unwrap(),
+        0,
+        "cancelled request returned a response"
+    );
+    assert!(
+        premature.is_err(),
+        "socket shutdown returned while blocking work was still running"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cancelling_socket_host_joins_its_blocking_embedder() {
+    let tempdir = tempfile::tempdir().unwrap();
+    let socket = tempdir.path().join("embed.sock");
+    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+    let started = Mutex::new(Some(started_tx));
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let release = Mutex::new(release_rx);
+    let service = EmbedService::new(
+        "stub-model",
+        || true,
+        move |_texts| {
+            started.lock().unwrap().take().unwrap().send(()).unwrap();
+            release.lock().unwrap().recv().unwrap();
+            Ok(vec![vector(1.0)])
+        },
+    );
+    let mut server = tokio::spawn(service.serve_socket(socket.clone()));
+    wait_for_socket(&socket).await;
+    let mut stream = UnixStream::connect(&socket).await.unwrap();
+    stream
+        .write_all(b"{\"v\":1,\"id\":1,\"op\":\"embed\",\"texts\":[\"query\"]}\n")
+        .await
+        .unwrap();
+    started_rx.await.unwrap();
+    server.abort();
+    let premature = tokio::time::timeout(Duration::from_millis(100), &mut server).await;
+    release_tx.send(()).unwrap();
+    if premature.is_err() {
+        assert!(server.await.unwrap_err().is_cancelled());
+    }
+    assert!(
+        premature.is_err(),
+        "cancelled host returned while blocking work remained"
+    );
+}
+
 async fn send_request(socket: &Path, request: Value) -> Value {
     let mut stream = UnixStream::connect(socket).await.expect("connect");
     stream

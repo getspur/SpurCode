@@ -99,6 +99,64 @@ impl AnalystFixture {
     }
 }
 
+#[cfg(feature = "embed")]
+#[tokio::test]
+async fn bounded_pack_keeps_completed_response_after_cleanup_failure() {
+    const CHILD: &str = "SPUR_S6_PACK_RESULT_CHILD";
+    if std::env::var_os(CHILD).is_some() {
+        tracing_subscriber::fmt()
+            .with_ansi(false)
+            .with_writer(std::io::stderr)
+            .try_init()
+            .unwrap();
+        let fixture = AnalystFixture::new();
+        let pack = dispatch_in_fixture(
+            &fixture,
+            "knowledge_context_pack",
+            json!({"query": "dispatch approval evidence"}),
+        )
+        .await
+        .expect("completed pack must survive cleanup failure");
+        assert!(pack.get("error").is_none(), "{pack:#}");
+        return;
+    }
+    let dir = tempfile::tempdir().unwrap();
+    let script = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/embedding/fixtures/owned_fault_worker.py");
+    let config = json!({
+        "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let log = dir.path().join("worker.log");
+    let output = std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact", "mcp_tools_characterization::bounded_pack_keeps_completed_response_after_cleanup_failure", "--nocapture"])
+        .env(CHILD, "1").env("SPUR_GRAPH_TEST_WORKER_LOG", &log)
+        .env("SPUR_GRAPH_TEST_WORKER_FAULT", "shutdown_abort").env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+        .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string()).output().unwrap();
+    assert!(
+        output.status.success(),
+        "child failed: {}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("embedding compatibility shutdown failed"),
+        "cleanup error was not reported: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let events = std::fs::read_to_string(log).unwrap();
+    assert!(events.lines().any(|line| line == "shutdown"), "{events}");
+    let pid = events
+        .lines()
+        .find_map(|line| line.strip_prefix("service_pid "))
+        .unwrap();
+    let probe = std::process::Command::new("/usr/bin/python3").args(["-c", "import os,sys\ntry: os.kill(int(sys.argv[1]), 0)\nexcept ProcessLookupError: sys.exit(0)\nelse: sys.exit(1)", pid]).status().unwrap();
+    assert!(probe.success(), "helper still exists: {events}");
+}
+
 struct EnvGuard {
     _lock: MutexGuard<'static, ()>,
     key: &'static str,
@@ -696,6 +754,11 @@ fn replace_string_value(value: &mut Value, needle: &str, replacement: &str) {
 
 fn seed_analyst_db(db_path: &Path) {
     let conn = duckdb::Connection::open(db_path).expect("open fixture db");
+    if let Ok(directory) = std::env::var("SPUR_DUCKDB_EXTENSION_DIR") {
+        let escaped = directory.replace('\'', "''");
+        conn.execute_batch(&format!("SET extension_directory = '{escaped}'"))
+            .expect("set isolated fixture extension directory");
+    }
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load fixture extensions");
     conn.execute_batch(

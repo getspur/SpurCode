@@ -481,6 +481,7 @@ struct LexicalCallable {
     syntax_kind: String,
     byte_range: [usize; 2],
     header_range: [usize; 2],
+    body_range: [usize; 2],
 }
 
 /// Resolve definitions from the same validated physical bytes as P1, without
@@ -512,6 +513,7 @@ fn lexical_callables(request: &CgaImportRequest<'_>) -> anyhow::Result<Vec<Lexic
                         syntax_kind: node.kind().into(),
                         byte_range: [node.start_byte(), node.end_byte()],
                         header_range: [node.start_byte(), body.start_byte()],
+                        body_range: [body.start_byte(), body.end_byte()],
                     });
                 }
             }
@@ -520,6 +522,28 @@ fn lexical_callables(request: &CgaImportRequest<'_>) -> anyhow::Result<Vec<Lexic
         }
     }
     Ok(callables)
+}
+
+/// Reuse the importer's definition-header rules for the new body sidecar.
+/// The result is spatial provenance, never compiler instance/type equivalence.
+pub(super) fn cga_body_locations(
+    graph: &CgaGraph,
+    request: &CgaImportRequest<'_>,
+) -> anyhow::Result<Vec<Option<ConvertedCgaLocation>>> {
+    let callables = lexical_callables(request)?;
+    graph
+        .nodes
+        .iter()
+        .map(|node| {
+            let (location, _) = convert_location(&node.location, request)?;
+            Ok(
+                resolve_caller(&location, &callables).map(|owner| ConvertedCgaLocation {
+                    file_path: Some(owner.file_path.clone()),
+                    byte_range: Some(owner.body_range),
+                }),
+            )
+        })
+        .collect()
 }
 
 fn resolve_caller<'a>(
