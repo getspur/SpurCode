@@ -4,5 +4,6 @@ mod embed_service;
 mod embedding_sidecar_layout;
 #[path = "embedding/dependency_boundary.rs"]
 mod dependency_boundary;
+#[cfg(all(unix, feature = "embed"))]
 #[path = "embedding/warm_helper.rs"]
 mod warm_helper;
