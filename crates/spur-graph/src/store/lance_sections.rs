@@ -15,7 +15,7 @@ use arrow_schema::{DataType, Field, Schema};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use parquet::arrow::ArrowWriter;
 #[cfg(feature = "embed")]
-use spur_embedding::{ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits};
+use spur_embedding::{Cancellation, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits};
 #[cfg(feature = "embed")]
 use std::time::{Duration, Instant};
 
@@ -2176,6 +2176,25 @@ pub fn load_embedding_model(
     embedding_model: EmbeddingModelSelection,
     _show_download_progress: bool,
 ) -> Result<EmbeddingModelHandle> {
+    load_embedding_model_impl(embedding_model, None)
+}
+
+/// Construct a supervised model while observing the owner's cancellation and deadline.
+#[cfg(feature = "embed")]
+pub fn load_embedding_model_cancellable(
+    embedding_model: EmbeddingModelSelection,
+    _show_download_progress: bool,
+    cancel: Cancellation,
+    deadline: Instant,
+) -> Result<EmbeddingModelHandle> {
+    load_embedding_model_impl(embedding_model, Some((cancel, deadline)))
+}
+
+#[cfg(feature = "embed")]
+fn load_embedding_model_impl(
+    embedding_model: EmbeddingModelSelection,
+    cancellation: Option<(Cancellation, Instant)>,
+) -> Result<EmbeddingModelHandle> {
     let raw = std::env::var("SPUR_EMBEDDING_HELPER_CONFIG").context(
         "SPUR_EMBEDDING_HELPER_CONFIG is required until helper packaging supplies configuration",
     )?;
@@ -2206,14 +2225,22 @@ pub fn load_embedding_model(
     };
     let executable = config.executable.into_os_string();
     let prefix: Vec<std::ffi::OsString> = config.args.into_iter().map(Into::into).collect();
-    let identity = EmbeddingClient::describe_model(
+    let (cancel, deadline) = match cancellation {
+        Some((cancel, deadline)) => (cancel, deadline),
+        None => (
+            Cancellation::new(),
+            checked_deadline(policy.startup_timeout)?,
+        ),
+    };
+    let identity = EmbeddingClient::describe_model_cancellable(
         executable.clone(),
         prefix.clone(),
         embedding_model.model_id(),
         config.artifact_budget,
         limits.clone(),
         policy.clone(),
-        checked_deadline(policy.startup_timeout)?,
+        deadline,
+        cancel,
     )
     .context("describe supervised embedding model")?;
     if identity.dimensions != EMBEDDING_VECTOR_DIMENSIONS {

@@ -17,8 +17,6 @@ pub use build::{
     EXTRACTOR_VERSION, SCHEMA_VERSION,
 };
 pub use canonical_hash::artifact_content_hash_blake3_hex;
-#[cfg(feature = "embed")]
-pub use lance_sections::load_embedding_model;
 pub use lance_sections::{
     embedding_query_text_for_model, fastembed_cache_dir, write_sections_dataset,
     EmbeddingModelSelection, CODE_RANK_EMBED_MODEL_NAME, CODE_SYMBOLS_DATASET_DIR,
@@ -26,6 +24,8 @@ pub use lance_sections::{
     JINA_EMBEDDINGS_V2_BASE_CODE_MODEL_NAME, NOMIC_EMBED_TEXT_V15_MODEL_NAME, SECTIONS_DATASET_DIR,
     SECTIONS_PARQUET, SECTIONS_TABLE,
 };
+#[cfg(feature = "embed")]
+pub use lance_sections::{load_embedding_model, load_embedding_model_cancellable};
 pub use parquet::{
     load_temporal_artifact_parquet, read_artifact_header_parquet, read_artifact_parquet,
     stamp_sidecar_status, stream_temporal_artifact_parquet, write_artifact_parquet,
