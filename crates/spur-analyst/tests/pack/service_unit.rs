@@ -3167,3 +3167,38 @@ async fn knowledge_context_pack_reports_confidence_from_real_hybrid_fusion() {
     assert_eq!(weak_grounding, "bm25-doc");
     assert_eq!(weak_pack["confidence"], "low");
 }
+
+/// Explicit acceptance path: a real owned helper supplies the pack query.
+#[cfg(feature = "embed")]
+#[tokio::test]
+#[ignore = "requires explicitly configured real model helper and DuckDB extensions"]
+async fn real_owned_helper_returns_indexed_context_pack() {
+    let fixture = build_hybrid_confidence_fixture();
+    let repo = fixture._temp_dir.path().join("repo");
+    let spur_dir = repo.join(".spur");
+    fs::create_dir_all(&spur_dir).unwrap();
+    fs::copy(&fixture.db_path, spur_dir.join("analyst.duckdb")).unwrap();
+    let runtime = OwnedEmbeddingRuntime::new();
+    runtime.warm().await.expect("real helper warm inference");
+    let pack = spur_graph::mcp::with_worktree_root_for_request(repo, async {
+        let request = KnowledgeContextPackRequest::parse(&json!({
+            "query": "ranking beacon", "scope": "all", "limit": 3
+        }))
+        .unwrap();
+        knowledge_context_pack_with_runtime(request, &runtime).await
+    })
+    .await
+    .expect("indexed pack with real owned helper");
+    runtime
+        .shutdown()
+        .await
+        .expect("checked owned helper shutdown");
+    println!("S6C_REAL_PACK {}", serde_json::to_string(&pack).unwrap());
+    assert_eq!(pack["answerable"], true, "{pack}");
+    assert!(
+        pack["primary_evidence"]
+            .as_array()
+            .is_some_and(|rows| !rows.is_empty()),
+        "{pack}"
+    );
+}
