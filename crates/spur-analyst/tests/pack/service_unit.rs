@@ -3205,3 +3205,22 @@ async fn real_owned_helper_returns_indexed_context_pack() {
         "{pack}"
     );
 }
+
+/// Keep the indexed fixture alive while a real CLI host serves a pack request.
+#[cfg(feature = "embed")]
+#[test]
+#[ignore = "requires an explicitly configured CLI, real helper and DuckDB extensions"]
+fn real_cli_host_serves_indexed_context_pack() {
+    let fixture = build_hybrid_confidence_fixture();
+    let repo = fixture._temp_dir.path().join("repo");
+    let spur_dir = repo.join(".spur");
+    fs::create_dir_all(&spur_dir).unwrap();
+    fs::copy(&fixture.db_path, spur_dir.join("analyst.duckdb")).unwrap();
+    let driver = std::env::var_os("SPUR_S6C_HOST_DRIVER").expect("explicit host driver");
+    let status = Command::new("/usr/bin/python3")
+        .arg(driver)
+        .env("SPUR_S6C_HOST_ROOT", repo)
+        .status()
+        .expect("start host driver");
+    assert!(status.success(), "real CLI host driver failed: {status}");
+}
