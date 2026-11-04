@@ -110,3 +110,71 @@ fn cancellation_interrupts_hung_descriptor_discovery() {
         "discovery did not respond to cancellation"
     );
 }
+
+#[test]
+fn owner_can_join_cancelled_descriptor_process() {
+    use spur_embedding::{Cancellation, CleanupOwner};
+    use std::sync::Arc;
+    let timeout = Duration::from_secs(5);
+    let limits = ProtocolLimits {
+        max_frame_bytes: 65536,
+        max_texts: 16,
+        max_text_bytes: 1024,
+        max_total_text_bytes: 4096,
+        max_dimensions: 16,
+        max_identity_bytes: 128,
+        max_pending: 4,
+    };
+    let policy = ClientPolicy {
+        queue_capacity: 1,
+        max_restarts: 0,
+        startup_timeout: timeout,
+        request_timeout: timeout,
+        shutdown_timeout: timeout,
+        shutdown_poll_interval: Duration::from_millis(2),
+    };
+    let cleanup = Arc::new(CleanupOwner::new(policy.shutdown_poll_interval).unwrap());
+    let path = std::env::temp_dir().join(format!("spur-descriptor-pid-{}", uuid::Uuid::new_v4()));
+    let watch = path.clone();
+    let cancel = Cancellation::new();
+    let trigger = cancel.clone();
+    let job = std::thread::spawn(move || {
+        let until = Instant::now() + timeout;
+        while !watch.exists() {
+            assert!(Instant::now() < until, "descriptor process never started");
+            std::thread::yield_now();
+        }
+        trigger.cancel();
+    });
+    let result = EmbeddingClient::describe_model_cancellable_with_cleanup(
+        "/bin/sh",
+        vec![
+            "-c".into(),
+            "printf '%s' $$ > \"$1\"; exec /usr/bin/tail -f /dev/null".into(),
+            "descriptor".into(),
+            path.as_os_str().to_owned(),
+        ],
+        ModelId::NomicEmbedTextV15,
+        100,
+        limits,
+        policy,
+        Instant::now() + timeout,
+        cancel,
+        Arc::clone(&cleanup),
+    );
+    job.join().unwrap();
+    assert!(matches!(result, Err(ClientError::Cancelled)), "{result:?}");
+    cleanup
+        .wait_for_cleanup(Instant::now() + timeout)
+        .expect("join descriptor cleanup");
+    let pid = std::fs::read_to_string(&path).unwrap();
+    let status = std::process::Command::new("/bin/kill")
+        .args(["-0", &pid])
+        .status()
+        .unwrap();
+    assert!(
+        !status.success(),
+        "descriptor process {pid} survived cleanup"
+    );
+    std::fs::remove_file(path).unwrap();
+}
