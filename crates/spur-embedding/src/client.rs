@@ -287,6 +287,7 @@ impl EmbeddingClient {
         drop(child.stdin.take());
         let mut stdout = child.stdout.take().expect("descriptor stdout");
         let (tx, rx) = mpsc::sync_channel(1);
+        let wake = Arc::clone(&client.wake);
         let job = thread::spawn(move || {
             let result = (|| -> Result<ReplyEnvelope, String> {
                 let reply = read_frame(&mut stdout, &limits).map_err(|e| e.to_string())?;
@@ -296,22 +297,29 @@ impl EmbeddingClient {
                 }
                 Ok(reply)
             })();
+            let _guard = wake.gate.lock().unwrap();
             let _ = tx.send(result);
+            wake.cv.notify_all();
         });
+        let mut gate = client.wake.gate.lock().unwrap();
         let received = loop {
             if cancel.cancelled() {
-                Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
-                return Err(ClientError::Cancelled);
+                break Err(ClientError::Cancelled);
             }
             let remaining = deadline.saturating_duration_since(Instant::now());
             if remaining.is_zero() {
-                break Err(mpsc::RecvTimeoutError::Timeout);
+                break Err(ClientError::Timeout);
             }
-            match rx.recv_timeout(remaining.min(policy.shutdown_poll_interval)) {
-                Err(mpsc::RecvTimeoutError::Timeout) => continue,
-                result => break result,
+            match rx.try_recv() {
+                Ok(result) => break Ok(result),
+                Err(mpsc::TryRecvError::Disconnected) => {
+                    break Err(ClientError::Transport("descriptor reader stopped".into()));
+                }
+                Err(mpsc::TryRecvError::Empty) => {}
             }
+            gate = client.wake.cv.wait_timeout(gate, remaining).unwrap().0;
         };
+        drop(gate);
         let reply = match received {
             Ok(result) => {
                 let _ = job.join();
@@ -323,13 +331,9 @@ impl EmbeddingClient {
                     }
                 }
             }
-            Err(mpsc::RecvTimeoutError::Timeout) => {
+            Err(error) => {
                 Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
-                return Err(ClientError::Timeout);
-            }
-            Err(mpsc::RecvTimeoutError::Disconnected) => {
-                Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
-                return Err(ClientError::Transport("descriptor reader stopped".into()));
+                return Err(error);
             }
         };
         loop {
@@ -346,11 +350,23 @@ impl EmbeddingClient {
                 Ok(Some(status)) => {
                     return Err(ClientError::Transport(format!("descriptor exit: {status}")));
                 }
-                Ok(None) => thread::park_timeout(
-                    policy
-                        .shutdown_poll_interval
-                        .min(deadline.saturating_duration_since(Instant::now())),
-                ),
+                Ok(None) => {
+                    let gate = client.wake.gate.lock().unwrap();
+                    if !cancel.cancelled() {
+                        drop(
+                            client
+                                .wake
+                                .cv
+                                .wait_timeout(
+                                    gate,
+                                    policy
+                                        .shutdown_poll_interval
+                                        .min(deadline.saturating_duration_since(Instant::now())),
+                                )
+                                .unwrap(),
+                        );
+                    }
+                }
                 Err(error) => {
                     Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
                     return Err(ClientError::Transport(error.to_string()));
