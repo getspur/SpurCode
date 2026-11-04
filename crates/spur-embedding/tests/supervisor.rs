@@ -590,3 +590,36 @@ fn cleanup_wait_joins_cancelled_child_and_its_io() {
         serde_json::to_string(&events).unwrap()
     );
 }
+
+#[test]
+fn cleanup_wait_reports_reap_failure() {
+    let client = Arc::new(setup("hang", 0, 1));
+    client.test_inject_reap_failure();
+    let cancel = Cancellation::new();
+    let worker_cancel = cancel.clone();
+    let worker_client = Arc::clone(&client);
+    let worker = thread::spawn(move || {
+        worker_client.embed_cancellable(vec!["query".into()], deadline(), worker_cancel)
+    });
+    let limit = deadline();
+    while !client
+        .test_events()
+        .iter()
+        .any(|event| event.kind == "request" && event.status.as_deref() == Some("embed"))
+    {
+        assert!(
+            Instant::now() < limit,
+            "helper never received embedding request"
+        );
+        thread::yield_now();
+    }
+    cancel.cancel();
+    assert!(
+        matches!(worker.join().unwrap(), Err(ClientError::Cancelled)),
+        "cancelled query must fail"
+    );
+    assert!(
+        client.wait_for_cleanup(deadline()).is_err(),
+        "reap failure must remain visible"
+    );
+}
