@@ -25,7 +25,10 @@ pub use lance_sections::{
     SECTIONS_PARQUET, SECTIONS_TABLE,
 };
 #[cfg(feature = "embed")]
-pub use lance_sections::{load_embedding_model, load_embedding_model_cancellable};
+pub use lance_sections::{
+    load_embedding_model, load_embedding_model_cancellable,
+    load_embedding_model_cancellable_with_cleanup,
+};
 pub use parquet::{
     load_temporal_artifact_parquet, read_artifact_header_parquet, read_artifact_parquet,
     stamp_sidecar_status, stream_temporal_artifact_parquet, write_artifact_parquet,

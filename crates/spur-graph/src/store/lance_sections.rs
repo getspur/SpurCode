@@ -15,7 +15,9 @@ use arrow_schema::{DataType, Field, Schema};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use parquet::arrow::ArrowWriter;
 #[cfg(feature = "embed")]
-use spur_embedding::{Cancellation, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits};
+use spur_embedding::{
+    Cancellation, CleanupOwner, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits,
+};
 #[cfg(feature = "embed")]
 use std::time::{Duration, Instant};
 
@@ -2189,7 +2191,7 @@ pub fn load_embedding_model(
     embedding_model: EmbeddingModelSelection,
     _show_download_progress: bool,
 ) -> Result<EmbeddingModelHandle> {
-    load_embedding_model_impl(embedding_model, None)
+    load_embedding_model_impl(embedding_model, None, None)
 }
 
 /// Construct a supervised model while observing the owner's cancellation and deadline.
@@ -2200,13 +2202,26 @@ pub fn load_embedding_model_cancellable(
     cancel: Cancellation,
     deadline: Instant,
 ) -> Result<EmbeddingModelHandle> {
-    load_embedding_model_impl(embedding_model, Some((cancel, deadline)))
+    load_embedding_model_impl(embedding_model, Some((cancel, deadline)), None)
+}
+
+/// Construct a supervised model with caller-owned descriptor and client cleanup.
+#[cfg(feature = "embed")]
+pub fn load_embedding_model_cancellable_with_cleanup(
+    embedding_model: EmbeddingModelSelection,
+    _show_download_progress: bool,
+    cancel: Cancellation,
+    deadline: Instant,
+    cleanup: Arc<CleanupOwner>,
+) -> Result<EmbeddingModelHandle> {
+    load_embedding_model_impl(embedding_model, Some((cancel, deadline)), Some(cleanup))
 }
 
 #[cfg(feature = "embed")]
 fn load_embedding_model_impl(
     embedding_model: EmbeddingModelSelection,
     cancellation: Option<(Cancellation, Instant)>,
+    cleanup: Option<Arc<CleanupOwner>>,
 ) -> Result<EmbeddingModelHandle> {
     let raw = std::env::var("SPUR_EMBEDDING_HELPER_CONFIG").context(
         "SPUR_EMBEDDING_HELPER_CONFIG is required until helper packaging supplies configuration",
@@ -2238,6 +2253,10 @@ fn load_embedding_model_impl(
     };
     let executable = config.executable.into_os_string();
     let prefix: Vec<std::ffi::OsString> = config.args.into_iter().map(Into::into).collect();
+    let cleanup = match cleanup {
+        Some(cleanup) => cleanup,
+        None => Arc::new(CleanupOwner::new(policy.shutdown_poll_interval)?),
+    };
     let (cancel, deadline) = match cancellation {
         Some((cancel, deadline)) => (cancel, deadline),
         None => (
@@ -2245,7 +2264,7 @@ fn load_embedding_model_impl(
             checked_deadline(policy.startup_timeout)?,
         ),
     };
-    let identity = EmbeddingClient::describe_model_cancellable(
+    let identity = EmbeddingClient::describe_model_cancellable_with_cleanup(
         executable.clone(),
         prefix.clone(),
         embedding_model.model_id(),
@@ -2254,6 +2273,7 @@ fn load_embedding_model_impl(
         policy.clone(),
         deadline,
         cancel,
+        Arc::clone(&cleanup),
     )
     .context("describe supervised embedding model")?;
     if identity.dimensions != EMBEDDING_VECTOR_DIMENSIONS {
@@ -2274,8 +2294,15 @@ fn load_embedding_model_impl(
         .into_iter()
         .map(Into::into),
     );
-    let client = EmbeddingClient::new(executable, args, identity, limits, policy.clone())
-        .context("configure supervised embedding client")?;
+    let client = EmbeddingClient::new_with_cleanup(
+        executable,
+        args,
+        identity,
+        limits,
+        policy.clone(),
+        cleanup,
+    )
+    .context("configure supervised embedding client")?;
     Ok(EmbeddingModelHandle {
         client,
         request_timeout: policy.request_timeout,
