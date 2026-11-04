@@ -1,0 +1,11 @@
+# C checkpoint — incomplete
+
+Canonical issue bd-1ktd, delegation fcf377bba2aa410e, plan 805bc9eb-cc70-4d4c-8784-f35776e70a5d. Dispatched HEAD 0f7a11f7c2286322bc427f3fe8a393d17539a870, tree f523dbb5cac08c1bfc74963cd0a96ef82ee490be. No B source replay or production source change.
+
+Docs-only commit 6fa8ac067 imports root-B-final from 4a02c151d50e9b32f12caac09d402717619ed779. Its verifier exited 0: 31 source hashes, 34 receipt records, 102 predicates. Fourteen C PRE receipts reloaded via get_solve_result: two SAT, twelve UNSAT, matching receipts.json; Jev provenance and exact requests inspected. This is not real inference evidence.
+
+Native helper build: `SPUR_REMOTE=0 TMPDIR=/private/tmp CARGO_TARGET_DIR=/private/tmp/rust-gap-g1-acceptance-target SPUR_ORT_ARCHIVE=/private/tmp/spur-embedding-isolation-assets/onnxruntime-osx-arm64-1.22.0.tgz scripts/spur-cargo build -p spur-embedding-worker --bin spur-embedding-worker` exited 0. Archive SHA256 cab6dcbd77e7ec775390e7b73a8939d45fec3379b017c7cb74f5b204c1a1cc07; resulting helper SHA256 db438c3c61a04524604dfa6cd49604cec21e6f63f77019a81c14cdb687676b04. Vendor warnings retained in command output in session, not evidence of native safety.
+
+6f697860a and 4cf755f00 add an opt-in real owned query harness, process proxy, and runner. Harness compiles (harness-build.log, exit 0) but has NOT yet executed. It exercises query reuse only; batch, independent verification, host paths, identity and process-status checks still need completion. Proxy/runner are unvalidated drafts. Do not count them as acceptance. The helper remains a separate native owner. The first format check failed on test formatting; formatting was applied and fmt-recheck exited 0.
+
+The original hybrid.log is a ZERO-TEST run because `--exact` lacked the module path. The corrected direct test executable was started with the explicit real helper configuration; inspect hybrid-actual.log and its exit before using any result. The fixture falls back to a synthetic vector if the parquet vector is absent and therefore requires explicit proof of real inference and owned cleanup; a passing result alone is not sufficient. Windows, final application/notebook, packaging, eight native baseline cases, all three fresh model runs, full affected suites, and POST are not established. No production bug has been fixed. Do not approve or close bd-1ktd.
