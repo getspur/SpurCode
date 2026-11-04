@@ -4,6 +4,7 @@ import json
 import os
 import struct
 import sys
+import threading
 
 log = os.environ["SPUR_GRAPH_TEST_WORKER_LOG"]
 def record(event):
@@ -30,6 +31,8 @@ def main():
     if args[0] == "--describe-model":
         identity["model"] = args[1]
         record("describe " + args[1])
+        if os.environ.get("SPUR_GRAPH_TEST_WORKER_FAULT") == "descriptor_hang":
+            threading.Event().wait()
         send({"version": 2, "generation": args[3], "request_id": int(args[4]),
               "reply": {"type": "Ready", "identity": identity}})
         return
