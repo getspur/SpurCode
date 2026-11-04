@@ -1,0 +1,35 @@
+# S5 partial: registered-model cold acquisition
+
+Canonical issue bd-39y0, delegation 5f09d72b8b9e4df0. This is **partial**, not S5 GREEN or a completion audit. Graph migration and native regression relocation remain.
+
+Test commit 74c39e286; fix commit 4096bb6d9. Rationale: restore Nomic and Jina cold-cache acquisition in the worker while continuing to validate the selected revision and artifact identity.
+
+Both imported archive verify.py scripts succeeded; twelve root PRE receipts were reloaded via get_solve_result and their lowered requests, statuses and models matched the archive. This is prospective policy, not proof of graph behavior.
+
+Test environment: SPUR_REMOTE=0 TMPDIR=/private/tmp CARGO_TARGET_DIR=/private/tmp/rust-gap-g1-acceptance-target CARGO_NET_OFFLINE=true SPUR_ORT_ARCHIVE=/private/tmp/rust-gap-g1-acceptance-target/debug/build/spur-graph-6801f523f6a15259/out/onnxruntime-osx-arm64-1.22.0.tgz. Tests used escalated execution for isolated localhost HTTP fixture.
+
+- `scripts/spur-cargo test -p spur-embedding-worker --test embedding_metadata registered_models_fetch_missing_artifacts_into_the_selected_cache -- --exact --nocapture`: before fix exit 101, Nomic returned correlated Unavailable; after fix exit 0, 1 passed, includes Nomic and Jina.
+- An earlier sandboxed attempt failed with EPERM binding the localhost fixture; it was an infrastructure failure, not product RED.
+- `HF_ENDPOINT=http://127.0.0.1:9 scripts/spur-cargo test -p spur-embedding-worker --test embedding_metadata -- --test-threads=1`: exit 0, 11 passed, none ignored, 80.22s. The two local-server tests override this endpoint; the unavailable endpoint prevents unrelated network fetches for missing fixtures.
+- `scripts/spur-cargo fmt --all`: exit 0.
+
+Existing downstream `spur-analyst/src/embedding/in_process.rs` consumes graph's `TextEmbedding` loader and requires the separately planned S6 migration. The graph still links native inference; no graph sidecar observations, root POST candidates, actual graph GREEN or production-wide inference claim are supplied here. Signal 44adf132-11dd-4a4d-a8c7-972d78b4b17e recorded the risk; lease continuation requested through report_progress.
+f9b3d5c2794fdc5a0eea898c62a979f2015f4d189a9bb81e53fa8112aa10dd26  crates/spur-embedding-worker/src/model_artifacts.rs
+a1b5c66a43612b830cecb3a63760ffaef2813baa56c7a7463513d4fde863749d  crates/spur-embedding-worker/tests/embedding_metadata.rs
+23727675d9c7a0c2efd28d80125a735eae958bee7a4ed332adc51925115460fc  /private/tmp/rust-gap-g1-acceptance-target/debug/spur-embedding-worker
+cab6dcbd77e7ec775390e7b73a8939d45fec3379b017c7cb74f5b204c1a1cc07  /private/tmp/rust-gap-g1-acceptance-target/debug/build/spur-graph-6801f523f6a15259/out/onnxruntime-osx-arm64-1.22.0.tgz
+
+The subsequent real-model check used `SPUR_S4C_EXPORT=/private/tmp/spur-s5-partial-export scripts/spur-cargo test -p spur-embedding-worker --features test-support --test embedding_models -- --test-threads=1` with the same isolated target/archive and offline environment. Exit 0: 4 passed, none ignored, 306.83s. Archived `vectors/` are actual worker outputs and independently generated references: two cycles per model, two batches per cycle, two 768-dimensional finite rows per batch; maximum reference delta 0. These validate the changed worker only and are not graph-side POST inputs.
+
+The first standalone wrapper compile was stopped with SIGINT (exit 130) after standalone dependency resolution selected newer versions and initiated a full rebuild; it was not a test result. A retry using the workspace lock was started separately. Originals remain in graph pending standalone verification.
+
+Standalone relocation: the final seven test sources exactly match candidate d2956a1, and the three ONNX fixtures are byte-identical; hashes are in `relocation-source-match.json`. A `--no-run` build succeeded. The first test execution used an intermediate helper-path rename; afterward the standalone shim was named `spur_graph`, restoring each test source byte-for-byte, and all targets were compiled again. The first `scripts/spur-cargo test --manifest-path crates/spur-graph/tests/wrapper-regressions/Cargo.toml -- --test-threads=1` exited 101: initializer 1/1, node attribute 1/1, custom allocator 2/2; lifecycle 2 passed and 7 failed with child SIGABRT after inference, `libc++abi: terminating due to uncaught exception of type std::__1::system_error: mutex lock failed: Invalid argument`. The runner stopped before the remaining targets. Matching inherited signatures occur in `docs/research/artifacts/2026-11-02-rust-gap-implementation/G2-lifecycle/rust-gap-n0-vendored-runtime-red.log`; this comparison does not establish identical root cause. Signal 81f7dca9-3789-40f6-ae26-28e5f5ce2226 was recorded.
+
+A separate `--test ort_owner_constructors --test ort_runtime_cache --test ort_shutdown --no-fail-fast -- --test-threads=1` run exited 101: owner constructors 21 passed, runtime cache 2 passed and 1 failed after inference and PGQ succeeded followed by the same shutdown error, and shutdown 14 passed; none ignored. The complete captured output is `standalone-remaining.log`. The matching inherited runtime-cache failure is described in `docs/research/artifacts/2026-11-02-rust-gap-implementation/G2-linkage/attempt-3/README.md`. No failure is represented as passing.
+
+Final byte-identical standalone targets: `scripts/spur-cargo test --manifest-path crates/spur-graph/tests/wrapper-regressions/Cargo.toml --no-fail-fast -- --test-threads=1` exit 101; 43 passed and 8 failed across seven targets, none ignored. Lifecycle has 7 shutdown abort failures and runtime-cache has 1; the other 5 targets pass. Exact output is `standalone-final.log`. `scripts/spur-cargo check -p spur-graph --all-targets` exit 0 after relocation; `graph-relocation-check.log` records it. These results do not establish a native-free graph: its production inference dependency and runtime build hook remain.
+
+Relocation commit 0a6ee1d2c. Standalone sources now exactly match the original seven test files by SHA-256; the isolated test library uses the historical `spur_graph` crate name to preserve the original paths and contains the copied historical runtime seam, with no dependency on the graph crate. `scripts/spur-cargo fmt --manifest-path crates/spur-graph/tests/wrapper-regressions/Cargo.toml -- --check` exit 0 after restoring byte-identical tests; the initial check before that adjustment exited 1 due solely to formatting differences in the longer helper path and shim.
+815ebae404a16de06a67f02f7bf1d904af42f6c4e0abac962407d8c4caff7c59  docs/research/artifacts/2026-11-03-embedding-isolation/S5/worker-partial/standalone-final.log
+f93d8aba8de9116b8a922a79aadf14ed8fdf3510efac65f79778ac71589f1560  docs/research/artifacts/2026-11-03-embedding-isolation/S5/worker-partial/standalone-remaining.log
+e0175b1f2c8b004563b1ee8247fdc77164ea3a1d2bde91f9173d1d448c48ae00  docs/research/artifacts/2026-11-03-embedding-isolation/S5/worker-partial/graph-relocation-check.log

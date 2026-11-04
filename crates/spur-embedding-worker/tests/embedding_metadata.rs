@@ -508,6 +508,126 @@ fn coderank_fetches_the_pinned_revision_into_the_selected_cache() {
 }
 
 #[test]
+fn registered_models_fetch_missing_artifacts_into_the_selected_cache() {
+    use std::{
+        io::{Read, Write},
+        net::TcpListener,
+        sync::{
+            atomic::{AtomicBool, Ordering},
+            Arc,
+        },
+        thread,
+        time::Duration,
+    };
+    const REVISION: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    for (model, repo) in [
+        (
+            "NomicEmbedTextV15",
+            "models--nomic-ai--nomic-embed-text-v1.5",
+        ),
+        (
+            "JinaEmbeddingsV2BaseCode",
+            "models--jinaai--jina-embeddings-v2-base-code",
+        ),
+    ] {
+        let fixture = Fixture::new();
+        let existing = fixture.0.join(repo);
+        if existing.exists() {
+            fs::remove_dir_all(existing).unwrap();
+        }
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let stop = Arc::new(AtomicBool::new(false));
+        let stop_server = stop.clone();
+        let server = thread::spawn(move || {
+            let mut seen = Vec::new();
+            while !stop_server.load(Ordering::Relaxed) {
+                let (mut stream, _) = match listener.accept() {
+                    Ok(pair) => pair,
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        thread::sleep(Duration::from_millis(5));
+                        continue;
+                    }
+                    Err(error) => panic!("fixture listener: {error}"),
+                };
+                stream
+                    .set_read_timeout(Some(Duration::from_secs(5)))
+                    .unwrap();
+                let mut request = Vec::new();
+                let mut buffer = [0; 1024];
+                while !request.ends_with(b"\r\n\r\n") {
+                    let n = stream.read(&mut buffer).unwrap();
+                    if n == 0 {
+                        break;
+                    }
+                    request.extend_from_slice(&buffer[..n]);
+                }
+                let request = String::from_utf8(request).unwrap();
+                let url = request
+                    .lines()
+                    .next()
+                    .unwrap()
+                    .split_whitespace()
+                    .nth(1)
+                    .unwrap();
+                assert!(url.contains("/resolve/main/"), "{url}");
+                let name = url.split("/resolve/main/").nth(1).unwrap();
+                let body = name.as_bytes();
+                let metadata = request.to_ascii_lowercase().contains("range: bytes=0-0");
+                let payload = if metadata { &body[..1] } else { body };
+                let header = format!("HTTP/1.1 206 Partial Content\r\nContent-Length: {}\r\nContent-Range: bytes 0-{}/{}\r\nX-Repo-Commit: {REVISION}\r\nETag: \"{}\"\r\nConnection: close\r\n\r\n", payload.len(), payload.len()-1, body.len(), name.replace('/', "-"));
+                stream.write_all(header.as_bytes()).unwrap();
+                stream.write_all(payload).unwrap();
+                seen.push(name.to_owned());
+            }
+            seen
+        });
+        let output = Command::new(env!("CARGO_BIN_EXE_spur-embedding-worker"))
+            .args([
+                "--describe-model",
+                model,
+                "10000",
+                "d32a3002-a3aa-4b1c-9ae7-ff0824970841",
+                "7",
+                "65536",
+                "2",
+                "4096",
+                "8192",
+                "768",
+                "256",
+                "1",
+            ])
+            .env("SPUR_MODEL_CACHE", &fixture.0)
+            .env("HF_ENDPOINT", format!("http://{address}"))
+            .env("NO_PROXY", "127.0.0.1,localhost")
+            .output()
+            .unwrap();
+        stop.store(true, Ordering::Relaxed);
+        let seen = server.join().unwrap();
+        assert!(output.status.success());
+        let reply: ReplyEnvelope = read_frame(&mut Cursor::new(output.stdout), &limits()).unwrap();
+        assert!(
+            matches!(reply.reply, Reply::Ready { .. }),
+            "{:?}",
+            reply.reply
+        );
+        for name in [
+            "onnx/model.onnx",
+            "config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+        ] {
+            assert!(
+                seen.iter().any(|value| value == name),
+                "missing {name}: {seen:?}"
+            );
+        }
+    }
+}
+
+#[test]
 fn real_worker_rejects_a_different_model_bound_to_jina_hashes() {
     use spur_embedding::ModelId;
     let cache = "/private/tmp/spur-s4c-model-cache";

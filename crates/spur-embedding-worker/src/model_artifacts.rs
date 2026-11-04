@@ -124,48 +124,66 @@ fn part(hash: &mut Sha256, name: &str, value: &[u8]) -> io::Result<()> {
 }
 
 pub fn resolve(model_id: ModelId, budget: u64) -> io::Result<ResolvedArtifacts> {
-    let (repo_name, profile, pinned_revision) = match model_id {
-        ModelId::NomicEmbedTextV15 => (REPO, PROFILE, None),
+    let (repo_name, source_name, profile, pinned_revision) = match model_id {
+        ModelId::NomicEmbedTextV15 => (REPO, "nomic-ai/nomic-embed-text-v1.5", PROFILE, None),
         ModelId::CodeRankEmbed => (
             "models--jamie8johnson--CodeRankEmbed-onnx",
+            "jamie8johnson/CodeRankEmbed-onnx",
             CODE_RANK_PROFILE,
             Some("151669b173750250e611e1be00c812f112ea6020"),
         ),
         ModelId::JinaEmbeddingsV2BaseCode => (
             "models--jinaai--jina-embeddings-v2-base-code",
+            "jinaai/jina-embeddings-v2-base-code",
             JINA_PROFILE,
             None,
         ),
     };
-    let repo = cache()?.join(repo_name);
+    let cache_dir = cache()?;
+    let repo = cache_dir.join(repo_name);
     let revision = match pinned_revision {
-        Some(revision) => revision.to_owned(),
-        None => fs::read_to_string(repo.join("refs/main"))?,
+        Some(revision) => Some(revision.to_owned()),
+        None => match fs::read_to_string(repo.join("refs/main")) {
+            Ok(revision) => Some(revision.trim().to_owned()),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => None,
+            Err(error) => return Err(error),
+        },
     };
-    let revision = revision.trim();
-    if revision.len() != 40 || !revision.bytes().all(|c| c.is_ascii_hexdigit()) {
-        return Err(fail("invalid model revision"));
+    if let Some(revision) = &revision {
+        if revision.len() != 40 || !revision.bytes().all(|c| c.is_ascii_hexdigit()) {
+            return Err(fail("invalid model revision"));
+        }
     }
-    if model_id == ModelId::CodeRankEmbed
-        && FILES
+    if revision.as_ref().is_none_or(|revision| {
+        FILES
             .iter()
             .any(|name| !repo.join("snapshots").join(revision).join(name).is_file())
-    {
+    }) {
         let source = ApiBuilder::from_env()
-            .with_cache_dir(cache()?)
+            .with_cache_dir(cache_dir)
             .with_progress(true)
             .with_retries(3)
             .build()
             .map_err(io::Error::other)?
             .repo(Repo::with_revision(
-                "jamie8johnson/CodeRankEmbed-onnx".to_owned(),
+                source_name.to_owned(),
                 RepoType::Model,
-                revision.to_owned(),
+                revision.as_deref().unwrap_or("main").to_owned(),
             ));
         for name in FILES {
             source.get(name).map_err(io::Error::other)?;
         }
     }
+    let revision = match revision {
+        Some(revision) => revision,
+        None => fs::read_to_string(repo.join("refs/main"))?
+            .trim()
+            .to_owned(),
+    };
+    if revision.len() != 40 || !revision.bytes().all(|c| c.is_ascii_hexdigit()) {
+        return Err(fail("invalid model revision"));
+    }
+    let revision = revision.as_str();
     let snapshot = repo.join("snapshots").join(revision).canonicalize()?;
     let snapshots = repo.join("snapshots").canonicalize()?;
     if snapshot.parent() != Some(snapshots.as_path()) {

@@ -29,6 +29,64 @@ fn hang() -> ! {
 fn main() {
     let mut args = env::args().skip(1);
     let mode = args.next().unwrap();
+    if mode.starts_with("describe_") {
+        use spur_embedding::{ModelId, ModelIdentity, PROTOCOL_VERSION};
+        assert_eq!(args.next().as_deref(), Some("--describe-model"));
+        let _model = args.next().unwrap();
+        let _budget = args.next().unwrap();
+        let generation = args.next().unwrap().parse().unwrap();
+        let request_id = args.next().unwrap().parse().unwrap();
+        if mode == "describe_hang" {
+            hang();
+        }
+        if mode == "describe_truncated" {
+            io::stdout().write_all(&100u32.to_be_bytes()).unwrap();
+            io::stdout().write_all(b"{").unwrap();
+            return;
+        }
+        let identity = ModelIdentity {
+            model: if mode == "describe_wrong_model" {
+                ModelId::CodeRankEmbed
+            } else {
+                ModelId::NomicEmbedTextV15
+            },
+            dimensions: 2,
+            model_fingerprint: "model".into(),
+            tokenizer_fingerprint: "tokenizer".into(),
+            pooling: "mean".into(),
+            normalization: "unit".into(),
+            prefix: "none".into(),
+        };
+        let reply = ReplyEnvelope {
+            version: PROTOCOL_VERSION,
+            generation: if mode == "describe_wrong_generation" {
+                uuid::Uuid::new_v4()
+            } else {
+                generation
+            },
+            request_id: if mode == "describe_wrong_request" {
+                request_id + 1
+            } else {
+                request_id
+            },
+            reply: if mode == "describe_error" {
+                Reply::Error {
+                    code: ErrorCode::Unavailable,
+                    message: "injected".into(),
+                }
+            } else {
+                Reply::Ready { identity }
+            },
+        };
+        write_frame(&mut io::stdout(), &reply, &limits()).unwrap();
+        if mode == "describe_trailing" {
+            io::stdout().write_all(b"extra").unwrap();
+        }
+        if mode == "describe_failed_exit" {
+            panic!("injected failing exit");
+        }
+        return;
+    }
     if let Some(path) = args.next() {
         use std::fs::OpenOptions;
         let mut log = OpenOptions::new()

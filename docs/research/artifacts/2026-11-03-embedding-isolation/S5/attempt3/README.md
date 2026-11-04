@@ -1,0 +1,38 @@
+# S5 recovery attempt 3: review packet
+
+Canonical issue `bd-39y0` remains in progress. Plan projection reported attempt 3 dispatched as `79185a9fabfb4fb1`, matching the sole delegation label and assignee. The authenticated worker audit `789eae96-282e-481f-b458-4568af4cc76c` was persisted as comment 2913. The projection derives current delegation from dispatch audits; no approval or completion transition is asserted here.
+
+The clean dispatch base was exactly `d2956a1fb604a1467829ace828d26238ab29e4d9`. The full 16-commit `rev-list --reverse d295...2814` chain was cherry-picked with Python subprocess argument arrays. The initial sandbox attempt exited 1 (Git could not create its sequencer); the authorized escalated replay exited 0. Production source, Cargo manifests and lockfiles have an empty diff against `2814a3f5935b34a119efbe0ec760b51f7a8b49ab`. Only the recovery directory was imported from `7c495463f567cdf46729698fdb7d46cc18299b37`, in commit `e51ece98671ade6e228ff0ad8c08c7fb0e04cb43`.
+
+Replayed test commits: `b430ae9e40f66c207396de9bccad26f57c942568`, `3d9fc8159b9e85e723cd22cfbb6ad878181baa4c`, `75b06fe9e6c46743583bf52059fb45f3a7e92cce`, `cfbe4685dab5eb652a9ea74961bfc4aa57166bfd`, `a7cadde3c17f68e1611a9bb1c79ed54154716776`, `497de385ad83ba53ebd9539b399581f74fd32db9`, and `e2e9e2345523924d81c6c2d0332f40dfda62aa7b`. Replayed source commits: `eb15bc6764470c4e8f372a622568b247955857d6`, `8b5341eae64f1c89bf09c986ea640cb1384017ea`, `c8495b3f6e7bce2d62ddc86ed91f81cffd1ccc29`, and `e5a722389d7f8364f2abc586b331f6dbc49172db`. Evidence commits `7b962b8e3b5e56a1a6a6f497c70467d3cd2734ab`, `1199389fab67043eec18dc5f13fc3618a9f2cdb2`, `513f10739bf318075c1fbb8500747c18f71fdbec`, `736fd15de75a38438e85bbc837bffc9aa5f84fd5`, and `05cfe33e9c2d7c8141ea9aeb94d93f034cff25c8` preserve earlier results. The [source diff](../worker/implementation.diff) is the checkpoint's original diff; `git diff --stat d295... HEAD -- crates Cargo.toml Cargo.lock xtask` reports 30 files, 4,323 insertions and 221 deletions including the standalone lockfile and unchanged relocations.
+
+## Executed checks
+
+Local cargo commands used `SPUR_REMOTE=0 TMPDIR=/private/tmp CARGO_TARGET_DIR=/private/tmp/rust-gap-g1-acceptance-target CARGO_NET_OFFLINE=true` and the pinned `SPUR_ORT_ARCHIVE` from the task. Compressed raw logs accompany this packet.
+
+| Command | Exit and result |
+|---|---|
+| `python3 ../recovery/verify.py` | 0; 2 SAT, 10 UNSAT, five source and four evidence hashes |
+| `scripts/spur-cargo test -p spur-embedding --features test-support -- --test-threads=1` | 0; 34 passed, none ignored, including 3 `root_close_review` tests. This rerun had process inspection permission; the earlier denied `ps` result remains in `../worker-partial/client-suite.log`. |
+| `SPUR_S5_TEST_EXPORT=/private/tmp/spur-s5-attempt3-fake scripts/spur-cargo test -p spur-graph --lib store::lance_sections::tests::graph_client -- --test-threads=1 --nocapture` | 0; one passed. |
+| `SPUR_S5_TEST_EXPORT=/private/tmp/spur-s5-attempt3-complete scripts/spur-cargo test -p spur-graph --lib store::lance_sections::tests::graph_ -- --test-threads=1 --nocapture` | 0; five passed, none ignored. |
+| `SPUR_S5_TEST_EXPORT=/private/tmp/spur-s5-attempt3-faults scripts/spur-cargo test -p spur-graph --features test-support --lib store::lance_sections::tests::graph_rejects_failed_pending_batch_and_keeps_prior_reply -- --exact --nocapture` | 0; one test covers all five traced faults. |
+| `scripts/spur-cargo check -p spur-graph --all-targets` | 0; compiler warnings retained in log. |
+| `scripts/spur-cargo fmt --all -- --check` and `scripts/spur-cargo fmt --manifest-path crates/spur-graph/tests/wrapper-regressions/Cargo.toml -- --check` | Both 0. |
+| `git diff --check d295... HEAD -- crates Cargo.toml Cargo.lock xtask` | 0. Unscoped check exited 2 on preserved historical log blank lines and whitespace in embedded diff artifacts; raw output retained. |
+| `python3 ../worker/verify.py` and `python3 verify_fresh.py` | Both 0. Fresh fake/fault exports and frozen real artifacts regenerate the same observations as the prior candidates; eight publication rows equal the separately stated policy. |
+| Four `scripts/spur-cargo tree` normal/build and feature commands | All 0 and match checkpoint trees after normalizing worktree paths; commands and raw trees retained in `dependency-check.json` and compressed files. |
+
+The archive SHA-256 is `cab6dcbd77e7ec775390e7b73a8939d45fec3379b017c7cb74f5b204c1a1cc07`. Source and lock hashes are in `source-sha256.json` and match `../worker/source-build-sha256.txt`, which also records the helper, reference, test binary and the three runtime dylib hashes (`2b885992d3d6fa4130d39ec84a80d7504ff52750027c547bb22c86165f19406a`). All twelve specified PRE results were reloaded; the archived lowered request, status and model matched in every case, recorded in `receipt-comparison.json`. PRE is prospective, not POST approval.
+
+## Actual output and pending root POST
+
+The fresh exports and [observation-derived candidates](post-candidates.json) record the same facts as the frozen verifier. Disabled section and symbol paths started no helper. Valid section and all three symbol model selections preserved source fields, model selection, formatted input ordering, batches and persisted vectors. Across all five fault controls two earlier validated rows were persisted and the pending third remained null. Raw waits: error 0, truncated 0, abort 6, wrong identity 9, nonfinite 9. Prior reply validation preceded the abort; on-disk publication before the abort was not observed. Error or truncated exit 0 did not publish the pending row. BLAKE3 was not independently recomputed.
+
+Frozen real sidecars for Nomic, CodeRank and Jina each have two finite 768-dimensional vectors, one helper with two validated embedding replies, a validated close and raw wait 0. Maximum differences from independent legacy references were respectively `1.0058283805847168e-07`, `0`, and `0`, under the inherited `1e-4` test tolerance. Fifteen model artifact hashes and profile identities match the S4C reference archive. Graph normal/build dependencies contain client and Parquet storage but no FastEmbed, ORT, HF Hub, DuckDB or LanceDB runtime package; the helper owns native inference and has no graph, analyst or database dependency. Neither normal feature closure contains owner test hooks or client test support.
+
+The separate `../worker/independent-policy.json` and `../worker/adversaries.json` retain seven publication and three dependency corruptions for root to evaluate using fresh Jev POST. No solver results are implied by the comparisons here. Analyst API migration and native dependency removal belong to S6; packaging to S7; whole CLI, PGQ, native-free and notebook acceptance to S8.
+
+## Unresolved acceptance risk
+
+The saved standalone native wrapper suite exited 101: **43 passed, eight failed, none ignored**. Seven failures are `failed_session_then_valid_session_exits_normally`, `output_value_survives_session_drop_before_normal_exit`, `production_combined_process_exits_normally`, `production_ort_process_exits_normally`, `relocated_production_combined_process_exits_normally`, `repeated_production_initialization_exits_normally`, and `session_owners_on_distinct_threads_drop_before_normal_exit`; the eighth is `relocated_process_runs_ort_inference_then_pgq`. The full output and unchanged original test and fixture comparisons remain in `../worker-partial/standalone-final.log` and `../worker-partial/relocation-source-match.json`. A similar historical shutdown signature does not establish the same cause. Root must decide baseline relevance; S5 acceptance is not GREEN. Root Jev POST and review remain required.

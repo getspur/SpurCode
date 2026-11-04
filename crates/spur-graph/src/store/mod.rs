@@ -5,11 +5,6 @@ pub mod canonical_hash;
 pub mod commit_index;
 pub mod lance_sections;
 pub mod macro_invocations;
-#[cfg(all(target_os = "macos", feature = "embed"))]
-mod ort_runtime;
-#[cfg(all(target_os = "macos", feature = "embed"))]
-#[doc(hidden)]
-pub use ort_runtime::ensure_ort_runtime_at as ensure_bundled_ort_runtime_at;
 pub mod parquet;
 pub mod pointer;
 pub mod shard_writer;

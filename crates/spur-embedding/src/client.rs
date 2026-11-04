@@ -1,11 +1,11 @@
 //! Native-free process supervision for the embedding wire protocol.
 use crate::{
-    read_frame, write_frame, ErrorCode, ModelIdentity, ProtocolLimits, Reply, ReplyEnvelope,
-    Request, RequestEnvelope, Session, PROTOCOL_VERSION,
+    read_frame, write_frame, ErrorCode, ModelId, ModelIdentity, ProtocolLimits, Reply,
+    ReplyEnvelope, Request, RequestEnvelope, Session, PROTOCOL_VERSION,
 };
 use std::{
     ffi::OsString,
-    io::Write as _,
+    io::{Read as _, Write as _},
     process::{Child, ChildStdin, ChildStdout, Command, Stdio},
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -217,6 +217,120 @@ impl Trace {
     }
 }
 impl EmbeddingClient {
+    /// Discover a helper's actual artifact-bound identity before opening a session.
+    /// All bounds and the deadline are supplied by the caller.
+    pub fn describe_model(
+        program: impl Into<OsString>,
+        mut args: Vec<OsString>,
+        model: ModelId,
+        artifact_budget: u64,
+        limits: ProtocolLimits,
+        policy: ClientPolicy,
+        caller_deadline: Instant,
+    ) -> Result<ModelIdentity, ClientError> {
+        let generation = Uuid::new_v4();
+        let model_name = match model {
+            ModelId::NomicEmbedTextV15 => "NomicEmbedTextV15",
+            ModelId::CodeRankEmbed => "CodeRankEmbed",
+            ModelId::JinaEmbeddingsV2BaseCode => "JinaEmbeddingsV2BaseCode",
+        };
+        args.extend([
+            OsString::from("--describe-model"),
+            OsString::from(model_name),
+            OsString::from(artifact_budget.to_string()),
+            OsString::from(generation.to_string()),
+            OsString::from("1"),
+            OsString::from(limits.max_frame_bytes.to_string()),
+            OsString::from(limits.max_texts.to_string()),
+            OsString::from(limits.max_text_bytes.to_string()),
+            OsString::from(limits.max_total_text_bytes.to_string()),
+            OsString::from(limits.max_dimensions.to_string()),
+            OsString::from(limits.max_identity_bytes.to_string()),
+            OsString::from(limits.max_pending.to_string()),
+        ]);
+        let placeholder = ModelIdentity {
+            model,
+            dimensions: 1,
+            model_fingerprint: "-".into(),
+            tokenizer_fingerprint: "-".into(),
+            pooling: "-".into(),
+            normalization: "-".into(),
+            prefix: "-".into(),
+        };
+        let client = Self::new(program, args, placeholder, limits.clone(), policy.clone())?;
+        let deadline = Self::effective(caller_deadline, policy.startup_timeout)?;
+        let cancel = Cancellation::new();
+        let mut child = client.launch(generation, deadline, &cancel)?;
+        drop(child.stdin.take());
+        let mut stdout = child.stdout.take().expect("descriptor stdout");
+        let (tx, rx) = mpsc::sync_channel(1);
+        let job = thread::spawn(move || {
+            let result = (|| -> Result<ReplyEnvelope, String> {
+                let reply = read_frame(&mut stdout, &limits).map_err(|e| e.to_string())?;
+                let mut trailing = [0u8; 1];
+                if stdout.read(&mut trailing).map_err(|e| e.to_string())? != 0 {
+                    return Err("trailing descriptor bytes".into());
+                }
+                Ok(reply)
+            })();
+            let _ = tx.send(result);
+        });
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        let reply = match rx.recv_timeout(remaining) {
+            Ok(result) => {
+                let _ = job.join();
+                match result {
+                    Ok(reply) => reply,
+                    Err(error) => {
+                        Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                        return Err(ClientError::Transport(error));
+                    }
+                }
+            }
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
+                return Err(ClientError::Timeout);
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
+                return Err(ClientError::Transport("descriptor reader stopped".into()));
+            }
+        };
+        loop {
+            if Instant::now() >= deadline {
+                Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                return Err(ClientError::Timeout);
+            }
+            match child.try_wait() {
+                Ok(Some(status)) if status.success() => break,
+                Ok(Some(status)) => {
+                    return Err(ClientError::Transport(format!("descriptor exit: {status}")));
+                }
+                Ok(None) => thread::park_timeout(
+                    policy
+                        .shutdown_poll_interval
+                        .min(deadline.saturating_duration_since(Instant::now())),
+                ),
+                Err(error) => {
+                    Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                    return Err(ClientError::Transport(error.to_string()));
+                }
+            }
+        }
+        if reply.version != PROTOCOL_VERSION
+            || reply.generation != generation
+            || reply.request_id != 1
+        {
+            return Err(ClientError::Transport(
+                "descriptor correlation mismatch".into(),
+            ));
+        }
+        match reply.reply {
+            Reply::Ready { identity } if identity.model == model => Ok(identity),
+            Reply::Error { code, message } => Err(ClientError::Remote { code, message }),
+            _ => Err(ClientError::Transport("unexpected descriptor reply".into())),
+        }
+    }
     pub fn new(
         program: impl Into<OsString>,
         args: Vec<OsString>,
