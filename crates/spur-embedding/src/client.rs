@@ -221,12 +221,35 @@ impl EmbeddingClient {
     /// All bounds and the deadline are supplied by the caller.
     pub fn describe_model(
         program: impl Into<OsString>,
+        args: Vec<OsString>,
+        model: ModelId,
+        artifact_budget: u64,
+        limits: ProtocolLimits,
+        policy: ClientPolicy,
+        caller_deadline: Instant,
+    ) -> Result<ModelIdentity, ClientError> {
+        Self::describe_model_cancellable(
+            program,
+            args,
+            model,
+            artifact_budget,
+            limits,
+            policy,
+            caller_deadline,
+            Cancellation::new(),
+        )
+    }
+
+    /// Discover the artifact identity while observing caller cancellation.
+    pub fn describe_model_cancellable(
+        program: impl Into<OsString>,
         mut args: Vec<OsString>,
         model: ModelId,
         artifact_budget: u64,
         limits: ProtocolLimits,
         policy: ClientPolicy,
         caller_deadline: Instant,
+        cancel: Cancellation,
     ) -> Result<ModelIdentity, ClientError> {
         let generation = Uuid::new_v4();
         let model_name = match model {
@@ -259,7 +282,7 @@ impl EmbeddingClient {
         };
         let client = Self::new(program, args, placeholder, limits.clone(), policy.clone())?;
         let deadline = Self::effective(caller_deadline, policy.startup_timeout)?;
-        let cancel = Cancellation::new();
+        cancel.register(&client.wake);
         let mut child = client.launch(generation, deadline, &cancel)?;
         drop(child.stdin.take());
         let mut stdout = child.stdout.take().expect("descriptor stdout");
@@ -275,8 +298,21 @@ impl EmbeddingClient {
             })();
             let _ = tx.send(result);
         });
-        let remaining = deadline.saturating_duration_since(Instant::now());
-        let reply = match rx.recv_timeout(remaining) {
+        let received = loop {
+            if cancel.cancelled() {
+                Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
+                return Err(ClientError::Cancelled);
+            }
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                break Err(mpsc::RecvTimeoutError::Timeout);
+            }
+            match rx.recv_timeout(remaining.min(policy.shutdown_poll_interval)) {
+                Err(mpsc::RecvTimeoutError::Timeout) => continue,
+                result => break result,
+            }
+        };
+        let reply = match received {
             Ok(result) => {
                 let _ = job.join();
                 match result {
@@ -297,6 +333,10 @@ impl EmbeddingClient {
             }
         };
         loop {
+            if cancel.cancelled() {
+                Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                return Err(ClientError::Cancelled);
+            }
             if Instant::now() >= deadline {
                 Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
                 return Err(ClientError::Timeout);
@@ -316,6 +356,9 @@ impl EmbeddingClient {
                     return Err(ClientError::Transport(error.to_string()));
                 }
             }
+        }
+        if cancel.cancelled() {
+            return Err(ClientError::Cancelled);
         }
         if reply.version != PROTOCOL_VERSION
             || reply.generation != generation

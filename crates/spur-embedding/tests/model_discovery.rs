@@ -105,5 +105,8 @@ fn cancellation_interrupts_hung_descriptor_discovery() {
     );
     job.join().unwrap();
     assert!(matches!(result, Err(ClientError::Cancelled)), "{result:?}");
-    assert!(start.elapsed() < timeout, "discovery did not respond to cancellation");
+    assert!(
+        start.elapsed() < timeout,
+        "discovery did not respond to cancellation"
+    );
 }
