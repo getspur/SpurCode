@@ -4,3 +4,5 @@ mod embed_service;
 mod embedding_sidecar_layout;
 #[path = "embedding/dependency_boundary.rs"]
 mod dependency_boundary;
+#[path = "embedding/warm_helper.rs"]
+mod warm_helper;
