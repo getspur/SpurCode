@@ -241,6 +241,10 @@ impl EmbeddingClient {
     }
 
     /// Discover the artifact identity while observing caller cancellation.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "mirrors descriptor discovery inputs and adds owner cancellation"
+    )]
     pub fn describe_model_cancellable(
         program: impl Into<OsString>,
         mut args: Vec<OsString>,
