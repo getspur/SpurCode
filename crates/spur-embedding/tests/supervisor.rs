@@ -622,4 +622,8 @@ fn cleanup_wait_reports_reap_failure() {
         client.wait_for_cleanup(deadline()).is_err(),
         "reap failure must remain visible"
     );
+    assert!(
+        client.wait_for_cleanup(deadline()).is_err(),
+        "reap failure must stay visible on retry"
+    );
 }
