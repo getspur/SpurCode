@@ -124,7 +124,8 @@ struct Launch {
 
 /// Caller-owned cleanup scope shared by descriptor discovery and its client.
 pub struct CleanupOwner {
-    jobs: Mutex<Vec<JoinHandle<()>>>,
+    jobs: Mutex<Vec<JoinHandle<Result<(), String>>>>,
+    failure: Mutex<Option<String>>,
     poll_interval: Duration,
 }
 
@@ -137,31 +138,42 @@ impl CleanupOwner {
         }
         Ok(Self {
             jobs: Mutex::new(Vec::new()),
+            failure: Mutex::new(None),
             poll_interval,
         })
     }
 
-    fn track(&self, job: JoinHandle<()>) {
+    fn track(&self, job: JoinHandle<Result<(), String>>) {
         self.jobs.lock().unwrap().push(job);
     }
 
     /// Join cleanup after admission is closed and all request jobs have been joined.
     pub fn wait_for_cleanup(&self, deadline: Instant) -> Result<(), ClientError> {
         loop {
-            let completed = {
-                let mut jobs = self.jobs.lock().unwrap();
-                jobs.iter()
-                    .position(JoinHandle::is_finished)
-                    .map(|index| jobs.swap_remove(index))
-            };
+            let mut jobs = self.jobs.lock().unwrap();
+            let completed = jobs
+                .iter()
+                .position(JoinHandle::is_finished)
+                .map(|index| jobs.swap_remove(index));
             if let Some(job) = completed {
-                job.join()
-                    .map_err(|_panic| ClientError::Transport("cleanup task panicked".into()))?;
+                let result = job
+                    .join()
+                    .unwrap_or_else(|_panic| Err("cleanup task panicked".into()));
+                if let Err(error) = result {
+                    let mut failure = self.failure.lock().unwrap();
+                    if failure.is_none() {
+                        *failure = Some(error);
+                    }
+                }
                 continue;
             }
-            if self.jobs.lock().unwrap().is_empty() {
-                return Ok(());
+            if jobs.is_empty() {
+                return match self.failure.lock().unwrap().clone() {
+                    Some(error) => Err(ClientError::Transport(error)),
+                    None => Ok(()),
+                };
             }
+            drop(jobs);
             let remaining = deadline.saturating_duration_since(Instant::now());
             if remaining.is_zero() {
                 return Err(ClientError::Timeout);
@@ -202,6 +214,7 @@ struct Trace {
     delivery_hold: Mutex<Option<Duration>>,
     spawn_hold: Mutex<Option<Duration>>,
     validation_hold: Mutex<Option<Duration>>,
+    fail_reap_report: AtomicBool,
 }
 #[cfg(feature = "test-support")]
 impl Trace {
@@ -212,6 +225,7 @@ impl Trace {
             delivery_hold: Mutex::new(None),
             spawn_hold: Mutex::new(None),
             validation_hold: Mutex::new(None),
+            fail_reap_report: AtomicBool::new(false),
         }
     }
     fn hold_delivery(&self) {
@@ -228,6 +242,9 @@ impl Trace {
         if let Some(duration) = self.validation_hold.lock().unwrap().take() {
             thread::sleep(duration);
         }
+    }
+    fn fail_reap_report(&self) -> bool {
+        self.fail_reap_report.swap(false, Ordering::AcqRel)
     }
     fn record(
         &self,
@@ -257,6 +274,9 @@ impl Trace {
     fn hold_delivery(&self) {}
     fn hold_spawn(&self) {}
     fn hold_validation(&self) {}
+    fn fail_reap_report(&self) -> bool {
+        false
+    }
     fn record(
         &self,
         _: &'static str,
@@ -564,7 +584,7 @@ impl EmbeddingClient {
         Ok(client)
     }
 
-    fn track_cleanup(&self, job: JoinHandle<()>) {
+    fn track_cleanup(&self, job: JoinHandle<Result<(), String>>) {
         self.cleanup.track(job);
     }
 
@@ -592,6 +612,10 @@ impl EmbeddingClient {
     #[cfg(feature = "test-support")]
     pub fn test_hold_validation(&self, delay: Duration) {
         *self.trace.validation_hold.lock().unwrap() = Some(delay);
+    }
+    #[cfg(feature = "test-support")]
+    pub fn test_inject_reap_failure(&self) {
+        self.trace.fail_reap_report.store(true, Ordering::Release);
     }
     fn effective(caller: Instant, timeout: Duration) -> Result<Instant, ClientError> {
         Instant::now()
@@ -686,8 +710,9 @@ impl EmbeddingClient {
             if let Some(worker) = worker {
                 Self::dispose_child(worker.child, worker.generation, trace, None)
                     .join()
-                    .expect("worker cleanup task panicked");
+                    .map_err(|_panic| "worker cleanup task panicked".to_owned())??;
             }
+            Ok(())
         });
         self.track_cleanup(job);
     }
@@ -814,7 +839,7 @@ impl EmbeddingClient {
             {
                 let _gate = wake.gate.lock().unwrap();
                 if launch.lock().unwrap().abandoned {
-                    return;
+                    return Ok(());
                 }
             }
             let result = Command::new(program)
@@ -835,12 +860,13 @@ impl EmbeddingClient {
                 if let Ok(child) = result {
                     Self::dispose_child(child, generation, Arc::clone(&trace), None)
                         .join()
-                        .expect("abandoned child cleanup task panicked");
+                        .map_err(|_panic| "abandoned child cleanup task panicked".to_owned())??;
                 }
             } else {
                 launch.result = Some(result);
                 wake.cv.notify_all();
             }
+            Ok(())
         });
         let mut gate = self.wake.gate.lock().unwrap();
         loop {
@@ -873,7 +899,9 @@ impl EmbeddingClient {
             if let Some(result) = launch.result.take() {
                 drop(launch);
                 drop(gate);
-                let _ = job.join();
+                job.join()
+                    .map_err(|_panic| ClientError::Transport("launch task panicked".into()))?
+                    .map_err(ClientError::Transport)?;
                 return result.map_err(ClientError::Transport);
             }
             drop(launch);
@@ -1097,7 +1125,7 @@ impl EmbeddingClient {
         generation: Uuid,
         trace: Arc<Trace>,
         job: Option<JoinHandle<()>>,
-    ) -> JoinHandle<()> {
+    ) -> JoinHandle<Result<(), String>> {
         let pid = child.id();
         let killed = child.kill();
         trace.record(
@@ -1121,10 +1149,21 @@ impl EmbeddingClient {
                 None,
                 Some(format!("{status:?}")),
             );
-            if let Some(job) = job {
-                let _ = job.join();
+            let io_result = if let Some(job) = job {
+                let result = job
+                    .join()
+                    .map_err(|_panic| "embedding I/O task panicked".to_owned());
                 trace.record("io_joined", Some(pid), Some(generation), None, None);
+                result
+            } else {
+                Ok(())
+            };
+            status.map_err(|error| format!("embedding child wait failed: {error}"))?;
+            io_result?;
+            if trace.fail_reap_report() {
+                return Err("injected embedding child wait failure".into());
             }
+            Ok(())
         })
     }
     pub fn shutdown(&self, caller_deadline: Instant) -> Result<(), ClientError> {
