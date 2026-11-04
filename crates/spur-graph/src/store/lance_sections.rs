@@ -2159,6 +2159,19 @@ impl EmbeddingModelHandle {
             .embed(texts, checked_deadline(self.request_timeout)?)
             .context("supervised embedding request")
     }
+
+    /// Run an embedding request with a caller deadline and cancellation token.
+    pub fn embed_cancellable<T: AsRef<str>>(
+        &self,
+        texts: &[T],
+        deadline: Instant,
+        cancel: Cancellation,
+    ) -> Result<Vec<Vec<f32>>> {
+        let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
+        self.client
+            .embed_cancellable(texts, deadline, cancel)
+            .context("supervised embedding request")
+    }
 }
 
 #[cfg(feature = "embed")]
