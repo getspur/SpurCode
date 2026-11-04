@@ -545,3 +545,48 @@ fn owner_can_wait_for_abandoned_launch_cleanup() {
         "abandoned launch must not start a child"
     );
 }
+
+#[test]
+fn cleanup_wait_joins_cancelled_child_and_its_io() {
+    let client = Arc::new(setup("hang", 0, 1));
+    let cancel = Cancellation::new();
+    let worker_cancel = cancel.clone();
+    let worker_client = Arc::clone(&client);
+    let worker = thread::spawn(move || {
+        worker_client.embed_cancellable(vec!["query".into()], deadline(), worker_cancel)
+    });
+    let limit = deadline();
+    while !client
+        .test_events()
+        .iter()
+        .any(|event| event.kind == "request" && event.status.as_deref() == Some("embed"))
+    {
+        assert!(
+            Instant::now() < limit,
+            "helper never received embedding request"
+        );
+        thread::yield_now();
+    }
+    cancel.cancel();
+    assert!(
+        matches!(worker.join().unwrap(), Err(ClientError::Cancelled)),
+        "cancelled query must fail"
+    );
+    client
+        .wait_for_cleanup(deadline())
+        .expect("child and I/O cleanup");
+    let events = client.test_events();
+    let reap = events
+        .iter()
+        .position(|event| event.kind == "reaped")
+        .expect("helper wait status");
+    let io_join = events
+        .iter()
+        .position(|event| event.kind == "io_joined" && event.request_id.is_none())
+        .expect("cancelled I/O joined");
+    assert!(
+        reap < io_join,
+        "helper must be reaped before the I/O join: {}",
+        serde_json::to_string(&events).unwrap()
+    );
+}
