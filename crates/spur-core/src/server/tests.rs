@@ -34,6 +34,216 @@ fn test_callback_server() -> Arc<McpCallbackServer> {
     Arc::new(server)
 }
 
+#[cfg(feature = "embed")]
+#[tokio::test]
+async fn callback_shutdown_joins_pending_warm() {
+    const CHILD: &str = "SPUR_S6_CALLBACK_WARM_CHILD";
+    if std::env::var_os(CHILD).is_some() {
+        let server = test_callback_server();
+        let (_url, listener) = Arc::clone(&server).start().await.unwrap();
+        let log = std::env::var("SPUR_GRAPH_TEST_WORKER_LOG").unwrap();
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(10);
+        loop {
+            let events = std::fs::read_to_string(&log).unwrap_or_default();
+            if events.contains("descriptor_pid ") {
+                break;
+            }
+            assert!(
+                tokio::time::Instant::now() < deadline,
+                "warm did not start: {events}"
+            );
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        tokio::time::timeout(Duration::from_secs(10), server.shutdown())
+            .await
+            .expect("callback shutdown did not join warm");
+        let _ = listener.await;
+        let events = std::fs::read_to_string(log).unwrap();
+        let pid = events
+            .lines()
+            .find_map(|line| line.strip_prefix("descriptor_pid "))
+            .unwrap();
+        let probe = std::process::Command::new("/usr/bin/python3").args(["-c", "import os,sys\ntry: os.kill(int(sys.argv[1]), 0)\nexcept ProcessLookupError: sys.exit(0)\nelse: sys.exit(1)", pid]).status().unwrap();
+        assert!(
+            probe.success(),
+            "descriptor still exists after shutdown: {events}"
+        );
+        assert!(
+            !events.lines().any(|line| line == "service"),
+            "late helper: {events}"
+        );
+        return;
+    }
+    let dir = tempfile::tempdir().unwrap();
+    let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../spur-graph/tests/fixtures/embedding_fault_worker.py");
+    let config = json!({
+        "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let output = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "server::tests::callback_shutdown_joins_pending_warm",
+            "--nocapture",
+        ])
+        .env(CHILD, "1")
+        .env("SPUR_GRAPH_TEST_WORKER_LOG", dir.path().join("worker.log"))
+        .env("SPUR_GRAPH_TEST_WORKER_FAULT", "descriptor_hang")
+        .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+        .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "child failed: {}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[cfg(feature = "embed")]
+#[tokio::test]
+async fn callback_requests_reuse_helper_until_server_shutdown() {
+    const CHILD: &str = "SPUR_S6_CALLBACK_HOST_CHILD";
+    if std::env::var_os(CHILD).is_some() {
+        if std::env::var_os("SPUR_S6_CALLBACK_TRACE").is_some() {
+            tracing_subscriber::fmt()
+                .with_ansi(false)
+                .with_writer(std::io::stderr)
+                .try_init()
+                .unwrap();
+        }
+        let mut server = test_callback_server();
+        Arc::get_mut(&mut server).unwrap().repo_root =
+            Some(std::env::var_os("SPUR_S6_CALLBACK_ROOT").unwrap().into());
+        for query in ["callback first", "callback second"] {
+            let response = server
+                .handle_tool_call(
+                    json!(1),
+                    json!({
+                        "name": "knowledge_context_pack_2", "arguments": {"query": query}
+                    }),
+                )
+                .await;
+            assert!(
+                response.error.is_some(),
+                "empty fixture must return database error"
+            );
+        }
+        if std::env::var_os("SPUR_S6_CALLBACK_FORCE").is_some() {
+            let force = CancellationToken::new();
+            force.cancel();
+            assert!(server.shutdown_until_forced(&force).await);
+        } else {
+            server.shutdown().await;
+        }
+        return;
+    }
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::create_dir(dir.path().join(".spur")).unwrap();
+    drop(duckdb::Connection::open(dir.path().join(".spur/analyst.duckdb")).unwrap());
+    let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../spur-graph/tests/fixtures/embedding_fault_worker.py");
+    let config = json!({
+        "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let log_path = dir.path().join("worker.log");
+    let output = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "server::tests::callback_requests_reuse_helper_until_server_shutdown",
+            "--nocapture",
+        ])
+        .env(CHILD, "1")
+        .env("SPUR_S6_CALLBACK_ROOT", dir.path())
+        .env("SPUR_GRAPH_TEST_WORKER_LOG", &log_path)
+        .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+        .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "child failed: {}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let log = std::fs::read_to_string(log_path).unwrap();
+    assert_eq!(
+        log.lines().filter(|line| *line == "service").count(),
+        1,
+        "{log}"
+    );
+    assert_eq!(
+        log.lines()
+            .filter(|line| line.starts_with("embed "))
+            .count(),
+        2,
+        "{log}"
+    );
+    assert_eq!(log.lines().last(), Some("shutdown"), "{log}");
+}
+
+#[cfg(feature = "embed")]
+#[tokio::test]
+async fn forced_callback_shutdown_reports_helper_abort() {
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::create_dir(dir.path().join(".spur")).unwrap();
+    drop(duckdb::Connection::open(dir.path().join(".spur/analyst.duckdb")).unwrap());
+    let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../spur-analyst/tests/embedding/fixtures/owned_fault_worker.py");
+    let config = json!({
+        "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let log = dir.path().join("worker.log");
+    let output = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "server::tests::callback_requests_reuse_helper_until_server_shutdown",
+            "--nocapture",
+        ])
+        .env("SPUR_S6_CALLBACK_HOST_CHILD", "1")
+        .env("SPUR_S6_CALLBACK_TRACE", "1")
+        .env("SPUR_S6_CALLBACK_FORCE", "1")
+        .env("SPUR_S6_CALLBACK_ROOT", dir.path())
+        .env("SPUR_GRAPH_TEST_WORKER_LOG", &log)
+        .env("SPUR_GRAPH_TEST_WORKER_FAULT", "shutdown_abort")
+        .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+        .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "child failed: {}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("callback embedding shutdown failed"),
+        "cleanup error was not reported: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let events = std::fs::read_to_string(log).unwrap();
+    assert!(events.lines().any(|line| line == "shutdown"), "{events}");
+    let pid = events
+        .lines()
+        .find_map(|line| line.strip_prefix("service_pid "))
+        .unwrap();
+    let probe = std::process::Command::new("/usr/bin/python3").args(["-c", "import os,sys\ntry: os.kill(int(sys.argv[1]), 0)\nexcept ProcessLookupError: sys.exit(0)\nelse: sys.exit(1)", pid]).status().unwrap();
+    assert!(probe.success(), "helper still exists: {events}");
+}
+
 #[tokio::test(flavor = "current_thread")]
 async fn root_completion_guard_disarms_after_acknowledged_completion() {
     let server = test_callback_server();

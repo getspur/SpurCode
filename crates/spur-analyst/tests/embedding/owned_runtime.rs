@@ -1,6 +1,52 @@
 use std::process::Command;
 
 #[tokio::test]
+async fn missing_helper_fails_without_leaving_background_work() {
+    const CHILD: &str = "SPUR_S6_MISSING_HELPER_CHILD";
+    if std::env::var_os(CHILD).is_some() {
+        let runtime = spur_analyst::embedding::OwnedEmbeddingRuntime::new();
+        let warm = tokio::time::timeout(std::time::Duration::from_secs(10), runtime.warm())
+            .await
+            .expect("missing helper warm must be bounded");
+        assert!(warm.is_err(), "missing helper warm must report failure");
+        assert!(runtime.embed_query("query").await.is_none());
+        runtime
+            .shutdown()
+            .await
+            .expect("missing helper cleanup joins");
+        return;
+    }
+    let dir = tempfile::tempdir().unwrap();
+    let log = dir.path().join("worker.log");
+    let config = serde_json::json!({
+        "executable": dir.path().join("missing-helper"), "args": [], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let output = Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "owned_runtime::missing_helper_fails_without_leaving_background_work",
+            "--nocapture",
+        ])
+        .env(CHILD, "1")
+        .env("SPUR_GRAPH_TEST_WORKER_LOG", &log)
+        .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+        .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "child failed: {}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!log.exists(), "missing executable started helper work");
+}
+
+#[tokio::test]
 async fn owned_runtime_reuses_one_warmed_helper_and_sends_shutdown() {
     const CHILD: &str = "SPUR_S6_OWNED_RUNTIME_CHILD";
     if std::env::var_os(CHILD).is_some() {

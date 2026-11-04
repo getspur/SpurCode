@@ -1,16 +1,20 @@
 use std::process::Command;
 use std::time::{Duration, Instant};
 
-#[test]
-fn warm_starts_the_supervised_model_session() {
+#[tokio::test]
+async fn warm_starts_the_supervised_model_session() {
     const CHILD: &str = "SPUR_S6_WARM_TEST_CHILD";
     const LOG: &str = "SPUR_GRAPH_TEST_WORKER_LOG";
     if std::env::var_os(CHILD).is_some() {
-        spur_analyst::embedding::warm_embed_model();
+        let runtime = spur_analyst::embedding::OwnedEmbeddingRuntime::new();
+        spur_analyst::embedding::warm_embed_model(&runtime)
+            .await
+            .expect("warm owned runtime");
         let deadline = Instant::now() + Duration::from_secs(10);
         loop {
             let log = std::fs::read_to_string(std::env::var_os(LOG).unwrap()).unwrap_or_default();
             if log.lines().any(|line| line.starts_with("hello ")) {
+                runtime.shutdown().await.expect("joined warm session");
                 return;
             }
             assert!(

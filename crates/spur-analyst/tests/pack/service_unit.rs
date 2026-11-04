@@ -334,7 +334,9 @@ async fn off_embed_mode_never_starts_in_process_model_load() {
         "test assumes no previous load is running"
     );
 
-    warm_embed_model();
+    let runtime = crate::embedding::OwnedEmbeddingRuntime::new();
+    warm_embed_model(&runtime).await.expect("owned warm");
+    runtime.shutdown().await.expect("joined warm");
 
     assert!(
         !model_cell.is_ready(),
@@ -512,7 +514,9 @@ async fn auto_warm_embed_model_pings_reachable_sidecar_without_starting_in_proce
         .begin_load()
         .expect("test should hold the in-process load gate");
 
-    warm_embed_model();
+    let runtime = crate::embedding::OwnedEmbeddingRuntime::new();
+    warm_embed_model(&runtime).await.expect("owned warm");
+    runtime.shutdown().await.expect("joined warm");
     for _ in 0..20 {
         if pinged.load(Ordering::SeqCst) {
             break;
@@ -536,25 +540,35 @@ async fn auto_warm_embed_model_pings_reachable_sidecar_without_starting_in_proce
 
 #[cfg(feature = "embed")]
 #[tokio::test]
-async fn auto_embed_mode_without_sidecar_falls_back_to_in_process_gate() {
+async fn auto_embed_mode_without_sidecar_uses_supervised_helper() {
     let _lock = async_env_lock().await;
     reset_auto_sidecar_probe_for_test();
     let temp_dir = tempfile::tempdir().expect("socket tempdir");
     let missing_socket = temp_dir.path().join("missing.sock");
     let _socket_guard = set_env_var_for_test(SPUR_EMBED_SOCKET_ENV, &missing_socket);
     let _mode_guard = set_analyst_embed_mode_for_test(AnalystEmbedMode::Auto);
-    let model_cell = embed_model_cell(EmbeddingModelSelection::NomicEmbedTextV15);
-    let _permit = model_cell
-        .begin_load()
-        .expect("test should hold the in-process load gate");
-
-    let embedding = embed_query("ranking beacon").await;
-
-    assert!(embedding.is_none());
-    assert!(
-        model_cell.is_loading_for_test(),
-        "auto mode without sidecar should reach the in-process load gate"
+    let script = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../spur-graph/tests/fixtures/embedding_fault_worker.py");
+    let log = temp_dir.path().join("worker.log");
+    let config = json!({
+        "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+        "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+            "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+        "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+        "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+    });
+    let _config = set_env_var_for_test("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string());
+    let _log = set_env_var_for_test("SPUR_GRAPH_TEST_WORKER_LOG", &log);
+    let runtime = crate::embedding::OwnedEmbeddingRuntime::new();
+    assert!(runtime.embed_query("ranking beacon").await.is_some());
+    runtime.shutdown().await.expect("joined fallback helper");
+    let events = std::fs::read_to_string(log).unwrap();
+    assert_eq!(
+        events.lines().filter(|line| *line == "service").count(),
+        1,
+        "{events}"
     );
+    assert_eq!(events.lines().last(), Some("shutdown"), "{events}");
 }
 
 #[test]
@@ -833,6 +847,7 @@ fn kcp2_fixture_repo(include_graph_reasoning_views: bool) -> (tempfile::TempDir,
     fs::create_dir_all(repo.join(".spur")).expect("create .spur");
     let db_path = repo.join(".spur").join("analyst.duckdb");
     let conn = Connection::open(&db_path).expect("open fixture db");
+    configure_fixture_extension_directory(&conn);
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load fixture extensions");
     conn.execute_batch(
@@ -1026,6 +1041,7 @@ pub fn dispatch_approval_evidence() -> &'static str {
 
 fn seed_overlay_pack_analyst_db(db_path: &Path, artifact_dir: &Path, graph_hash: &str) {
     let conn = Connection::open(db_path).expect("open overlay pack fixture db");
+    configure_fixture_extension_directory(&conn);
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load overlay pack fixture extensions");
     let artifact_dir = sql_escape_path(artifact_dir);
@@ -1311,6 +1327,7 @@ println!("lexical fallback utility");
 
     let db_path = temp_dir.path().join("analyst.duckdb");
     let conn = Connection::open(&db_path).expect("open fixture db");
+    configure_fixture_extension_directory(&conn);
     conn.execute_batch("INSTALL fts; LOAD fts; INSTALL icu; LOAD icu;")
         .expect("load fixture extensions");
     let sections_parquet = sql_escape_path(&artifact_dir.join(SECTIONS_PARQUET));
@@ -1405,6 +1422,14 @@ println!("lexical fallback utility");
         _temp_dir: temp_dir,
         db_path,
         query_vec,
+    }
+}
+
+fn configure_fixture_extension_directory(conn: &Connection) {
+    if let Ok(directory) = std::env::var("SPUR_DUCKDB_EXTENSION_DIR") {
+        let escaped = directory.replace('\'', "''");
+        conn.execute_batch(&format!("SET extension_directory = '{escaped}'"))
+            .expect("set isolated fixture extension directory");
     }
 }
 

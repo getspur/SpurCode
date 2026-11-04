@@ -1,44 +1,36 @@
-#[cfg(unix)]
-use std::fs;
-#[cfg(unix)]
-use std::io;
-#[cfg(unix)]
-use std::os::unix::fs::PermissionsExt as _;
-#[cfg(unix)]
-use std::os::unix::net::UnixStream as StdUnixStream;
-#[cfg(unix)]
-use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-#[cfg(unix)]
+#[cfg(any(not(feature = "embed"), not(unix)))]
+use anyhow::bail;
+#[cfg(all(feature = "embed", unix))]
 use anyhow::Context as _;
-use anyhow::{bail, Result};
+use anyhow::Result;
 #[cfg(unix)]
 use serde_json::{json, Value};
 #[cfg(unix)]
 use spur_graph::{
     embedding_query_text_for_model, EmbeddingModelSelection, EMBEDDING_VECTOR_DIMENSIONS,
 };
-#[cfg(unix)]
-use tokio::io::{AsyncBufReadExt as _, AsyncWriteExt as _, BufReader};
-#[cfg(unix)]
-use tokio::net::{UnixListener, UnixStream};
 
 use super::protocol;
 #[cfg(unix)]
 use super::protocol::{EmbedRequest, PROTOCOL_VERSION};
-#[cfg(feature = "embed")]
-use super::EmbeddingRuntime;
+use super::sidecar_blocking::BlockingBackend;
+#[cfg(all(feature = "embed", unix))]
+use super::OwnedEmbeddingRuntime;
 
 pub const SPUR_EMBED_SOCKET_ENV: &str = protocol::SPUR_EMBED_SOCKET_ENV;
 pub const MAX_EMBED_TEXTS: usize = 16;
 
-#[cfg(unix)]
-const SOCKET_PERMISSIONS: u32 = 0o600;
-
-type Embedder = dyn Fn(Vec<String>) -> Result<Vec<Vec<f32>>, String> + Send + Sync;
 type Ready = dyn Fn() -> bool + Send + Sync;
+
+#[derive(Clone)]
+enum EmbedBackend {
+    Blocking(Arc<BlockingBackend>),
+    #[cfg(all(feature = "embed", unix))]
+    Owned(OwnedEmbeddingRuntime, Arc<std::sync::atomic::AtomicBool>),
+}
 
 #[derive(Clone)]
 // On non-unix the socket serving path is compiled out, so the fields are
@@ -47,10 +39,12 @@ type Ready = dyn Fn() -> bool + Send + Sync;
 pub struct EmbedService {
     model_name: Arc<str>,
     ready: Arc<Ready>,
-    embedder: Arc<Embedder>,
+    embedder: EmbedBackend,
 }
 
 impl EmbedService {
+    /// The supplied blocking embedder must eventually return: shutdown joins
+    /// admitted callbacks and cannot preempt an arbitrary blocking callback.
     pub fn new<M, R, E>(model_name: M, ready: R, embedder: E) -> Self
     where
         M: Into<String>,
@@ -60,36 +54,41 @@ impl EmbedService {
         Self {
             model_name: Arc::from(model_name.into()),
             ready: Arc::new(ready),
-            embedder: Arc::new(embedder),
+            embedder: EmbedBackend::Blocking(Arc::new(BlockingBackend::new(embedder))),
+        }
+    }
+
+    #[cfg(all(feature = "embed", unix))]
+    fn owned(runtime: OwnedEmbeddingRuntime) -> Self {
+        let ready = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let ready_for_ping = Arc::clone(&ready);
+        Self {
+            model_name: Arc::from(EmbeddingModelSelection::from_env().model_name()),
+            ready: Arc::new(move || ready_for_ping.load(std::sync::atomic::Ordering::Acquire)),
+            embedder: EmbedBackend::Owned(runtime, ready),
         }
     }
 
     #[cfg(unix)]
     pub async fn serve_socket(self, socket_path: PathBuf) -> Result<()> {
-        bind_socket_path(&socket_path)?;
-        let listener = UnixListener::bind(&socket_path)
-            .with_context(|| format!("failed to bind embed socket at {}", socket_path.display()))?;
-        fs::set_permissions(&socket_path, fs::Permissions::from_mode(SOCKET_PERMISSIONS))
-            .with_context(|| {
-                format!(
-                    "failed to set permissions on embed socket {}",
-                    socket_path.display()
-                )
-            })?;
+        super::sidecar_transport::serve(self, socket_path, std::future::pending()).await
+    }
 
-        loop {
-            let (stream, _) = listener.accept().await.with_context(|| {
-                format!(
-                    "failed to accept embed socket connection at {}",
-                    socket_path.display()
-                )
-            })?;
-            let service = self.clone();
-            tokio::spawn(async move {
-                if let Err(error) = service.handle_connection(stream).await {
-                    tracing::debug!(%error, "embed sidecar connection ended with error");
-                }
-            });
+    #[cfg(unix)]
+    pub async fn serve_socket_until(
+        self,
+        socket_path: PathBuf,
+        shutdown: impl std::future::Future<Output = ()>,
+    ) -> Result<()> {
+        super::sidecar_transport::serve(self, socket_path, shutdown).await
+    }
+
+    #[cfg(unix)]
+    pub(super) async fn close_blocking(&self) -> Result<()> {
+        match &self.embedder {
+            EmbedBackend::Blocking(backend) => backend.close().await.map_err(anyhow::Error::msg),
+            #[cfg(feature = "embed")]
+            EmbedBackend::Owned(_, _) => Ok(()),
         }
     }
 
@@ -104,36 +103,7 @@ impl EmbedService {
     }
 
     #[cfg(unix)]
-    async fn handle_connection(&self, stream: UnixStream) -> Result<()> {
-        let (reader, mut writer) = stream.into_split();
-        let mut lines = BufReader::new(reader).lines();
-
-        while let Some(line) = lines
-            .next_line()
-            .await
-            .context("failed to read embed request line")?
-        {
-            if line.trim().is_empty() {
-                continue;
-            }
-
-            let response = self.handle_line(&line).await;
-            let response = serde_json::to_vec(&response).context("failed to encode response")?;
-            writer
-                .write_all(&response)
-                .await
-                .context("failed to write embed response")?;
-            writer
-                .write_all(b"\n")
-                .await
-                .context("failed to write embed response newline")?;
-        }
-
-        Ok(())
-    }
-
-    #[cfg(unix)]
-    async fn handle_line(&self, line: &str) -> Value {
+    pub(super) async fn handle_line(&self, line: &str) -> Value {
         let request: EmbedRequest = match serde_json::from_str(line) {
             Ok(request) => request,
             Err(error) => {
@@ -179,16 +149,34 @@ impl EmbedService {
         }
 
         let embedding_model = EmbeddingModelSelection::from_env();
-        let normalized = texts
-            .iter()
-            .map(|text| embedding_query_text_for_model(text, embedding_model).into_owned())
-            .collect::<Vec<_>>();
-        let embedder = Arc::clone(&self.embedder);
-        let result = tokio::task::spawn_blocking(move || embedder(normalized)).await;
-        let vectors = match result {
-            Ok(Ok(vectors)) => vectors,
-            Ok(Err(error)) => return error_response(id, error),
-            Err(error) => return error_response(id, format!("embed task failed: {error}")),
+        let vectors = match &self.embedder {
+            EmbedBackend::Blocking(embedder) => {
+                let normalized = texts
+                    .iter()
+                    .map(|text| embedding_query_text_for_model(text, embedding_model).into_owned())
+                    .collect::<Vec<_>>();
+                match embedder.embed(normalized).await {
+                    Ok(vectors) => vectors,
+                    Err(error) => return error_response(id, error),
+                }
+            }
+            #[cfg(feature = "embed")]
+            EmbedBackend::Owned(runtime, ready) => {
+                let mut vectors = Vec::with_capacity(texts.len());
+                for text in &texts {
+                    match runtime.embed_local_query(text).await {
+                        Ok(vector) => vectors.push(vector.to_vec()),
+                        Err(error) => {
+                            ready.store(false, std::sync::atomic::Ordering::Release);
+                            return error_response(id, format!("{error:#}"));
+                        }
+                    }
+                }
+                if !texts.is_empty() {
+                    ready.store(true, std::sync::atomic::Ordering::Release);
+                }
+                vectors
+            }
         };
 
         if vectors.len() != texts.len() {
@@ -225,65 +213,67 @@ pub fn resolve_socket_path(socket: Option<PathBuf>) -> Result<PathBuf> {
 
 #[cfg(feature = "embed")]
 pub async fn serve(socket: Option<PathBuf>) -> Result<()> {
-    let socket_path = resolve_socket_path(socket)?;
-    production_service(EmbeddingRuntime::global())
-        .serve_socket(socket_path)
+    serve_until(socket, shutdown_signal()).await
+}
+
+#[cfg(all(feature = "embed", unix))]
+async fn shutdown_signal() {
+    match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
+        Ok(mut terminate) => {
+            tokio::select! {
+                result = tokio::signal::ctrl_c() => {
+                    if let Err(error) = result { tracing::error!(%error, "embed service interrupt listener failed"); }
+                }
+                _ = terminate.recv() => {}
+            }
+        }
+        Err(error) => {
+            tracing::error!(%error, "embed service termination listener failed");
+            if let Err(error) = tokio::signal::ctrl_c().await {
+                tracing::error!(%error, "embed service interrupt listener failed");
+            }
+        }
+    }
+}
+
+#[cfg(all(feature = "embed", not(unix)))]
+async fn shutdown_signal() {
+    if let Err(error) = tokio::signal::ctrl_c().await {
+        tracing::error!(%error, "embed service interrupt listener failed");
+    }
+}
+
+#[cfg(all(feature = "embed", unix))]
+pub async fn serve_until(
+    socket: Option<PathBuf>,
+    shutdown: impl std::future::Future<Output = ()>,
+) -> Result<()> {
+    let runtime = OwnedEmbeddingRuntime::local_helper();
+    let result = match resolve_socket_path(socket) {
+        Ok(path) => {
+            super::sidecar_transport::serve(EmbedService::owned(runtime.clone()), path, shutdown)
+                .await
+        }
+        Err(error) => Err(error),
+    };
+    runtime
+        .shutdown()
         .await
+        .context("embed service shutdown failed")?;
+    result
+}
+
+#[cfg(all(feature = "embed", not(unix)))]
+pub async fn serve_until(
+    _socket: Option<PathBuf>,
+    _shutdown: impl std::future::Future<Output = ()>,
+) -> Result<()> {
+    bail!("embed sidecar socket unsupported: unix domain sockets are unavailable")
 }
 
 #[cfg(not(feature = "embed"))]
 pub async fn serve(_socket: Option<PathBuf>) -> Result<()> {
     bail!("spur embed serve requires a binary built with the `embed` feature")
-}
-
-#[cfg(feature = "embed")]
-fn production_service(runtime: &'static EmbeddingRuntime) -> EmbedService {
-    EmbedService::new(
-        runtime.sidecar_model_name(),
-        move || runtime.sidecar_ready(),
-        move |texts| runtime.embed_sidecar_texts(texts),
-    )
-}
-
-#[cfg(unix)]
-fn bind_socket_path(path: &Path) -> Result<()> {
-    if let Some(parent) = path
-        .parent()
-        .filter(|parent| !parent.as_os_str().is_empty())
-    {
-        fs::create_dir_all(parent).with_context(|| {
-            format!(
-                "failed to create embed socket parent directory {}",
-                parent.display()
-            )
-        })?;
-    }
-
-    if path.exists() {
-        match StdUnixStream::connect(path) {
-            Ok(_) => bail!("embed socket already in use at {}", path.display()),
-            Err(error)
-                if matches!(
-                    error.kind(),
-                    io::ErrorKind::ConnectionRefused | io::ErrorKind::NotFound
-                ) =>
-            {
-                fs::remove_file(path).with_context(|| {
-                    format!("failed to remove stale embed socket {}", path.display())
-                })?;
-            }
-            Err(error) => {
-                fs::remove_file(path).with_context(|| {
-                    format!(
-                        "failed to remove stale embed socket {} after connect failed: {error}",
-                        path.display()
-                    )
-                })?;
-            }
-        }
-    }
-
-    Ok(())
 }
 
 #[cfg(unix)]

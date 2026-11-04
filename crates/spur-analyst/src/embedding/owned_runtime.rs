@@ -147,9 +147,18 @@ impl Default for OwnedEmbeddingRuntime {
 }
 impl OwnedEmbeddingRuntime {
     pub fn new() -> Self {
+        Self::for_mode(AnalystEmbedMode::current())
+    }
+
+    #[cfg(all(feature = "embed", unix))]
+    pub(super) fn local_helper() -> Self {
+        Self::for_mode(AnalystEmbedMode::InProcess)
+    }
+
+    fn for_mode(mode: AnalystEmbedMode) -> Self {
         Self {
             owner: Arc::new(Owner {
-                mode: AnalystEmbedMode::current(),
+                mode,
                 closed: AtomicBool::new(false),
                 sidecar: SidecarTracker {
                     count: Mutex::new(0),
@@ -176,6 +185,14 @@ impl OwnedEmbeddingRuntime {
                 shutdown_lock: Mutex::new(()),
             }),
         }
+    }
+
+    #[cfg(all(feature = "embed", unix))]
+    pub(super) async fn embed_local_query(
+        &self,
+        query: &str,
+    ) -> anyhow::Result<[f32; EMBEDDING_VECTOR_DIMENSIONS]> {
+        self.run(query.to_owned()).await
     }
 
     async fn sidecar_operation<T>(

@@ -15,3 +15,11 @@ mod warm_inference;
 #[cfg(all(unix, feature = "embed"))]
 #[path = "embedding/owned_runtime.rs"]
 mod owned_runtime;
+
+#[cfg(all(unix, feature = "embed"))]
+#[path = "embedding/host_lifetime.rs"]
+mod host_lifetime;
+
+#[cfg(all(unix, feature = "embed"))]
+#[path = "embedding/owned_socket.rs"]
+mod owned_socket;

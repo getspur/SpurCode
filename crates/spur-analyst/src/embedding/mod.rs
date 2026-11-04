@@ -1,11 +1,16 @@
+#[cfg(test)]
 mod in_process;
 mod mode;
+#[cfg(test)]
 mod model_cache;
 mod owned_runtime;
 mod protocol;
 mod runtime;
+mod sidecar_blocking;
 pub(crate) mod sidecar_client;
 pub mod sidecar_service;
+#[cfg(unix)]
+mod sidecar_transport;
 
 #[cfg(all(test, feature = "embed"))]
 pub(crate) use in_process::embed_with_ready_model;

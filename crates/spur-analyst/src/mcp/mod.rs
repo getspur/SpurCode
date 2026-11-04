@@ -5,6 +5,7 @@ mod tools {
     pub(crate) mod knowledge_context;
     pub(crate) mod query;
 }
+mod owned_knowledge_context;
 mod value {
     pub(crate) mod arrow;
 }
@@ -20,6 +21,7 @@ use crate::{MAX_CONTEXT_PATHS, MAX_CONTEXT_PATH_HOPS};
 pub use crate::db::paths::ensure_analyst_db_ready;
 pub use crate::embedding::warm_embed_model;
 pub use crate::overlay::open_worktree_overlay;
+pub use owned_knowledge_context::knowledge_context_pack_2_with_runtime;
 pub use spur_mcp::tools::McpHandlerError;
 pub use spur_mcp::tools::ToolDefinition;
 pub use tools::doc_navigate::doc_navigate;
@@ -34,6 +36,7 @@ type AnalystDispatchFuture<'a> = std::pin::Pin<
 pub struct AnalystMcpModule {
     local_projects: LocalProjectAccess,
     followup_surface: LocalProjectFollowupSurface,
+    embedding_runtime: Option<crate::embedding::OwnedEmbeddingRuntime>,
 }
 
 impl Default for AnalystMcpModule {
@@ -47,6 +50,7 @@ impl AnalystMcpModule {
         Self {
             local_projects: LocalProjectAccess::CurrentWorktreeOnly,
             followup_surface: LocalProjectFollowupSurface::GraphAndAnalyst,
+            embedding_runtime: None,
         }
     }
 
@@ -58,6 +62,7 @@ impl AnalystMcpModule {
         Self {
             local_projects: LocalProjectAccess::Catalog(resolver),
             followup_surface: LocalProjectFollowupSurface::GraphAndAnalyst,
+            embedding_runtime: None,
         }
     }
 
@@ -67,7 +72,16 @@ impl AnalystMcpModule {
         Self {
             local_projects: LocalProjectAccess::Catalog(resolver),
             followup_surface: LocalProjectFollowupSurface::AnalystOnly,
+            embedding_runtime: None,
         }
+    }
+
+    pub fn with_embedding_runtime(
+        mut self,
+        runtime: crate::embedding::OwnedEmbeddingRuntime,
+    ) -> Self {
+        self.embedding_runtime = Some(runtime);
+        self
     }
 
     pub fn tools(&self) -> Vec<ToolDefinition> {
@@ -103,8 +117,17 @@ impl AnalystMcpModule {
     ) -> Result<Value, McpHandlerError> {
         match name {
             "doc_navigate" => doc_navigate(&args).await,
-            "knowledge_context_pack" => knowledge_context_pack(&args).await,
-            "knowledge_context_pack_2" => knowledge_context_pack_2(&args).await,
+            "knowledge_context_pack" => match &self.embedding_runtime {
+                Some(runtime) => {
+                    owned_knowledge_context::knowledge_context_pack_with_runtime(&args, runtime)
+                        .await
+                }
+                None => knowledge_context_pack(&args).await,
+            },
+            "knowledge_context_pack_2" => match &self.embedding_runtime {
+                Some(runtime) => knowledge_context_pack_2_with_runtime(&args, runtime).await,
+                None => knowledge_context_pack_2(&args).await,
+            },
             "query" => query(&args).await,
             other => Err(McpHandlerError::InvalidParams(format!(
                 "unknown analyst MCP tool: {other}"

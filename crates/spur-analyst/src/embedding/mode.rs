@@ -52,7 +52,7 @@ impl AnalystEmbedMode {
         }
     }
 
-    #[cfg(feature = "embed")]
+    #[cfg(all(test, feature = "embed"))]
     pub(crate) fn allows_in_process(self, entrypoint: &'static str) -> bool {
         match self {
             Self::Auto | Self::InProcess => true,

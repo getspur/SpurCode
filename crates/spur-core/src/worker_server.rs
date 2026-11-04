@@ -706,6 +706,7 @@ impl Drop for DelegationDispatchGuard {
 
 /// Internal bundle of the materialized handler dependencies.
 struct DispatcherDeps {
+    embedding_runtime: spur_analyst::embedding::OwnedEmbeddingRuntime,
     pm_service: Arc<spur_pm::PmService>,
     feature_gate: Arc<spur_license::FeatureGate>,
     funnel: Arc<dyn McpEventSink>,
@@ -916,7 +917,7 @@ async fn invoke_knowledge_context_for_worker(
         // knowledge_context_pack is a deprecated alias that routes to v2 behavior
         // (main's knowledge_context_pack_2 first-class promotion), served through the
         // spur-analyst-owned handler (our P4 ownership boundary).
-        spur_analyst::mcp::knowledge_context_pack_2(&args)
+        spur_analyst::mcp::knowledge_context_pack_2_with_runtime(&args, &deps.embedding_runtime)
             .await
             .map_err(analyst_mcp_error)
     };
@@ -2536,6 +2537,7 @@ impl WorkerMcpServer {
         let graph_mcp_module =
             spur_graph::mcp::GraphMcpModule::new(spur_graph::mcp::GraphMcpDeps::default());
         let dispatcher_deps = Arc::new(DispatcherDeps {
+            embedding_runtime: spur_analyst::embedding::OwnedEmbeddingRuntime::new(),
             pm_service: deps.pm_service,
             feature_gate: deps.feature_gate,
             funnel: deps.funnel,
@@ -3154,6 +3156,9 @@ impl WorkerMcpServer {
             // The connection barrier prevents any request from registering
             // after this final handler snapshot.
             self.force_abort_handlers_and_wait().await;
+        }
+        if let Err(error) = self.deps.embedding_runtime.shutdown().await {
+            tracing::error!(%error, brain_session_id = %self.brain_session_id, "worker embedding shutdown failed");
         }
         // Reference held only to keep the deps Arc alive until shutdown
         // completes; explicit drop documents intent.
@@ -4417,6 +4422,7 @@ mod tests {
         let worker_read_sink: Arc<dyn WorkerReadToolSink> = Arc::new(NullWorkerReadToolSink);
 
         Arc::new(DispatcherDeps {
+            embedding_runtime: spur_analyst::embedding::OwnedEmbeddingRuntime::new(),
             pm_service,
             feature_gate,
             funnel,
@@ -4925,6 +4931,157 @@ mod tests {
             .expect("list comments");
         assert_eq!(comments.len(), 1);
         assert!(comments[0].body.contains("\"delegation_id\":\"del-stale\""));
+    }
+
+    #[cfg(feature = "embed")]
+    #[tokio::test]
+    async fn direct_worker_calls_reuse_helper_until_server_shutdown() {
+        const CHILD: &str = "SPUR_S6_WORKER_HOST_CHILD";
+        if std::env::var_os(CHILD).is_some() {
+            if std::env::var_os("SPUR_S6_WORKER_TRACE").is_some() {
+                tracing_subscriber::fmt()
+                    .with_ansi(false)
+                    .with_writer(std::io::stderr)
+                    .try_init()
+                    .unwrap();
+            }
+            let pm_dir = TempDir::new().unwrap();
+            let pm = pm_service_fixture(pm_dir.path()).await;
+            let server = WorkerMcpServer::start(
+                "brain-A".into(),
+                worker_mcp_deps_fixture(
+                    pm,
+                    pro_feature_gate(),
+                    Arc::new(RecordingWorkerSignalSink::default()),
+                ),
+            )
+            .await
+            .unwrap();
+            server.deps.delegation_worktree_roots.lock().insert(
+                "del-A".into(),
+                std::env::var_os("SPUR_S6_WORKER_ROOT").unwrap().into(),
+            );
+            for query in ["worker first", "worker second"] {
+                let result = invoke_knowledge_context_for_worker(
+                    Arc::clone(&server.deps),
+                    WorkerCallContext {
+                        delegation_id: "del-A".into(),
+                        brain_session_id: "brain-A".into(),
+                    },
+                    json!({"query": query}),
+                )
+                .await;
+                assert!(
+                    result.is_err(),
+                    "empty fixture must return a database error"
+                );
+            }
+            if std::env::var_os("SPUR_S6_WORKER_FORCE").is_some() {
+                server.shutdown_immediately().await;
+            } else {
+                server.shutdown(Duration::from_secs(5)).await;
+            }
+            return;
+        }
+        let dir = TempDir::new().unwrap();
+        std::fs::create_dir(dir.path().join(".spur")).unwrap();
+        drop(duckdb::Connection::open(dir.path().join(".spur/analyst.duckdb")).unwrap());
+        let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../spur-graph/tests/fixtures/embedding_fault_worker.py");
+        let config = json!({
+            "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+            "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+                "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+            "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+            "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+        });
+        let log_path = dir.path().join("worker.log");
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "worker_server::tests::direct_worker_calls_reuse_helper_until_server_shutdown",
+                "--nocapture",
+            ])
+            .env(CHILD, "1")
+            .env("SPUR_S6_WORKER_ROOT", dir.path())
+            .env("SPUR_GRAPH_TEST_WORKER_LOG", &log_path)
+            .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+            .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "child failed: {}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let log = std::fs::read_to_string(log_path).unwrap();
+        assert_eq!(
+            log.lines().filter(|line| *line == "service").count(),
+            1,
+            "{log}"
+        );
+        assert_eq!(
+            log.lines()
+                .filter(|line| line.starts_with("embed "))
+                .count(),
+            2,
+            "{log}"
+        );
+        assert_eq!(log.lines().last(), Some("shutdown"), "{log}");
+    }
+
+    #[cfg(feature = "embed")]
+    #[tokio::test]
+    async fn forced_worker_shutdown_reports_helper_abort() {
+        let dir = TempDir::new().unwrap();
+        std::fs::create_dir(dir.path().join(".spur")).unwrap();
+        drop(duckdb::Connection::open(dir.path().join(".spur/analyst.duckdb")).unwrap());
+        let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../spur-analyst/tests/embedding/fixtures/owned_fault_worker.py");
+        let config = json!({
+            "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+            "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+                "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+            "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+            "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+        });
+        let log = dir.path().join("worker.log");
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "worker_server::tests::direct_worker_calls_reuse_helper_until_server_shutdown",
+                "--nocapture",
+            ])
+            .env("SPUR_S6_WORKER_HOST_CHILD", "1")
+            .env("SPUR_S6_WORKER_TRACE", "1")
+            .env("SPUR_S6_WORKER_FORCE", "1")
+            .env("SPUR_S6_WORKER_ROOT", dir.path())
+            .env("SPUR_GRAPH_TEST_WORKER_LOG", &log)
+            .env("SPUR_GRAPH_TEST_WORKER_FAULT", "shutdown_abort")
+            .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+            .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "child failed: {}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(
+            String::from_utf8_lossy(&output.stderr).contains("worker embedding shutdown failed"),
+            "cleanup error was not reported: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let events = std::fs::read_to_string(log).unwrap();
+        assert!(events.lines().any(|line| line == "shutdown"), "{events}");
+        let pid = events
+            .lines()
+            .find_map(|line| line.strip_prefix("service_pid "))
+            .unwrap();
+        let probe = std::process::Command::new("/usr/bin/python3").args(["-c", "import os,sys\ntry: os.kill(int(sys.argv[1]), 0)\nexcept ProcessLookupError: sys.exit(0)\nelse: sys.exit(1)", pid]).status().unwrap();
+        assert!(probe.success(), "helper still exists: {events}");
     }
 
     #[tokio::test]

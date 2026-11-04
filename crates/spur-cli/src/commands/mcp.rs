@@ -36,11 +36,17 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 
+use spur_analyst::embedding::OwnedEmbeddingRuntime;
 use spur_analyst::mcp::AnalystMcpModule;
 use spur_core::mcp::{ContextServiceAuth, ContextServiceClient, LocalProjectMcpComposition};
 use spur_graph::mcp::{GraphMcpDeps, GraphMcpModule};
 use spur_mcp::{serve_stdio_server, RegistryServerHandler, ToolRegistry};
 use spur_solver::{mcp::SolverMcpModule, service::SolverService};
+use tokio_util::sync::CancellationToken;
+
+#[cfg(unix)]
+#[path = "mcp_stdin.rs"]
+mod mcp_stdin;
 
 const SPUR_WORKTREE_ENV: &str = "SPUR_WORKTREE";
 
@@ -122,25 +128,33 @@ fn graph_server_registry(local_projects: &LocalProjectMcpComposition) -> Result<
         .build())
 }
 
-fn analyst_server_registry(local_projects: &LocalProjectMcpComposition) -> Result<ToolRegistry> {
+fn analyst_server_registry(
+    local_projects: &LocalProjectMcpComposition,
+    runtime: OwnedEmbeddingRuntime,
+) -> Result<ToolRegistry> {
     Ok(ToolRegistry::builder()
         .with(local_projects.catalog_module())?
-        .with(AnalystMcpModule::with_local_projects_for_analyst_server(
-            local_projects.resolver(),
-        ))?
+        .with(
+            AnalystMcpModule::with_local_projects_for_analyst_server(local_projects.resolver())
+                .with_embedding_runtime(runtime),
+        )?
         .build())
 }
 
-fn bundled_server_registry(local_projects: &LocalProjectMcpComposition) -> Result<ToolRegistry> {
+fn bundled_server_registry(
+    local_projects: &LocalProjectMcpComposition,
+    runtime: OwnedEmbeddingRuntime,
+) -> Result<ToolRegistry> {
     Ok(ToolRegistry::builder()
         .with(local_projects.catalog_module())?
         .with(GraphMcpModule::with_local_projects(
             GraphMcpDeps::default(),
             local_projects.resolver(),
         ))?
-        .with(AnalystMcpModule::with_local_projects(
-            local_projects.resolver(),
-        ))?
+        .with(
+            AnalystMcpModule::with_local_projects(local_projects.resolver())
+                .with_embedding_runtime(runtime),
+        )?
         .with_alias("code_search", "code_symbol_search")?
         .build())
 }
@@ -162,12 +176,101 @@ pub async fn run_graph_server(root: Option<PathBuf>) -> Result<()> {
 /// `root` is the optional `--root <path>` override. When absent, `SPUR_WORKTREE`
 /// is honored before falling back to the MCP client launch directory.
 pub async fn run_analyst_server(root: Option<PathBuf>) -> Result<()> {
-    spur_analyst::mcp::warm_embed_model();
+    with_command_embedding_runtime(|runtime, cancel| async move {
+        let local_projects = local_project_composition();
+        let registry = analyst_server_registry(&local_projects, runtime)?;
+        let handler =
+            RegistryServerHandler::new(registry, "spur-analyst-mcp", ANALYST_INSTRUCTIONS);
+        Box::pin(with_mcp_worktree_scope(
+            root,
+            serve_command_stdio(handler, cancel),
+        ))
+        .await?
+    })
+    .await
+}
 
-    let local_projects = local_project_composition();
-    let registry = analyst_server_registry(&local_projects)?;
-    let handler = RegistryServerHandler::new(registry, "spur-analyst-mcp", ANALYST_INSTRUCTIONS);
-    Box::pin(with_mcp_worktree_scope(root, serve_stdio_server(handler))).await?
+async fn with_command_embedding_runtime<F, Fut>(operation: F) -> Result<()>
+where
+    F: FnOnce(OwnedEmbeddingRuntime, CancellationToken) -> Fut,
+    Fut: Future<Output = Result<()>>,
+{
+    // Register both ordinary Unix signals before warm can start a child. Keep
+    // the listeners alive until the owned runtime has finished shutting down.
+    #[cfg(unix)]
+    let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+        .context("install command termination listener")?;
+    #[cfg(unix)]
+    let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())
+        .context("install command interrupt listener")?;
+
+    let runtime = OwnedEmbeddingRuntime::new();
+    let cancel = CancellationToken::new();
+    let result = {
+        let work = async {
+            tokio::select! {
+                _ = cancel.cancelled() => return Ok(()),
+                warm = runtime.warm() => if let Err(error) = warm {
+                    tracing::warn!(%error, "command embedding warm failed");
+                },
+            }
+            operation(runtime.clone(), cancel.clone()).await
+        };
+        tokio::pin!(work);
+        #[cfg(unix)]
+        let signal = async {
+            tokio::select! {
+                _ = terminate.recv() => Ok::<_, anyhow::Error>("SIGTERM"),
+                _ = interrupt.recv() => Ok("SIGINT"),
+            }
+        };
+        #[cfg(not(unix))]
+        let signal = async {
+            tokio::signal::ctrl_c()
+                .await
+                .context("command interrupt listener failed")?;
+            Ok::<_, anyhow::Error>("interrupt")
+        };
+        tokio::select! {
+            biased;
+            signal = signal => {
+                cancel.cancel();
+                let (work_result, shutdown_result) = tokio::join!(&mut work, runtime.shutdown());
+                shutdown_result.context("command embedding shutdown failed")?;
+                work_result?;
+                return signal.and_then(|name| Err(anyhow::anyhow!("command terminated by {name}")));
+            },
+            result = &mut work => result,
+        }
+    };
+    runtime
+        .shutdown()
+        .await
+        .context("command embedding shutdown failed")?;
+    result
+}
+
+async fn serve_command_stdio(
+    handler: RegistryServerHandler,
+    cancel: CancellationToken,
+) -> Result<()> {
+    #[cfg(unix)]
+    let stdin = mcp_stdin::command_stdin()?;
+    #[cfg(not(unix))]
+    let stdin = tokio::io::stdin();
+    let running =
+        rmcp::service::serve_server_with_ct(handler, (stdin, tokio::io::stdout()), cancel.clone())
+            .await;
+    let running = match running {
+        Ok(running) => running,
+        Err(_) if cancel.is_cancelled() => return Ok(()),
+        Err(error) => return Err(error).context("failed to start stdio MCP server"),
+    };
+    running
+        .waiting()
+        .await
+        .context("stdio MCP server exited unexpectedly")?;
+    Ok(())
 }
 
 fn context_server_registry(url: String, auth: ContextServiceAuth) -> Result<ToolRegistry> {
@@ -256,12 +359,17 @@ pub async fn run_legacy_context_server(url: String, token: String) -> Result<()>
 /// `root` is the optional `--root <path>` override. When absent, `SPUR_WORKTREE`
 /// is honored before falling back to the MCP client launch directory.
 pub async fn run_bundled_server(root: Option<PathBuf>) -> Result<()> {
-    spur_analyst::mcp::warm_embed_model();
-
-    let local_projects = local_project_composition();
-    let registry = bundled_server_registry(&local_projects)?;
-    let handler = RegistryServerHandler::new(registry, "spur-mcp", BUNDLED_INSTRUCTIONS);
-    Box::pin(with_mcp_worktree_scope(root, serve_stdio_server(handler))).await?
+    with_command_embedding_runtime(|runtime, cancel| async move {
+        let local_projects = local_project_composition();
+        let registry = bundled_server_registry(&local_projects, runtime)?;
+        let handler = RegistryServerHandler::new(registry, "spur-mcp", BUNDLED_INSTRUCTIONS);
+        Box::pin(with_mcp_worktree_scope(
+            root,
+            serve_command_stdio(handler, cancel),
+        ))
+        .await?
+    })
+    .await
 }
 
 #[cfg(test)]
@@ -344,10 +452,11 @@ mod tests {
         ] {
             let body = function_body(source, signature);
             assert!(
-                body.contains("spur_analyst::mcp::warm_embed_model();"),
+                body.contains("with_command_embedding_runtime("),
                 "{signature} must pre-warm knowledge_context_pack embeddings"
             );
         }
+        assert!(source.contains("runtime.warm().await"));
     }
 
     #[tokio::test]
@@ -459,8 +568,16 @@ mod tests {
             catalog.path().join("projects.toml"),
         ));
         let graph = super::graph_server_registry(&local_projects).expect("graph registry");
-        let analyst = super::analyst_server_registry(&local_projects).expect("analyst registry");
-        let bundled = super::bundled_server_registry(&local_projects).expect("bundled registry");
+        let analyst = super::analyst_server_registry(
+            &local_projects,
+            spur_analyst::embedding::OwnedEmbeddingRuntime::new(),
+        )
+        .expect("analyst registry");
+        let bundled = super::bundled_server_registry(
+            &local_projects,
+            spur_analyst::embedding::OwnedEmbeddingRuntime::new(),
+        )
+        .expect("bundled registry");
 
         for (name, registry) in [
             ("graph", &graph),
@@ -490,6 +607,90 @@ mod tests {
                 .expect("bundled alias"),
             "code_symbol_search"
         );
+    }
+
+    #[cfg(feature = "embed")]
+    #[tokio::test]
+    async fn analyst_registry_reuses_command_owned_runtime() {
+        const CHILD: &str = "SPUR_S6_CLI_HOST_CHILD";
+        if std::env::var_os(CHILD).is_some() {
+            let root = std::path::PathBuf::from(std::env::var_os("SPUR_S6_CLI_ROOT").unwrap());
+            let projects = LocalProjectMcpComposition::new(LocalProjectCatalogStore::new(
+                root.join("catalog.toml"),
+            ));
+            let runtime = spur_analyst::embedding::OwnedEmbeddingRuntime::new();
+            let registry = super::analyst_server_registry(&projects, runtime.clone()).unwrap();
+            for query in ["cli first", "cli second"] {
+                let response = super::with_mcp_worktree_scope(Some(root.clone()), async {
+                    registry
+                        .call_json_tool(
+                            ToolCallContext::new(
+                                ServerKind::Brain,
+                                ToolAuthority::Brain,
+                                None,
+                                None,
+                            ),
+                            "knowledge_context_pack_2",
+                            json!({"query": query}),
+                        )
+                        .await
+                })
+                .await
+                .unwrap();
+                assert!(
+                    response.error.is_some(),
+                    "empty fixture must return database error"
+                );
+            }
+            runtime.shutdown().await.expect("joined command shutdown");
+            return;
+        }
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::create_dir(dir.path().join(".spur")).unwrap();
+        drop(duckdb::Connection::open(dir.path().join(".spur/analyst.duckdb")).unwrap());
+        let script = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../spur-graph/tests/fixtures/embedding_fault_worker.py");
+        let config = json!({
+            "executable": "/usr/bin/python3", "args": [script], "artifact_budget": 10000,
+            "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+                "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+            "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+            "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+        });
+        let log_path = dir.path().join("worker.log");
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "commands::mcp::tests::analyst_registry_reuses_command_owned_runtime",
+                "--nocapture",
+            ])
+            .env(CHILD, "1")
+            .env("SPUR_S6_CLI_ROOT", dir.path())
+            .env("SPUR_GRAPH_TEST_WORKER_LOG", &log_path)
+            .env("SPUR_ANALYST_EMBED_MODE", "inprocess")
+            .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "child failed: {}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let log = std::fs::read_to_string(log_path).unwrap();
+        assert_eq!(
+            log.lines().filter(|line| *line == "service").count(),
+            1,
+            "{log}"
+        );
+        assert_eq!(
+            log.lines()
+                .filter(|line| line.starts_with("embed "))
+                .count(),
+            2,
+            "{log}"
+        );
+        assert_eq!(log.lines().last(), Some("shutdown"), "{log}");
     }
 
     #[test]
