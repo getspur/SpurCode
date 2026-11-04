@@ -7,3 +7,7 @@ mod dependency_boundary;
 #[cfg(all(unix, feature = "embed"))]
 #[path = "embedding/warm_helper.rs"]
 mod warm_helper;
+
+#[cfg(all(unix, feature = "embed"))]
+#[path = "embedding/warm_inference.rs"]
+mod warm_inference;
