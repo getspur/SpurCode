@@ -60,6 +60,8 @@ def main():
             with open(log + ".inputs", "a", encoding="utf-8") as file:
                 file.write(json.dumps(texts) + "\n")
             fault = os.environ.get("SPUR_GRAPH_TEST_WORKER_FAULT", "")
+            if fault == "query_hang":
+                threading.Event().wait()
             if count == 2 and fault == "death":
                 os.abort()
             if count == 2 and fault == "truncated":
