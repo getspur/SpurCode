@@ -130,6 +130,7 @@ pub struct EmbeddingClient {
     wake: Arc<Wake>,
     state: Arc<Mutex<State>>,
     trace: Arc<Trace>,
+    cleanup: Mutex<Vec<JoinHandle<()>>>,
 }
 
 type IoResult = (Result<ReplyEnvelope, String>, ChildStdin, ChildStdout);
@@ -330,23 +331,43 @@ impl EmbeddingClient {
                 match result {
                     Ok(reply) => reply,
                     Err(error) => {
-                        Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                        client.track_cleanup(Self::dispose_child(
+                            child,
+                            generation,
+                            Arc::clone(&client.trace),
+                            None,
+                        ));
                         return Err(ClientError::Transport(error));
                     }
                 }
             }
             Err(error) => {
-                Self::dispose_child(child, generation, Arc::clone(&client.trace), Some(job));
+                client.track_cleanup(Self::dispose_child(
+                    child,
+                    generation,
+                    Arc::clone(&client.trace),
+                    Some(job),
+                ));
                 return Err(error);
             }
         };
         loop {
             if cancel.cancelled() {
-                Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                client.track_cleanup(Self::dispose_child(
+                    child,
+                    generation,
+                    Arc::clone(&client.trace),
+                    None,
+                ));
                 return Err(ClientError::Cancelled);
             }
             if Instant::now() >= deadline {
-                Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                client.track_cleanup(Self::dispose_child(
+                    child,
+                    generation,
+                    Arc::clone(&client.trace),
+                    None,
+                ));
                 return Err(ClientError::Timeout);
             }
             match child.try_wait() {
@@ -372,7 +393,12 @@ impl EmbeddingClient {
                     }
                 }
                 Err(error) => {
-                    Self::dispose_child(child, generation, Arc::clone(&client.trace), None);
+                    client.track_cleanup(Self::dispose_child(
+                        child,
+                        generation,
+                        Arc::clone(&client.trace),
+                        None,
+                    ));
                     return Err(ClientError::Transport(error.to_string()));
                 }
             }
@@ -432,7 +458,38 @@ impl EmbeddingClient {
                 restarts_left,
             })),
             trace: Arc::new(Trace::new()),
+            cleanup: Mutex::new(Vec::new()),
         })
+    }
+
+    fn track_cleanup(&self, job: JoinHandle<()>) {
+        self.cleanup.lock().unwrap().push(job);
+    }
+
+    /// Join cleanup work after callers have stopped submitting and joined requests.
+    /// A timeout retains unfinished jobs for a subsequent call.
+    pub fn wait_for_cleanup(&self, deadline: Instant) -> Result<(), ClientError> {
+        loop {
+            let completed = {
+                let mut jobs = self.cleanup.lock().unwrap();
+                jobs.iter()
+                    .position(JoinHandle::is_finished)
+                    .map(|index| jobs.swap_remove(index))
+            };
+            if let Some(job) = completed {
+                job.join()
+                    .map_err(|_panic| ClientError::Transport("cleanup task panicked".into()))?;
+                continue;
+            }
+            if self.cleanup.lock().unwrap().is_empty() {
+                return Ok(());
+            }
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                return Err(ClientError::Timeout);
+            }
+            thread::park_timeout(remaining.min(self.policy.shutdown_poll_interval));
+        }
     }
     #[cfg(feature = "test-support")]
     pub fn test_events(&self) -> Vec<TestEvent> {
@@ -537,16 +594,20 @@ impl EmbeddingClient {
         let wake = Arc::clone(&self.wake);
         let state = Arc::clone(&self.state);
         let trace = Arc::clone(&self.trace);
-        thread::spawn(move || {
+        let job = thread::spawn(move || {
             let mut gate = wake.gate.lock().unwrap();
             while gate.active {
                 gate = wake.cv.wait(gate).unwrap();
             }
             drop(gate);
-            if let Some(worker) = state.lock().unwrap().worker.take() {
-                Self::dispose_child(worker.child, worker.generation, trace, None);
+            let worker = state.lock().unwrap().worker.take();
+            if let Some(worker) = worker {
+                Self::dispose_child(worker.child, worker.generation, trace, None)
+                    .join()
+                    .expect("worker cleanup task panicked");
             }
         });
+        self.track_cleanup(job);
     }
     pub fn embed(
         &self,
@@ -687,8 +748,12 @@ impl EmbeddingClient {
             let _gate = wake.gate.lock().unwrap();
             let mut launch = launch.lock().unwrap();
             if launch.abandoned {
+                drop(launch);
+                drop(_gate);
                 if let Ok(child) = result {
-                    Self::dispose_child(child, generation, Arc::clone(&trace), None);
+                    Self::dispose_child(child, generation, Arc::clone(&trace), None)
+                        .join()
+                        .expect("abandoned child cleanup task panicked");
                 }
             } else {
                 launch.result = Some(result);
@@ -713,8 +778,14 @@ impl EmbeddingClient {
                 drop(launch);
                 drop(gate);
                 if let Some(Ok(child)) = result {
-                    Self::dispose_child(child, generation, Arc::clone(&self.trace), None);
+                    self.track_cleanup(Self::dispose_child(
+                        child,
+                        generation,
+                        Arc::clone(&self.trace),
+                        None,
+                    ));
                 }
+                self.track_cleanup(job);
                 return Err(error);
             }
             if let Some(result) = launch.result.take() {
@@ -931,7 +1002,12 @@ impl EmbeddingClient {
     }
     fn dispose(&self, worker: &mut Option<Worker>, job: Option<JoinHandle<()>>) {
         if let Some(w) = worker.take() {
-            Self::dispose_child(w.child, w.generation, Arc::clone(&self.trace), job);
+            self.track_cleanup(Self::dispose_child(
+                w.child,
+                w.generation,
+                Arc::clone(&self.trace),
+                job,
+            ));
         }
     }
     fn dispose_child(
@@ -939,7 +1015,7 @@ impl EmbeddingClient {
         generation: Uuid,
         trace: Arc<Trace>,
         job: Option<JoinHandle<()>>,
-    ) {
+    ) -> JoinHandle<()> {
         let pid = child.id();
         let killed = child.kill();
         trace.record(
@@ -967,7 +1043,7 @@ impl EmbeddingClient {
                 let _ = job.join();
                 trace.record("io_joined", Some(pid), Some(generation), None, None);
             }
-        });
+        })
     }
     pub fn shutdown(&self, caller_deadline: Instant) -> Result<(), ClientError> {
         let deadline = Self::effective(caller_deadline, self.policy.shutdown_timeout)?;
