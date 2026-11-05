@@ -1,4 +1,4 @@
-//! Source-bound evidence for direct physical Rust tuple fields.
+//! Source-bound evidence for physical Rust tuple fields and foreign declarations.
 //!
 //! Completeness applies only to supplied files and the covered syntax kind;
 //! attributes are raw syntax, with no configured or compiled interpretation.
@@ -12,7 +12,10 @@ use tree_sitter::Node;
 
 use crate::{compute_graph_content_hash, git_blob_oid, GraphIndexArtifact, RelationKind};
 
-pub const RUST_DECLARATION_SCHEMA_VERSION: &str = "spur-rust-declarations-v1";
+mod ffi;
+pub use ffi::*;
+
+pub const RUST_DECLARATION_SCHEMA_VERSION: &str = "spur-rust-declarations-v2";
 
 #[derive(Debug, Clone, Copy)]
 pub struct RustDeclarationSource<'a> {
@@ -30,23 +33,26 @@ pub enum RustDeclarationScope {
 #[serde(rename_all = "snake_case")]
 pub enum RustDeclarationKind {
     TupleField,
+    ForeignFunction,
+    ExternBlock,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
 pub enum RustDeclarationAvailability {
     Complete { row_count: usize },
     Unknown { reason: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
 pub enum RustDeclarationOwner {
     File { stable_file_id: String },
     Symbol { stable_symbol_id: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RustDeclarationText {
     pub text: String,
     pub byte_range: [usize; 2],
@@ -54,6 +60,7 @@ pub struct RustDeclarationText {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RustDeclarationFile {
     pub file_path: String,
     pub stable_file_id: String,
@@ -63,6 +70,7 @@ pub struct RustDeclarationFile {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RustTupleFieldEvidence {
     pub file_path: String,
     pub stable_file_id: String,
@@ -79,6 +87,7 @@ pub struct RustTupleFieldEvidence {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RustDeclarationEvidenceSet {
     pub schema_version: String,
     pub extractor_version: String,
@@ -87,6 +96,8 @@ pub struct RustDeclarationEvidenceSet {
     pub covered_kinds: Vec<RustDeclarationKind>,
     pub sources: Vec<RustDeclarationFile>,
     pub rows: Vec<RustTupleFieldEvidence>,
+    pub foreign_functions: Vec<RustForeignFunctionEvidence>,
+    pub extern_blocks: Vec<RustExternBlockEvidence>,
 }
 
 impl RustDeclarationEvidenceSet {
@@ -135,9 +146,15 @@ pub fn collect_rust_declarations(
         extractor_version: crate::store::EXTRACTOR_VERSION.into(),
         graph_content_hash: graph.graph_content_hash.clone(),
         scope: RustDeclarationScope::SuppliedPhysicalRustFiles,
-        covered_kinds: vec![RustDeclarationKind::TupleField],
+        covered_kinds: vec![
+            RustDeclarationKind::TupleField,
+            RustDeclarationKind::ForeignFunction,
+            RustDeclarationKind::ExternBlock,
+        ],
         sources: Vec::new(),
         rows: Vec::new(),
+        foreign_functions: Vec::new(),
+        extern_blocks: Vec::new(),
     };
     let mut paths = BTreeSet::new();
     let mut ordered = sources.iter().collect::<Vec<_>>();
@@ -175,7 +192,7 @@ pub fn collect_rust_declarations(
         let tree = parser
             .parse(source.bytes, None)
             .context("Rust parser returned no tree")?;
-        let start = set.rows.len();
+        let start = set.rows.len() + set.foreign_functions.len() + set.extern_blocks.len();
         let utf8 = std::str::from_utf8(source.bytes).is_ok();
         if utf8 {
             collect_node(
@@ -186,6 +203,14 @@ pub fn collect_rust_declarations(
                 &oid,
                 &mut set.rows,
             )?;
+            ffi::collect(
+                tree.root_node(),
+                graph,
+                source,
+                &manifest.stable_file_id,
+                &oid,
+                &mut set,
+            )?;
         }
         let availability = if !utf8 || tree.root_node().has_error() {
             RustDeclarationAvailability::Unknown {
@@ -193,7 +218,8 @@ pub fn collect_rust_declarations(
             }
         } else {
             RustDeclarationAvailability::Complete {
-                row_count: set.rows.len() - start,
+                row_count: set.rows.len() + set.foreign_functions.len() + set.extern_blocks.len()
+                    - start,
             }
         };
         set.sources.push(RustDeclarationFile {
