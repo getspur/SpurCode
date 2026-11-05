@@ -219,4 +219,3 @@ ROOT should inspect Beads for that UUID before any idempotent retry through an
 authorized worker context. No successful final persistence or new status
 transition is inferred from the timeout. The later progress call was also
 unacknowledged/interrupted; this does not change the saved runtime outcomes.
-
