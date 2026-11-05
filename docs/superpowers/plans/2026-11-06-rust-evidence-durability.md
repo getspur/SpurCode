@@ -15,7 +15,7 @@ This is prospective implementation, not executed TDD or G3 acceptance. The curre
 
 ## Frozen interface contract
 
-D1 creates `crates/spur-graph/src/rust_evidence.rs`, exports it from `lib.rs`, and uses these exact public names/signatures. The code below specifies fields and signatures; it is not a production prototype. All new stored structs derive `Debug, Clone, PartialEq, Eq, Serialize, Deserialize` and deny unknown fields. Enums serialize in snake_case. Existing collector types retain their current derives/serialization unchanged.
+D1 creates `crates/spur-graph/src/rust_evidence.rs`, exports it from `lib.rs`, and uses these exact public names/signatures, except that the artifact-only capability digest is introduced in D2 after the artifact field exists. The code below specifies fields and signatures; it is not a production prototype. All new stored structs derive `Debug, Clone, PartialEq, Eq, Serialize, Deserialize` and deny unknown fields. Enums serialize in snake_case. Existing collector types retain their current derives/serialization unchanged.
 
 ```rust
 pub const RUST_EVIDENCE_SCHEMA_VERSION: &str = "spur-rust-evidence-v1";
@@ -114,7 +114,7 @@ pub fn rust_evidence_manifest_capability_digest(manifest: &GraphArtifactManifest
     -> anyhow::Result<String>;
 ```
 
-The manifest digest helper and D1's artifact helper encode identical tagged presence/version/manifest/checksum inputs. D5 tests their equality for both None and Some, including zero and Unknown. This is the predecessor API for D6 and D9; it avoids a second, incompatible cache identity encoding.
+The manifest digest helper and D2's artifact helper encode identical tagged presence/version/manifest/checksum inputs. D5 tests their equality for both None and Some, including zero and Unknown. This is the predecessor API for D6 and D9; it avoids a second, incompatible cache identity encoding.
 
 Every table exists with its exact schema even at zero rows. All tables carry identical metadata: graph disk schema, manifest version, aggregate source hash, wrapper/declaration/call schema/extractor, source scope `supplied_physical_rust_files`, evidence checksum and table name. Use UTF-8 strings, nullable UTF-8 where stated and checked nonnegative Int64 for offsets/counts/lengths. Convert usize with checked conversions. JSON columns are strict lossless Serde encodings, not substitute lossy summaries.
 
@@ -185,7 +185,7 @@ All GREEN commands use `scripts/spur-cargo`; remote failure is real. Do not bles
 
 **Files:** Create `crates/spur-graph/src/rust_evidence.rs` and `crates/spur-graph/tests/rust_evidence_contract.rs`; modify `crates/spur-graph/src/lib.rs`. Permit a crate-private identity helper extraction in `panic_evidence/call_sites.rs` only if needed for identical stored identity checks; no public collector semantics/IDs change.
 
-**Scope:** Implement the frozen wrapper/origin/checksum APIs, per-file classification and stored/source validation. No artifact field, builders, Parquet or query changes. Source collectors remain canonical and public as today.
+**Scope:** Implement the frozen wrapper/origin/checksum APIs, per-file classification and stored/source validation. Defer `rust_evidence_capability_digest(artifact)` to D2: D1 has no artifact carrier field to inspect. No artifact field, builders, Parquet or query changes. Source collectors remain canonical and public as today.
 
 **First RED:** New-API compile RED is unavoidable because there is no wrapper surface. This is the complete initial integration test seed; it uses existing graph-building APIs and the exact new D1 APIs.
 
@@ -234,7 +234,7 @@ fn mixed_sources_retain_zero_and_unknown() {
 
 **Task ID:** `D2-rust-artifact-carrier`. **Depends on:** `D1-rust-evidence-contract`. **Suggested Worker:** codex, approved profile/model/effort.
 
-**Files:** Modify `schema.rs`, `store/canonical_hash.rs`, `tests/rust_evidence_contract.rs` under `crates/spur-graph`; allow only the mechanical `rust_evidence: None` addition at all **64 literal sites in the 32 files** enumerated in `grounding/source-map.json`. This includes other crates' tests/fixtures/benches and history constructors. No other cross-crate logic change. This atomic Rust struct field addition is the justified exception to the small file-count guideline.
+**Files:** Modify `schema.rs`, `store/canonical_hash.rs`, `src/rust_evidence.rs` (artifact capability helper only), `tests/rust_evidence_contract.rs` under `crates/spur-graph`; allow only the mechanical `rust_evidence: None` addition at all **64 literal sites in the 32 files** enumerated in `grounding/source-map.json`. This includes other crates' tests/fixtures/benches and history constructors. No other cross-crate logic change. This atomic Rust struct field addition is the justified exception to the small file-count guideline.
 
 **First compiling assertion RED:** Add this test to the D1 integration file before adding the field. Every API below exists by D1; current strict artifact decoding rejects the new member.
 
@@ -255,7 +255,7 @@ fn artifact_accepts_present_empty_and_keeps_legacy_absent() {
 }
 ```
 
-**Implementation/acceptance:** Add the field/convenience validator and canonical hash member. Use a typed decoded envelope when testing hash mutations; compare absent legacy canonical bytes to the existing omission layout without altering its snapshot. Assert absent versus Some(empty) hashes differ; changing availability, original inventory, body/site or FFI payload changes the canonical body hash, while changing only header hash does not. Validate source bindings separately after rehashing a forgery: recomputing a hash does not repair canonical content. Builders still default None until D3. Confirm every inventory literal is accounted for, including history projections; no unrelated refactor.
+**Implementation/acceptance:** Add the field/convenience validator, artifact capability digest helper and canonical hash member. Use a typed decoded envelope when testing hash mutations; compare absent legacy canonical bytes to the existing omission layout without altering its snapshot. Assert absent versus Some(empty) hashes differ; changing availability, original inventory, body/site or FFI payload changes the canonical body hash, while changing only header hash does not. Validate source bindings separately after rehashing a forgery: recomputing a hash does not repair canonical content. Builders still default None until D3. Confirm every inventory literal is accounted for, including history projections; no unrelated refactor.
 
 **GREEN:** `scripts/spur-cargo test -p spur-graph --test rust_evidence_contract`; `scripts/spur-cargo test -p spur-graph store::canonical_hash::tests`; `scripts/spur-cargo check --workspace --all-targets` (mechanical API fallout requires all targets). Run normal crate tests for any unexpected semantic change before continuing.
 
@@ -374,7 +374,7 @@ For each table, test complete zero rows, missing file, `PAR1` truncation, wrong 
 
 **Task ID:** `D6-rust-evidence-publication-cache`. **Depends on:** `D5-rust-evidence-parquet`. **Suggested Worker:** codex, approved profile/model/effort.
 
-**Files:** Modify `crates/spur-graph/src/store/cache.rs` and its existing unit tests only. D1 supplies checksum/capability APIs and D5 supplies manifest metadata. No retention/quota change.
+**Files:** Modify `crates/spur-graph/src/store/cache.rs` and its existing unit tests only. D1 supplies the checksum, D2 supplies the artifact capability API and D5 supplies manifest metadata. No retention/quota change.
 
 **First compiling assertion RED:** Add inside `store/cache.rs`'s unit tests; its private `validate_publication` currently checks macro equality only. Both artifacts are well formed, with identical source and macro evidence, so this is a targeted behavioral failure.
 
@@ -513,7 +513,7 @@ fn overlay_compatibility_includes_rust_evidence_digest() {
 }
 ```
 
-**Implementation/acceptance:** Add `indexed_rust_evidence_digest: String` to `SnapshotBase`, `SnapshotIdentity`, `CachedSnapshot` and `OverlayGenerationCompatibilityKey`. Compute it through D1/D5 identical artifact/manifest helpers in `snapshot_base`; include it in validated-snapshot compatibility, `finish_snapshot`, all exact overlay delta/generation keys and compatibility checks. Explicitly tag the legacy `SnapshotBase::compatibility` constructor's unavailable capability using the same absence encoding; it must not assert supported evidence. Update every constructor/test helper in these three files. Retain existing changed-set/OID/index/head identity and byte-read race checks.
+**Implementation/acceptance:** Add `indexed_rust_evidence_digest: String` to `SnapshotBase`, `SnapshotIdentity`, `CachedSnapshot` and `OverlayGenerationCompatibilityKey`. Compute it through D2/D5 identical artifact/manifest helpers in `snapshot_base`; include it in validated-snapshot compatibility, `finish_snapshot`, all exact overlay delta/generation keys and compatibility checks. Explicitly tag the legacy `SnapshotBase::compatibility` constructor's unavailable capability using the same absence encoding; it must not assert supported evidence. Update every constructor/test helper in these three files. Retain existing changed-set/OID/index/head identity and byte-read race checks.
 
 `ParquetClientCacheKey` already hashes actual manifest bytes, including D5 metadata; do not replace it with mtime/source hash. Extend its current same-mtime test with Rust checksum/availability/schema metadata changes. Cached client keeps its own frozen evidence snapshot; a newly requested client with changed manifest bytes opens a fresh context and validates cold tables. Test exact identity hit, same-source/different-capability invalidation, compatible-generation seed rejection across capability changes, legacy absence versus zero, failed/retried singleflight and deletion/readd generations. Changing evidence versions without file edits must not reuse an old overlay generation. No additional cache capacity or retry count is introduced.
 
