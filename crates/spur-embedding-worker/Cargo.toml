@@ -57,6 +57,7 @@ sha2.workspace = true
 
 [dev-dependencies]
 spur-embedding = { path = "../spur-embedding", features = ["test-support"] }
+serde_json.workspace = true
 
 [target.'cfg(target_os = "macos")'.dev-dependencies]
 fastembed = { version = "=5.8.0", default-features = false, features = ["hf-hub-native-tls", "ort-load-dynamic"] }
