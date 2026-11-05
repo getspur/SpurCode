@@ -64,6 +64,10 @@ Measure cold/warm request latency, throughput and peak RSS for the actual suppor
 
 ## Scope and execution
 
-Cross-crate changes are necessary to remove both existing native loaders and ship the companion executable. Workers are sequentially reviewed through Plan Engine, explicit codex/profilecodex/gpt-6.1-terra/xhigh. User approval covers implementation and local verification; no repeated confirmation is required.
+Cross-crate changes are necessary to remove both existing native loaders and ship the companion executable. Workers are sequentially reviewed through Plan Engine. The user's latest routing on2026-11-05 is explicit codex/profilecodex/gpt-6.1-sol/xhigh, superseding Terra. User approval covers implementation and local verification; no repeated confirmation is required.
 
 Use SPUR_REMOTE=0 TMPDIR=/private/tmp scripts/spur-cargo, one writer to the shared target. Preserve dirty main and all historical evidence. A real new defect is signaled with source/runtime evidence and addressed within the relevant scope; it does not restart the broad upstream ownership audit automatically.
+
+## Current shared-policy implementation entry gate (2026-11-05)
+
+M1 metadata is independently reviewed in [the root packet](../../research/artifacts/2026-11-05-embedding-sol/root-M1-review/README.md). The next `shared-policy` task (`bd-7c53`, plan`dc9cc6fb-d54a-4429-a231-1f7f3425f7fd`) must read [M2's concrete PRE and scope](../../research/artifacts/2026-11-05-embedding-sol/M2-pre/README.md), run its `verify_pre.py` before edits/builds and reload its six current receipts. This gate supplies all14 configurable default values, source/measurement identities and explicit limitations. Replace only configuration/projection; ownership and shutdown remain reviewed behavior. Older PRE records are historical, and the existing JSON remains a supported explicit override.
