@@ -152,6 +152,33 @@ Schema / extractor / resolver versions gate incremental validity (`SCHEMA_VERSIO
 
 ---
 
+## Physical Rust declaration evidence
+
+`collect_rust_declarations(&graph, &sources)` returns the separate
+`spur-rust-declarations-v2` contract. Supply exact physical Rust bytes with
+`RustDeclarationSource`; `validate` recollects the canonical set against those
+bytes and authoritative graph owners. This API does not add persisted tables.
+
+`covered_kinds` lists `TupleField`, `ForeignFunction` and `ExternBlock`.
+The existing `rows: Vec<RustTupleFieldEvidence>` remains tuple-only;
+`foreign_functions` and `extern_blocks` carry typed FFI records. A complete
+source's `row_count` sums all three vectors. Healthy zero-record files are
+retained. Recovered syntax remains `Unknown`, retaining independently healthy
+declarations. V1 archives are historical, and unknown decoded fields are rejected.
+
+FFI records bind physical path/file ID/source OID, graph symbol identity,
+full/core byte and line ranges, and structural/lexical owners. Imported functions
+structurally belong to their exact block; their lexical owner skips the block.
+`RustDeclarationAbiSyntax` preserves `Omitted`, `Explicit { literal }`, or
+`Inherited { extern_block_id }`, plus raw qualifier tokens, visibility and ordered
+owned attributes/doc comments, including raw link spellings. Their body category
+is `AbsentForeignDeclaration`; blocks are `NonExecutableContainer`. Bodyful
+extern definitions and trait methods remain separate from these FFI records.
+
+Coverage concerns supplied source syntax under the locked parser only. It does
+not establish Cargo cfg selection, expansion, resolved ABI/linkage or unwind
+behavior, compiler dispatch, local foreign bodies, or complete panic detection.
+
 ## Stable identity & content hash
 
 These two hashes are the load-bearing walls of the crate.

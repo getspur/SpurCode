@@ -459,6 +459,8 @@ pub(crate) fn rust_config() -> LanguageConfig {
         definition_kind_map: &[
             ("definition.module", NodeKind::Module),
             ("definition.function", NodeKind::Function),
+            ("definition.foreign_function", NodeKind::Function),
+            ("definition.extern_block", NodeKind::ExternBlock),
             ("definition.method", NodeKind::Method),
             ("definition.struct", NodeKind::Struct),
             ("definition.enum", NodeKind::Enum),
@@ -1307,7 +1309,15 @@ pub(crate) fn emit_definitions_with_parents<'tree>(
         let fqn_prefix = receiver_parent
             .and_then(|parent| parent.fqn)
             .or(receiver_scope.as_deref())
-            .or(parent.fqn)
+            .or_else(|| {
+                bindings
+                    .iter()
+                    .rev()
+                    .find(|binding| {
+                        binding.node.kind() != "foreign_mod_item" && contains(binding.node, node)
+                    })
+                    .map(|binding| binding.fqn.as_str())
+            })
             .unwrap_or("");
         let fqn = scoped_name(fqn_prefix, &fqn_segment(kind, &label));
         let node_id =
@@ -1892,6 +1902,11 @@ fn definition_candidates<'tree>(
                     definition_name(kind, capture, source, captures),
                     if capture.name == "definition.tuple_field" {
                         tuple_field_range(capture.node)
+                    } else if matches!(
+                        capture.name.as_str(),
+                        "definition.extern_block" | "definition.foreign_function"
+                    ) {
+                        foreign_declaration_range(capture.node)
                     } else {
                         capture.node.range()
                     },
@@ -1926,6 +1941,31 @@ fn tuple_field_range(node: Node<'_>) -> tree_sitter::Range {
             range.start_point = sibling.start_position();
         }
         previous = sibling.prev_sibling();
+    }
+    range
+}
+
+// Ordinary comments can separate an item's owned metadata. They remain in the
+// full source slice between metadata and syntax, but never extend its start.
+// Any preceding item or inner attribute ends ownership of outer metadata.
+fn foreign_declaration_range(node: Node<'_>) -> tree_sitter::Range {
+    let mut range = node.range();
+    let mut previous = node.prev_named_sibling();
+    while let Some(sibling) = previous {
+        match sibling.kind() {
+            "attribute_item" => {
+                range.start_byte = sibling.start_byte();
+                range.start_point = sibling.start_position();
+            }
+            "line_comment" | "block_comment" => {
+                if sibling.child_by_field_name("outer").is_some() {
+                    range.start_byte = sibling.start_byte();
+                    range.start_point = sibling.start_position();
+                }
+            }
+            _ => break,
+        }
+        previous = sibling.prev_named_sibling();
     }
     range
 }
@@ -1965,6 +2005,7 @@ fn definition_name(
     }
 
     match definition.name.as_str() {
+        "definition.extern_block" => Some("<extern>".to_owned()),
         "definition.tuple_field" => tuple_field_ordinal(definition.node).map(|n| n.to_string()),
         "definition.resource" if is_hcl_provider_block(definition, source, captures) => {
             hcl_provider_address(definition, source, captures)
@@ -2298,10 +2339,9 @@ fn nearest_extracted_parent<'a, 'tree>(
     definitions: &'a [ExtractedDefinitionBinding<'tree>],
     node: Node<'_>,
 ) -> Option<&'a ExtractedDefinitionBinding<'tree>> {
-    definitions
-        .iter()
-        .rev()
-        .find(|definition| contains(definition.node, node))
+    definitions.iter().rev().find(|definition| {
+        definition.node.kind() != "foreign_mod_item" && contains(definition.node, node)
+    })
 }
 
 fn symbol_kind(kind: NodeKind) -> &'static str {

@@ -32,7 +32,11 @@ fn provenance_covers_each_source_and_exact_tuple_syntax() {
     set.validate(&graph, &sources()).unwrap();
     let v = serde_json::to_value(&set).unwrap();
     assert_eq!(v["scope"], "supplied_physical_rust_files");
-    assert_eq!(v["covered_kinds"], serde_json::json!(["tuple_field"]));
+    assert_eq!(v["schema_version"], "spur-rust-declarations-v2");
+    assert_eq!(
+        v["covered_kinds"],
+        serde_json::json!(["tuple_field", "foreign_function", "extern_block"])
+    );
     assert_eq!(v["sources"].as_array().unwrap().len(), 2);
     assert_eq!(v["rows"].as_array().unwrap().len(), 5);
     let zero = v["sources"]
