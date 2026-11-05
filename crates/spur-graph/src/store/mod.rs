@@ -13,8 +13,8 @@ pub mod temporal_shards;
 
 pub use artifact_staging::ArtifactStagingDir;
 pub use build::{
-    artifact_from_facts, artifact_from_facts_incremental, current_manifest_version, BuildMode,
-    EXTRACTOR_VERSION, SCHEMA_VERSION,
+    artifact_from_facts, artifact_from_facts_for_paths, artifact_from_facts_incremental,
+    current_manifest_version, BuildMode, EXTRACTOR_VERSION, SCHEMA_VERSION,
 };
 pub use canonical_hash::artifact_content_hash_blake3_hex;
 pub use lance_sections::{

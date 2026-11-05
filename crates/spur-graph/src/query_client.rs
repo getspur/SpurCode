@@ -39,7 +39,7 @@ use crate::store::parquet::{
 };
 use crate::temporal::{symbol_history_indexed, GitSha, TemporalIndex};
 use crate::{
-    artifact_from_facts, build_facts_for_paths, compare_symbols, find_callee_edges,
+    artifact_from_facts_for_paths, build_facts_for_paths, compare_symbols, find_callee_edges,
     find_caller_edges, internal_unbounded_search_options, limited_search_result,
     read_artifact_header_parquet, resolve_selector, search_symbols, ChangeKind,
     CommitIndexArtifact, GraphArtifactManifest, GraphEdgeArtifact, GraphFileArtifact,
@@ -510,7 +510,7 @@ impl<B: GraphQueryClient> OverlayClient<B> {
         changed_files: &[PathBuf],
     ) -> anyhow::Result<(Arc<GraphIndexArtifact>, HashSet<String>)> {
         let facts = build_facts_for_paths(root, changed_files)?;
-        let artifact = artifact_from_facts(&facts, root)?;
+        let artifact = artifact_from_facts_for_paths(&facts, root, changed_files)?;
         let shadowed = changed_files
             .iter()
             .filter_map(|path| normalize_worktree_path(root, path).ok())

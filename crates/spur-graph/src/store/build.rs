@@ -298,6 +298,24 @@ pub fn artifact_from_facts(
     facts: &GraphFacts,
     worktree_root: &Path,
 ) -> anyhow::Result<GraphIndexArtifact> {
+    artifact_from_facts_in_domain(facts, worktree_root, None)
+}
+
+/// Compose selected facts against exactly the requested current file domain.
+/// Missing paths have no active manifest; deletion transport belongs to deltas.
+pub fn artifact_from_facts_for_paths(
+    facts: &GraphFacts,
+    root: &Path,
+    paths: &[PathBuf],
+) -> anyhow::Result<GraphIndexArtifact> {
+    artifact_from_facts_in_domain(facts, root, Some(paths))
+}
+
+fn artifact_from_facts_in_domain(
+    facts: &GraphFacts,
+    worktree_root: &Path,
+    paths: Option<&[PathBuf]>,
+) -> anyhow::Result<GraphIndexArtifact> {
     let build_started = Instant::now();
     let worktree_root = worktree_root
         .canonicalize()
@@ -311,7 +329,10 @@ pub fn artifact_from_facts(
     );
     let current_entries = {
         let _entered = discover_span.enter();
-        let result = discover_current_entries(&worktree_root);
+        let result = match paths {
+            Some(paths) => discover_selected_entries(&worktree_root, paths),
+            None => discover_current_entries(&worktree_root),
+        };
         match &result {
             Ok(entries) => {
                 discover_span.record("files", entries.len());
@@ -333,6 +354,19 @@ pub fn artifact_from_facts(
         }
         result?
     };
+    // Nodes and edges are already restricted by buckets_from_facts. Restrict
+    // the exact macro carriers too, before composing a selected artifact.
+    let selected_facts = paths.map(|_| {
+        let mut selected = facts.clone();
+        selected
+            .macro_invocations
+            .retain(|row| current_entries.contains_key(&row.file_path));
+        selected
+            .macro_scopes
+            .retain(|scope| current_entries.contains_key(&scope.file_path));
+        selected
+    });
+    let facts = selected_facts.as_ref().unwrap_or(facts);
     let buckets = buckets_from_facts(facts, &worktree_root, &current_entries)?;
     let compose_started = Instant::now();
     let compose_span = tracing::info_span!(
@@ -343,13 +377,14 @@ pub fn artifact_from_facts(
     );
     let artifact = {
         let _entered = compose_span.enter();
-        let artifact = compose_artifact(
+        let mut artifact = compose_artifact(
             buckets,
             &current_entries,
             current_manifest_version(),
             Vec::new(),
         );
         validate_macro_evidence(&artifact, &worktree_root, &facts.macro_scopes)?;
+        attach_rust_evidence(&mut artifact, &worktree_root)?;
         tracing::info!(
             target: "spur_graph::build::compose",
             files = artifact.files.len(),
@@ -950,6 +985,109 @@ fn discover_current_entries(root: &Path) -> anyhow::Result<BTreeMap<String, Curr
     } else {
         discover_fs_entries(root, &allowed_extensions)
     }
+}
+
+fn discover_selected_entries(
+    root: &Path,
+    paths: &[PathBuf],
+) -> anyhow::Result<BTreeMap<String, CurrentFileEntry>> {
+    use std::path::Component;
+
+    let allowed_extensions = all_supported_extensions();
+    let mut entries = BTreeMap::new();
+    for path in paths {
+        // Canonicalize existing absolute inputs first, including root aliases
+        // such as /var -> /private/var. Relative inputs are normalized below.
+        let absolute = if path.is_absolute() {
+            match path.canonicalize() {
+                Ok(path) => path,
+                Err(error) if error.kind() == ErrorKind::NotFound => path.clone(),
+                Err(error) => return Err(error).context("failed to resolve selected path"),
+            }
+        } else {
+            root.join(path)
+        };
+        let relative = absolute
+            .strip_prefix(root)
+            .context("selected path escapes worktree root")?;
+        let mut normalized = PathBuf::new();
+        for component in relative.components() {
+            match component {
+                Component::Normal(part) => normalized.push(part),
+                Component::CurDir => {}
+                Component::ParentDir => {
+                    anyhow::ensure!(normalized.pop(), "selected path escapes worktree root")
+                }
+                _ => anyhow::bail!("selected path is not worktree relative"),
+            }
+        }
+        normalized.to_str().context("selected path is not UTF-8")?;
+        let path = relative_path(root, &root.join(&normalized))?;
+        if path.contains("#cell:")
+            || !is_supported_path(&path, &allowed_extensions)
+            || entries.contains_key(&path)
+        {
+            continue;
+        }
+        let full_path = root.join(&normalized);
+        match full_path.canonicalize() {
+            Ok(resolved) => anyhow::ensure!(
+                resolved.starts_with(root),
+                "selected path escapes worktree root"
+            ),
+            Err(error) if error.kind() == ErrorKind::NotFound => continue,
+            Err(error) => return Err(error).with_context(|| format!("failed to resolve `{path}`")),
+        }
+        // Propagate I/O failures. Only genuinely absent requested paths above
+        // are omitted; a failed read cannot stand for complete-zero evidence.
+        let bytes = fs::read(&full_path).with_context(|| format!("failed to read `{path}`"))?;
+        entries.insert(
+            path.clone(),
+            CurrentFileEntry {
+                path,
+                content_oid: git_blob_oid(&bytes),
+                extractable: true,
+            },
+        );
+    }
+    Ok(entries)
+}
+
+fn attach_rust_evidence(artifact: &mut GraphIndexArtifact, root: &Path) -> anyhow::Result<()> {
+    let mut bytes = Vec::new();
+    for manifest in &artifact.file_manifests {
+        let path = manifest.path.as_str();
+        // Keep the D1 physical-source policy exact. Virtual/external lanes
+        // must never be interpreted as disk paths.
+        if path.starts_with("external://")
+            || path.contains("#cell:")
+            || Path::new(path)
+                .extension()
+                .is_none_or(|extension| extension != "rs")
+        {
+            continue;
+        }
+        anyhow::ensure!(
+            Path::new(path)
+                .components()
+                .all(|c| matches!(c, std::path::Component::Normal(_))),
+            "source is not a physical Rust path"
+        );
+        let source = fs::read(root.join(path))
+            .with_context(|| format!("failed to read Rust evidence source `{path}`"))?;
+        anyhow::ensure!(
+            git_blob_oid(&source) == manifest.content_oid,
+            "Rust evidence source OID mismatch for `{path}` (source changed during build)"
+        );
+        bytes.push((path, source));
+    }
+    let sources = bytes
+        .iter()
+        .map(|(file_path, bytes)| crate::RustDeclarationSource { file_path, bytes })
+        .collect::<Vec<_>>();
+    let evidence = crate::collect_rust_evidence(artifact, &sources)?;
+    artifact.rust_evidence = Some(evidence);
+    Ok(())
 }
 
 fn validate_macro_evidence(
