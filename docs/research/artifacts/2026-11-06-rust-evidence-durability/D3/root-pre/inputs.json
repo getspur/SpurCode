@@ -1,0 +1,2795 @@
+{
+  "kind": "prospective_D3_full_selected_domain_contract_not_runtime",
+  "source_bindings": {
+    "crates/spur-analyst/src/overlay/session_tests.rs": "38972274eaeda4af700d10b77bba21fa489e55ea0440653955e8a962a6388700",
+    "crates/spur-cli/tests/analyst_temporal_views.rs": "f6501ad100645e0ec2563a9bf505d8bb356cd2dcc05c957381cee7812ff0e18c",
+    "crates/spur-core/src/server/handlers/rebuild_singleflight.rs": "af1ff3a90730b04c9362f1e639f7a0963a3c9005b39f572547655eb397eec600",
+    "crates/spur-core/tests/code_graph_e2e.rs": "ad99d81f34cdfa1058764c9b36d8aa96df8bae39f477dc51fb19a98e643f996b",
+    "crates/spur-core/tests/worker_server_dispatch.rs": "15baba4ee3377fca9ac9653f0ba9658fe56eab121e86c8365db129cb812369fb",
+    "crates/spur-graph/benches/incremental.rs": "5a590071b00b5e1cb038a3a9040a40123efb4d2c9ce7c0175d85d6c3278c6e55",
+    "crates/spur-graph/benches/parquet.rs": "cf10cf2d45573bb56c4cf34872edc65f67f7e3b09f63a92cf62487496747d589",
+    "crates/spur-graph/src/extract/mod.rs": "7b384d698237c1bcd6feeb922bd73420de14237608346830c6763bc44aa4f410",
+    "crates/spur-graph/src/git_walk.rs": "63815617c9905c100315cd3331dd2ed481de804d7424d9ce30d062113b36bed7",
+    "crates/spur-graph/src/lib.rs": "07eb899233a4ba47a1bb80d46f37c63f81f6d3d497072c472f6ee7152f9b10b5",
+    "crates/spur-graph/src/macro_invocations.rs": "4b5862c085cfe0b223d1a295f3dec5f1ecb93a8b8fd493a56951844ef177096e",
+    "crates/spur-graph/src/mcp/mod.rs": "b732eb2f801805bf35701175cf83215e08b623034085956b7ff6f7eb91346e24",
+    "crates/spur-graph/src/mcp/overlay_runtime.rs": "40d88fc282a330dc35deaae36160ed5aba1483a783fa33edd8dc96e4cced189c",
+    "crates/spur-graph/src/mcp/overlay_snapshot.rs": "94176d5ac3e86b7f50f6a5c994a2c6e3c0a9218f2210bb5198ef44100a140048",
+    "crates/spur-graph/src/mcp/rebuild_singleflight.rs": "9fc18b007c1b267b5e689fa0f41deb803554d876b6da552c468c2b3de0026c73",
+    "crates/spur-graph/src/mcp/request_cache.rs": "2200e7f287edf9570326d4feda33df939cc00e337b18f92744291c3ee1d5c973",
+    "crates/spur-graph/src/overlay_generation.rs": "6ebcbd923679cc62e15a068ee35a61ccf6705f3c2ea96ccc875d99b3087a5576",
+    "crates/spur-graph/src/panic_evidence/call_sites.rs": "aaa28f4fb38a8ea22560fd0874b31c64b0d59764a01b7767c9b2a66f581c9679",
+    "crates/spur-graph/src/panic_evidence/mod.rs": "799e81423d100a5cfd9a2fad70bcf9b58af167a32a7ecf275dce28eb0cf0bccf",
+    "crates/spur-graph/src/query_client.rs": "dcbc22ae3a571f444692f6eafec59df44037f242384f3bbbb0360025a3ad814b",
+    "crates/spur-graph/src/rust_declarations.rs": "e35c5fbfdfde1cfaf041a83b53b350e15e6537d03fb23ba13c36f358065fef4f",
+    "crates/spur-graph/src/rust_declarations/ffi.rs": "2446206b3a5067b49da48a8d3c442e85856736a3caa03796b3d8f98adee7f184",
+    "crates/spur-graph/src/rust_evidence.rs": "29eed07c9360704a1f886382c9e6a64379048993ec4a0ea5b90953bd5fcf4302",
+    "crates/spur-graph/src/schema.rs": "91e58fec0387548cf996362908aa9186c04acdc9f38f4625fb9872250550b87b",
+    "crates/spur-graph/src/search.rs": "c3a0682801091bee6c3a983d4e30a4a0f7262f31e5b0e20a89095c132c6216d1",
+    "crates/spur-graph/src/selector.rs": "b2556269899a64b90b8f13fd2b63a9ed5d69acbadd56c967cb9e5d427d43944d",
+    "crates/spur-graph/src/store/build.rs": "34ac8faf21e13d47a73c73bd4c469815d40ef80de9d93108346473d57eb0532f",
+    "crates/spur-graph/src/store/cache.rs": "bfca2760f0a6d4316d0ea867118d5ae1f77188fc6aa711d9bd4945c340f7a359",
+    "crates/spur-graph/src/store/canonical_hash.rs": "a9580c05ff5c14d01a7e9675649fffca81c72ad0acf3312b705f36e74cf98c8f",
+    "crates/spur-graph/src/store/lance_sections.rs": "2ded2c6a3951a3b908508b6950cfb7ef7384d674fd2bdd6a19c97f3cf31b20a1",
+    "crates/spur-graph/src/store/macro_invocations.rs": "45163eb560039fcfdc7a9868a9e2e8865f7b0ebc815b6b690fb806cdb0926733",
+    "crates/spur-graph/src/store/mod.rs": "2bca18d9d7ca0228acc588b84fbc3cbb0c77ec7bede69fc124c7ace17471aae3",
+    "crates/spur-graph/src/store/parquet.rs": "1a53f0a3b213b62b6868431f398bf318956d2d2a71ce828ee44526f32afd2e3b",
+    "crates/spur-graph/src/temporal.rs": "d1a6cb80ab135068b037027208db17009d9578e1d4d8b32ca2e8e117eeef3747",
+    "crates/spur-graph/src/traversal.rs": "24b209ef6a4a92eee2928e7b8d478a95ca3a19abeb270690cfb96da3864f21a8",
+    "crates/spur-graph/tests/diagnostics_persist.rs": "5fbf8821f5597f8c6f930fb6691151223723ed2a3bdb701eaf75df61c20346e5",
+    "crates/spur-graph/tests/lance_sections.rs": "3b0894cd82024936cce605f0792d403c0cfe212cd9e1a49b17f88f5a3464a5a5",
+    "crates/spur-graph/tests/load_artifact_dispatch.rs": "2050fa1f7bc1d96af2616ad2491e3678dea68c2f45d114f7ca98cb4021ff052a",
+    "crates/spur-graph/tests/macro_invocation_artifacts.rs": "9e421f203b710831ae98ddb82878f071fca98fa19f0c8b641fc9ce3ab26246b7",
+    "crates/spur-graph/tests/macro_invocation_parquet.rs": "02924cbacddf598e41e8b2f9396f9980ed98c73fb1a8f2b1aed056bee6defa45",
+    "crates/spur-graph/tests/macro_invocation_queries.rs": "37516b4931290383a2674a47fd4fbaec3ca8ffc4e35efeea915d14fd8a153fb3",
+    "crates/spur-graph/tests/overlay_client.rs": "c013659c78598e7e300f1b5fc9acbfaa2296f34e2ad438ac96e97c9d86fbbfff",
+    "crates/spur-graph/tests/panic_call_sites.rs": "7d364c0ffb9b1d337156572569d771917a0b1d8bd86fd777d4436b892122bc6e",
+    "crates/spur-graph/tests/parquet_roundtrip.rs": "5314de56e9d3882dd04271072069e7d582133923246f75698d565248036a961a",
+    "crates/spur-graph/tests/parquet_schema_invariants.rs": "aadaa15430866ec5c96a7fdde748d1dbfc32b52ec2795ff2ec9db8fabb32477b",
+    "crates/spur-graph/tests/query_client_parity.rs": "180c01735c0ff29205d14ae490159efcc1edd953a45e8aef0d8d491d085c5eff",
+    "crates/spur-graph/tests/rust_declaration_evidence.rs": "249345b184703a7475e2fcbcf548f6933c694b3dc4fc93965b6d4e7c4b5dc74f",
+    "crates/spur-graph/tests/rust_evidence_contract.rs": "e5c2c16907cfd7119fa716bf7e2720c9a22a5a957e91f37cd0938a9f99a4cd16",
+    "crates/spur-graph/tests/rust_foreign_evidence.rs": "8b57e3a7fef203e1ca64295c24973f14cd81658a3089a5664312836e2cd17c8d",
+    "crates/spur-graph/tests/temporal_resolution.rs": "f658701405c355b186e26c967879f4b6d886c544292e5cd4d5fd6e1a8f6e243b",
+    "crates/spur-tui/src/mentions/registry.rs": "2a6faefd87a013dfca4073e18674603ddde1f1c367a6d1e8ae39674f420079f2",
+    "crates/spur-utilities/mentions/src/code/source.rs": "c7fe9b0e072b9f6683b422446011782851c4b3bc0f9f8851ec77fd731014ffb0",
+    "docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fixtures/bodies/lib.rs": "3a1e1a7935f312c41ff585bc48b7709a8cbe051164c800d4c47b32e716c4001f",
+    "docs/research/artifacts/2026-11-02-rust-gap-closure-grounding/REPORT.md": "9794ef15ee9c267a3df7552f6bace39a88eda0c8373130ae62824da9f016a8f0",
+    "docs/research/artifacts/2026-11-02-rust-gap-closure-grounding/audits/call-evidence.md": "41fc1fd3f865d696271f988cda06a92052ef4aa0fb201e6a1683dda46d8f1b43",
+    "docs/research/artifacts/2026-11-03-embedding-isolation/S6/replan/root-B-final/project_models.py": "3d99592218a644e733106742f3e7907b29d1c1c1bbda4065fd21d070507c6747",
+    "docs/research/artifacts/2026-11-03-embedding-isolation/S6/replan/root-B-final/verify.py": "561287405e84a1bb369bf15d8d471dd4b95f5af129d2851775cd60975583653d",
+    "docs/research/artifacts/2026-11-05-embedding-sol/root-M1-review/verify.py": "442a8f8415fe31fd24eea8b92ca59bb44a2c1a2cd3ccc3fe47544936af12b040",
+    "docs/research/artifacts/2026-11-05-rust-foreign-resume/ROOT-A-review/solver_oracle.py": "3d60acdfdfb6f9e23ae8b5f1e4aacd62814a38c7da86081f51cec6e2dac1606f",
+    "docs/research/artifacts/2026-11-05-rust-foreign-resume/ROOT-C-review/README.md": "7fb264dff3c6393d4ca530cff9101680526e3581387f9a1c15e421c3bc19cd0b",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/root-pre/inputs.json": "54966ab51b71095d35c6c00d5c7fafd38160afed7aac41540c58e4289d231f77",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D2/ROOT-review/actual-full/empty-and-absent.json": "ba5f9f9905493724f0db3d80f6c048b6475e2a3c11f0f1a55f5b8c2cd5bb3dd5",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D2/ROOT-review/actual-full/populated.json": "6922d9bbb6c5c4d027e5e420ae916eec5b1cdf61004eeb1f5b39a029d72728fd",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D3/root-pre/prepare.py": "2222c86ca80e285f547b693879b0277b9b9b4afeaa3a8d129a9aded371c50a37",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D3/root-pre/verify.py": "e9c6e9b35f6eeb6047ffc3cc6f7c88cc3460cd3e386826113a7382a6bca8ddef",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/grounding/source-map.json": "5773d5bf90c9ade91505f7e2a6b497a501705d0af078d25db4127935df8ce1a3",
+    "docs/superpowers/plans/2026-11-06-rust-evidence-durability-grounding.md": "28ec09c4e051b97d495fc2c138c27c090614f050dc0c1e914c17991b2500abf2",
+    "docs/superpowers/plans/2026-11-06-rust-evidence-durability.md": "54a1ee26782c9b1cedc58643664c81e7a8efbea419acd1243accbd59ae990168"
+  },
+  "fixtures": [
+    {
+      "path": "cfg.rs",
+      "source_oid": "67fa976fcc61c1487bb9255235d79f3e7193f402",
+      "bytes": 48,
+      "sha256": "5d155cbfb4273969357a070db2c0194ce74eae68593892efde19872f98be19e2",
+      "hex": "235b6366672866656174757265203d20227822295d20666e2073656c65637465642829207b206c65616628293b207d0a"
+    },
+    {
+      "path": "empty.rs",
+      "source_oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+      "bytes": 18,
+      "sha256": "15781d4a449a1d9f531b351390c0334365ce5d56b6595b8b8e0fab0bed54974e",
+      "hex": "7075622073747275637420456d7074793b0a"
+    },
+    {
+      "path": "ffi.rs",
+      "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+      "bytes": 41,
+      "sha256": "968d5ca1933948f5b5f0970371d82b957c7a9b605434588e1c85b54a98c1f690",
+      "hex": "756e736166652065787465726e20224322207b2070756220666e20696d706f7274656428293b207d0a"
+    },
+    {
+      "path": "invalid.rs",
+      "source_oid": "29e181ebb88626236ef10f2af5bc94781c8061f1",
+      "bytes": 2,
+      "sha256": "e4688624e5f1ad0629505e6768e3bb36244f2f3e33e751215afa820334a76ed3",
+      "hex": "ff0a"
+    },
+    {
+      "path": "main.rs",
+      "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+      "bytes": 79,
+      "sha256": "19980a2b4dcecc3a0d9fbae209fd3c4aef5707e87ef54a2d3996b3969bad2e49",
+      "hex": "666e206c6561662829207b7d0a666e2072756e2829207b0a202020202f2a612a2f206c65616628293b0a202020206c6574205f66203d207c7c207b202f2a622a2f206c65616628293b207d3b0a7d0a"
+    },
+    {
+      "path": "recovery.rs",
+      "source_oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+      "bytes": 34,
+      "sha256": "f22a443d4c8dd9de8b69a859cb5ef7166dec0c0299b79f52606fdafe34d4befa",
+      "hex": "7075622073747275637420496e74616374287538293b20666e2062726f6b656e280a"
+    }
+  ],
+  "accepted_manual_full_evidence": {
+    "schema_version": "spur-rust-evidence-v1",
+    "extractor_version": "rust-evidence-wrapper-v1",
+    "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+    "origins": [
+      {
+        "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "manifest_version": "bf1ad64f405c4cd5222120dad7b0d5461d0b7d2f52f9aeb0bbe79c07ae61d524",
+        "sources": [
+          {
+            "path": "cfg.rs",
+            "stable_file_id": "158061fc065e1e9f",
+            "content_oid": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+          },
+          {
+            "path": "empty.rs",
+            "stable_file_id": "422e86d2bb46bd55",
+            "content_oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+          },
+          {
+            "path": "ffi.rs",
+            "stable_file_id": "af45236bc7e88e71",
+            "content_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+          },
+          {
+            "path": "invalid.rs",
+            "stable_file_id": "5ff3d02318edfcd9",
+            "content_oid": "29e181ebb88626236ef10f2af5bc94781c8061f1"
+          },
+          {
+            "path": "main.rs",
+            "stable_file_id": "edd2a6d0ff8af948",
+            "content_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+          },
+          {
+            "path": "recovery.rs",
+            "stable_file_id": "a736d84427e56b1c",
+            "content_oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4"
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "file_path": "cfg.rs",
+        "stable_file_id": "158061fc065e1e9f",
+        "source_oid": "67fa976fcc61c1487bb9255235d79f3e7193f402",
+        "byte_length": 48,
+        "origin_graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "cfg.rs",
+              "stable_file_id": "158061fc065e1e9f",
+              "source_oid": "67fa976fcc61c1487bb9255235d79f3e7193f402",
+              "byte_length": 48,
+              "availability": {
+                "complete": {
+                  "row_count": 0
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "unknown": {
+            "reason": "unevaluated_cfg"
+          }
+        }
+      },
+      {
+        "file_path": "empty.rs",
+        "stable_file_id": "422e86d2bb46bd55",
+        "source_oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+        "byte_length": 18,
+        "origin_graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "empty.rs",
+              "stable_file_id": "422e86d2bb46bd55",
+              "source_oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+              "byte_length": 18,
+              "availability": {
+                "complete": {
+                  "row_count": 0
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "complete": {
+            "evidence": {
+              "schema_version": "panic-rust-call-sites-v1",
+              "extractor_version": "rust-direct-call-bodies-v1",
+              "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+              "source_scope": "supplied_physical_rust_files",
+              "sources": [
+                {
+                  "file_path": "empty.rs",
+                  "stable_file_id": "422e86d2bb46bd55",
+                  "source_oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "byte_length": 18,
+                  "body_count": 0,
+                  "site_count": 0
+                }
+              ],
+              "bodies": [],
+              "sites": []
+            }
+          }
+        }
+      },
+      {
+        "file_path": "ffi.rs",
+        "stable_file_id": "af45236bc7e88e71",
+        "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+        "byte_length": 41,
+        "origin_graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "ffi.rs",
+              "stable_file_id": "af45236bc7e88e71",
+              "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+              "byte_length": 41,
+              "availability": {
+                "complete": {
+                  "row_count": 2
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [
+            {
+              "file_path": "ffi.rs",
+              "stable_file_id": "af45236bc7e88e71",
+              "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+              "stable_symbol_id": "39371e327f243b11",
+              "entity_name": "imported",
+              "qualified_name": "imported",
+              "structural_owner": {
+                "symbol": {
+                  "stable_symbol_id": "fb8fcafd86910e52"
+                }
+              },
+              "lexical_owner": {
+                "file": {
+                  "stable_file_id": "af45236bc7e88e71"
+                }
+              },
+              "full_range": [
+                20,
+                38
+              ],
+              "line_range": [
+                1,
+                1
+              ],
+              "core_range": [
+                20,
+                38
+              ],
+              "core_line_range": [
+                1,
+                1
+              ],
+              "qualifiers": [],
+              "visibility": {
+                "text": "pub",
+                "byte_range": [
+                  20,
+                  23
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              },
+              "attributes": [],
+              "abi": {
+                "inherited": {
+                  "extern_block_id": "fb8fcafd86910e52"
+                }
+              },
+              "body": "absent_foreign_declaration"
+            }
+          ],
+          "extern_blocks": [
+            {
+              "file_path": "ffi.rs",
+              "stable_file_id": "af45236bc7e88e71",
+              "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+              "stable_symbol_id": "fb8fcafd86910e52",
+              "entity_name": "<extern>",
+              "qualified_name": "<extern>",
+              "structural_owner": {
+                "file": {
+                  "stable_file_id": "af45236bc7e88e71"
+                }
+              },
+              "lexical_owner": {
+                "file": {
+                  "stable_file_id": "af45236bc7e88e71"
+                }
+              },
+              "full_range": [
+                0,
+                40
+              ],
+              "line_range": [
+                1,
+                1
+              ],
+              "core_range": [
+                0,
+                40
+              ],
+              "core_line_range": [
+                1,
+                1
+              ],
+              "qualifiers": [
+                {
+                  "text": "unsafe",
+                  "byte_range": [
+                    0,
+                    6
+                  ],
+                  "line_range": [
+                    1,
+                    1
+                  ]
+                },
+                {
+                  "text": "extern",
+                  "byte_range": [
+                    7,
+                    13
+                  ],
+                  "line_range": [
+                    1,
+                    1
+                  ]
+                }
+              ],
+              "visibility": null,
+              "attributes": [],
+              "abi": {
+                "explicit": {
+                  "literal": {
+                    "text": "\"C\"",
+                    "byte_range": [
+                      14,
+                      17
+                    ],
+                    "line_range": [
+                      1,
+                      1
+                    ]
+                  }
+                }
+              },
+              "body": "non_executable_container"
+            }
+          ]
+        },
+        "calls": {
+          "complete": {
+            "evidence": {
+              "schema_version": "panic-rust-call-sites-v1",
+              "extractor_version": "rust-direct-call-bodies-v1",
+              "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+              "source_scope": "supplied_physical_rust_files",
+              "sources": [
+                {
+                  "file_path": "ffi.rs",
+                  "stable_file_id": "af45236bc7e88e71",
+                  "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                  "byte_length": 41,
+                  "body_count": 0,
+                  "site_count": 0
+                }
+              ],
+              "bodies": [],
+              "sites": []
+            }
+          }
+        }
+      },
+      {
+        "file_path": "invalid.rs",
+        "stable_file_id": "5ff3d02318edfcd9",
+        "source_oid": "29e181ebb88626236ef10f2af5bc94781c8061f1",
+        "byte_length": 2,
+        "origin_graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "invalid.rs",
+              "stable_file_id": "5ff3d02318edfcd9",
+              "source_oid": "29e181ebb88626236ef10f2af5bc94781c8061f1",
+              "byte_length": 2,
+              "availability": {
+                "unknown": {
+                  "reason": "invalid UTF-8 or recovered Rust syntax"
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "unknown": {
+            "reason": "invalid_utf8"
+          }
+        }
+      },
+      {
+        "file_path": "main.rs",
+        "stable_file_id": "edd2a6d0ff8af948",
+        "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+        "byte_length": 79,
+        "origin_graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "main.rs",
+              "stable_file_id": "edd2a6d0ff8af948",
+              "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+              "byte_length": 79,
+              "availability": {
+                "complete": {
+                  "row_count": 0
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "complete": {
+            "evidence": {
+              "schema_version": "panic-rust-call-sites-v1",
+              "extractor_version": "rust-direct-call-bodies-v1",
+              "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+              "source_scope": "supplied_physical_rust_files",
+              "sources": [
+                {
+                  "file_path": "main.rs",
+                  "stable_file_id": "edd2a6d0ff8af948",
+                  "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "byte_length": 79,
+                  "body_count": 3,
+                  "site_count": 2
+                }
+              ],
+              "bodies": [
+                {
+                  "body_id": "3b03d9409e0e7b8dbba1f969e2e7da3904c1581f59530dfdd20ad41fae6f5b06",
+                  "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "file_path": "main.rs",
+                  "byte_range": [
+                    10,
+                    12
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "6d423c9d0477f3ac"
+                },
+                {
+                  "body_id": "973eb8714e82cc2ae186a1decf83ddd15546bcb21ee80093c72bfa73dd239789",
+                  "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "file_path": "main.rs",
+                  "byte_range": [
+                    22,
+                    78
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "d38193a5247e1d5b"
+                },
+                {
+                  "body_id": "b229bf9bbd0bc2b7a87772cc4142737b2fd2840de0d7c0c64f14ae4557d19104",
+                  "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "file_path": "main.rs",
+                  "byte_range": [
+                    58,
+                    75
+                  ],
+                  "kind": "closure",
+                  "definition_stable_symbol_id": null
+                }
+              ],
+              "sites": [
+                {
+                  "site_id": "0fdc4950164b50885ac7cda2d3542439b0e6d508dc0e9f4f974890ce990ad2e4",
+                  "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "file_path": "main.rs",
+                  "byte_range": [
+                    34,
+                    40
+                  ],
+                  "call_text": "leaf()",
+                  "body_id": "973eb8714e82cc2ae186a1decf83ddd15546bcb21ee80093c72bfa73dd239789"
+                },
+                {
+                  "site_id": "04c4701432db0c5c7483ee1577c1c8c25638653a9ff2557c1927b72424788810",
+                  "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "file_path": "main.rs",
+                  "byte_range": [
+                    66,
+                    72
+                  ],
+                  "call_text": "leaf()",
+                  "body_id": "b229bf9bbd0bc2b7a87772cc4142737b2fd2840de0d7c0c64f14ae4557d19104"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "file_path": "recovery.rs",
+        "stable_file_id": "a736d84427e56b1c",
+        "source_oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+        "byte_length": 34,
+        "origin_graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "617e11b1c6847d68e8b9813ac3ba9c36056e6aa65f3a46ebb4846e649e3af771",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "recovery.rs",
+              "stable_file_id": "a736d84427e56b1c",
+              "source_oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+              "byte_length": 34,
+              "availability": {
+                "unknown": {
+                  "reason": "invalid UTF-8 or recovered Rust syntax"
+                }
+              }
+            }
+          ],
+          "rows": [
+            {
+              "file_path": "recovery.rs",
+              "stable_file_id": "a736d84427e56b1c",
+              "source_oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+              "stable_symbol_id": "a7841475684f2fdf",
+              "structural_owner": {
+                "symbol": {
+                  "stable_symbol_id": "622716e7ce2fdd8f"
+                }
+              },
+              "lexical_owner": {
+                "symbol": {
+                  "stable_symbol_id": "622716e7ce2fdd8f"
+                }
+              },
+              "ordinal": 0,
+              "full_range": [
+                18,
+                20
+              ],
+              "type_range": [
+                18,
+                20
+              ],
+              "line_range": [
+                1,
+                1
+              ],
+              "visibility": null,
+              "attributes": []
+            }
+          ],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "unknown": {
+            "reason": "parse_recovery"
+          }
+        }
+      }
+    ]
+  },
+  "captured_empty_set": {
+    "schema_version": "spur-rust-evidence-v1",
+    "extractor_version": "rust-evidence-wrapper-v1",
+    "graph_content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+    "origins": [],
+    "files": []
+  },
+  "domain_contracts": {
+    "full": [
+      {
+        "key": "full:cfg.rs",
+        "path": "cfg.rs",
+        "oid": "67fa976fcc61c1487bb9255235d79f3e7193f402",
+        "snapshot": "full_fresh_inventory",
+        "declarations": "complete:0",
+        "calls": "unknown:unevaluated_cfg"
+      },
+      {
+        "key": "full:empty.rs",
+        "path": "empty.rs",
+        "oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+        "snapshot": "full_fresh_inventory",
+        "declarations": "complete:0",
+        "calls": "complete:bodies0,sites0"
+      },
+      {
+        "key": "full:ffi.rs",
+        "path": "ffi.rs",
+        "oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+        "snapshot": "full_fresh_inventory",
+        "declarations": "complete:2",
+        "calls": "complete:bodies0,sites0"
+      },
+      {
+        "key": "full:invalid.rs",
+        "path": "invalid.rs",
+        "oid": "29e181ebb88626236ef10f2af5bc94781c8061f1",
+        "snapshot": "full_fresh_inventory",
+        "declarations": "unknown:rows0",
+        "calls": "unknown:invalid_utf8"
+      },
+      {
+        "key": "full:main.rs",
+        "path": "main.rs",
+        "oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+        "snapshot": "full_fresh_inventory",
+        "declarations": "complete:0",
+        "calls": "complete:bodies3,sites2"
+      },
+      {
+        "key": "full:recovery.rs",
+        "path": "recovery.rs",
+        "oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+        "snapshot": "full_fresh_inventory",
+        "declarations": "unknown:rows1",
+        "calls": "unknown:parse_recovery"
+      }
+    ],
+    "selected": [
+      {
+        "key": "selected:empty.rs",
+        "path": "empty.rs",
+        "oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+        "snapshot": "selected_fresh_inventory",
+        "declarations": "complete:0",
+        "calls": "complete:bodies0,sites0"
+      },
+      {
+        "key": "selected:main.rs",
+        "path": "main.rs",
+        "oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+        "snapshot": "selected_fresh_inventory",
+        "declarations": "complete:0",
+        "calls": "complete:bodies3,sites2"
+      },
+      {
+        "key": "domain_contract",
+        "path": "@domain",
+        "oid": "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0",
+        "snapshot": "selected_and_empty_domain_contract",
+        "declarations": "empty_workspace:Some_files0_origins0",
+        "calls": "missing_requested_path:no_active_source_row"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "full_first_half",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:cfg.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:unevaluated_cfg"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:ffi.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:2"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "full:cfg.rs",
+                  "cfg.rs",
+                  "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "unknown:unevaluated_cfg"
+                ],
+                [
+                  "full:empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies0,sites0"
+                ],
+                [
+                  "full:ffi.rs",
+                  "ffi.rs",
+                  "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                  "full_fresh_inventory",
+                  "complete:2",
+                  "complete:bodies0,sites0"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "full_second_half",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:invalid.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "invalid.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "29e181ebb88626236ef10f2af5bc94781c8061f1"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "unknown:rows0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:invalid_utf8"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies3,sites2"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:recovery.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "recovery.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "unknown:rows1"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:parse_recovery"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "full:invalid.rs",
+                  "invalid.rs",
+                  "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                  "full_fresh_inventory",
+                  "unknown:rows0",
+                  "unknown:invalid_utf8"
+                ],
+                [
+                  "full:main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies3,sites2"
+                ],
+                [
+                  "full:recovery.rs",
+                  "recovery.rs",
+                  "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                  "full_fresh_inventory",
+                  "unknown:rows1",
+                  "unknown:parse_recovery"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "selected_and_empty_contract",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies3,sites2"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "domain_contract"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "@domain"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_and_empty_domain_contract"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "empty_workspace:Some_files0_origins0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "missing_requested_path:no_active_source_row"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "selected:empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "selected_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies0,sites0"
+                ],
+                [
+                  "selected:main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "selected_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies3,sites2"
+                ],
+                [
+                  "domain_contract",
+                  "@domain",
+                  "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0",
+                  "selected_and_empty_domain_contract",
+                  "empty_workspace:Some_files0_origins0",
+                  "missing_requested_path:no_active_source_row"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "healthy_zero_removed",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:cfg.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:unevaluated_cfg"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:ffi.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:2"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "full:cfg.rs",
+                  "cfg.rs",
+                  "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "unknown:unevaluated_cfg"
+                ],
+                [
+                  "full:empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies0,sites0"
+                ],
+                [
+                  "full:ffi.rs",
+                  "ffi.rs",
+                  "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                  "full_fresh_inventory",
+                  "complete:2",
+                  "complete:bodies0,sites0"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "unknown_fabricated_zero",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:invalid.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "invalid.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "29e181ebb88626236ef10f2af5bc94781c8061f1"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "unknown:rows0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies3,sites2"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:recovery.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "recovery.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "unknown:rows1"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:parse_recovery"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "full:invalid.rs",
+                  "invalid.rs",
+                  "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                  "full_fresh_inventory",
+                  "unknown:rows0",
+                  "unknown:invalid_utf8"
+                ],
+                [
+                  "full:main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies3,sites2"
+                ],
+                [
+                  "full:recovery.rs",
+                  "recovery.rs",
+                  "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                  "full_fresh_inventory",
+                  "unknown:rows1",
+                  "unknown:parse_recovery"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "unselected_source_leaked",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies3,sites2"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "domain_contract"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "@domain"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_and_empty_domain_contract"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "empty_workspace:Some_files0_origins0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "missing_requested_path:no_active_source_row"
+                    }
+                  }
+                },
+                "3": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:ffi.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:2"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "selected:empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "selected_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies0,sites0"
+                ],
+                [
+                  "selected:main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "selected_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies3,sites2"
+                ],
+                [
+                  "domain_contract",
+                  "@domain",
+                  "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0",
+                  "selected_and_empty_domain_contract",
+                  "empty_workspace:Some_files0_origins0",
+                  "missing_requested_path:no_active_source_row"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "selected_bound_to_full_inventory",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies0,sites0"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "selected:main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies3,sites2"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "domain_contract"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "@domain"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "selected_and_empty_domain_contract"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "empty_workspace:Some_files0_origins0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "missing_requested_path:no_active_source_row"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "selected:empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "selected_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies0,sites0"
+                ],
+                [
+                  "selected:main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "selected_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies3,sites2"
+                ],
+                [
+                  "domain_contract",
+                  "@domain",
+                  "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0",
+                  "selected_and_empty_domain_contract",
+                  "empty_workspace:Some_files0_origins0",
+                  "missing_requested_path:no_active_source_row"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "read_bytes_oid_mismatch",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "capture": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "full:cfg.rs",
+                    "full:empty.rs",
+                    "full:ffi.rs",
+                    "full:invalid.rs",
+                    "full:main.rs",
+                    "full:recovery.rs",
+                    "selected:empty.rs",
+                    "selected:main.rs",
+                    "domain_contract",
+                    "selected:ffi.rs"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "cfg.rs",
+                    "empty.rs",
+                    "ffi.rs",
+                    "invalid.rs",
+                    "main.rs",
+                    "recovery.rs",
+                    "@domain"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "d84a71c5e5459cc8250f962decce69375a51ff7a2edf76d33387275b65e3ccd0"
+                  ]
+                },
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "full_fresh_inventory",
+                    "selected_fresh_inventory",
+                    "selected_and_empty_domain_contract"
+                  ]
+                },
+                "declarations": {
+                  "kind": "enum",
+                  "values": [
+                    "complete:0",
+                    "complete:2",
+                    "unknown:rows0",
+                    "unknown:rows1",
+                    "empty_workspace:Some_files0_origins0"
+                  ]
+                },
+                "calls": {
+                  "kind": "enum",
+                  "values": [
+                    "unknown:unevaluated_cfg",
+                    "complete:bodies0,sites0",
+                    "unknown:invalid_utf8",
+                    "complete:bodies3,sites2",
+                    "unknown:parse_recovery",
+                    "missing_requested_path:no_active_source_row"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:invalid.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "invalid.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "29e181ebb88626236ef10f2af5bc94781c8061f1"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "unknown:rows0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:invalid_utf8"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "complete:0"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "complete:bodies3,sites2"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "full:recovery.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "recovery.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4"
+                    },
+                    "snapshot": {
+                      "present": true,
+                      "value": "full_fresh_inventory"
+                    },
+                    "declarations": {
+                      "present": true,
+                      "value": "unknown:rows1"
+                    },
+                    "calls": {
+                      "present": true,
+                      "value": "unknown:parse_recovery"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "capture",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "capture",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_capture": {
+              "relation": "capture",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "snapshot",
+                "declarations",
+                "calls"
+              ],
+              "allowed": [
+                [
+                  "full:invalid.rs",
+                  "invalid.rs",
+                  "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                  "full_fresh_inventory",
+                  "unknown:rows0",
+                  "unknown:invalid_utf8"
+                ],
+                [
+                  "full:main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "full_fresh_inventory",
+                  "complete:0",
+                  "complete:bodies3,sites2"
+                ],
+                [
+                  "full:recovery.rs",
+                  "recovery.rs",
+                  "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                  "full_fresh_inventory",
+                  "unknown:rows1",
+                  "unknown:parse_recovery"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_capture"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    }
+  ],
+  "fingerprint": "9ea37e195982bf582303ffdb83eb1fbeaba44dd69f4ed8483b4bfe39ca8d6ae8"
+}
