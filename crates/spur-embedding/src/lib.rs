@@ -5,3 +5,5 @@ mod client;
 pub use client::{Cancellation, CleanupOwner, ClientError, ClientPolicy, EmbeddingClient};
 mod policy;
 pub use policy::{HelperConfig, LocalPolicy, PolicyError};
+mod discovery;
+pub use discovery::{DiscoveryError, HelperCommand, LocalHelper};
