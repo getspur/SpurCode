@@ -2128,11 +2128,16 @@ impl EmbeddingModelHandle {
     pub fn embed<T: AsRef<str>>(
         &mut self,
         texts: &[T],
-        _batch_size: Option<usize>,
+        batch_size: Option<usize>,
     ) -> Result<Vec<Vec<f32>>> {
         let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
         self.client
-            .embed(texts, checked_deadline(self.request_timeout)?)
+            .embed_batched_cancellable(
+                texts,
+                batch_size,
+                checked_deadline(self.request_timeout)?,
+                Cancellation::new(),
+            )
             .context("supervised embedding request")
     }
 
@@ -2145,7 +2150,7 @@ impl EmbeddingModelHandle {
     ) -> Result<Vec<Vec<f32>>> {
         let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
         self.client
-            .embed_cancellable(texts, deadline, cancel)
+            .embed_batched_cancellable(texts, None, deadline, cancel)
             .context("supervised embedding request")
     }
 }
@@ -4019,6 +4024,9 @@ mod tests {
             }
         }
     }
+
+    #[cfg(all(feature = "embed", feature = "test-support"))]
+    include!("lance_sections_batch_tests.rs");
 
     fn env_lock() -> MutexGuard<'static, ()> {
         ENV_LOCK.lock().expect("env lock")

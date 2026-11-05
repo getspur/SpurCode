@@ -30,6 +30,8 @@ pub struct ClientPolicy {
 
 #[derive(Debug, Error)]
 pub enum ClientError {
+    #[error(transparent)]
+    Batch(#[from] crate::BatchError),
     #[error("invalid policy: {0}")]
     InvalidPolicy(String),
     #[error("deadline exceeded")]
@@ -909,6 +911,59 @@ impl EmbeddingClient {
         deadline: Instant,
     ) -> Result<Vec<Vec<f32>>, ClientError> {
         self.embed_cancellable(texts, deadline, Cancellation::new())
+    }
+    /// Embed a logical input in bounded frames, returning all ordered rows or an error.
+    /// Admission, startup and every chunk share one effective request deadline.
+    pub fn embed_batched_cancellable(
+        &self,
+        texts: Vec<String>,
+        batch_size: Option<usize>,
+        caller_deadline: Instant,
+        cancel: Cancellation,
+    ) -> Result<Vec<Vec<f32>>, ClientError> {
+        let deadline = Self::effective(caller_deadline, self.policy.request_timeout)?;
+        let chunks = crate::plan_batches(&texts, &self.identity, &self.limits, batch_size)?;
+        let _active = self.acquire(deadline, &cancel, false)?;
+        let mut state = self.state.lock().unwrap();
+        let mut rows = Vec::new();
+        for chunk in chunks {
+            self.check_batch(deadline, &cancel)?;
+            if state.worker.is_none() {
+                self.start(&mut state, deadline, &cancel)?;
+            }
+            match self.exchange(
+                &mut state.worker,
+                Request::Embed {
+                    identity: self.identity.clone(),
+                    texts: texts[chunk].to_vec(),
+                },
+                deadline,
+                &cancel,
+            )? {
+                Reply::Embeddings {
+                    rows: chunk_rows, ..
+                } => rows.extend(chunk_rows),
+                Reply::Error { code, message } => {
+                    return Err(ClientError::Remote { code, message })
+                }
+                _ => return Err(ClientError::Transport("unexpected reply".into())),
+            }
+        }
+        self.check_batch(deadline, &cancel)?;
+        Ok(rows)
+    }
+    fn check_batch(&self, deadline: Instant, cancel: &Cancellation) -> Result<(), ClientError> {
+        let gate = self.wake.gate.lock().unwrap();
+        if gate.closed {
+            return Err(ClientError::Closed);
+        }
+        if cancel.cancelled() {
+            return Err(ClientError::Cancelled);
+        }
+        if Instant::now() >= deadline {
+            return Err(ClientError::Timeout);
+        }
+        Ok(())
     }
     pub fn embed_cancellable(
         &self,
