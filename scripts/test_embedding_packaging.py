@@ -54,10 +54,43 @@ class WrapperPackaging(unittest.TestCase):
                          [["build", "-p", "spur-cost"]])
 
     def test_source_install_places_both_binaries_under_requested_root(self):
+        for name in ["spur-cli", "spur-embedding-worker"]:
+            (self.root / "crates" / name).mkdir(parents=True, exist_ok=True)
         commands = self.run_wrapper("install", "--path", "crates/spur-cli", "--root", "private install ü", "--bin", "spur", "--locked")
         self.assertEqual(commands[-1], ["install", "--path", "crates/spur-cli", "--root", "private install ü", "--bin", "spur", "--locked"])
-        self.assertTrue(any("crates/spur-embedding-worker" in c and "private install ü" in c
-                            and "spur-embedding-worker" in c for c in commands[:-1]), commands)
+        self.assertTrue(any("--path" in c and
+                            (self.root / c[c.index("--path") + 1]).resolve() == self.root / "crates/spur-embedding-worker"
+                            and "private install ü" in c and "spur-embedding-worker" in c
+                            for c in commands[:-1]), commands)
+
+    def test_install_path_role_uses_actual_cli_directory(self):
+        for name in ["spur-cli", "spur-embedding-worker", "not-spur-cli", "spur-cost"]:
+            directory = self.root / "crates" / name
+            directory.mkdir(parents=True, exist_ok=True)
+            (directory / "Cargo.toml").write_text('[package]\nname="' + ("spur-cost" if name == "not-spur-cli" else name) + '"\nversion="1.0.0"\n')
+        for workdir, path_args, paired in [
+            (self.root, ("--path", "crates/spur-cli/"), True),
+            (self.root, ("--path", "crates/spur-cli/."), True),
+            (self.root, ("--path=crates/spur-cli/",), True),
+            (self.root / "crates/spur-cli", ("--path", "./"), True),
+            (self.root, ("--path", "crates/not-spur-cli"), False),
+            (self.root, ("--path", "crates/spur-cost/"), False),
+        ]:
+            with self.subTest(workdir=workdir, path_args=path_args):
+                self.log.unlink(missing_ok=True)
+                args = ["install", *path_args, "--root", "private install ü", "--bin", "spur" if paired else "spur-cost", "--locked"]
+                commands = self.run_wrapper("--workdir", str(workdir), *args)
+                self.assertEqual(commands[-1], args)
+                helpers = commands[:-1]
+                if paired:
+                    self.assertTrue(helpers, commands)
+                    helper = helpers[0]
+                    index = helper.index("--path") if "--path" in helper else None
+                    helper_path = helper[index + 1] if index is not None else next(a.split("=", 1)[1] for a in helper if a.startswith("--path="))
+                    self.assertEqual((workdir / helper_path).resolve(), self.root / "crates/spur-embedding-worker")
+                    self.assertIn("private install ü", helper)
+                else:
+                    self.assertEqual(commands, [args])
 
 
 class ReleasePackaging(unittest.TestCase):
