@@ -1,5 +1,11 @@
 # Sol implementation continuation
 
+## Current status: runtime approved and merged locally
+
+All six tasks in plan dc9cc6fb-d54a-4429-a231-1f7f3425f7fd are ROOT-approved. The scoped [runtime/Rust notebook review](../2026-11-05-embedding-runtime-acceptance/ROOT-review/README.md) includes 13 fresh persisted/reloaded POST receipts and 52 independent predicates. Local main merge 191bf8505e2324e1c76f41643b876f1eb3d0c661 preserves the five pre-existing dirty files; no push occurred. The automatic checksum-manifest conflict was resolved manually by retaining the verified cumulative tree and partial integration history, as recorded in ROOT-integration. The tool's old automatic-conflict projection was not rewritten.
+
+The test-only reference shutdown risk (bd-1rpe), nullable vector reader interoperability (bd-31du) and eight historical native failures remain explicit. Resume G2 on freshly grounded merged source, then G3–G5; those graph objectives are incomplete. The entries below preserve the earlier handoff history.
+
 ## Latest M6 observations awaiting ROOT review
 
 Canonical `runtime-rust-notebook` / `bd-1pvg` verified the live dispatch after all five predecessors were approved, then successfully persisted/replayed its fresh INTENT. [M6 runtime evidence](../2026-11-05-embedding-runtime-acceptance/README.md) now contains actual three-model normal artifact observations, real child/protocol/publication failures, full graph target/doctest and CLI/analyst results, measurements/control limitations, and a **new MCP notebook with executed Rust cells**. The eight historical direct-native aborts remain failures; the original failed-cache control abort and PyArrow reader limitation remain separate risks.
