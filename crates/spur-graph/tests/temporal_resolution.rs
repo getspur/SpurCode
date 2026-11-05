@@ -312,6 +312,7 @@ fn cyclic_rename_artifact() -> (GraphIndexArtifact, CommitIndexArtifact) {
     let new = snapshot("new", "c2", "new");
 
     let graph = GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.into(),

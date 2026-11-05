@@ -2684,6 +2684,7 @@ fn rebuild_from_buckets(
         ))
     });
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: Some(crate::MacroInvocationEvidenceSet {
             schema_version: crate::MACRO_INVOCATION_SCHEMA_VERSION.into(),
             extractor_version: EXTRACTOR_VERSION.into(),
@@ -3276,6 +3277,7 @@ mod tests {
     #[test]
     fn buckets_from_artifact_rebuckets_edges_by_file_or_symbol_source() {
         let artifact = GraphIndexArtifact {
+            rust_evidence: None,
             macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),

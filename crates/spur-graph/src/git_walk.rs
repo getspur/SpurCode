@@ -1345,6 +1345,7 @@ fn file_change_to_temporal_edge(commit_sha: &str, change: &FileChange) -> Tempor
 
 fn empty_graph_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),

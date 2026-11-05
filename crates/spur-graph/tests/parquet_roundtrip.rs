@@ -461,6 +461,7 @@ fn fixture_artifact_with_unsorted_resolved_edges() -> GraphIndexArtifact {
 
 fn fixture_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),

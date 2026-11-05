@@ -277,6 +277,7 @@ fn assert_fixture_has_file_source_contains_edge(artifact: &GraphIndexArtifact) {
 
 fn fixture_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "spur-graph-phase2".to_owned(),

@@ -570,6 +570,7 @@ fn search_pruning_benchmark_artifact() -> GraphIndexArtifact {
         .collect();
 
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "bench".to_owned(),
@@ -617,6 +618,7 @@ fn traversal_benchmark_artifact() -> GraphIndexArtifact {
     }
 
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "bench".to_owned(),
@@ -783,6 +785,7 @@ fn search_benchmark_query(artifact: &GraphIndexArtifact) -> String {
 
 fn symbol_search_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndexArtifact {
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: artifact.header.clone(),
         manifest_version: artifact.manifest_version.clone(),
@@ -803,6 +806,7 @@ fn symbol_search_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndex
 
 fn current_query_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndexArtifact {
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: artifact.header.clone(),
         manifest_version: artifact.manifest_version.clone(),

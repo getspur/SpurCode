@@ -8,6 +8,21 @@ use spur_graph::{
     RustEvidenceUnknownReason,
 };
 
+#[test]
+fn artifact_accepts_present_empty_and_keeps_legacy_absent() {
+    let root = tempfile::tempdir().unwrap();
+    let graph =
+        artifact_from_facts(&build_facts(root.path(), None).unwrap().0, root.path()).unwrap();
+    let set = collect_rust_evidence(&graph, &[]).unwrap();
+    let mut value = serde_json::to_value(&graph).unwrap();
+    value["rust_evidence"] = serde_json::to_value(&set).unwrap();
+    let decoded = serde_json::from_value::<GraphIndexArtifact>(value);
+    assert!(decoded.is_ok(), "present evidence must decode: {decoded:?}");
+    let mut legacy = serde_json::to_value(&graph).unwrap();
+    legacy.as_object_mut().unwrap().remove("rust_evidence");
+    assert!(serde_json::from_value::<GraphIndexArtifact>(legacy).is_ok());
+}
+
 fn graph(inputs: &[(String, Vec<u8>)]) -> GraphIndexArtifact {
     let root = tempfile::tempdir().unwrap();
     for (path, bytes) in inputs {
@@ -710,4 +725,346 @@ fn rehashing_cannot_authenticate_forged_sources_or_graph_owners() {
         "rehashed-forgeries.json",
         &json!({"source_collector_error":source_error,"owner_graph":graph,"owner_set":set,"owner_stored_error":null,"owner_source_error":owner_error}),
     );
+}
+
+// The order below is the independent pre-D2 body layout. Keep the frozen
+// canonical snapshot as the second guard; do not derive this from artifact JSON
+// (which has a different field order and omits empty history/diagnostic arrays).
+fn d2_body_bytes(graph: &GraphIndexArtifact) -> Vec<u8> {
+    #[derive(serde::Serialize)]
+    struct LegacyBody<'a> {
+        files: &'a [spur_graph::GraphFileArtifact],
+        symbols: &'a [spur_graph::GraphSymbolArtifact],
+        edges: &'a [spur_graph::GraphEdgeArtifact],
+        file_manifests: &'a [spur_graph::GraphFileManifestEntry],
+        graph_content_hash: &'a str,
+        manifest_version: &'a str,
+        tombstones: &'a [spur_graph::GraphTombstoneEntry],
+        commits: &'a [spur_graph::CommitArtifact],
+        symbol_snapshots: &'a [spur_graph::SymbolSnapshotArtifact],
+        temporal_edges: &'a [spur_graph::TemporalEdgeArtifact],
+        diagnostics: &'a [String],
+        #[serde(skip_serializing_if = "Option::is_none")]
+        macro_invocations: Option<&'a spur_graph::MacroInvocationEvidenceSet>,
+    }
+    let mut bytes = serde_json::to_vec(&LegacyBody {
+        files: &graph.files,
+        symbols: &graph.symbols,
+        edges: &graph.edges,
+        file_manifests: &graph.file_manifests,
+        graph_content_hash: &graph.graph_content_hash,
+        manifest_version: &graph.manifest_version,
+        tombstones: &graph.tombstones,
+        commits: &graph.commits,
+        symbol_snapshots: &graph.symbol_snapshots,
+        temporal_edges: &graph.temporal_edges,
+        diagnostics: &graph.diagnostics,
+        macro_invocations: graph.macro_invocations.as_ref(),
+    })
+    .unwrap();
+    if let Some(set) = &graph.rust_evidence {
+        assert_eq!(bytes.pop(), Some(b'}'));
+        bytes.extend_from_slice(b",\"rust_evidence\":");
+        bytes.extend_from_slice(&serde_json::to_vec(set).unwrap());
+        bytes.push(b'}');
+    }
+    bytes
+}
+
+fn d2_export(name: &str, value: &Value) {
+    if let Ok(dir) = std::env::var("D2_EXPORT_DIR") {
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(
+            std::path::Path::new(&dir).join(name),
+            serde_json::to_vec_pretty(value).unwrap(),
+        )
+        .unwrap();
+    }
+}
+
+fn d2_observe(graph: &GraphIndexArtifact, inputs: &[(String, Vec<u8>)]) -> Value {
+    let body = d2_body_bytes(graph);
+    let hash = spur_graph::artifact_content_hash_blake3_hex(graph).unwrap();
+    assert_eq!(hash, blake3::hash(&body).to_hex().to_string());
+    json!({"artifact":graph,"canonical_body_utf8":String::from_utf8(body).unwrap(),
+        "canonical_hash":hash,
+        "envelope_checksum":graph.rust_evidence.as_ref().map(|s|rust_evidence_checksum_blake3_hex(s).unwrap()),
+        "capability_digest":spur_graph::rust_evidence_capability_digest(graph).unwrap(),
+        "source_error":graph.validate_rust_evidence_sources(&sources(inputs)).err().map(|e|format!("{e:#}"))})
+}
+
+#[test]
+fn d2_absence_empty_legacy_bytes_and_capability_encoding() {
+    let mut absent = graph(&[]);
+    assert!(
+        absent.rust_evidence.is_none(),
+        "builders remain unavailable until D3"
+    );
+    assert!(serde_json::to_value(&absent)
+        .unwrap()
+        .get("rust_evidence")
+        .is_none());
+    let error = absent
+        .validate_rust_evidence_sources(&[])
+        .unwrap_err()
+        .to_string();
+    assert!(
+        error.contains("unavailable") && error.contains("rebuild"),
+        "{error}"
+    );
+    let original_bytes = d2_body_bytes(&absent);
+    let old: Value = serde_json::from_str(include_str!("../../../docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/ROOT-review/actual-current/captured-empty.json")).unwrap();
+    assert_eq!(serde_json::to_value(&absent).unwrap(), old["graph"]);
+    let mut present = absent.clone();
+    let set = collect_rust_evidence(&absent, &[]).unwrap();
+    assert_eq!(serde_json::to_value(&set).unwrap(), old["set"]);
+    present.rust_evidence = Some(set);
+    present.validate_rust_evidence_sources(&[]).unwrap();
+    let a = d2_observe(&absent, &[]);
+    let p = d2_observe(&present, &[]);
+    assert_ne!(a["canonical_hash"], p["canonical_hash"]);
+    assert_ne!(a["capability_digest"], p["capability_digest"]);
+    assert_ne!(original_bytes, d2_body_bytes(&present));
+    for artifact in [&absent, &present] {
+        // D5 can reproduce these exact JSON tuple inputs from manifest metadata,
+        // supported versions and the full-envelope checksum, without graph rows.
+        let checksum = artifact
+            .rust_evidence
+            .as_ref()
+            .map(|s| rust_evidence_checksum_blake3_hex(s).unwrap());
+        let set = artifact.rust_evidence.as_ref();
+        let encoded = serde_json::to_vec(&(
+            "spur-rust-evidence-capability-v1",
+            if set.is_some() { "present" } else { "absent" },
+            set.map_or(spur_graph::RUST_EVIDENCE_SCHEMA_VERSION, |s| {
+                s.schema_version.as_str()
+            }),
+            set.map_or(spur_graph::RUST_EVIDENCE_EXTRACTOR_VERSION, |s| {
+                s.extractor_version.as_str()
+            }),
+            spur_graph::RUST_DECLARATION_SCHEMA_VERSION,
+            spur_graph::store::EXTRACTOR_VERSION,
+            spur_graph::panic_evidence::RUST_CALL_SITE_SCHEMA_VERSION,
+            spur_graph::panic_evidence::RUST_CALL_SITE_EXTRACTOR_VERSION,
+            artifact.manifest_version.as_str(),
+            checksum,
+        ))
+        .unwrap();
+        assert_eq!(
+            spur_graph::rust_evidence_capability_digest(artifact).unwrap(),
+            blake3::hash(&encoded).to_hex().to_string()
+        );
+    }
+    absent.header.content_hash_blake3 = Some("only-self-header".into());
+    assert_eq!(d2_body_bytes(&absent), original_bytes);
+    let mut header = present.clone();
+    header.header.content_hash_blake3 = Some("only-self-header".into());
+    assert_eq!(
+        d2_observe(&header, &[])["canonical_hash"],
+        p["canonical_hash"]
+    );
+    assert_eq!(
+        spur_graph::rust_evidence_capability_digest(&header).unwrap(),
+        p["capability_digest"]
+    );
+    let mut version = present.clone();
+    version.manifest_version.push_str("-changed");
+    assert_ne!(
+        spur_graph::rust_evidence_capability_digest(&version).unwrap(),
+        p["capability_digest"]
+    );
+    d2_export(
+        "empty-and-absent.json",
+        &json!({"absent":a,"present_empty":p,
+        "header_only":d2_observe(&header, &[]),"legacy_body_equal":true,"unavailable_error":error}),
+    );
+}
+
+fn d2_leaf_edits(value: &Value, path: &str, edits: &mut Vec<(String, Value)>) {
+    match value {
+        Value::Object(map) => {
+            for (key, child) in map {
+                d2_leaf_edits(child, &format!("{path}/{key}"), edits);
+            }
+        }
+        Value::Array(array) => {
+            for (index, child) in array.iter().enumerate() {
+                d2_leaf_edits(child, &format!("{path}/{index}"), edits);
+            }
+        }
+        Value::String(s) => {
+            let replacement = match s.as_str() {
+                // These scope enums each have only one representable variant.
+                "supplied_physical_rust_files" => return,
+                "tuple_field" => "foreign_function".into(),
+                "foreign_function" | "extern_block" => "tuple_field".into(),
+                "function" => "closure".into(),
+                "closure" => "async_block".into(),
+                "absent_foreign_declaration" => "non_executable_container".into(),
+                "non_executable_container" => "absent_foreign_declaration".into(),
+                "unevaluated_cfg" => "parse_recovery".into(),
+                "invalid_utf8" | "parse_recovery" => "unevaluated_cfg".into(),
+                _ => format!("{s}~D2"),
+            };
+            edits.push((path.into(), Value::String(replacement)));
+        }
+        Value::Number(n) => edits.push((path.into(), json!(n.as_u64().unwrap() + 1))),
+        Value::Null if path.ends_with("definition_stable_symbol_id") => {
+            edits.push((path.into(), json!("different-definition")))
+        }
+        Value::Null if path.ends_with("visibility") => edits.push((
+            path.into(),
+            json!({"text":"pub","byte_range":[0,3],"line_range":[1,1]}),
+        )),
+        other => panic!("unhandled typed evidence scalar at {path}: {other}"),
+    }
+}
+
+#[test]
+fn d2_entire_typed_envelope_hashes_and_rehashed_forgeries_reject() {
+    let inputs = fixtures();
+    let mut graph = graph(&inputs);
+    let set = collect_rust_evidence(&graph, &sources(&inputs)).unwrap();
+    let old: Value = serde_json::from_str(include_str!("../../../docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/ROOT-review/actual-current/actual.json")).unwrap();
+    assert_eq!(serde_json::to_value(&graph).unwrap(), old["graph"]);
+    assert_eq!(serde_json::to_value(&set).unwrap(), old["set"]);
+    let original_source_hash = graph.graph_content_hash.clone();
+    let original_macro = graph.macro_invocations.clone();
+    graph.rust_evidence = Some(set);
+    graph
+        .validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    let before = d2_observe(&graph, &inputs);
+    let envelope = serde_json::to_value(graph.rust_evidence.as_ref().unwrap()).unwrap();
+    let mut edits = Vec::new();
+    d2_leaf_edits(&envelope, "", &mut edits);
+    for (index, file) in envelope["files"].as_array().unwrap().iter().enumerate() {
+        // Cover variant presence/availability and whole-list omissions in
+        // addition to every mutable scalar, including zero source groups.
+        if file["calls"].get("complete").is_some() {
+            edits.push((
+                format!("/files/{index}/calls"),
+                json!({"unknown":{"reason":"parse_unavailable"}}),
+            ));
+        }
+        edits.push((
+            format!("/files/{index}/declarations/sources/0/availability"),
+            json!({"unknown":{"reason":"D2 raw availability mutation"}}),
+        ));
+    }
+    edits.push(("/origins".into(), json!([])));
+    edits.push(("/files".into(), json!([])));
+    let mut observations = Vec::new();
+    for (pointer, after) in edits {
+        let mut changed = envelope.clone();
+        let prior = changed.pointer(&pointer).unwrap().clone();
+        assert_ne!(prior, after, "{pointer}");
+        *changed.pointer_mut(&pointer).unwrap() = after.clone();
+        let typed: RustEvidenceSet = serde_json::from_value(changed)
+            .unwrap_or_else(|e| panic!("mutation must remain typed: {pointer}: {e}"));
+        let mut artifact = graph.clone();
+        artifact.rust_evidence = Some(typed);
+        let hash = spur_graph::artifact_content_hash_blake3_hex(&artifact).unwrap();
+        artifact.header.content_hash_blake3 = Some(hash.clone());
+        let observed = d2_observe(&artifact, &inputs);
+        assert_ne!(
+            observed["canonical_hash"], before["canonical_hash"],
+            "{pointer}"
+        );
+        assert_ne!(
+            observed["envelope_checksum"], before["envelope_checksum"],
+            "{pointer}"
+        );
+        assert_ne!(
+            observed["capability_digest"], before["capability_digest"],
+            "{pointer}"
+        );
+        assert!(
+            observed["source_error"].is_string(),
+            "rehashed forgery: {pointer}"
+        );
+        assert_eq!(artifact.graph_content_hash, original_source_hash);
+        assert_eq!(artifact.macro_invocations, original_macro);
+        observations.push(json!({"pointer":pointer,"before":prior,"after":after,
+            "canonical_hash":hash,"self_header_rehashed":artifact.header.content_hash_blake3,
+            "envelope_checksum":observed["envelope_checksum"],"capability_digest":observed["capability_digest"],
+            "source_error":observed["source_error"]}));
+    }
+    let mut absent = graph.clone();
+    absent.rust_evidence = None;
+    let mut header = graph.clone();
+    header.header.content_hash_blake3 = Some("self-header-only".into());
+    assert_eq!(d2_body_bytes(&graph), d2_body_bytes(&header));
+    assert_eq!(
+        spur_graph::rust_evidence_capability_digest(&graph).unwrap(),
+        spur_graph::rust_evidence_capability_digest(&header).unwrap()
+    );
+    d2_export(
+        "populated.json",
+        &json!({"present":before,"absent":d2_observe(&absent,&inputs),
+        "header_only":d2_observe(&header,&inputs),"source_hash_preserved":true,"macro_preserved":true}),
+    );
+    d2_export(
+        "mutations.json",
+        &json!({"count":observations.len(),"mutations":observations}),
+    );
+    d2_export(
+        "api-replay-input.json",
+        &json!({"sources":inputs,
+        "cases":[{"name":"fresh_D1_fixture_carrier","artifact":graph,"sources_ok":true}]}),
+    );
+}
+
+/// Accepts independently mutated current artifact/source packets for ROOT POST.
+/// Every normal run also exercises the fresh real canonical packet.
+#[test]
+fn d2_replay_artifacts_through_current_public_apis() {
+    let inputs = fixtures();
+    let mut graph = graph(&inputs);
+    graph.rust_evidence = Some(collect_rust_evidence(&graph, &sources(&inputs)).unwrap());
+    let packet: Value = if let Ok(path) = std::env::var("D2_REPLAY_INPUT") {
+        serde_json::from_slice(&fs::read(path).unwrap()).unwrap()
+    } else {
+        json!({"sources":inputs,"cases":[{"name":"canonical","artifact":graph,"sources_ok":true}]})
+    };
+    let inputs: Vec<(String, Vec<u8>)> = serde_json::from_value(packet["sources"].clone()).unwrap();
+    let mut results = Vec::new();
+    for case in packet["cases"].as_array().unwrap() {
+        let decoded = serde_json::from_value::<GraphIndexArtifact>(case["artifact"].clone());
+        if let Some(expected) = case["decode_ok"].as_bool() {
+            assert_eq!(decoded.is_ok(), expected, "{}", case["name"]);
+        }
+        let observed = match decoded {
+            Ok(artifact) => {
+                let observed = d2_observe(&artifact, &inputs);
+                if let Some(expected) = case["sources_ok"].as_bool() {
+                    assert_eq!(
+                        observed["source_error"].is_null(),
+                        expected,
+                        "{}: {}",
+                        case["name"],
+                        observed["source_error"]
+                    );
+                }
+                observed
+            }
+            Err(error) => json!({"decode_error":error.to_string()}),
+        };
+        results.push(json!({"name":case["name"],"observed":observed}));
+    }
+    d2_export("api-replay-output.json", &json!(results));
+    if std::env::var_os("D2_EXPORT_DIR").is_some() {
+        let exe = std::env::current_exe().unwrap();
+        let toolchain = std::process::Command::new("rustc")
+            .args(["--version", "--verbose"])
+            .output()
+            .unwrap();
+        assert!(toolchain.status.success());
+        d2_export(
+            "runtime-identity.json",
+            &json!({"executable":exe,
+            "executable_blake3":blake3::hash(&fs::read(&exe).unwrap()).to_hex().to_string(),
+            "rustc":String::from_utf8(toolchain.stdout).unwrap()}),
+        );
+    }
 }

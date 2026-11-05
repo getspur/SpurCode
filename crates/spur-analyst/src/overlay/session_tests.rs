@@ -347,6 +347,7 @@ fn empty_previous_artifact() -> spur_graph::GraphIndexArtifact {
 
 fn artifact_with_file(path: &str, content_oid: &str) -> spur_graph::GraphIndexArtifact {
     spur_graph::GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: spur_graph::GraphIndexHeader {
             graph_index_version: spur_graph::GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),

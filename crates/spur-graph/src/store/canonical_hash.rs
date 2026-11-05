@@ -23,6 +23,8 @@ pub(crate) struct GraphArtifactBodyForHash<'a> {
     // Omit absent evidence to preserve content hashes of legitimate legacy bodies.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub macro_invocations: Option<&'a crate::MacroInvocationEvidenceSet>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rust_evidence: Option<&'a crate::RustEvidenceSet>,
 }
 
 pub fn artifact_content_hash_blake3_hex(artifact: &GraphIndexArtifact) -> anyhow::Result<String> {
@@ -39,6 +41,7 @@ pub fn artifact_content_hash_blake3_hex(artifact: &GraphIndexArtifact) -> anyhow
         temporal_edges: &artifact.temporal_edges,
         diagnostics: &artifact.diagnostics,
         macro_invocations: artifact.macro_invocations.as_ref(),
+        rust_evidence: artifact.rust_evidence.as_ref(),
     };
     let canonical_json = serde_json::to_vec(&body)
         .context("failed to encode graph artifact body for content hash")?;
@@ -56,6 +59,7 @@ mod tests {
     #[test]
     fn canonical_bytes_snapshot_guard() {
         let artifact = GraphIndexArtifact {
+            rust_evidence: None,
             macro_invocations: Some(crate::MacroInvocationEvidenceSet {
                 schema_version: crate::MACRO_INVOCATION_SCHEMA_VERSION.into(),
                 extractor_version: crate::store::EXTRACTOR_VERSION.into(),
@@ -129,6 +133,7 @@ mod tests {
             temporal_edges: &artifact.temporal_edges,
             diagnostics: &artifact.diagnostics,
             macro_invocations: artifact.macro_invocations.as_ref(),
+            rust_evidence: artifact.rust_evidence.as_ref(),
         };
         let bytes = serde_json::to_vec(&body).expect("canonical JSON should serialize");
 
@@ -202,6 +207,7 @@ mod tests {
 
     fn minimal_hash_artifact() -> GraphIndexArtifact {
         GraphIndexArtifact {
+            rust_evidence: None,
             macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "v5".to_owned(),

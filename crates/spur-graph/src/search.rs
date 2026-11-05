@@ -221,6 +221,7 @@ mod tests {
             .collect();
 
         GraphIndexArtifact {
+            rust_evidence: None,
             macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),

@@ -93,6 +93,8 @@ pub struct GraphIndexArtifact {
     pub edges: Vec<GraphEdgeArtifact>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub macro_invocations: Option<crate::MacroInvocationEvidenceSet>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rust_evidence: Option<crate::RustEvidenceSet>,
     #[serde(default)]
     pub tombstones: Vec<GraphTombstoneEntry>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -106,6 +108,18 @@ pub struct GraphIndexArtifact {
 }
 
 impl GraphIndexArtifact {
+    /// Authenticate captured Rust evidence against the graph and exact bytes.
+    /// Legacy absence is unavailable, including on an otherwise empty graph.
+    pub fn validate_rust_evidence_sources(
+        &self,
+        sources: &[crate::RustDeclarationSource<'_>],
+    ) -> anyhow::Result<()> {
+        let set = self.rust_evidence.as_ref().ok_or_else(|| {
+            anyhow::anyhow!("Rust evidence unavailable; rebuild with Rust evidence capture enabled")
+        })?;
+        set.validate_sources(self, sources)
+    }
+
     /// Check optional direct macro evidence against exact bytes, authoritative
     /// lexical scopes and this graph's physical files and function symbols.
     /// Evidence-only scope IDs never establish graph symbol membership.

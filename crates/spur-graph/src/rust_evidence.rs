@@ -268,6 +268,7 @@ impl RustEvidenceSet {
                 .context("Rust source origin missing")?;
             let mut view = graph.clone();
             view.macro_invocations = None;
+            view.rust_evidence = None;
             view.graph_content_hash = origin.graph_content_hash.clone();
             view.manifest_version = origin.manifest_version.clone();
             view.file_manifests = origin
@@ -308,6 +309,37 @@ pub fn rust_evidence_checksum_blake3_hex(set: &RustEvidenceSet) -> anyhow::Resul
     hash.update(b"spur-rust-evidence-tables-v1\0");
     hash.update(&serde_json::to_vec(set)?);
     Ok(hash.finalize().to_hex().to_string())
+}
+
+/// Capability identity, independent of canonical source authentication.
+///
+/// BLAKE3 hashes a compact Serde JSON tuple, in this exact order: domain
+/// `spur-rust-evidence-capability-v1`, `absent`/`present`, wrapper schema and
+/// extractor, declaration schema and extractor, call schema and extractor,
+/// artifact manifest version, and full-envelope checksum (JSON null if absent).
+/// Wrapper versions come from the present envelope or current supported versions
+/// if absent. Declaration/call versions name the supported capture contract;
+/// every actual nested version is also bound by the full-envelope checksum.
+/// A manifest helper can reproduce these inputs without graph rows or bytes.
+/// This digest does not validate syntax, provenance or version compatibility.
+pub fn rust_evidence_capability_digest(artifact: &GraphIndexArtifact) -> anyhow::Result<String> {
+    let set = artifact.rust_evidence.as_ref();
+    let checksum = set.map(rust_evidence_checksum_blake3_hex).transpose()?;
+    let encoded = serde_json::to_vec(&(
+        "spur-rust-evidence-capability-v1",
+        if set.is_some() { "present" } else { "absent" },
+        set.map_or(RUST_EVIDENCE_SCHEMA_VERSION, |s| s.schema_version.as_str()),
+        set.map_or(RUST_EVIDENCE_EXTRACTOR_VERSION, |s| {
+            s.extractor_version.as_str()
+        }),
+        RUST_DECLARATION_SCHEMA_VERSION,
+        crate::store::EXTRACTOR_VERSION,
+        RUST_CALL_SITE_SCHEMA_VERSION,
+        RUST_CALL_SITE_EXTRACTOR_VERSION,
+        artifact.manifest_version.as_str(),
+        checksum,
+    ))?;
+    Ok(blake3::hash(&encoded).to_hex().to_string())
 }
 
 fn eligible(path: &str) -> anyhow::Result<bool> {

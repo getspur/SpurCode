@@ -42,6 +42,7 @@ fn load_artifact_rejects_file_path_with_parquet_directory_error() {
 
 fn fixture_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "spur-graph-phase2".to_owned(),

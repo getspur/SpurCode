@@ -986,6 +986,7 @@ fn synthetic_history_artifact(
     assert!(snapshot_count >= target_chain_len);
 
     let mut graph = GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.into(),
@@ -1081,6 +1082,7 @@ fn synthetic_resolve_artifact(
     assert!(snapshot_count >= target_chain_len);
 
     let mut graph = GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.into(),

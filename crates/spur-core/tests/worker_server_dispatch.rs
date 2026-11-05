@@ -991,6 +991,7 @@ fn write_worker_graph_fixture(worktree: &Path) -> String {
     std::fs::write(&source_path, WORKER_GRAPH_SOURCE).expect("write fixture source");
     let content_oid = git_blob_oid(WORKER_GRAPH_SOURCE.as_bytes());
     let artifact = GraphIndexArtifact {
+        rust_evidence: None,
         macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
