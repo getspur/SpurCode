@@ -1,0 +1,21 @@
+# ROOT review: A requires remaining CLI acceptance
+
+Do not approve A yet. The original worker packet is valid partial evidence:103 graph case executions (101 distinct names), graph all-target check exit0, zero executed assertion failures. The default-feature CLI build failed with ENOSPC before its tests; CLI guards, analyst_build_cli, analyst_temporal_views and the unchanged original five-row PGQ remain unverified. ROOT POST and B PRE remain pending.
+
+ROOT checked Beads in_progress, blocked signal4c8655a3-5666-45f0-8d8d-0529fbb4fe88, completion evidence3675 with confirmed identical replay, and orchestrator completion3677. All68 changed files are A evidence only. Authored534a38c56 (which includesd17582078) and normalizedb0430cec have protected review-evidence refs. No production source or existing test changed. Resolved worker model/effort were gpt-6.1-sol/xhigh; the profile request was retained, with its managed-profile-body absence/inherited environment warning preserved in the outcome.
+
+The exact original68-file Git packet is retained in attempt1-packet.tar.gz. ROOT extracted a temporary copy, ran the unchanged original verifier on the identical current185 source hashes, confirmed103 graph cases and acceptance_complete=false, and confirmed --require-acceptance rejects it (exit1). The extracted copy was removed; archive and command outputs remain. Original ENOSPC, raw logs, source/control/binary identities, actual partial exports and completion acknowledgement remain in the protected branch and archive.
+
+The cause was measured disk capacity during native archive construction: ranlib could not write its output. A1 had removed one incomplete archive after hashing it. ROOT found a second orphan file from that same failed command, libduckdb.a.EqetDA, with matching failure-period birth/mtime and archive signature.
+
+ROOT also found550 generated .o files across two older complete DuckDB build outputs. Every object was matched by exact name, byte length and SHA256 to its member in its retained complete static archive, using an independent archive reader. Both275-member archives remain untouched. Those object copies are recoverable with ordinary ar extraction; they carry no unique source or result data.
+
+After confirming no Cargo/native compiler/linker writers, ROOT removed only the550 verified object copies and that one exact orphan archive. The selected files accounted for3,858,776,064 allocated bytes (about3.59 GiB). Available filesystem space was observed increasing from2,157,416,448 to6,320,451,584 bytes; background filesystem activity means the free-space difference is not attributed solely to the selected removals. Both retained archives kept their original SHA256. All185 PRE source files and the five dirty user files remain byte-identical. No complete library, executable, source checkout, model/runtime asset, installed binary or global cache was removed. The initial sandbox process-list EPERM was resolved by an authorized read outside the sandbox; the cleanup checked process names again before mutation.
+
+storage-preflight.json records every selected path, size, digest and archive member; storage-recovery.json records the actual operation and preservation results. storage.py is the exact bounded inventory/cleanup program. It is not a general cache-clean command, and rerunning its removal step after files are gone is intentionally rejected. verify.py independently checks post-cleanup absence, recoverability from unchanged archive members, exact source preservation and the original incomplete-acceptance rejection.
+
+Next action is a focused request_changes retry of verify-landed-kind, retaining the prior packet. Run only the still-missing real default-feature CLI schema guards and both actual analyst targets unless a new source/build/runtime change warrants more graph tests. Preserve the failed command separately; do not overwrite its raw output or convert zero tests into a pass. Collect current real outputs, source/build identities and controls, then ROOT executes actual-output POST and prepares fresh B PRE before any approval or downstream work. No guessed capacity/default, feature relaxation, profile change, stale-binary substitution or native behavior repair is authorized.
+
+Recheck:
+
+    python3 -B docs/research/artifacts/2026-11-05-rust-foreign-resume/ROOT-A-recovery/verify.py
