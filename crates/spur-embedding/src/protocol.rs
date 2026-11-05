@@ -28,8 +28,9 @@ pub struct ModelIdentity {
     pub prefix: String,
 }
 
-/// Explicit caller policy, without product defaults.
-#[derive(Debug, Clone, PartialEq, Eq)]
+/// Wire admission limits, also used by the configurable local helper policy.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ProtocolLimits {
     pub max_frame_bytes: u32,
     pub max_texts: usize,

@@ -10,7 +10,7 @@ use spur_graph::EMBEDDING_VECTOR_DIMENSIONS;
 #[cfg(feature = "embed")]
 use {
     anyhow::{anyhow, Context},
-    spur_embedding::{Cancellation, CleanupOwner},
+    spur_embedding::{Cancellation, CleanupOwner, LocalPolicy},
     spur_graph::{
         embedding_query_text_for_model, load_embedding_model_cancellable_with_cleanup,
         EmbeddingModelSelection,
@@ -79,7 +79,7 @@ struct State {
 }
 
 #[cfg(feature = "embed")]
-#[derive(Clone, serde::Deserialize)]
+#[derive(Clone)]
 struct Timeouts {
     queue_capacity: usize,
     startup_timeout_ms: u64,
@@ -91,26 +91,14 @@ struct Timeouts {
 #[cfg(feature = "embed")]
 impl Timeouts {
     fn from_env() -> anyhow::Result<Self> {
-        let raw = std::env::var("SPUR_EMBEDDING_HELPER_CONFIG")?;
-        let config: Self = serde_json::from_str(&raw)?;
-        if config.queue_capacity == 0 || config.queue_capacity.checked_add(1).is_none() {
-            return Err(anyhow!("invalid embedding queue capacity"));
-        }
-        for ms in [
-            config.startup_timeout_ms,
-            config.request_timeout_ms,
-            config.shutdown_timeout_ms,
-            config.shutdown_poll_interval_ms,
-        ] {
-            if ms == 0
-                || Instant::now()
-                    .checked_add(Duration::from_millis(ms))
-                    .is_none()
-            {
-                return Err(anyhow!("invalid embedding timeout"));
-            }
-        }
-        Ok(config)
+        let policy = LocalPolicy::from_env()?;
+        Ok(Self {
+            queue_capacity: policy.queue_capacity,
+            startup_timeout_ms: policy.startup_timeout_ms,
+            request_timeout_ms: policy.request_timeout_ms,
+            shutdown_timeout_ms: policy.shutdown_timeout_ms,
+            shutdown_poll_interval_ms: policy.shutdown_poll_interval_ms,
+        })
     }
     fn deadline(ms: u64) -> anyhow::Result<Instant> {
         Instant::now()
@@ -568,6 +556,10 @@ impl Drop for Owner {
         }
     }
 }
+
+#[cfg(all(test, feature = "embed"))]
+#[path = "owned_runtime_policy_tests.rs"]
+mod policy_tests;
 
 #[cfg(all(test, feature = "embed"))]
 mod completion_tests {
