@@ -14,6 +14,15 @@
 (ordered_field_declaration_list
   type: (_) @definition.tuple_field)
 
+; Foreign containers own physical declarations without introducing a Rust
+; namespace. Only signatures directly inside their declaration list qualify.
+(foreign_mod_item) @definition.extern_block
+
+(foreign_mod_item
+  body: (declaration_list
+    (function_signature_item
+      name: (identifier) @name) @definition.foreign_function))
+
 (use_declaration
   argument: (identifier) @import.name) @import
 

@@ -987,6 +987,17 @@ fn resolve_call_edge_after_qualified_miss(
             );
             builder.add_pending_edge(edge, None);
         }
+        _ if edge.scope_text.is_some()
+            && edge.receiver_text.is_none()
+            && indexes
+                .file_by_id
+                .get(&edge.source)
+                .is_some_and(|path| language_family(path) == Some("rust")) =>
+        {
+            // A failed explicit Rust path is not evidence for an unrelated
+            // bare-name singleton (including newly represented foreign items).
+            builder.add_pending_edge(edge, None);
+        }
         _ => {
             resolve_bare_pending_edge(
                 builder,
@@ -3211,9 +3222,18 @@ fn enclosing_scope_by_id(
         .nodes
         .iter()
         .filter_map(|node| {
-            let parent = parent_by_target
+            let mut parent = parent_by_target
                 .get(&node.node_id)
                 .and_then(|id| nodes_by_id.get(id).copied())?;
+            let mut seen = HashSet::from([node.node_id]);
+            while parent.kind == NodeKind::ExternBlock {
+                if !seen.insert(parent.node_id) {
+                    return None;
+                }
+                parent = parent_by_target
+                    .get(&parent.node_id)
+                    .and_then(|id| nodes_by_id.get(id).copied())?;
+            }
             match parent.kind {
                 NodeKind::File => None,
                 NodeKind::Impl => Some((
@@ -3497,8 +3517,9 @@ pub(crate) fn extract_file_contents_from_tree(
         .as_ref()
         .map(|query| run_query(query, root_node, source));
     if language_label == "rust" {
-        // Variant definitions come from the edge query. Include them before
-        // naming tag definitions so payload fields see their direct owner.
+        // Assemble all owners before assigning IDs: variants and foreign blocks
+        // come from the edge query. Descendants retain these structural owners
+        // while foreign blocks are transparent to Rust lexical names.
         if let Some(captures) = &edge_captures {
             tag_captures.extend(captures.iter().cloned().map(|mut capture| {
                 capture.pattern_index += queries.tags.pattern_count();
@@ -3991,7 +4012,9 @@ fn qualified_node_name(
         if !seen.insert(parent.node_id) || parent.kind == NodeKind::File {
             break;
         }
-        segments.push(qualified_node_segment(parent));
+        if parent.kind != NodeKind::ExternBlock {
+            segments.push(qualified_node_segment(parent));
+        }
         current = parent;
     }
 

@@ -30,7 +30,7 @@ use crate::{
 };
 
 pub const SCHEMA_VERSION: &str = "spur-graph-schema-v12";
-pub const EXTRACTOR_VERSION: &str = "2026-11-02-rust-tuple-fields-v1";
+pub const EXTRACTOR_VERSION: &str = "2026-11-03-rust-foreign-declarations-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
 pub const RESOLVER_VERSION: &str = "2026-11-02-rust-receiver-rebind-v2";
 
@@ -1845,14 +1845,14 @@ fn rebind_remaining_edges(
                 drop_dangling_stamped_target(edge, current_symbol_ids);
                 continue;
             }
-            // Physical Rust receiver lookup already adjudicated this call.
+            // Physical Rust receiver/qualified lookup already adjudicated this call.
             // Nominal scope is evidence, not trait/autoderef authority. Neither
             // a same-directory singleton nor an import license may resurrect
             // a target rejected by that lookup. Grounded stamped targets above
             // and explicit UFCS paths retain their established behavior.
             if language_family(source_file_path) == Some("rust")
                 && edge.relation == RelationKind::Calls
-                && edge.receiver_text.is_some()
+                && (edge.receiver_text.is_some() || edge.scope_text.is_some())
             {
                 edge.target_stable_symbol_id = None;
                 edge.bind_method = None;
@@ -2915,7 +2915,9 @@ fn qualified_name(
             break;
         }
 
-        segments.push(qualified_scope_segment(parent));
+        if parent.kind != NodeKind::ExternBlock {
+            segments.push(qualified_scope_segment(parent));
+        }
         current = parent;
     }
 
@@ -2935,9 +2937,18 @@ fn enclosing_scope(
     nodes_by_id: &HashMap<crate::NodeId, &GraphNode>,
     node: &GraphNode,
 ) -> Option<String> {
-    let parent = containing_parent(parent_by_target, nodes_by_id, node)?;
+    let mut parent = containing_parent(parent_by_target, nodes_by_id, node)?;
+    let foreign_scope = node.kind == NodeKind::ExternBlock || parent.kind == NodeKind::ExternBlock;
+    let mut seen = HashSet::from([node.node_id]);
+    while parent.kind == NodeKind::ExternBlock {
+        if !seen.insert(parent.node_id) {
+            return None;
+        }
+        parent = containing_parent(parent_by_target, nodes_by_id, parent)?;
+    }
     match parent.kind {
         NodeKind::File => None,
+        _ if foreign_scope => Some(qualified_name(parent_by_target, nodes_by_id, parent)),
         NodeKind::Impl => Some(format!("impl {}", parent.label)),
         _ => Some(parent.label.clone()),
     }
