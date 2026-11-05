@@ -218,3 +218,9 @@ The task list specifies behavior-level tests and public protocol contracts rathe
 ## After this runtime plan
 
 Root resumes source phase bd-3nv (G2 kind/schema acceptance, physical foreign declarations, source-bound evidence), then approved G3–G5 in their original order. Those objectives remain open; cancellation of stale dispatched-plan units is recorded as supersession, never as acceptance of graph coverage or panic freedom.
+
+## 2026-11-05 runtime acceptance review
+
+The replacement six-node plan dc9cc6fb-d54a-4429-a231-1f7f3425f7fd has completed its implementation and source-bound runtime checks. ROOT's independent [M6 review and POST](../../research/artifacts/2026-11-05-embedding-runtime-acceptance/ROOT-review/README.md) records three-model parity, normal clean exits, actual Rust notebook continuity around a real helper abort, all applicable graph runners, and 13 fresh persisted/reloaded receipts with 52 independently checked predicates. Beads carries the authoritative approval/integration status.
+
+Acceptance is scoped to the measured macOS ARM64 debug inference surface. The eight historical direct-native failures remain explicit. New follow-ups bd-1rpe (test-only failed-cache teardown) and bd-31du (nullable vector Parquet reader interoperability) remain open. Notebook SQL DuckPGQ was unavailable; the real Rust cell executed the unchanged built CLI graph regression before and after failure. Other platforms, optimized release execution and the optional cargo-dist plan remain unverified. No broad ORT ownership, complete panic detection, performance improvement or G2–G5 completion is inferred.
