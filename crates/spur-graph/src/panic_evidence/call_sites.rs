@@ -390,7 +390,13 @@ fn range(node: Node<'_>) -> [usize; 2] {
     [node.start_byte(), node.end_byte()]
 }
 
-fn snapshot_id(domain: &str, path: &str, oid: &str, range: [usize; 2], kind: &str) -> String {
+pub(crate) fn snapshot_id(
+    domain: &str,
+    path: &str,
+    oid: &str,
+    range: [usize; 2],
+    kind: &str,
+) -> String {
     let mut hash = blake3::Hasher::new();
     hash.update(b"spur:panic-evidence:rust-call-bodies:v1\0");
     for value in [domain, path, oid, kind] {
