@@ -1,0 +1,2503 @@
+{
+  "kind": "prospective_finite_D1_contract_not_runtime",
+  "fixtures": [
+    {
+      "path": "cfg.rs",
+      "source_oid": "67fa976fcc61c1487bb9255235d79f3e7193f402",
+      "bytes": 48,
+      "sha256": "5d155cbfb4273969357a070db2c0194ce74eae68593892efde19872f98be19e2",
+      "hex": "235b6366672866656174757265203d20227822295d20666e2073656c65637465642829207b206c65616628293b207d0a"
+    },
+    {
+      "path": "empty.rs",
+      "source_oid": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+      "bytes": 18,
+      "sha256": "15781d4a449a1d9f531b351390c0334365ce5d56b6595b8b8e0fab0bed54974e",
+      "hex": "7075622073747275637420456d7074793b0a"
+    },
+    {
+      "path": "ffi.rs",
+      "source_oid": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+      "bytes": 41,
+      "sha256": "968d5ca1933948f5b5f0970371d82b957c7a9b605434588e1c85b54a98c1f690",
+      "hex": "756e736166652065787465726e20224322207b2070756220666e20696d706f7274656428293b207d0a"
+    },
+    {
+      "path": "invalid.rs",
+      "source_oid": "29e181ebb88626236ef10f2af5bc94781c8061f1",
+      "bytes": 2,
+      "sha256": "e4688624e5f1ad0629505e6768e3bb36244f2f3e33e751215afa820334a76ed3",
+      "hex": "ff0a"
+    },
+    {
+      "path": "main.rs",
+      "source_oid": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+      "bytes": 79,
+      "sha256": "19980a2b4dcecc3a0d9fbae209fd3c4aef5707e87ef54a2d3996b3969bad2e49",
+      "hex": "666e206c6561662829207b7d0a666e2072756e2829207b0a202020202f2a612a2f206c65616628293b0a202020206c6574205f66203d207c7c207b202f2a622a2f206c65616628293b207d3b0a7d0a"
+    },
+    {
+      "path": "recovery.rs",
+      "source_oid": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+      "bytes": 34,
+      "sha256": "f22a443d4c8dd9de8b69a859cb5ef7166dec0c0299b79f52606fdafe34d4befa",
+      "hex": "7075622073747275637420496e74616374287538293b20666e2062726f6b656e280a"
+    }
+  ],
+  "body_oracle": {
+    "leaf": [
+      10,
+      12
+    ],
+    "run": [
+      22,
+      78
+    ],
+    "closure": [
+      58,
+      75
+    ]
+  },
+  "source_bindings": {
+    "crates/spur-analyst/src/overlay/session_tests.rs": "262500ec2ab3334b21427e3d8be12d31041617a4b44baba4c672de9ee5deee60",
+    "crates/spur-cli/tests/analyst_temporal_views.rs": "64d3e177932c88a9fec459d2f6129581ae5ca4414a5371ec7e0cd4e0d66a69b8",
+    "crates/spur-core/src/server/handlers/rebuild_singleflight.rs": "01c5494bc86af38903c95e12cfecdba72a28ddfdad0032d0e348322ee5a9cfc8",
+    "crates/spur-core/tests/code_graph_e2e.rs": "0ace03ac197ca95a871716c5912e1b0f62a6ce613f15e16ec01e05826dbe95bb",
+    "crates/spur-core/tests/worker_server_dispatch.rs": "48efcf2f9ec711b81a1348d2b77a5d89bd77e714e178bc32bb54bce4b3216985",
+    "crates/spur-graph/benches/incremental.rs": "a0e9d82757093f1a201a20253bd41920941bce2d0e5439ff1fa310f0224bc210",
+    "crates/spur-graph/benches/parquet.rs": "eb044ea72301069956f891aaedf61f19f9f30d85030a136c843b7c2a673ee6e9",
+    "crates/spur-graph/src/extract/mod.rs": "7b384d698237c1bcd6feeb922bd73420de14237608346830c6763bc44aa4f410",
+    "crates/spur-graph/src/git_walk.rs": "13de1fe19d15b2c94ac49e65be2933ce62610fa2087f43ed5ef2de990b5e7d15",
+    "crates/spur-graph/src/lib.rs": "f1621209eb36c499a57581d256bfe43cdf9fafba043d3bc3fc7b4e92e48c32f8",
+    "crates/spur-graph/src/macro_invocations.rs": "4b5862c085cfe0b223d1a295f3dec5f1ecb93a8b8fd493a56951844ef177096e",
+    "crates/spur-graph/src/mcp/mod.rs": "dde4b6f9268b5729741e02745c8c5a310f4809334df3df3744b32404591e076a",
+    "crates/spur-graph/src/mcp/overlay_runtime.rs": "4370177b6f0c3c1ea823c2b6374b4ee15749fbe67a933ef73a6009c4057f6445",
+    "crates/spur-graph/src/mcp/overlay_snapshot.rs": "94176d5ac3e86b7f50f6a5c994a2c6e3c0a9218f2210bb5198ef44100a140048",
+    "crates/spur-graph/src/mcp/rebuild_singleflight.rs": "8374bccc4d11bf1f1449550e9df059a94d9c74a3bd6ab084b3dfde1a4d552b8d",
+    "crates/spur-graph/src/mcp/request_cache.rs": "fd4f7b865384e7792fa6a8a068a1d6038c18eb3df30f0314a4a90e1cbf04827b",
+    "crates/spur-graph/src/overlay_generation.rs": "6ebcbd923679cc62e15a068ee35a61ccf6705f3c2ea96ccc875d99b3087a5576",
+    "crates/spur-graph/src/panic_evidence/call_sites.rs": "0109eed8619e48e0d85d260ff14a0da98a931d7a000356ade2ba67d0366d86f0",
+    "crates/spur-graph/src/panic_evidence/mod.rs": "799e81423d100a5cfd9a2fad70bcf9b58af167a32a7ecf275dce28eb0cf0bccf",
+    "crates/spur-graph/src/query_client.rs": "443a11e7bcb16f8405d87def0bee737558e05f12568700aa64c1efd5ec272d39",
+    "crates/spur-graph/src/rust_declarations.rs": "e35c5fbfdfde1cfaf041a83b53b350e15e6537d03fb23ba13c36f358065fef4f",
+    "crates/spur-graph/src/rust_declarations/ffi.rs": "2446206b3a5067b49da48a8d3c442e85856736a3caa03796b3d8f98adee7f184",
+    "crates/spur-graph/src/schema.rs": "5a9dab51ac1fc22b3ea1941cb02554e0077da58baed1b0141a7cbf84e2acf89f",
+    "crates/spur-graph/src/search.rs": "7345e0f5cab8071ae188ceb19d677646679a9c51e706ef1bd697a50ac0e4209b",
+    "crates/spur-graph/src/selector.rs": "13aaeb3d78a0af44992eceedec45dd060ff8d8c8622093366d4ee10e872cc8a6",
+    "crates/spur-graph/src/store/build.rs": "9583eb077b49afd11e5abc903599efa286c282a9ac93028db7dd058b8ca5cf27",
+    "crates/spur-graph/src/store/cache.rs": "bf0f557a9fb1ef5f42ab7e53494f3bdb3061830525fb2e267702ca682eba86e9",
+    "crates/spur-graph/src/store/canonical_hash.rs": "99afa255a1b9dc16460be6ccf89696a4f62d9247512e391d1a5614bb71c7327b",
+    "crates/spur-graph/src/store/lance_sections.rs": "5cbefdfd6f651f2b740427b3dc57d6a3a0be23a4484db59b47a43e4355de5cad",
+    "crates/spur-graph/src/store/macro_invocations.rs": "45163eb560039fcfdc7a9868a9e2e8865f7b0ebc815b6b690fb806cdb0926733",
+    "crates/spur-graph/src/store/mod.rs": "2bca18d9d7ca0228acc588b84fbc3cbb0c77ec7bede69fc124c7ace17471aae3",
+    "crates/spur-graph/src/store/parquet.rs": "6edfd27a6b059b997e012a4ef082f5ec7fcc48976d27aa38d91b2ffbc1f1a886",
+    "crates/spur-graph/src/temporal.rs": "4846152ba9f323c88b0c61a29ffd05628272916907b9ceeb6a43f7c391dd75de",
+    "crates/spur-graph/src/traversal.rs": "00261c048f4cb9595f63245f0367b76f1f58521ab64114b63d9f6efd3502a4c7",
+    "crates/spur-graph/tests/diagnostics_persist.rs": "9680b06f9c32dd54db0ea7075818872938bf5d5ba4ef7550b703d0750dbea2ae",
+    "crates/spur-graph/tests/lance_sections.rs": "d7455c6c6ceb44d970dfdb5061350115ac9cb1996bded11108bc73967bcad40b",
+    "crates/spur-graph/tests/load_artifact_dispatch.rs": "42952474f0b179fec030ab89ef0fff33e8b3be9adcbebf02047edfaeb3ef8aff",
+    "crates/spur-graph/tests/macro_invocation_artifacts.rs": "9e421f203b710831ae98ddb82878f071fca98fa19f0c8b641fc9ce3ab26246b7",
+    "crates/spur-graph/tests/macro_invocation_parquet.rs": "02924cbacddf598e41e8b2f9396f9980ed98c73fb1a8f2b1aed056bee6defa45",
+    "crates/spur-graph/tests/macro_invocation_queries.rs": "37516b4931290383a2674a47fd4fbaec3ca8ffc4e35efeea915d14fd8a153fb3",
+    "crates/spur-graph/tests/overlay_client.rs": "4953b12ba87dac355c497d67aecc1fe26d2a7e731edfc7e9e59e3e5f5d0859f1",
+    "crates/spur-graph/tests/panic_call_sites.rs": "7d364c0ffb9b1d337156572569d771917a0b1d8bd86fd777d4436b892122bc6e",
+    "crates/spur-graph/tests/parquet_roundtrip.rs": "18f2e708bfec28a2d332bad7c0aa5e2b7070b5bb4b1b913ee2606ea0bc659d1f",
+    "crates/spur-graph/tests/parquet_schema_invariants.rs": "ede4afe518df53af06d2bf91b15299c692b4c82d8316816008309f1bbdf8c522",
+    "crates/spur-graph/tests/query_client_parity.rs": "76da89682f7eea4669318ee70239e0ab3e1ea0ffcb2ead6f4fbdd54d17f09192",
+    "crates/spur-graph/tests/rust_declaration_evidence.rs": "249345b184703a7475e2fcbcf548f6933c694b3dc4fc93965b6d4e7c4b5dc74f",
+    "crates/spur-graph/tests/rust_foreign_evidence.rs": "8b57e3a7fef203e1ca64295c24973f14cd81658a3089a5664312836e2cd17c8d",
+    "crates/spur-graph/tests/temporal_resolution.rs": "54c3deafb364267ae73442a124331a9b9de7c91ce56d729e8368df9ac4784b40",
+    "crates/spur-tui/src/mentions/registry.rs": "e2f33c2596553ebd02b7cb162f51d854eb09b92a53a1be22ef9406064a191b7e",
+    "crates/spur-utilities/mentions/src/code/source.rs": "bf8fa560c1b72fa3237df3a8109893b6d1dfc5ac56cce5b02ed0017018a7066b",
+    "docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fixtures/bodies/lib.rs": "3a1e1a7935f312c41ff585bc48b7709a8cbe051164c800d4c47b32e716c4001f",
+    "docs/research/artifacts/2026-11-02-rust-gap-closure-grounding/REPORT.md": "9794ef15ee9c267a3df7552f6bace39a88eda0c8373130ae62824da9f016a8f0",
+    "docs/research/artifacts/2026-11-02-rust-gap-closure-grounding/audits/call-evidence.md": "41fc1fd3f865d696271f988cda06a92052ef4aa0fb201e6a1683dda46d8f1b43",
+    "docs/research/artifacts/2026-11-03-embedding-isolation/S6/replan/root-B-final/project_models.py": "3d99592218a644e733106742f3e7907b29d1c1c1bbda4065fd21d070507c6747",
+    "docs/research/artifacts/2026-11-03-embedding-isolation/S6/replan/root-B-final/verify.py": "561287405e84a1bb369bf15d8d471dd4b95f5af129d2851775cd60975583653d",
+    "docs/research/artifacts/2026-11-05-embedding-sol/root-M1-review/verify.py": "442a8f8415fe31fd24eea8b92ca59bb44a2c1a2cd3ccc3fe47544936af12b040",
+    "docs/research/artifacts/2026-11-05-rust-foreign-resume/ROOT-A-review/solver_oracle.py": "3d60acdfdfb6f9e23ae8b5f1e4aacd62814a38c7da86081f51cec6e2dac1606f",
+    "docs/research/artifacts/2026-11-05-rust-foreign-resume/ROOT-C-review/README.md": "7fb264dff3c6393d4ca530cff9101680526e3581387f9a1c15e421c3bc19cd0b",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/root-pre/prepare.py": "37024deaed19c4b033436a2906e4d3c61545d16e32efab467f7ebc841a4d8413",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/root-pre/verify.py": "fb221e2f0e2ffe6a46d9339e6182884fa5f60d52a1a6d0c2b626d4f003686321",
+    "docs/research/artifacts/2026-11-06-rust-evidence-durability/grounding/source-map.json": "5773d5bf90c9ade91505f7e2a6b497a501705d0af078d25db4127935df8ce1a3",
+    "docs/superpowers/plans/2026-11-06-rust-evidence-durability-grounding.md": "28ec09c4e051b97d495fc2c138c27c090614f050dc0c1e914c17991b2500abf2",
+    "docs/superpowers/plans/2026-11-06-rust-evidence-durability.md": "54a1ee26782c9b1cedc58643664c81e7a8efbea419acd1243accbd59ae990168"
+  },
+  "fingerprint": "1e6338133c7572de5625d6f18e24d030b47c88bc22cd2e8f39d8bc7230986dcc",
+  "cases": [
+    {
+      "name": "sources_0",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=3,sites=2"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=0,sites=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_unknown_cfg"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,call_payload=absent"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=3,sites=2",
+                  "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                ],
+                [
+                  "empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=0,sites=0",
+                  "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                ],
+                [
+                  "cfg.rs",
+                  "cfg.rs",
+                  "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                  "decl_complete/call_unknown_cfg",
+                  "decl=0,call_payload=absent",
+                  "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "sources_1",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "recovery.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "recovery.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "dc40d5cbad8a162ba5eb441b37e788bf927d36c4"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_unknown/call_unknown_parse"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "tuple=1,call_payload=absent"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "invalid.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "invalid.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "29e181ebb88626236ef10f2af5bc94781c8061f1"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_unknown/call_unknown_utf8"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,call_payload=absent"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "foreign=1,block=1,bodies=0,sites=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "recovery.rs",
+                  "recovery.rs",
+                  "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                  "decl_unknown/call_unknown_parse",
+                  "tuple=1,call_payload=absent",
+                  "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf"
+                ],
+                [
+                  "invalid.rs",
+                  "invalid.rs",
+                  "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                  "decl_unknown/call_unknown_utf8",
+                  "decl=0,call_payload=absent",
+                  "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994"
+                ],
+                [
+                  "ffi.rs",
+                  "ffi.rs",
+                  "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                  "decl_complete/call_complete",
+                  "foreign=1,block=1,bodies=0,sites=0",
+                  "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "site_ownership",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "/*a*/"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "direct_call"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "{\"range\": [34, 40], \"text\": \"leaf()\"}"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "{\"body_range\": [22, 78], \"kind\": \"run\"}"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "/*b*/"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "direct_call"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "{\"range\": [66, 72], \"text\": \"leaf()\"}"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "{\"body_range\": [58, 75], \"kind\": \"closure\"}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 2,
+              "maximum": 2
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "/*a*/",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "direct_call",
+                  "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                  "{\"body_range\": [22, 78], \"kind\": \"run\"}"
+                ],
+                [
+                  "/*b*/",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "direct_call",
+                  "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                  "{\"body_range\": [58, 75], \"kind\": \"closure\"}"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "origin_ffi_empty",
+      "expected": "sat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "origin_policy"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "(contract)"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "recorded_original_snapshot"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "nested_headers_and_ids_unchanged"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "ffi_body"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "non_executable_container/absent_foreign_declaration"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "block_explicit_C/function_inherited_block"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "no_local_executable_body"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "captured_empty"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "(contract)"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "captured_empty_workspace"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "files=0,origins=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "distinct_from_legacy_absent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "origin_policy",
+                  "(contract)",
+                  "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                  "recorded_original_snapshot",
+                  "nested_headers_and_ids_unchanged",
+                  "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                ],
+                [
+                  "ffi_body",
+                  "ffi.rs",
+                  "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                  "non_executable_container/absent_foreign_declaration",
+                  "block_explicit_C/function_inherited_block",
+                  "no_local_executable_body"
+                ],
+                [
+                  "captured_empty",
+                  "(contract)",
+                  "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                  "captured_empty_workspace",
+                  "files=0,origins=0",
+                  "distinct_from_legacy_absent"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "wrong_existing_body",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "/*a*/"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "direct_call"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "{\"range\": [34, 40], \"text\": \"leaf()\"}"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "{\"body_range\": [58, 75], \"kind\": \"closure\"}"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "/*b*/"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "direct_call"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "{\"range\": [66, 72], \"text\": \"leaf()\"}"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "{\"body_range\": [58, 75], \"kind\": \"closure\"}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 2,
+              "maximum": 2
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "/*a*/",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "direct_call",
+                  "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                  "{\"body_range\": [22, 78], \"kind\": \"run\"}"
+                ],
+                [
+                  "/*b*/",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "direct_call",
+                  "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                  "{\"body_range\": [58, 75], \"kind\": \"closure\"}"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "unknown_as_complete_zero",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=3,sites=2"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=0,sites=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=0,sites=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=3,sites=2",
+                  "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                ],
+                [
+                  "empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=0,sites=0",
+                  "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                ],
+                [
+                  "cfg.rs",
+                  "cfg.rs",
+                  "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                  "decl_complete/call_unknown_cfg",
+                  "decl=0,call_payload=absent",
+                  "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "missing_zero_source",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=3,sites=2"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_unknown_cfg"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,call_payload=absent"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=3,sites=2",
+                  "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                ],
+                [
+                  "empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=0,sites=0",
+                  "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                ],
+                [
+                  "cfg.rs",
+                  "cfg.rs",
+                  "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                  "decl_complete/call_unknown_cfg",
+                  "decl=0,call_payload=absent",
+                  "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "duplicate_source",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "main.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=3,sites=2"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=0,sites=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "cfg.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "67fa976fcc61c1487bb9255235d79f3e7193f402"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_unknown_cfg"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,call_payload=absent"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                    }
+                  }
+                },
+                "3": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "empty.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "decl_complete/call_complete"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "decl=0,bodies=0,sites=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "main.rs",
+                  "main.rs",
+                  "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=3,sites=2",
+                  "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8"
+                ],
+                [
+                  "empty.rs",
+                  "empty.rs",
+                  "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                  "decl_complete/call_complete",
+                  "decl=0,bodies=0,sites=0",
+                  "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4"
+                ],
+                [
+                  "cfg.rs",
+                  "cfg.rs",
+                  "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                  "decl_complete/call_unknown_cfg",
+                  "decl=0,call_payload=absent",
+                  "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    },
+    {
+      "name": "rebound_origin",
+      "expected": "unsat",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "evidence": {
+              "fields": {
+                "key": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "/*a*/",
+                    "/*b*/",
+                    "origin_policy",
+                    "ffi_body",
+                    "captured_empty"
+                  ]
+                },
+                "path": {
+                  "kind": "enum",
+                  "values": [
+                    "main.rs",
+                    "empty.rs",
+                    "cfg.rs",
+                    "recovery.rs",
+                    "invalid.rs",
+                    "ffi.rs",
+                    "(contract)"
+                  ]
+                },
+                "oid": {
+                  "kind": "enum",
+                  "values": [
+                    "2dcc402232cfaad40164b1b2aa38d23f4ba0c08e",
+                    "7b9d80fd6565cd8c82444ed7f2ec564cec16dbe6",
+                    "67fa976fcc61c1487bb9255235d79f3e7193f402",
+                    "dc40d5cbad8a162ba5eb441b37e788bf927d36c4",
+                    "29e181ebb88626236ef10f2af5bc94781c8061f1",
+                    "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                  ]
+                },
+                "state": {
+                  "kind": "enum",
+                  "values": [
+                    "decl_complete/call_complete",
+                    "decl_complete/call_unknown_cfg",
+                    "decl_unknown/call_unknown_parse",
+                    "decl_unknown/call_unknown_utf8",
+                    "direct_call",
+                    "recorded_original_snapshot",
+                    "non_executable_container/absent_foreign_declaration",
+                    "captured_empty_workspace"
+                  ]
+                },
+                "payload": {
+                  "kind": "enum",
+                  "values": [
+                    "decl=0,bodies=3,sites=2",
+                    "decl=0,bodies=0,sites=0",
+                    "decl=0,call_payload=absent",
+                    "tuple=1,call_payload=absent",
+                    "foreign=1,block=1,bodies=0,sites=0",
+                    "{\"range\": [34, 40], \"text\": \"leaf()\"}",
+                    "{\"range\": [66, 72], \"text\": \"leaf()\"}",
+                    "nested_headers_and_ids_unchanged",
+                    "block_explicit_C/function_inherited_block",
+                    "files=0,origins=0"
+                  ]
+                },
+                "binding": {
+                  "kind": "enum",
+                  "values": [
+                    "915bd67a0dfa9f9709cf5c80c5ebd52b7eedcc2e2622f00d8dc92cd289f203b8",
+                    "99a6d2a8f60e1bedbd27c1531f836159853abacfb4393532435c89bcc47319e4",
+                    "71f94dfec57e36a5b819c4e64945461c4fb4bc40a974631ab2e7fd50cecbfa92",
+                    "524ac64cf3e3826b0b0c0aba2bc960f90489ca9d58d1503be3032fc480d7d0cf",
+                    "bb964089e8e02358e3aca53e9d21d813926cbfb822b95d754d1432aa93e26994",
+                    "5699f0c43155e83f8291b48869325e975f4c14c67df923ba161e0cc1c0aa75d6",
+                    "{\"body_range\": [22, 78], \"kind\": \"run\"}",
+                    "{\"body_range\": [58, 75], \"kind\": \"closure\"}",
+                    "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                    "no_local_executable_body",
+                    "distinct_from_legacy_absent",
+                    "rebound_to_new_aggregate"
+                  ]
+                }
+              },
+              "rows": {
+                "0": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "origin_policy"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "(contract)"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "recorded_original_snapshot"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "nested_headers_and_ids_unchanged"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "rebound_to_new_aggregate"
+                    }
+                  }
+                },
+                "1": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "ffi_body"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "ffi.rs"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "non_executable_container/absent_foreign_declaration"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "block_explicit_C/function_inherited_block"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "no_local_executable_body"
+                    }
+                  }
+                },
+                "2": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": "captured_empty"
+                    },
+                    "path": {
+                      "present": true,
+                      "value": "(contract)"
+                    },
+                    "oid": {
+                      "present": true,
+                      "value": "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                    },
+                    "state": {
+                      "present": true,
+                      "value": "captured_empty_workspace"
+                    },
+                    "payload": {
+                      "present": true,
+                      "value": "files=0,origins=0"
+                    },
+                    "binding": {
+                      "present": true,
+                      "value": "distinct_from_legacy_absent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "identity": {
+              "relation": "evidence",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "coverage": {
+              "relation": "evidence",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "exact_tuple": {
+              "relation": "evidence",
+              "fields": [
+                "key",
+                "path",
+                "oid",
+                "state",
+                "payload",
+                "binding"
+              ],
+              "allowed": [
+                [
+                  "origin_policy",
+                  "(contract)",
+                  "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                  "recorded_original_snapshot",
+                  "nested_headers_and_ids_unchanged",
+                  "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538"
+                ],
+                [
+                  "ffi_body",
+                  "ffi.rs",
+                  "66a8dfa06bbcc95e5c0053190cf5fd7a9b3dc474",
+                  "non_executable_container/absent_foreign_declaration",
+                  "block_explicit_C/function_inherited_block",
+                  "no_local_executable_body"
+                ],
+                [
+                  "captured_empty",
+                  "(contract)",
+                  "aea5b20a6d50c04b33df1be21ad4f67ecebe8487241255277d012fbff406d538",
+                  "captured_empty_workspace",
+                  "files=0,origins=0",
+                  "distinct_from_legacy_absent"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "exact_tuple"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "identity"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "coverage"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": true,
+        "include_smt": true
+      }
+    }
+  ]
+}
