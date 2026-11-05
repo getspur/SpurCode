@@ -11,7 +11,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { execFileSync } = require("child_process");
-const { assetFor, binaryPath, skillsAssetFor } = require("./platform");
+const { assetFor, binaryPath, helperPath, helperIsCompatible, skillsAssetFor } = require("./platform");
 
 const RELEASES = "https://github.com/getspur/spur-releases/releases/download";
 
@@ -61,26 +61,43 @@ async function main() {
 
   const bytes = await fetchBytes(`${base}/${asset}`);
   verifyChecksum(sums, asset, bytes);
-
-  const dest = binaryPath(exe);
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.writeFileSync(dest, bytes, { mode: 0o755 });
-  console.log(`spur ${version} installed: ${dest}`);
+  const helperAsset = asset.replace(/^spur-/, "spur-embedding-worker-");
+  const helperBytes = await fetchBytes(`${base}/${helperAsset}`);
+  verifyChecksum(sums, helperAsset, helperBytes);
 
   // Skills are not embedded in the binary. Extract the release skills
   // tarball so package_asset_candidates finds <pkg>/share/spur/skills.
   const skillsBytes = await fetchBytes(`${base}/${skillsAsset}`);
   verifyChecksum(sums, skillsAsset, skillsBytes);
 
-  const skillsTar = path.join(__dirname, skillsAsset);
+  // Finish downloads, checksums and extraction before replacing any installed
+  // component. A failed helper fetch must leave the previous pair usable.
+  const stage = fs.mkdtempSync(path.join(__dirname, ".spur-install-"));
+  const skillsTar = path.join(stage, skillsAsset);
   fs.writeFileSync(skillsTar, skillsBytes);
   try {
-    // Drop any previous extract so upgrades replace the skill set cleanly.
+    extractSkillsArchive(skillsTar, stage);
+    const stagedSkills = path.join(stage, "share", "spur", "skills");
+    if (!fs.statSync(stagedSkills).isDirectory()) {
+      throw new Error("skills archive layout must be share/spur/skills/");
+    }
+    const dest = binaryPath(exe);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    const stagedHost = path.join(stage, path.basename(dest));
+    const stagedHelper = path.join(stage, path.basename(helperPath(exe)));
+    fs.writeFileSync(stagedHost, bytes, { mode: 0o755 });
+    fs.writeFileSync(stagedHelper, helperBytes, { mode: 0o755 });
+    if (!helperIsCompatible(stagedHelper)) {
+      throw new Error("incompatible embedding worker version, protocol or platform");
+    }
+    fs.renameSync(stagedHelper, helperPath(exe));
+    fs.renameSync(stagedHost, dest);
     const shareRoot = path.join(__dirname, "share");
     fs.rmSync(shareRoot, { recursive: true, force: true });
-    extractSkillsArchive(skillsTar, __dirname);
+    fs.renameSync(path.join(stage, "share"), shareRoot);
+    console.log(`spur ${version} and embedding worker installed: ${dest}`);
   } finally {
-    fs.rmSync(skillsTar, { force: true });
+    fs.rmSync(stage, { recursive: true, force: true });
   }
 
   const skillProbe = path.join(__dirname, "share", "spur", "skills");

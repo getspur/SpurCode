@@ -35,4 +35,22 @@ function binaryPath(exe = process.platform === "win32") {
   return path.join(__dirname, "bin", exe ? "spur.exe" : "spur");
 }
 
-module.exports = { assetFor, binaryPath, skillsAssetFor };
+function helperPath(exe = process.platform === "win32") {
+  return path.join(__dirname, "bin", `spur-embedding-worker${exe ? ".exe" : ""}`);
+}
+
+function helperIsCompatible(executable = helperPath()) {
+  const result = require("child_process").spawnSync(executable, ["--compatibility"], { encoding: "utf8" });
+  if (result.error || result.status !== 0 || result.stderr) return false;
+  try {
+    const metadata = JSON.parse(result.stdout);
+    return metadata.version === require("./package.json").version &&
+      metadata.protocol === 2 &&
+      metadata.os === ({ darwin: "macos", win32: "windows" }[process.platform] || process.platform) &&
+      metadata.arch === ({ arm64: "aarch64", x64: "x86_64" }[process.arch] || process.arch);
+  } catch (_) {
+    return false;
+  }
+}
+
+module.exports = { assetFor, binaryPath, helperPath, helperIsCompatible, skillsAssetFor };
