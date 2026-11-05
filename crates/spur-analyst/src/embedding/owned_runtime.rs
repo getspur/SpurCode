@@ -10,7 +10,7 @@ use spur_graph::EMBEDDING_VECTOR_DIMENSIONS;
 #[cfg(feature = "embed")]
 use {
     anyhow::{anyhow, Context},
-    spur_embedding::{Cancellation, CleanupOwner},
+    spur_embedding::{Cancellation, CleanupOwner, LocalPolicy},
     spur_graph::{
         embedding_query_text_for_model, load_embedding_model_cancellable_with_cleanup,
         EmbeddingModelSelection,
@@ -79,7 +79,7 @@ struct State {
 }
 
 #[cfg(feature = "embed")]
-#[derive(Clone, serde::Deserialize)]
+#[derive(Clone)]
 struct Timeouts {
     queue_capacity: usize,
     startup_timeout_ms: u64,
@@ -91,26 +91,14 @@ struct Timeouts {
 #[cfg(feature = "embed")]
 impl Timeouts {
     fn from_env() -> anyhow::Result<Self> {
-        let raw = std::env::var("SPUR_EMBEDDING_HELPER_CONFIG")?;
-        let config: Self = serde_json::from_str(&raw)?;
-        if config.queue_capacity == 0 || config.queue_capacity.checked_add(1).is_none() {
-            return Err(anyhow!("invalid embedding queue capacity"));
-        }
-        for ms in [
-            config.startup_timeout_ms,
-            config.request_timeout_ms,
-            config.shutdown_timeout_ms,
-            config.shutdown_poll_interval_ms,
-        ] {
-            if ms == 0
-                || Instant::now()
-                    .checked_add(Duration::from_millis(ms))
-                    .is_none()
-            {
-                return Err(anyhow!("invalid embedding timeout"));
-            }
-        }
-        Ok(config)
+        let policy = LocalPolicy::from_env()?;
+        Ok(Self {
+            queue_capacity: policy.queue_capacity,
+            startup_timeout_ms: policy.startup_timeout_ms,
+            request_timeout_ms: policy.request_timeout_ms,
+            shutdown_timeout_ms: policy.shutdown_timeout_ms,
+            shutdown_poll_interval_ms: policy.shutdown_poll_interval_ms,
+        })
     }
     fn deadline(ms: u64) -> anyhow::Result<Instant> {
         Instant::now()
@@ -570,10 +558,109 @@ impl Drop for Owner {
 }
 
 #[cfg(all(test, feature = "embed"))]
+#[path = "owned_runtime_policy_tests.rs"]
+mod policy_tests;
+
+#[cfg(all(test, feature = "embed"))]
 mod completion_tests {
     use super::*;
     use std::future::Future;
     use std::task::{Context, Poll};
+
+    #[cfg(unix)]
+    #[test]
+    fn off_mode_never_launches_configured_helper() {
+        const CHILD: &str = "SPUR_OFF_NO_LAUNCH_TEST_CHILD";
+        if std::env::var_os(CHILD).is_some() {
+            tokio::runtime::Runtime::new().unwrap().block_on(async {
+                let owner = OwnedEmbeddingRuntime::for_mode(AnalystEmbedMode::Off);
+                owner.warm().await.unwrap();
+                assert!(owner.embed_query("unused query").await.is_none());
+                owner.shutdown().await.unwrap();
+            });
+            return;
+        }
+        use std::os::unix::fs::PermissionsExt;
+        let dir = tempfile::tempdir().unwrap();
+        let helper = dir.path().join("helper with spaces");
+        let marker = dir.path().join("launched");
+        std::fs::write(&helper, "#!/bin/sh\ntouch \"$SPUR_OFF_LAUNCH_MARKER\"\n").unwrap();
+        std::fs::set_permissions(&helper, std::fs::Permissions::from_mode(0o700)).unwrap();
+        let config = serde_json::json!({
+            "executable": helper, "args": [], "artifact_budget": 10000,
+            "limits": {"max_frame_bytes": 65536, "max_texts": 2, "max_text_bytes": 8192,
+                "max_total_text_bytes": 16384, "max_dimensions": 768, "max_identity_bytes": 256, "max_pending": 1},
+            "queue_capacity": 1, "max_restarts": 0, "startup_timeout_ms": 10000,
+            "request_timeout_ms": 10000, "shutdown_timeout_ms": 10000, "shutdown_poll_interval_ms": 10
+        });
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", "embedding::owned_runtime::completion_tests::off_mode_never_launches_configured_helper", "--nocapture"])
+            .env(CHILD, "1")
+            .env("SPUR_OFF_LAUNCH_MARKER", &marker)
+            .env("SPUR_EMBEDDING_HELPER_CONFIG", config.to_string())
+            .output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!marker.exists(), "disabled embeddings launched a helper");
+    }
+
+    #[test]
+    fn off_mode_ignores_invalid_helper_configuration() {
+        const CHILD: &str = "SPUR_OFF_EMBED_POLICY_TEST_CHILD";
+        if std::env::var_os(CHILD).is_some() {
+            let runtime = tokio::runtime::Runtime::new().unwrap();
+            runtime.block_on(async {
+                let owner = OwnedEmbeddingRuntime::for_mode(AnalystEmbedMode::Off);
+                owner.warm().await.unwrap();
+                assert!(owner.embed_query("unused query").await.is_none());
+                owner.shutdown().await.unwrap();
+            });
+            return;
+        }
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "embedding::owned_runtime::completion_tests::off_mode_ignores_invalid_helper_configuration",
+                "--nocapture",
+            ])
+            .env(CHILD, "1")
+            .env("SPUR_EMBEDDING_HELPER_CONFIG", "invalid JSON")
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    #[test]
+    fn default_local_policy_does_not_require_json_configuration() {
+        const CHILD: &str = "SPUR_DEFAULT_EMBED_POLICY_TEST_CHILD";
+        if std::env::var_os(CHILD).is_some() {
+            Timeouts::from_env().expect("default local helper policy must be available");
+            return;
+        }
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "embedding::owned_runtime::completion_tests::default_local_policy_does_not_require_json_configuration",
+                "--nocapture",
+            ])
+            .env(CHILD, "1")
+            .env_remove("SPUR_EMBEDDING_HELPER_CONFIG")
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "default policy child failed:\n{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
 
     #[tokio::test]
     async fn local_completion_observes_shutdown_at_both_delivery_boundaries() {

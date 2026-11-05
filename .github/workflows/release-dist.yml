@@ -160,7 +160,7 @@ jobs:
         # --parallel runs the legs concurrently in per-platform remote
         # namespaces; the VM is already up from the spin step, so the
         # concurrent --auto-spin dispatches cannot race a create.
-        run: cargo xtask dist --parallel --platforms "$PLATFORMS"
+        run: scripts/spur-cargo xtask dist --parallel --platforms "$PLATFORMS"
 
       - name: Smoke-test linux x86_64 embedded skills + compatibility bundle
         # The runner itself is linux x86_64 — the one dist platform we can
@@ -172,7 +172,14 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          bins=(dist/spur-*-x86_64-unknown-linux-gnu)
+          (cd dist && sha256sum -c SHA256SUMS)
+          # Every selected target must publish both normal executables.
+          for host in dist/spur-[0-9]*; do
+            worker="${host/dist\/spur-/dist\/spur-embedding-worker-}"
+            test -f "$worker" || { echo "missing embedding worker: $worker" >&2; exit 1; }
+          done
+          bins=(dist/spur-[0-9]*-x86_64-unknown-linux-gnu)
+          workers=(dist/spur-embedding-worker-*-x86_64-unknown-linux-gnu)
           skills=(dist/spur-skills-*.tar.gz)
           duckdb_exts=(dist/spur-duckdb-extensions-*.tar.gz)
           if [[ ${#bins[@]} -eq 0 ]]; then
@@ -217,7 +224,16 @@ jobs:
           mkdir -p "$smoke/prefix/bin" "$smoke/embedded-home" \
             "$smoke/embedded-repo" "$smoke/home" "$smoke/repo"
           cp "${bins[0]}" "$smoke/prefix/bin/spur"
-          chmod +x "$smoke/prefix/bin/spur"
+          cp "${workers[0]}" "$smoke/prefix/bin/spur-embedding-worker"
+          chmod +x "$smoke/prefix/bin/"*
+          "$smoke/prefix/bin/spur-embedding-worker" --compatibility > "$smoke/compatibility.json"
+          python3 - "$smoke/compatibility.json" <<'PY'
+          import json, sys, tomllib
+          with open('Cargo.toml', 'rb') as f:
+              version = tomllib.load(f)['workspace']['package']['version']
+          with open(sys.argv[1]) as f:
+              assert json.load(f) == dict(version=version, protocol=2, os='linux', arch='x86_64')
+          PY
           (
             cd "$smoke/embedded-repo"
             HOME="$smoke/embedded-home" XDG_CONFIG_HOME="$smoke/embedded-home/xdg" \

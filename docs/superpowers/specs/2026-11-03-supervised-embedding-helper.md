@@ -64,6 +64,22 @@ Measure cold/warm request latency, throughput and peak RSS for the actual suppor
 
 ## Scope and execution
 
-Cross-crate changes are necessary to remove both existing native loaders and ship the companion executable. Workers are sequentially reviewed through Plan Engine, explicit codex/profilecodex/gpt-6.1-terra/xhigh. User approval covers implementation and local verification; no repeated confirmation is required.
+Cross-crate changes are necessary to remove both existing native loaders and ship the companion executable. Workers are sequentially reviewed through Plan Engine. The user's latest routing on2026-11-05 is explicit codex/profilecodex/gpt-6.1-sol/xhigh, superseding Terra. User approval covers implementation and local verification; no repeated confirmation is required.
 
 Use SPUR_REMOTE=0 TMPDIR=/private/tmp scripts/spur-cargo, one writer to the shared target. Preserve dirty main and all historical evidence. A real new defect is signaled with source/runtime evidence and addressed within the relevant scope; it does not restart the broad upstream ownership audit automatically.
+
+## Current shipped-packaging rework entry gate (2026-11-05)
+
+M1–M4 metadata/policy/discovery/cache/batching and complete local stage-A acceptance are independently reviewed in [root M4 evidence](../../research/artifacts/2026-11-05-embedding-sol/root-M4-review/README.md). Initial M5 installed/native evidence passed replay, but `shipped-packaging` (`bd-2zan`, plan`dc9cc6fb-d54a-4429-a231-1f7f3425f7fd`) is not approved: equivalent CLI install paths omit the helper, unrelated suffix-matching packages trigger helper installation, and the npm compatibility probe can hang indefinitely. See [root M5 review and current narrow PRE](../../research/artifacts/2026-11-05-embedding-sol/root-M5-review/README.md).
+
+On a clean retry, fast-forward merge protected `spur/review-evidence/embedding-sol-m5-root` to recover the complete implementation plus committed PRE/tests/evidence. Before edits/builds run its `rework-pre/verify_pre.py` and reload `sol_30590f8b03b84f3f`, `sol_7c7ea39c8f77452b`, and `sol_bcf862aef5ff43ca` (2 SAT, 1 UNSAT). The gate binds64 source files, nine repair requirements and seven compound predicates to fingerprint `7eca8eb22d7eaa73296b6a7c5a8bafe8b639a3ec7cdc5eedb0b8758efd681033`. The old62-file M5 PRE is historical. Preserve regression commit `4e6ae0dc9a073374d301ed42beb2a8c23932f2f4` and observed runtime REDs. Repair path-role selection and bound/reap metadata probes using inherited startup/cleanup allowances; do not invent new capacities. Keep codex/profilecodex/gpt-6.1-sol/xhigh routing.
+
+After focused GREEN and affected packaging checks, ROOT must execute fresh complete M5 POST and supply the final runtime/notebook PRE before approval. Preserve initial evidence and all test/fix/evidence commits. No numeric/native/owner/profile redesign, publication, service restart, main merge or external notebook source edit is authorized by this rework. Final runtime/performance/containment and fresh Rust Notebook acceptance remain separate.
+
+## Runtime acceptance observations (2026-11-05)
+
+The live plan approved all five implementation/packaging predecessors before dispatching canonical M6 `bd-1pvg`. The worker persisted and identically replayed its authorized INTENT before acceptance work. Fresh normal-product, three-model, fault/publication, default CLI/PGQ, graph targets/doctests and actual Rust Notebook MCP observations are recorded in [M6 evidence](../../research/artifacts/2026-11-05-embedding-runtime-acceptance/README.md). The eight direct-native historical aborts remain failures, and separate control/reader risks remain explicit.
+
+The new Rust notebook executed the unchanged built default PGQ assertion before and after a real helper abort, plus a pending-inference abort with runtime-loaded/no-reply evidence. Its SQL kernel lacks DuckPGQ; no native notebook-SQL PGQ success is claimed. Observed cold latency and sampled RSS costs, the available test-only in-process control and its limitations are preserved. No performance improvement or broad native safety claim follows.
+
+M6 observations are ready for independent ROOT review, with complete task binding, measured facts and stale/forged/missing/duplicate controls supplied for a **fresh ROOT Jev POST**. This evidence is not approval or epic closure. G2/G3–G5 remain incomplete and resume under their separate objectives.

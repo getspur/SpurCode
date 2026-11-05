@@ -15,9 +15,7 @@ use arrow_schema::{DataType, Field, Schema};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use parquet::arrow::ArrowWriter;
 #[cfg(feature = "embed")]
-use spur_embedding::{
-    Cancellation, CleanupOwner, ClientPolicy, EmbeddingClient, ModelId, ProtocolLimits,
-};
+use spur_embedding::{Cancellation, CleanupOwner, EmbeddingClient, LocalHelper, ModelId};
 #[cfg(feature = "embed")]
 use std::time::{Duration, Instant};
 
@@ -2088,35 +2086,6 @@ where
     result
 }
 
-#[cfg(feature = "embed")]
-#[derive(serde::Deserialize)]
-#[serde(deny_unknown_fields)]
-struct HelperLimits {
-    max_frame_bytes: u32,
-    max_texts: usize,
-    max_text_bytes: usize,
-    max_total_text_bytes: usize,
-    max_dimensions: usize,
-    max_identity_bytes: usize,
-    max_pending: usize,
-}
-
-#[cfg(feature = "embed")]
-#[derive(serde::Deserialize)]
-#[serde(deny_unknown_fields)]
-struct HelperConfig {
-    executable: PathBuf,
-    args: Vec<String>,
-    artifact_budget: u64,
-    limits: HelperLimits,
-    queue_capacity: usize,
-    max_restarts: usize,
-    startup_timeout_ms: u64,
-    request_timeout_ms: u64,
-    shutdown_timeout_ms: u64,
-    shutdown_poll_interval_ms: u64,
-}
-
 /// Owned supervised model. Dropping it performs checked helper shutdown.
 #[cfg(feature = "embed")]
 pub struct EmbeddingModelHandle {
@@ -2159,11 +2128,16 @@ impl EmbeddingModelHandle {
     pub fn embed<T: AsRef<str>>(
         &mut self,
         texts: &[T],
-        _batch_size: Option<usize>,
+        batch_size: Option<usize>,
     ) -> Result<Vec<Vec<f32>>> {
         let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
         self.client
-            .embed(texts, checked_deadline(self.request_timeout)?)
+            .embed_batched_cancellable(
+                texts,
+                batch_size,
+                checked_deadline(self.request_timeout)?,
+                Cancellation::new(),
+            )
             .context("supervised embedding request")
     }
 
@@ -2176,7 +2150,7 @@ impl EmbeddingModelHandle {
     ) -> Result<Vec<Vec<f32>>> {
         let texts = texts.iter().map(|text| text.as_ref().to_owned()).collect();
         self.client
-            .embed_cancellable(texts, deadline, cancel)
+            .embed_batched_cancellable(texts, None, deadline, cancel)
             .context("supervised embedding request")
     }
 }
@@ -2190,7 +2164,7 @@ impl Drop for EmbeddingModelHandle {
     }
 }
 
-/// Construct a model using the explicitly configured companion and limits.
+/// Construct a model using shared policy and a compatible local companion.
 #[cfg(feature = "embed")]
 pub fn load_embedding_model(
     embedding_model: EmbeddingModelSelection,
@@ -2228,36 +2202,10 @@ fn load_embedding_model_impl(
     cancellation: Option<(Cancellation, Instant)>,
     cleanup: Option<Arc<CleanupOwner>>,
 ) -> Result<EmbeddingModelHandle> {
-    let raw = std::env::var("SPUR_EMBEDDING_HELPER_CONFIG").context(
-        "SPUR_EMBEDDING_HELPER_CONFIG is required until helper packaging supplies configuration",
-    )?;
-    let config: HelperConfig =
-        serde_json::from_str(&raw).context("invalid embedding helper configuration")?;
-    if config.executable.as_os_str().is_empty() || config.artifact_budget == 0 {
-        bail!("embedding helper executable and artifact budget must be nonzero");
-    }
-    let limits = ProtocolLimits {
-        max_frame_bytes: config.limits.max_frame_bytes,
-        max_texts: config.limits.max_texts,
-        max_text_bytes: config.limits.max_text_bytes,
-        max_total_text_bytes: config.limits.max_total_text_bytes,
-        max_dimensions: config.limits.max_dimensions,
-        max_identity_bytes: config.limits.max_identity_bytes,
-        max_pending: config.limits.max_pending,
-    };
-    limits
-        .validate()
-        .context("invalid embedding protocol limits")?;
-    let policy = ClientPolicy {
-        queue_capacity: config.queue_capacity,
-        max_restarts: config.max_restarts,
-        startup_timeout: Duration::from_millis(config.startup_timeout_ms),
-        request_timeout: Duration::from_millis(config.request_timeout_ms),
-        shutdown_timeout: Duration::from_millis(config.shutdown_timeout_ms),
-        shutdown_poll_interval: Duration::from_millis(config.shutdown_poll_interval_ms),
-    };
-    let executable = config.executable.into_os_string();
-    let prefix: Vec<std::ffi::OsString> = config.args.into_iter().map(Into::into).collect();
+    let helper = LocalHelper::from_env()?;
+    let config = helper.policy();
+    let limits = config.limits.clone();
+    let policy = config.client_policy()?;
     let cleanup = match cleanup {
         Some(cleanup) => cleanup,
         None => Arc::new(CleanupOwner::new(policy.shutdown_poll_interval)?),
@@ -2269,9 +2217,11 @@ fn load_embedding_model_impl(
             checked_deadline(policy.startup_timeout)?,
         ),
     };
-    let identity = EmbeddingClient::describe_model_cancellable_with_cleanup(
-        executable.clone(),
-        prefix.clone(),
+    // Compatibility and descriptor consume the same effective startup budget.
+    let deadline = deadline.min(checked_deadline(policy.startup_timeout)?);
+    helper.check_compatibility(deadline, cancel.clone(), Arc::clone(&cleanup))?;
+    let identity = EmbeddingClient::describe_command_with_cleanup(
+        helper.command().clone(),
         embedding_model.model_id(),
         config.artifact_budget,
         limits.clone(),
@@ -2284,7 +2234,7 @@ fn load_embedding_model_impl(
     if identity.dimensions != EMBEDDING_VECTOR_DIMENSIONS {
         bail!("embedding helper returned unexpected dimensions");
     }
-    let mut args = prefix;
+    let mut args = helper.command().args().to_vec();
     args.extend(
         [
             limits.max_frame_bytes.to_string(),
@@ -2299,9 +2249,8 @@ fn load_embedding_model_impl(
         .into_iter()
         .map(Into::into),
     );
-    let client = EmbeddingClient::new_with_cleanup(
-        executable,
-        args,
+    let client = EmbeddingClient::new_command_with_cleanup(
+        helper.command().with_args(args),
         identity,
         limits,
         policy.clone(),
@@ -4075,6 +4024,9 @@ mod tests {
             }
         }
     }
+
+    #[cfg(all(feature = "embed", feature = "test-support"))]
+    include!("lance_sections_batch_tests.rs");
 
     fn env_lock() -> MutexGuard<'static, ()> {
         ENV_LOCK.lock().expect("env lock")

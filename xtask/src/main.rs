@@ -401,7 +401,13 @@ fn install_macos_cli(
     extra: &[String],
 ) -> Result<(), String> {
     if local {
-        let mut build = cargo_build_command(workspace_root, debug, &["spur-cli"], &[], extra);
+        let mut build = cargo_build_command(
+            workspace_root,
+            debug,
+            &["spur-cli", "spur-embedding-worker"],
+            &[],
+            extra,
+        );
         run_status(&mut build, "cargo build -p spur-cli")?;
         return install_built_binary(workspace_root, debug, "spur");
     }
@@ -415,6 +421,16 @@ fn install_macos_cli(
     run_status(&mut build, "scripts/spur-cargo zigbuild -p spur-cli")?;
     let mut fetch = zigbuild_install_fetch_command(workspace_root, &triple, debug);
     run_status(&mut fetch, "scripts/cloud-build/fetch.sh --via-s3 (spur)")?;
+    let mut worker_fetch = zigbuild_install_fetch_named_command(
+        workspace_root,
+        &triple,
+        debug,
+        "spur-embedding-worker",
+    );
+    run_status(
+        &mut worker_fetch,
+        "scripts/cloud-build/fetch.sh --via-s3 (embedding worker)",
+    )?;
 
     let profile = if debug { "debug" } else { "release" };
     let fetched = workspace_root
@@ -424,6 +440,7 @@ fn install_macos_cli(
         .join("spur");
     // S3 download does not preserve the executable bit.
     mark_executable(&fetched)?;
+    mark_executable(&fetched.with_file_name("spur-embedding-worker"))?;
     install_binary_from(workspace_root, &fetched, "spur")
 }
 
@@ -450,7 +467,14 @@ fn zigbuild_install_build_command(
     if !debug {
         cmd.arg("--release");
     }
-    cmd.args(["-p", "spur-cli", "--target", triple]);
+    cmd.args([
+        "-p",
+        "spur-cli",
+        "-p",
+        "spur-embedding-worker",
+        "--target",
+        triple,
+    ]);
     for arg in extra.iter().filter(|arg| !is_xtask_install_flag(arg)) {
         cmd.arg(arg);
     }
@@ -459,8 +483,17 @@ fn zigbuild_install_build_command(
 }
 
 fn zigbuild_install_fetch_command(workspace_root: &Path, triple: &str, debug: bool) -> Command {
+    zigbuild_install_fetch_named_command(workspace_root, triple, debug, "spur")
+}
+
+fn zigbuild_install_fetch_named_command(
+    workspace_root: &Path,
+    triple: &str,
+    debug: bool,
+    binary: &str,
+) -> Command {
     let profile = if debug { "debug" } else { "release" };
-    let artifact = format!("target/{triple}/{profile}/spur");
+    let artifact = format!("target/{triple}/{profile}/{binary}");
     let mut cmd = Command::new(workspace_root.join("scripts/cloud-build/fetch.sh"));
     // Match spur-cargo's namespace so fetch finds both the artifact and its
     // recorded builder, even when the checkout directory has another name.
@@ -555,6 +588,16 @@ impl DistPlatform {
             Self::MacX64 => format!("spur-{version}-x86_64-apple-darwin"),
             Self::WindowsX64 => format!("spur-{version}-x86_64-pc-windows-msvc.exe"),
         }
+    }
+
+    fn worker_artifact_rel(self) -> String {
+        self.artifact_rel()
+            .replace("/spur", "/spur-embedding-worker")
+    }
+
+    fn worker_artifact_name(self, version: &str) -> String {
+        self.artifact_name(version)
+            .replacen("spur-", "spur-embedding-worker-", 1)
     }
 
     fn build_label(self) -> &'static str {
@@ -900,6 +943,24 @@ fn run_dist_platform(
     }
     // S3 download does not preserve the executable bit.
     mark_executable(&dest)?;
+    let worker = out_dir.join(platform.worker_artifact_name(version));
+    let mut fetch_worker =
+        dist_fetch_path_command(workspace_root, &platform.worker_artifact_rel(), &worker);
+    if let Some(queue_slots) = parallel {
+        apply_dist_namespace(&mut fetch_worker, platform, queue_slots);
+        run_status_prefixed(
+            &mut fetch_worker,
+            "scripts/cloud-build/fetch.sh --via-s3 (embedding worker)",
+            platform.namespace_key(),
+        )?;
+    } else {
+        run_status(
+            &mut fetch_worker,
+            "scripts/cloud-build/fetch.sh --via-s3 (embedding worker)",
+        )?;
+    }
+    mark_executable(&worker)?;
+    eprintln!("packaged embedding worker: {}", worker.display());
     Ok(dest)
 }
 
@@ -1078,16 +1139,18 @@ fn dist_build_command(workspace_root: &Path, platform: DistPlatform) -> Command 
             ]);
         }
     }
+    cmd.args(["-p", "spur-embedding-worker"]);
     cmd.current_dir(workspace_root);
     cmd
 }
 
 fn dist_fetch_command(workspace_root: &Path, platform: DistPlatform, dest: &Path) -> Command {
+    dist_fetch_path_command(workspace_root, platform.artifact_rel(), dest)
+}
+
+fn dist_fetch_path_command(workspace_root: &Path, artifact: &str, dest: &Path) -> Command {
     let mut cmd = Command::new(workspace_root.join("scripts/cloud-build/fetch.sh"));
-    cmd.arg("--via-s3")
-        .arg("--to")
-        .arg(dest)
-        .arg(platform.artifact_rel());
+    cmd.arg("--via-s3").arg("--to").arg(dest).arg(artifact);
     cmd.current_dir(workspace_root);
     cmd
 }
@@ -1210,7 +1273,13 @@ fn linux_install_build_command(
     extra: &[String],
     _notebook_channel: NotebookInstallChannel,
 ) -> Command {
-    cargo_build_command(workspace_root, debug, &["spur-cli"], &[], extra)
+    cargo_build_command(
+        workspace_root,
+        debug,
+        &["spur-cli", "spur-embedding-worker"],
+        &[],
+        extra,
+    )
 }
 
 fn linux_install_build_label(_notebook_channel: NotebookInstallChannel) -> &'static str {
@@ -1260,8 +1329,20 @@ fn install_remote_linux_binaries(
         &mut build,
         "scripts/cloud-build/build.sh remote release build",
     )?;
+    let mut worker_fetch = Command::new(workspace_root.join("scripts/cloud-build/fetch.sh"));
+    worker_fetch
+        .arg("--to")
+        .arg(dest.dir.join("spur-embedding-worker"))
+        .arg("target/release/spur-embedding-worker")
+        .current_dir(workspace_root);
+    run_status(
+        &mut worker_fetch,
+        "scripts/cloud-build/fetch.sh target/release/spur-embedding-worker",
+    )?;
+    mark_executable(&dest.dir.join("spur-embedding-worker"))?;
     let mut fetch = remote_install_fetch_command(workspace_root, &dest.dir, notebook_channel);
     run_status(&mut fetch, remote_install_fetch_label(notebook_channel))?;
+    mark_executable(&dest.dir.join("spur"))?;
     install_bundled_skill_assets(workspace_root, &dest.dir)
 }
 
@@ -1275,7 +1356,8 @@ fn remote_install_build_command(
         "--release",
         "-p",
         "spur-cli",
-        "--no-default-features",
+        "-p",
+        "spur-embedding-worker",
     ]);
     cmd.arg("--locked").current_dir(workspace_root);
     cmd
@@ -1329,8 +1411,10 @@ fn cargo_build_command(
     features: &[&str],
     extra: &[String],
 ) -> Command {
-    let mut cmd = Command::new(cargo());
-    cmd.arg("build").current_dir(workspace_root);
+    let mut cmd = Command::new(workspace_root.join("scripts/spur-cargo"));
+    cmd.arg("build")
+        .env("SPUR_REMOTE", "0")
+        .current_dir(workspace_root);
     if !debug {
         cmd.arg("--release");
     }
@@ -1379,10 +1463,10 @@ fn install_built_binary(
     binary_name: &str,
 ) -> Result<(), String> {
     let profile = if debug { "debug" } else { "release" };
-    let built_binary = workspace_root
-        .join("target")
-        .join(profile)
-        .join(binary_name);
+    let target = env::var_os("CARGO_TARGET_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| workspace_root.join("target"));
+    let built_binary = target.join(profile).join(binary_name);
     install_binary_from(workspace_root, &built_binary, binary_name)
 }
 
@@ -1398,9 +1482,23 @@ fn install_binary_from(
         ));
     }
 
+    // Preflight the companion before replacing an existing host. No helper
+    // execution or compilation belongs in installation/runtime discovery.
+    let helper = built_binary.with_file_name("spur-embedding-worker");
+    if binary_name == "spur" && !helper.is_file() {
+        return Err(format!("expected embedding worker at {}", helper.display()));
+    }
+
     let bin_dir = cargo_home_bin();
     fs::create_dir_all(&bin_dir)
         .map_err(|err| format!("failed to create {}: {err}", bin_dir.display()))?;
+    if binary_name == "spur" {
+        let dest = bin_dir.join("spur-embedding-worker");
+        remove_existing_path(&dest)?;
+        fs::copy(&helper, &dest)
+            .map_err(|err| format!("failed to install {}: {err}", helper.display()))?;
+        mark_executable(&dest)?;
+    }
     let installed_binary = bin_dir.join(binary_name);
     remove_existing_path(&installed_binary)?;
     fs::copy(built_binary, &installed_binary).map_err(|err| {
@@ -1589,6 +1687,12 @@ mod tests {
             &["spur-cli/example-feature"],
             &extra,
         );
+        assert!(
+            command.get_envs().any(
+                |(key, value)| key == "SPUR_REMOTE" && value == Some(std::ffi::OsStr::new("0"))
+            ),
+            "native install build must retain local routing"
+        );
 
         assert_eq!(
             command_args(&command),
@@ -1623,7 +1727,8 @@ mod tests {
                 "--release".to_owned(),
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
-                "--no-default-features".to_owned(),
+                "-p".to_owned(),
+                "spur-embedding-worker".to_owned(),
                 "--locked".to_owned(),
             ]
         );
@@ -1645,7 +1750,8 @@ mod tests {
                 "--release".to_owned(),
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
-                "--no-default-features".to_owned(),
+                "-p".to_owned(),
+                "spur-embedding-worker".to_owned(),
                 "--locked".to_owned(),
             ]
         );
@@ -1781,6 +1887,16 @@ mod tests {
             fs::read_to_string(installed_asset).unwrap(),
             "---\nname: package-skill\ndescription: packaged\n---\nbody\n"
         );
+        // A missing remote helper must not replace the previously installed host.
+        fs::write(&fetch_script, "#!/bin/sh\nwhile [ \"$#\" -gt 0 ]; do\ncase \"$1\" in\n--to) dest=\"$2\"; shift 2 ;;\n*spur-embedding-worker) exit 42 ;;\n*) shift ;;\nesac\ndone\nprintf 'new host without helper' > \"$dest\"\n").unwrap();
+        assert!(
+            install_remote_linux_binaries(&workspace, &dest, NotebookInstallChannel::Green)
+                .is_err()
+        );
+        assert_eq!(
+            fs::read_to_string(dest.dir.join("spur")).unwrap(),
+            "fake remote spur"
+        );
     }
 
     #[test]
@@ -1795,6 +1911,11 @@ mod tests {
         let built = workspace.join("target/debug/spur");
         fs::create_dir_all(built.parent().unwrap()).unwrap();
         fs::write(&built, "fake spur binary").unwrap();
+        fs::write(
+            built.with_file_name("spur-embedding-worker"),
+            "fake worker binary",
+        )
+        .unwrap();
         let asset = workspace.join("crates/spur-cli/assets/skills/package-skill/SKILL.md");
         fs::create_dir_all(asset.parent().unwrap()).unwrap();
         fs::write(
@@ -1809,6 +1930,7 @@ mod tests {
             .arg("--nocapture")
             .env("SPUR_XTASK_INSTALL_ASSET_CHILD", "1")
             .env("SPUR_XTASK_WORKSPACE", &workspace)
+            .env_remove("CARGO_TARGET_DIR")
             .env("CARGO_HOME", &cargo_home)
             .output()
             .expect("child test process should run");
@@ -1818,6 +1940,25 @@ mod tests {
             "child install test failed\nstdout:\n{}\nstderr:\n{}",
             String::from_utf8_lossy(&output.stdout),
             String::from_utf8_lossy(&output.stderr)
+        );
+        fs::remove_file(built.with_file_name("spur-embedding-worker")).unwrap();
+        let missing = Command::new(env::current_exe().unwrap())
+            .args([
+                "tests::install_built_binary_child_asserts_skill_asset_copy",
+                "--exact",
+                "--nocapture",
+            ])
+            .env("SPUR_XTASK_INSTALL_ASSET_CHILD", "1")
+            .env("SPUR_EXPECT_MISSING_HELPER", "1")
+            .env("SPUR_XTASK_WORKSPACE", &workspace)
+            .env("CARGO_HOME", &cargo_home)
+            .env_remove("CARGO_TARGET_DIR")
+            .output()
+            .unwrap();
+        assert!(
+            missing.status.success(),
+            "{}",
+            String::from_utf8_lossy(&missing.stdout)
         );
         let stdout = String::from_utf8_lossy(&output.stdout);
         assert!(
@@ -1833,7 +1974,18 @@ mod tests {
         }
         let workspace = PathBuf::from(env::var_os("SPUR_XTASK_WORKSPACE").unwrap());
 
+        if env::var_os("SPUR_EXPECT_MISSING_HELPER").is_some() {
+            assert!(
+                install_built_binary(&workspace, true, "spur").is_err(),
+                "missing helper must prevent host installation"
+            );
+            return;
+        }
         install_built_binary(&workspace, true, "spur").unwrap();
+        assert_eq!(
+            fs::read_to_string(cargo_home_bin().join("spur-embedding-worker")).unwrap(),
+            "fake worker binary"
+        );
 
         let installed_asset = cargo_home_bin()
             .parent()
@@ -2273,6 +2425,8 @@ fi
                 "--release".to_owned(),
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
+                "-p".to_owned(),
+                "spur-embedding-worker".to_owned(),
                 "--target".to_owned(),
                 "aarch64-apple-darwin".to_owned(),
                 "--locked".to_owned(),
@@ -2349,6 +2503,7 @@ done
 artifact="$FAKE_REMOTE_ROOT/$SPUR_REMOTE_NAMESPACE/main/$triple/release/spur"
 mkdir -p "$(dirname "$artifact")"
 printf 'fake Mach-O %s' "$SPUR_REMOTE_NAMESPACE" > "$artifact"
+printf 'fake worker %s' "$SPUR_REMOTE_NAMESPACE" > "${artifact}-embedding-worker"
 "#,
             )
             .unwrap();
@@ -2540,6 +2695,58 @@ cp "$source" "$destination"
     }
 
     #[test]
+    fn packaging_builds_embedding_worker_with_default_host() {
+        let root = PathBuf::from("/workspace with spaces");
+        for platform in DistPlatform::ALL {
+            let args = command_args(&dist_build_command(&root, platform));
+            assert!(
+                args.windows(2)
+                    .any(|pair| pair == ["-p", "spur-embedding-worker"]),
+                "{platform:?} must build the companion worker: {args:?}"
+            );
+        }
+        let args = command_args(&linux_install_build_command(
+            &root,
+            false,
+            &[],
+            NotebookInstallChannel::Auto,
+        ));
+        assert!(args
+            .windows(2)
+            .any(|pair| pair == ["-p", "spur-embedding-worker"]));
+        let args = command_args(&remote_install_build_command(
+            &root,
+            NotebookInstallChannel::Auto,
+        ));
+        assert!(!args.iter().any(|arg| arg == "--no-default-features"));
+        assert!(args
+            .windows(2)
+            .any(|pair| pair == ["-p", "spur-embedding-worker"]));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn dist_fetches_both_platform_artifacts_into_space_containing_path() {
+        let root = temp_test_dir("dist worker root with spaces");
+        let scripts = root.join("scripts");
+        fs::create_dir_all(scripts.join("cloud-build")).unwrap();
+        let build = scripts.join("spur-cargo");
+        fs::write(&build, "#!/bin/sh\nexit 0\n").unwrap();
+        make_executable(&build);
+        let fetch = scripts.join("cloud-build/fetch.sh");
+        fs::write(&fetch, "#!/bin/sh\n[ \"$1\" = --via-s3 ] || exit 2\n[ \"$2\" = --to ] || exit 2\nprintf '%s' \"$4\" > \"$3\"\n").unwrap();
+        make_executable(&fetch);
+        let out = root.join("output with spaces");
+        fs::create_dir_all(&out).unwrap();
+        run_dist_platform(&root, DistPlatform::MacAarch64, "1.20.0", &out, None).unwrap();
+        assert_eq!(
+            fs::read_to_string(out.join("spur-embedding-worker-1.20.0-aarch64-apple-darwin"))
+                .unwrap(),
+            "target/aarch64-apple-darwin/release/spur-embedding-worker"
+        );
+    }
+
+    #[test]
     fn dist_build_commands_dispatch_spur_cargo_per_platform() {
         let root = PathBuf::from("/workspace");
 
@@ -2603,6 +2810,7 @@ cp "$source" "$destination"
                 command_args(&command),
                 expected
                     .into_iter()
+                    .chain(["-p", "spur-embedding-worker"])
                     .map(str::to_owned)
                     .collect::<Vec<String>>()
             );
@@ -2690,6 +2898,8 @@ tokio = { version = "1", features = ["full"] }
                 "--release".to_owned(),
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
+                "-p".to_owned(),
+                "spur-embedding-worker".to_owned(),
                 "--locked".to_owned(),
             ]
         );
@@ -2711,6 +2921,8 @@ tokio = { version = "1", features = ["full"] }
                 "--release".to_owned(),
                 "-p".to_owned(),
                 "spur-cli".to_owned(),
+                "-p".to_owned(),
+                "spur-embedding-worker".to_owned(),
                 "--locked".to_owned(),
             ]
         );

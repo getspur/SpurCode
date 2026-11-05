@@ -30,6 +30,8 @@ pub struct ClientPolicy {
 
 #[derive(Debug, Error)]
 pub enum ClientError {
+    #[error(transparent)]
+    Batch(#[from] crate::BatchError),
     #[error("invalid policy: {0}")]
     InvalidPolicy(String),
     #[error("deadline exceeded")]
@@ -186,6 +188,7 @@ impl CleanupOwner {
 pub struct EmbeddingClient {
     program: OsString,
     args: Vec<OsString>,
+    environment: Vec<(OsString, OsString)>,
     identity: ModelIdentity,
     limits: ProtocolLimits,
     policy: ClientPolicy,
@@ -288,6 +291,145 @@ impl Trace {
     }
 }
 impl EmbeddingClient {
+    /// Bounded metadata-only probe, using the descriptor's existing cleanup owner.
+    pub(crate) fn compatibility_output(
+        command: &crate::HelperCommand,
+        local: &crate::LocalPolicy,
+        deadline: Instant,
+        cancel: Cancellation,
+        cleanup: Arc<CleanupOwner>,
+    ) -> Result<Vec<u8>, crate::DiscoveryError> {
+        let limit = local.limits.max_frame_bytes;
+        let read_bound = u64::from(limit)
+            .checked_add(1)
+            .ok_or_else(|| ClientError::InvalidPolicy("metadata sentinel overflow".into()))?;
+        let identity = ModelIdentity {
+            model: ModelId::NomicEmbedTextV15,
+            dimensions: 1,
+            model_fingerprint: "-".into(),
+            tokenizer_fingerprint: "-".into(),
+            pooling: "-".into(),
+            normalization: "-".into(),
+            prefix: "-".into(),
+        };
+        let mut args = command.args().to_vec();
+        args.push("--compatibility".into());
+        let policy = local.client_policy().map_err(crate::DiscoveryError::from)?;
+        let client = Self::new_command_with_cleanup(
+            command.with_args(args),
+            identity,
+            local.limits.clone(),
+            policy.clone(),
+            cleanup,
+        )?;
+        cancel.register(&client.wake);
+        let generation = Uuid::new_v4();
+        let mut child = client.launch(generation, deadline, &cancel)?;
+        drop(child.stdin.take());
+        let output = child.stdout.take().expect("compatibility stdout");
+        let wake = Arc::clone(&client.wake);
+        let (tx, rx) = mpsc::sync_channel(1);
+        let job = thread::spawn(move || {
+            let mut bytes = Vec::new();
+            let result = output
+                .take(read_bound)
+                .read_to_end(&mut bytes)
+                .map_err(|e| crate::DiscoveryError::Metadata(e.to_string()))
+                .and_then(|_| {
+                    if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > u64::from(limit) {
+                        Err(crate::DiscoveryError::MetadataLimit(limit))
+                    } else {
+                        Ok(bytes)
+                    }
+                });
+            let _gate = wake.gate.lock().unwrap();
+            let _ = tx.send(result);
+            wake.cv.notify_all();
+        });
+        let mut gate = client.wake.gate.lock().unwrap();
+        let received = loop {
+            if cancel.cancelled() {
+                break Err(ClientError::Cancelled.into());
+            }
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                break Err(ClientError::Timeout.into());
+            }
+            match rx.try_recv() {
+                Ok(result) => break result,
+                Err(mpsc::TryRecvError::Disconnected) => {
+                    break Err(crate::DiscoveryError::Metadata("reader stopped".into()))
+                }
+                Err(mpsc::TryRecvError::Empty) => {}
+            }
+            gate = client.wake.cv.wait_timeout(gate, remaining).unwrap().0;
+        };
+        drop(gate);
+        let bytes = match received {
+            Ok(bytes) => {
+                let _ = job.join();
+                bytes
+            }
+            Err(error) => {
+                client.track_cleanup(Self::dispose_child(
+                    child,
+                    generation,
+                    Arc::clone(&client.trace),
+                    Some(job),
+                ));
+                return Err(error);
+            }
+        };
+        loop {
+            let error = if cancel.cancelled() {
+                Some(ClientError::Cancelled)
+            } else if Instant::now() >= deadline {
+                Some(ClientError::Timeout)
+            } else {
+                None
+            };
+            if let Some(error) = error {
+                client.track_cleanup(Self::dispose_child(
+                    child,
+                    generation,
+                    Arc::clone(&client.trace),
+                    None,
+                ));
+                return Err(error.into());
+            }
+            match child.try_wait() {
+                Ok(Some(status)) if status.success() => return Ok(bytes),
+                Ok(Some(status)) => return Err(crate::DiscoveryError::Exit(status.to_string())),
+                Ok(None) => {
+                    let gate = client.wake.gate.lock().unwrap();
+                    if !cancel.cancelled() {
+                        drop(
+                            client
+                                .wake
+                                .cv
+                                .wait_timeout(
+                                    gate,
+                                    policy
+                                        .shutdown_poll_interval
+                                        .min(deadline.saturating_duration_since(Instant::now())),
+                                )
+                                .unwrap(),
+                        );
+                    }
+                }
+                Err(error) => {
+                    client.track_cleanup(Self::dispose_child(
+                        child,
+                        generation,
+                        Arc::clone(&client.trace),
+                        None,
+                    ));
+                    return Err(ClientError::Transport(error.to_string()).into());
+                }
+            }
+        }
+    }
+
     /// Discover a helper's actual artifact-bound identity before opening a session.
     /// All bounds and the deadline are supplied by the caller.
     pub fn describe_model(
@@ -347,7 +489,7 @@ impl EmbeddingClient {
     )]
     pub fn describe_model_cancellable_with_cleanup(
         program: impl Into<OsString>,
-        mut args: Vec<OsString>,
+        args: Vec<OsString>,
         model: ModelId,
         artifact_budget: u64,
         limits: ProtocolLimits,
@@ -356,6 +498,33 @@ impl EmbeddingClient {
         cancel: Cancellation,
         cleanup: Arc<CleanupOwner>,
     ) -> Result<ModelIdentity, ClientError> {
+        Self::describe_command_with_cleanup(
+            crate::HelperCommand::new(program, args),
+            model,
+            artifact_budget,
+            limits,
+            policy,
+            caller_deadline,
+            cancel,
+            cleanup,
+        )
+    }
+
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "descriptor configuration plus caller-owned cancellation/cleanup"
+    )]
+    pub fn describe_command_with_cleanup(
+        command: crate::HelperCommand,
+        model: ModelId,
+        artifact_budget: u64,
+        limits: ProtocolLimits,
+        policy: ClientPolicy,
+        caller_deadline: Instant,
+        cancel: Cancellation,
+        cleanup: Arc<CleanupOwner>,
+    ) -> Result<ModelIdentity, ClientError> {
+        let mut args = command.args().to_vec();
         let generation = Uuid::new_v4();
         let model_name = match model {
             ModelId::NomicEmbedTextV15 => "NomicEmbedTextV15",
@@ -385,9 +554,8 @@ impl EmbeddingClient {
             normalization: "-".into(),
             prefix: "-".into(),
         };
-        let client = Self::new_with_cleanup(
-            program,
-            args,
+        let client = Self::new_command_with_cleanup(
+            command.with_args(args),
             placeholder,
             limits.clone(),
             policy.clone(),
@@ -556,6 +724,7 @@ impl EmbeddingClient {
         Ok(Self {
             program: program.into(),
             args,
+            environment: Vec::new(),
             identity,
             limits,
             policy,
@@ -581,6 +750,26 @@ impl EmbeddingClient {
     ) -> Result<Self, ClientError> {
         let mut client = Self::new(program, args, identity, limits, policy)?;
         client.cleanup = cleanup;
+        Ok(client)
+    }
+
+    /// Apply the same immutable child environment to descriptor and serving commands.
+    pub fn new_command_with_cleanup(
+        command: crate::HelperCommand,
+        identity: ModelIdentity,
+        limits: ProtocolLimits,
+        policy: ClientPolicy,
+        cleanup: Arc<CleanupOwner>,
+    ) -> Result<Self, ClientError> {
+        let mut client = Self::new_with_cleanup(
+            command.program().to_owned(),
+            command.args().to_vec(),
+            identity,
+            limits,
+            policy,
+            cleanup,
+        )?;
+        client.environment = command.environment().to_vec();
         Ok(client)
     }
 
@@ -723,6 +912,59 @@ impl EmbeddingClient {
     ) -> Result<Vec<Vec<f32>>, ClientError> {
         self.embed_cancellable(texts, deadline, Cancellation::new())
     }
+    /// Embed a logical input in bounded frames, returning all ordered rows or an error.
+    /// Admission, startup and every chunk share one effective request deadline.
+    pub fn embed_batched_cancellable(
+        &self,
+        texts: Vec<String>,
+        batch_size: Option<usize>,
+        caller_deadline: Instant,
+        cancel: Cancellation,
+    ) -> Result<Vec<Vec<f32>>, ClientError> {
+        let deadline = Self::effective(caller_deadline, self.policy.request_timeout)?;
+        let chunks = crate::plan_batches(&texts, &self.identity, &self.limits, batch_size)?;
+        let _active = self.acquire(deadline, &cancel, false)?;
+        let mut state = self.state.lock().unwrap();
+        let mut rows = Vec::new();
+        for chunk in chunks {
+            self.check_batch(deadline, &cancel)?;
+            if state.worker.is_none() {
+                self.start(&mut state, deadline, &cancel)?;
+            }
+            match self.exchange(
+                &mut state.worker,
+                Request::Embed {
+                    identity: self.identity.clone(),
+                    texts: texts[chunk].to_vec(),
+                },
+                deadline,
+                &cancel,
+            )? {
+                Reply::Embeddings {
+                    rows: chunk_rows, ..
+                } => rows.extend(chunk_rows),
+                Reply::Error { code, message } => {
+                    return Err(ClientError::Remote { code, message })
+                }
+                _ => return Err(ClientError::Transport("unexpected reply".into())),
+            }
+        }
+        self.check_batch(deadline, &cancel)?;
+        Ok(rows)
+    }
+    fn check_batch(&self, deadline: Instant, cancel: &Cancellation) -> Result<(), ClientError> {
+        let gate = self.wake.gate.lock().unwrap();
+        if gate.closed {
+            return Err(ClientError::Closed);
+        }
+        if cancel.cancelled() {
+            return Err(ClientError::Cancelled);
+        }
+        if Instant::now() >= deadline {
+            return Err(ClientError::Timeout);
+        }
+        Ok(())
+    }
     pub fn embed_cancellable(
         &self,
         texts: Vec<String>,
@@ -834,6 +1076,7 @@ impl EmbeddingClient {
         let trace = Arc::clone(&self.trace);
         let program = self.program.clone();
         let args = self.args.clone();
+        let environment = self.environment.clone();
         let job = thread::spawn(move || {
             trace.hold_spawn();
             {
@@ -844,6 +1087,7 @@ impl EmbeddingClient {
             }
             let result = Command::new(program)
                 .args(args)
+                .envs(environment)
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
                 .stderr(Stdio::null())

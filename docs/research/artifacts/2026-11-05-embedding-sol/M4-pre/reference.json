@@ -1,0 +1,1502 @@
+{
+  "source_fingerprint": "dd5361615d064068fe6a06c1d57d6c5858f5a76da83ffdb45f14d9b4d75302ba",
+  "binding": "dd5361615d064068fe6a06c1d57d6c5858f5a76da83ffdb45f14d9b4d75302ba:8cf2858c2434b47dadcf98ef53d3c197e791f821f25993b8b48e07bbe6bd7e6c",
+  "protocol_identity": {
+    "model": "NomicEmbedTextV15",
+    "dimensions": 768,
+    "model_fingerprint": "e58ab91635b10d545b053784ce1c5789a83553b2f2c57949f44e468023f7c9de",
+    "tokenizer_fingerprint": "c821f0c73638e67d15084fedee10987edaaebd44dcababa8aefb5f35de6d315f",
+    "pooling": "mean",
+    "normalization": "unit",
+    "prefix": "legacy_preformatted"
+  },
+  "policy": {
+    "limits": {
+      "max_frame_bytes": 33554432,
+      "max_texts": 64,
+      "max_text_bytes": 65536,
+      "max_total_text_bytes": 4194304,
+      "max_dimensions": 768,
+      "max_identity_bytes": 64,
+      "max_pending": 1
+    },
+    "artifact_budget": 644080771,
+    "queue_capacity": 1,
+    "max_restarts": 0,
+    "startup_timeout_ms": 120000,
+    "request_timeout_ms": 240000,
+    "shutdown_timeout_ms": 30000,
+    "shutdown_poll_interval_ms": 20
+  },
+  "fresh_rust_writer_measurement": {
+    "composed_request_ms": 240000,
+    "escaped_request_body_bytes": 25168231,
+    "first_inference_phase_budget_ms": 120000,
+    "frame_limit_bytes": 33554432,
+    "one_byte_short_frame_error": "JSON: frame too large",
+    "one_byte_short_frame_published_bytes": 0,
+    "one_byte_short_frame_rejected": true,
+    "raw_float_bytes": 196608,
+    "raw_text_bytes": 4194304,
+    "rows": 64,
+    "startup_phase_budget_ms": 120000,
+    "text_bytes_each": 65536
+  },
+  "python_writer_body_bytes": 25168231,
+  "cases": [
+    {
+      "name": "row_boundary_63",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 63,
+      "input_bytes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "input_digest": "8ae3e9a02c3f17fbabc0d38076e7fb3d8fbcc1f79b6f8e99fb2e04ea99cc3b40",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 63,
+          "raw_bytes": 116,
+          "body_bytes": 748,
+          "ordered_input_digest": "8ae3e9a02c3f17fbabc0d38076e7fb3d8fbcc1f79b6f8e99fb2e04ea99cc3b40"
+        }
+      ]
+    },
+    {
+      "name": "row_boundary_64",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 64,
+      "input_bytes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "input_digest": "fae67f0091b0391cf0772dfa886ebc071f7340dbcd460d12dde27b036d1d1487",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 64,
+          "raw_bytes": 118,
+          "body_bytes": 753,
+          "ordered_input_digest": "fae67f0091b0391cf0772dfa886ebc071f7340dbcd460d12dde27b036d1d1487"
+        }
+      ]
+    },
+    {
+      "name": "row_boundary_65",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 65,
+      "input_bytes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "input_digest": "b0cfc2b96ad8a84cb19dc1b203e25857a4bba48c906f67f64b0473826715ed34",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 64,
+          "raw_bytes": 118,
+          "body_bytes": 753,
+          "ordered_input_digest": "fae67f0091b0391cf0772dfa886ebc071f7340dbcd460d12dde27b036d1d1487"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "5f035bae856e785c882b28d1592fbe89ef52df5ca3c87cf632e229d0da48892a"
+        }
+      ]
+    },
+    {
+      "name": "batch_override_1",
+      "requested_batch": 1,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 65,
+      "input_bytes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "input_digest": "b0cfc2b96ad8a84cb19dc1b203e25857a4bba48c906f67f64b0473826715ed34",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "a37bbbb0764cc5bf8d8c251cb1c95e3d2e142934792916ccb362ceb5902d9f0b"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "43de3a417d75f4818c5a553268b80ce3a5805109a3bbc6b605e9fb0b8f50b485"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "68a90152c04505f5f2f397b31c13447056085e8176be9daa43b182b9d731b2e4"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "26a6ce94f8d2ece150a6caa06e71f7d032764e0638a47b58e868257bb3dea578"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "0e5b96c0aaf7d37b171e575a6421a5163b8a04317045726eb0cbec3f2bc91e84"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "5e3322c682b4e46a737ec3a18be48fc20ba87309ae7f942cef08eb51f2a6537e"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "0e71c9d61a801b86235274dfab92b15dfb859514f351bf1627e1bc07bca5b60c"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "2aaa0d08e3a122ebeb3a8ad58d25d4f9633aef77be71e5c52780a74cef886d53"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "953d1c8161d6c2eaf8834e68a39f73a45a03c5999959b43902164286f1ba8571"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "8d81fb9d8d154c5e6d6840b806b2c52e6285fb84c30152a00a09619f41b70523"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "6e32bc5b03ab4d239b1eff1de30de5007f906dda41e8f720240bbf6481496a60"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "71447c96d68bdc65906c5092de19f2d27634b0fb59a86baac726a961b4de4228"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "115175dafa22e3159003105401f27980690a156ea5190aa769e33a7e1394b09e"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "803ec8add3498ac66633e5fdbf8f47d69858594c8820ab43a85dd692fc73e5ba"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "75fd229c68471d3d93eb936c077cb9a3f70082a3366a78bf62d4228389f77847"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "614c38a4fe853d409710a29b6c7559f5d0d794d8aa95ca462fba2cdd56b7ca73"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "3d2f323697bf5f150cb2c41dd9deb48e49b793e1be62c52d2f12d116a18e6ffa"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "ff79e6583582a4445d69f80c3ecd3034c158754bd33c7c62958c861edf7f2a62"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "c28e42d96b947502d9ff5405e01a869aeeff5aec51e2bca638f1b3bf1fe4cf30"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "5dd919819f5f1549c0004f1a68f8072b1f656d5adecbade143b14e100ab7e1fd"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "9246e824773fc95ffe7097ebf344e3aef5d4cd76329e4d39a4fd0e79eb8d75c4"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "7b50cf81bac9fc36591022488cfd565755196a76ed7fcfb1a9ffd00264aed02c"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "0417a7d51830bb705043cec4fff28ee5c63e6ce8131e9e269fd3be65dde972d0"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "4b42dd669fe6169e98ef22c16dc4fa5b132d6099e3ac9cef34bb84ab893f4610"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "eb7eedd2171aef6f7352b4f1312ecdf8a90f35e8b6dd65e010b707bc51bfe5f5"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "d3fc45e172f79b21f889e4d2c8d30f2d2dd49b50ed0c957443ffc9cd643ecc55"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "972975fc6396b41bef4c7564091bbb20557375df0d3ba8c39a639160b8e93d0d"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "d92723c4497911ac5053e8e194fc639d64d1c0fc039e1d6bbaf2690cc908ff2a"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "c8aadec2f347531fc02668612e50a6f8b8c03210ec056a9ee8dabc21ea0f9003"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "096e6b61808171c6520e470f43963f465a33de5fd00695c3cfe574a0e3579eca"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "c97e340a8bff18db0056e65dd3c36f60f40396897eade3ed18cef860e7e9422c"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "3c4e6cc4afd15d16c4dcd7cf43af362f9e3850c6b68384216263a8e50f9b64de"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "462964112f8b27ab0ca0f6c858d12951ea41cd58d50bde935f976aec121a4db6"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "0327562ac0e86ecba365bd4a19df8d4fdc735811c34d8825f4b6c83f6d2fe2dd"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "d914fbe47864274c03bb7c6407090f4b52f08c40392cbdfd6c9cdde63c311232"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "bfbbe6670e529aafa094b664b38f31021129cd265ee9532a1901f88ce292bf68"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "aa6ad7c8d40b4e884fdb6af36cc4791495a5f4e0db7db97973ced9d345549f96"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "ca3589e5ae7fc5057c17b2dd641e1274f404b4b488766995a6050b5daf710b36"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "253c48ef0cb09a0a33e291a51381d028e7d702c478df4bd6948d083c9ae92037"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "dd6a663d0e7cbae0ad459cd78f11c25a0e06b3cb76d85e7fdff74c2e05b309cc"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "5e10b0fa901b03996d5c3bfc84f3d971dcd7655e8d4af9c6b07baa4468668793"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "898d1890c30286031226763feed8e4dd9a13d71f4ce47ea02b492a4b307c3e2d"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "d646f2fabdd13a7ee16dfb12e59519b7b6880bf51912088c911f653b490c920f"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "d35d93509ae15a9af9dec0853e9a99d578cf226b980236cf7560e88ad2a6e57b"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "85e7f7aa69715db2a19a30bc27f37f9fe60cbebf9b0d8f520d52eb05a69bd576"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "92126ccca0f2ca2b1185caf3ad6b98d2b1652edb2394a2d526dd2552730307ed"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "7f8ccf56f0868c0858f72883985d3a21aa972b27a8e1b4e69e95f6ce6a5656d1"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "4ebd698b4a1c3c7f36b8b8d87cfea5bc4fe952045cc27bbf17a4077740b3ad67"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "db04614e17cac1cdf65010dd2b1c5e84499865ef73ad758c35e76a6d4a62ab9e"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "8e7e24687e7a199d478c46463edf87b6795a8730ec730a1a6e379a8ee18320a9"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "2308f4e21cb0531f80ef1e6aba504d41702749f4eb484f5976c9868a57d9d5df"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "00f704fb7518dcdccfc4e0a1c41ab17c2be250322f99d91864b09779ca95ea35"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "1a2835647e32523006fe3837f7406b304396a2057e6a5d6f8fbe8bbc86e08fd6"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "817b92dfe4085218254fe63117e8f9f68b58fe5ada65c628b5d1a1986c3d49f2"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "6389412746d41c3363995bfd624ef34f993821ef2ff1620bfd29c229ff88be11"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "cab5380d78c2540a7587755aa292235e3869eced455f4bea76a1a488154e9686"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "776e7e383d2fc118dcdc7361f094dddd5f307998c46120ec57b3c27977346c79"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "7555af12cafef5dcc1ce6973f3904286dfa15909b3b856b19430092dd23f68b8"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "f2604e9d119575b515fbe2aac36165636afba1b5528b1476ef23c0d15a4ae64d"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "7bca50a49df46e993b5a94dc7f38dca5a5092e806a7167c3af099d8265312d37"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "94ab087f60890852e463f1d53273a40730be97bbefba2ffa4a467c1694277381"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "52bb8623bcac42b589598ed308ae08ad49ea983b0105c9bd582e83b3a737285f"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "b6bfffcc9ea0e97491a69b0d62eb9a9d2457df01744aba30449ff8c452050673"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "3f054a8e6d320a8089542944d510f9925dc0ec1163739180203aecff087130c3"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "5f035bae856e785c882b28d1592fbe89ef52df5ca3c87cf632e229d0da48892a"
+        }
+      ]
+    },
+    {
+      "name": "batch_override_2",
+      "requested_batch": 2,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 65,
+      "input_bytes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "input_digest": "b0cfc2b96ad8a84cb19dc1b203e25857a4bba48c906f67f64b0473826715ed34",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 2,
+          "raw_bytes": 2,
+          "body_bytes": 451,
+          "ordered_input_digest": "53d7f4a048bd0daee134c84d46a9de1de3d4c71942f740eb4f964d3fccbeecf3"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 2,
+          "body_bytes": 451,
+          "ordered_input_digest": "3e86359fd1425354844c60f68c7249d2619ae32cfbf07f03f813244c9dc63e2d"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 2,
+          "body_bytes": 451,
+          "ordered_input_digest": "b39e6ab924823138a38f18ef3c8012d0539ab52305f4de2931d6d135e8bc9239"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 2,
+          "body_bytes": 451,
+          "ordered_input_digest": "5a24e3286254ec00a5bec2cb40b8044b5f980ff985339041cbbd9120a480958b"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 2,
+          "body_bytes": 451,
+          "ordered_input_digest": "b813a5284cf2a36bc39dd7c13d92fa8c183f5c103cf65b1cae7984ceb831fe2a"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "0ace05249c81af18c887f5014c0de8959fef1e61cd576545729cc0d6dc73ec0b"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "36aad0046a939b8f71c93dee68e66061d6a0867d7728948d8307414293f9772f"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "ea2ede2e4278581a64f73533a6c4d0009e8f5cc060f61596f1938d63fa326ee3"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "15fc9fbfeb1fe56e6d23078d126933670fc6e4c776192d45b4f54b1374614be7"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "eaedb755668602099122153c82ee43de656a7d6299a0fbad729bfdef519ec3db"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "5cd0564d0388011fd7c2915159e350c98838224e0f458d31a88e1c8e4507c98a"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "d03f6402e1d480021419a837fe5895bccdf3516fe53e081f9037086e4deccfaf"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "b0db9ac894482660d250cd2d360fd6203ce838c91566ca436744f548cff2ba42"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "e350cf141eb84b819c5fb2f5d5c974a3d0a81cd9df06d735eca48df0174eecce"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "000ce9247ff0f5cb9af7fae1a7c60f067aad5059b6bd784cdc171294368eff2c"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "85555ecc141a9fccf732c4a2f471a9ab3c90e4c2f6e5677430844928de70ba51"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "708b214d02a3a11de111f10ac6af8e519cbc124a71e66e23140df6a8b431a9f5"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "50943ec98455dcb35b5efc4ed37c8fed3949122ed737707a5615e825a9e97785"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "404ee8ed7bb0e646404f32f9a121f97a3490a4277147d110b42f36aa125fb9fb"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "1014124d0b2286fec2ac23c53ff7bb517c83dd99764b74ef993d0533dbc0ffe2"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "84f8d77f08e1761b94203afcd6feec263bf05d2cd7f772f6d0b1b80085a6f92e"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "be6540e653f4b69c3dd6957d3912b0d2a2d121b8e32a4203cf9908fc347f96e3"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "f7807605aac5868f344d5b6b1a89e8ab0a0b9198a561ea70d9a1a9157c91b75a"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "cea07c58326ac7d8cff13af1b94f564a01c6e9e48d4f8d1f83afa7ef8d1b354d"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "c1564923407fac079da516d30cb33ba7baa0a9f3e3a8ef244fd7946c3869437a"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "d024af7699429be32eaa9aeea7c89824764525a5d64bd2b0b52b27fe0138298a"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "f1c0a4e5cc38e636767401baef95903141b6c7b2aba9ee9d2feb2efe851c25bf"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "26c1e33d3a2f7a4df3c1080de54c17e3cdb6ab2578b2eb377db8476ea941a99c"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "5e6b1ecae1c90e3dce07ff312b29f40c282d05357909df2bf68185eef6a518c6"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "d9cd27e8f0b7fea61742d4c49b267c2e2da60fc9fb0b29000da5a53eb83e8377"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "399b4b33c2b1ce74c238a4ab8d2c15a6e79fb217d57c89d3ba33dc34a7f27fb6"
+        },
+        {
+          "rows": 2,
+          "raw_bytes": 4,
+          "body_bytes": 453,
+          "ordered_input_digest": "bebe2c01464be29010ec313871bb88f883dba66978826cc85955674669abbcf1"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "5f035bae856e785c882b28d1592fbe89ef52df5ca3c87cf632e229d0da48892a"
+        }
+      ]
+    },
+    {
+      "name": "batch_override_128",
+      "requested_batch": 128,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 65,
+      "input_bytes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "input_digest": "b0cfc2b96ad8a84cb19dc1b203e25857a4bba48c906f67f64b0473826715ed34",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 64,
+          "raw_bytes": 118,
+          "body_bytes": 753,
+          "ordered_input_digest": "fae67f0091b0391cf0772dfa886ebc071f7340dbcd460d12dde27b036d1d1487"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 2,
+          "body_bytes": 448,
+          "ordered_input_digest": "5f035bae856e785c882b28d1592fbe89ef52df5ca3c87cf632e229d0da48892a"
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 0,
+      "input_bytes": [],
+      "input_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "error": null,
+      "chunks": []
+    },
+    {
+      "name": "explicit_zero_batch",
+      "requested_batch": 0,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        1
+      ],
+      "input_digest": "0eb5b8d6f81bc677da8a08567cc4fa9a06a57e9ec8da85ed73a7f62727996002",
+      "error": "invalid_batch_size",
+      "chunks": []
+    },
+    {
+      "name": "empty_individual",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        0
+      ],
+      "input_digest": "055539df4a0b804c58caf46c0cd2941af10d64c1395ddd8e50b5f55d945841e6",
+      "error": "invalid_individual_text",
+      "chunks": []
+    },
+    {
+      "name": "ascii_exact",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        65536
+      ],
+      "input_digest": "7aa6bcac8d63a1aae1a0376f9375ca14d851aa010f8a2930c86e105005e8bc9e",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 1,
+          "raw_bytes": 65536,
+          "body_bytes": 65982,
+          "ordered_input_digest": "7aa6bcac8d63a1aae1a0376f9375ca14d851aa010f8a2930c86e105005e8bc9e"
+        }
+      ]
+    },
+    {
+      "name": "ascii_over",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        65537
+      ],
+      "input_digest": "b22dabce3260f2e735f29b38dc523e98e01d8260ac52985bafddd24d7eff34a0",
+      "error": "invalid_individual_text",
+      "chunks": []
+    },
+    {
+      "name": "unicode_exact",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        65536
+      ],
+      "input_digest": "ef58129601e18bcecd51b650ea6c6036d7691182f8dc98c44e49e5e34c3eb247",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 1,
+          "raw_bytes": 65536,
+          "body_bytes": 65982,
+          "ordered_input_digest": "ef58129601e18bcecd51b650ea6c6036d7691182f8dc98c44e49e5e34c3eb247"
+        }
+      ]
+    },
+    {
+      "name": "unicode_over",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        65538
+      ],
+      "input_digest": "60c60c1573220c0a82c180f7962e6f4b4b2bd0e0aa1b13a1be70733c9735b38b",
+      "error": "invalid_individual_text",
+      "chunks": []
+    },
+    {
+      "name": "total_override_split",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 131071,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 2,
+      "input_bytes": [
+        65536,
+        65536
+      ],
+      "input_digest": "8c4029b578d85d0b86d2533f0bd382bdff09977b2f17fe93ea1b16f739c76741",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 1,
+          "raw_bytes": 65536,
+          "body_bytes": 65982,
+          "ordered_input_digest": "7aa6bcac8d63a1aae1a0376f9375ca14d851aa010f8a2930c86e105005e8bc9e"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 65536,
+          "body_bytes": 65982,
+          "ordered_input_digest": "7aa6bcac8d63a1aae1a0376f9375ca14d851aa010f8a2930c86e105005e8bc9e"
+        }
+      ]
+    },
+    {
+      "name": "exact_frame",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 451,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 2,
+      "input_bytes": [
+        1,
+        1
+      ],
+      "input_digest": "0473ef2dc0d324ab659d3580c1134e9d812035905c4781fdd6d529b0c6860e13",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 2,
+          "raw_bytes": 2,
+          "body_bytes": 451,
+          "ordered_input_digest": "0473ef2dc0d324ab659d3580c1134e9d812035905c4781fdd6d529b0c6860e13"
+        }
+      ]
+    },
+    {
+      "name": "one_less_frame",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 450,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 2,
+      "input_bytes": [
+        1,
+        1
+      ],
+      "input_digest": "0473ef2dc0d324ab659d3580c1134e9d812035905c4781fdd6d529b0c6860e13",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "0eb5b8d6f81bc677da8a08567cc4fa9a06a57e9ec8da85ed73a7f62727996002"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 447,
+          "ordered_input_digest": "a8950f05d3443e7921e7ec6fbe06c8febe40966a5db58b15f767a995d561290b"
+        }
+      ]
+    },
+    {
+      "name": "escape_frame_split",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 452,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 2,
+      "input_bytes": [
+        1,
+        1
+      ],
+      "input_digest": "0cf1b5e5b215a625b14cdd9b3d2524d440206b190481819c492c2edee60af1ba",
+      "error": null,
+      "chunks": [
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 452,
+          "ordered_input_digest": "e8d092a2abe0afaefae429a5cf3715c71efa25daf1ecb041d8926e5a75e1c12c"
+        },
+        {
+          "rows": 1,
+          "raw_bytes": 1,
+          "body_bytes": 448,
+          "ordered_input_digest": "16ec795185b645d8d57bd90786f83612f045ee5efe642dd1520f3496ef3b03d3"
+        }
+      ]
+    },
+    {
+      "name": "individual_frame_over",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 451,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 4194304,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        1
+      ],
+      "input_digest": "e8d092a2abe0afaefae429a5cf3715c71efa25daf1ecb041d8926e5a75e1c12c",
+      "error": "individual_request_exceeds_limits",
+      "chunks": []
+    },
+    {
+      "name": "total_cap_too_small",
+      "requested_batch": null,
+      "limits": {
+        "max_frame_bytes": 33554432,
+        "max_texts": 64,
+        "max_text_bytes": 65536,
+        "max_total_text_bytes": 1,
+        "max_dimensions": 768,
+        "max_identity_bytes": 64,
+        "max_pending": 1
+      },
+      "input_rows": 1,
+      "input_bytes": [
+        2
+      ],
+      "input_digest": "e5c416e39c2e689ed4353bc2d8adb0832a14289420c6ab4bde8d622d991ee321",
+      "error": "individual_request_exceeds_limits",
+      "chunks": []
+    }
+  ],
+  "scope": "Finite reference requirements only; current graph handle ignores batch_size and sends whole inputs. No claim of implemented M4 behavior or universal correctness."
+}

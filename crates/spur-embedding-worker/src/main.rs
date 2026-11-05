@@ -56,6 +56,21 @@ fn reply_error(
 
 fn run() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.iter().any(|arg| arg == "--compatibility") {
+        if args.len() != 1 {
+            return Err("--compatibility accepts no additional arguments".into());
+        }
+        let metadata = serde_json::json!({
+            "version": env!("CARGO_PKG_VERSION"),
+            "protocol": PROTOCOL_VERSION,
+            "os": std::env::consts::OS,
+            "arch": std::env::consts::ARCH,
+        });
+        let mut output = io::stdout().lock();
+        serde_json::to_writer(&mut output, &metadata)?;
+        writeln!(output)?;
+        return Ok(());
+    }
     if args.first().is_some_and(|arg| arg == "--describe-model") {
         if args.len() != 12 {
             return Err("expected model, budget, correlation, and seven protocol limits".into());

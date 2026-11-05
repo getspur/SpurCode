@@ -1,7 +1,7 @@
 {
   "name": "@getspur/spur-cli",
   "version": "0.0.0",
-  "description": "Spur — terminal agent orchestrator. Installs the prebuilt spur binary and bundled skill assets from getspur/spur-releases.",
+  "description": "Spur — terminal agent orchestrator. Installs the matching host, embedding worker and skill assets from getspur/spur-releases.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/getspur/SpurCode.git"
@@ -17,7 +17,7 @@
     "platform.js"
   ],
   "scripts": {
-    "test": "node --test platform.test.js",
+    "test": "node --test platform.test.js install-layout.test.js",
     "postinstall": "node install.js"
   },
   "engines": {

@@ -317,6 +317,85 @@ case "${1:-}" in
         ;;
 esac
 
+# cargo install accepts one local package path. Install the ordinary companion
+# under the same requested prefix before installing the CLI package.
+embedding_companion_install_path() {
+    local selected cli
+    selected=$(cd "$1" 2>/dev/null && pwd -P) || return 1
+    cli=$(cd "$SCRIPT_DIR/../crates/spur-cli" 2>/dev/null && pwd -P) || return 1
+    [[ "$selected" == "$cli" ]] || return 1
+    printf '%s\n' "${cli%/*}/spur-embedding-worker"
+}
+
+if [[ "${1:-}" == install ]]; then
+    HELPER_INSTALL=(install)
+    INSTALL_CLI=0
+    INSTALL_PREVIOUS=""
+    for arg in "${@:2}"; do
+        case "$INSTALL_PREVIOUS" in
+            --features|-F) INSTALL_PREVIOUS=""; continue ;;
+            --path)
+                if INSTALL_HELPER_PATH=$(embedding_companion_install_path "$arg"); then
+                    arg="$INSTALL_HELPER_PATH"; INSTALL_CLI=1
+                fi
+                HELPER_INSTALL+=(--path "$arg"); INSTALL_PREVIOUS=""; continue ;;
+            --bin)
+                HELPER_INSTALL+=(--bin spur-embedding-worker); INSTALL_PREVIOUS=""; continue ;;
+        esac
+        case "$arg" in
+            --path|--bin|--features|-F) INSTALL_PREVIOUS="$arg" ;;
+            --path=*)
+                if INSTALL_HELPER_PATH=$(embedding_companion_install_path "${arg#--path=}"); then
+                    arg="--path=$INSTALL_HELPER_PATH"; INSTALL_CLI=1
+                fi
+                HELPER_INSTALL+=("$arg") ;;
+            --bin=*) HELPER_INSTALL+=(--bin=spur-embedding-worker) ;;
+            --features=*|-F?*|--all-features|--no-default-features) ;;
+            *) HELPER_INSTALL+=("$arg") ;;
+        esac
+    done
+    if [[ $INSTALL_CLI -eq 1 ]]; then
+        "$SCRIPT_DIR/spur-cargo" --workdir "$WORKDIR" "${HELPER_INSTALL[@]}"
+    fi
+fi
+
+# A CLI source build ships the separate native owner alongside the host. Keep
+# run's single-package argv intact and build its sibling first, with the same
+# profile/target and routing. This is build tooling, never host runtime work.
+HOST_SELECTED=0
+BIN_SELECTED=0
+HELPER_SELECTED=0
+PREVIOUS=""
+HELPER_BUILD=(build -p spur-embedding-worker)
+for arg in "$@"; do
+    [[ "$arg" == -- ]] && break
+    case "$PREVIOUS:$arg" in
+        -p:spur-cli|--package:spur-cli|--bin:spur) HOST_SELECTED=1 ;;
+        -p:spur-embedding-worker|--package:spur-embedding-worker) HELPER_SELECTED=1 ;;
+    esac
+    case "$arg" in
+        --package=spur-cli|--bin=spur) HOST_SELECTED=1 ;;
+        --package=spur-embedding-worker) HELPER_SELECTED=1 ;;
+        --bin|--bin=*) BIN_SELECTED=1 ;;
+        --release|--locked|--offline|--frozen|--target=*|--profile=*|--target-dir=*) HELPER_BUILD+=("$arg") ;;
+    esac
+    case "$PREVIOUS" in
+        --target|--profile|--target-dir|--manifest-path|--config) HELPER_BUILD+=("$PREVIOUS" "$arg") ;;
+    esac
+    PREVIOUS="$arg"
+done
+if [[ $HOST_SELECTED -eq 1 ]]; then
+    case "${1:-}" in
+        build|zigbuild|xwin)
+            [[ $HELPER_SELECTED -eq 1 ]] || set -- "$@" -p spur-embedding-worker
+            [[ $BIN_SELECTED -eq 0 ]] || set -- "$@" --bin spur-embedding-worker
+            ;;
+        run)
+            "$SCRIPT_DIR/spur-cargo" --workdir "$WORKDIR" "${HELPER_BUILD[@]}"
+            ;;
+    esac
+fi
+
 # ---- routing ---------------------------------------------------------------
 # Remote is the default for heavy compiles; lightweight subcommands auto-run
 # local. Precedence: an explicit SPUR_REMOTE wins; otherwise the subcommand
