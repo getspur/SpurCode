@@ -1,0 +1,9 @@
+# Attempt 3 authorization blocker
+
+The clean worker worktree fast-forwarded from `093a1461c5dde2abb2e1732d1b11af6ec0639596` to the complete protected recovery checkpoint `5ee4a5898774323f23a771110a95d1de0d5c70ba`. The preserved TDD test is `a65053535abff3154bcf788cf96b37a70a3a3fba`; its fix is `103cc3e09611aa6c978af35b41ff0fc8877aad93`. Git ancestry and clean working-tree checks succeeded.
+
+Canonical issue `bd-2zan` read as `in_progress`, assigned to `spur-worker-1fb6d13d37ac49dd`. The worker service is authoritative: the new INTENT and its identical replay both returned `Mcp error: -32001: unauthorized: worker evidence: target is not assigned to this delegation`. The exact request and complete tool responses are saved alongside this note. The identical replay was attempted once; no alternate identity or issue was tried. The subsequent explicit blocker report was accepted by `report_progress`.
+
+Work stopped at this authorization guard. Neither requested recovery verifier was executed in this attempt. No production source, captured evidence, native artifact, model, notebook, shared cache or issue status was changed. The only additions are this evidence-only rejection record. The root-reported 64-file fingerprint `b633efdf819255ce175c3cf5dab318cae6908e4b07793cc5f43621882b9b643c` and earlier GREEN results remain historical claims pending the requested verifier replay; this attempt does not relabel them as freshly verified.
+
+ROOT must repair current dispatch authorization before the worker can persist and reload its INTENT, run both specified verifiers, and finalize the evidence handoff. The immutable [recovery packet](../../2026-11-05-embedding-sol/root-M5-recovery/README.md) and [rework evidence](../rework/) remain intact. Fresh complete final M5 Jev/SOLVE POST, including original and new negatives, and fresh M6 runtime/notebook PRE remain required before approval. This record requests no approval, closure or M6 dispatch.
