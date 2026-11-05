@@ -1,5 +1,31 @@
 # Sol implementation continuation
 
+## Current entry: final runtime and Rust-notebook acceptance
+
+M1–M4 are approved. M5 packaging has completed independent ROOT review and full
+fresh POST; approval remains the plan engine's explicit boundary. The authoritative
+M5 evidence is [root-M5-final](../2026-11-05-embedding-sol/root-M5-final/README.md).
+The next task is `runtime-rust-notebook`, canonical issue `bd-1pvg`. Start only
+after `shipped-packaging` is approved, using the already executed
+[fresh M6 PRE](../2026-11-05-embedding-runtime-acceptance/PRE/README.md).
+
+Before edits/builds, persist/replay the real canonical worker INTENT, run M6's
+`verify_pre.py`, and reload `sol_8d0c64a6cbc04cb3`, `sol_bdfbe72f554849cd` and
+`sol_d4c7713a8072484e` (SAT/SAT/UNSAT). Current source64 fingerprint is
+`b633efdf819255ce175c3cf5dab318cae6908e4b07793cc5f43621882b9b643c`.
+Preserve codex/profile codex/gpt-6.1-sol/xhigh routing and every clause of
+M6's full canonical task. These PRE results do not establish Rust execution,
+runtime fault coverage, performance or whole-program panic safety.
+
+Actual new Rust Notebook MCP acceptance remains required. ROOT can operate
+root-only notebook tools and bridge Jev; an absent worker-local tool is not
+permission to substitute Python or fabricate results. No existing notebook,
+external source, cache, service or local main may be altered by that bridge.
+The separate worker-audit authorization failure is preserved honestly; no
+failed INTENT is relabeled successful and no guard is weakened.
+
+## Historical start of this plan
+
 The user selected **codex / profile codex / gpt-6.1-sol / xhigh** for all remaining
 work. The prior stage exhausted its attempts with tests and evidence only; no
 production implementation is accepted. Its final test checkpoint
