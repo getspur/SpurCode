@@ -1,5 +1,11 @@
 # Sol implementation continuation
 
+## Latest M6 observations awaiting ROOT review
+
+Canonical `runtime-rust-notebook` / `bd-1pvg` verified the live dispatch after all five predecessors were approved, then successfully persisted/replayed its fresh INTENT. [M6 runtime evidence](../2026-11-05-embedding-runtime-acceptance/README.md) now contains actual three-model normal artifact observations, real child/protocol/publication failures, full graph target/doctest and CLI/analyst results, measurements/control limitations, and a **new MCP notebook with executed Rust cells**. The eight historical direct-native aborts remain failures; the original failed-cache control abort and PyArrow reader limitation remain separate risks.
+
+ROOT must review the complete retained gates and execute a fresh observation/source-bound Jev POST using `post-inputs.json` and its independent adversaries. The worker has not approved itself, closed an epic, published anything or completed G2/G3–G5. Historical entry instructions below remain the provenance of the completed worker entry gate.
+
 ## Current entry: final runtime and Rust-notebook acceptance
 
 M1–M4 are approved. M5 packaging has completed independent ROOT review and full
