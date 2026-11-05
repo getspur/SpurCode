@@ -40,7 +40,13 @@ function helperPath(exe = process.platform === "win32") {
 }
 
 function helperIsCompatible(executable = helperPath()) {
-  const result = require("child_process").spawnSync(executable, ["--compatibility"], { encoding: "utf8" });
+  // Reuse the supervised helper's startup allowance. spawnSync waits for reaping;
+  // force termination so a metadata executable ignoring SIGTERM cannot hang npm.
+  const result = require("child_process").spawnSync(executable, ["--compatibility"], {
+    encoding: "utf8",
+    timeout: 120000,
+    killSignal: "SIGKILL",
+  });
   if (result.error || result.status !== 0 || result.stderr) return false;
   try {
     const metadata = JSON.parse(result.stdout);

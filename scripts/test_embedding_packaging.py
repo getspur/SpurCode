@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class WrapperPackaging(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="spur packaging ü ")
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         scripts = self.root / "scripts"
         scripts.mkdir()
         shutil.copy(ROOT / "scripts/spur-cargo", scripts)

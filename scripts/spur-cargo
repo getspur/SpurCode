@@ -319,6 +319,14 @@ esac
 
 # cargo install accepts one local package path. Install the ordinary companion
 # under the same requested prefix before installing the CLI package.
+embedding_companion_install_path() {
+    local selected cli
+    selected=$(cd "$1" 2>/dev/null && pwd -P) || return 1
+    cli=$(cd "$SCRIPT_DIR/../crates/spur-cli" 2>/dev/null && pwd -P) || return 1
+    [[ "$selected" == "$cli" ]] || return 1
+    printf '%s\n' "${cli%/*}/spur-embedding-worker"
+}
+
 if [[ "${1:-}" == install ]]; then
     HELPER_INSTALL=(install)
     INSTALL_CLI=0
@@ -327,17 +335,20 @@ if [[ "${1:-}" == install ]]; then
         case "$INSTALL_PREVIOUS" in
             --features|-F) INSTALL_PREVIOUS=""; continue ;;
             --path)
-                case "$arg" in
-                    *spur-cli) arg="${arg%spur-cli}spur-embedding-worker"; INSTALL_CLI=1 ;;
-                    .) if [[ "${WORKDIR##*/}" == spur-cli ]]; then arg="../spur-embedding-worker"; INSTALL_CLI=1; fi ;;
-                esac
+                if INSTALL_HELPER_PATH=$(embedding_companion_install_path "$arg"); then
+                    arg="$INSTALL_HELPER_PATH"; INSTALL_CLI=1
+                fi
                 HELPER_INSTALL+=(--path "$arg"); INSTALL_PREVIOUS=""; continue ;;
             --bin)
                 HELPER_INSTALL+=(--bin spur-embedding-worker); INSTALL_PREVIOUS=""; continue ;;
         esac
         case "$arg" in
             --path|--bin|--features|-F) INSTALL_PREVIOUS="$arg" ;;
-            --path=*spur-cli) HELPER_INSTALL+=("${arg%spur-cli}spur-embedding-worker"); INSTALL_CLI=1 ;;
+            --path=*)
+                if INSTALL_HELPER_PATH=$(embedding_companion_install_path "${arg#--path=}"); then
+                    arg="--path=$INSTALL_HELPER_PATH"; INSTALL_CLI=1
+                fi
+                HELPER_INSTALL+=("$arg") ;;
             --bin=*) HELPER_INSTALL+=(--bin=spur-embedding-worker) ;;
             --features=*|-F?*|--all-features|--no-default-features) ;;
             *) HELPER_INSTALL+=("$arg") ;;
