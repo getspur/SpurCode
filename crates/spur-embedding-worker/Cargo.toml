@@ -10,7 +10,7 @@ spur-embedding = { path = "../spur-embedding" }
 uuid.workspace = true
 
 [features]
-test-support = ["dep:serde_json"]
+test-support = []
 
 [[bin]]
 name = "embedding-native-probe"
@@ -29,7 +29,6 @@ features = ["native-tls", "ureq"]
 
 [dependencies.serde_json]
 workspace = true
-optional = true
 
 [dependencies.anyhow]
 workspace = true
