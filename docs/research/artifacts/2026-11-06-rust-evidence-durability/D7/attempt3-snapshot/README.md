@@ -1,0 +1,7 @@
+# Expired attempt 3 — preserved draft
+
+This is a stable, double-read snapshot of the expired worker checkout at b321a5c38b6b75229e03e9a4abbb48ddfb17f86d, plus its uncommitted API-only draft and exact external logs. inventory.json hashes every captured file and binds the draft and original test bytes. The original worktree was not changed by this capture.
+
+The authorized remote compile reached the missing-API diagnostics and exited 101 with 32 errors. This is genuine **compile RED**, with no runtime test execution. The later assertion attempt exited 255 because the AWS SSM endpoint could not be reached; it did not reach compilation and is **not behavioral RED**. The three draft source files add only the frozen types, filter shape validation, default Unavailable behavior and reference forwarding. No functional memory/Parquet query implementation, GREEN or full D7 completion exists.
+
+The old delegation is no longer addressable by cancel_delegation (Unknown delegation). ROOT used submit_plan_mutation / abandon_task, mutation cf183257-5c60-4f05-ada3-f5ab02e97bc0, to terminate that exhausted canonical execution bd-bl34. The original D7 source goal bd-2o7z remains in progress. A new bounded D7A stage preserves and finishes the TDD checkpoint, followed by functional implementation under fresh ROOT PRE/POST review. A late completion from the old execution must remain attached to its old issue.
