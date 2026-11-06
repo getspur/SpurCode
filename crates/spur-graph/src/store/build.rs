@@ -991,37 +991,9 @@ fn discover_selected_entries(
     root: &Path,
     paths: &[PathBuf],
 ) -> anyhow::Result<BTreeMap<String, CurrentFileEntry>> {
-    use std::path::Component;
-
     let allowed_extensions = all_supported_extensions();
     let mut entries = BTreeMap::new();
-    for path in paths {
-        // Canonicalize existing absolute inputs first, including root aliases
-        // such as /var -> /private/var. Relative inputs are normalized below.
-        let absolute = if path.is_absolute() {
-            match path.canonicalize() {
-                Ok(path) => path,
-                Err(error) if error.kind() == ErrorKind::NotFound => path.clone(),
-                Err(error) => return Err(error).context("failed to resolve selected path"),
-            }
-        } else {
-            root.join(path)
-        };
-        let relative = absolute
-            .strip_prefix(root)
-            .context("selected path escapes worktree root")?;
-        let mut normalized = PathBuf::new();
-        for component in relative.components() {
-            match component {
-                Component::Normal(part) => normalized.push(part),
-                Component::CurDir => {}
-                Component::ParentDir => {
-                    anyhow::ensure!(normalized.pop(), "selected path escapes worktree root")
-                }
-                _ => anyhow::bail!("selected path is not worktree relative"),
-            }
-        }
-        normalized.to_str().context("selected path is not UTF-8")?;
+    for normalized in crate::extract::normalize_selected_paths(root, paths)? {
         let path = relative_path(root, &root.join(&normalized))?;
         if path.contains("#cell:")
             || !is_supported_path(&path, &allowed_extensions)

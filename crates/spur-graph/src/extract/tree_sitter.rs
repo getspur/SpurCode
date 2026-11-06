@@ -3821,12 +3821,8 @@ fn language_groups_for_paths(
 ) -> anyhow::Result<Vec<LanguageFileGroup>> {
     let mut groups: GroupAccumulator = BTreeMap::new();
     let descriptors: &[LanguageDescriptor] = language_registry();
-    for path in files {
-        let full_path = if path.is_absolute() {
-            path.clone()
-        } else {
-            root.join(path)
-        };
+    for path in super::normalize_selected_paths(root, files)? {
+        let full_path = root.join(path);
         if !full_path.is_file() {
             continue;
         }

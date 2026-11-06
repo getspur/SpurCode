@@ -511,9 +511,14 @@ impl<B: GraphQueryClient> OverlayClient<B> {
     ) -> anyhow::Result<(Arc<GraphIndexArtifact>, HashSet<String>)> {
         let facts = build_facts_for_paths(root, changed_files)?;
         let artifact = artifact_from_facts_for_paths(&facts, root, changed_files)?;
-        let shadowed = changed_files
-            .iter()
-            .filter_map(|path| normalize_worktree_path(root, path).ok())
+        let shadowed = crate::extract::normalize_selected_paths(root, changed_files)?
+            .into_iter()
+            .map(|path| {
+                path.components()
+                    .map(|part| part.as_os_str().to_str().expect("normalized UTF-8 path"))
+                    .collect::<Vec<_>>()
+                    .join("/")
+            })
             .collect::<HashSet<_>>();
         Ok((Arc::new(artifact), shadowed))
     }
@@ -1083,22 +1088,6 @@ fn build_overlay_remap<B: GraphQueryClient>(
         }
     }
     Ok(remap)
-}
-
-fn normalize_worktree_path(root: &Path, path: &Path) -> anyhow::Result<String> {
-    let relative = if path.is_absolute() {
-        let root = root
-            .canonicalize()
-            .with_context(|| format!("failed to canonicalize `{}`", root.display()))?;
-        path.strip_prefix(&root).unwrap_or(path)
-    } else {
-        path
-    };
-    Ok(relative
-        .components()
-        .map(|component| component.as_os_str().to_string_lossy())
-        .collect::<Vec<_>>()
-        .join("/"))
 }
 
 fn ranges_overlap(left: [usize; 2], right: [usize; 2]) -> bool {
