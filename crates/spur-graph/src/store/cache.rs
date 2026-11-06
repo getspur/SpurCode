@@ -19,6 +19,7 @@ use crate::store::lance_sections::{
     SectionSidecarProgressCallback, SectionSidecarProgressEvent, CODE_SYMBOLS_DATASET_DIR,
     CODE_SYMBOLS_PARQUET, SECTIONS_DATASET_DIR, SECTIONS_PARQUET,
 };
+use crate::store::parquet::GraphArtifactManifest;
 use crate::store::pointer::resolve_artifact_location;
 use crate::store::{
     read_artifact_header_parquet, read_artifact_parquet, read_current_pointer,
@@ -60,8 +61,11 @@ static BASE_ARTIFACT_CACHE: OnceLock<Mutex<BaseArtifactCache>> = OnceLock::new()
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct BaseArtifactCacheKey {
     common_dir: PathBuf,
+    canonical_artifact_path: PathBuf,
     manifest_version: String,
     graph_content_hash: String,
+    rust_evidence_capability: String,
+    manifest_identity: String,
 }
 
 #[derive(Default)]
@@ -782,19 +786,53 @@ fn read_resolved_base_artifact(
             return None;
         }
     };
-    let key = BaseArtifactCacheKey {
-        common_dir,
-        manifest_version: manifest.manifest_version,
-        graph_content_hash: manifest.graph_content_hash,
+    let key = match base_artifact_cache_key(common_dir, path, &manifest) {
+        Ok(key) => key,
+        Err(error) => {
+            tracing::debug!(
+                target: "spur_graph::base_seed",
+                source,
+                path = %path.display(),
+                error = %error,
+                "spur-graph: base artifact manifest identity invalid"
+            );
+            return None;
+        }
     };
-    read_cached_base_artifact(key, path, source)
+    read_cached_base_artifact(key, &manifest, source)
+}
+
+fn base_artifact_cache_key(
+    common_dir: PathBuf,
+    path: &Path,
+    manifest: &GraphArtifactManifest,
+) -> Result<BaseArtifactCacheKey> {
+    anyhow::ensure!(manifest.complete, "incomplete base artifact manifest");
+    anyhow::ensure!(
+        manifest.rust_evidence.as_ref().is_none_or(|e| e.complete),
+        "incomplete base Rust evidence manifest"
+    );
+    // A digest identifies a declaration; only a full decode validates it. Bind
+    // every parsed header field so changed versions/counts cannot bypass that
+    // validation through an older hit, including recognized legacy absence.
+    Ok(BaseArtifactCacheKey {
+        common_dir,
+        canonical_artifact_path: path.canonicalize()?,
+        manifest_version: manifest.manifest_version.clone(),
+        graph_content_hash: manifest.graph_content_hash.clone(),
+        rust_evidence_capability: crate::store::rust_evidence_manifest_capability_digest(manifest)?,
+        manifest_identity: blake3::hash(&serde_json::to_vec(manifest)?)
+            .to_hex()
+            .to_string(),
+    })
 }
 
 fn read_cached_base_artifact(
     key: BaseArtifactCacheKey,
-    canonical: &Path,
+    manifest: &GraphArtifactManifest,
     source: &'static str,
 ) -> Option<Arc<GraphIndexArtifact>> {
+    let canonical = &key.canonical_artifact_path;
     if let Some(artifact) = base_artifact_cache()
         .lock()
         .ok()
@@ -828,6 +866,66 @@ fn read_cached_base_artifact(
             pointer_manifest_version = %key.manifest_version,
             artifact_manifest_version = %artifact.manifest_version,
             "spur-graph: base artifact does not match pointer"
+        );
+        return None;
+    }
+
+    let validation = (|| -> Result<()> {
+        anyhow::ensure!(
+            crate::rust_evidence_capability_digest(&artifact)? == key.rust_evidence_capability,
+            "decoded Rust capability differs from base manifest"
+        );
+        // General graph readers use some counts for allocation only. A base
+        // snapshot must still agree with the identity declared by its header.
+        let counts = &manifest.row_counts;
+        for (name, declared, loaded) in [
+            ("files", counts.files, artifact.files.len()),
+            (
+                "file_manifests",
+                counts.file_manifests,
+                artifact.file_manifests.len(),
+            ),
+            ("nodes", counts.nodes, artifact.symbols.len()),
+            ("tombstones", counts.tombstones, artifact.tombstones.len()),
+            ("commits", counts.commits, artifact.commits.len()),
+            (
+                "symbol_snapshots",
+                counts.symbol_snapshots,
+                artifact.symbol_snapshots.len(),
+            ),
+            (
+                "temporal_edges",
+                counts.temporal_edges,
+                artifact.temporal_edges.len(),
+            ),
+            (
+                "diagnostics",
+                counts.diagnostics,
+                artifact.diagnostics.len(),
+            ),
+        ] {
+            anyhow::ensure!(
+                declared == loaded,
+                "base manifest {name} row count mismatch: declared {declared}, loaded {loaded}"
+            );
+        }
+        anyhow::ensure!(
+            counts.edges.checked_add(counts.edges_unresolved) == Some(artifact.edges.len()),
+            "base manifest edge row count mismatch"
+        );
+        anyhow::ensure!(
+            read_artifact_header_parquet(canonical)? == *manifest,
+            "base manifest changed during decode"
+        );
+        Ok(())
+    })();
+    if let Err(error) = validation {
+        tracing::debug!(
+            target: "spur_graph::base_seed",
+            source,
+            path = %canonical.display(),
+            error = %error,
+            "spur-graph: decoded base artifact does not match manifest identity"
         );
         return None;
     }
@@ -949,6 +1047,10 @@ fn validate_publication(expected: &GraphIndexArtifact, path: &Path) -> Result<()
     anyhow::ensure!(
         stored.macro_invocations == expected.macro_invocations,
         "publication macro evidence mismatch"
+    );
+    anyhow::ensure!(
+        stored.rust_evidence == expected.rust_evidence,
+        "publication Rust evidence mismatch"
     );
     Ok(())
 }
@@ -1192,10 +1294,10 @@ mod tests {
     use super::{
         delete_stale_canonical_artifacts, lookup_canonical, protected_canonical_artifacts,
         prune_after_success_best_effort, prune_after_worktree_change,
-        prune_canonical_artifacts_best_effort, stale_canonical_artifacts, write_with_dedup,
-        write_with_dedup_with_section_sidecar_options, CanonicalArtifactCandidate,
-        POINTER_PUBLICATION_FAILURE, RETAINED_CANONICAL_ARTIFACTS, RETAINED_EMBED_SIDECARS,
-        RETAINED_WORKTREE_LOCAL_ARTIFACTS, WORKTREE_ARTIFACT_PATH,
+        prune_canonical_artifacts_best_effort, stale_canonical_artifacts, validate_publication,
+        write_with_dedup, write_with_dedup_with_section_sidecar_options,
+        CanonicalArtifactCandidate, POINTER_PUBLICATION_FAILURE, RETAINED_CANONICAL_ARTIFACTS,
+        RETAINED_EMBED_SIDECARS, RETAINED_WORKTREE_LOCAL_ARTIFACTS, WORKTREE_ARTIFACT_PATH,
     };
     use crate::git::GitCtx;
     use crate::store::lance_sections::{
@@ -1210,6 +1312,569 @@ mod tests {
         GraphFileArtifact, GraphFileManifestEntry, GraphIndexArtifact, GraphIndexHeader,
         GraphIndexPointer, GraphSymbolArtifact, NodeId, SourceKind,
     };
+
+    // These probes use only temporary fixture directories. Optional exports let ROOT
+    // replay the same native API calls without treating prospective claims as output.
+    fn d6_graph(source: Option<&str>) -> GraphIndexArtifact {
+        let root = TempDir::new().unwrap();
+        if let Some(source) = source {
+            fs::write(root.path().join("a.rs"), source).unwrap();
+        }
+        crate::artifact_from_facts(
+            &crate::build_facts(root.path(), None).unwrap().0,
+            root.path(),
+        )
+        .unwrap()
+    }
+
+    fn d6_write(graph: &GraphIndexArtifact, path: &Path) {
+        if path.exists() {
+            fs::remove_dir_all(path).unwrap();
+        }
+        crate::write_artifact_parquet(graph, path, crate::WriteOptions::default(), vec![]).unwrap();
+    }
+
+    fn d6_copy(from: &Path, to: &Path) {
+        fs::create_dir_all(to).unwrap();
+        for entry in fs::read_dir(from).unwrap() {
+            let entry = entry.unwrap();
+            let target = to.join(entry.file_name());
+            if entry.file_type().unwrap().is_dir() {
+                d6_copy(&entry.path(), &target);
+            } else {
+                fs::copy(entry.path(), target).unwrap();
+            }
+        }
+    }
+
+    fn d6_export(name: &str, value: &serde_json::Value, disk: Option<&Path>) {
+        let Some(root) = std::env::var_os("D6_EXPORT_DIR") else {
+            return;
+        };
+        let out = PathBuf::from(root).join(name);
+        fs::create_dir_all(&out).unwrap();
+        fs::write(
+            out.join("actual.json"),
+            serde_json::to_vec_pretty(value).unwrap(),
+        )
+        .unwrap();
+        if let Some(disk) = disk {
+            d6_copy(disk, &out.join("disk"));
+        }
+    }
+
+    fn d6_patch(path: &Path, patches: &serde_json::Value) {
+        let file = path.join("manifest.json");
+        let mut manifest: serde_json::Value =
+            serde_json::from_slice(&fs::read(&file).unwrap()).unwrap();
+        for (pointer, value) in patches.as_object().unwrap() {
+            *manifest.pointer_mut(pointer).unwrap() = value.clone();
+        }
+        fs::write(file, serde_json::to_vec_pretty(&manifest).unwrap()).unwrap();
+    }
+
+    fn d6_snapshot(graph: &GraphIndexArtifact) -> serde_json::Value {
+        serde_json::json!({
+            "graph_content_hash": graph.graph_content_hash,
+            "manifest_version": graph.manifest_version,
+            "header": graph.header,
+            "rust_evidence": graph.rust_evidence,
+            "capability": crate::rust_evidence_capability_digest(graph).unwrap(),
+        })
+    }
+
+    fn d6_load(
+        name: &str,
+        common: &Path,
+        path: &Path,
+        retained: Option<&std::sync::Arc<GraphIndexArtifact>>,
+        request: serde_json::Value,
+    ) -> Option<std::sync::Arc<GraphIndexArtifact>> {
+        let loaded = super::read_resolved_base_artifact(common.to_path_buf(), path, "d6_probe");
+        let header = read_artifact_header_parquet(path);
+        let cold = read_artifact_parquet(path);
+        let key = loaded.as_ref().and_then(|loaded| {
+            super::base_artifact_cache()
+                .lock()
+                .unwrap()
+                .artifacts
+                .iter()
+                .find(|(_, value)| std::sync::Arc::ptr_eq(value, loaded))
+                .map(|(key, _)| format!("{key:?}"))
+        });
+        let value = serde_json::json!({
+            "request": request,
+            "common_dir": common,
+            "canonical_path": path.canonicalize().unwrap(),
+            "raw_manifest": fs::read(path.join("manifest.json")).unwrap(),
+            "manifest": header.as_ref().ok(),
+            "header_error": header.as_ref().err().map(|e| format!("{e:#}")),
+            "manifest_capability": header.as_ref().ok().map(|m| crate::store::rust_evidence_manifest_capability_digest(m).unwrap()),
+            "actual_cache_key": key,
+            "loaded": loaded.as_ref().map(|v| d6_snapshot(v)),
+            "cold_loaded": cold.as_ref().ok().map(d6_snapshot),
+            "cold_error": cold.as_ref().err().map(|e| format!("{e:#}")),
+            "ptr_eq_retained": loaded.as_ref().zip(retained).map(|(a,b)| std::sync::Arc::ptr_eq(a,b)),
+            "retained": retained.map(|v| d6_snapshot(v)),
+        });
+        d6_export(name, &value, Some(path));
+        loaded
+    }
+
+    #[test]
+    fn d6_hot_cache_tracks_presence_path_and_retained_snapshots() {
+        let common = TempDir::new().unwrap();
+        let path = common.path().join("canonical.parquet");
+        let zero = d6_graph(None);
+        assert!(zero.rust_evidence.as_ref().unwrap().files.is_empty());
+        let mut absent = zero.clone();
+        absent.rust_evidence = None;
+        d6_write(&zero, &path);
+        let present = d6_load(
+            "presence-initial",
+            common.path(),
+            &path,
+            None,
+            serde_json::json!({"write":"some-empty"}),
+        )
+        .unwrap();
+        let original = present.rust_evidence.clone();
+        d6_write(&absent, &path);
+        let legacy = d6_load(
+            "present-to-absent",
+            common.path(),
+            &path,
+            Some(&present),
+            serde_json::json!({"replace_same_path":"none"}),
+        )
+        .unwrap();
+        d6_write(&zero, &path);
+        let restored = d6_load(
+            "absent-to-present-zero",
+            common.path(),
+            &path,
+            Some(&legacy),
+            serde_json::json!({"replace_same_path":"some-empty"}),
+        )
+        .unwrap();
+        let replacement = common.path().join("replacement.parquet");
+        d6_write(&zero, &replacement);
+        let moved = d6_load(
+            "replacement-path",
+            common.path(),
+            &replacement,
+            Some(&restored),
+            serde_json::json!({"replace_path":"same-manifest"}),
+        )
+        .unwrap();
+        assert!(
+            legacy.rust_evidence.is_none(),
+            "present -> absent must not reuse the present snapshot"
+        );
+        assert!(restored.rust_evidence.is_some());
+        assert!(!std::sync::Arc::ptr_eq(&present, &legacy));
+        assert!(!std::sync::Arc::ptr_eq(&legacy, &restored));
+        assert!(
+            !std::sync::Arc::ptr_eq(&restored, &moved),
+            "canonical paths are separate identities"
+        );
+        assert_eq!(
+            present.rust_evidence, original,
+            "retained Arc remains immutable"
+        );
+    }
+
+    #[test]
+    fn d6_hot_cache_tracks_same_source_checksum_changes() {
+        let common = TempDir::new().unwrap();
+        let path = common.path().join("canonical.parquet");
+        let graph = d6_graph(Some("pub struct A;\n"));
+        let mut changed = graph.clone();
+        changed.rust_evidence.as_mut().unwrap().files[0].calls = crate::RustCallEvidence::Unknown {
+            reason: crate::RustEvidenceUnknownReason::ParseUnavailable,
+        };
+        assert_eq!(graph.graph_content_hash, changed.graph_content_hash);
+        d6_write(&graph, &path);
+        let old = d6_load(
+            "checksum-initial",
+            common.path(),
+            &path,
+            None,
+            serde_json::json!({"write":"complete"}),
+        )
+        .unwrap();
+        d6_write(&changed, &path);
+        let new = d6_load(
+            "checksum-changed",
+            common.path(),
+            &path,
+            Some(&old),
+            serde_json::json!({"replace_same_path":"unknown-parse-unavailable"}),
+        )
+        .unwrap();
+        assert_eq!(new.rust_evidence, changed.rust_evidence);
+        assert!(!std::sync::Arc::ptr_eq(&old, &new));
+        assert_eq!(old.rust_evidence, graph.rust_evidence);
+    }
+
+    #[test]
+    fn d6_hot_cache_rejects_changed_malformed_headers() {
+        let graph = d6_graph(Some("pub struct A;\n"));
+        let changes = [
+            (
+                "checksum",
+                "/rust_evidence/checksum_blake3",
+                serde_json::json!("0".repeat(64)),
+            ),
+            (
+                "wrapper-schema",
+                "/rust_evidence/schema_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "wrapper-extractor",
+                "/rust_evidence/extractor_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "declaration-schema",
+                "/rust_evidence/declaration_schema_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "declaration-extractor",
+                "/rust_evidence/declaration_extractor_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "call-schema",
+                "/rust_evidence/call_schema_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "call-extractor",
+                "/rust_evidence/call_extractor_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "rust-incomplete",
+                "/rust_evidence/complete",
+                serde_json::json!(false),
+            ),
+            (
+                "rust-row-count",
+                "/rust_evidence/row_counts/sources",
+                serde_json::json!(2),
+            ),
+            ("core-row-count", "/row_counts/files", serde_json::json!(2)),
+            ("core-incomplete", "/complete", serde_json::json!(false)),
+            (
+                "disk-schema",
+                "/schema_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "graph-extractor",
+                "/extractor_version",
+                serde_json::json!("unsupported"),
+            ),
+            (
+                "manifest-version",
+                "/manifest_version",
+                serde_json::json!("unsupported"),
+            ),
+        ];
+        let mut failures = Vec::new();
+        for (name, pointer, value) in changes {
+            let common = TempDir::new().unwrap();
+            let path = common.path().join("canonical.parquet");
+            d6_write(&graph, &path);
+            let old =
+                super::read_resolved_base_artifact(common.path().to_path_buf(), &path, "d6_probe")
+                    .unwrap();
+            let patch = serde_json::json!({pointer: value});
+            d6_patch(&path, &patch);
+            let cold = read_artifact_parquet(&path);
+            let loaded = d6_load(
+                &format!("header-{name}"),
+                common.path(),
+                &path,
+                Some(&old),
+                patch,
+            );
+            if (name != "core-row-count" && cold.is_ok())
+                || loaded.is_some()
+                || old.rust_evidence != graph.rust_evidence
+            {
+                failures.push(name);
+            }
+        }
+        assert!(
+            failures.is_empty(),
+            "changed malformed headers must return no seed: {failures:?}"
+        );
+    }
+
+    #[test]
+    fn d6_hot_cache_binds_valid_header_changes() {
+        let common = TempDir::new().unwrap();
+        let path = common.path().join("canonical.parquet");
+        let graph = d6_graph(None);
+        d6_write(&graph, &path);
+        let old =
+            super::read_resolved_base_artifact(common.path().to_path_buf(), &path, "d6_probe")
+                .unwrap();
+        let patch = serde_json::json!({"/indexed_commit_oid":"another-commit"});
+        d6_patch(&path, &patch);
+        let new = d6_load(
+            "valid-header-changed",
+            common.path(),
+            &path,
+            Some(&old),
+            patch,
+        )
+        .unwrap();
+        assert!(
+            !std::sync::Arc::ptr_eq(&old, &new),
+            "a newly read manifest cannot alias an older header"
+        );
+    }
+
+    #[test]
+    fn d6_hot_snapshot_survives_table_mutation_but_cold_decode_rejects() {
+        let common = TempDir::new().unwrap();
+        let path = common.path().join("canonical.parquet");
+        let graph = d6_graph(None);
+        d6_write(&graph, &path);
+        let old =
+            super::read_resolved_base_artifact(common.path().to_path_buf(), &path, "d6_probe")
+                .unwrap();
+        fs::remove_file(path.join("rust_evidence_sites.parquet")).unwrap();
+        let hot = d6_load("unchanged-header-missing-table-hot", common.path(), &path, Some(&old), serde_json::json!({"remove_table":"rust_evidence_sites.parquet","manifest_unchanged":true})).unwrap();
+        let cold_path = common.path().join("cold.parquet");
+        d6_copy(&path, &cold_path);
+        let cold = d6_load(
+            "unchanged-header-missing-table-cold",
+            common.path(),
+            &cold_path,
+            Some(&old),
+            serde_json::json!({"copy_to_uncached_path":true}),
+        );
+        assert!(
+            std::sync::Arc::ptr_eq(&old, &hot),
+            "validated immutable snapshots do not monitor table bytes"
+        );
+        assert!(cold.is_none());
+        assert_eq!(old.rust_evidence, graph.rust_evidence);
+    }
+
+    fn d6_pointer_bytes(root: &Path) -> [Vec<u8>; 2] {
+        let current = root.join(WORKTREE_ARTIFACT_PATH).join("CURRENT");
+        let current_bytes = if fs::symlink_metadata(&current)
+            .unwrap()
+            .file_type()
+            .is_symlink()
+        {
+            fs::read_link(&current)
+                .unwrap()
+                .as_os_str()
+                .as_encoded_bytes()
+                .to_vec()
+        } else {
+            fs::read(&current).unwrap()
+        };
+        [
+            current_bytes,
+            fs::read(root.join(super::POINTER_PATH)).unwrap(),
+        ]
+    }
+
+    #[test]
+    fn d6_publication_and_dedup_reject_before_either_pointer_changes() {
+        let present = d6_graph(Some("pub struct A;\n"));
+        let mut absent = present.clone();
+        absent.rust_evidence = None;
+        let mut unknown = present.clone();
+        unknown.rust_evidence.as_mut().unwrap().files[0].calls = crate::RustCallEvidence::Unknown {
+            reason: crate::RustEvidenceUnknownReason::ParseUnavailable,
+        };
+        let mut failures = Vec::new();
+        for (case, expected, stored) in [
+            ("present-absent", &present, &absent),
+            ("absent-present", &absent, &present),
+            ("present-unknown", &present, &unknown),
+            ("equal-present", &present, &present),
+            ("equal-absent", &absent, &absent),
+        ] {
+            for dedup in [false, true] {
+                let env = GitCacheEnv::new();
+                let previous = env.repo.path().join("previous.parquet");
+                d6_write(&artifact("previous", "old.txt"), &previous);
+                write_current_pointer(env.repo.path(), &previous).unwrap();
+                write_test_pointer(env.repo.path(), &previous);
+                let path = super::canonical_path(
+                    &env.ctx.git_common_dir,
+                    &expected.manifest_version,
+                    &expected.graph_content_hash,
+                );
+                d6_write(stored, &path);
+                let before = d6_pointer_bytes(env.repo.path());
+                let raw_before = fs::read(path.join("manifest.json")).unwrap();
+                let result = if dedup {
+                    write_with_dedup_with_section_sidecar_options(
+                        expected,
+                        env.repo.path(),
+                        &env.ctx,
+                        skip_embedding_sidecar_options(),
+                        None,
+                    )
+                } else {
+                    super::publish_worktree_rebuild(
+                        expected,
+                        env.repo.path(),
+                        Some(&env.ctx),
+                        &path,
+                    )
+                };
+                let after = d6_pointer_bytes(env.repo.path());
+                let mismatch = expected.rust_evidence != stored.rust_evidence;
+                d6_export(
+                    &format!("publication-{case}-dedup-{dedup}"),
+                    &serde_json::json!({
+                        "request":{"case":case,"dedup":dedup}, "expected":d6_snapshot(expected), "stored":d6_snapshot(&read_artifact_parquet(&path).unwrap()),
+                        "canonical_path":path.canonicalize().unwrap(), "before":before, "after":after,
+                        "raw_manifest_before":raw_before, "raw_manifest_after":fs::read(path.join("manifest.json")).unwrap(),
+                        "error":result.as_ref().err().map(|e|format!("{e:#}")), "published":result.is_ok(),
+                    }),
+                    Some(&path),
+                );
+                if result.is_err() != mismatch
+                    || (mismatch
+                        && (before != after
+                            || raw_before != fs::read(path.join("manifest.json")).unwrap()))
+                {
+                    failures.push(format!("{case}/dedup={dedup}"));
+                }
+            }
+        }
+        assert!(
+            failures.is_empty(),
+            "Rust rejection must precede both pointers and sidecar repair: {failures:?}"
+        );
+    }
+
+    #[test]
+    fn d6_base_cache_preserves_recognized_legacy_absence() {
+        let common = TempDir::new().unwrap();
+        let path = common.path().join("legacy.parquet");
+        let mut graph = d6_graph(None);
+        graph.rust_evidence = None;
+        graph.macro_invocations = None;
+        d6_write(&graph, &path);
+        d6_patch(
+            &path,
+            &serde_json::json!({"/schema_version":"spur-graph-schema-v12"}),
+        );
+        let old = d6_load(
+            "legacy-absence",
+            common.path(),
+            &path,
+            None,
+            serde_json::json!({"schema":"spur-graph-schema-v12"}),
+        )
+        .unwrap();
+        assert!(old.rust_evidence.is_none());
+        for schema in [
+            "spur-graph-schema-v012",
+            "spur-graph-schema-v+12",
+            "spur-graph-schema-v999",
+        ] {
+            let patch = serde_json::json!({"/schema_version":schema});
+            d6_patch(&path, &patch);
+            let loaded = d6_load(
+                &format!("legacy-invalid-{schema}"),
+                common.path(),
+                &path,
+                Some(&old),
+                patch,
+            );
+            assert!(
+                loaded.is_none(),
+                "unrecognized schema must not reuse a valid legacy seed"
+            );
+        }
+        assert!(old.rust_evidence.is_none());
+    }
+
+    #[test]
+    fn d6_native_replay() {
+        // ROOT can supply fresh fixture copies and arbitrary declared mutations.
+        let Some(request_path) = std::env::var_os("D6_REPLAY_REQUEST") else {
+            return;
+        };
+        let request: serde_json::Value =
+            serde_json::from_slice(&fs::read(request_path).unwrap()).unwrap();
+        let common = TempDir::new().unwrap();
+        let first = common.path().join("first.parquet");
+        d6_copy(Path::new(request["first_dir"].as_str().unwrap()), &first);
+        let old = d6_load(
+            "replay-before",
+            common.path(),
+            &first,
+            None,
+            request.clone(),
+        );
+        let next = if request["replacement_path"].as_bool().unwrap_or(false) {
+            common.path().join("second.parquet")
+        } else {
+            first.clone()
+        };
+        if let Some(replacement) = request["next_dir"].as_str() {
+            if next.exists() {
+                fs::remove_dir_all(&next).unwrap();
+            }
+            d6_copy(Path::new(replacement), &next);
+        } else if next != first {
+            d6_copy(&first, &next);
+        }
+        if request["manifest_patch"].is_object() {
+            d6_patch(&next, &request["manifest_patch"]);
+        }
+        if let Some(table) = request["remove_table"].as_str() {
+            assert!(Path::new(table).components().count() == 1 && table.ends_with(".parquet"));
+            fs::remove_file(next.join(table)).unwrap();
+        }
+        d6_load(
+            "replay-after",
+            common.path(),
+            &next,
+            old.as_ref(),
+            request.clone(),
+        );
+        if let Some(expected) = request["expected_dir"].as_str() {
+            let expected = read_artifact_parquet(Path::new(expected)).unwrap();
+            let result = validate_publication(&expected, &next);
+            d6_export(
+                "replay-publication",
+                &serde_json::json!({"request":request,"expected":d6_snapshot(&expected),"error":result.as_ref().err().map(|e|format!("{e:#}")),"accepted":result.is_ok()}),
+                Some(&next),
+            );
+        }
+    }
+
+    #[test]
+    fn publication_rejects_different_rust_capability() {
+        let root = tempfile::tempdir().unwrap();
+        std::fs::write(root.path().join("a.rs"), "pub struct A;\n").unwrap();
+        let facts = crate::build_facts(root.path(), None).unwrap().0;
+        let expected = crate::artifact_from_facts(&facts, root.path()).unwrap();
+        let mut legacy = expected.clone();
+        legacy.rust_evidence = None;
+        let out = tempfile::tempdir().unwrap();
+        crate::write_artifact_parquet(&legacy, out.path(), crate::WriteOptions::default(), vec![])
+            .unwrap();
+        assert!(validate_publication(&expected, out.path()).is_err());
+    }
 
     #[test]
     fn retention_count_covers_current_and_two_rollbacks() {
