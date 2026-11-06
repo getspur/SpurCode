@@ -153,6 +153,20 @@ struct ParquetMacroContext {
 }
 
 pub trait GraphQueryClient {
+    /// Recorded physical Rust evidence. Custom backends opt in explicitly.
+    fn rust_evidence(
+        &self,
+        filter: &crate::RustEvidenceFilter,
+    ) -> anyhow::Result<crate::RustEvidenceQueryResult> {
+        filter.validate_shape()?;
+        Ok(crate::RustEvidenceQueryResult {
+            availability: crate::RustEvidenceAvailability::Unavailable,
+            source_domain: None,
+            files: Vec::new(),
+            origins: Vec::new(),
+        })
+    }
+
     /// Direct syntax evidence. Custom backends must opt in explicitly.
     fn macro_invocations(
         &self,

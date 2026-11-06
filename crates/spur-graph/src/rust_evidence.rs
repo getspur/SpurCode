@@ -10,6 +10,11 @@ use std::path::{Component, Path};
 use anyhow::{ensure, Context as _};
 use serde::{Deserialize, Serialize};
 
+mod query;
+pub use query::{
+    RustEvidenceAvailability, RustEvidenceFilter, RustEvidenceQueryResult, RustEvidenceQuerySource,
+};
+
 use crate::panic_evidence::{
     collect_rust_call_sites, snapshot_id, MethodCallSourceScope, PanicEvidenceSource, RustBodyKind,
     RustCallSiteEvidenceSet, RUST_CALL_SITE_EXTRACTOR_VERSION, RUST_CALL_SITE_SCHEMA_VERSION,
