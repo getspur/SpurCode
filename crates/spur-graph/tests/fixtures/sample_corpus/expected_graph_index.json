@@ -630,5 +630,255 @@
     "rows": [],
     "scopes": []
   },
+  "rust_evidence": {
+    "schema_version": "spur-rust-evidence-v1",
+    "extractor_version": "rust-evidence-wrapper-v1",
+    "graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+    "origins": [
+      {
+        "graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+        "manifest_version": "bf1ad64f405c4cd5222120dad7b0d5461d0b7d2f52f9aeb0bbe79c07ae61d524",
+        "sources": [
+          {
+            "path": "src/lib.rs",
+            "stable_file_id": "b4bf8362c80d42ea",
+            "content_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a"
+          },
+          {
+            "path": "src/utils.rs",
+            "stable_file_id": "b481045ec43d18b4",
+            "content_oid": "cf63867bec87bd095c26bb4b345f8606406c475e"
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "file_path": "src/lib.rs",
+        "stable_file_id": "b4bf8362c80d42ea",
+        "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+        "byte_length": 481,
+        "origin_graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "src/lib.rs",
+              "stable_file_id": "b4bf8362c80d42ea",
+              "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+              "byte_length": 481,
+              "availability": {
+                "complete": {
+                  "row_count": 0
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "complete": {
+            "evidence": {
+              "schema_version": "panic-rust-call-sites-v1",
+              "extractor_version": "rust-direct-call-bodies-v1",
+              "graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+              "source_scope": "supplied_physical_rust_files",
+              "sources": [
+                {
+                  "file_path": "src/lib.rs",
+                  "stable_file_id": "b4bf8362c80d42ea",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "byte_length": 481,
+                  "body_count": 5,
+                  "site_count": 3
+                }
+              ],
+              "bodies": [
+                {
+                  "body_id": "f162eb2768a8974be72ab5afea03e0e73d824f8dcb19160bc25a5ce928c7cbbf",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    166,
+                    191
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "1c16e5672cd55bac"
+                },
+                {
+                  "body_id": "a067c521bdfd9769bdd6cac5fe431ebebfd384006edf21adeec4530df0fe8f36",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    272,
+                    293
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "df9ddd1c2983c622"
+                },
+                {
+                  "body_id": "badc016118439e66a4342f9b8ae26706cec13f98c8d97d4f53f5b4ed5b6eaff4",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    331,
+                    344
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "66bf26d3c5059ec8"
+                },
+                {
+                  "body_id": "be4ef07e8d46091e56c8f7d267b12f28155789aa7ac8309f09044c2bf24469d9",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    394,
+                    422
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "b19d8b200a35b5df"
+                },
+                {
+                  "body_id": "b81174d7776ad5d6c1a6f42b87719bd3f9587c4d3d7af131186057015837cd59",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    450,
+                    480
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "b6473192bc6c9fa3"
+                }
+              ],
+              "sites": [
+                {
+                  "site_id": "d55b32977e79e4c9089c3d014368bab66e0b654abd42b5bd809b3fd2dbd8f515",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    176,
+                    184
+                  ],
+                  "call_text": "helper()",
+                  "body_id": "f162eb2768a8974be72ab5afea03e0e73d824f8dcb19160bc25a5ce928c7cbbf"
+                },
+                {
+                  "site_id": "0dca7fa00fab20b5c0229ce0eed1a87322782ad97557999695e1c6fe5009503f",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    278,
+                    290
+                  ],
+                  "call_text": "runner.run()",
+                  "body_id": "a067c521bdfd9769bdd6cac5fe431ebebfd384006edf21adeec4530df0fe8f36"
+                },
+                {
+                  "site_id": "62273419139c2192e32367d26323cd8d804a983a99692b1ba0592544e50512c3",
+                  "source_oid": "b5e687746be21a63e977c97830ffdbeb72a5650a",
+                  "file_path": "src/lib.rs",
+                  "byte_range": [
+                    400,
+                    420
+                  ],
+                  "call_text": "items.map(normalize)",
+                  "body_id": "be4ef07e8d46091e56c8f7d267b12f28155789aa7ac8309f09044c2bf24469d9"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "file_path": "src/utils.rs",
+        "stable_file_id": "b481045ec43d18b4",
+        "source_oid": "cf63867bec87bd095c26bb4b345f8606406c475e",
+        "byte_length": 121,
+        "origin_graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+        "declarations": {
+          "schema_version": "spur-rust-declarations-v2",
+          "extractor_version": "2026-11-03-rust-foreign-declarations-v1",
+          "graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+          "scope": "supplied_physical_rust_files",
+          "covered_kinds": [
+            "tuple_field",
+            "foreign_function",
+            "extern_block"
+          ],
+          "sources": [
+            {
+              "file_path": "src/utils.rs",
+              "stable_file_id": "b481045ec43d18b4",
+              "source_oid": "cf63867bec87bd095c26bb4b345f8606406c475e",
+              "byte_length": 121,
+              "availability": {
+                "complete": {
+                  "row_count": 0
+                }
+              }
+            }
+          ],
+          "rows": [],
+          "foreign_functions": [],
+          "extern_blocks": []
+        },
+        "calls": {
+          "complete": {
+            "evidence": {
+              "schema_version": "panic-rust-call-sites-v1",
+              "extractor_version": "rust-direct-call-bodies-v1",
+              "graph_content_hash": "36018835651609826cd76fe200f7a85f56ee68fc7eb83114ef98593d8d12e005",
+              "source_scope": "supplied_physical_rust_files",
+              "sources": [
+                {
+                  "file_path": "src/utils.rs",
+                  "stable_file_id": "b481045ec43d18b4",
+                  "source_oid": "cf63867bec87bd095c26bb4b345f8606406c475e",
+                  "byte_length": 121,
+                  "body_count": 2,
+                  "site_count": 0
+                }
+              ],
+              "bodies": [
+                {
+                  "body_id": "28e45a89aaec072871ae69161823d1a6852e5e837604ca6e22ec5650e1421f5e",
+                  "source_oid": "cf63867bec87bd095c26bb4b345f8606406c475e",
+                  "file_path": "src/utils.rs",
+                  "byte_range": [
+                    36,
+                    38
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "6a2e722ded1d0d94"
+                },
+                {
+                  "body_id": "3a3eeca6f7f6a36e2118c33700ed4dd44edf8e233c3613c747fcb3b261ed27c9",
+                  "source_oid": "cf63867bec87bd095c26bb4b345f8606406c475e",
+                  "file_path": "src/utils.rs",
+                  "byte_range": [
+                    94,
+                    118
+                  ],
+                  "kind": "function",
+                  "definition_stable_symbol_id": "a2189e8da277ec66"
+                }
+              ],
+              "sites": []
+            }
+          }
+        }
+      }
+    ]
+  },
   "tombstones": []
 }
