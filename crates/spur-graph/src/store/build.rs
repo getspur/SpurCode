@@ -29,7 +29,7 @@ use crate::{
     GraphSymbolArtifact, GraphTombstoneEntry, NodeId, NodeKind, RelationKind, SourceSpan,
 };
 
-pub const SCHEMA_VERSION: &str = "spur-graph-schema-v12";
+pub const SCHEMA_VERSION: &str = "spur-graph-schema-v13";
 pub const EXTRACTOR_VERSION: &str = "2026-11-03-rust-foreign-declarations-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
 pub const RESOLVER_VERSION: &str = "2026-11-02-rust-receiver-rebind-v2";
@@ -3569,7 +3569,7 @@ mod tests {
 
     #[test]
     fn schema_version_carries_phase_1b_vocabulary() {
-        assert_eq!(super::SCHEMA_VERSION, "spur-graph-schema-v12");
+        assert_eq!(super::SCHEMA_VERSION, "spur-graph-schema-v13");
     }
 
     #[test]

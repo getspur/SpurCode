@@ -1,0 +1,49 @@
+Require exact canonical legacy schema names while preserving the reviewed transport, and align the two stale extractor expectations with fresh native v13 output.
+
+This is a worker candidate for ROOT's actual-output POST/Jev and independent review. D5 is not approved. Canonical issue `bd-73kv` remains `in_progress`, assigned to `spur-worker-c3553bf42ea64742`, with exactly one matching delegation label. The original implementation, tests, authored-history reference, ROOT review failures and previous evidence are preserved.
+
+[Unified retry diff](retry.diff) covers four crate files: the narrow absence guard, two new regressions, the extractor version guard and one Rust golden value. [Complete implementation diff from dispatch](complete.diff.gz) preserves the integrated D5 change. No cache, collector, source authentication, checksum, query, runtime, dependency or external-project implementation changed in this retry. The unchanged reviewed files and their hashes are recorded in [measurement-manifest.json](measurement-manifest.json).
+
+| Checkpoint | Commit |
+| --- | --- |
+| Authorized fast-forward recovery | `6b21a257595ea805345a756e3c41f8a752a61e5c` |
+| Committed regression before assertion RED | `1ebf14a31c572261090b68d25157701af4e5f5f8` |
+| Minimal fix and direct v13 expectation fallout | `cacd53030dd7773f8dce3b5187c32f4f5db6d0e1` |
+
+INTENT comment 4073 and RED comment 4075 were persisted and replayed idempotently; exact requests and responses are in [audits.json](audits.json). After clean recovery, the rework verifier passed at the reviewed checkpoint: fingerprint `9fce14f4f133d2b2e2ed91bc4d30711ca9d3ed17cf32df988ab3d8128a4e80d4`, 1,902 bindings and 15 predicates. Both fresh receipts, `sol_10a048ed91254fbb` (SAT) and `sol_2eac73069be1464a` (UNSAT), matched the complete archived envelopes, including requests, models, cores and statuses. [Lossless live receipts](pre-live.json.gz) and [entry verification](pre-verification.json) retain the comparison. The original PRE verifier was not run against modified production. ROOT owns final POST/Jev.
+
+The new regression compiled and failed at its runtime assertion before the fix: **exit 101, one passed/one failed**, with both full and slim readers incorrectly accepting `v012`, `v+12`, `v01` and `v+1`. The canonical v1–v13 absence control passed. The [raw RED log](runs/alias-assertion-red-2.log.gz) has SHA-256 `38fcfec4e5b7031ecfe5d46fbeca19d3201a1bd26e220ee6a64de17d3fab5949`; its executed binary has SHA-256 `e920bcfe671192545f9e0f799fb3a5e949e8094f4f0b9d574a34bb532b1a8cdf`. [Whole RED snapshots](red-native-outputs.tar.gz) preserve the actual manifests and reader results.
+
+| Final verification | Exit | Actual result |
+| --- | --- | --- |
+| Complete extractor target | 0 | 55 passed, three existing ignores |
+| All seven original scoped graph targets | 0 | 73 passed, one existing cross-device ignore; includes 18 transport cases |
+| Graph `check --all-targets` | 0 | All targets compile; existing warnings remain |
+| Local graph/analyst formatting | 0 | Passed |
+| Broad analyst `overlay` filter | 101 | 18 unit and five integration tests passed; one known failure |
+
+The analyst failure is still `worktree_overlay_keeps_base_edges_to_reemitted_delta_targets`, at `crates/spur-analyst/tests/overlay.rs:158`: zero edges versus one expected. This is the exact known `bd-16eq` failure previously reproduced on pre-D5 production; its baseline evidence remains under `../worker-evidence/`. It was neither repaired nor weakened. The current [lossless analyst log](runs/final-analyst.log.gz) and current executable identities are preserved. This command is RED, and overall durability acceptance remains ROOT's decision.
+
+Every exact argv, environment, source binding, exit, count and executed-binary hash is in [run-results.json](run-results.json); full raw streams are gzip-preserved under `runs/`. Remote commands used `scripts/spur-cargo` with `SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0`; formatting used its local route. The external build-helper path and the existing `SPUR_RSYNC_IO_TIMEOUT=600` setting are recorded per applicable run. Logs stayed outside the checkout during stable-source sync. The existing remote target was reused; no local build or local fallback ran.
+
+The runtime RED command was `scripts/spur-cargo test -p spur-graph --test rust_evidence_parquet --target-dir /mnt/cargo/targets/spur/worktrees/00c43777-38c2-4eef-b6c4-36a33474d37b --config docs/research/artifacts/2026-11-06-rust-evidence-durability/D5/attempt2-evidence/red-env.toml absent_rust_evidence -- --nocapture --test-threads=1`.
+
+The final unblessed graph command was:
+
+```sh
+scripts/spur-cargo test -p spur-graph --test extractor --test rust_evidence_parquet --test macro_invocation_parquet --test parquet_roundtrip --test parquet_schema_invariants --test load_artifact_dispatch --test diagnostics_persist --test integration_git_incremental --no-fail-fast --target-dir /mnt/cargo/targets/spur/worktrees/00c43777-38c2-4eef-b6c4-36a33474d37b --config docs/research/artifacts/2026-11-06-rust-evidence-durability/D5/attempt2-evidence/native-env.toml -- --test-threads=1
+```
+
+The remaining final commands were `scripts/spur-cargo check -p spur-graph --all-targets --target-dir /mnt/cargo/targets/spur/worktrees/00c43777-38c2-4eef-b6c4-36a33474d37b`, `scripts/spur-cargo fmt -p spur-graph -p spur-analyst -- --check`, and `scripts/spur-cargo test -p spur-analyst overlay --target-dir /mnt/cargo/targets/spur/worktrees/00c43777-38c2-4eef-b6c4-36a33474d37b -- --test-threads=1`.
+
+[Golden path proof](golden-path-proof.json), replayable by invoking `golden-proof.py` with the repository root as the working directory, proves exactly `/rust_evidence/origins/0/manifest_version` changed from `bf1ad64f405c4cd5222120dad7b0d5461d0b7d2f52f9aeb0bbe79c07ae61d524` to the native v13 value `37eee2e2e0d9213d4d9ff13ccbacae861859bd592305fb88dbe54e4e09024626`. Fresh collection used the existing updater only on the single Rust sample test, then checked every parsed JSON path before adopting its bytes. All five non-Rust goldens are byte-identical. [Collection archive](golden-collection.tar.gz) preserves all six whole native golden files and build identities; both whole Rust golden versions are separately gzip-preserved. The complete final extractor target ran without the updater environment.
+
+[Final native archive](native-outputs.tar.gz) preserves whole Parquet/manifest bytes, actual schemas, metadata and rows, saved source bytes, original and reconstructed full/slim envelopes, reader verdicts and separate saved-source validator verdicts. It includes all prior positive/negative profiles plus the new aliases and canonical absence controls: **192 current profiles**, with 3,084 captured files independently hash-checked. All 155 original corruption controls and all 11 malformed-name controls reject in both readers; all 13 canonical absence controls load. Legacy v12 macro compatibility, full rebuild, None, captured empty, complete-zero, Unknown, snapshots, composed origins and all delta profiles remain exercised. Transport integrity is separate from source authentication. No full canonical hash is claimed for slim/history projections.
+
+[Independent verifier](verify-native.py) derives expected source OIDs, lengths and body/call geometry from the frozen raw inputs, producing [independent-expected.json](independent-expected.json). [Prior comparison](prior-native-comparison.json), replayable with `compare-prior.py`, checks all 168 old profiles' verdicts and exact equality of the artifacts, tables, sources and digests in all 13 accepted profiles. [Native replayer](replay-native.py) accepts a ROOT-verified compatible executable and a fresh output directory; it copies whole snapshots and generates fresh zero-row deletion, same-count call mutation, checksum/schema and signed/zero-padded version controls. ROOT must run its fresh final probes and POST/Jev; this candidate does not grant approval.
+
+All **1,876 source/config bindings** match the final remote capture. Their canonical-map SHA-256 is `02a1ee2ff8d0b8c286c0c744fa85b8f0c3249b1c915154386571df4b001ceb5f`; [complete native identities](native-identities.json.gz) retain toolchain, sources, files and executable inventory. [Measurements](measurement-manifest.json) distinguish binaries actually executed in each run from stale binaries merely observed in the shared target. The final transport binary SHA-256 is `c666acd06237013666d7f57b579b7807212edbeffa66eed31ce901754e38f3f9`. Final archive SHA-256: `f65b3cf2f9baa2406b851bbd1d70db5302f6f2560e7855f9ae359736cbb1dd8a`.
+
+Infrastructure failures remain separate: endpoint failure exit 200, inline Cargo-config parse failure exit 101 before compilation, and rsync timeout exit 30 before compilation. The quoted inline config was replaced by saved file configs; the sync retry used the existing longer-timeout setting. A native-capture argument-length failure was corrected by streaming the source-verification script over stdin. The initial formatting failure and correction are recorded in `format-correction.json`. No foreign process, solver storage/quota, dependency, external repository or production infrastructure was modified. No push, publication, self-approval, closure, main integration or D6 work occurred.
+
+Evidence commit `44ee02cf402771591d05332ebf6850e85df9129a` was made with a clean task tree. Completion audit UUID `e38e26ba-5e64-409a-96a5-aa96f82059d3` is **durably confirmed** as Beads comment **4077**; identical replay returned `recorded: true`, `idempotent: true` and the same full audit. [Completion request, response and replay](completion-record.json) preserve the exact envelopes. The final local audit-record commit only adds this persistence record and updates the evidence inventory. Canonical issue status remains `in_progress`; ROOT's final POST/Jev and approval are pending.

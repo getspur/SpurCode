@@ -507,25 +507,31 @@ fn fresh_linked_worktree_seeds_incremental_from_main_with_no_changes() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
-        assert!(
-            seed.artifact.rust_evidence.is_none(),
-            "v12 disk seed has no Rust carrier before D5"
-        );
+        assert_eq!(seed.artifact.rust_evidence, main_artifact.rust_evidence);
+        assert_rust_sources(&seed.artifact, repo.path());
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Full);
-        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(
+            stats,
+            spur_graph::build::BuildStats {
+                reused_buckets: 2,
+                ..Default::default()
+            }
+        );
         let expected = build_full(&worker);
         assert_eq!(rebuilt.files, expected.files);
         assert_eq!(rebuilt.symbols, expected.symbols);
         assert_eq!(rebuilt.edges, expected.edges);
         assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
+        assert_eq!(rebuilt.rust_evidence, seed.artifact.rust_evidence);
+        assert_rust_sources(&rebuilt, &worker);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 2);
 }
 
 #[test]
@@ -545,20 +551,59 @@ fn fresh_linked_worktree_seeds_incremental_from_main_with_one_modified_file() {
 
     let (rebuilt, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
-        assert!(
-            seed.artifact.rust_evidence.is_none(),
-            "v12 disk seed has no Rust carrier before D5"
-        );
+        assert_eq!(seed.artifact.rust_evidence, main_artifact.rust_evidence);
+        assert_rust_sources(&seed.artifact, repo.path());
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Full);
-        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(
+            stats,
+            spur_graph::build::BuildStats {
+                reused_buckets: 1,
+                changed_paths: 1,
+                changed_or_added_paths: BTreeSet::from(["src/lib.rs".into()]),
+                removed_paths: BTreeSet::new()
+            }
+        );
         let expected = build_full(&worker);
         assert_eq!(rebuilt.files, expected.files);
         assert_eq!(rebuilt.symbols, expected.symbols);
         assert_eq!(rebuilt.edges, expected.edges);
-        assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
+        assert_rust_sources(&rebuilt, &worker);
+        let before = seed.artifact.rust_evidence.as_ref().unwrap();
+        let after = rebuilt.rust_evidence.as_ref().unwrap();
+        let keep = |set: &spur_graph::RustEvidenceSet| {
+            set.files
+                .iter()
+                .find(|f| f.file_path == "src/keep.rs")
+                .unwrap()
+                .clone()
+        };
+        assert_eq!(keep(after), keep(before));
+        assert!(after.origins.contains(&before.origins[0]));
+        let facts = build_facts(&worker, None).unwrap().0;
+        let selected = spur_graph::artifact_from_facts_for_paths(
+            &facts,
+            &worker,
+            &[worker.join("src/lib.rs")],
+        )
+        .unwrap();
+        let changed = after
+            .files
+            .iter()
+            .find(|f| f.file_path == "src/lib.rs")
+            .unwrap();
+        assert_eq!(changed, &selected.rust_evidence.as_ref().unwrap().files[0]);
+        assert_ne!(
+            changed.source_oid,
+            before
+                .files
+                .iter()
+                .find(|f| f.file_path == "src/lib.rs")
+                .unwrap()
+                .source_oid
+        );
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
@@ -566,7 +611,7 @@ fn fresh_linked_worktree_seeds_incremental_from_main_with_one_modified_file() {
         .symbols
         .iter()
         .any(|symbol| symbol.entity_name == "lib_changed"));
-    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
+    assert_base_seed_trace(&lines, "main_worktree", 1, 1);
 }
 
 #[test]
@@ -590,26 +635,32 @@ fn fresh_linked_worktree_seeds_incremental_from_main_current_without_pointer() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
-        assert!(
-            seed.artifact.rust_evidence.is_none(),
-            "v12 disk seed has no Rust carrier before D5"
-        );
+        assert_eq!(seed.artifact.rust_evidence, main_artifact.rust_evidence);
+        assert_rust_sources(&seed.artifact, repo.path());
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Full);
-        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(
+            stats,
+            spur_graph::build::BuildStats {
+                reused_buckets: 2,
+                ..Default::default()
+            }
+        );
         let expected = build_full(&worker);
         assert_eq!(rebuilt.files, expected.files);
         assert_eq!(rebuilt.symbols, expected.symbols);
         assert_eq!(rebuilt.edges, expected.edges);
         assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
+        assert_eq!(rebuilt.rust_evidence, seed.artifact.rust_evidence);
+        assert_rust_sources(&rebuilt, &worker);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
 
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 2);
 }
 
 #[test]
@@ -625,25 +676,31 @@ fn main_worktree_uses_self_pointer_as_incremental_seed() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(repo.path()).expect("self base artifact");
-        assert!(
-            seed.artifact.rust_evidence.is_none(),
-            "v12 disk seed has no Rust carrier before D5"
-        );
+        assert_eq!(seed.artifact.rust_evidence, main_artifact.rust_evidence);
+        assert_rust_sources(&seed.artifact, repo.path());
         let (rebuilt, mode, stats) = artifact_from_facts_incremental(&seed.artifact, repo.path())
             .expect("incremental rebuild");
         assert_eq!(seed.base, "self_pointer");
-        assert_eq!(mode, BuildMode::Full);
-        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(
+            stats,
+            spur_graph::build::BuildStats {
+                reused_buckets: 2,
+                ..Default::default()
+            }
+        );
         let expected = build_full(repo.path());
         assert_eq!(rebuilt.files, expected.files);
         assert_eq!(rebuilt.symbols, expected.symbols);
         assert_eq!(rebuilt.edges, expected.edges);
         assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
+        assert_eq!(rebuilt.rust_evidence, seed.artifact.rust_evidence);
+        assert_rust_sources(&rebuilt, &repo.path());
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "self_pointer", 0, 0);
+    assert_base_seed_trace(&lines, "self_pointer", 0, 2);
 }
 
 #[test]
@@ -735,26 +792,32 @@ fn corrupted_self_pointer_falls_back_to_main_worktree_pointer() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
-        assert!(
-            seed.artifact.rust_evidence.is_none(),
-            "v12 disk seed has no Rust carrier before D5"
-        );
+        assert_eq!(seed.artifact.rust_evidence, main_artifact.rust_evidence);
+        assert_rust_sources(&seed.artifact, repo.path());
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Full);
-        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(
+            stats,
+            spur_graph::build::BuildStats {
+                reused_buckets: 1,
+                ..Default::default()
+            }
+        );
         let expected = build_full(&worker);
         assert_eq!(rebuilt.files, expected.files);
         assert_eq!(rebuilt.symbols, expected.symbols);
         assert_eq!(rebuilt.edges, expected.edges);
         assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
+        assert_eq!(rebuilt.rust_evidence, seed.artifact.rust_evidence);
+        assert_rust_sources(&rebuilt, &worker);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
 
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 1);
 }
 
 #[test]
@@ -769,6 +832,8 @@ fn code_symbol_info_rebuild_aware_uses_seed_rebuild_for_stale_current_with_valid
 
     let mut stale_current = build_full(repo.path());
     stale_current.manifest_version = "legacy-manifest-version".to_owned();
+    // This fixture deliberately represents an unsupported pre-carrier snapshot.
+    stale_current.rust_evidence = None;
     write_current_only_cache(repo.path(), &stale_current);
 
     repo.write(
@@ -890,6 +955,23 @@ fn crlf_bom_dirty_hash_is_bytewise() {
 
 fn string_set(paths: &[&str]) -> BTreeSet<String> {
     paths.iter().map(|path| (*path).to_owned()).collect()
+}
+
+fn assert_rust_sources(graph: &GraphIndexArtifact, root: &Path) {
+    let inputs: Vec<_> = graph
+        .file_manifests
+        .iter()
+        .filter(|m| m.path.ends_with(".rs"))
+        .map(|m| (m.path.clone(), fs::read(root.join(&m.path)).unwrap()))
+        .collect();
+    let sources: Vec<_> = inputs
+        .iter()
+        .map(|(path, bytes)| spur_graph::RustDeclarationSource {
+            file_path: path,
+            bytes,
+        })
+        .collect();
+    graph.validate_rust_evidence_sources(&sources).unwrap();
 }
 
 fn build_full(root: &Path) -> GraphIndexArtifact {

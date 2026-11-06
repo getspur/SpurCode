@@ -7,6 +7,7 @@ pub mod lance_sections;
 pub mod macro_invocations;
 pub mod parquet;
 pub mod pointer;
+pub mod rust_evidence;
 pub mod shard_writer;
 pub mod snapshot;
 pub mod temporal_shards;
@@ -38,6 +39,9 @@ pub use parquet::{
 pub use pointer::{
     read_current_pointer, resolve_artifact_location, write_current_pointer, ArtifactCacheKey,
     ResolvedArtifact,
+};
+pub use rust_evidence::{
+    rust_evidence_manifest_capability_digest, RustEvidenceManifest, RustEvidenceRowCounts,
 };
 pub use shard_writer::TemporalShardSink;
 pub use temporal_shards::{ShardIndexEntry, TemporalShardConfig};

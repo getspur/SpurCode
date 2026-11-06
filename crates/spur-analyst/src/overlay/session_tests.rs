@@ -313,6 +313,7 @@ fn complete_manifest_json() -> String {
         indexed_commit_oid: None,
         extractor_version: "test".to_owned(),
         complete: true,
+        rust_evidence: None,
         row_counts: spur_graph::store::parquet::GraphArtifactRowCounts {
             nodes: 0,
             edges: 0,

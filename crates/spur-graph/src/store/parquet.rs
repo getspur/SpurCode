@@ -370,6 +370,8 @@ pub struct GraphArtifactManifest {
     pub row_counts: GraphArtifactRowCounts,
     #[serde(default)]
     pub macro_evidence: Option<super::macro_invocations::MacroEvidenceManifest>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rust_evidence: Option<super::rust_evidence::RustEvidenceManifest>,
     #[serde(default)]
     pub sidecar_complete: bool,
     #[serde(default)]
@@ -629,6 +631,7 @@ pub fn write_worktree_delta(
         Ok::<_, anyhow::Error>(())
     })?;
 
+    let rust_evidence = super::rust_evidence::write(artifact, out_dir)?;
     let macro_evidence = super::macro_invocations::write(artifact, out_dir)?;
     let manifest = GraphArtifactManifest {
         graph_index_version: artifact.header.graph_index_version.clone(),
@@ -639,6 +642,7 @@ pub fn write_worktree_delta(
         extractor_version: EXTRACTOR_VERSION.to_owned(),
         complete: true,
         macro_evidence,
+        rust_evidence,
         row_counts: GraphArtifactRowCounts {
             nodes: nodes.len(),
             edges: resolved_edges.len(),
@@ -812,6 +816,7 @@ pub fn write_artifact_parquet(
         Ok::<_, anyhow::Error>(())
     })?;
 
+    let rust_evidence = super::rust_evidence::write(artifact, out_dir)?;
     let macro_evidence = super::macro_invocations::write(artifact, out_dir)?;
     let manifest = GraphArtifactManifest {
         graph_index_version: artifact.header.graph_index_version.clone(),
@@ -822,6 +827,7 @@ pub fn write_artifact_parquet(
         extractor_version: EXTRACTOR_VERSION.to_owned(),
         complete: true,
         macro_evidence,
+        rust_evidence,
         row_counts: GraphArtifactRowCounts {
             nodes: nodes.len(),
             edges: resolved_edges.len(),
@@ -973,10 +979,11 @@ pub fn read_artifact_parquet(dir: &Path) -> anyhow::Result<GraphIndexArtifact> {
 
     edges.extend(unresolved_edges);
 
+    let rust_evidence = super::rust_evidence::read(dir, &manifest)?;
     let macro_invocations = super::macro_invocations::read(dir, &manifest)?;
 
     let mut artifact = GraphIndexArtifact {
-        rust_evidence: None,
+        rust_evidence,
         macro_invocations,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
@@ -1000,6 +1007,9 @@ pub fn read_artifact_parquet(dir: &Path) -> anyhow::Result<GraphIndexArtifact> {
         crate::schema::rehash_legacy_snapshot_ids(&mut artifact);
     }
     if let Some(set) = &artifact.macro_invocations {
+        set.validate_stored(&artifact)?;
+    }
+    if let Some(set) = &artifact.rust_evidence {
         set.validate_stored(&artifact)?;
     }
     Ok(artifact)
@@ -1034,8 +1044,9 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
             ))
         })?;
 
+    let rust_evidence = super::rust_evidence::read(dir, &manifest)?;
     let macro_invocations = super::macro_invocations::read(dir, &manifest)?;
-    let file_manifests = if macro_invocations.is_some() {
+    let file_manifests = if macro_invocations.is_some() || rust_evidence.is_some() {
         read_file_manifests(
             &dir.join("file_manifests.parquet"),
             row_counts.file_manifests,
@@ -1043,8 +1054,15 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
     } else {
         Vec::new()
     };
+    // Stored declaration ownership uses Contains edges. Retain this projection
+    // through validation, then clear it with the general slim manifests.
+    let edges = if rust_evidence.is_some() {
+        read_edges(&dir.join("edges.parquet"), row_counts.edges)?
+    } else {
+        Vec::new()
+    };
     let mut artifact = GraphIndexArtifact {
-        rust_evidence: None,
+        rust_evidence,
         macro_invocations,
         header: GraphIndexHeader {
             graph_index_version: manifest.graph_index_version,
@@ -1057,7 +1075,7 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
         file_node_ids,
         symbols,
         symbol_node_ids,
-        edges: Vec::new(),
+        edges,
         tombstones,
         diagnostics: Vec::new(),
         commits: Vec::new(),
@@ -1070,7 +1088,11 @@ pub fn read_artifact_parquet_slim(dir: &Path) -> anyhow::Result<GraphIndexArtifa
     if let Some(set) = &artifact.macro_invocations {
         set.validate_stored(&artifact)?;
     }
+    if let Some(set) = &artifact.rust_evidence {
+        set.validate_stored(&artifact)?;
+    }
     artifact.file_manifests.clear();
+    artifact.edges.clear();
     Ok(artifact)
 }
 

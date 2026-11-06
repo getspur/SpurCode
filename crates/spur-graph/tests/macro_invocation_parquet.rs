@@ -229,6 +229,7 @@ fn captured_empty_writes_both_zero_row_tables_and_legacy_none_stays_unavailable(
         artifact.macro_invocations
     );
     artifact.macro_invocations = None;
+    artifact.rust_evidence = None;
     let legacy = tempfile::tempdir().unwrap();
     write(&artifact, legacy.path());
     change_manifest(legacy.path(), |m| {

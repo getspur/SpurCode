@@ -69,6 +69,7 @@ pub(super) fn write(
         &manifest,
         &artifact.graph_content_hash,
         &artifact.manifest_version,
+        SCHEMA_VERSION,
     );
     let invocations = set
         .rows
@@ -141,7 +142,9 @@ fn read_impl(
     };
     ensure!(evidence.complete, "incomplete macro evidence");
     ensure!(
-        manifest.schema_version == SCHEMA_VERSION
+        (manifest.schema_version == SCHEMA_VERSION
+            || (manifest.schema_version == "spur-graph-schema-v12"
+                && manifest.rust_evidence.is_none()))
             && evidence.schema_version == MACRO_INVOCATION_SCHEMA_VERSION,
         "incompatible macro graph/evidence schema"
     );
@@ -154,6 +157,7 @@ fn read_impl(
         evidence,
         &manifest.graph_content_hash,
         &manifest.manifest_version,
+        &manifest.schema_version,
     );
     let rows = read_table(
         &dir.join(INVOCATIONS),
@@ -198,10 +202,11 @@ fn metadata(
     evidence: &MacroEvidenceManifest,
     hash: &str,
     version: &str,
+    graph_schema_version: &str,
 ) -> HashMap<String, String> {
     HashMap::from([
         ("schema_version".into(), evidence.schema_version.clone()),
-        ("graph_schema_version".into(), SCHEMA_VERSION.into()),
+        ("graph_schema_version".into(), graph_schema_version.into()),
         (
             "extractor_version".into(),
             evidence.extractor_version.clone(),
@@ -542,6 +547,7 @@ impl MacroQueryTables {
             evidence,
             &manifest.graph_content_hash,
             &manifest.manifest_version,
+            &manifest.schema_version,
         );
         let mut filters = Vec::new();
         for (name, value) in [
@@ -604,6 +610,7 @@ impl FrozenMacroTable {
             evidence,
             &manifest.graph_content_hash,
             &manifest.manifest_version,
+            &manifest.schema_version,
         );
         let count = if scopes {
             manifest.row_counts.macro_scopes
