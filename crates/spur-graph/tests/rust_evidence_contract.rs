@@ -796,10 +796,13 @@ fn d2_observe(graph: &GraphIndexArtifact, inputs: &[(String, Vec<u8>)]) -> Value
 #[test]
 fn d2_absence_empty_legacy_bytes_and_capability_encoding() {
     let mut absent = graph(&[]);
-    assert!(
-        absent.rust_evidence.is_none(),
-        "builders remain unavailable until D3"
-    );
+    // Current builders capture evidence. Construct the legacy absence case
+    // explicitly while checking that the automatic capture is canonical.
+    let automatic = absent
+        .rust_evidence
+        .take()
+        .expect("current builder capture");
+    automatic.validate_sources(&absent, &[]).unwrap();
     assert!(serde_json::to_value(&absent)
         .unwrap()
         .get("rust_evidence")
@@ -817,6 +820,7 @@ fn d2_absence_empty_legacy_bytes_and_capability_encoding() {
     assert_eq!(serde_json::to_value(&absent).unwrap(), old["graph"]);
     let mut present = absent.clone();
     let set = collect_rust_evidence(&absent, &[]).unwrap();
+    assert_eq!(automatic, set);
     assert_eq!(serde_json::to_value(&set).unwrap(), old["set"]);
     present.rust_evidence = Some(set);
     present.validate_rust_evidence_sources(&[]).unwrap();
@@ -924,7 +928,12 @@ fn d2_leaf_edits(value: &Value, path: &str, edits: &mut Vec<(String, Value)>) {
 fn d2_entire_typed_envelope_hashes_and_rehashed_forgeries_reject() {
     let inputs = fixtures();
     let mut graph = graph(&inputs);
+    let automatic = graph.rust_evidence.take().expect("current builder capture");
+    automatic
+        .validate_sources(&graph, &sources(&inputs))
+        .unwrap();
     let set = collect_rust_evidence(&graph, &sources(&inputs)).unwrap();
+    assert_eq!(automatic, set);
     let old: Value = serde_json::from_str(include_str!("../../../docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/ROOT-review/actual-current/actual.json")).unwrap();
     assert_eq!(serde_json::to_value(&graph).unwrap(), old["graph"]);
     assert_eq!(serde_json::to_value(&set).unwrap(), old["set"]);
