@@ -15,6 +15,642 @@ fn build(root: &Path) -> spur_graph::GraphIndexArtifact {
     artifact_from_facts(&build_facts(root, None).unwrap().0, root).unwrap()
 }
 
+fn evidence_git(root: &Path, args: &[&str]) -> Vec<u8> {
+    let output = std::process::Command::new("git")
+        .args(args)
+        .current_dir(root)
+        .env("GIT_AUTHOR_DATE", "2026-11-06T00:00:00Z")
+        .env("GIT_COMMITTER_DATE", "2026-11-06T00:00:00Z")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "git {args:?}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    output.stdout
+}
+
+#[test]
+fn gitlink_is_manifest_only_and_preserves_original_rust_inventory() {
+    use spur_graph::{artifact_from_facts_incremental, store::BuildMode};
+    let root = tempfile::tempdir().unwrap();
+    evidence_git(root.path(), &["init"]);
+    evidence_git(root.path(), &["config", "user.name", "Evidence Test"]);
+    evidence_git(
+        root.path(),
+        &["config", "user.email", "evidence@example.test"],
+    );
+    let inputs = vec![(
+        "keep.rs".into(),
+        b"fn leaf() {} fn keep() { leaf(); }\n".to_vec(),
+    )];
+    write(root.path(), &inputs);
+    evidence_git(root.path(), &["add", "keep.rs"]);
+    evidence_git(root.path(), &["commit", "-m", "first real commit"]);
+    let first_oid = String::from_utf8(evidence_git(root.path(), &["rev-parse", "HEAD"]))
+        .unwrap()
+        .trim()
+        .to_owned();
+    let first_commit = evidence_git(root.path(), &["cat-file", "commit", &first_oid]);
+    fs::write(root.path().join("note.txt"), "second commit\n").unwrap();
+    evidence_git(root.path(), &["add", "note.txt"]);
+    evidence_git(root.path(), &["commit", "-m", "second real commit"]);
+    let second_oid = String::from_utf8(evidence_git(root.path(), &["rev-parse", "HEAD"]))
+        .unwrap()
+        .trim()
+        .to_owned();
+    let second_commit = evidence_git(root.path(), &["cat-file", "commit", &second_oid]);
+    let link = "vendor/submodule.rs";
+    evidence_git(
+        root.path(),
+        &[
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            "160000",
+            &first_oid,
+            link,
+        ],
+    );
+    evidence_git(root.path(), &["commit", "-m", "add gitlink"]);
+    assert!(
+        !root.path().join(link).exists(),
+        "gitlink has no disk source"
+    );
+
+    let full = build(root.path());
+    let original = full.rust_evidence.as_ref().unwrap();
+    assert_eq!(
+        original
+            .files
+            .iter()
+            .map(|f| f.file_path.as_str())
+            .collect::<Vec<_>>(),
+        ["keep.rs"]
+    );
+    assert_eq!(
+        full.file_manifests
+            .iter()
+            .find(|m| m.path == link)
+            .unwrap()
+            .content_oid,
+        format!("gitlink:{first_oid}")
+    );
+    assert_eq!(original.origins[0].sources.len(), full.file_manifests.len());
+    assert!(original.origins[0]
+        .sources
+        .iter()
+        .any(|s| s.path == link && s.content_oid == format!("gitlink:{first_oid}")));
+    assert_eq!(
+        collect_rust_evidence(&full, &sources(&inputs)).unwrap(),
+        *original
+    );
+    full.validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    assert!(
+        collect_rust_evidence(&full, &[]).is_err(),
+        "physical Rust cannot be omitted"
+    );
+    let mut bogus_sources = sources(&inputs);
+    bogus_sources.push(RustDeclarationSource {
+        file_path: link,
+        bytes: &first_commit,
+    });
+    let gitlink_source_error = full
+        .validate_rust_evidence_sources(&bogus_sources)
+        .unwrap_err()
+        .to_string();
+    assert!(gitlink_source_error.contains("outside physical Rust graph domain"));
+    assert!(collect_rust_evidence(&full, &bogus_sources).is_err());
+
+    let (noop, mode, stats) = artifact_from_facts_incremental(&full, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, full.file_manifests.len());
+    assert_eq!(stats.changed_paths, 0);
+    assert!(stats.removed_paths.is_empty());
+    assert_eq!(noop.rust_evidence, full.rust_evidence);
+    let noop_packet = json!({"native":packet(&noop,&inputs),"stats":stats_value(mode,&stats)});
+
+    evidence_git(
+        root.path(),
+        &["update-index", "--cacheinfo", "160000", &second_oid, link],
+    );
+    evidence_git(root.path(), &["commit", "-m", "move gitlink"]);
+    let (changed, mode, stats) = artifact_from_facts_incremental(&noop, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, full.file_manifests.len() - 1);
+    // These statistics count paths sent to extraction. The manifest-only
+    // pointer is replaced without extracting a source or reusing its bucket.
+    assert_eq!(stats.changed_paths, 0);
+    assert!(stats.changed_or_added_paths.is_empty());
+    assert!(stats.removed_paths.is_empty());
+    assert_ne!(changed.graph_content_hash, full.graph_content_hash);
+    assert_eq!(
+        changed
+            .file_manifests
+            .iter()
+            .find(|m| m.path == link)
+            .unwrap()
+            .content_oid,
+        format!("gitlink:{second_oid}")
+    );
+    let current = changed.rust_evidence.as_ref().unwrap();
+    assert_eq!(current.files, original.files);
+    assert_eq!(current.origins, original.origins);
+    changed
+        .validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    assert_eq!(
+        collect_rust_evidence(&changed, &sources(&inputs))
+            .unwrap()
+            .origins[0]
+            .graph_content_hash,
+        changed.graph_content_hash
+    );
+    let changed_packet =
+        json!({"native":packet(&changed,&inputs),"stats":stats_value(mode,&stats)});
+
+    evidence_git(root.path(), &["update-index", "--force-remove", link]);
+    let (deleted, mode, stats) = artifact_from_facts_incremental(&changed, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, 1);
+    assert_eq!(stats.changed_paths, 0);
+    assert_eq!(stats.removed_paths, BTreeSet::from([link.into()]));
+    assert!(deleted.file_manifests.iter().all(|m| m.path != link));
+    assert_eq!(
+        deleted.rust_evidence.as_ref().unwrap().origins,
+        original.origins
+    );
+    assert_eq!(
+        deleted.rust_evidence.as_ref().unwrap().files,
+        original.files
+    );
+    deleted
+        .validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    let deleted_packet =
+        json!({"native":packet(&deleted,&inputs),"stats":stats_value(mode,&stats)});
+
+    evidence_git(root.path(), &["rm", "keep.rs"]);
+    let (pruned, mode, stats) = artifact_from_facts_incremental(&deleted, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, 0);
+    assert_eq!(stats.changed_paths, 0);
+    assert_eq!(stats.removed_paths, BTreeSet::from(["keep.rs".into()]));
+    let empty = pruned.rust_evidence.as_ref().unwrap();
+    assert!(empty.files.is_empty() && empty.origins.is_empty());
+    pruned.validate_rust_evidence_sources(&[]).unwrap();
+    export_d4(
+        "gitlink.json",
+        &json!({"full":packet(&full,&inputs),"noop":noop_packet,"pointer_change":changed_packet,"deleted_gitlink":deleted_packet,"pruned":packet(&pruned,&[]),"commits":[{"oid":first_oid,"bytes":first_commit},{"oid":second_oid,"bytes":second_commit}],"gitlink_source_error":gitlink_source_error}),
+    );
+}
+
+#[test]
+fn reuse_keeps_original_snapshot_and_deletion_removes_active_file() {
+    let root = tempfile::tempdir().unwrap();
+    fs::write(
+        root.path().join("keep.rs"),
+        "fn leaf() {} fn keep() { leaf(); }\n",
+    )
+    .unwrap();
+    fs::write(root.path().join("edit.rs"), "pub struct Old(u8);\n").unwrap();
+    let before = build(root.path());
+    let original = before
+        .rust_evidence
+        .as_ref()
+        .unwrap()
+        .files
+        .iter()
+        .find(|f| f.file_path == "keep.rs")
+        .unwrap()
+        .clone();
+    fs::write(root.path().join("edit.rs"), "pub struct New(u16);\n").unwrap();
+    let (after, _, _) = spur_graph::artifact_from_facts_incremental(&before, root.path()).unwrap();
+    assert_ne!(after.graph_content_hash, before.graph_content_hash);
+    let set = after.rust_evidence.as_ref().expect("incremental carrier");
+    assert_eq!(
+        *set.files.iter().find(|f| f.file_path == "keep.rs").unwrap(),
+        original
+    );
+    assert_eq!(
+        original.origin_graph_content_hash,
+        before.graph_content_hash
+    );
+    fs::remove_file(root.path().join("edit.rs")).unwrap();
+    let (deleted, _, _) = spur_graph::artifact_from_facts_incremental(&after, root.path()).unwrap();
+    assert!(deleted
+        .rust_evidence
+        .as_ref()
+        .unwrap()
+        .files
+        .iter()
+        .all(|f| f.file_path != "edit.rs"));
+    assert!(deleted.tombstones.iter().any(|t| t.path == "edit.rs"));
+}
+
+fn export_d4(name: &str, value: &Value) {
+    if let Ok(dir) = std::env::var("D4_EXPORT_DIR") {
+        let dir = PathBuf::from(dir);
+        let dir = if dir.is_absolute() {
+            dir
+        } else {
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../..")
+                .join(dir)
+        };
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(dir.join(name), serde_json::to_vec_pretty(value).unwrap()).unwrap();
+    }
+}
+
+fn stats_value(mode: spur_graph::store::BuildMode, stats: &spur_graph::build::BuildStats) -> Value {
+    json!({"mode":format!("{mode:?}"),"reused_buckets":stats.reused_buckets,
+        "changed_paths":stats.changed_paths,"changed_or_added_paths":stats.changed_or_added_paths,
+        "removed_paths":stats.removed_paths})
+}
+
+#[test]
+fn composition_preserves_whole_origins_zero_unknown_and_selected_snapshot() {
+    use spur_graph::{artifact_from_facts_incremental, store::BuildMode};
+    let root = tempfile::tempdir().unwrap();
+    let mut inputs = fixtures();
+    write(root.path(), &inputs);
+    let before = build(root.path());
+    let original = before.rust_evidence.clone().unwrap();
+    export_d4("full.json", &packet(&before, &inputs));
+    let (noop, mode, stats) = artifact_from_facts_incremental(&before, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, inputs.len());
+    assert_eq!(stats.changed_paths, 0);
+    assert!(stats.removed_paths.is_empty());
+    assert_eq!(noop.rust_evidence, before.rust_evidence);
+    export_d4(
+        "noop.json",
+        &json!({"native":packet(&noop, &inputs),"stats":stats_value(mode,&stats)}),
+    );
+
+    inputs.iter_mut().find(|(p, _)| p == "empty.rs").unwrap().1 =
+        b"pub struct New(u16);\n".to_vec();
+    write(root.path(), &inputs);
+    let selected_paths = [PathBuf::from("empty.rs")];
+    let selected_facts = build_facts_for_paths(root.path(), &selected_paths).unwrap();
+    let selected =
+        artifact_from_facts_for_paths(&selected_facts, root.path(), &selected_paths).unwrap();
+    let (edited, mode, stats) = artifact_from_facts_incremental(&noop, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, inputs.len() - 1);
+    assert_eq!(stats.changed_paths, 1);
+    assert_eq!(
+        stats.changed_or_added_paths,
+        BTreeSet::from(["empty.rs".into()])
+    );
+    assert!(stats.removed_paths.is_empty());
+    let set = edited.rust_evidence.as_ref().expect("edited carrier");
+    assert_eq!(set.graph_content_hash, edited.graph_content_hash);
+    assert_ne!(selected.graph_content_hash, edited.graph_content_hash);
+    assert_eq!(
+        set.origins
+            .iter()
+            .find(|o| o.graph_content_hash == before.graph_content_hash)
+            .unwrap(),
+        &original.origins[0]
+    );
+    for file in &original.files {
+        let current = set
+            .files
+            .iter()
+            .find(|f| f.file_path == file.file_path)
+            .unwrap();
+        if file.file_path == "empty.rs" {
+            assert_eq!(current, &selected.rust_evidence.as_ref().unwrap().files[0]);
+            assert_eq!(
+                current.origin_graph_content_hash,
+                selected.graph_content_hash
+            );
+            assert_ne!(current, file);
+        } else {
+            assert_eq!(current, file);
+        }
+    }
+    edited
+        .validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    export_d4(
+        "edit.json",
+        &json!({"native":packet(&edited,&inputs),"selected":packet(&selected,&inputs.iter().filter(|(p,_)|p=="empty.rs").cloned().collect::<Vec<_>>()),"stats":stats_value(mode,&stats)}),
+    );
+
+    fs::remove_file(root.path().join("cfg.rs")).unwrap();
+    inputs.retain(|(p, _)| p != "cfg.rs");
+    let (deleted, mode, stats) = artifact_from_facts_incremental(&edited, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.reused_buckets, inputs.len());
+    assert_eq!(stats.changed_paths, 0);
+    assert_eq!(stats.removed_paths, BTreeSet::from(["cfg.rs".into()]));
+    let deleted_set = deleted.rust_evidence.as_ref().unwrap();
+    assert_eq!(deleted_set.origins, set.origins);
+    assert!(deleted_set.files.iter().all(|f| f.file_path != "cfg.rs"));
+    assert!(deleted.file_manifests.iter().all(|f| f.path != "cfg.rs"));
+    assert!(deleted.tombstones.iter().any(|t| t.path == "cfg.rs"));
+    deleted
+        .validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    export_d4(
+        "delete.json",
+        &json!({"native":packet(&deleted,&inputs),"stats":stats_value(mode,&stats)}),
+    );
+
+    inputs.push(("cfg.rs".into(), b"pub fn returned() {}\n".to_vec()));
+    write(root.path(), &inputs);
+    let (readded, mode, stats) = artifact_from_facts_incremental(&deleted, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.changed_paths, 1);
+    assert_eq!(stats.reused_buckets, inputs.len() - 1);
+    assert!(stats.removed_paths.is_empty());
+    assert_ne!(
+        readded
+            .rust_evidence
+            .as_ref()
+            .unwrap()
+            .files
+            .iter()
+            .find(|f| f.file_path == "cfg.rs")
+            .unwrap(),
+        original
+            .files
+            .iter()
+            .find(|f| f.file_path == "cfg.rs")
+            .unwrap()
+    );
+    readded
+        .validate_rust_evidence_sources(&sources(&inputs))
+        .unwrap();
+    export_d4(
+        "readd.json",
+        &json!({"native":packet(&readded,&inputs),"stats":stats_value(mode,&stats)}),
+    );
+
+    for (path, _) in &inputs {
+        if path != "cfg.rs" {
+            fs::remove_file(root.path().join(path)).unwrap();
+        }
+    }
+    let (last, mode, stats) = artifact_from_facts_incremental(&readded, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.removed_paths.len(), inputs.len() - 1);
+    assert_eq!(last.rust_evidence.as_ref().unwrap().origins.len(), 1);
+    assert_eq!(
+        last.rust_evidence.as_ref().unwrap().origins[0],
+        readded
+            .rust_evidence
+            .as_ref()
+            .unwrap()
+            .origins
+            .iter()
+            .find(|o| o.graph_content_hash
+                == readded
+                    .rust_evidence
+                    .as_ref()
+                    .unwrap()
+                    .files
+                    .iter()
+                    .find(|f| f.file_path == "cfg.rs")
+                    .unwrap()
+                    .origin_graph_content_hash)
+            .unwrap()
+            .clone()
+    );
+    fs::remove_file(root.path().join("cfg.rs")).unwrap();
+    let (empty, mode, stats) = artifact_from_facts_incremental(&last, root.path()).unwrap();
+    assert_eq!(mode, BuildMode::Incremental);
+    assert_eq!(stats.removed_paths, BTreeSet::from(["cfg.rs".into()]));
+    let empty_set = empty.rust_evidence.as_ref().unwrap();
+    assert!(empty_set.files.is_empty() && empty_set.origins.is_empty());
+    empty.validate_rust_evidence_sources(&[]).unwrap();
+    export_d4("pruned-empty.json", &packet(&empty, &[]));
+}
+
+#[test]
+fn absent_or_incompatible_versions_rebuild_full() {
+    use spur_graph::{artifact_from_facts_incremental, build::BuildStats, store::BuildMode};
+    let root = tempfile::tempdir().unwrap();
+    fs::write(root.path().join("a.rs"), "fn a() {}\n").unwrap();
+    let graph = build(root.path());
+    let mut results = Vec::new();
+    for field in [
+        "absent",
+        "manifest",
+        "wrapper_schema",
+        "wrapper_extractor",
+        "declaration_schema",
+        "declaration_extractor",
+        "call_schema",
+        "call_extractor",
+    ] {
+        let mut prior = serde_json::to_value(&graph).unwrap();
+        match field {
+            "absent" => prior["rust_evidence"] = Value::Null,
+            "manifest" => prior["manifest_version"] = json!("old"),
+            "wrapper_schema" => prior["rust_evidence"]["schema_version"] = json!("old"),
+            "wrapper_extractor" => prior["rust_evidence"]["extractor_version"] = json!("old"),
+            "declaration_schema" => {
+                prior["rust_evidence"]["files"][0]["declarations"]["schema_version"] = json!("old")
+            }
+            "declaration_extractor" => {
+                prior["rust_evidence"]["files"][0]["declarations"]["extractor_version"] =
+                    json!("old")
+            }
+            "call_schema" => {
+                prior["rust_evidence"]["files"][0]["calls"]["complete"]["evidence"]
+                    ["schema_version"] = json!("old")
+            }
+            "call_extractor" => {
+                prior["rust_evidence"]["files"][0]["calls"]["complete"]["evidence"]
+                    ["extractor_version"] = json!("old")
+            }
+            _ => unreachable!(),
+        }
+        let prior: GraphIndexArtifact = serde_json::from_value(prior).unwrap();
+        let (rebuilt, mode, stats) = artifact_from_facts_incremental(&prior, root.path()).unwrap();
+        assert_eq!(mode, BuildMode::Full, "{field}");
+        assert_eq!(stats, BuildStats::default());
+        assert_eq!(rebuilt.rust_evidence, graph.rust_evidence);
+        let inputs = vec![("a.rs".into(), fs::read(root.path().join("a.rs")).unwrap())];
+        results.push(json!({"case":field,"stats":stats_value(mode,&stats),"before":prior,"native":packet(&rebuilt,&inputs)}));
+    }
+    export_d4("compatibility.json", &json!(results));
+}
+
+fn mutation_verdict(
+    name: &str,
+    mut graph: GraphIndexArtifact,
+    root: &Path,
+    inputs: &[(String, Vec<u8>)],
+) -> Value {
+    let before = graph
+        .validate_rust_evidence_sources(&sources(inputs))
+        .err()
+        .map(|e| format!("{e:#}"));
+    let stored = graph
+        .rust_evidence
+        .as_ref()
+        .unwrap()
+        .validate_stored(&graph)
+        .err()
+        .map(|e| format!("{e:#}"));
+    let incremental = spur_graph::artifact_from_facts_incremental(&graph, root)
+        .err()
+        .map(|e| format!("{e:#}"));
+    assert!(before.is_some(), "source validation accepted {name}");
+    assert!(incremental.is_some(), "incremental accepted {name}");
+    let hash = spur_graph::artifact_content_hash_blake3_hex(&graph).unwrap();
+    graph.header.content_hash_blake3 = Some(hash.clone());
+    let after = graph
+        .validate_rust_evidence_sources(&sources(inputs))
+        .err()
+        .map(|e| format!("{e:#}"));
+    let rehashed_incremental = spur_graph::artifact_from_facts_incremental(&graph, root)
+        .err()
+        .map(|e| format!("{e:#}"));
+    assert!(
+        after.is_some() && rehashed_incremental.is_some(),
+        "canonical rehash masked {name}"
+    );
+    let source_inventory = packet(&graph, inputs)["sources"].clone();
+    json!({"case":name,"artifact":graph,"sources":source_inventory,"stored_error":stored,"source_error_before":before,"incremental_error_before":incremental,"native_canonical_hash":hash,"source_error_after":after,"incremental_error_after":rehashed_incremental})
+}
+
+#[test]
+fn compatible_reused_forgery_is_rejected_even_after_native_rehash() {
+    let root = tempfile::tempdir().unwrap();
+    let inputs = vec![
+        (
+            "a.rs".into(),
+            b"fn leaf() {} fn first() { leaf(); } fn second() { leaf(); }\n".to_vec(),
+        ),
+        ("edit.rs".into(), b"pub struct Old(u8);\n".to_vec()),
+    ];
+    write(root.path(), &inputs);
+    let graph = build(root.path());
+    let mut verdicts = Vec::new();
+    let mut wrong_oid = graph.clone();
+    wrong_oid.rust_evidence.as_mut().unwrap().files[0].source_oid = git_blob_oid(b"wrong");
+    verdicts.push(mutation_verdict(
+        "wrong_reused_oid",
+        wrong_oid,
+        root.path(),
+        &inputs,
+    ));
+    let mut swapped = graph.clone();
+    if let RustCallEvidence::Complete { evidence } =
+        &mut swapped.rust_evidence.as_mut().unwrap().files[0].calls
+    {
+        let first = evidence.bodies[1].definition_stable_symbol_id.clone();
+        evidence.bodies[1].definition_stable_symbol_id =
+            evidence.bodies[2].definition_stable_symbol_id.clone();
+        evidence.bodies[2].definition_stable_symbol_id = first;
+    } else {
+        panic!("healthy calls");
+    }
+    verdicts.push(mutation_verdict(
+        "swapped_existing_owners",
+        swapped,
+        root.path(),
+        &inputs,
+    ));
+    let mut omitted = graph.clone();
+    if let RustCallEvidence::Complete { evidence } =
+        &mut omitted.rust_evidence.as_mut().unwrap().files[0].calls
+    {
+        evidence.sites.pop().unwrap();
+        evidence.sources[0].site_count -= 1;
+    }
+    omitted
+        .rust_evidence
+        .as_ref()
+        .unwrap()
+        .validate_stored(&omitted)
+        .expect("FK/shape-valid omission control");
+    verdicts.push(mutation_verdict(
+        "omitted_site_fk_valid",
+        omitted,
+        root.path(),
+        &inputs,
+    ));
+    let mut edited_inputs = inputs.clone();
+    edited_inputs[1].1 = b"pub struct New(u16);\n".to_vec();
+    write(root.path(), &edited_inputs);
+    let (after, _, _) = spur_graph::artifact_from_facts_incremental(&graph, root.path()).unwrap();
+    let mut rebound = after.clone();
+    rebound.rust_evidence.as_mut().unwrap().files[0]
+        .declarations
+        .graph_content_hash = after.graph_content_hash.clone();
+    verdicts.push(mutation_verdict(
+        "old_nested_header_rebound_to_aggregate",
+        rebound,
+        root.path(),
+        &edited_inputs,
+    ));
+
+    // Delete the old site from a changed source. Reinserting it with its old
+    // source binding must fail even after hashing the actual mutated artifact.
+    edited_inputs[0].1 = b"fn leaf() {} fn first() {} fn second() {}\n".to_vec();
+    write(root.path(), &edited_inputs);
+    let (clean, _, _) = spur_graph::artifact_from_facts_incremental(&after, root.path()).unwrap();
+    let mut reinserted = clean;
+    reinserted.rust_evidence.as_mut().unwrap().files[0].calls =
+        graph.rust_evidence.as_ref().unwrap().files[0].calls.clone();
+    verdicts.push(mutation_verdict(
+        "deleted_site_reinserted",
+        reinserted,
+        root.path(),
+        &edited_inputs,
+    ));
+    export_d4("mutations.json", &json!(verdicts));
+}
+
+#[test]
+fn unknown_cannot_be_relabelled_complete_zero() {
+    let root = tempfile::tempdir().unwrap();
+    let inputs = vec![
+        ("empty.rs".into(), b"pub struct Empty;\n".to_vec()),
+        ("invalid.rs".into(), vec![0xff, b'\n']),
+    ];
+    write(root.path(), &inputs);
+    let mut graph = build(root.path());
+    let set = graph.rust_evidence.as_mut().unwrap();
+    let mut calls = set.files[0].calls.clone();
+    let target = &set.files[1];
+    assert!(matches!(target.calls, RustCallEvidence::Unknown { .. }));
+    if let RustCallEvidence::Complete { evidence } = &mut calls {
+        let source = &mut evidence.sources[0];
+        source.file_path = target.file_path.clone();
+        source.stable_file_id = target.stable_file_id.clone();
+        source.source_oid = target.source_oid.clone();
+        source.byte_length = target.byte_length;
+    } else {
+        panic!("complete zero control");
+    }
+    set.files[1].calls = calls;
+    graph
+        .rust_evidence
+        .as_ref()
+        .unwrap()
+        .validate_stored(&graph)
+        .unwrap();
+    export_d4(
+        "unknown-mutation.json",
+        &mutation_verdict(
+            "unknown_relabelled_complete_zero_fk_valid",
+            graph,
+            root.path(),
+            &inputs,
+        ),
+    );
+}
+
 #[test]
 fn full_build_captures_zero_file() {
     let root = tempfile::tempdir().unwrap();
@@ -350,6 +986,7 @@ fn stale_index_oid_is_rejected_after_current_bytes_are_read() {
         "-qm",
         "fixture",
     ]);
+    let before = build(root.path());
     git(&["update-index", "--assume-unchanged", "empty.rs"]);
     fs::write(root.path().join("empty.rs"), "pub struct Other;\n").unwrap();
     let facts = build_facts(root.path(), None).unwrap().0;
@@ -357,6 +994,16 @@ fn stale_index_oid_is_rejected_after_current_bytes_are_read() {
     assert!(
         error.to_string().contains("source OID mismatch"),
         "{error:#}"
+    );
+    let reused_error =
+        spur_graph::artifact_from_facts_incremental(&before, root.path()).unwrap_err();
+    assert!(
+        reused_error.to_string().contains("source OID mismatch"),
+        "{reused_error:#}"
+    );
+    export_d4(
+        "reused-source-race.json",
+        &json!({"error":format!("{reused_error:#}"),"method":"unchanged index OID classified reused, freshly read bytes disagree"}),
     );
     export_value(
         "oid-race-error.json",

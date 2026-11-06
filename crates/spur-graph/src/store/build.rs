@@ -251,6 +251,10 @@ struct FileBucket {
     edges: Vec<GraphEdgeArtifact>,
     macro_invocations: Vec<crate::MacroInvocationEvidence>,
     macro_scopes: Vec<crate::MacroScopeEvidence>,
+    rust_evidence: Option<crate::RustEvidenceFile>,
+    // Share complete inventories across buckets; do not duplicate a full
+    // original manifest for every unchanged Rust file.
+    rust_origin: Option<std::sync::Arc<crate::RustEvidenceOrigin>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -382,7 +386,7 @@ fn artifact_from_facts_in_domain(
             &current_entries,
             current_manifest_version(),
             Vec::new(),
-        );
+        )?;
         validate_macro_evidence(&artifact, &worktree_root, &facts.macro_scopes)?;
         attach_rust_evidence(&mut artifact, &worktree_root)?;
         tracing::info!(
@@ -423,11 +427,12 @@ pub fn artifact_from_facts_incremental(
             set.schema_version == crate::MACRO_INVOCATION_SCHEMA_VERSION
                 && set.extractor_version == EXTRACTOR_VERSION
         })
+        || !rust_evidence_versions_compatible(prev)
     {
         tracing::info!(
             expected = %manifest_version,
             found = %prev.manifest_version,
-            "spur-graph: full rebuild selected: incompatible manifest or macro evidence"
+            "spur-graph: full rebuild selected: incompatible manifest, macro or Rust evidence"
         );
         let extract_started = Instant::now();
         let extract_span = tracing::info_span!(
@@ -493,6 +498,14 @@ pub fn artifact_from_facts_incremental(
         };
         return Ok((artifact, BuildMode::Full, BuildStats::default()));
     }
+
+    // Compatible but forged data is an integrity error, including mutations
+    // on paths about to be replaced. Old bytes of edited/deleted paths are
+    // deliberately not required: only retained payloads are source-reused.
+    prev.rust_evidence
+        .as_ref()
+        .context("compatible Rust evidence missing")?
+        .validate_stored(prev)?;
 
     let discover_started = Instant::now();
     let discover_span = tracing::info_span!(
@@ -622,7 +635,9 @@ pub fn artifact_from_facts_incremental(
         };
         changed_tombstones =
             tombstones_from_changed_paths(prev, &root, &changed_paths, &changed_facts)?;
-        let changed_buckets = buckets_from_facts(&changed_facts, &root, &current_entries)?;
+        let changed_artifact =
+            artifact_from_facts_for_paths(&changed_facts, &root, &changed_paths)?;
+        let changed_buckets = buckets_from_artifact(&changed_artifact);
         buckets.extend(changed_buckets);
     }
 
@@ -638,7 +653,8 @@ pub fn artifact_from_facts_incremental(
         add_missing_manifest_buckets(&mut buckets, &current_entries);
 
         let tombstones = tombstones_for_worktree(prev, &current_entries, changed_tombstones);
-        let artifact = compose_artifact(buckets, &current_entries, manifest_version, tombstones);
+        let artifact = compose_artifact(buckets, &current_entries, manifest_version, tombstones)?;
+        validate_rust_evidence(&artifact, &root)?;
         validate_macro_evidence(
             &artifact,
             &root,
@@ -692,6 +708,28 @@ pub(crate) fn build_worktree_delta_artifact(
     let prev_buckets = buckets_from_artifact(prev);
     let diff = changed_paths_from_previous(prev, &root, &current_entries, &prev_buckets);
 
+    if rust_evidence_versions_compatible(prev) {
+        prev.rust_evidence
+            .as_ref()
+            .context("compatible Rust evidence missing")?
+            .validate_stored(prev)?;
+        // A delta publishes only changed paths. Authenticate any bytes used
+        // to classify prior buckets as reusable without reading old edited
+        // sources, which need not exist in a worktree fixture.
+        let reused_hash = compute_graph_content_hash(
+            diff.buckets
+                .values()
+                .map(|b| (&b.manifest.path, &b.manifest.content_oid)),
+        );
+        let reused = rebuild_from_buckets(
+            diff.buckets.clone(),
+            manifest_version.clone(),
+            reused_hash,
+            vec![],
+        )?;
+        validate_rust_evidence(&reused, &root)?;
+    }
+
     let changed_facts = if diff.changed_paths.is_empty() {
         GraphFacts::empty()
     } else {
@@ -706,11 +744,9 @@ pub(crate) fn build_worktree_delta_artifact(
         .filter(|(path, _entry)| diff.changed_or_added_paths.contains(*path))
         .map(|(path, entry)| (path.clone(), entry.clone()))
         .collect();
-    let mut buckets = if diff.changed_paths.is_empty() {
-        BTreeMap::new()
-    } else {
-        buckets_from_facts(&changed_facts, &root, &current_entries)?
-    };
+    let changed_artifact =
+        artifact_from_facts_for_paths(&changed_facts, &root, &diff.changed_paths)?;
+    let mut buckets = buckets_from_artifact(&changed_artifact);
     add_missing_manifest_buckets(&mut buckets, &changed_entries);
     rebind_cross_file_edges(&mut buckets);
 
@@ -719,7 +755,8 @@ pub(crate) fn build_worktree_delta_artifact(
             .values()
             .map(|entry| (entry.path.as_str(), entry.content_oid.as_str())),
     );
-    let artifact = rebuild_from_buckets(buckets, manifest_version, graph_content_hash, tombstones);
+    let artifact = rebuild_from_buckets(buckets, manifest_version, graph_content_hash, tombstones)?;
+    validate_rust_evidence(&artifact, &root)?;
     validate_macro_evidence(&artifact, &root, &changed_facts.macro_scopes)?;
     let prev_symbol_ids: HashSet<_> = prev
         .symbols
@@ -794,6 +831,8 @@ fn buckets_from_facts(
                         edges: Vec::new(),
                         macro_invocations: Vec::new(),
                         macro_scopes: Vec::new(),
+                        rust_evidence: None,
+                        rust_origin: None,
                     });
                 entry.file = GraphFileArtifact {
                     stable_file_id: stable_file_id.clone(),
@@ -860,6 +899,8 @@ fn buckets_from_facts(
                         edges: Vec::new(),
                         macro_invocations: Vec::new(),
                         macro_scopes: Vec::new(),
+                        rust_evidence: None,
+                        rust_origin: None,
                     }
                 });
                 entry.manifest.node_ids.push(node.node_id);
@@ -920,6 +961,8 @@ fn buckets_from_facts(
                 edges: Vec::new(),
                 macro_invocations: Vec::new(),
                 macro_scopes: Vec::new(),
+                rust_evidence: None,
+                rust_origin: None,
             }
         });
         entry.edges.push(GraphEdgeArtifact {
@@ -1025,13 +1068,37 @@ fn discover_selected_entries(
     Ok(entries)
 }
 
-fn attach_rust_evidence(artifact: &mut GraphIndexArtifact, root: &Path) -> anyhow::Result<()> {
+fn rust_evidence_versions_compatible(artifact: &GraphIndexArtifact) -> bool {
+    artifact.rust_evidence.as_ref().is_some_and(|set| {
+        set.schema_version == crate::RUST_EVIDENCE_SCHEMA_VERSION
+            && set.extractor_version == crate::RUST_EVIDENCE_EXTRACTOR_VERSION
+            && set.files.iter().all(|file| {
+                file.declarations.schema_version == crate::RUST_DECLARATION_SCHEMA_VERSION
+                    && file.declarations.extractor_version == EXTRACTOR_VERSION
+                    && match &file.calls {
+                        crate::RustCallEvidence::Unknown { .. } => true,
+                        crate::RustCallEvidence::Complete { evidence } => {
+                            evidence.schema_version
+                                == crate::panic_evidence::RUST_CALL_SITE_SCHEMA_VERSION
+                                && evidence.extractor_version
+                                    == crate::panic_evidence::RUST_CALL_SITE_EXTRACTOR_VERSION
+                        }
+                    }
+            })
+    })
+}
+
+fn rust_source_bytes(
+    artifact: &GraphIndexArtifact,
+    root: &Path,
+) -> anyhow::Result<Vec<(String, Vec<u8>)>> {
     let mut bytes = Vec::new();
     for manifest in &artifact.file_manifests {
         let path = manifest.path.as_str();
-        // Keep the D1 physical-source policy exact. Virtual/external lanes
-        // must never be interpreted as disk paths.
-        if path.starts_with("external://")
+        // Gitlinks are manifest commit pointers, even with a Rust suffix.
+        // Keep them and virtual/external lanes out of physical source reads.
+        if manifest.content_oid.starts_with("gitlink:")
+            || path.starts_with("external://")
             || path.contains("#cell:")
             || Path::new(path)
                 .extension()
@@ -1051,8 +1118,13 @@ fn attach_rust_evidence(artifact: &mut GraphIndexArtifact, root: &Path) -> anyho
             git_blob_oid(&source) == manifest.content_oid,
             "Rust evidence source OID mismatch for `{path}` (source changed during build)"
         );
-        bytes.push((path, source));
+        bytes.push((path.to_owned(), source));
     }
+    Ok(bytes)
+}
+
+fn attach_rust_evidence(artifact: &mut GraphIndexArtifact, root: &Path) -> anyhow::Result<()> {
+    let bytes = rust_source_bytes(artifact, root)?;
     let sources = bytes
         .iter()
         .map(|(file_path, bytes)| crate::RustDeclarationSource { file_path, bytes })
@@ -1060,6 +1132,20 @@ fn attach_rust_evidence(artifact: &mut GraphIndexArtifact, root: &Path) -> anyho
     let evidence = crate::collect_rust_evidence(artifact, &sources)?;
     artifact.rust_evidence = Some(evidence);
     Ok(())
+}
+
+fn validate_rust_evidence(artifact: &GraphIndexArtifact, root: &Path) -> anyhow::Result<()> {
+    let set = artifact
+        .rust_evidence
+        .as_ref()
+        .context("composed artifact must carry captured Rust evidence")?;
+    set.validate_stored(artifact)?;
+    let bytes = rust_source_bytes(artifact, root)?;
+    let sources = bytes
+        .iter()
+        .map(|(file_path, bytes)| crate::RustDeclarationSource { file_path, bytes })
+        .collect::<Vec<_>>();
+    set.validate_sources(artifact, &sources)
 }
 
 fn validate_macro_evidence(
@@ -1261,6 +1347,23 @@ fn changed_paths_from_previous(
 }
 
 fn buckets_from_artifact(artifact: &GraphIndexArtifact) -> BTreeMap<String, FileBucket> {
+    let rust_files: BTreeMap<_, _> = artifact
+        .rust_evidence
+        .iter()
+        .flat_map(|set| &set.files)
+        .map(|file| (file.file_path.as_str(), file))
+        .collect();
+    let rust_origins: BTreeMap<_, _> = artifact
+        .rust_evidence
+        .iter()
+        .flat_map(|set| &set.origins)
+        .map(|origin| {
+            (
+                origin.graph_content_hash.as_str(),
+                std::sync::Arc::new(origin.clone()),
+            )
+        })
+        .collect();
     let mut manifest_by_path = BTreeMap::new();
     for manifest in &artifact.file_manifests {
         manifest_by_path.insert(manifest.path.as_str(), manifest);
@@ -1323,6 +1426,11 @@ fn buckets_from_artifact(artifact: &GraphIndexArtifact) -> BTreeMap<String, File
         buckets.insert(
             path.to_owned(),
             FileBucket {
+                rust_evidence: rust_files.get(path).map(|file| (*file).clone()),
+                rust_origin: rust_files
+                    .get(path)
+                    .and_then(|file| rust_origins.get(file.origin_graph_content_hash.as_str()))
+                    .cloned(),
                 file: file_by_path.get(path).copied().cloned().unwrap_or_else(|| {
                     GraphFileArtifact {
                         stable_file_id: manifest.stable_file_id.clone(),
@@ -1434,6 +1542,8 @@ fn empty_bucket(path: &str, content_oid: &str) -> FileBucket {
         edges: Vec::new(),
         macro_invocations: Vec::new(),
         macro_scopes: Vec::new(),
+        rust_evidence: None,
+        rust_origin: None,
     }
 }
 
@@ -1564,7 +1674,7 @@ fn compose_artifact(
     current_entries: &BTreeMap<String, CurrentFileEntry>,
     manifest_version: String,
     tombstones: Vec<GraphTombstoneEntry>,
-) -> GraphIndexArtifact {
+) -> anyhow::Result<GraphIndexArtifact> {
     add_missing_manifest_buckets(&mut buckets, current_entries);
     rebind_cross_file_edges(&mut buckets);
     let graph_content_hash = compute_graph_content_hash(
@@ -2698,7 +2808,7 @@ fn rebuild_from_buckets(
     manifest_version: String,
     graph_content_hash: String,
     tombstones: Vec<GraphTombstoneEntry>,
-) -> GraphIndexArtifact {
+) -> anyhow::Result<GraphIndexArtifact> {
     let mut files = Vec::new();
     let mut file_node_ids = Vec::new();
     let mut symbols = Vec::new();
@@ -2707,6 +2817,8 @@ fn rebuild_from_buckets(
     let mut edges = Vec::new();
     let mut macro_rows = Vec::new();
     let mut macro_scopes = Vec::new();
+    let mut rust_files = Vec::new();
+    let mut rust_origins = Vec::new();
 
     for bucket in buckets.values_mut() {
         sort_bucket_symbols(bucket);
@@ -2744,6 +2856,8 @@ fn rebuild_from_buckets(
         edges.extend(bucket.edges.clone());
         macro_rows.extend(bucket.macro_invocations.clone());
         macro_scopes.extend(bucket.macro_scopes.clone());
+        rust_files.extend(bucket.rust_evidence.iter().cloned());
+        rust_origins.extend(bucket.rust_origin.iter().map(|origin| origin.as_ref()));
     }
 
     files.sort_by(|a, b| a.0.file_path.cmp(&b.0.file_path));
@@ -2793,8 +2907,19 @@ fn rebuild_from_buckets(
             &b.scope.stable_symbol_id,
         ))
     });
-    GraphIndexArtifact {
-        rust_evidence: None,
+    rust_files.sort_by(|a, b| a.file_path.cmp(&b.file_path));
+    let origins = crate::rust_evidence::retained_origins(&rust_files, rust_origins)?;
+    // Full builds initially compose graph owners without syntax payloads and
+    // attach the complete capture before returning. Reuse/delta callers must
+    // validate coverage and current bytes before publishing this draft.
+    Ok(GraphIndexArtifact {
+        rust_evidence: Some(crate::RustEvidenceSet {
+            schema_version: crate::RUST_EVIDENCE_SCHEMA_VERSION.into(),
+            extractor_version: crate::RUST_EVIDENCE_EXTRACTOR_VERSION.into(),
+            graph_content_hash: graph_content_hash.clone(),
+            files: rust_files,
+            origins,
+        }),
         macro_invocations: Some(crate::MacroInvocationEvidenceSet {
             schema_version: crate::MACRO_INVOCATION_SCHEMA_VERSION.into(),
             extractor_version: EXTRACTOR_VERSION.into(),
@@ -2821,7 +2946,7 @@ fn rebuild_from_buckets(
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
-    }
+    })
 }
 
 fn max_existing_node_id(
@@ -3067,6 +3192,163 @@ fn enclosing_scope(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn composition_rejects_conflicting_whole_origin_inventories() {
+        let dir = tempfile::tempdir().unwrap();
+        fs::write(dir.path().join("a.rs"), "pub struct A;\n").unwrap();
+        fs::write(dir.path().join("b.rs"), "pub struct B;\n").unwrap();
+        let graph =
+            artifact_from_facts(&build_facts(dir.path(), None).unwrap().0, dir.path()).unwrap();
+        let mut buckets = buckets_from_artifact(&graph);
+        let bucket = buckets.get_mut("b.rs").unwrap();
+        let mut origin = bucket.rust_origin.as_ref().unwrap().as_ref().clone();
+        origin.sources[0].stable_file_id = "forged-historical-file-id".into();
+        bucket.rust_origin = Some(Arc::new(origin));
+        let error = super::rebuild_from_buckets(
+            buckets,
+            graph.manifest_version,
+            graph.graph_content_hash,
+            vec![],
+        )
+        .unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("conflicting Rust origin inventories"));
+    }
+
+    #[test]
+    fn rust_delta_captures_only_changed_active_files_and_empty_carriers() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        fs::write(root.join("keep.rs"), "fn leaf() {} fn keep() { leaf(); }\n").unwrap();
+        fs::write(root.join("edit.rs"), "pub struct Old(u8);\n").unwrap();
+        fs::write(root.join("gone.rs"), "fn gone() {}\n").unwrap();
+        let baseline = artifact_from_facts(&build_facts(root, None).unwrap().0, root).unwrap();
+        let empty = super::build_worktree_delta_artifact(&baseline, root).unwrap();
+        assert_eq!(empty.changed_files, 0);
+        assert_eq!(empty.new_symbols, 0);
+        assert_eq!(empty.tombstoned_symbols, 0);
+        assert!(empty.artifact.file_manifests.is_empty());
+        let empty_set = empty
+            .artifact
+            .rust_evidence
+            .as_ref()
+            .expect("empty delta carrier");
+        assert!(empty_set.files.is_empty() && empty_set.origins.is_empty());
+        empty.artifact.validate_rust_evidence_sources(&[]).unwrap();
+        fs::write(root.join("edit.rs"), "pub struct New(u16);\n").unwrap();
+        fs::remove_file(root.join("gone.rs")).unwrap();
+        let delta = super::build_worktree_delta_artifact(&baseline, root).unwrap();
+        assert_eq!(delta.changed_files, 1);
+        assert_eq!(delta.new_symbols, 2);
+        assert_eq!(delta.tombstoned_symbols, 2);
+        let set = delta
+            .artifact
+            .rust_evidence
+            .as_ref()
+            .expect("delta carrier");
+        assert_eq!(
+            set.files
+                .iter()
+                .map(|f| f.file_path.as_str())
+                .collect::<Vec<_>>(),
+            ["edit.rs"]
+        );
+        assert_eq!(set.origins.len(), 1);
+        assert_eq!(set.origins[0].sources.len(), 1);
+        assert_eq!(
+            set.files[0].origin_graph_content_hash,
+            delta.artifact.graph_content_hash
+        );
+        assert!(delta
+            .artifact
+            .tombstones
+            .iter()
+            .any(|t| t.path == "gone.rs"));
+        let source = fs::read(root.join("edit.rs")).unwrap();
+        delta
+            .artifact
+            .validate_rust_evidence_sources(&[crate::RustDeclarationSource {
+                file_path: "edit.rs",
+                bytes: &source,
+            }])
+            .unwrap();
+        if let Ok(dir) = std::env::var("D4_EXPORT_DIR") {
+            let dir = PathBuf::from(dir);
+            let dir = if dir.is_absolute() {
+                dir
+            } else {
+                Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("../..")
+                    .join(dir)
+            };
+            fs::create_dir_all(&dir).unwrap();
+            for (name, artifact, bytes) in [
+                ("delta.json", &delta.artifact, source.as_slice()),
+                ("empty-delta.json", &empty.artifact, &[][..]),
+            ] {
+                let hash = crate::artifact_content_hash_blake3_hex(artifact).unwrap();
+                let sources = artifact
+                    .file_manifests
+                    .iter()
+                    .map(|manifest| {
+                        serde_json::json!({
+                            "path":manifest.path,"stable_file_id":manifest.stable_file_id,
+                            "hex":bytes.iter().map(|b|format!("{b:02x}")).collect::<String>(),
+                            "source_oid":git_blob_oid(bytes),"byte_length":bytes.len()
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                let value = serde_json::json!({"artifact":artifact,"canonical_hash":hash,"sources":sources,"changed_files":if name=="delta.json"{delta.changed_files}else{empty.changed_files},"new_symbols":artifact.symbols.len(),"transport":"private in-memory delta; no D4 Rust disk transport"});
+                fs::write(dir.join(name), serde_json::to_vec_pretty(&value).unwrap()).unwrap();
+            }
+        }
+        // A deletion-only delta carries tombstones and captured empty evidence.
+        let (current, _, _) = artifact_from_facts_incremental(&baseline, root).unwrap();
+        fs::remove_file(root.join("edit.rs")).unwrap();
+        let deleted = super::build_worktree_delta_artifact(&current, root).unwrap();
+        assert_eq!(deleted.changed_files, 0);
+        assert!(deleted
+            .artifact
+            .rust_evidence
+            .as_ref()
+            .unwrap()
+            .files
+            .is_empty());
+        assert!(deleted
+            .artifact
+            .rust_evidence
+            .as_ref()
+            .unwrap()
+            .origins
+            .is_empty());
+        assert!(deleted
+            .artifact
+            .tombstones
+            .iter()
+            .any(|t| t.path == "edit.rs"));
+        deleted
+            .artifact
+            .validate_rust_evidence_sources(&[])
+            .unwrap();
+        if let Ok(dir) = std::env::var("D4_EXPORT_DIR") {
+            let dir = PathBuf::from(dir);
+            let dir = if dir.is_absolute() {
+                dir
+            } else {
+                Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("../..")
+                    .join(dir)
+            };
+            fs::create_dir_all(&dir).unwrap();
+            fs::write(dir.join("delete-delta.json"),serde_json::to_vec_pretty(&serde_json::json!({
+                "artifact":deleted.artifact,"sources":[],"changed_files":deleted.changed_files,
+                "canonical_hash":crate::artifact_content_hash_blake3_hex(&deleted.artifact).unwrap(),
+                "transport":"private in-memory delta; no D4 Rust disk transport"
+            })).unwrap()).unwrap();
+        }
+    }
+
     #[test]
     fn macro_evidence_survives_worktree_delta_with_all_owner_scopes() {
         let dir = tempfile::tempdir().unwrap();
@@ -4164,7 +4446,8 @@ mod tests {
             &current_entries,
             "test-manifest".to_owned(),
             Vec::new(),
-        );
+        )
+        .unwrap();
 
         let external_id = stable_symbol_id_for_external_path("serde::Deserialize");
         let external_symbols = artifact
@@ -4443,7 +4726,8 @@ pub fn consume_b() {}
             &current_entries,
             "test-manifest".to_owned(),
             Vec::new(),
-        );
+        )
+        .unwrap();
 
         assert_eq!(artifact.files.len(), 2);
         assert_eq!(artifact.file_node_ids.len(), artifact.files.len());

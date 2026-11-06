@@ -180,8 +180,18 @@ fn normalize_for_golden(
 }
 
 fn normalize_for_comparison(
-    artifact: spur_graph::GraphIndexArtifact,
+    mut artifact: spur_graph::GraphIndexArtifact,
 ) -> spur_graph::GraphIndexArtifact {
+    artifact
+        .rust_evidence
+        .as_ref()
+        .expect("current builder must capture Rust evidence")
+        .validate_stored(&artifact)
+        .expect("validate provenance before normalizing the outer manifest");
+    // D4 tests check exact retained payloads and whole original inventories.
+    // A fresh full snapshot has different provenance, so this legacy helper
+    // compares the core columns after independently validating the carrier.
+    artifact.rust_evidence = None;
     let mut artifact = normalize_for_golden(artifact);
     for entry in &mut artifact.file_manifests {
         entry.node_ids.clear();
@@ -1472,11 +1482,25 @@ fn artifact_uses_sentinel_anchor_when_source_drifts_after_extraction() {
     let root = dir.path();
 
     fs::create_dir_all(root.join("src")).expect("mkdir src");
-    fs::write(root.join("src/lib.rs"), "pub fn run() {}\n").expect("write lib.rs");
+    // Non-Rust columns retain the generic sentinel contract. Rust publication
+    // additionally authenticates owner ranges against current source bytes.
+    let original = b"def run():\n    pass\n";
+    fs::write(root.join("src/lib.py"), original).expect("write lib.py");
 
     let facts = build_facts(root, None).expect("build facts").0;
+    let healthy = artifact_from_facts(&facts, root).expect("healthy artifact");
+    assert_ne!(
+        healthy
+            .symbols
+            .iter()
+            .find(|s| s.entity_name == "run")
+            .unwrap()
+            .anchor_hash,
+        "0"
+    );
 
-    fs::write(root.join("src/lib.rs"), "pub fn").expect("truncate lib.rs");
+    let truncated = b"def";
+    fs::write(root.join("src/lib.py"), truncated).expect("truncate lib.py");
 
     let artifact = artifact_from_facts(&facts, root).expect("artifact should still serialize");
     let run_symbol = artifact
@@ -1486,6 +1510,75 @@ fn artifact_uses_sentinel_anchor_when_source_drifts_after_extraction() {
         .expect("run symbol should still exist");
 
     assert_eq!(run_symbol.anchor_hash, "0");
+    artifact.validate_rust_evidence_sources(&[]).unwrap();
+    export_source_drift_control(
+        "nonrust-sentinel.json",
+        &serde_json::json!({
+            "healthy":healthy,"artifact":artifact,"original_bytes":original.as_slice(),
+            "truncated_bytes":truncated.as_slice(),"truncated_oid":spur_graph::git_blob_oid(truncated)
+        }),
+    );
+}
+
+#[test]
+fn artifact_rejects_truncated_rust_source_after_extraction() {
+    let dir = tempfile::tempdir().expect("tempdir");
+    let root = dir.path();
+    fs::create_dir_all(root.join("src")).expect("mkdir src");
+    let original = b"pub fn run() {}\n";
+    fs::write(root.join("src/lib.rs"), original).expect("write lib.rs");
+    let facts = build_facts(root, None).expect("build facts").0;
+    let healthy = artifact_from_facts(&facts, root).expect("fresh Rust artifact");
+    let sources = [spur_graph::RustDeclarationSource {
+        file_path: "src/lib.rs",
+        bytes: original,
+    }];
+    let fresh_source_error = healthy
+        .validate_rust_evidence_sources(&sources)
+        .err()
+        .map(|e| format!("{e:#}"));
+    assert!(fresh_source_error.is_none());
+    assert_ne!(
+        healthy
+            .symbols
+            .iter()
+            .find(|s| s.entity_name == "run")
+            .unwrap()
+            .anchor_hash,
+        "0"
+    );
+
+    // This is the exact historical Rust fixture: stale facts have an owner
+    // extending past the new bytes. A sentinel cannot authenticate that owner.
+    let truncated = b"pub fn";
+    fs::write(root.join("src/lib.rs"), truncated).expect("truncate lib.rs");
+    let error = artifact_from_facts(&facts, root).expect_err("stale Rust facts must be rejected");
+    assert_eq!(
+        error.to_string(),
+        "Rust evidence range out of source bounds"
+    );
+    export_source_drift_control(
+        "truncated-rust.json",
+        &serde_json::json!({
+            "healthy":healthy,"original_bytes":original.as_slice(),"truncated_bytes":truncated.as_slice(),
+            "truncated_oid":spur_graph::git_blob_oid(truncated),"error":error.to_string(),"fresh_source_error":fresh_source_error
+        }),
+    );
+}
+
+fn export_source_drift_control(name: &str, value: &serde_json::Value) {
+    if let Ok(dir) = std::env::var("D4_EXPORT_DIR") {
+        let dir = PathBuf::from(dir);
+        let dir = if dir.is_absolute() {
+            dir
+        } else {
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../..")
+                .join(dir)
+        };
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(dir.join(name), serde_json::to_vec_pretty(value).unwrap()).unwrap();
+    }
 }
 
 #[test]

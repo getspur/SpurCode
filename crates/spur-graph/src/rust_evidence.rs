@@ -79,6 +79,36 @@ pub struct RustEvidenceSet {
     pub files: Vec<RustEvidenceFile>,
 }
 
+/// Union complete original inventories, retaining only origins still referenced
+/// by active files. Never shrink an inventory to its currently active members.
+pub(crate) fn retained_origins<'a>(
+    files: &[RustEvidenceFile],
+    origins: impl IntoIterator<Item = &'a RustEvidenceOrigin>,
+) -> anyhow::Result<Vec<RustEvidenceOrigin>> {
+    let mut union = BTreeMap::new();
+    for origin in origins {
+        let key = (&origin.manifest_version, &origin.graph_content_hash);
+        if let Some(previous) = union.insert(key, origin) {
+            ensure!(previous == origin, "conflicting Rust origin inventories");
+        }
+    }
+    let used: BTreeSet<_> = files
+        .iter()
+        .map(|file| &file.origin_graph_content_hash)
+        .collect();
+    ensure!(
+        used.iter().all(|hash| union
+            .values()
+            .any(|origin| &origin.graph_content_hash == *hash)),
+        "Rust source origin missing during composition"
+    );
+    Ok(union
+        .into_values()
+        .filter(|origin| used.contains(&origin.graph_content_hash))
+        .cloned()
+        .collect())
+}
+
 /// Capture exactly the eligible physical Rust manifest domain, including zeros.
 pub fn collect_rust_evidence(
     graph: &GraphIndexArtifact,
@@ -378,6 +408,7 @@ fn graph_domain(
     );
     let mut paths = BTreeSet::new();
     let mut ids = BTreeSet::new();
+    let mut gitlinks = BTreeSet::new();
     let mut domain = BTreeMap::new();
     for manifest in &graph.file_manifests {
         ensure!(
@@ -388,7 +419,11 @@ fn graph_domain(
                 && ids.insert(&manifest.stable_file_id),
             "duplicate or invalid graph manifest identity"
         );
-        if eligible(&manifest.path)? {
+        // Preserve commit pointers in graph hashes and complete origin
+        // inventories, but never require syntax or disk bytes for them.
+        if manifest.content_oid.starts_with("gitlink:") {
+            gitlinks.insert(manifest.path.as_str());
+        } else if eligible(&manifest.path)? {
             let files: Vec<_> = graph
                 .files
                 .iter()
@@ -410,7 +445,9 @@ fn graph_domain(
     }
     for file in &graph.files {
         ensure!(
-            !eligible(&file.file_path)? || domain.contains_key(file.file_path.as_str()),
+            !eligible(&file.file_path)?
+                || domain.contains_key(file.file_path.as_str())
+                || gitlinks.contains(file.file_path.as_str()),
             "physical Rust graph file has no manifest"
         );
     }

@@ -507,15 +507,25 @@ fn fresh_linked_worktree_seeds_incremental_from_main_with_no_changes() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
+        assert!(
+            seed.artifact.rust_evidence.is_none(),
+            "v12 disk seed has no Rust carrier before D5"
+        );
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(mode, BuildMode::Full);
+        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        let expected = build_full(&worker);
+        assert_eq!(rebuilt.files, expected.files);
+        assert_eq!(rebuilt.symbols, expected.symbols);
+        assert_eq!(rebuilt.edges, expected.edges);
+        assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "main_worktree", 0, 2);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
 }
 
 #[test]
@@ -535,10 +545,20 @@ fn fresh_linked_worktree_seeds_incremental_from_main_with_one_modified_file() {
 
     let (rebuilt, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
+        assert!(
+            seed.artifact.rust_evidence.is_none(),
+            "v12 disk seed has no Rust carrier before D5"
+        );
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(mode, BuildMode::Full);
+        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        let expected = build_full(&worker);
+        assert_eq!(rebuilt.files, expected.files);
+        assert_eq!(rebuilt.symbols, expected.symbols);
+        assert_eq!(rebuilt.edges, expected.edges);
+        assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
@@ -546,7 +566,7 @@ fn fresh_linked_worktree_seeds_incremental_from_main_with_one_modified_file() {
         .symbols
         .iter()
         .any(|symbol| symbol.entity_name == "lib_changed"));
-    assert_base_seed_trace(&lines, "main_worktree", 1, 1);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
 }
 
 #[test]
@@ -570,16 +590,26 @@ fn fresh_linked_worktree_seeds_incremental_from_main_current_without_pointer() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
+        assert!(
+            seed.artifact.rust_evidence.is_none(),
+            "v12 disk seed has no Rust carrier before D5"
+        );
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(mode, BuildMode::Full);
+        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        let expected = build_full(&worker);
+        assert_eq!(rebuilt.files, expected.files);
+        assert_eq!(rebuilt.symbols, expected.symbols);
+        assert_eq!(rebuilt.edges, expected.edges);
+        assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
 
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "main_worktree", 0, 2);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
 }
 
 #[test]
@@ -595,15 +625,25 @@ fn main_worktree_uses_self_pointer_as_incremental_seed() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(repo.path()).expect("self base artifact");
+        assert!(
+            seed.artifact.rust_evidence.is_none(),
+            "v12 disk seed has no Rust carrier before D5"
+        );
         let (rebuilt, mode, stats) = artifact_from_facts_incremental(&seed.artifact, repo.path())
             .expect("incremental rebuild");
         assert_eq!(seed.base, "self_pointer");
-        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(mode, BuildMode::Full);
+        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        let expected = build_full(repo.path());
+        assert_eq!(rebuilt.files, expected.files);
+        assert_eq!(rebuilt.symbols, expected.symbols);
+        assert_eq!(rebuilt.edges, expected.edges);
+        assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "self_pointer", 0, 2);
+    assert_base_seed_trace(&lines, "self_pointer", 0, 0);
 }
 
 #[test]
@@ -695,16 +735,26 @@ fn corrupted_self_pointer_falls_back_to_main_worktree_pointer() {
 
     let (base, lines) = capture_base_seed_trace(|| {
         let seed = load_base_seed_for_worktree(&worker).expect("main worktree base artifact");
+        assert!(
+            seed.artifact.rust_evidence.is_none(),
+            "v12 disk seed has no Rust carrier before D5"
+        );
         let (rebuilt, mode, stats) =
             artifact_from_facts_incremental(&seed.artifact, &worker).expect("incremental rebuild");
         assert_eq!(seed.base, "main_worktree");
-        assert_eq!(mode, BuildMode::Incremental);
+        assert_eq!(mode, BuildMode::Full);
+        assert_eq!(stats, spur_graph::build::BuildStats::default());
+        let expected = build_full(&worker);
+        assert_eq!(rebuilt.files, expected.files);
+        assert_eq!(rebuilt.symbols, expected.symbols);
+        assert_eq!(rebuilt.edges, expected.edges);
+        assert_eq!(rebuilt.rust_evidence, expected.rust_evidence);
         emit_base_seed_stats(seed.base, stats);
         rebuilt
     });
 
     assert_eq!(base.graph_content_hash, main_artifact.graph_content_hash);
-    assert_base_seed_trace(&lines, "main_worktree", 0, 1);
+    assert_base_seed_trace(&lines, "main_worktree", 0, 0);
 }
 
 #[test]
