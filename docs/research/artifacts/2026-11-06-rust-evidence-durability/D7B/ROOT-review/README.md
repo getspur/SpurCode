@@ -19,7 +19,7 @@ The fixture is the exact 18 bytes `pub struct Empty;\n` in `empty.rs`. Its indep
 
 `rework-pre/regression-first/` preserves the complete command/result, compressed raw log, exact structured observation and remote identity receipt. `pruning-statistics/` preserves the independently supplied D5 footer mutation and the earlier `TargetNotConnected` transport failure. That failed transport is not the runtime RED.
 
-The later test-only commit `f51831679` allows a repair to reject invalid metadata at the full reader as well as the query. It keeps the final assertion against silent omission. The final test is rerun separately; no production fix is present in this checkpoint.
+The later test-only commit `f51831679` allows a repair to reject invalid metadata at the full reader as well as the query. It keeps the final assertion against silent omission. Its follow-up wrapper run exited 1 before compilation/test execution because ROOT committed review evidence during upload. The source revision/state guard correctly rejected that changing checkout, despite unchanged graph/test source bytes. `final-regression-upload/` preserves this operational failure; it is not a runtime RED. The first native RED remains valid. The retry worker must reproduce the final committed regression from the stable recovery checkpoint before production edits.
 
 ## Repair PRE
 
