@@ -817,7 +817,17 @@ fn d2_absence_empty_legacy_bytes_and_capability_encoding() {
     );
     let original_bytes = d2_body_bytes(&absent);
     let old: Value = serde_json::from_str(include_str!("../../../docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/ROOT-review/actual-current/captured-empty.json")).unwrap();
-    assert_eq!(serde_json::to_value(&absent).unwrap(), old["graph"]);
+    let mut expected_graph = old["graph"].clone();
+    assert_eq!(
+        expected_graph["manifest_version"],
+        "bf1ad64f405c4cd5222120dad7b0d5461d0b7d2f52f9aeb0bbe79c07ae61d524"
+    );
+    assert_eq!(
+        absent.manifest_version,
+        "37eee2e2e0d9213d4d9ff13ccbacae861859bd592305fb88dbe54e4e09024626"
+    );
+    expected_graph["manifest_version"] = json!(absent.manifest_version);
+    assert_eq!(serde_json::to_value(&absent).unwrap(), expected_graph);
     let mut present = absent.clone();
     let set = collect_rust_evidence(&absent, &[]).unwrap();
     assert_eq!(automatic, set);
@@ -935,8 +945,27 @@ fn d2_entire_typed_envelope_hashes_and_rehashed_forgeries_reject() {
     let set = collect_rust_evidence(&graph, &sources(&inputs)).unwrap();
     assert_eq!(automatic, set);
     let old: Value = serde_json::from_str(include_str!("../../../docs/research/artifacts/2026-11-06-rust-evidence-durability/D1/ROOT-review/actual-current/actual.json")).unwrap();
-    assert_eq!(serde_json::to_value(&graph).unwrap(), old["graph"]);
-    assert_eq!(serde_json::to_value(&set).unwrap(), old["set"]);
+    let mut expected_graph = old["graph"].clone();
+    let mut expected_set = old["set"].clone();
+    assert_eq!(
+        expected_graph["manifest_version"],
+        "bf1ad64f405c4cd5222120dad7b0d5461d0b7d2f52f9aeb0bbe79c07ae61d524"
+    );
+    assert_eq!(
+        graph.manifest_version,
+        "37eee2e2e0d9213d4d9ff13ccbacae861859bd592305fb88dbe54e4e09024626"
+    );
+    assert_eq!(expected_set["origins"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        expected_set["origins"][0]["manifest_version"],
+        expected_graph["manifest_version"]
+    );
+    assert_eq!(set.origins.len(), 1);
+    assert_eq!(set.origins[0].manifest_version, graph.manifest_version);
+    expected_graph["manifest_version"] = json!(graph.manifest_version);
+    expected_set["origins"][0]["manifest_version"] = json!(graph.manifest_version);
+    assert_eq!(serde_json::to_value(&graph).unwrap(), expected_graph);
+    assert_eq!(serde_json::to_value(&set).unwrap(), expected_set);
     let original_source_hash = graph.graph_content_hash.clone();
     let original_macro = graph.macro_invocations.clone();
     graph.rust_evidence = Some(set);
