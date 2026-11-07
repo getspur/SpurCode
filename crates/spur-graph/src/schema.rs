@@ -108,6 +108,64 @@ pub struct GraphIndexArtifact {
 }
 
 impl GraphIndexArtifact {
+    /// Construct an unchecked draft with no captured evidence or completeness claim.
+    pub fn empty() -> Self {
+        Self {
+            header: GraphIndexHeader {
+                graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
+                content_hash_blake3: None,
+            },
+            manifest_version: crate::store::current_manifest_version(),
+            graph_content_hash: crate::compute_graph_content_hash(
+                std::iter::empty::<(&str, &str)>(),
+            ),
+            file_manifests: Vec::new(),
+            files: Vec::new(),
+            file_node_ids: Vec::new(),
+            symbols: Vec::new(),
+            symbol_node_ids: Vec::new(),
+            edges: Vec::new(),
+            macro_invocations: None,
+            rust_evidence: None,
+            tombstones: Vec::new(),
+            diagnostics: Vec::new(),
+            commits: Vec::new(),
+            symbol_snapshots: Vec::new(),
+            temporal_edges: Vec::new(),
+        }
+    }
+
+    /// Preparation guard; current typed fields are already legacy-representable.
+    /// The later artifact cutover supplies the legacy adapter check.
+    pub(crate) fn validate_legacy_evidence_export(&self) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    /// Return an owned view of the current typed field without validating it.
+    pub fn rust_evidence_set(&self) -> anyhow::Result<Option<crate::RustEvidenceSet>> {
+        Ok(self.rust_evidence.clone())
+    }
+
+    /// Replace the typed lane exactly, preserving absence and captured-empty values.
+    pub fn set_rust_evidence(&mut self, set: Option<crate::RustEvidenceSet>) -> anyhow::Result<()> {
+        self.rust_evidence = set;
+        Ok(())
+    }
+
+    /// Return an owned view of the current typed field without validating it.
+    pub fn macro_evidence_set(&self) -> anyhow::Result<Option<crate::MacroInvocationEvidenceSet>> {
+        Ok(self.macro_invocations.clone())
+    }
+
+    /// Replace the typed lane exactly, preserving absence and captured-empty values.
+    pub fn set_macro_evidence(
+        &mut self,
+        set: Option<crate::MacroInvocationEvidenceSet>,
+    ) -> anyhow::Result<()> {
+        self.macro_invocations = set;
+        Ok(())
+    }
+
     /// Authenticate captured Rust evidence against the graph and exact bytes.
     /// Legacy absence is unavailable, including on an otherwise empty graph.
     pub fn validate_rust_evidence_sources(

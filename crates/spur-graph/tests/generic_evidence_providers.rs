@@ -884,6 +884,8 @@ fn compiled_bindings() -> Value {
         bind!("../src/panic_evidence/mod.rs"),
         bind!("../src/query_client.rs"),
         bind!("../src/schema.rs"),
+        bind!("../src/store/parquet.rs"),
+        bind!("../src/store/canonical_hash.rs"),
         bind!("../src/store/build.rs"),
         bind!("../src/store/rust_evidence.rs"),
         bind!("../src/store/macro_invocations.rs"),
@@ -1091,4 +1093,240 @@ fn root_query_projection_keeps_unavailable_source_without_invented_origin() {
         "valid query coverage is not a stored captured source: {actual:?}"
     );
     assert_eq!(actual.unwrap(), expected);
+}
+
+// G03: these tests deliberately use the public preparation surface while the
+// existing typed fields remain the independent, sole source of mutable truth.
+fn g03_artifact_value(graph: &GraphIndexArtifact) -> Value {
+    json!({"value":graph,"serialized_bytes":serde_json::to_vec(graph).unwrap(),
+        "canonical_hash":artifact_content_hash_blake3_hex(graph).unwrap(),
+        "rust_capability":rust_evidence_capability_digest(graph).unwrap()})
+}
+
+fn g03_manifest_value(manifest: &GraphArtifactManifest) -> Value {
+    json!({"value":manifest,"serialized_bytes":serde_json::to_vec(manifest).unwrap(),
+        "rust_capability":rust_evidence_manifest_capability_digest(manifest).unwrap()})
+}
+
+#[test]
+fn g03_artifact_accessors_preserve_presence_owned_values_and_native_bytes() {
+    for input in [vec![], inputs()] {
+        let mut live = graph(&input);
+        let before = g03_artifact_value(&live);
+        let rust = live.rust_evidence.clone().unwrap();
+        let macros = live.macro_invocations.clone().unwrap();
+        assert_eq!(live.rust_evidence_set().unwrap(), Some(rust.clone()));
+        assert_eq!(live.macro_evidence_set().unwrap(), Some(macros.clone()));
+        let mut owned_rust = live.rust_evidence_set().unwrap().unwrap();
+        owned_rust.schema_version = "unchecked-draft-rust".into();
+        let mut owned_macro = live.macro_evidence_set().unwrap().unwrap();
+        owned_macro.schema_version = "unchecked-draft-macro".into();
+        assert_eq!(g03_artifact_value(&live), before);
+        live.set_rust_evidence(Some(owned_rust.clone())).unwrap();
+        live.set_macro_evidence(Some(owned_macro.clone())).unwrap();
+        assert_eq!(live.rust_evidence, Some(owned_rust));
+        assert_eq!(live.macro_invocations, Some(owned_macro));
+        live.set_rust_evidence(None).unwrap();
+        live.set_macro_evidence(None).unwrap();
+        assert_eq!(live.rust_evidence_set().unwrap(), None);
+        assert_eq!(live.macro_evidence_set().unwrap(), None);
+        let absent = serde_json::to_value(&live).unwrap();
+        assert!(absent.get("rust_evidence").is_none());
+        assert!(absent.get("macro_invocations").is_none());
+        live.set_rust_evidence(Some(rust)).unwrap();
+        live.set_macro_evidence(Some(macros)).unwrap();
+        assert_eq!(g03_artifact_value(&live), before);
+    }
+}
+
+#[test]
+fn g03_empty_constructors_are_unchecked_native_drafts() {
+    use spur_graph::store::parquet::{GraphArtifactRowCounts, PARQUET_ROW_GROUP_SIZE};
+    let draft = GraphIndexArtifact::empty();
+    let mut captured_empty = graph(&[]);
+    captured_empty.rust_evidence = None;
+    captured_empty.macro_invocations = None;
+    assert_eq!(draft, captured_empty);
+    let manifest = GraphArtifactManifest::empty();
+    assert_eq!(
+        manifest.graph_index_version,
+        draft.header.graph_index_version
+    );
+    assert_eq!(manifest.schema_version, SCHEMA_VERSION);
+    assert_eq!(manifest.manifest_version, current_manifest_version());
+    assert_eq!(manifest.extractor_version, EXTRACTOR_VERSION);
+    assert_eq!(manifest.graph_content_hash, draft.graph_content_hash);
+    assert_eq!(manifest.indexed_commit_oid, None);
+    assert!(!manifest.complete && !manifest.sidecar_complete && !manifest.edges_by_dst_present);
+    assert!(manifest.temporal_shards.is_empty());
+    assert_eq!(
+        manifest.sidecar_row_counts,
+        GraphArtifactSidecarRowCounts::default()
+    );
+    assert_eq!(manifest.parquet_writer.compression, "zstd-3");
+    assert_eq!(
+        manifest.parquet_writer.row_group_size,
+        PARQUET_ROW_GROUP_SIZE
+    );
+    assert_eq!(manifest.row_counts, GraphArtifactRowCounts::empty());
+    assert_eq!(
+        serde_json::to_value(&manifest.row_counts).unwrap(),
+        json!({
+        "nodes":0,"edges":0,"edges_by_dst":null,"edges_unresolved":0,"files":0,
+        "file_manifests":0,"tombstones":0,"macro_invocations":null,"macro_scopes":null,
+        "commits":0,"symbol_snapshots":0,"temporal_edges":0,"diagnostics":0})
+    );
+    assert_eq!(manifest.rust_evidence_metadata().unwrap(), None);
+    assert_eq!(manifest.macro_evidence_metadata().unwrap(), None);
+    let wire = serde_json::to_value(&manifest).unwrap();
+    assert!(wire.get("rust_evidence").is_none());
+    assert_eq!(wire.get("macro_evidence"), Some(&Value::Null));
+    let mut omitted = wire.clone();
+    omitted.as_object_mut().unwrap().remove("macro_evidence");
+    assert_eq!(
+        serde_json::from_value::<GraphArtifactManifest>(omitted).unwrap(),
+        manifest
+    );
+    let mut explicit_null = wire;
+    explicit_null["rust_evidence"] = Value::Null;
+    assert_eq!(
+        serde_json::from_value::<GraphArtifactManifest>(explicit_null).unwrap(),
+        manifest
+    );
+}
+
+#[test]
+fn g03_native_accessor_writer_export_and_metadata_controls() {
+    const REQUEST_PATH: &str =
+        "docs/research/artifacts/2026-11-07-generic-graph-evidence/G03/worker/native-request.json";
+    const CONFIG_PATH: &str =
+        "docs/research/artifacts/2026-11-07-generic-graph-evidence/G03/worker/native-config.json";
+    let request_raw = b"{\n  \"fixtures\": [\n    [\n      \"lib.rs\",\n      [\n        112,\n        117,\n        98,\n        32,\n        115,\n        116,\n        114,\n        117,\n        99,\n        116,\n        32,\n        80,\n        97,\n        105,\n        114,\n        40,\n        112,\n        117,\n        98,\n        32,\n        105,\n        51,\n        50,\n        44,\n        32,\n        112,\n        117,\n        98,\n        32,\n        98,\n        111,\n        111,\n        108,\n        41,\n        59,\n        10,\n        117,\n        110,\n        115,\n        97,\n        102,\n        101,\n        32,\n        101,\n        120,\n        116,\n        101,\n        114,\n        110,\n        32,\n        34,\n        67,\n        34,\n        32,\n        123,\n        32,\n        112,\n        117,\n        98,\n        32,\n        102,\n        110,\n        32,\n        102,\n        111,\n        114,\n        101,\n        105,\n        103,\n        110,\n        40,\n        120,\n        58,\n        32,\n        105,\n        51,\n        50,\n        41,\n        59,\n        32,\n        125,\n        10,\n        102,\n        110,\n        32,\n        108,\n        101,\n        97,\n        102,\n        40,\n        41,\n        32,\n        123,\n        125,\n        10,\n        102,\n        110,\n        32,\n        114,\n        117,\n        110,\n        40,\n        41,\n        32,\n        123,\n        32,\n        108,\n        101,\n        97,\n        102,\n        40,\n        41,\n        59,\n        32,\n        108,\n        101,\n        116,\n        32,\n        95,\n        102,\n        32,\n        61,\n        32,\n        124,\n        124,\n        32,\n        108,\n        101,\n        97,\n        102,\n        40,\n        41,\n        59,\n        32,\n        112,\n        97,\n        110,\n        105,\n        99,\n        33,\n        40,\n        34,\n        104,\n        101,\n        108,\n        108,\n        111,\n        34,\n        41,\n        59,\n        32,\n        125,\n        10\n      ]\n    ],\n    [\n      \"cfg.rs\",\n      [\n        35,\n        91,\n        99,\n        102,\n        103,\n        40,\n        102,\n        101,\n        97,\n        116,\n        117,\n        114,\n        101,\n        32,\n        61,\n        32,\n        34,\n        120,\n        34,\n        41,\n        93,\n        32,\n        102,\n        110,\n        32,\n        104,\n        105,\n        100,\n        100,\n        101,\n        110,\n        40,\n        41,\n        32,\n        123,\n        32,\n        108,\n        101,\n        97,\n        102,\n        40,\n        41,\n        59,\n        32,\n        125,\n        10\n      ]\n    ],\n    [\n      \"zero.rs\",\n      [\n        112,\n        117,\n        98,\n        32,\n        115,\n        116,\n        114,\n        117,\n        99,\n        116,\n        32,\n        90,\n        101,\n        114,\n        111,\n        59,\n        10\n      ]\n    ],\n    [\n      \"independent.py\",\n      [\n        100,\n        101,\n        102,\n        32,\n        105,\n        110,\n        100,\n        101,\n        112,\n        101,\n        110,\n        100,\n        101,\n        110,\n        116,\n        40,\n        41,\n        58,\n        10,\n        32,\n        32,\n        32,\n        32,\n        114,\n        101,\n        116,\n        117,\n        114,\n        110,\n        32,\n        55,\n        10\n      ]\n    ]\n  ],\n  \"cases\": []\n}\n";
+    let config_raw = b"{\n  \"task\": \"G03\",\n  \"base\": \"bb1f602b3b2f35943a3c4546adad8d9883528709\",\n  \"request\": \"docs/research/artifacts/2026-11-07-generic-graph-evidence/G03/worker/native-request.json\",\n  \"binding\": \"exact archived bytes embedded in provider test; native fixture input; stdout G03_NATIVE_JSON\",\n  \"SPUR_REMOTE\": \"1\",\n  \"SPUR_NO_LOCAL_FALLBACK\": \"1\"\n}\n";
+    let request: ReplayRequest = serde_json::from_slice(request_raw).unwrap();
+    let mut exports = Vec::new();
+    for input in [vec![], request.fixtures.clone()] {
+        let root = tempfile::tempdir().unwrap();
+        for (p, b) in &input {
+            fs::write(root.path().join(p), b).unwrap();
+        }
+        let mut live =
+            artifact_from_facts(&build_facts(root.path(), None).unwrap().0, root.path()).unwrap();
+        let post_candidates = [
+            encode_rust_evidence(&live, live.rust_evidence.as_ref().unwrap()).unwrap(),
+            encode_macro_evidence(&live, live.macro_invocations.as_ref().unwrap()).unwrap(),
+        ]
+        .into_iter()
+        .map(|extension| {
+            let case = ReplayCase {
+                name: extension.descriptor.provider_id.clone(),
+                graph: live.clone(),
+                extension,
+                sources: input
+                    .iter()
+                    .filter(|(p, _)| p.ends_with(".rs"))
+                    .cloned()
+                    .collect(),
+                rust_checksum_set: None,
+                macro_checksum_set: None,
+                counter_registered: false,
+            };
+            let result = replay(&case);
+            assert_eq!(result["source_validation"], json!({"Ok":null}));
+            json!({"request_case":{"name":case.name,"graph":case.graph,"extension":case.extension,
+                "sources":case.sources},"actual":result})
+        })
+        .collect::<Vec<_>>();
+        let before = g03_artifact_value(&live);
+        let rust = live.rust_evidence_set().unwrap();
+        let macros = live.macro_evidence_set().unwrap();
+        live.set_rust_evidence(None).unwrap();
+        live.set_macro_evidence(None).unwrap();
+        let absent = g03_artifact_value(&live);
+        live.set_rust_evidence(rust.clone()).unwrap();
+        live.set_macro_evidence(macros.clone()).unwrap();
+        assert_eq!(g03_artifact_value(&live), before);
+        let mut owned = live.rust_evidence_set().unwrap().unwrap();
+        owned.schema_version = "unvalidated".into();
+        let clone_before_set = g03_artifact_value(&live);
+        live.set_rust_evidence(Some(owned)).unwrap();
+        let clone_after_set = g03_artifact_value(&live);
+        live.set_rust_evidence(rust).unwrap();
+        let mut owned = live.macro_evidence_set().unwrap().unwrap();
+        owned.schema_version = "unvalidated".into();
+        let macro_clone_before_set = g03_artifact_value(&live);
+        live.set_macro_evidence(Some(owned)).unwrap();
+        let macro_clone_after_set = g03_artifact_value(&live);
+        live.set_macro_evidence(macros).unwrap();
+        let full = tempfile::tempdir().unwrap();
+        write_artifact_parquet(&live, full.path(), WriteOptions::default(), vec![]).unwrap();
+        let loaded = read_artifact_parquet(full.path()).unwrap();
+        assert_eq!(loaded.rust_evidence, live.rust_evidence);
+        assert_eq!(loaded.macro_invocations, live.macro_invocations);
+        let mut manifest = read_artifact_header_parquet(full.path()).unwrap();
+        let manifest_before = g03_manifest_value(&manifest);
+        let rm = manifest.rust_evidence_metadata().unwrap().unwrap();
+        let mm = manifest.macro_evidence_metadata().unwrap().unwrap();
+        let mut owned_rm = rm.clone();
+        owned_rm.schema_version = "unvalidated".into();
+        let mut owned_mm = mm.clone();
+        owned_mm.schema_version = "unvalidated".into();
+        assert_eq!(g03_manifest_value(&manifest), manifest_before);
+        manifest
+            .set_rust_evidence_metadata(Some(owned_rm.clone()))
+            .unwrap();
+        manifest
+            .set_macro_evidence_metadata(Some(owned_mm.clone()))
+            .unwrap();
+        assert_eq!(manifest.rust_evidence, Some(owned_rm));
+        assert_eq!(manifest.macro_evidence, Some(owned_mm));
+        let manifest_replaced = g03_manifest_value(&manifest);
+        manifest.set_rust_evidence_metadata(None).unwrap();
+        manifest.set_macro_evidence_metadata(None).unwrap();
+        assert_eq!(manifest.rust_evidence_metadata().unwrap(), None);
+        assert_eq!(manifest.macro_evidence_metadata().unwrap(), None);
+        let manifest_absent = g03_manifest_value(&manifest);
+        manifest.set_rust_evidence_metadata(Some(rm)).unwrap();
+        manifest.set_macro_evidence_metadata(Some(mm)).unwrap();
+        assert_eq!(g03_manifest_value(&manifest), manifest_before);
+        // Real persisted metadata negatives still reach the existing reader.
+        let path = full.path().join("manifest.json");
+        let original_bytes = fs::read(&path).unwrap();
+        let mut bad = manifest.clone();
+        bad.rust_evidence.as_mut().unwrap().checksum_blake3 = "forged".into();
+        fs::write(&path, serde_json::to_vec(&bad).unwrap()).unwrap();
+        let rust_error = read_artifact_parquet(full.path()).unwrap_err().to_string();
+        bad = manifest.clone();
+        bad.macro_evidence.as_mut().unwrap().checksum_blake3 = "forged".into();
+        fs::write(&path, serde_json::to_vec(&bad).unwrap()).unwrap();
+        let macro_error = read_artifact_parquet(full.path()).unwrap_err().to_string();
+        fs::write(&path, &original_bytes).unwrap();
+        fs::write(
+            root.path().join("changed.rs"),
+            "fn changed() { panic!(\"changed\"); }\n",
+        )
+        .unwrap();
+        let delta = tempfile::tempdir().unwrap();
+        let summary = write_worktree_delta(&live, root.path(), delta.path()).unwrap();
+        assert_eq!(summary.changed_files, 1);
+        let delta_loaded = read_artifact_parquet(delta.path()).unwrap();
+        assert!(delta_loaded
+            .files
+            .iter()
+            .any(|f| f.file_path == "changed.rs"));
+        exports.push(json!({"post_candidates":post_candidates,"fixtures":input,"before":before,"absent":absent,"after":g03_artifact_value(&live),
+            "clone_before_set":clone_before_set,"clone_after_set":clone_after_set,
+            "macro_clone_before_set":macro_clone_before_set,"macro_clone_after_set":macro_clone_after_set,
+            "full_loaded":g03_artifact_value(&loaded),"manifest_before":manifest_before,
+            "manifest_replaced":manifest_replaced,"manifest_absent":manifest_absent,"manifest_after":g03_manifest_value(&manifest),
+            "persisted_manifest_bytes":original_bytes,"rust_negative_error":rust_error,"macro_negative_error":macro_error,
+            "delta_loaded":g03_artifact_value(&delta_loaded),"delta_manifest":g03_manifest_value(&read_artifact_header_parquet(delta.path()).unwrap())}));
+    }
+    let exe = std::env::current_exe().unwrap();
+    println!("G03_NATIVE_JSON={}",serde_json::to_string(&json!({"request_path":REQUEST_PATH,"request_bytes":request_raw.as_slice(),"request_sha256":sha256(request_raw),
+        "config_path":CONFIG_PATH,"config_bytes":config_raw.as_slice(),"config_sha256":sha256(config_raw),
+        "executable":exe,"executable_sha256":sha256(&fs::read(&exe).unwrap()),"compiled_source_bindings":compiled_bindings(),
+        "rustc":String::from_utf8(std::process::Command::new("rustc").arg("-vV").output().unwrap().stdout).unwrap(),
+        "artifact_draft":g03_artifact_value(&GraphIndexArtifact::empty()),"manifest_draft":g03_manifest_value(&GraphArtifactManifest::empty()),
+        "cases":exports,"supplied":request.cases.iter().map(replay).collect::<Vec<_>>()})).unwrap());
 }

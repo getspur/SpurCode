@@ -382,6 +382,66 @@ pub struct GraphArtifactManifest {
     pub temporal_shards: Vec<ShardIndexEntry>,
 }
 
+impl GraphArtifactManifest {
+    /// Construct an unchecked, incomplete draft using the existing writer defaults.
+    pub fn empty() -> Self {
+        Self {
+            graph_index_version: crate::schema::GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
+            schema_version: SCHEMA_VERSION.to_owned(),
+            manifest_version: super::current_manifest_version(),
+            graph_content_hash: crate::compute_graph_content_hash(
+                std::iter::empty::<(&str, &str)>(),
+            ),
+            indexed_commit_oid: None,
+            extractor_version: EXTRACTOR_VERSION.to_owned(),
+            complete: false,
+            row_counts: GraphArtifactRowCounts::empty(),
+            macro_evidence: None,
+            rust_evidence: None,
+            sidecar_complete: false,
+            sidecar_row_counts: GraphArtifactSidecarRowCounts::default(),
+            parquet_writer: GraphArtifactParquetWriter {
+                compression: "zstd-3".to_owned(),
+                row_group_size: PARQUET_ROW_GROUP_SIZE,
+            },
+            edges_by_dst_present: false,
+            temporal_shards: Vec::new(),
+        }
+    }
+
+    /// Return an owned view of the current metadata without validating it.
+    pub fn rust_evidence_metadata(
+        &self,
+    ) -> anyhow::Result<Option<super::rust_evidence::RustEvidenceManifest>> {
+        Ok(self.rust_evidence.clone())
+    }
+
+    /// Replace the existing optional metadata without introducing validation.
+    pub fn set_rust_evidence_metadata(
+        &mut self,
+        value: Option<super::rust_evidence::RustEvidenceManifest>,
+    ) -> anyhow::Result<()> {
+        self.rust_evidence = value;
+        Ok(())
+    }
+
+    /// Return an owned view of the current metadata without validating it.
+    pub fn macro_evidence_metadata(
+        &self,
+    ) -> anyhow::Result<Option<super::macro_invocations::MacroEvidenceManifest>> {
+        Ok(self.macro_evidence.clone())
+    }
+
+    /// Replace the existing optional metadata without introducing validation.
+    pub fn set_macro_evidence_metadata(
+        &mut self,
+        value: Option<super::macro_invocations::MacroEvidenceManifest>,
+    ) -> anyhow::Result<()> {
+        self.macro_evidence = value;
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct GraphArtifactRowCounts {
@@ -404,6 +464,26 @@ pub struct GraphArtifactRowCounts {
     pub temporal_edges: usize,
     #[serde(default)]
     pub diagnostics: usize,
+}
+
+impl GraphArtifactRowCounts {
+    pub fn empty() -> Self {
+        Self {
+            nodes: 0,
+            edges: 0,
+            edges_by_dst: None,
+            edges_unresolved: 0,
+            files: 0,
+            file_manifests: 0,
+            tombstones: 0,
+            macro_invocations: None,
+            macro_scopes: None,
+            commits: 0,
+            symbol_snapshots: 0,
+            temporal_edges: 0,
+            diagnostics: 0,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -573,6 +653,7 @@ pub fn write_worktree_delta(
 ) -> anyhow::Result<DeltaSummary> {
     let delta = build_worktree_delta_artifact(prev, worktree_root)?;
     let artifact = &delta.artifact;
+    artifact.validate_legacy_evidence_export()?;
 
     fs::create_dir_all(out_dir)
         .with_context(|| format!("failed to create `{}`", out_dir.display()))?;
@@ -691,6 +772,7 @@ pub fn write_artifact_parquet(
     options: WriteOptions,
     temporal_shards: Vec<ShardIndexEntry>,
 ) -> anyhow::Result<PathBuf> {
+    artifact.validate_legacy_evidence_export()?;
     fs::create_dir_all(out_dir)
         .with_context(|| format!("failed to create `{}`", out_dir.display()))?;
 
