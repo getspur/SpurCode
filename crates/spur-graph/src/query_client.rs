@@ -49,7 +49,9 @@ use crate::{
 };
 use crate::{CandidateRow, NodeId, ResolvedSymbol, SearchFilters, SearchMode};
 
+use crate::rust_evidence::RustEvidenceQueryContext;
 use crate::store::macro_invocations::MacroQueryTables;
+use crate::store::rust_evidence::RustEvidenceQueryTables;
 use crate::{
     MacroEvidenceAvailability, MacroEvidenceSnapshot, MacroEvidenceSourceScope,
     MacroInvocationFilter, MacroInvocationQueryResult,
@@ -152,6 +154,11 @@ struct ParquetMacroContext {
     tables: Option<MacroQueryTables>,
 }
 
+enum ParquetRustContext {
+    Captured(RustEvidenceQueryTables),
+    Unavailable(RustEvidenceQueryContext),
+}
+
 pub trait GraphQueryClient {
     /// Recorded physical Rust evidence. Custom backends opt in explicitly.
     fn rust_evidence(
@@ -216,6 +223,13 @@ pub trait GraphQueryClient {
 }
 
 impl<T: GraphQueryClient + ?Sized> GraphQueryClient for &T {
+    fn rust_evidence(
+        &self,
+        filter: &crate::RustEvidenceFilter,
+    ) -> anyhow::Result<crate::RustEvidenceQueryResult> {
+        (**self).rust_evidence(filter)
+    }
+
     fn macro_invocations(
         &self,
         filter: &MacroInvocationFilter,
@@ -292,6 +306,7 @@ pub struct InMemoryClient {
     artifact: Arc<GraphIndexArtifact>,
     temporal_index: Arc<OnceLock<Arc<TemporalIndex>>>,
     macro_context: Arc<OnceLock<Result<MacroQueryContext, String>>>,
+    rust_context: Arc<OnceLock<Result<RustEvidenceQueryContext, String>>>,
 }
 
 impl InMemoryClient {
@@ -300,6 +315,7 @@ impl InMemoryClient {
             artifact,
             temporal_index: Arc::new(OnceLock::new()),
             macro_context: Arc::new(OnceLock::new()),
+            rust_context: Arc::new(OnceLock::new()),
         }
     }
 
@@ -309,6 +325,20 @@ impl InMemoryClient {
 }
 
 impl GraphQueryClient for InMemoryClient {
+    fn rust_evidence(
+        &self,
+        filter: &crate::RustEvidenceFilter,
+    ) -> anyhow::Result<crate::RustEvidenceQueryResult> {
+        filter.validate_shape()?;
+        self.rust_context
+            .get_or_init(|| {
+                RustEvidenceQueryContext::new(&self.artifact).map_err(|e| format!("{e:#}"))
+            })
+            .as_ref()
+            .map_err(|e| anyhow!(e.clone()))?
+            .project(&self.artifact, filter)
+    }
+
     fn macro_invocations(
         &self,
         filter: &MacroInvocationFilter,
@@ -1259,6 +1289,7 @@ pub struct ParquetClient {
     file_oids_load_count: std::sync::atomic::AtomicUsize,
     temporal_index: OnceLock<Arc<TemporalIndex>>,
     macro_context: OnceLock<Result<ParquetMacroContext, String>>,
+    rust_context: OnceLock<Result<ParquetRustContext, String>>,
 }
 
 #[derive(Clone)]
@@ -1355,6 +1386,7 @@ impl ParquetClient {
             file_oids_load_count: std::sync::atomic::AtomicUsize::new(0),
             temporal_index: OnceLock::new(),
             macro_context: OnceLock::new(),
+            rust_context: OnceLock::new(),
         })
     }
 
@@ -1393,6 +1425,136 @@ impl ParquetClient {
             context: MacroQueryContext::new(&artifact)?,
             tables,
         })
+    }
+
+    fn load_rust_context(&self) -> anyhow::Result<ParquetRustContext> {
+        let (tables, _validated) = RustEvidenceQueryTables::open(&self.dir, &self.manifest)?;
+        if let Some(tables) = tables {
+            Ok(ParquetRustContext::Captured(tables))
+        } else {
+            Ok(ParquetRustContext::Unavailable(
+                RustEvidenceQueryContext::new(&self.rust_evidence_validation_projection(None)?)?,
+            ))
+        }
+    }
+
+    /// Stored-validation projection only: actual manifests/files, current symbol
+    /// metadata and Contains relationships for evidence declarations. No call
+    /// edges, temporal history, embeddings or mutable source bytes are loaded.
+    pub(crate) fn rust_evidence_validation_projection(
+        &self,
+        set: Option<&crate::RustEvidenceSet>,
+    ) -> anyhow::Result<GraphIndexArtifact> {
+        let mut graph = empty_overlay_delta_artifact();
+        graph.manifest_version = self.manifest.manifest_version.clone();
+        graph.graph_content_hash = self.manifest.graph_content_hash.clone();
+        graph.file_manifests = file_manifests_from_batches(read_projected_batches(
+            &self.dir.join("file_manifests.parquet"),
+            &self.metadata_cache,
+            FILE_MANIFEST_COLUMNS,
+        )?)?;
+        graph.files = self.files()?;
+        anyhow::ensure!(
+            graph.file_manifests.len() == self.manifest.row_counts.file_manifests
+                && graph.files.len() == self.manifest.row_counts.files,
+            "Rust query file/manifest row count mismatch"
+        );
+        let Some(set) = set else {
+            return Ok(graph);
+        };
+        graph.symbols = symbols_from_batches(read_projected_batches(
+            &self.dir.join("nodes.parquet"),
+            &self.metadata_cache,
+            SYMBOL_COLUMNS,
+        )?)?;
+        anyhow::ensure!(
+            graph.symbols.len() == self.manifest.row_counts.nodes,
+            "Rust query symbol row count mismatch"
+        );
+        let children = set
+            .files
+            .iter()
+            .flat_map(|f| {
+                f.declarations
+                    .rows
+                    .iter()
+                    .map(|r| r.stable_symbol_id.clone())
+                    .chain(
+                        f.declarations
+                            .foreign_functions
+                            .iter()
+                            .map(|r| r.stable_symbol_id.clone()),
+                    )
+                    .chain(
+                        f.declarations
+                            .extern_blocks
+                            .iter()
+                            .map(|r| r.stable_symbol_id.clone()),
+                    )
+            })
+            .collect::<HashSet<_>>();
+        if !children.is_empty() {
+            let pruning = StringPruningPredicate::all([
+                StringPruningPredicate::eq("relation", "contains"),
+                StringPruningPredicate::any_value("target_stable_id", children.iter().cloned()),
+            ]);
+            let batches = read_filtered_projected_batches(
+                &self.dir.join("edges.parquet"),
+                &self.metadata_cache,
+                ["source_stable_id", "target_stable_id", "relation"],
+                &pruning,
+                |schema| {
+                    let children = children.clone();
+                    let projection =
+                        ProjectionMask::columns(schema, ["target_stable_id", "relation"]);
+                    RowFilter::new(vec![Box::new(ArrowPredicateFn::new(
+                        projection,
+                        move |batch| {
+                            let targets = string_array_by_name(&batch, "target_stable_id")?;
+                            let relations = string_array_by_name(&batch, "relation")?;
+                            Ok(BooleanArray::from_iter((0..batch.num_rows()).map(|i| {
+                                Some(
+                                    !targets.is_null(i)
+                                        && !relations.is_null(i)
+                                        && relations.value(i) == "contains"
+                                        && children.contains(targets.value(i)),
+                                )
+                            })))
+                        },
+                    ))])
+                },
+            )?;
+            for batch in batches {
+                let sources = string_array_by_name(&batch, "source_stable_id")?;
+                let targets = string_array_by_name(&batch, "target_stable_id")?;
+                for i in 0..batch.num_rows() {
+                    // Only these three actual columns participate in stored
+                    // owner validation; this is not a full artifact or edge.
+                    graph.edges.push(GraphEdgeArtifact {
+                        source_stable_symbol_id: required_string_value(
+                            sources,
+                            i,
+                            "source_stable_id",
+                        )?
+                        .into(),
+                        target_stable_symbol_id: Some(
+                            required_string_value(targets, i, "target_stable_id")?.into(),
+                        ),
+                        relation: RelationKind::Contains,
+                        target_label: None,
+                        import_path: None,
+                        receiver_text: None,
+                        scope_text: None,
+                        confidence: crate::Confidence::SyntaxExact,
+                        confidence_score: 1.0,
+                        change_kind: None,
+                        edge_kind: None,
+                        bind_method: None,
+                    });
+                }
+            }
+        }
+        Ok(graph)
     }
 
     pub fn dir(&self) -> &Path {
@@ -1940,6 +2102,22 @@ impl ParquetClient {
 }
 
 impl GraphQueryClient for ParquetClient {
+    fn rust_evidence(
+        &self,
+        filter: &crate::RustEvidenceFilter,
+    ) -> anyhow::Result<crate::RustEvidenceQueryResult> {
+        filter.validate_shape()?;
+        match self
+            .rust_context
+            .get_or_init(|| self.load_rust_context().map_err(|e| format!("{e:#}")))
+            .as_ref()
+            .map_err(|e| anyhow!(e.clone()))?
+        {
+            ParquetRustContext::Captured(tables) => tables.query(filter),
+            ParquetRustContext::Unavailable(context) => context.result(filter),
+        }
+    }
+
     fn macro_invocations(
         &self,
         filter: &MacroInvocationFilter,
@@ -2678,6 +2856,72 @@ mod tests {
     struct RecordingRangeReader {
         bytes: Bytes,
         ranges: Arc<StdMutex<Vec<Range<u64>>>>,
+    }
+
+    #[test]
+    fn rust_evidence_frozen_context_performs_no_additional_evidence_file_reads() {
+        use crate::store::rust_evidence::RUST_EVIDENCE_QUERY_IO;
+        use crate::{RustEvidenceAvailability, RustEvidenceFilter};
+        let root = tempfile::tempdir().unwrap();
+        std::fs::write(root.path().join("a.rs"), "fn a() { leaf(); }\n").unwrap();
+        std::fs::write(root.path().join("empty.rs"), "pub struct Empty;\n").unwrap();
+        let graph = crate::artifact_from_facts(
+            &crate::build_facts(root.path(), None).unwrap().0,
+            root.path(),
+        )
+        .unwrap();
+        let out = tempfile::tempdir().unwrap();
+        write_artifact_parquet(&graph, out.path(), WriteOptions::default(), vec![]).unwrap();
+        let tables = [
+            "rust_evidence_origins.parquet",
+            "rust_evidence_sources.parquet",
+            "rust_evidence_bodies.parquet",
+            "rust_evidence_sites.parquet",
+            "rust_declarations.parquet",
+        ];
+        let bytes = tables
+            .iter()
+            .map(|t| std::fs::metadata(out.path().join(t)).unwrap().len())
+            .sum::<u64>();
+        let before = RUST_EVIDENCE_QUERY_IO.with(|n| n.get());
+        let client = ParquetClient::open(out.path()).unwrap();
+        let filter = RustEvidenceFilter {
+            file_path: Some("empty.rs".into()),
+            source_oid: None,
+        };
+        assert_eq!(
+            client.rust_evidence(&filter).unwrap().availability,
+            RustEvidenceAvailability::Complete
+        );
+        let frozen = RUST_EVIDENCE_QUERY_IO.with(|n| n.get());
+        assert_eq!(
+            (frozen.0 - before.0, frozen.1 - before.1),
+            (tables.len(), bytes)
+        );
+        let memory = InMemoryClient::new(Arc::new(graph));
+        let all = RustEvidenceFilter::default();
+        let expected = memory.rust_evidence(&all).unwrap();
+        for table in tables {
+            std::fs::write(out.path().join(table), b"corrupt").unwrap();
+        }
+        std::fs::write(root.path().join("a.rs"), "changed mutable source\n").unwrap();
+        assert_eq!(client.rust_evidence(&all).unwrap(), expected);
+        let replaced = RUST_EVIDENCE_QUERY_IO.with(|n| n.get());
+        assert_eq!(replaced, frozen);
+        let cold = ParquetClient::open(out.path()).unwrap();
+        let cold_error = cold.rust_evidence(&filter).unwrap_err();
+        let cold_io = RUST_EVIDENCE_QUERY_IO.with(|n| n.get());
+        assert!(cold_io.0 > replaced.0);
+        for table in tables {
+            std::fs::remove_file(out.path().join(table)).unwrap();
+        }
+        assert_eq!(client.rust_evidence(&all).unwrap(), expected);
+        let deleted = RUST_EVIDENCE_QUERY_IO.with(|n| n.get());
+        assert_eq!(deleted, cold_io);
+        println!(
+            "D7B_IO {}",
+            serde_json::json!({"before":before,"frozen":frozen,"replaced":replaced,"cold":cold_io,"deleted":deleted,"cold_error":format!("{cold_error:#}"),"expected_compressed_bytes":bytes})
+        );
     }
 
     impl RecordingRangeReader {

@@ -26,6 +26,7 @@ use crate::panic_evidence::{
     MethodCallSourceScope, RustBodyEvidence, RustCallSiteEvidence, RustCallSiteEvidenceSet,
     RustCallSourceBinding, RUST_CALL_SITE_EXTRACTOR_VERSION, RUST_CALL_SITE_SCHEMA_VERSION,
 };
+use crate::rust_evidence::{referenced_origins, RustEvidenceQueryContext};
 use crate::{
     rust_evidence_checksum_blake3_hex, GraphIndexArtifact, RustCallEvidence,
     RustDeclarationEvidenceSet, RustDeclarationFile, RustDeclarationKind, RustDeclarationOwner,
@@ -41,6 +42,12 @@ const TABLES: [&str; 5] = [
     "rust_evidence_sites.parquet",
     "rust_declarations.parquet",
 ];
+
+#[cfg(test)]
+thread_local! {
+    // Successful evidence-file byte reads, isolated from concurrent test threads.
+    pub(crate) static RUST_EVIDENCE_QUERY_IO: std::cell::Cell<(usize, u64)> = const { std::cell::Cell::new((0, 0)) };
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -455,6 +462,14 @@ pub(super) fn read(
     dir: &Path,
     manifest: &GraphArtifactManifest,
 ) -> anyhow::Result<Option<RustEvidenceSet>> {
+    read_impl(dir, manifest, None)
+}
+
+fn read_impl(
+    dir: &Path,
+    manifest: &GraphArtifactManifest,
+    frozen: Option<&[FrozenRustTable]>,
+) -> anyhow::Result<Option<RustEvidenceSet>> {
     no_extra_tables(dir)?;
     let Some(evidence) = &manifest.rust_evidence else {
         ensure!(
@@ -491,17 +506,32 @@ pub(super) fn read(
                 table,
             ),
             counts[index],
+            frozen.map(|tables| &tables[index]),
         )?);
     }
-    let mut set = RustEvidenceSet {
+    let (files, origins) = decode_tables(&tables)?;
+    let set = RustEvidenceSet {
         schema_version: evidence.schema_version.clone(),
         extractor_version: evidence.extractor_version.clone(),
         graph_content_hash: manifest.graph_content_hash.clone(),
-        origins: Vec::new(),
-        files: Vec::new(),
+        files,
+        origins,
     };
+    ensure!(
+        rust_evidence_checksum_blake3_hex(&set)? == evidence.checksum_blake3,
+        "Rust evidence checksum mismatch in {}; rebuild with spur explore sync",
+        dir.display()
+    );
+    Ok(Some(set))
+}
+
+fn decode_tables(
+    tables: &[Vec<Value>],
+) -> anyhow::Result<(Vec<RustEvidenceFile>, Vec<RustEvidenceOrigin>)> {
+    let mut decoded_files = Vec::new();
+    let mut origins = Vec::new();
     for row in &tables[0] {
-        set.origins.push(RustEvidenceOrigin {
+        origins.push(RustEvidenceOrigin {
             graph_content_hash: string(row, "origin_graph_content_hash")?.into(),
             manifest_version: string(row, "manifest_version")?.into(),
             sources: decode_json::<Vec<RustEvidenceOriginSource>>(row, "sources_json")?,
@@ -564,22 +594,22 @@ pub(super) fn read(
         };
         ensure!(
             files
-                .insert(file.file_path.clone(), set.files.len())
+                .insert(file.file_path.clone(), decoded_files.len())
                 .is_none(),
             "duplicate Rust source row"
         );
-        set.files.push(file);
+        decoded_files.push(file);
     }
     for (index, rows) in tables.iter().enumerate().skip(2) {
         for row in rows {
-            let file = &mut set.files[*files
+            let file = &mut decoded_files[*files
                 .get(string(row, "file_path")?)
                 .context("Rust row has no source")?];
             ensure!(
                 row["source_oid"] == file.source_oid
                     && row["origin_graph_content_hash"] == file.origin_graph_content_hash,
                 "Rust source/origin projection mismatch in {}",
-                dir.join(TABLES[index]).display()
+                TABLES[index]
             );
             if index == 4 {
                 let text = string(row, "payload_json")?;
@@ -664,18 +694,135 @@ pub(super) fn read(
             }
         }
     }
-    ensure!(
-        rust_evidence_checksum_blake3_hex(&set)? == evidence.checksum_blake3,
-        "Rust evidence checksum mismatch in {}; rebuild with spur explore sync",
-        dir.display()
-    );
-    Ok(Some(set))
+    Ok((decoded_files, origins))
 }
 
 fn string<'a>(row: &'a Value, name: &str) -> anyhow::Result<&'a str> {
     row[name]
         .as_str()
         .with_context(|| format!("invalid required Rust string: {name}"))
+}
+
+/// All compressed tables belong to one immutable, fully validated snapshot.
+/// Full decoded rows exist only during opening and for the selected query.
+pub(crate) struct RustEvidenceQueryTables {
+    tables: Vec<FrozenRustTable>,
+    context: RustEvidenceQueryContext,
+    origins: Vec<RustEvidenceOrigin>,
+    // Preserve the actual owner/source projection used for stored validation.
+    // It has no evidence rows, unrelated edges or temporal/Lance data.
+    _owners: GraphIndexArtifact,
+}
+
+impl RustEvidenceQueryTables {
+    pub(crate) fn open(
+        dir: &Path,
+        manifest: &GraphArtifactManifest,
+    ) -> anyhow::Result<(Option<Self>, Option<RustEvidenceSet>)> {
+        let Some(evidence) = &manifest.rust_evidence else {
+            // Absence still checks for orphan tables and legacy compatibility.
+            return Ok((None, read(dir, manifest)?));
+        };
+        no_extra_tables(dir)?;
+        compatible(dir, manifest, evidence)?;
+        let tables = (0..TABLES.len())
+            .map(|i| FrozenRustTable::open(dir, manifest, i))
+            .collect::<anyhow::Result<Vec<_>>>()?;
+        let set =
+            read_impl(dir, manifest, Some(&tables))?.context("missing captured Rust evidence")?;
+        let client = crate::query_client::ParquetClient::open(dir)?;
+        let mut owners = client.rust_evidence_validation_projection(Some(&set))?;
+        owners.rust_evidence = Some(set);
+        let context = RustEvidenceQueryContext::new(&owners)?;
+        let set = owners
+            .rust_evidence
+            .take()
+            .context("missing validated Rust evidence")?;
+        let origins = set.origins.clone();
+        Ok((
+            Some(Self {
+                tables,
+                context,
+                origins,
+                _owners: owners,
+            }),
+            Some(set),
+        ))
+    }
+
+    pub(crate) fn query(
+        &self,
+        filter: &crate::RustEvidenceFilter,
+    ) -> anyhow::Result<crate::RustEvidenceQueryResult> {
+        let mut result = self.context.result(filter)?;
+        if matches!(
+            result.availability,
+            crate::RustEvidenceAvailability::Unavailable
+                | crate::RustEvidenceAvailability::UnsupportedSource
+        ) {
+            return Ok(result);
+        }
+        let mut rows = vec![Vec::new()];
+        for table in self.tables.iter().skip(1) {
+            rows.push((table.read)(filter.file_path.as_deref())?);
+        }
+        // Decode a projection directly into files; never construct a partial
+        // RustEvidenceSet with a forged full-artifact checksum or coverage.
+        result.files = decode_tables(&rows)?.0;
+        result.origins = referenced_origins(&result.files, &self.origins);
+        Ok(result)
+    }
+}
+
+// Erase Parquet's concrete byte-buffer type, as for the macro query tables,
+// without adding a dependency. The closure owns immutable compressed bytes.
+type FrozenRustRead = dyn Fn(Option<&str>) -> anyhow::Result<Vec<Value>> + Send + Sync;
+struct FrozenRustTable {
+    read: Box<FrozenRustRead>,
+}
+
+impl FrozenRustTable {
+    fn open(dir: &Path, manifest: &GraphArtifactManifest, index: usize) -> anyhow::Result<Self> {
+        use parquet::file::reader::ChunkReader as _;
+        let path = dir.join(TABLES[index]);
+        let file = File::open(&path).with_context(|| format!("open {}", path.display()))?;
+        let bytes = file.get_bytes(0, usize::try_from(file.metadata()?.len())?)?;
+        #[cfg(test)]
+        RUST_EVIDENCE_QUERY_IO.with(|n| {
+            let (reads, size) = n.get();
+            n.set((reads + 1, size + bytes.len() as u64));
+        });
+        let evidence = manifest
+            .rust_evidence
+            .as_ref()
+            .context("missing Rust evidence metadata")?;
+        let counts = &evidence.row_counts;
+        let count = [
+            counts.origins,
+            counts.sources,
+            counts.bodies,
+            counts.sites,
+            counts.declarations,
+        ][index];
+        let metadata = metadata(
+            evidence,
+            &manifest.graph_content_hash,
+            &manifest.manifest_version,
+            TABLES[index],
+        );
+        Ok(Self {
+            read: Box::new(move |filter| {
+                read_table_input(
+                    bytes.clone(),
+                    &path,
+                    fields(index),
+                    &metadata,
+                    count,
+                    filter,
+                )
+            }),
+        })
+    }
 }
 fn integer(row: &Value, name: &str) -> anyhow::Result<usize> {
     usize::try_from(
@@ -754,11 +901,31 @@ fn read_table(
     fields: Vec<Field>,
     metadata: &HashMap<String, String>,
     count: usize,
+    frozen: Option<&FrozenRustTable>,
 ) -> anyhow::Result<Vec<Value>> {
-    let reader = ParquetRecordBatchReaderBuilder::try_new(
+    if let Some(frozen) = frozen {
+        return (frozen.read)(None);
+    }
+    read_table_input(
         File::open(path).with_context(|| format!("open {}", path.display()))?,
+        path,
+        fields,
+        metadata,
+        count,
+        None,
     )
-    .with_context(|| format!("invalid Rust Parquet table {}", path.display()))?;
+}
+
+fn read_table_input(
+    input: impl parquet::file::reader::ChunkReader + 'static,
+    path: &Path,
+    fields: Vec<Field>,
+    metadata: &HashMap<String, String>,
+    count: usize,
+    filter: Option<&str>,
+) -> anyhow::Result<Vec<Value>> {
+    let mut reader = ParquetRecordBatchReaderBuilder::try_new(input)
+        .with_context(|| format!("invalid Rust Parquet table {}", path.display()))?;
     ensure!(
         reader.schema().fields() == Schema::new(fields).fields(),
         "Rust table column schema mismatch in {}",
@@ -776,6 +943,30 @@ fn read_table(
         "Rust table manifest row count mismatch in {}",
         path.display()
     );
+    if let Some(path_filter) = filter {
+        use parquet::arrow::{
+            arrow_reader::{ArrowPredicateFn, RowFilter},
+            ProjectionMask,
+        };
+        // The shared checksum authenticates decoded rows, not footer statistics.
+        // Filter actual path values from the frozen bytes; unauthenticated min/max
+        // values must never exclude rows from a validated whole-file projection.
+        let projection = ProjectionMask::columns(reader.parquet_schema(), ["file_path"]);
+        let wanted = path_filter.to_owned();
+        let predicate = ArrowPredicateFn::new(projection, move |batch| {
+            let paths = batch
+                .column(0)
+                .as_any()
+                .downcast_ref::<StringArray>()
+                .ok_or_else(|| {
+                    arrow_schema::ArrowError::SchemaError("invalid Rust filter column".into())
+                })?;
+            Ok(arrow_array::BooleanArray::from_iter(
+                paths.iter().map(|p| Some(p == Some(wanted.as_str()))),
+            ))
+        });
+        reader = reader.with_row_filter(RowFilter::new(vec![Box::new(predicate)]));
+    }
     let mut rows = Vec::new();
     for batch in reader
         .build()
@@ -812,7 +1003,7 @@ fn read_table(
         }
     }
     ensure!(
-        rows.len() == count,
+        filter.is_some() || rows.len() == count,
         "decoded Rust table count mismatch in {}",
         path.display()
     );

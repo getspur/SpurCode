@@ -11,6 +11,7 @@ use anyhow::{ensure, Context as _};
 use serde::{Deserialize, Serialize};
 
 mod query;
+pub(crate) use query::{referenced_origins, RustEvidenceQueryContext};
 pub use query::{
     RustEvidenceAvailability, RustEvidenceFilter, RustEvidenceQueryResult, RustEvidenceQuerySource,
 };
