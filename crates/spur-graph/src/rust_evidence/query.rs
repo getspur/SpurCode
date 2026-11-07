@@ -1,7 +1,7 @@
 //! Whole-file projections of recorded Rust evidence.
 
 use std::{
-    collections::BTreeSet,
+    collections::{BTreeSet, HashSet},
     path::{Component, Path},
 };
 
@@ -43,6 +43,68 @@ pub struct RustEvidenceQueryResult {
     pub source_domain: Option<Vec<RustEvidenceQuerySource>>,
     pub files: Vec<RustEvidenceFile>,
     pub origins: Vec<RustEvidenceOrigin>,
+}
+
+impl RustEvidenceQueryResult {
+    /// Replace whole query groups without constructing a synthetic stored set.
+    /// Each input has already undergone its backend's stored validation.
+    pub(crate) fn overlay(
+        mut self,
+        delta: Self,
+        shadowed: &HashSet<String>,
+    ) -> anyhow::Result<Self> {
+        self.files.retain(|f| !shadowed.contains(&f.file_path));
+        self.files.extend(
+            delta
+                .files
+                .into_iter()
+                .filter(|f| shadowed.contains(&f.file_path)),
+        );
+        self.files.sort_by(|a, b| a.file_path.cmp(&b.file_path));
+        self.origins =
+            super::retained_origins(&self.files, self.origins.iter().chain(&delta.origins))?;
+        self.source_domain = match (self.source_domain, delta.source_domain) {
+            (Some(mut base), Some(delta)) => {
+                base.retain(|s| !shadowed.contains(&s.file_path));
+                base.extend(
+                    delta
+                        .into_iter()
+                        .filter(|s| shadowed.contains(&s.file_path)),
+                );
+                base.sort_by(|a, b| a.file_path.cmp(&b.file_path));
+                Some(base)
+            }
+            // Delta bindings cannot establish the extent of an unknown base.
+            _ => None,
+        };
+        self.availability = match &self.source_domain {
+            Some(domain)
+                if domain
+                    .iter()
+                    .all(|s| s.availability == RustEvidenceAvailability::Complete) =>
+            {
+                RustEvidenceAvailability::Complete
+            }
+            Some(domain)
+                if domain
+                    .iter()
+                    .all(|s| s.availability == RustEvidenceAvailability::Unavailable) =>
+            {
+                RustEvidenceAvailability::Unavailable
+            }
+            Some(_) => RustEvidenceAvailability::Partial,
+            None if !self.files.is_empty()
+                || matches!(
+                    self.availability,
+                    RustEvidenceAvailability::Complete | RustEvidenceAvailability::Partial
+                ) =>
+            {
+                RustEvidenceAvailability::Partial
+            }
+            None => RustEvidenceAvailability::Unavailable,
+        };
+        Ok(self)
+    }
 }
 
 impl RustEvidenceFilter {

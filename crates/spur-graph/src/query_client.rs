@@ -824,6 +824,28 @@ impl<B: GraphQueryClient> OverlayClient<B> {
 }
 
 impl<B: GraphQueryClient> GraphQueryClient for OverlayClient<B> {
+    fn rust_evidence(
+        &self,
+        filter: &crate::RustEvidenceFilter,
+    ) -> anyhow::Result<crate::RustEvidenceQueryResult> {
+        filter.validate_shape()?;
+        if self.is_identity_overlay() {
+            return self.base.rust_evidence(filter);
+        }
+        // Route the original OID filter only after choosing the active source.
+        // A deleted delta binding must never fall back to the historical base.
+        if let Some(path) = &filter.file_path {
+            return if self.is_shadowed_path(path) {
+                self.delta.rust_evidence(filter)
+            } else {
+                self.base.rust_evidence(filter)
+            };
+        }
+        self.base
+            .rust_evidence(filter)?
+            .overlay(self.delta.rust_evidence(filter)?, &self.shadowed)
+    }
+
     fn macro_invocations(
         &self,
         filter: &MacroInvocationFilter,
