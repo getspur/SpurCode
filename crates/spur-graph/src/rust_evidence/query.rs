@@ -78,6 +78,14 @@ impl RustEvidenceQueryResult {
             _ => None,
         };
         self.availability = match &self.source_domain {
+            // An empty domain does not turn absent capability into a capture.
+            Some(domain)
+                if domain.is_empty()
+                    && self.availability == RustEvidenceAvailability::Unavailable
+                    && delta.availability == RustEvidenceAvailability::Unavailable =>
+            {
+                RustEvidenceAvailability::Unavailable
+            }
             Some(domain)
                 if domain
                     .iter()
