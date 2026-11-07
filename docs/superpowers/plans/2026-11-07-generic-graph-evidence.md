@@ -74,7 +74,7 @@ This deliberately simple snapshot annotation has no parser/language claim. Later
 
 **Task ID:** G01. **Depends on:** none beyond approved base. **Files:** Create `src/evidence/{mod,contract}.rs`, `tests/generic_evidence_contract.rs`; modify `src/lib.rs` exports and `src/query_client.rs` generic default only (five files). **Scope:** implement every contract/manifest/query transport type, registry and inventory-only helper from the spec. Add optional GraphQueryClient::evidence with shape-checked empty Unavailable default now, so G02 adapter query functions compile; built-in implementations wait for G11. Artifact/manifest digest wrappers wait for G05a/G09, so no nonexistent field is referenced here.
 
-First compile RED adds the fixture and this test; after the surface compiles, a stub ignoring payload produces assertion RED:
+First commit the fixture and this test, then observe compile RED for the missing generic API. This is valid new-surface RED, not an observed existing cache collision. Do not introduce a deliberately broken implementation solely to manufacture assertion RED. Preserve genuine runnable behavioral RED whenever an existing behavior is changed:
 
 ```rust
 #[test]
@@ -87,7 +87,7 @@ fn counter_only_change_changes_inventory_capability() {
 }
 ```
 
-Implement exact tuple/determinism/typed-cell checks, no languages in core. Add provider-order invariance, add/remove/version/presence/metadata changes, duplicate IDs/rows/paths, required-null/type/order errors and captured-empty versus absent cases. Unknown registry entries are integrity checked and semantically UnknownProvider. **GREEN:** `scripts/spur-cargo test -p spur-graph --test generic_evidence_contract`. **Native export/negative:** real serialized tuples/digests/schema, duplicate key and changed counter payload. ROOT PRE/POST checks unique/cardinality/exact capability correspondence; do not call these values artifact helper observations yet.
+Implement exact tuple/determinism/typed-cell checks, no languages in core. Add provider-order invariance, add/remove/version/presence/metadata changes, duplicate IDs/rows/paths, required-null/type/order errors, captured-empty versus absent cases, and rejection of extension paths colliding with reserved core files/directories. G01 checks lexical paths only; G08 owns filesystem/symlink ownership checks. Unknown registry entries are integrity checked and semantically UnknownProvider. **GREEN:** `scripts/spur-cargo test -p spur-graph --test generic_evidence_contract`. **Native export/negative:** real serialized tuples/digests/schema, duplicate key and changed counter payload. ROOT PRE/POST checks unique/cardinality/exact capability correspondence; do not call these values artifact helper observations yet.
 
 ## G02 — Rust and legacy macro codecs, source validation and fixture provider
 
@@ -394,7 +394,9 @@ fn artifact_accepts_generic_counter_and_rejects_dual_layout() {
 
 This test compiles against old strict Serde and gives assertion RED before the format exists. Keep old DTO strictness/None omission and original payload values; add new v14 golden rather than blessing old bytes. Implement original v13 origin-version acceptance in the provider by **G05a**, before attempting v14 persisted migration. Until generic disk integration, old writers must reject unrepresentable counter/opaque inventories rather than silently discard them. **GREEN:** `scripts/spur-cargo test -p spur-graph --test generic_evidence_contract --test generic_evidence_providers`; canonical hash and artifact macro/Rust suites. **Export/negative:** native old omission hash, new canonical bytes/hash, same source hash, both-layout rejection and payload-rehash forgery rejection.
 
-**G05a (separate task, depends on G05):** owns `src/evidence/contract.rs`, `src/evidence/providers/rust.rs`, `src/rust_evidence.rs`, provider tests (four files). Add exact artifact helper; adapt strict origin equality to the explicit accepted old/current origin policy without relabeling values. Add a compiling helper equality assertion against `evidence_inventory_capability_digest(&graph.manifest_version, &graph.evidence)` and mutate only test.counter; retain runnable RED for any source-only wrapper. GREEN: contract/provider/Rust contract suites. Export actual helper parity and original-view source validation; unsupported old origin errors. G06 depends on G05a.
+## G05a — Artifact capability and original-origin compatibility
+
+**Task ID:** G05a. **Depends on:** G05. **Files:** owns `src/evidence/contract.rs`, `src/evidence/providers/rust.rs`, `src/rust_evidence.rs`, provider tests (four files). Add exact artifact helper; adapt strict origin equality to the explicit accepted old/current origin policy without relabeling values. Add a compiling helper equality assertion against `evidence_inventory_capability_digest(&graph.manifest_version, &graph.evidence)` and mutate only test.counter; retain runnable RED for any source-only wrapper. GREEN: contract/provider/Rust contract suites. Export actual helper parity and original-view source validation; unsupported old origin errors. G06 depends on G05a.
 
 ## G06 — Full and selected capture through provider composition
 
@@ -536,3 +538,7 @@ This is acceptance, not a fabricated new production RED. Retain actual earlier R
 ## Coverage and handoff
 
 G01/G02 own genericity and source semantics; G03/M/G04/G05 own exact compatibility and compile-safe API fallout; G06/G07 own full/selected/reuse/delta; G08/G09 own relational persistence and old bytes/origins; G10 owns publication; G11/G11b own frozen queries and the acknowledged Arc/wrapper gap; G12/G13 own all cache/runtime identities; G14/ROOT-final own fresh native/SQL review. Every task is serial, all dependencies are explicit, and each has isolated file ownership. ROOT reviews this proposal, rebinds the integrated source for fresh generic PRE, then submits the authorized work without another user confirmation.
+
+## ROOT recovery review
+
+ROOT independently reviews the cumulative five-document packet from production base457b9f70f through protected verification checkpoint9722f17f1. Repeated dispatch lease expiry superseded the worker task; it is not generic implementation failure or worker approval. Fresh worker INTENT4456 remains historical authentic evidence, while final architecture selection and G01 PRE are ROOT-owned under bd-7xo8. All later tasks rebind source after approved predecessors; only G01 is executable after its fresh PRE. Artifact/manifest fields and helpers requiring them are explicitly deferred as above. No old Rust-only receipt proves generic behavior.
