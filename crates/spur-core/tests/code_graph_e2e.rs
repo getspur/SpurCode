@@ -247,8 +247,6 @@ fn write_temporal_fixture_artifact_for_backend(worktree: &Path, backend: CodeGra
     let old_root = snapshot(OLD_ROOT_ID, OLD_SHA, "foo");
     let new_root = snapshot(NEW_ROOT_ID, NEW_SHA, "bar");
     let graph = GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
             content_hash_blake3: None,
@@ -303,6 +301,7 @@ fn write_temporal_fixture_artifact_for_backend(worktree: &Path, backend: CodeGra
             ),
             temporal_rename(old_root.key.clone(), new_root.key.clone()),
         ],
+        ..GraphIndexArtifact::empty()
     };
     match backend {
         CodeGraphFixtureBackend::Parquet => write_graph_artifact(worktree, &graph),
@@ -390,8 +389,6 @@ fn write_temporal_resolution_fixture_artifact(worktree: &Path) {
     ];
 
     let graph = GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
             content_hash_blake3: None,
@@ -454,6 +451,7 @@ fn write_temporal_resolution_fixture_artifact(worktree: &Path) {
             temporal_rename(ambiguous_origin.key.clone(), ambiguous_right.key.clone()),
             temporal_touch(UNINDEXED_SHA, unknown.key.clone(), ChangeKind::Added),
         ],
+        ..GraphIndexArtifact::empty()
     };
     write_graph_artifact(worktree, &graph);
 
@@ -489,8 +487,6 @@ fn write_temporal_resolution_fixture_artifact(worktree: &Path) {
 fn write_graph_without_commit_index(worktree: &Path) {
     std::fs::create_dir_all(worktree.join(".git")).expect("create git marker");
     let graph = GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
             content_hash_blake3: None,
@@ -508,6 +504,7 @@ fn write_graph_without_commit_index(worktree: &Path) {
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     };
     write_graph_artifact(worktree, &graph);
 }
@@ -523,8 +520,6 @@ fn write_graph_with_empty_snapshots(worktree: &Path) {
         summary: "empty snapshots".to_string(),
     }];
     let graph = GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
             content_hash_blake3: None,
@@ -542,6 +537,7 @@ fn write_graph_with_empty_snapshots(worktree: &Path) {
         commits: commits.clone(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     };
     write_graph_artifact(worktree, &graph);
 
@@ -2040,8 +2036,6 @@ async fn code_subgraph_table_format_returns_node_edge_tables_and_unresolved_edge
     unresolved.target_stable_symbol_id = None;
     unresolved.target_label = Some("external_charge".to_string());
     let artifact = GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
             content_hash_blake3: None,
@@ -2062,6 +2056,7 @@ async fn code_subgraph_table_format_returns_node_edge_tables_and_unresolved_edge
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     };
     write_graph_artifact(worktree.path(), &artifact);
     let _cwd = enter_dir(worktree.path());
@@ -2436,8 +2431,6 @@ async fn code_file_symbols_uses_symbol_uri_selector_for_legacy_empty_qualified_n
     let _lock = cwd_lock().await;
     let worktree = TempDir::new().expect("temp worktree");
     let artifact = GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_string(),
             content_hash_blake3: None,
@@ -2473,6 +2466,7 @@ async fn code_file_symbols_uses_symbol_uri_selector_for_legacy_empty_qualified_n
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     };
     write_graph_artifact(worktree.path(), &artifact);
     let _cwd = enter_dir(worktree.path());
