@@ -313,14 +313,11 @@ fn complete_manifest_json() -> String {
         indexed_commit_oid: None,
         extractor_version: "test".to_owned(),
         complete: true,
-        rust_evidence: None,
         row_counts: spur_graph::store::parquet::GraphArtifactRowCounts {
             nodes: 0,
             edges: 0,
             edges_by_dst: None,
             edges_unresolved: 0,
-            macro_invocations: None,
-            macro_scopes: None,
             files: 0,
             file_manifests: 0,
             tombstones: 0,
@@ -328,6 +325,7 @@ fn complete_manifest_json() -> String {
             symbol_snapshots: 0,
             temporal_edges: 0,
             diagnostics: 0,
+            ..spur_graph::store::parquet::GraphArtifactRowCounts::empty()
         },
         sidecar_complete: false,
         sidecar_row_counts: Default::default(),
@@ -336,8 +334,8 @@ fn complete_manifest_json() -> String {
             row_group_size: 16_384,
         },
         edges_by_dst_present: false,
-        macro_evidence: None,
         temporal_shards: Vec::new(),
+        ..spur_graph::GraphArtifactManifest::empty()
     })
     .expect("encode complete overlay manifest")
 }
@@ -348,8 +346,6 @@ fn empty_previous_artifact() -> spur_graph::GraphIndexArtifact {
 
 fn artifact_with_file(path: &str, content_oid: &str) -> spur_graph::GraphIndexArtifact {
     spur_graph::GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: spur_graph::GraphIndexHeader {
             graph_index_version: spur_graph::GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
             content_hash_blake3: None,
@@ -372,6 +368,7 @@ fn artifact_with_file(path: &str, content_oid: &str) -> spur_graph::GraphIndexAr
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..spur_graph::GraphIndexArtifact::empty()
     }
 }
 

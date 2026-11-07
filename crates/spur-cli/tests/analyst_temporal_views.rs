@@ -1270,8 +1270,6 @@ fn identity_integrity_artifact(graph_content_hash: &str) -> GraphIndexArtifact {
 
 fn structural_artifact(graph_content_hash: &str) -> GraphIndexArtifact {
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "spur-graph-phase2".to_string(),
             content_hash_blake3: None,
@@ -1292,5 +1290,6 @@ fn structural_artifact(graph_content_hash: &str) -> GraphIndexArtifact {
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
