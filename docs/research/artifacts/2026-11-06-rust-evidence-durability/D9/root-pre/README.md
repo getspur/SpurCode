@@ -113,4 +113,3 @@ Also run the focused new/existing `mod.rs` runtime/freshness regressions.
 Preserve the unrelated known macro baseline `bd-xb5p` if encountered.
 ROOT owns fresh POST, independent alias/forgery review, approval and local-main
 integration after the implementation handoff. D10 notebook work follows D9.
-
