@@ -1,4 +1,34 @@
-# G01 rework: original implementation passes; final replay pending
+# G01 measured verification epochs
+
+Current canonical issue is **bd-8xcp**, runtime delegation `1873cdd9aefe4760`.
+Audit target equals assigned ID; INTENT UUID
+`2e9c2635-4a08-4bd5-90f0-6a14ac53f7de` persisted and replayed as comment 4543.
+
+The completed checkpoint `65cec9a1e` focused command is **exit 0, 18 passed,
+0 failed, 0 ignored**, with **17 native fixture cases and 53 serialized replay
+cases**. The fresh `../final-verification/verify_epochs.py` checks full log/export
+equality, compiler/executable identity, all ten compiled-source SHA256/lengths
+against checkpoint/current bytes, and four production files against `b2bd69cb6`.
+`reload_packet.py` now succeeds on that actual log: full typed inputs/results
+are in `actual-export.json.gz`, `actual-replay.json.gz`, and `request-fixture.json`.
+Generated independent payload/null requests remain inputs, not execution results.
+
+Fresh historical PRE passed without `--current-source`: 729 bindings, 19 cases,
+13 rejected false claims, eight current and eight retired predicates. All 68
+bound files match `git show 87af0db9:path`; both allowed full live envelopes
+equal saved reloaded objects with pin omitted. Archived Jev is open/0.66/
+jev-1.14.0. Current source is checked separately from the historical PRE epoch.
+
+At this checkpoint the protected original RED command is still in remote source
+transfer, with no compiler result. Later serial query/all-target/supplied replay
+checks remain outstanding. New command evidence and handoff live under
+`../final-verification/`. No source changes, new solve/pin, POST or approval.
+
+## Historical attempt 2 entry and transport history
+
+The remaining text preserves the earlier epoch, including its then-pending
+focused command and transport failures; the measured completion above supersedes
+that earlier pending status only for the 18-test focused run.
 
 Canonical `bd-bohx == report_audit.task_id`; fresh delegation `52ed8b8342674b60`,
 assignee `spur-worker-52ed8b8342674b60`, durable plan/task
@@ -85,3 +115,10 @@ Remaining: final replay/default and supplied-request execution; genuine
 missing-API compiler RED at protected `b543a7fa1`; passing query/all-target
 checks; full final-source native packet. ROOT owns actual-output POST,
 independent mutations, approval and later phases.
+
+Final dispatch outcome: original RED command was stopped during source sync
+before lease expiry, subprocess exit -15, zero executed tests and no rustc RED.
+Only this dispatch's five descendants were signaled. Durable blocked signal
+40cb2055-4638-4429-b978-75476002019e and risk signal 790f8152-7228-4cb6-87b7-c2510d152c7c
+were accepted. Remaining: compiler RED, query regressions, all-target check,
+supplied positive/negative native replay, then ROOT POST/review.
