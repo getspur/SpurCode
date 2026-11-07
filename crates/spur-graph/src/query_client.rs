@@ -160,6 +160,22 @@ enum ParquetRustContext {
 }
 
 pub trait GraphQueryClient {
+    /// Generic recorded evidence. Backends opt in explicitly.
+    fn evidence(
+        &self,
+        filter: &crate::EvidenceFilter,
+    ) -> anyhow::Result<crate::EvidenceQueryResult> {
+        filter.validate_shape()?;
+        Ok(crate::EvidenceQueryResult {
+            availability: crate::EvidenceAvailability::Unavailable,
+            semantic_status: crate::EvidenceSemanticStatus::UnknownProvider,
+            descriptor: None,
+            domain: crate::EvidenceDomain::Unknown,
+            origins: Vec::new(),
+            tables: Vec::new(),
+        })
+    }
+
     /// Recorded physical Rust evidence. Custom backends opt in explicitly.
     fn rust_evidence(
         &self,

@@ -1,5 +1,6 @@
 pub mod content_hash;
 pub mod discovery;
+pub mod evidence;
 pub mod extract;
 pub mod git;
 pub mod git_walk;
@@ -27,6 +28,7 @@ pub mod worktree;
 
 pub use content_hash::*;
 pub use discovery::*;
+pub use evidence::*;
 pub use extract::*;
 pub use git::*;
 pub use graph::*;
