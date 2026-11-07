@@ -1,6 +1,462 @@
 use spur_graph::evidence::*;
 use std::collections::BTreeMap;
 
+// A finite, test-only replay protocol. Each supplied case calls the public
+// helpers directly; typed failures are output data, not substituted successes.
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ReplayCase {
+    name: String,
+    graph: spur_graph::GraphIndexArtifact,
+    inventory: EvidenceInventory,
+    extensions: Vec<EvidenceExtension>,
+    filter: EvidenceFilter,
+    replacements: Vec<EvidenceExtension>,
+    removals: Vec<String>,
+    lookups: Vec<String>,
+    duplicate_registry: bool,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ReplayRequest {
+    cases: Vec<ReplayCase>,
+}
+
+fn replay_case(input: &ReplayCase) -> serde_json::Value {
+    use serde_json::json;
+    use spur_graph::GraphQueryClient;
+    let counter = TestProvider { id: "test.counter" };
+    let independent = FlagProvider;
+    let mut providers: Vec<&dyn EvidenceProvider> = vec![&counter, &independent];
+    if input.duplicate_registry {
+        providers.push(&counter);
+    }
+    let registry = EvidenceRegistry::new(&providers);
+    let extensions = input
+        .extensions
+        .iter()
+        .map(|extension| {
+            let mut canonical = EvidenceInventory::empty();
+            let canonical_result = canonical.replace(extension.clone());
+            let checksum_inputs = canonical_result.as_ref().ok().map(|()| {
+                let e = &canonical.extensions[0];
+                json!({
+                    "extension_prefix":"spur-evidence-extension-v1\0",
+                    "extension_compact_json":serde_json::to_string(e).unwrap(),
+                    "tables":e.tables.iter().map(|table| json!({
+                        "name":table.name,"prefix":"spur-evidence-table-v1\0",
+                        "compact_json":serde_json::to_string(table).unwrap(),
+                    })).collect::<Vec<_>>(),
+                })
+            });
+            json!({
+                "provider_id":extension.descriptor.provider_id,
+                "canonicalization":canonical_result,
+                "checksum_inputs":checksum_inputs,
+                "checksum":evidence_extension_checksum(extension),
+                "tables":extension.tables.iter().map(|t| json!({
+                    "name":t.name,"checksum":evidence_table_checksum(t),
+                })).collect::<Vec<_>>(),
+                "registry":registry.as_ref().map_err(Clone::clone)
+                    .and_then(|r|r.validate(&input.graph,extension)),
+            })
+        })
+        .collect::<Vec<_>>();
+    let manifest = evidence_inventory_manifest(&input.inventory);
+    // Serialize the typed tuple itself. Serializing a JSON Value would reorder
+    // object fields and would not be the actual production digest preimage.
+    let capability_input = manifest.as_ref().ok().map(|m| {
+        serde_json::to_string(&(
+            "spur-evidence-capability-v1",
+            EVIDENCE_SCHEMA_VERSION,
+            &input.graph.manifest_version,
+            &m.extensions,
+        ))
+        .unwrap()
+    });
+    let mut state = input.inventory.clone();
+    let replacements = input
+        .replacements
+        .iter()
+        .map(|e| {
+            let result = state.replace(e.clone());
+            json!({"result":result,"state_after":state})
+        })
+        .collect::<Vec<_>>();
+    let lookups = input
+        .lookups
+        .iter()
+        .map(|id| json!({"provider_id":id,"result":state.get(id)}))
+        .collect::<Vec<_>>();
+    let removals = input
+        .removals
+        .iter()
+        .map(|id| {
+            let removed = state.remove(id);
+            json!({"provider_id":id,"result":removed,"state_after":state})
+        })
+        .collect::<Vec<_>>();
+    let client = spur_graph::InMemoryClient::new(std::sync::Arc::new(input.graph.clone()));
+    let query: Result<EvidenceQueryResult, EvidenceError> =
+        client.evidence(&input.filter).map_err(|e| {
+            e.downcast::<EvidenceError>()
+                .expect("default must preserve typed cause")
+        });
+    json!({
+        "name":input.name,"integrity":input.inventory.validate_integrity(&input.graph),
+        "manifest":manifest,"capability_compact_json":capability_input,
+        "capability_digest":evidence_inventory_capability_digest(&input.graph.manifest_version,&input.inventory),
+        "extensions":extensions,"registry_construction":registry.as_ref().map(|_|()).map_err(Clone::clone),
+        "filter_shape":input.filter.validate_shape(),"default_query":query,
+        "operations":{"empty":EvidenceInventory::empty(),"empty_is_empty":EvidenceInventory::empty().is_empty(),
+            "initial_is_empty":input.inventory.is_empty(),"replacements":replacements,
+            "lookups":lookups,"removals":removals,"final":state,"final_is_empty":state.is_empty()},
+    })
+}
+
+fn default_replay_request() -> ReplayRequest {
+    let (g, bound) = source_fixture();
+    let positive = ReplayCase {
+        name: "positive".into(),
+        graph: g,
+        inventory: inventory(vec![bound.clone(), second_extension()]),
+        extensions: vec![bound.clone(), second_extension()],
+        filter: EvidenceFilter {
+            provider_id: "test.counter".into(),
+            file_path: None,
+            source_oid: None,
+        },
+        replacements: vec![counter_extension(2)],
+        removals: vec![
+            "test.counter".into(),
+            "test.independent".into(),
+            "missing".into(),
+        ],
+        lookups: vec!["test.counter".into(), "missing".into()],
+        duplicate_registry: false,
+    };
+    let mut cases = vec![positive.clone()];
+    for (name, mutate) in [
+        (
+            "payload",
+            (|e: &mut EvidenceExtension| e.tables[0].rows[0][1] = EvidenceValue::Int64(8))
+                as fn(&mut EvidenceExtension),
+        ),
+        ("provider", |e| {
+            e.descriptor.provider_id = "opaque.fixture".into()
+        }),
+        ("schema", |e| {
+            e.descriptor.schema_version = "future-v2".into()
+        }),
+        ("extractor", |e| {
+            e.descriptor.extractor_version = "fixture-v2".into()
+        }),
+        ("component", |e| {
+            e.descriptor
+                .component_versions
+                .insert("parser".into(), "v2".into());
+        }),
+        ("metadata", |e| {
+            e.descriptor
+                .metadata
+                .insert("note".into(), "changed".into());
+        }),
+        ("tableMetadata", |e| {
+            e.tables[0].metadata.insert("unit".into(), "items".into());
+        }),
+        ("tableName", |e| e.tables[0].name = "other".into()),
+        ("tablePath", |e| {
+            e.tables[0].storage_path = "evidence/test.counter/other.parquet".into()
+        }),
+        ("tableSchema", |e| e.tables[0].columns[1].nullable = true),
+        ("tableOrder", |e| {
+            e.tables[0].order_by = vec!["value".into()]
+        }),
+        ("tableKey", |e| e.tables[0].primary_key.push("value".into())),
+        ("scope", |e| {
+            e.tables[0].scope = EvidenceTableScope::Snapshot
+        }),
+        ("domainUnknown", |e| e.domain = EvidenceDomain::Unknown),
+        ("coverageUnknown", |e| {
+            if let EvidenceDomain::Known { sources } = &mut e.domain {
+                sources[0].coverage = EvidenceCoverage::Unknown {
+                    code: "fixture_unknown".into(),
+                };
+            }
+        }),
+        ("coverageUnavailable", |e| {
+            if let EvidenceDomain::Known { sources } = &mut e.domain {
+                sources[0].coverage = EvidenceCoverage::Unavailable;
+            }
+        }),
+        ("length", |e| {
+            if let EvidenceDomain::Known { sources } = &mut e.domain {
+                sources[0].byte_length = Some(0);
+            }
+        }),
+        ("originVersion", |e| {
+            e.origins[0].key.manifest_version = "historical".into();
+            if let EvidenceDomain::Known { sources } = &mut e.domain {
+                sources[0].origin = Some(e.origins[0].key.clone());
+            }
+        }),
+        ("duplicateKey", |e| {
+            let duplicate = e.tables[0].rows[0].clone();
+            e.tables[0].rows.push(duplicate);
+        }),
+        ("wrongType", |e| {
+            e.tables[0].rows[0][1] = EvidenceValue::Boolean(true)
+        }),
+        ("nonnullable", |e| {
+            e.tables[0].rows[0][1] = EvidenceValue::Null
+        }),
+        ("duplicateTable", |e| e.tables.push(e.tables[0].clone())),
+        ("forgedOrigin", |e| {
+            e.origins[0].key.graph_content_hash = "forged".into()
+        }),
+        ("wrongOid", |e| {
+            e.tables[0].rows[0][3] = EvidenceValue::Utf8("wrong".into())
+        }),
+        ("wrongPath", |e| {
+            e.tables[0].rows[0][2] = EvidenceValue::Utf8("wrong.txt".into())
+        }),
+        ("semanticError", |e| {
+            e.tables[0].rows[0][1] = EvidenceValue::Int64(-1)
+        }),
+    ] {
+        let mut case = positive.clone();
+        case.name = name.into();
+        mutate(&mut case.inventory.extensions[0]);
+        case.extensions = case.inventory.extensions.clone();
+        cases.push(case);
+    }
+    for path in [
+        "../escape",
+        "manifest.json",
+        "nodes.parquet",
+        "edges.parquet",
+        "files.parquet",
+        "tombstones.parquet",
+        "diagnostics.parquet",
+        "history/part.parquet",
+    ] {
+        let mut case = positive.clone();
+        case.name = format!("reservedOrUnsafe:{path}");
+        case.inventory.extensions[0].tables[0].storage_path = path.into();
+        case.extensions = case.inventory.extensions.clone();
+        cases.push(case);
+    }
+    for name in [
+        "providerOrder",
+        "providerRemoved",
+        "duplicateInventory",
+        "duplicateRegistry",
+        "duplicatePath",
+        "missingOwner",
+        "duplicateOwner",
+        "wrongOwner",
+        "staleGraphOid",
+        "sourceStableId",
+        "sourceOid",
+        "sourcePath",
+        "manifestVersion",
+        "emptyProviderFilter",
+        "oidWithoutPath",
+    ] {
+        let mut case = positive.clone();
+        case.name = name.into();
+        match name {
+            "providerOrder" => case.inventory.extensions.reverse(),
+            "providerRemoved" => {
+                case.inventory.extensions.pop();
+            }
+            "duplicateInventory" => case.inventory.extensions.push(bound.clone()),
+            "duplicateRegistry" => case.duplicate_registry = true,
+            "duplicatePath" => {
+                case.inventory.extensions[1].tables[0].storage_path =
+                    bound.tables[0].storage_path.clone()
+            }
+            "missingOwner" => case.graph.files.clear(),
+            "duplicateOwner" => case.graph.files.push(case.graph.files[0].clone()),
+            "wrongOwner" => case.graph.files[0].stable_file_id = "wrong".into(),
+            "staleGraphOid" => case.graph.file_manifests[0].content_oid = "wrong".into(),
+            "manifestVersion" => case.graph.manifest_version = "other-manifest".into(),
+            "emptyProviderFilter" => case.filter.provider_id = "".into(),
+            "oidWithoutPath" => case.filter.source_oid = Some("oid".into()),
+            _ => {
+                let source = &mut case.graph.file_manifests[0];
+                match name {
+                    "sourceStableId" => source.stable_file_id = "new-id".into(),
+                    "sourceOid" => source.content_oid = "new-oid".into(),
+                    _ => source.path = "new.txt".into(),
+                }
+                let source = EvidenceSourceKey {
+                    file_path: source.path.clone(),
+                    stable_file_id: source.stable_file_id.clone(),
+                    source_oid: source.content_oid.clone(),
+                };
+                case.graph.files[0].file_path = source.file_path.clone();
+                case.graph.files[0].stable_file_id = source.stable_file_id.clone();
+                case.graph.graph_content_hash = spur_graph::compute_graph_content_hash([(
+                    &source.file_path,
+                    &source.source_oid,
+                )]);
+                let e = &mut case.inventory.extensions[0];
+                e.origins[0].sources = vec![source.clone()];
+                e.origins[0].key.graph_content_hash = case.graph.graph_content_hash.clone();
+                if let EvidenceDomain::Known { sources } = &mut e.domain {
+                    sources[0].source = source.clone();
+                    sources[0].origin = Some(e.origins[0].key.clone());
+                }
+                e.tables[0].rows[0][2] = EvidenceValue::Utf8(source.file_path);
+                e.tables[0].rows[0][3] = EvidenceValue::Utf8(source.source_oid);
+                e.tables[0].rows[0][4] = EvidenceValue::Utf8(case.graph.graph_content_hash.clone());
+            }
+        }
+        case.extensions = case.inventory.extensions.clone();
+        cases.push(case);
+    }
+    for name in ["beforeCapturedZero", "afterAbsent", "capturedUnknown"] {
+        let mut case = positive.clone();
+        case.name = name.into();
+        case.graph = graph();
+        let mut extension = counter_extension(0);
+        extension.tables[0].rows.clear();
+        if name == "afterAbsent" {
+            extension.descriptor.presence = EvidencePresence::Absent;
+            extension.tables.clear();
+            extension.domain = EvidenceDomain::Unknown;
+        }
+        if name == "capturedUnknown" {
+            extension.domain = EvidenceDomain::Unknown;
+        }
+        case.inventory = inventory(vec![extension.clone()]);
+        case.extensions = vec![extension];
+        cases.push(case);
+    }
+    ReplayRequest { cases }
+}
+
+#[test]
+fn replay_serialized_contract_request() {
+    let supplied = std::env::var_os("G01_EVIDENCE_REQUEST");
+    let bytes = if let Some(path) = &supplied {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        std::fs::read(root.join(path)).expect("read supplied replay request")
+    } else {
+        serde_json::to_vec(&default_replay_request()).unwrap()
+    };
+    let request: ReplayRequest =
+        serde_json::from_slice(&bytes).expect("deserialize complete typed replay request");
+    assert!(
+        !request.cases.is_empty(),
+        "request needs at least one real case"
+    );
+    let results = request.cases.iter().map(replay_case).collect::<Vec<_>>();
+    if supplied.is_none() {
+        let case = |name: &str| results.iter().find(|r| r["name"] == name).unwrap();
+        assert_eq!(
+            case("positive")["integrity"],
+            serde_json::json!({"Ok":null})
+        );
+        assert_eq!(
+            case("positive")["extensions"][0]["registry"]["Ok"]["status"],
+            "validated"
+        );
+        assert_eq!(
+            case("positive")["default_query"]["Ok"]["availability"],
+            "unavailable"
+        );
+        assert_eq!(case("positive")["operations"]["final_is_empty"], true);
+        assert_eq!(
+            case("positive")["capability_digest"],
+            case("providerOrder")["capability_digest"]
+        );
+        for name in [
+            "payload",
+            "provider",
+            "schema",
+            "extractor",
+            "component",
+            "metadata",
+            "tableMetadata",
+            "tableName",
+            "tablePath",
+            "tableSchema",
+            "tableOrder",
+            "tableKey",
+            "scope",
+            "domainUnknown",
+            "coverageUnknown",
+            "coverageUnavailable",
+            "length",
+            "originVersion",
+            "providerRemoved",
+            "sourceStableId",
+            "sourceOid",
+            "sourcePath",
+            "manifestVersion",
+        ] {
+            assert!(case(name)["integrity"].get("Ok").is_some(), "{name}");
+            assert_ne!(
+                case("positive")["capability_digest"],
+                case(name)["capability_digest"],
+                "{name}"
+            );
+        }
+        for name in [
+            "duplicateKey",
+            "wrongType",
+            "nonnullable",
+            "duplicateTable",
+            "forgedOrigin",
+            "wrongOid",
+            "wrongPath",
+            "duplicateInventory",
+            "duplicatePath",
+            "missingOwner",
+            "duplicateOwner",
+            "wrongOwner",
+            "staleGraphOid",
+        ] {
+            assert!(
+                case(name)["integrity"]["Err"].get("integrity").is_some(),
+                "{name}"
+            );
+        }
+        assert!(case("duplicateRegistry")["registry_construction"]
+            .get("Err")
+            .is_some());
+        assert_eq!(
+            case("provider")["extensions"][0]["registry"]["Ok"]["status"],
+            "unknown_provider"
+        );
+        assert_eq!(
+            case("schema")["extensions"][0]["registry"]["Ok"]["status"],
+            "unsupported_schema"
+        );
+        assert!(case("semanticError")["extensions"][0]["registry"]["Err"]
+            .get("semantic")
+            .is_some());
+        for name in ["emptyProviderFilter", "oidWithoutPath"] {
+            assert!(case(name)["default_query"].get("Err").is_some());
+        }
+        assert_ne!(
+            case("beforeCapturedZero")["capability_digest"],
+            case("afterAbsent")["capability_digest"]
+        );
+        assert_ne!(
+            case("beforeCapturedZero")["capability_digest"],
+            case("capturedUnknown")["capability_digest"]
+        );
+    }
+    println!("G01_REPLAY_EXPORT={}",serde_json::to_string(&serde_json::json!({
+        "fixture_kind":"synthetic contract requests; no collector/artifact/disk/cache observations",
+        "supplied_path":supplied,"request":request,"results":results,
+    })).unwrap());
+}
+
 fn counter_extension(value: i64) -> EvidenceExtension {
     EvidenceExtension {
         descriptor: EvidenceDescriptor {
@@ -851,7 +1307,7 @@ fn export_native_contract_packet() {
         .arg("-vV")
         .output()
         .unwrap();
-    let source_files: [(&str, &[u8]); 7] = [
+    let source_files: [(&str, &[u8]); 10] = [
         (
             "crates/spur-graph/src/evidence/contract.rs",
             include_bytes!("../src/evidence/contract.rs"),
@@ -880,7 +1336,14 @@ fn export_native_contract_packet() {
             ".cargo/config.toml",
             include_bytes!("../../../.cargo/config.toml"),
         ),
+        ("Cargo.toml", include_bytes!("../../../Cargo.toml")),
+        ("Cargo.lock", include_bytes!("../../../Cargo.lock")),
+        (
+            "crates/spur-graph/Cargo.toml",
+            include_bytes!("../Cargo.toml"),
+        ),
     ];
+    use sha2::{Digest, Sha256};
     let packet = json!({
         "fixture_kind":"synthetic provider-neutral contract fixtures; no collector/artifact/disk/cache results",
         "cases":outputs,"negative_mutations":negatives,
@@ -894,10 +1357,12 @@ fn export_native_contract_packet() {
         "default_query":{"filter":filter,"result":client.evidence(&filter).unwrap(),
             "invalid_filter":invalid_filter,"shape_error":invalid_filter.validate_shape().unwrap_err()},
         "native_identity":{"executable":executable,"executable_blake3":blake3::hash(&executable_bytes).to_hex().to_string(),
+            "executable_sha256":format!("{:x}",Sha256::digest(&executable_bytes)),
             "compiler_probe_status":compiler.status.code(),"rustc_vV":String::from_utf8_lossy(&compiler.stdout),
             "arch":std::env::consts::ARCH,"os":std::env::consts::OS,
             "compiled_source":source_files.iter().map(|(path,bytes)| json!({"path":path,"byte_length":bytes.len(),
-                "blake3":blake3::hash(bytes).to_hex().to_string()})).collect::<Vec<_>>()},
+                "blake3":blake3::hash(bytes).to_hex().to_string(),
+                "sha256":format!("{:x}",Sha256::digest(bytes))})).collect::<Vec<_>>()},
     });
     // Keep the complete inputs and outputs reloadable, not just their digest strings.
     let encoded = serde_json::to_string(&packet).unwrap();
