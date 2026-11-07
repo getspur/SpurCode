@@ -31,8 +31,11 @@ and exactly compared to the archived PRE. INTENT UUID
 `2677c669-ff37-466a-8a54-a2c6505b71f9` was persisted as comment `4347` and
 idempotently replayed before the recovery fast-forward, source edit or build.
 Focused GREEN and native progress audits `4348` and `4349` were also persisted
-and replayed. Exact requests, responses and PRE envelope copies are under
-`audit/`. The prior attempt's wrong-target request remains preserved unchanged
+and replayed. Fresh completion UUID `c3fa38c4-9cab-4e11-a0e3-6385b3b1db66`
+was persisted as comment `4351` and idempotently replayed. It binds the clean
+evidence commit `52009becc`; this later receipt-only commit archives that
+confirmed audit and its original manifest without changing production bytes.
+Exact requests, responses and PRE envelope copies are under `audit/`. The prior attempt's wrong-target request remains preserved unchanged
 in `dispatch-recovery/`; it was not reused as this worker's audit.
 
 | Required executable / filter | Passed | Failed | Ignored | Filtered |
