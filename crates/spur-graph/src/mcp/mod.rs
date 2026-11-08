@@ -9076,8 +9076,6 @@ mod tests {
         let oid = git_blob_oid(src);
 
         let artifact = Arc::new(GraphIndexArtifact {
-            rust_evidence: None,
-            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -9103,6 +9101,7 @@ mod tests {
             commits: Vec::new(),
             symbol_snapshots: Vec::new(),
             temporal_edges: Vec::new(),
+            ..GraphIndexArtifact::empty()
         });
         let backend = CodeSearchBackend::InMemory {
             client: InMemoryClient::new(Arc::clone(&artifact)),

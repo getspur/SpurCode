@@ -1345,8 +1345,6 @@ fn file_change_to_temporal_edge(commit_sha: &str, change: &FileChange) -> Tempor
 
 fn empty_graph_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
             content_hash_blake3: None,
@@ -1364,6 +1362,7 @@ fn empty_graph_artifact() -> GraphIndexArtifact {
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
 
