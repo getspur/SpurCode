@@ -156,7 +156,8 @@ fn availability(file: &RustEvidenceFile) -> RustEvidenceAvailability {
 
 impl RustEvidenceQueryContext {
     pub(crate) fn new(graph: &GraphIndexArtifact) -> anyhow::Result<Self> {
-        if let Some(set) = &graph.rust_evidence {
+        let rust_set = graph.rust_evidence_set()?;
+        if let Some(set) = rust_set.as_ref() {
             // Validate every source, origin and actual owner before selection.
             set.validate_stored(graph)?;
         }
@@ -201,8 +202,7 @@ impl RustEvidenceQueryContext {
                         == 1,
                 "source is not an authoritative physical graph file"
             );
-            let file = graph
-                .rust_evidence
+            let file = rust_set
                 .as_ref()
                 .and_then(|s| s.files.iter().find(|f| f.file_path == manifest.path));
             domain.push(RustEvidenceQuerySource {
@@ -226,7 +226,7 @@ impl RustEvidenceQueryContext {
         domain.sort_by(|a, b| a.file_path.cmp(&b.file_path));
         Ok(Self {
             domain,
-            captured: graph.rust_evidence.is_some(),
+            captured: rust_set.is_some(),
         })
     }
 
@@ -294,7 +294,7 @@ impl RustEvidenceQueryContext {
         filter: &RustEvidenceFilter,
     ) -> anyhow::Result<RustEvidenceQueryResult> {
         let mut result = self.result(filter)?;
-        if let Some(set) = &graph.rust_evidence {
+        if let Some(set) = graph.rust_evidence_set()? {
             result.files = set
                 .files
                 .iter()
