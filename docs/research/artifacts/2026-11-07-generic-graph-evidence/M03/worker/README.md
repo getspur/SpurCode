@@ -26,7 +26,9 @@ performance, other-batch, or product-test changes.
 | Minimal source migration; native AFTER compiled HEAD | `4179448927de9d8f03c312cafa5819f2acf0abb5` |
 | Native equality checkpoint; final checks compiled HEAD | `9d1772515bdb869aeb3a4db1fe219f528ecf9017` |
 
-The final evidence/receipt commit IDs are reported in the handoff. These commits
+Final validation evidence is committed at
+`09546e21945102a13e88d769a4b7dc4e076558db`. The final receipt commit ID is
+reported in the handoff. These commits
 retain the original history; uniquely named `refs/evidence/M03-f69c5315b70c4340/*`
 refs preserve the important epochs too. All changes after the source migration
 commit are under this worker evidence directory.
@@ -134,6 +136,10 @@ All diagnostic history is retained:
   succeeded (comment 4750), including identical successful replays. ACTION audit
   comment 4752 likewise has its returned first receipt and identical replay.
   Full payloads/receipts are in `intent-audit.json` and `action-audit.json`.
+  RECORD audit comment 4757 persisted with its identical successful replay;
+  `record-audit.json` preserves both complete returned receipts. Its digests bind
+  validation commit `09546e21945102a13e88d769a4b7dc4e076558db`, including that
+  epoch's manifest. The final manifest additionally binds these receipts.
 
 The three existing model-download ignores remain named in both full library logs:
 `coderank_embed_smoke_constructs_model_and_returns_expected_dimensions`,
