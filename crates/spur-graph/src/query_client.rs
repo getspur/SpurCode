@@ -68,24 +68,22 @@ struct MacroQueryContext {
 
 impl MacroQueryContext {
     fn new(artifact: &GraphIndexArtifact) -> anyhow::Result<Self> {
-        if let Some(set) = &artifact.macro_invocations {
+        let macro_set = artifact.macro_evidence_set()?;
+        if let Some(set) = macro_set.as_ref() {
             set.validate_stored(artifact)?;
         }
         Ok(Self {
-            snapshot: artifact
-                .macro_invocations
-                .as_ref()
-                .map(|set| MacroEvidenceSnapshot {
-                    graph_content_hash: set.graph_content_hash.clone(),
-                    schema_version: set.schema_version.clone(),
-                    extractor_version: set.extractor_version.clone(),
-                    source_oids: artifact
-                        .file_manifests
-                        .iter()
-                        .filter(|f| physical_rust_path(&f.path))
-                        .map(|f| (f.path.clone(), f.content_oid.clone()))
-                        .collect(),
-                }),
+            snapshot: macro_set.as_ref().map(|set| MacroEvidenceSnapshot {
+                graph_content_hash: set.graph_content_hash.clone(),
+                schema_version: set.schema_version.clone(),
+                extractor_version: set.extractor_version.clone(),
+                source_oids: artifact
+                    .file_manifests
+                    .iter()
+                    .filter(|f| physical_rust_path(&f.path))
+                    .map(|f| (f.path.clone(), f.content_oid.clone()))
+                    .collect(),
+            }),
             graph_files: artifact.files.iter().map(|f| f.file_path.clone()).collect(),
             notebook_owners: artifact
                 .file_manifests
@@ -376,7 +374,7 @@ impl GraphQueryClient for InMemoryClient {
         };
         let mut result = context.result(filter, caller.as_ref().map(|s| s.file_path.as_str()))?;
         if result.availability == MacroEvidenceAvailability::Complete {
-            if let Some(set) = &self.artifact.macro_invocations {
+            if let Some(set) = self.artifact.macro_evidence_set()? {
                 result.rows = set
                     .rows
                     .iter()
@@ -542,8 +540,6 @@ impl OverlayFinalizationMeasurements {
 
 fn empty_overlay_delta_artifact() -> GraphIndexArtifact {
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
             content_hash_blake3: None,
@@ -561,6 +557,7 @@ fn empty_overlay_delta_artifact() -> GraphIndexArtifact {
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
 
@@ -1458,7 +1455,7 @@ impl ParquetClient {
             artifact.symbols =
                 self.symbols_by_stable_ids(&callers.into_iter().collect::<Vec<_>>())?;
         }
-        artifact.macro_invocations = set;
+        artifact.set_macro_evidence(set)?;
         Ok(ParquetMacroContext {
             context: MacroQueryContext::new(&artifact)?,
             tables,
@@ -3035,8 +3032,6 @@ mod tests {
 
     fn artifact(symbols: Vec<GraphSymbolArtifact>) -> GraphIndexArtifact {
         GraphIndexArtifact {
-            rust_evidence: None,
-            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: "test".to_owned(),
                 content_hash_blake3: None,
@@ -3054,6 +3049,7 @@ mod tests {
             commits: Vec::new(),
             symbol_snapshots: Vec::new(),
             temporal_edges: Vec::new(),
+            ..GraphIndexArtifact::empty()
         }
     }
 
