@@ -172,7 +172,7 @@ impl GraphIndexArtifact {
         &self,
         sources: &[crate::RustDeclarationSource<'_>],
     ) -> anyhow::Result<()> {
-        let set = self.rust_evidence.as_ref().ok_or_else(|| {
+        let set = self.rust_evidence_set()?.ok_or_else(|| {
             anyhow::anyhow!("Rust evidence unavailable; rebuild with Rust evidence capture enabled")
         })?;
         set.validate_sources(self, sources)
@@ -186,7 +186,7 @@ impl GraphIndexArtifact {
         sources: &[crate::MacroEvidenceSource<'_>],
         scopes: &[crate::MacroScopeEvidence],
     ) -> anyhow::Result<()> {
-        let Some(set) = &self.macro_invocations else {
+        let Some(set) = self.macro_evidence_set()? else {
             return Ok(());
         };
         set.validate(&self.graph_content_hash, sources, scopes)?;
