@@ -1314,8 +1314,6 @@ mod tests {
 
     fn empty_artifact(hash: &str) -> GraphIndexArtifact {
         GraphIndexArtifact {
-            rust_evidence: None,
-            macro_invocations: None,
             header: GraphIndexHeader {
                 graph_index_version: GRAPH_INDEX_VERSION_TEMPORAL.to_owned(),
                 content_hash_blake3: None,
@@ -1333,6 +1331,7 @@ mod tests {
             commits: Vec::new(),
             symbol_snapshots: Vec::new(),
             temporal_edges: Vec::new(),
+            ..GraphIndexArtifact::empty()
         }
     }
 
