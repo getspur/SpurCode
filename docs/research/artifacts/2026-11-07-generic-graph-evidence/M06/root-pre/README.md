@@ -1,60 +1,109 @@
-# M06 prospective PRE checkpoint — persistence blocked
+# M06 prospective PRE and implementation handoff
 
-ROOT approved the three grounding documents at
-`9799dc20f974d54cb33e02bafff4cc3b71d9ed12` after independently checking all 46 file
-bindings, 138 combined range references, and canonical RECORD 4931/completion
-4934. Four operations migrate six typed field occurrences; eight compatibility
-storage/default/getter/setter occurrences remain. No product source changed.
+ROOT approved the grounding at `9799dc20f974d54cb33e02bafff4cc3b71d9ed12`
+after checking 46 files, 138 combined source ranges, exact three-document scope,
+and canonical RECORD 4931/completion 4934. Grounding is merged at
+`98cd1c097787f83b46e75039afb1eb3e7b05e95a`. No M06 product code has changed.
 
-This prospective policy snapshot is
-`a99d2c132816f945b50cee8c45476c3cc743a2669f69253db8931d9e187e0b4d`:
-153 source/reference inputs, three grounding documents, twelve complete policy
-rows and four distinct acquisition lanes, using 48 compiler variables. The
-source-bound acquisition policy explicitly permits only temporary private
-fixture captures and appended capture-only wrapper probes using existing real
-physical fixtures. Both support test files must be restored exactly. Original
-tests/assertions and production validator bodies are not probe-edit targets.
-Final product changes are only the four operations in schema/search/selector.
-Unreached branches stay explicit; case names or upstream errors never certify
-execution. Full native bytes, ordered values, errors and compilation provenance
-must be captured before and after; M05 ordering exceptions do not apply.
+PRE fingerprint:
+`a99d2c132816f945b50cee8c45476c3cc743a2669f69253db8931d9e187e0b4d`.
+It binds 153 source/reference inputs, three grounding documents, twelve complete
+policy rows and four distinct acquisition lanes, using 48 compiler variables.
+`sol_e556e670e1904bad` is SAT/pass;
+`sol_aa9e9b76e042467c` is UNSAT/fail. Both complete compiled envelopes are
+reloaded and pinned in `proof.json.gz`. The independent oracle checks eight
+compiled predicates and fourteen individual false-claim/lane/cardinality
+controls. Native observations remain null: this is prospective policy, not
+native acceptance or M06 completion.
 
-Jev blocked at data-completeness confidence 0.48, below its unchanged 0.6 gate.
-ROOT did not rephrase, lower the threshold or fabricate an open request. Every
-actual catalog row/cell and enum value is independently present and declared;
-the absent measurements are explicitly prospective, outside solver facts.
-ROOT used the documented direct catalog route. Nonpersistent validation returns
-SAT/pass for the complete intended policy and UNSAT/fail for the forbidden
-policy. Eight family rule predicates match the independent semantic evaluator,
-and fourteen individual false-claim/lane/cardinality controls reject. Native
-observations remain null. These results do not complete the PRE handoff.
+Jev remains blocked at completeness confidence 0.48, below its unchanged 0.6
+threshold. ROOT independently checked that all policy rows/cells and enum values
+are present and declared, with no unknowns. The absent native measurements are
+outside these policy facts. The direct catalog route verifies this explicit
+finite model; no rephrasing, threshold change or fabricated open gate occurred.
 
-Durable execution failed with `ArtifactCount`: existing limit 512, attempted 513.
-The exact request/error is preserved in `quota-rejection.json.gz`. Automatic
-approval review also rejected ROOT's attempted `pin=false` for protected M05
-receipt `sol_d2d83b1036a64726`, citing the instruction to keep M05 POST pins
-untouched. That action did not execute; the second receipt was not unpinned.
-No quota, cache file, alternate retention path or threshold was changed.
+The earlier quota failure, automatic unpin rejection and nonpersistent checks
+remain archived, together with the original blocked checkpoint documents.
+The user then explicitly approved continuing M6 in response to the request to
+release only the two archived M05 POST pins. ROOT again compared both complete
+live envelopes to their lossless archives, then retired only
+`sol_d2d83b1036a64726` and `sol_a2fe41435dd24f8a`.
+`retirement-approval.json` records that authorization. M04 POST pins
+`sol_20d1c51504e24bf7` and `sol_3a83a9eb74604722` remain protected.
+No cache file, quota or compiler limit was changed.
 
-The two M05 POST envelopes (`sol_d2d83b1036a64726` and
-`sol_a2fe41435dd24f8a`) were reloaded read-only and compared in full to the
-accepted proof. They are archived losslessly in `inherited-M05-POST-live.json.gz`;
-the inherited eight compiled predicates also verify independently. M05 and M04
-pins remain protected. Retiring only those two M05 pins is a concrete proposed
-next action requiring user approval after automatic rejection. Their complete
-request/model/core/version/timing records remain archived; retiring a pin would
-allow cache eviction, not delete the Git evidence. M04 pins would stay untouched.
+## Authorized mechanical change
 
-Implementation is **not dispatched or authorized by this incomplete PRE**.
-ROOT must first persist, reload and pin the new complete PRE receipts, verify
-their compiled predicates and commit the finished handoff. Only then may the
-serial Codex implementation/native acquisition start. M06 remains incomplete.
+Only four operations in three product files:
+
+- S1: `schema.rs::validate_rust_evidence_sources` obtains its owned Option via
+  `rust_evidence_set()?`, preserving the exact absence error and validation order.
+- S2: `schema.rs::validate_macro_invocations` obtains its owned Option via
+  `macro_evidence_set()?`, preserving None success and every subsequent check.
+- S3/S4: the existing private artifact helpers in `search.rs` and `selector.rs`
+  remove only the two explicit typed None members and add the final
+  `..GraphIndexArtifact::empty()` tail. All other expressions and vector order
+  remain exact.
+
+These are six field occurrence migrations. Eight compatibility declarations,
+defaults and getter/setter self-accesses remain; replacing their internals with
+recursive calls is forbidden. Preserve old raw wire controls, all explicit
+synthetic test header/version/hash values, GraphFacts, canonical/omission rules
+and None versus Some(empty). G03 getters clone and setters assign; no semantic
+bugfix, new storage truth, cache change or generic carrier cutover is authorized.
+
+## Reversible native acquisition
+
+The exact policy and case inventory are in `inputs.json#acquisition_policy`.
+Temporary capture at the two existing cfg(test) helper returns must emit the
+original native artifact, serialized bytes, Debug, canonical/capability outcome,
+actual fixture input and current test identity, returning the identical object.
+Temporary capture-only tests may be appended to
+`tests/rust_evidence_contract.rs` and `tests/macro_invocation_artifacts.rs`,
+using their existing physical fixtures and directly invoking the public schema
+wrappers. Original test bodies/assertions and production validator bodies are
+not probe-edit targets.
+
+Capture real None, empty, nonempty and source/manifest/owner/caller negatives
+with complete errors and actual inputs. An upstream rejection or a case name
+does not prove a later branch ran. Keep any unreachable coverage explicit.
+The unchanged remainder of each validator is also source-checked.
+
+Acquire actual before/after native bytes/ordered values with matching input,
+site, case and multiplicity; retain source, command, compiler and executable
+identities from the actual compiled variant. Never inject expected source hashes
+as native observations or relabel G03 historical metadata as M06 provenance.
+Prefer framed stdout with exact raw diagnostic/removal spans. Optional export
+environment/path transport must be demonstrated before relying on it.
+
+Remove all temporary hooks and restore both support test files byte-for-byte.
+The final product diff contains only the four operations above. Preserve
+temporary patches, compiled variants and raw captures as bounded compressed
+evidence. M05's transient owner/error ordering exceptions do not apply to M06.
+Any unexplained comparison gap returns to ROOT with the strict failure intact.
+
+All builds/tests/checks use `scripts/spur-cargo`, remote with no local fallback;
+formatting is local. The mechanical refactor has no fabricated semantic RED.
+Use genuine existing baseline results and meaningful copied-native mutation
+controls, then exact before/after conservation and required GREEN/check/fmt.
+A true bugfix is a separate decision requiring a failing regression.
+
+## Review and retention
+
+Workers reload only the two current M06 PRE IDs and compare complete envelopes.
+Do not reload retired M05/M03/original PRE IDs. Workers make no retention changes.
+ROOT retains these pins through implementation and, after complete live reload
+and lossless archival, may consume this PRE for the required actual POST.
+M04 pins remain protected. ROOT owns actual POST, independent adversarial review,
+approval, local-main merge and the serial M07 successor.
+
+Entry verification, before any source edits:
 
 ```sh
 python3 docs/research/artifacts/2026-11-07-generic-graph-evidence/M06/root-pre/verify.py
 ```
 
-This command verifies bound source/grounding bytes, all range references,
-prospective measurement absence, the actual nonpersistent results, independent
-semantic controls and inherited proof envelopes. It honestly reports the
-persistence blocker; it is not a passing durable PRE or native acceptance.
+After source migration, `--historical` explicitly checks baseline source bytes
+from the bound Git epoch; it does not certify changed working-tree/native inputs.
+Those require the separate before/after acquisition and actual POST. No runtime
+success, performance gain or completed architecture is claimed by this PRE.
