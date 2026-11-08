@@ -303,8 +303,8 @@ impl RustEvidenceSet {
                 .find(|o| o.graph_content_hash == file.origin_graph_content_hash)
                 .context("Rust source origin missing")?;
             let mut view = graph.clone();
-            view.macro_invocations = None;
-            view.rust_evidence = None;
+            view.set_macro_evidence(None)?;
+            view.set_rust_evidence(None)?;
             view.graph_content_hash = origin.graph_content_hash.clone();
             view.manifest_version = origin.manifest_version.clone();
             view.file_manifests = origin
@@ -359,7 +359,8 @@ pub fn rust_evidence_checksum_blake3_hex(set: &RustEvidenceSet) -> anyhow::Resul
 /// A manifest helper can reproduce these inputs without graph rows or bytes.
 /// This digest does not validate syntax, provenance or version compatibility.
 pub fn rust_evidence_capability_digest(artifact: &GraphIndexArtifact) -> anyhow::Result<String> {
-    let set = artifact.rust_evidence.as_ref();
+    let owned_set = artifact.rust_evidence_set()?;
+    let set = owned_set.as_ref();
     let checksum = set.map(rust_evidence_checksum_blake3_hex).transpose()?;
     let encoded = serde_json::to_vec(&(
         "spur-rust-evidence-capability-v1",
