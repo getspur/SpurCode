@@ -570,8 +570,6 @@ fn search_pruning_benchmark_artifact() -> GraphIndexArtifact {
         .collect();
 
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "bench".to_owned(),
             content_hash_blake3: None,
@@ -589,6 +587,7 @@ fn search_pruning_benchmark_artifact() -> GraphIndexArtifact {
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
 
@@ -618,8 +617,6 @@ fn traversal_benchmark_artifact() -> GraphIndexArtifact {
     }
 
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: GraphIndexHeader {
             graph_index_version: "bench".to_owned(),
             content_hash_blake3: None,
@@ -637,6 +634,7 @@ fn traversal_benchmark_artifact() -> GraphIndexArtifact {
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
 
@@ -785,8 +783,6 @@ fn search_benchmark_query(artifact: &GraphIndexArtifact) -> String {
 
 fn symbol_search_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndexArtifact {
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: artifact.header.clone(),
         manifest_version: artifact.manifest_version.clone(),
         graph_content_hash: artifact.graph_content_hash.clone(),
@@ -801,13 +797,12 @@ fn symbol_search_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndex
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
 
 fn current_query_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndexArtifact {
     GraphIndexArtifact {
-        rust_evidence: None,
-        macro_invocations: None,
         header: artifact.header.clone(),
         manifest_version: artifact.manifest_version.clone(),
         graph_content_hash: artifact.graph_content_hash.clone(),
@@ -822,6 +817,7 @@ fn current_query_benchmark_artifact(artifact: &GraphIndexArtifact) -> GraphIndex
         commits: Vec::new(),
         symbol_snapshots: Vec::new(),
         temporal_edges: Vec::new(),
+        ..GraphIndexArtifact::empty()
     }
 }
 
