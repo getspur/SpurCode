@@ -313,7 +313,12 @@ fn transport_error(error: JevError) -> McpError {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::BTreeMap, ffi::OsString, process::Command, sync::Arc};
+    use std::{
+        collections::BTreeMap,
+        ffi::OsString,
+        process::Command,
+        sync::{Arc, Mutex},
+    };
 
     use serde_json::{json, Value};
     use spur_mcp::{ServerKind, ToolAuthority, ToolCallContext, ToolRegistry};
@@ -321,9 +326,9 @@ mod tests {
 
     use super::JevMcpModule;
     use crate::{
-        client::MockTransport,
+        client::{JevError, JevTransport, MockTransport},
         snapshot::{CatalogSnapshot, RuleCard},
-        wire::{Answer, JevResponse, Usage},
+        wire::{Answer, JevRequest, JevResponse, Usage},
     };
 
     fn context() -> ToolCallContext<'static> {
@@ -404,6 +409,194 @@ mod tests {
             },
             "unknowns": []
         })
+    }
+
+    struct RecordingTransport(Arc<Mutex<Vec<JevRequest>>>);
+
+    #[async_trait::async_trait]
+    impl JevTransport for RecordingTransport {
+        async fn send(&self, request: &JevRequest) -> Result<JevResponse, JevError> {
+            self.0.lock().expect("record request").push(request.clone());
+            Ok(recorded_response())
+        }
+    }
+
+    #[tokio::test]
+    async fn json_encoded_object_matches_object_before_jev_transport() {
+        let requests = Arc::new(Mutex::new(Vec::new()));
+        let registry = ToolRegistry::builder()
+            .with(JevMcpModule::new(
+                snapshot(),
+                RecordingTransport(Arc::clone(&requests)),
+            ))
+            .expect("register Jev module")
+            .build();
+        let mut results = Vec::new();
+        for data in [recorded_data(), json!(recorded_data().to_string())] {
+            results.push(result_json(
+                &registry
+                    .call_json_tool(
+                        context(),
+                        "jev_compile",
+                        json!({"intent": "verify containment", "data": data}),
+                    )
+                    .await,
+            ));
+        }
+        assert_eq!(results[0], results[1]);
+        assert_eq!(results[1]["gate"], "open");
+        let requests = requests.lock().expect("read requests");
+        assert_eq!(requests[0], requests[1]);
+        assert_eq!(requests[1].state["data"], recorded_data());
+    }
+
+    #[tokio::test]
+    async fn malformed_data_json_reports_parse_location_before_transport() {
+        let registry = ToolRegistry::builder()
+            .with(JevMcpModule::catalog_only(snapshot()))
+            .expect("register Jev module")
+            .build();
+        let response = registry
+            .call_json_tool(
+                context(),
+                "jev_compile",
+                json!({"intent": "verify containment", "data": "{\n  \"subjects\": [\n}"}),
+            )
+            .await;
+        let error = response.error.expect("malformed JSON must fail");
+        assert_eq!(error.code, i64::from(super::INVALID_PARAMS_CODE));
+        let details = error.data.expect("structured input error");
+        assert_eq!(details["code"], "invalid_jev_data");
+        assert_eq!(details["reason"], "invalid_json");
+        assert_eq!(details["stage"], "input");
+        assert_eq!(details["path"], "$.data");
+        assert_eq!(details["actual_type"], "string");
+        assert!(details["details"]["line"].as_u64().is_some_and(|n| n > 0));
+        assert!(details["details"]["column"].as_u64().is_some());
+        assert!(details["hint"].as_str().is_some_and(|s| !s.is_empty()));
+    }
+
+    #[tokio::test]
+    async fn non_object_data_reports_actual_type_without_recursive_decoding() {
+        let registry = ToolRegistry::builder()
+            .with(JevMcpModule::catalog_only(snapshot()))
+            .expect("register Jev module")
+            .build();
+        for (data, actual_type) in [
+            (Value::Null, "null"),
+            (json!(true), "boolean"),
+            (json!(1), "number"),
+            (json!([]), "array"),
+            (json!("null"), "null"),
+            (json!("true"), "boolean"),
+            (json!("1"), "number"),
+            (json!("[]"), "array"),
+            (
+                json!(json!(recorded_data().to_string()).to_string()),
+                "string",
+            ),
+        ] {
+            let response = registry
+                .call_json_tool(
+                    context(),
+                    "jev_compile",
+                    json!({"intent": "verify containment", "data": data}),
+                )
+                .await;
+            let error = response.error.expect("non-object data must fail");
+            assert_eq!(error.code, i64::from(super::INVALID_PARAMS_CODE));
+            let details = error.data.expect("structured type error");
+            assert_eq!(details["code"], "invalid_jev_data");
+            assert_eq!(details["reason"], "expected_object");
+            assert_eq!(details["stage"], "input");
+            assert_eq!(details["path"], "$.data");
+            assert_eq!(details["expected_type"], "object");
+            assert_eq!(details["actual_type"], actual_type);
+            assert!(details["hint"].as_str().is_some_and(|s| !s.is_empty()));
+        }
+    }
+
+    #[tokio::test]
+    async fn compile_input_errors_report_binding_path_rule_and_repair_hint() {
+        let registry = ToolRegistry::builder()
+            .with(JevMcpModule::new(
+                snapshot(),
+                MockTransport::new(recorded_response()),
+            ))
+            .expect("register Jev module")
+            .build();
+        for (field, value, reason, path) in [
+            (
+                "subjects",
+                json!("child"),
+                "invalid_template",
+                "$.data.subjects",
+            ),
+            (
+                "unknowns",
+                json!([{"kind": "rect", "node": "child"}]),
+                "mode_unknowns_mismatch",
+                "$.data.unknowns",
+            ),
+            (
+                "parameters",
+                json!({"padding": {"$choice": "missing_question"}}),
+                "missing_answer",
+                "$.data",
+            ),
+        ] {
+            let mut data = recorded_data();
+            data[field] = value;
+            let response = registry
+                .call_json_tool(
+                    context(),
+                    "jev_compile",
+                    json!({"intent": "verify containment", "data": data}),
+                )
+                .await;
+            let error = response.error.expect("invalid binding must fail");
+            assert_eq!(error.code, i64::from(super::INVALID_PARAMS_CODE));
+            let details = error.data.expect("structured compile error");
+            assert_eq!(details["code"], "invalid_jev_compile");
+            assert_eq!(details["reason"], reason);
+            assert_eq!(details["stage"], "compile");
+            assert_eq!(details["path"], path);
+            assert_eq!(details["rule_id"], "layout.containment");
+            assert_eq!(details["mode"], "verify");
+            assert!(details["hint"].as_str().is_some_and(|s| !s.is_empty()));
+        }
+    }
+
+    #[tokio::test]
+    async fn malformed_jev_answers_remain_internal_response_errors() {
+        let mut response = recorded_response();
+        response.answers.remove("route_rule");
+        let registry = ToolRegistry::builder()
+            .with(JevMcpModule::new(snapshot(), MockTransport::new(response)))
+            .expect("register Jev module")
+            .build();
+        let response = registry
+            .call_json_tool(
+                context(),
+                "jev_compile",
+                json!({"intent": "verify containment", "data": recorded_data()}),
+            )
+            .await;
+        let error = response.error.expect("incomplete Jev response must fail");
+        assert_eq!(error.code, i64::from(super::INTERNAL_ERROR_CODE));
+        assert_eq!(
+            error.data.expect("response error")["code"],
+            "invalid_jev_response"
+        );
+    }
+
+    #[test]
+    fn data_schema_documents_object_and_json_string_inputs() {
+        let schema = super::tool_definition().input_schema;
+        assert_eq!(
+            schema["properties"]["data"]["type"],
+            json!(["object", "string"])
+        );
     }
 
     fn generic_containment_preflight() -> Value {
