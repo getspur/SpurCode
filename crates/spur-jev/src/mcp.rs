@@ -10,7 +10,7 @@ use spur_mcp::{ErrorCode, McpError, ToolCallContext, ToolDefinition, ToolModule,
 use crate::{
     battery::generate_routing_battery,
     client::{HttpJevTransport, JevError, JevTransport},
-    compile::compile_family,
+    compile::{compile_family, CompileError},
     gate::{AmbiguityReport, DecisionReview, Gate},
     provenance::JevProvenance,
     snapshot::CatalogSnapshot,
@@ -90,18 +90,15 @@ impl JevMcpModule {
             return Err(invalid_params("`intent` must not be empty"));
         }
 
+        let data = normalize_data(input.data)?;
         let snapshot = filter_snapshot(&self.snapshot, input.family_hint.as_deref())?;
-        let questions = generate_routing_battery(
-            &input.intent,
-            &input.data,
-            &snapshot,
-            snapshot.language_version,
-        )
-        .map_err(|error| invalid_params(error.to_string()))?;
+        let questions =
+            generate_routing_battery(&input.intent, &data, &snapshot, snapshot.language_version)
+                .map_err(|error| invalid_params(error.to_string()))?;
         let request = JevRequest {
             state: json!({
                 "intent": input.intent,
-                "data": input.data,
+                "data": data,
                 "family_hint": input.family_hint,
             }),
             model: DEFAULT_MODEL.to_owned(),
@@ -120,7 +117,7 @@ impl JevMcpModule {
         match review.gate {
             Gate::Open => {
                 let compiled = compile_family(&response.answers, &snapshot, &request.state["data"])
-                    .map_err(|error| invalid_response(error.to_string()))?;
+                    .map_err(|error| compile_error(error, &provenance))?;
                 Ok(JevCompileResult {
                     gate: GateStatus::Open,
                     ambiguity: None,
@@ -272,7 +269,8 @@ fn tool_definition() -> ToolDefinition {
                     "description": "Natural-language constraint intent to route."
                 },
                 "data": {
-                    "description": "Structured scene or facts used to compile the solver request."
+                    "type": ["object", "string"],
+                    "description": "A structured object, or a JSON string encoding one object (decoded once before interpretation). Put subjects, parameters, scene or facts, and unknowns at the top level."
                 },
                 "family_hint": {
                     "type": "string",
@@ -288,6 +286,128 @@ fn tool_definition() -> ToolDefinition {
 
 fn invalid_params(message: impl Into<String>) -> McpError {
     McpError::new(ErrorCode(INVALID_PARAMS_CODE), message.into(), None)
+}
+
+fn normalize_data(data: Value) -> Result<Value, McpError> {
+    let data = if let Value::String(encoded) = data {
+        serde_json::from_str(&encoded).map_err(|error| {
+            invalid_data(
+                "invalid_json",
+                "string",
+                format!("`data` contains invalid JSON: {error}"),
+                json!({"line": error.line(), "column": error.column()}),
+            )
+        })?
+    } else {
+        data
+    };
+    if !data.is_object() {
+        let actual_type = match &data {
+            Value::Null => "null",
+            Value::Bool(_) => "boolean",
+            Value::Number(_) => "number",
+            Value::String(_) => "string",
+            Value::Array(_) => "array",
+            Value::Object(_) => unreachable!("objects passed the shape check"),
+        };
+        return Err(invalid_data(
+            "expected_object",
+            actual_type,
+            format!("`data` must resolve to a JSON object; received {actual_type}"),
+            json!({}),
+        ));
+    }
+    Ok(data)
+}
+
+fn invalid_data(reason: &str, actual_type: &str, message: String, details: Value) -> McpError {
+    McpError::new(
+        ErrorCode(INVALID_PARAMS_CODE),
+        message,
+        Some(json!({
+            "code": "invalid_jev_data",
+            "stage": "input",
+            "reason": reason,
+            "path": "$.data",
+            "expected_type": "object",
+            "actual_type": actual_type,
+            "hint": "Pass data as a JSON object or a JSON string encoding one object. Do not double-encode it.",
+            "details": details,
+        })),
+    )
+}
+
+fn compile_error(error: CompileError, provenance: &JevProvenance) -> McpError {
+    // Routing answers have already passed validate_response. Template directive
+    // references and type errors therefore belong to the caller's data.
+    let (reason, path, hint, details) = match &error {
+        CompileError::InvalidTemplate { path, message } => (
+            "invalid_template",
+            path.replacen("$data", "$.data", 1),
+            "Supply the expected value at this path. Keep subjects, parameters, scene or facts, and unknowns at the top level of data.",
+            json!({"message": message}),
+        ),
+        CompileError::ModeUnknownsMismatch { mode, count, required } => (
+            "mode_unknowns_mismatch",
+            "$.data.unknowns".to_owned(),
+            "Verification requires complete facts and no unknowns. Remove unknowns, or request synthesis if values should be solved.",
+            json!({"mode": mode, "actual_count": count, "required_count": required}),
+        ),
+        CompileError::MissingAnswer { question } => (
+            "missing_answer",
+            "$.data".to_owned(),
+            "Reference an existing routing-battery answer in template directives: route_rule, solve_mode, or data_complete.",
+            json!({"question": question}),
+        ),
+        CompileError::ExpectedChoice { question } => (
+            "expected_choice",
+            "$.data".to_owned(),
+            "Use a choice answer (route_rule or solve_mode) for a $choice directive.",
+            json!({"question": question}),
+        ),
+        CompileError::ExpectedNoul { question } => (
+            "expected_noul",
+            "$.data".to_owned(),
+            "Use a noul answer (data_complete) for a $noul_at_least or $noul_below directive.",
+            json!({"question": question}),
+        ),
+        CompileError::InvalidChoiceInteger { question, value } => (
+            "invalid_choice_integer",
+            "$.data".to_owned(),
+            "Use $choice for a string answer. $choice_int requires a choice containing a signed integer.",
+            json!({"question": question, "value": value}),
+        ),
+        CompileError::UnknownRule { rule_id } => (
+            "unknown_rule",
+            "$.provenance.answers.route_rule.choice".to_owned(),
+            "Refresh the solver catalog and retry; the selected rule is absent from the compilation snapshot.",
+            json!({"rule_id": rule_id}),
+        ),
+    };
+    let response_error = matches!(&error, CompileError::UnknownRule { .. });
+    let choice = |question: &str| match provenance.answers.get(question) {
+        Some(Answer::Choice { choice, .. }) => Some(choice.as_str()),
+        _ => None,
+    };
+    McpError::new(
+        ErrorCode(if response_error {
+            INTERNAL_ERROR_CODE
+        } else {
+            INVALID_PARAMS_CODE
+        }),
+        error.to_string(),
+        Some(json!({
+            "code": if response_error { "invalid_jev_response" } else { "invalid_jev_compile" },
+            "stage": "compile",
+            "reason": reason,
+            "path": path,
+            "hint": hint,
+            "details": details,
+            "rule_id": choice("route_rule"),
+            "mode": choice("solve_mode"),
+            "provenance": provenance,
+        })),
+    )
 }
 
 fn invalid_response(message: impl Into<String>) -> McpError {
@@ -544,6 +664,24 @@ mod tests {
                 "missing_answer",
                 "$.data",
             ),
+            (
+                "parameters",
+                json!({"padding": {"$choice": "data_complete"}}),
+                "expected_choice",
+                "$.data",
+            ),
+            (
+                "parameters",
+                json!({"padding": {"$choice_int": "solve_mode"}}),
+                "invalid_choice_integer",
+                "$.data",
+            ),
+            (
+                "parameters",
+                json!({"padding": {"$noul_at_least": {"question": "solve_mode", "threshold": 0.5}}}),
+                "expected_noul",
+                "$.data",
+            ),
         ] {
             let mut data = recorded_data();
             data[field] = value;
@@ -563,6 +701,8 @@ mod tests {
             assert_eq!(details["path"], path);
             assert_eq!(details["rule_id"], "layout.containment");
             assert_eq!(details["mode"], "verify");
+            assert_eq!(details["provenance"]["served_model_version"], "jev-1.13.0");
+            assert_eq!(details["provenance"]["gate"]["status"], "open");
             assert!(details["hint"].as_str().is_some_and(|s| !s.is_empty()));
         }
     }

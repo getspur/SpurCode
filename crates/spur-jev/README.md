@@ -27,6 +27,28 @@ The request returned by `jev_compile` must be consumed **only** through
 `solve_constraints`, as appropriate for its shape. Never execute it directly,
 feed it to raw `solve_smt`, or treat Jev output as proof.
 
+## Input and error contract
+
+`jev_compile.data` accepts a JSON object or a JSON string encoding one object.
+Strings are decoded once, before generating the battery or calling Jev, so
+equivalent object and encoded-object inputs receive identical interpretation.
+Nested strings are preserved. Arrays, scalars, and double-encoded objects are
+rejected; decoding does not infer missing facts or change solver validation.
+Keep `subjects`, optional `parameters`, `scene` or `facts`, and `unknowns` at
+the top level of the decoded object.
+
+Malformed JSON and non-object data return invalid parameters (`-32602`) with
+`code: "invalid_jev_data"`, `stage: "input"`, a `reason`, `path`, expected and
+actual types, and a repair `hint`. JSON syntax errors also include parser
+`line` and `column` in `details`. These failures do not call Jev.
+
+Caller-owned compile failures return `-32602` with
+`code: "invalid_jev_compile"`, `stage: "compile"`, a semantic `reason`, `path`,
+repair `hint`, and variant-specific `details`. The selected `rule_id`, `mode`,
+and Jev `provenance` remain available for diagnosis. An open interpretation gate
+does not imply that compilation or solver validation succeeded. Invalid Jev
+answers remain internal response errors (`-32603`, `invalid_jev_response`).
+
 ## Invariants
 
 1. **Pre-compiler purity.** `spur-jev` constructs JSON requests but does not
