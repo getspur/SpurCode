@@ -36,7 +36,7 @@ class HistoryShardTests(unittest.TestCase):
         payloads = {
             "source.rs": self.source,
             "empty.rs": b"",
-            "binary.rs": b"\xff\x00binary",
+            "binary.rs": b"\xff" + b" " * (8192 - 2) + b"\x00",
             "invalid.rs": b"\xffinvalid",
             "after-prefix.rs": b" " * 8192 + b"\x00\xff",
         }
@@ -119,7 +119,12 @@ class HistoryShardTests(unittest.TestCase):
             expected = connection.execute("SELECT spur_graph_symbols('history/source.rs', ?)",
                                           [self.source.decode()]).fetchone()[0]
             paths = [str(path) for path in self.parquet_paths()]
-            rows = connection.execute("SELECT * FROM read_parquet(?) ORDER BY blob_oid,language", [paths]).fetchall()
+            schema = connection.execute("DESCRIBE SELECT * FROM read_parquet(?)", [paths]).fetchall()
+            self.assertEqual(schema[-1][1], "TIMESTAMP WITH TIME ZONE")
+            rows = connection.execute(
+                "SELECT * REPLACE(CAST(parsed_at AS VARCHAR) AS parsed_at) FROM read_parquet(?) ORDER BY blob_oid,language",
+                [paths],
+            ).fetchall()
             columns = [entry[0] for entry in connection.description]
             self.assertEqual(columns, ["blob_oid", "language", "extractor_sha", "representative_path",
                                        "symbols", "status", "error", "input_bytes", "binary_prefix", "parsed_at"])
@@ -215,6 +220,25 @@ class HistoryShardTests(unittest.TestCase):
                 self.assertIn("byte budget" if failure == "bytes" else "duplicate parse key", result.stderr)
                 self.assertFalse(self.parquet_paths())
         self.assertEqual(self.repo_files(), self.source_before)
+
+    def test_valid_checksum_with_wrong_keys_still_refuses_completion(self):
+        first = self.run_parser()
+        self.assertEqual(first.returncode, 1, first.stderr)
+        parquet = self.parquet_paths()[0]
+        replacement = self.root / "different-keys.parquet"
+        with duckdb.connect() as connection:
+            connection.execute("COPY (SELECT * REPLACE('Other' AS language) FROM read_parquet(?)) TO '" +
+                               str(replacement).replace("'", "''") + "' (FORMAT PARQUET)", [str(parquet)])
+        replacement.replace(parquet)
+        receipt = parquet.with_suffix(".receipt.json")
+        value = json.loads(receipt.read_text())
+        value.update(sha256=sha256(parquet), file_bytes=parquet.stat().st_size)
+        receipt.write_text(json.dumps(value))
+        result = self.run_parser()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("exactly match planned tasks", result.stderr)
+        self.assertIs(self.result()["complete"], False)
+        self.assertEqual(self.result()["new_parse_tasks_this_run"], 0)
 
     def test_plan_generations_are_separate_and_success_exits_zero(self):
         self.assertEqual(self.run_parser().returncode, 1)
