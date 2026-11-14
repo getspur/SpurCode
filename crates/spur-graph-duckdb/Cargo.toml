@@ -1,0 +1,26 @@
+[package]
+name = "spur-graph-duckdb"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "DuckDB C API v2 adapter for SPUR's native symbol extractor"
+publish = false
+
+# Keep the V2 loadable bindings independent of the application's V1 client.
+[workspace]
+members = ["."]
+resolver = "2"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+duckdb-neo = { version = "=0.20000.2", features = ["build-extension"] }
+spur-graph = { path = "../spur-graph", default-features = false }
+
+[dev-dependencies]
+serde_json = "1"
+
+[profile.release]
+lto = true
+strip = true
