@@ -9,6 +9,8 @@ inline binary_prefix column. Producers must have disjoint (blob_oid, language)
 keys. Output is gen-<content hash>/temporal.duckdb plus immutable pair Parquet,
 checksummed batch receipts, inputs.json and result.json. Existing generations
 and orphaned files are retained. Restart reuses only verified checkpoints.
+current-status.json is authoritative for the latest verification attempt;
+result.json retains immutable completion evidence from a successful attempt.
 
 The byte budget bounds logical old+new source bytes per pair batch, not RSS.
 A pair larger than the budget runs alone and is recorded as oversized.
@@ -74,6 +76,16 @@ def write_new_json(path, value):
         os.fsync(stream.fileno())
 
 
+def publish_current_status(generation, generation_id, state, complete, error=None):
+    status = {"generation": generation_id, "state": state, "complete": complete, "updated_at_unix": time.time()}
+    if error is not None:
+        status["error"] = str(error)
+    path = generation / "current-status.json"
+    temporary = generation / ("current-status-" + uuid.uuid4().hex + ".tmp")
+    write_new_json(temporary, status)
+    os.replace(temporary, path)
+
+
 def columns(connection, expression):
     return dict((row[0], row[1]) for row in connection.execute(f"DESCRIBE SELECT * FROM {expression}").fetchall())
 
@@ -111,8 +123,9 @@ def index_inputs(connection, inputs, symbol_type):
                 "invalid required cache metadata")
         no_rows(connection, "SELECT blob_oid,extractor_sha FROM source_index WHERE extractor_sha IS NULL OR extractor_sha<>"
                 + quote(source["expected_extractor_sha"]), "extractor provenance mismatch")
-        no_rows(connection, "SELECT blob_oid,status FROM source_index WHERE status NOT IN ('completed','encoding_error','extension_error') "
-                "OR (status<>'completed' AND error IS NULL)", "invalid parse status/error")
+        no_rows(connection, "SELECT blob_oid,status FROM source_index WHERE status NOT IN ('completed','binary_skipped','encoding_error','extension_error') "
+                "OR (status IN ('encoding_error','extension_error') AND error IS NULL) "
+                "OR (status='binary_skipped' AND error IS NOT NULL)", "invalid parse status/error")
         if flags:
             relation = f"read_parquet({sql_list(item['path'] for item in flags)})"
             flag_schema = columns(connection, relation)
@@ -129,6 +142,12 @@ def index_inputs(connection, inputs, symbol_type):
             else:
                 connection.execute("UPDATE source_index s SET binary_prefix=f.binary_prefix FROM source_flags f WHERE s.blob_oid=f.blob_oid")
         no_rows(connection, "SELECT blob_oid FROM source_index WHERE binary_prefix IS NULL", "missing binary flag")
+        no_rows(connection, "SELECT blob_oid,status FROM source_index WHERE status='binary_skipped' AND NOT binary_prefix",
+                "binary_skipped requires a true binary flag")
+        # Only skipped rows need this payload-validity check; keep ordinary facts
+        # out of the global thin index and its scans.
+        no_rows(connection, f"SELECT blob_oid FROM read_parquet({sql_list(files)}) WHERE status='binary_skipped' AND symbols IS NOT NULL",
+                "binary_skipped requires NULL symbols")
         connection.execute("INSERT INTO cache_index SELECT * EXCLUDE(binary_prefix),?::BIGINT,binary_prefix FROM source_index", [source_id])
     no_rows(connection, "SELECT blob_oid,language FROM cache_index GROUP BY blob_oid,language HAVING count(*)<>1", "duplicate cache key")
     no_rows(connection, "SELECT blob_oid FROM cache_index GROUP BY blob_oid HAVING count(DISTINCT binary_prefix)>1", "conflicting binary flags")
@@ -312,70 +331,78 @@ def run(args):
         (generation / directory).mkdir(exist_ok=True)
     with (generation / ".lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        manifest = generation / "inputs.json"
-        if manifest.exists():
-            require(json.loads(manifest.read_text()) == inputs, "generation input manifest mismatch")
-        else:
-            write_new_json(manifest, inputs)
-        database = generation / "temporal.duckdb"
-        connection = duckdb.connect(str(database), config={"allow_unsigned_extensions": True})
-        connection.execute(f"LOAD {quote(args.extension.resolve())}")
-        symbol_type = connection.execute("SELECT return_type FROM duckdb_functions() WHERE function_name='spur_graph_symbols'").fetchone()[0]
-        connection.execute(f"ATTACH {quote(args.metadata.resolve())} AS frozen (READ_ONLY)")
-        print(json.dumps({"state": "indexing", "generation_directory": str(generation)}), flush=True)
-        for table in ("commits", "comparisons", "changes", "parse_tasks", "symbol_pairs", "change_pairs"):
-            connection.execute(f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM frozen.{table}")
-        index_inputs(connection, inputs, symbol_type)
-        validate_metadata(connection)
-        shards, reused, new, native_calls = [], 0, 0, 0
-        for batch_id, (pair_ids, source_bytes) in enumerate(batches(connection, args.row_limit, args.byte_budget)):
-            require(len(pair_ids) <= args.row_limit and (source_bytes <= args.byte_budget or len(pair_ids) == 1),
-                    "pair batch exceeds the row/byte contract")
-            expected = {"generation": generation_id, "batch_id": batch_id, "pair_ids": pair_ids,
-                        "rows": len(pair_ids), "input_bytes": source_bytes, "byte_budget": args.byte_budget,
-                        "row_limit": args.row_limit, "oversized": source_bytes > args.byte_budget}
-            receipt_path = generation / "receipts" / f"{batch_id:06}.json"
-            if receipt_path.exists():
-                receipt = json.loads(receipt_path.read_text())
-                shard = verify_receipt(generation, receipt, expected)
-                reused += 1
+        publish_current_status(generation, generation_id, "verifying", False)
+        try:
+            manifest = generation / "inputs.json"
+            if manifest.exists():
+                require(json.loads(manifest.read_text()) == inputs, "generation input manifest mismatch")
             else:
-                phase = time.perf_counter()
-                evaluate_batch(connection, pair_ids, symbol_type)
-                actual_ids = [r[0] for r in connection.execute("SELECT pair_id FROM evaluated ORDER BY pair_id").fetchall()]
-                require(actual_ids == pair_ids, "pair batch completion accounting mismatch")
-                calls = connection.execute("SELECT count(*) FROM evaluated WHERE native_invoked").fetchone()[0]
-                native_calls += calls
-                shard = generation / "pairs" / f"{batch_id:06}-{uuid.uuid4().hex}.parquet"
-                connection.execute(f"COPY evaluated TO {quote(shard)} (FORMAT PARQUET)")
-                with shard.open("r+b") as stream:
-                    os.fsync(stream.fileno())
-                receipt = dict(expected, file=str(shard.relative_to(generation)), file_bytes=shard.stat().st_size,
-                               sha256=digest(shard), native_invocations=calls, elapsed_seconds=time.perf_counter()-phase)
-                write_new_json(receipt_path, receipt)
-                new += 1
-                print(json.dumps({"state": "checkpoint", "batch_id": batch_id, "rows": len(pair_ids),
-                                  "input_bytes": source_bytes, "oversized": expected["oversized"]}), flush=True)
-            shards.append(str(shard))
-        materialize_views(connection, shards)
-        no_rows(connection, "SELECT pair_id FROM pair_results GROUP BY pair_id HAVING count(*)<>1", "duplicate completed pair")
-        no_rows(connection, "SELECT pair_id FROM symbol_pairs ANTI JOIN pair_results USING(pair_id)", "missing completed pair")
-        statuses = dict(connection.execute("SELECT status,count(*) FROM pair_results GROUP BY status").fetchall())
-        counts = {table: connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
-                  for table in ("commits", "comparisons", "changes", "symbol_pairs", "pair_occurrences", "symbol_snapshots", "temporal_edges", "diagnostics")}
-        connection.execute("CHECKPOINT")
-        connection.close()
-        summary = {"complete": True, "state": "completed_with_errors" if statuses.get("parse_failed", 0) or statuses.get("matching_error", 0) else "completed",
-                   "generation": generation_id, "generation_directory": str(generation), "database": str(database),
-                   "counts": counts, "pair_statuses": statuses, "batches": len(shards),
-                   "byte_budget": args.byte_budget, "row_limit": args.row_limit,
-                   "budget_scope": "logical old+new source bytes, not RSS; oversized pairs run alone"}
-        result = generation / "result.json"
-        if result.exists():
-            require(json.loads(result.read_text()) == summary, "completed generation summary mismatch")
-        else:
-            write_new_json(result, summary)
-        return dict(summary, new_batches=new, reused_batches=reused, native_invocations_this_run=native_calls)
+                write_new_json(manifest, inputs)
+            database = generation / "temporal.duckdb"
+            connection = duckdb.connect(str(database), config={"allow_unsigned_extensions": True})
+            connection.execute(f"LOAD {quote(args.extension.resolve())}")
+            symbol_type = connection.execute("SELECT return_type FROM duckdb_functions() WHERE function_name='spur_graph_symbols'").fetchone()[0]
+            connection.execute(f"ATTACH {quote(args.metadata.resolve())} AS frozen (READ_ONLY)")
+            print(json.dumps({"state": "indexing", "generation_directory": str(generation)}), flush=True)
+            for table in ("commits", "comparisons", "changes", "parse_tasks", "symbol_pairs", "change_pairs"):
+                connection.execute(f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM frozen.{table}")
+            index_inputs(connection, inputs, symbol_type)
+            validate_metadata(connection)
+            publish_current_status(generation, generation_id, "running", False)
+            shards, reused, new, native_calls = [], 0, 0, 0
+            for batch_id, (pair_ids, source_bytes) in enumerate(batches(connection, args.row_limit, args.byte_budget)):
+                require(len(pair_ids) <= args.row_limit and (source_bytes <= args.byte_budget or len(pair_ids) == 1),
+                        "pair batch exceeds the row/byte contract")
+                expected = {"generation": generation_id, "batch_id": batch_id, "pair_ids": pair_ids,
+                            "rows": len(pair_ids), "input_bytes": source_bytes, "byte_budget": args.byte_budget,
+                            "row_limit": args.row_limit, "oversized": source_bytes > args.byte_budget}
+                receipt_path = generation / "receipts" / f"{batch_id:06}.json"
+                if receipt_path.exists():
+                    receipt = json.loads(receipt_path.read_text())
+                    shard = verify_receipt(generation, receipt, expected)
+                    reused += 1
+                else:
+                    phase = time.perf_counter()
+                    evaluate_batch(connection, pair_ids, symbol_type)
+                    actual_ids = [r[0] for r in connection.execute("SELECT pair_id FROM evaluated ORDER BY pair_id").fetchall()]
+                    require(actual_ids == pair_ids, "pair batch completion accounting mismatch")
+                    calls = connection.execute("SELECT count(*) FROM evaluated WHERE native_invoked").fetchone()[0]
+                    native_calls += calls
+                    shard = generation / "pairs" / f"{batch_id:06}-{uuid.uuid4().hex}.parquet"
+                    connection.execute(f"COPY evaluated TO {quote(shard)} (FORMAT PARQUET)")
+                    with shard.open("r+b") as stream:
+                        os.fsync(stream.fileno())
+                    receipt = dict(expected, file=str(shard.relative_to(generation)), file_bytes=shard.stat().st_size,
+                                   sha256=digest(shard), native_invocations=calls, elapsed_seconds=time.perf_counter()-phase)
+                    write_new_json(receipt_path, receipt)
+                    new += 1
+                    print(json.dumps({"state": "checkpoint", "batch_id": batch_id, "rows": len(pair_ids),
+                                      "input_bytes": source_bytes, "oversized": expected["oversized"]}), flush=True)
+                shards.append(str(shard))
+            materialize_views(connection, shards)
+            no_rows(connection, "SELECT pair_id FROM pair_results GROUP BY pair_id HAVING count(*)<>1", "duplicate completed pair")
+            no_rows(connection, "SELECT pair_id FROM symbol_pairs ANTI JOIN pair_results USING(pair_id)", "missing completed pair")
+            statuses = dict(connection.execute("SELECT status,count(*) FROM pair_results GROUP BY status").fetchall())
+            counts = {table: connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+                      for table in ("commits", "comparisons", "changes", "symbol_pairs", "pair_occurrences", "symbol_snapshots", "temporal_edges", "diagnostics")}
+            connection.execute("CHECKPOINT")
+            connection.close()
+            summary = {"complete": True, "state": "completed_with_errors" if statuses.get("parse_failed", 0) or statuses.get("matching_error", 0) else "completed",
+                       "generation": generation_id, "generation_directory": str(generation), "database": str(database),
+                       "current_status_file": str(generation / "current-status.json"),
+                       "counts": counts, "pair_statuses": statuses, "batches": len(shards),
+                       "byte_budget": args.byte_budget, "row_limit": args.row_limit,
+                       "budget_scope": "logical old+new source bytes, not RSS; oversized pairs run alone"}
+            result = generation / "result.json"
+            if result.exists():
+                require(json.loads(result.read_text()) == summary, "completed generation summary mismatch")
+            else:
+                write_new_json(result, summary)
+            publish_current_status(generation, generation_id, summary["state"], True)
+            return dict(summary, new_batches=new, reused_batches=reused, native_invocations_this_run=native_calls)
+        except Exception as error:
+            publish_current_status(generation, generation_id, "failed", False, error)
+            raise
 
 
 def main():

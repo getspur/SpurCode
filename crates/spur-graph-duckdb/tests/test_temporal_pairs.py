@@ -259,7 +259,10 @@ class TemporalPairsTests(unittest.TestCase):
             stream.write(b"corruption")
         self.assertIn("checksum", self.run_runner(budget=1, success=False).stderr)
         current = Path(resumed.get("current_status_file", Path(first["generation_directory"]) / "result.json"))
-        self.assertFalse(json.loads(current.read_text())["complete"], "failed checkpoint verification must revoke current completion")
+        validity = json.loads(current.read_text())
+        self.assertFalse(validity["complete"], "failed checkpoint verification must revoke current completion")
+        self.assertEqual(validity["state"], "failed")
+        self.assertIn("checksum", validity["error"])
         self.assertTrue(shard.read_bytes().endswith(b"corruption"))
 
     def test_thin_fold_first_payload_and_parent_scoping(self):
