@@ -121,6 +121,7 @@ class TemporalReferenceTests(unittest.TestCase):
                 self.assertEqual(len(commits[self.head]["parents"]), 2)
                 manifest = json.loads((output / "manifest.json").read_text())
                 self.assertIs(manifest["complete"], True)
+                self.assertEqual(manifest["indexed_commit_oid"], self.head)
                 for key in ("commits", "symbol_snapshots", "temporal_edges", "diagnostics"):
                     self.assertEqual(summary[key], manifest["row_counts"][key])
                 self.assertGreater(summary["symbol_snapshots"], 0)
@@ -180,7 +181,8 @@ class TemporalReferenceTests(unittest.TestCase):
         result = self.run_example("temporal_reference", self.repo, existing, 1, "cli")
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(marker.read_text(), "sentinel")
-        for body in ('{"commit_oid":"invalid"}\n', '{"wrong_field":"HEAD"}\n'):
+        for body in ('{"commit_oid":"invalid"}\n', '{"wrong_field":"HEAD"}\n',
+                     json.dumps({"commit_oid": "0" * 40}) + "\n"):
             requests = self.root / "invalid.jsonl"
             requests.write_text(body)
             output = self.root / ("invalid-" + str(len(body)) + ".jsonl")
@@ -188,6 +190,26 @@ class TemporalReferenceTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             sidecar = Path(str(output) + ".summary.json")
             self.assertFalse(sidecar.exists() and json.loads(sidecar.read_text())["complete"])
+        self.assertEqual(self.source_files(), self.source_before)
+
+    def test_oracle_diagnostics_are_separate_from_symbol_rows(self):
+        (self.source / "binary.py").write_bytes(b"\x00binary\n")
+        commit = self.commit("binary")
+        requests = self.root / "binary-request.jsonl"
+        requests.write_text(json.dumps({"commit_oid": commit}) + "\n")
+        output = self.root / "binary-symbols.jsonl"
+        result = self.run_example("temporal_symbol_oracle", self.source, requests, output)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(output.read_text(), "")
+        summary = json.loads(result.stdout)
+        self.assertIs(summary["complete"], True)
+        self.assertEqual(summary["diagnostics"], 1)
+        self.assertEqual(summary["zero_symbol_commits"], 1)
+        diagnostics = [json.loads(line) for line in
+                       Path(str(output) + ".diagnostics.jsonl").read_text().splitlines()]
+        self.assertEqual(len(diagnostics), 1)
+        self.assertEqual(diagnostics[0]["commit_oid"], commit)
+        self.assertIn("binary_blob", diagnostics[0]["diagnostic"])
         self.assertEqual(self.source_files(), self.source_before)
 
 
