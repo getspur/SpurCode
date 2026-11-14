@@ -213,6 +213,35 @@ class TemporalPairsTests(unittest.TestCase):
         with duckdb.connect(summary["database"], read_only=True) as c:
             self.assertEqual(c.execute("SELECT count(DISTINCT extractor_sha) FROM cache_index").fetchone()[0], 2)
 
+    def test_actual_producer_binary_skipped_schema(self):
+        self.write("binary.py", b"\0\xff")
+        self.commit("binary source")
+        self.fixture()
+        self.make_cache(inline=True)
+        self.export_cache("UPDATE cache SET status='binary_skipped',symbols=NULL,error=NULL WHERE binary_prefix", inline=True)
+        config = json.loads(self.config.read_text())
+        del config["sources"][0]["flags_glob"]
+        self.config.write_text(json.dumps(config))
+        summary = self.run_runner()
+        with duckdb.connect(summary["database"], read_only=True) as c:
+            rows = c.execute("SELECT status,new_status,native_invoked,array_length(changes) FROM pair_results "
+                             "JOIN symbol_pairs USING(pair_id) WHERE path='binary.py'").fetchall()
+            self.assertEqual(rows, [("binary_skipped", "binary_skipped", False, 0)])
+
+    def test_binary_skipped_requires_true_flag_null_symbols_and_null_error(self):
+        self.write("binary.py", b"\0\xff")
+        self.commit("binary source")
+        self.fixture()
+        config = json.loads(self.config.read_text())
+        del config["sources"][0]["flags_glob"]
+        self.config.write_text(json.dumps(config))
+        for index, assignment in enumerate(("binary_prefix=false", "symbols=[]", "error='unexpected error'")):
+            self.make_cache(inline=True)
+            self.export_cache("UPDATE cache SET status='binary_skipped',symbols=NULL,error=NULL WHERE binary_prefix; "
+                              "UPDATE cache SET " + assignment + " WHERE status='binary_skipped'", inline=True)
+            result = self.run_runner(output=f"invalid-binary-{index}", success=False)
+            self.assertIn("binary_skipped", result.stderr)
+
     def test_checkpoint_reuse_corruption_and_oversized_pair_receipt(self):
         self.fixture(history=True)
         first = self.run_runner(budget=1)
@@ -229,6 +258,8 @@ class TemporalPairsTests(unittest.TestCase):
         with shard.open("ab") as stream:
             stream.write(b"corruption")
         self.assertIn("checksum", self.run_runner(budget=1, success=False).stderr)
+        current = Path(resumed.get("current_status_file", Path(first["generation_directory"]) / "result.json"))
+        self.assertFalse(json.loads(current.read_text())["complete"], "failed checkpoint verification must revoke current completion")
         self.assertTrue(shard.read_bytes().endswith(b"corruption"))
 
     def test_thin_fold_first_payload_and_parent_scoping(self):
