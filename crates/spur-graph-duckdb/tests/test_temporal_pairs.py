@@ -49,12 +49,14 @@ class TemporalPairsTests(unittest.TestCase):
     def fixture(self, history=False):
         self.write("input.py", "def alpha(x):\n    doubled = x * 2\n    return doubled + 1\n")
         self.write("empty.py", "")
+        self.write("shared.py", "def shared():\n    return 1\n")
         self.write("notes.unknown", "unsupported file still receives a touch\n")
         self.root_commit = self.commit("root")
         if history:
             self.git("branch", "side")
             self.empty_commit = self.commit("empty", "--allow-empty")
             self.write("input.py", "def alpha(x):\n    doubled = x * 2\n    return doubled + 2\n")
+            self.write("shared.py", "def shared():\n    return 2\n")
             self.commit("modify")
             self.git("mv", "input.py", "renamed.py")
             self.commit("rename file")
@@ -62,9 +64,14 @@ class TemporalPairsTests(unittest.TestCase):
             self.commit("rename symbol")
             self.git("checkout", "-q", "side")
             self.write("side.py", "def side():\n    return 3\n")
+            self.write("shared.py", "def shared():\n    return 3\n")
             self.commit("side")
             self.git("checkout", "-q", "main")
-            self.git("merge", "--no-ff", "-qm", "merge", "side")
+            merged = subprocess.run(["git", "-C", str(self.repo), "merge", "--no-ff", "-qm", "merge", "side"],
+                                    capture_output=True, text=True)
+            self.assertEqual(merged.returncode, 1, merged.stdout + merged.stderr)
+            self.write("shared.py", "def shared():\n    return 4\n")
+            self.commit("resolve merge")
         self.head = self.git("rev-parse", "HEAD")
         inventory = self.root / "inventory"
         subprocess.run([str(EXAMPLES / "history_catalog"), str(self.repo), self.head, str(inventory)],
@@ -129,6 +136,7 @@ class TemporalPairsTests(unittest.TestCase):
         c = duckdb.connect(str(self.cache_db))
         c.execute(update)
         c.execute(f"COPY (SELECT {'*' if inline else '* EXCLUDE(binary_prefix)'} FROM cache) TO {quote(self.cache)} (FORMAT PARQUET)")
+        c.execute(f"COPY (SELECT DISTINCT blob_oid,binary_prefix FROM cache) TO {quote(self.flags)} (FORMAT PARQUET)")
         c.close()
 
     def run_runner(self, output="result", budget=100000, row_limit=2, success=True):
@@ -190,6 +198,21 @@ class TemporalPairsTests(unittest.TestCase):
             messages = c.execute("SELECT diagnostic FROM diagnostics").fetchall()
             self.assertTrue(any("left" in d or "right" in d for (d,) in messages))
 
+    def test_disjoint_producers_with_old_and_inline_flag_schemas(self):
+        self.fixture()
+        c = duckdb.connect(str(self.cache_db))
+        first = self.root / "first.parquet"
+        second = self.root / "second.parquet"
+        c.execute(f"COPY (SELECT * EXCLUDE(binary_prefix) FROM cache WHERE input_bytes=0) TO {quote(first)} (FORMAT PARQUET)")
+        c.execute(f"COPY (SELECT * REPLACE ({quote('b' * 64)} AS extractor_sha) FROM cache WHERE input_bytes<>0) TO {quote(second)} (FORMAT PARQUET)")
+        c.close()
+        self.config.write_text(json.dumps({"sources": [
+            {"cache_glob": str(first), "flags_glob": str(self.flags), "expected_extractor_sha": self.producer},
+            {"cache_glob": str(second), "expected_extractor_sha": "b" * 64}]}))
+        summary = self.run_runner()
+        with duckdb.connect(summary["database"], read_only=True) as c:
+            self.assertEqual(c.execute("SELECT count(DISTINCT extractor_sha) FROM cache_index").fetchone()[0], 2)
+
     def test_checkpoint_reuse_corruption_and_oversized_pair_receipt(self):
         self.fixture(history=True)
         first = self.run_runner(budget=1)
@@ -210,13 +233,18 @@ class TemporalPairsTests(unittest.TestCase):
 
     def test_thin_fold_first_payload_and_parent_scoping(self):
         self.fixture()
+        later_oid = "f" * 40
+        self.export_cache("INSERT INTO cache SELECT " + quote(later_oid) + ",language,extractor_sha,representative_path,"
+                          "list_transform(symbols,lambda s: struct_update(s,anchor_hash:='later_payload')),status,error,"
+                          "input_bytes,parsed_at,binary_prefix FROM cache WHERE representative_path='input.py'")
         c = duckdb.connect(str(self.metadata))
         pair = c.execute("SELECT pair_id FROM symbol_pairs WHERE new_blob_oid IS NOT NULL AND path='input.py'").fetchone()[0]
         change = c.execute("SELECT * FROM changes WHERE path='input.py'").fetchone()
         columns = [r[0] for r in c.description]
         mapping = dict(zip(columns, change))
-        c.execute("INSERT INTO symbol_pairs SELECT 1000,language,path,old_path,'D',new_blob_oid,NULL FROM symbol_pairs WHERE pair_id=?", [pair])
-        mapping.update(change_id=1000, status="D", old_blob_oid=mapping["new_blob_oid"], new_blob_oid=None)
+        c.execute("INSERT INTO parse_tasks SELECT language,?,path,byte_length FROM parse_tasks WHERE path='input.py' LIMIT 1", [later_oid])
+        c.execute("INSERT INTO symbol_pairs SELECT 1000,language,path,old_path,'D',?,NULL FROM symbol_pairs WHERE pair_id=?", [later_oid, pair])
+        mapping.update(change_id=1000, status="D", old_blob_oid=later_oid, new_blob_oid=None)
         c.execute("INSERT INTO changes VALUES(" + ",".join("?" for _ in columns) + ")", [mapping[k] for k in columns])
         c.execute("INSERT INTO change_pairs VALUES(1000,1000)")
         c.close()
@@ -225,9 +253,37 @@ class TemporalPairsTests(unittest.TestCase):
             rows = c.execute("SELECT change_kind,previous_stable_symbol_id,symbol.anchor_hash,change_id FROM symbol_changes WHERE symbol.entity_name='alpha'").fetchall()
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0][0:2], ("modified", None))
+            self.assertNotEqual(rows[0][2], "later_payload", "the first snapshot payload must win")
             self.assertEqual(rows[0][3], change[columns.index("change_id")])
             fold_columns = c.execute("DESCRIBE folded_pointers").fetchall()
             self.assertFalse(any("tokens" in r[1] or "STRUCT(entity_name" in r[1] for r in fold_columns))
+
+    def test_matching_error_is_a_status_not_an_empty_success(self):
+        self.fixture()
+        self.export_cache("UPDATE cache SET symbols=list_transform(symbols,lambda s: struct_update(s,entity_name:=NULL)) "
+                          "WHERE representative_path='input.py'")
+        summary = self.run_runner()
+        self.assertEqual(summary["state"], "completed_with_errors")
+        with duckdb.connect(summary["database"], read_only=True) as c:
+            self.assertEqual(c.execute("SELECT status FROM pair_results JOIN symbol_pairs USING(pair_id) WHERE path='input.py'").fetchone()[0], "matching_error")
+            self.assertGreater(c.execute("SELECT count(*) FROM diagnostics WHERE diagnostic LIKE 'matching_error:%'").fetchone()[0], 0)
+
+    def test_no_supported_pairs_still_has_file_touches_and_gitlink_diagnostic(self):
+        self.fixture()
+        c = duckdb.connect(str(self.metadata))
+        c.execute("DELETE FROM changes WHERE language IS NOT NULL")
+        c.execute("DELETE FROM symbol_pairs")
+        c.execute("DELETE FROM change_pairs")
+        c.execute("UPDATE changes SET status='T'")
+        c.execute("INSERT INTO changes SELECT 1000,comparison_id,commit_oid,parent_oid,parent_index,'A',old_mode,'160000',"
+                  "NULL,'0123456789012345678901234567890123456789',NULL,'vendor/submodule.rs',NULL,true FROM changes LIMIT 1")
+        c.close()
+        summary = self.run_runner()
+        self.assertEqual(summary["native_invocations_this_run"], 0)
+        with duckdb.connect(summary["database"], read_only=True) as c:
+            self.assertEqual(c.execute("SELECT change_kind FROM temporal_edges").fetchall(), [("modified",), ("modified",)])
+            self.assertEqual(c.execute("SELECT count(*) FROM symbol_snapshots").fetchone()[0], 0)
+            self.assertEqual(c.execute("SELECT count(*) FROM diagnostics WHERE diagnostic LIKE 'gitlink:%'").fetchone()[0], 1)
 
     def test_native_snapshot_edge_multisets_and_oracle_parent_provenance(self):
         self.fixture(history=True)
@@ -259,6 +315,8 @@ class TemporalPairsTests(unittest.TestCase):
             self.assertEqual(actual, expected)
             parents = c.execute("SELECT DISTINCT parent_oid FROM symbol_changes WHERE commit_oid=?", [self.head]).fetchall()
             self.assertEqual(len(parents), 2)
+            duplicates = c.execute("SELECT count(*) FROM symbol_snapshots WHERE key_commit=? AND entity_name='shared'", [self.head]).fetchone()[0]
+            self.assertEqual(duplicates, 2, "identical snapshots from two parents must remain two rows")
             self.assertEqual(c.execute("SELECT count(*) FROM diagnostics").fetchone()[0], 0)
 
 
