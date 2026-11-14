@@ -50,12 +50,12 @@ class IngestPlanTests(unittest.TestCase):
     def write_plan(self):
         self.plan.write_text(json.dumps(self.plan_value))
 
-    def run_ingest(self):
+    def run_ingest(self, *extra):
         extension = os.environ["SPUR_GRAPH_EXTENSION"]
         return subprocess.run(
             [sys.executable, str(Path(__file__).resolve().parents[1] / "examples/ingest_plan.py"),
              "--repo", str(self.repo), "--catalog", str(self.catalog), "--plan", str(self.plan),
-             "--extension", extension, "--output", str(self.root / "output")],
+             "--extension", extension, "--output", str(self.root / "output"), *extra],
             text=True, capture_output=True, timeout=30,
         )
 
@@ -87,6 +87,50 @@ class IngestPlanTests(unittest.TestCase):
         result = self.run_ingest()
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertIn("task metadata does not match", result.stderr)
+
+    def test_git_source_storage_persists_facts_without_duplicating_source_blobs(self):
+        first = self.run_ingest("--source-storage", "git")
+        self.assertEqual(first.returncode, 0, first.stderr)
+        connection = duckdb.connect(str(self.root / "output/duckdb-spur-graph.duckdb"), read_only=True)
+        try:
+            self.assertEqual(connection.execute("SELECT count(*) FROM duckdb_tables() WHERE table_name='blobs'").fetchall()[0][0], 0)
+            self.assertEqual(connection.execute('SELECT count(*),count(*) FILTER(WHERE binary_prefix) FROM blob_flags').fetchall()[0], (2, 0))
+            self.assertEqual(connection.execute('SELECT count(*) FROM parse_cache').fetchall()[0][0], 2)
+        finally:
+            connection.close()
+        second = self.run_ingest("--source-storage", "git")
+        self.assertEqual(second.returncode, 0, second.stderr)
+        result = json.loads((self.root / "output/head-ingestion-result.json").read_text())
+        self.assertEqual(result["new_parse_tasks_this_run"], 0)
+
+    def test_resume_backfills_missing_binary_flags_without_reparsing(self):
+        first = self.run_ingest("--source-storage", "git")
+        self.assertEqual(first.returncode, 0, first.stderr)
+        connection = duckdb.connect(str(self.root / "output/duckdb-spur-graph.duckdb"))
+        connection.execute('DELETE FROM blob_flags')
+        connection.close()
+        second = self.run_ingest("--source-storage", "git")
+        self.assertEqual(second.returncode, 0, second.stderr)
+        connection = duckdb.connect(str(self.root / "output/duckdb-spur-graph.duckdb"), read_only=True)
+        try:
+            self.assertEqual(connection.execute('SELECT count(*) FROM blob_flags').fetchall()[0][0], 2)
+        finally:
+            connection.close()
+        result = json.loads((self.root / "output/head-ingestion-result.json").read_text())
+        self.assertEqual(result["new_parse_tasks_this_run"], 0)
+
+    def test_git_to_persistent_transition_backfills_source_without_reparsing(self):
+        first = self.run_ingest("--source-storage", "git")
+        self.assertEqual(first.returncode, 0, first.stderr)
+        second = self.run_ingest()
+        self.assertEqual(second.returncode, 0, second.stderr)
+        connection = duckdb.connect(str(self.root / "output/duckdb-spur-graph.duckdb"), read_only=True)
+        try:
+            self.assertEqual(connection.execute('SELECT count(*) FROM blobs').fetchall()[0][0], 2)
+        finally:
+            connection.close()
+        result = json.loads((self.root / "output/head-ingestion-result.json").read_text())
+        self.assertEqual(result["new_parse_tasks_this_run"], 0)
 
     def test_existing_catalog_conflict_cannot_be_hidden_by_cache(self):
         first = self.run_ingest()
