@@ -2364,86 +2364,126 @@ pub fn symbol_changes_for_commit(
             continue;
         }
 
-        let mut direct_changes = Vec::new();
-        let mut deleted_candidates = Vec::new();
-        let mut added_candidates = Vec::new();
-
-        if matches!(file_change.kind, FileChangeKind::Renamed { .. }) {
-            deleted_candidates.extend(left_symbols.iter().map(|left| SymbolChange {
-                snapshot: snapshot_from(sha, deleted_path, left),
-                change_kind: ChangeKind::Deleted,
-                parent_sha: file_change.parent_sha.clone(),
-            }));
-            added_candidates.extend(right_symbols.iter().map(|right| SymbolChange {
-                snapshot: snapshot_from(sha, &file_change.path, right),
-                change_kind: ChangeKind::Added,
-                parent_sha: file_change.parent_sha.clone(),
-            }));
-        } else {
-            let mut left_by_identity: HashMap<(String, String, Option<String>), &ExtractedSymbol> =
-                left_symbols
-                    .iter()
-                    .map(|symbol| {
-                        (
-                            (
-                                symbol.entity_name.clone(),
-                                symbol.symbol_kind.clone(),
-                                symbol.enclosing_scope.clone(),
-                            ),
-                            symbol,
-                        )
-                    })
-                    .collect();
-
-            for right in right_symbols.iter() {
-                let identity = (
-                    right.entity_name.clone(),
-                    right.symbol_kind.clone(),
-                    right.enclosing_scope.clone(),
-                );
-                let right_snapshot = snapshot_from(sha, &file_change.path, right);
-                match left_by_identity.remove(&identity) {
-                    Some(left) => {
-                        let left_snapshot = snapshot_from(sha, deleted_path, left);
-                        if left.anchor_hash == right.anchor_hash
-                            && left_snapshot.key.stable_symbol_id
-                                == right_snapshot.key.stable_symbol_id
-                        {
-                            continue;
-                        }
-                        direct_changes.push(SymbolChange {
-                            snapshot: right_snapshot,
-                            change_kind: ChangeKind::Modified,
-                            parent_sha: file_change.parent_sha.clone(),
-                        });
-                    }
-                    None => added_candidates.push(SymbolChange {
-                        snapshot: right_snapshot,
-                        change_kind: ChangeKind::Added,
-                        parent_sha: file_change.parent_sha.clone(),
-                    }),
-                }
-            }
-
-            for (_, left) in left_by_identity {
-                deleted_candidates.push(SymbolChange {
-                    snapshot: snapshot_from(sha, deleted_path, left),
-                    change_kind: ChangeKind::Deleted,
-                    parent_sha: file_change.parent_sha.clone(),
-                });
-            }
-        }
-
-        let (rename_changes, diagnostics) =
-            detect_renames(deleted_candidates, added_candidates, file_change, language);
+        let (changes, diagnostics) =
+            symbol_changes_from_extracted(sha, file_change, &left_symbols, &right_symbols);
         ctx.record_diagnostics(diagnostics);
 
-        for change in direct_changes.into_iter().chain(rename_changes) {
+        for change in changes {
             push_symbol_change(&mut out, &mut by_snapshot_key, change);
         }
     }
 
     Ok(out)
+}
+
+/// Match symbols already extracted from the two sides of a file change.
+///
+/// Both sides must be extracted with the language of `file_change.path`, including
+/// file renames. Blob loading, binary checks, and parse diagnostics belong to the
+/// caller. Unsupported paths and gitlinks produce no changes or diagnostics.
+/// Candidate order and duplicate identities retain the commit walker's matching
+/// semantics; use [`merge_symbol_changes`] to fold changes across a commit.
+pub fn symbol_changes_from_extracted(
+    sha: &str,
+    file_change: &FileChange,
+    left_symbols: &[ExtractedSymbol],
+    right_symbols: &[ExtractedSymbol],
+) -> (Vec<SymbolChange>, Vec<String>) {
+    if matches!(file_change.kind, FileChangeKind::Gitlink { .. }) {
+        return (Vec::new(), Vec::new());
+    }
+    let Some(language) = Language::from_path(&file_change.path.to_path_buf()) else {
+        return (Vec::new(), Vec::new());
+    };
+    let deleted_path = match &file_change.kind {
+        FileChangeKind::Renamed { from } => from,
+        _ => &file_change.path,
+    };
+
+    let mut direct_changes = Vec::new();
+    let mut deleted_candidates = Vec::new();
+    let mut added_candidates = Vec::new();
+
+    if matches!(file_change.kind, FileChangeKind::Renamed { .. }) {
+        deleted_candidates.extend(left_symbols.iter().map(|left| SymbolChange {
+            snapshot: snapshot_from(sha, deleted_path, left),
+            change_kind: ChangeKind::Deleted,
+            parent_sha: file_change.parent_sha.clone(),
+        }));
+        added_candidates.extend(right_symbols.iter().map(|right| SymbolChange {
+            snapshot: snapshot_from(sha, &file_change.path, right),
+            change_kind: ChangeKind::Added,
+            parent_sha: file_change.parent_sha.clone(),
+        }));
+    } else {
+        let mut left_by_identity: HashMap<(String, String, Option<String>), &ExtractedSymbol> =
+            left_symbols
+                .iter()
+                .map(|symbol| {
+                    (
+                        (
+                            symbol.entity_name.clone(),
+                            symbol.symbol_kind.clone(),
+                            symbol.enclosing_scope.clone(),
+                        ),
+                        symbol,
+                    )
+                })
+                .collect();
+
+        for right in right_symbols.iter() {
+            let identity = (
+                right.entity_name.clone(),
+                right.symbol_kind.clone(),
+                right.enclosing_scope.clone(),
+            );
+            let right_snapshot = snapshot_from(sha, &file_change.path, right);
+            match left_by_identity.remove(&identity) {
+                Some(left) => {
+                    let left_snapshot = snapshot_from(sha, deleted_path, left);
+                    if left.anchor_hash == right.anchor_hash
+                        && left_snapshot.key.stable_symbol_id == right_snapshot.key.stable_symbol_id
+                    {
+                        continue;
+                    }
+                    direct_changes.push(SymbolChange {
+                        snapshot: right_snapshot,
+                        change_kind: ChangeKind::Modified,
+                        parent_sha: file_change.parent_sha.clone(),
+                    });
+                }
+                None => added_candidates.push(SymbolChange {
+                    snapshot: right_snapshot,
+                    change_kind: ChangeKind::Added,
+                    parent_sha: file_change.parent_sha.clone(),
+                }),
+            }
+        }
+
+        for (_, left) in left_by_identity {
+            deleted_candidates.push(SymbolChange {
+                snapshot: snapshot_from(sha, deleted_path, left),
+                change_kind: ChangeKind::Deleted,
+                parent_sha: file_change.parent_sha.clone(),
+            });
+        }
+    }
+
+    let (rename_changes, diagnostics) =
+        detect_renames(deleted_candidates, added_candidates, file_change, language);
+    direct_changes.extend(rename_changes);
+    (direct_changes, diagnostics)
+}
+
+/// Fold commit changes by parent and snapshot key, retaining the first payload.
+/// Conflicting change kinds for the same key are represented as `Modified`.
+pub fn merge_symbol_changes(changes: impl IntoIterator<Item = SymbolChange>) -> Vec<SymbolChange> {
+    let mut out = Vec::new();
+    let mut by_snapshot_key = HashMap::new();
+    for change in changes {
+        push_symbol_change(&mut out, &mut by_snapshot_key, change);
+    }
+    out
 }
 
 fn push_symbol_change(
