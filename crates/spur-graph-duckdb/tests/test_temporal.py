@@ -81,8 +81,8 @@ class TemporalTests(unittest.TestCase):
         self.assertEqual(result["changes"][0]["symbol"], new)
 
     def test_rename_body_and_old_path_identifiers(self):
-        old = symbol("before")
-        new = symbol("after")
+        old = dict(symbol("before"), enclosing_scope="impl Outer")
+        new = dict(symbol("after"), enclosing_scope="impl Outer")
         before_id = self.changes("A", [], [old], path="old.rs")["changes"][0]["stable_symbol_id"]
         renamed = self.changes("R", [old], [new], path="new.rs", old_path="old.rs")["changes"]
         self.assertEqual(len(renamed), 1)
@@ -151,15 +151,26 @@ class TemporalTests(unittest.TestCase):
             "WHEN i % 3 = 1 THEN 'pub fn f' || i || '() -> u32 { 1 }' "
             "ELSE 'pub fn f' || i || '() -> u32 { 1 }\npub fn g' || i || '() -> u32 { 2 }' END AS source "
             "FROM range(?) t(i)", [count])
+        self.connection.execute(
+            "CREATE TEMP TABLE cached AS SELECT i, spur_graph_symbols('input.rs', source) symbols FROM pairs")
         rows = self.connection.execute(
             "SELECT i, spur_graph_symbol_changes('input.rs', '', 'A', spur_graph_symbols('input.rs', ''), "
-            "spur_graph_symbols('input.rs', source)) FROM pairs WHERE i % 2 = 0 ORDER BY i"
+            "symbols) FROM cached WHERE i % 2 = 0 ORDER BY i"
         ).fetchall()
         self.assertEqual([i for i, _ in rows], list(range(0, count, 2)))
         for i, result in rows:
             self.assertEqual(len(result["changes"]), i % 3)
             self.assertTrue(all(c["change_kind"] == "added" for c in result["changes"]))
             self.assertTrue(all(c["symbol"]["tokens"] for c in result["changes"]))
+        deleted = self.connection.execute(
+            "SELECT i, spur_graph_symbol_changes('input.rs', 'input.rs', 'D', symbols, "
+            "spur_graph_symbols('input.rs', '')) FROM cached WHERE i % 2 = 0 ORDER BY i"
+        ).fetchall()
+        for (i, added), (other_i, removed) in zip(rows, deleted):
+            self.assertEqual(i, other_i)
+            self.assertCountEqual([c["symbol"] for c in added["changes"]],
+                                  [c["symbol"] for c in removed["changes"]])
+            self.assertTrue(all(c["change_kind"] == "deleted" for c in removed["changes"]))
         repeated = self.connection.execute(
             "SELECT spur_graph_symbol_changes('input.rs', '', 'A', spur_graph_symbols('input.rs', ''), "
             "spur_graph_symbols('input.rs', 'pub fn constant() -> u32 { 1 }')) FROM range(3)"
