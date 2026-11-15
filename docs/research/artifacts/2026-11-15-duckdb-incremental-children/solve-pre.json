@@ -1,0 +1,2151 @@
+[
+  {
+    "name": "valid",
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "include_smt": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key",
+            "checkpoint_key",
+            "child_position"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "checkpoint_parent",
+            "cache_covered",
+            "children_parent"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "checkpoint": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "children": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              },
+              "collection": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "ordinal": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              }
+            },
+            "rows": {
+              "node_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_a2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "node_b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_v2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "edge_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "span_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 3
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "macro_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 4
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "scope_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 5
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "checkpoint_key": {
+            "relation": "checkpoint",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "child_position": {
+            "relation": "children",
+            "fields": [
+              "blob",
+              "path",
+              "version",
+              "collection",
+              "ordinal"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "checkpoint_parent": {
+            "child_relation": "checkpoint",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "cache_covered": {
+            "child_relation": "cache",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "checkpoint",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "children_parent": {
+            "child_relation": "children",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "unknowns": []
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: data integrity rule `data_integrity.unique`: rule `data_integrity.unique` requires 1 subjects, got 3"
+        }
+      ],
+      "isError": true
+    }
+  },
+  {
+    "name": "duplicate_child",
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "include_smt": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key",
+            "checkpoint_key",
+            "child_position"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "checkpoint_parent",
+            "cache_covered",
+            "children_parent"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "checkpoint": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "children": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              },
+              "collection": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "ordinal": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              }
+            },
+            "rows": {
+              "node_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_a2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "node_b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_v2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "edge_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "span_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 3
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "macro_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 4
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "scope_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 5
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "duplicate": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "checkpoint_key": {
+            "relation": "checkpoint",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "child_position": {
+            "relation": "children",
+            "fields": [
+              "blob",
+              "path",
+              "version",
+              "collection",
+              "ordinal"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "checkpoint_parent": {
+            "child_relation": "checkpoint",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "cache_covered": {
+            "child_relation": "cache",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "checkpoint",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "children_parent": {
+            "child_relation": "children",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "unknowns": []
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: data integrity rule `data_integrity.unique`: rule `data_integrity.unique` requires 1 subjects, got 3"
+        }
+      ],
+      "isError": true
+    }
+  },
+  {
+    "name": "orphan_child",
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "include_smt": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key",
+            "checkpoint_key",
+            "child_position"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "checkpoint_parent",
+            "cache_covered",
+            "children_parent"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "checkpoint": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "children": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              },
+              "collection": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "ordinal": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              }
+            },
+            "rows": {
+              "node_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_a2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "node_b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_v2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "edge_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "span_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 3
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "macro_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 4
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "scope_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 5
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "orphan": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 3
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "checkpoint_key": {
+            "relation": "checkpoint",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "child_position": {
+            "relation": "children",
+            "fields": [
+              "blob",
+              "path",
+              "version",
+              "collection",
+              "ordinal"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "checkpoint_parent": {
+            "child_relation": "checkpoint",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "cache_covered": {
+            "child_relation": "cache",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "checkpoint",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "children_parent": {
+            "child_relation": "children",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "unknowns": []
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: data integrity rule `data_integrity.unique`: rule `data_integrity.unique` requires 1 subjects, got 3"
+        }
+      ],
+      "isError": true
+    }
+  },
+  {
+    "name": "missing_checkpoint",
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "include_smt": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key",
+            "checkpoint_key",
+            "child_position"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "checkpoint_parent",
+            "cache_covered",
+            "children_parent"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "null_fact_parent": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "checkpoint": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            },
+            "rows": {
+              "a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "versioned": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              }
+            }
+          },
+          "children": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "version": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 3
+              },
+              "collection": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "ordinal": {
+                "kind": "integer",
+                "minimum": 1,
+                "maximum": 2
+              }
+            },
+            "rows": {
+              "node_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_a2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 2
+                  }
+                }
+              },
+              "node_b": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "node_v2": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "edge_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "span_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 3
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "macro_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 4
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              },
+              "scope_a": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "version": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "collection": {
+                    "present": true,
+                    "value": 5
+                  },
+                  "ordinal": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "checkpoint_key": {
+            "relation": "checkpoint",
+            "fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "child_position": {
+            "relation": "children",
+            "fields": [
+              "blob",
+              "path",
+              "version",
+              "collection",
+              "ordinal"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "checkpoint_parent": {
+            "child_relation": "checkpoint",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "cache_covered": {
+            "child_relation": "cache",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "checkpoint",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          },
+          "children_parent": {
+            "child_relation": "children",
+            "child_fields": [
+              "blob",
+              "path",
+              "version"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "version"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "unknowns": []
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: data integrity rule `data_integrity.unique`: rule `data_integrity.unique` requires 1 subjects, got 3"
+        }
+      ],
+      "isError": true
+    }
+  }
+]
