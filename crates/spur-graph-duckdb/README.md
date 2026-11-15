@@ -1,9 +1,9 @@
 # SPUR graph DuckDB extension
 
-This native prototype exposes SPUR's existing symbol extractor as
-`spur_graph_symbols(logical_path, source) -> LIST<STRUCT>` through DuckDB's V2
-C API. DuckDB supplies source vectors; the extension reuses parser/query state
-per worker and language, and writes typed symbol and token vectors.
+This native prototype exposes SPUR's symbol extractor and native single-file
+graph facts through DuckDB's V2 C API. DuckDB supplies source vectors; the
+extension reuses parser/query state per worker and language, and writes typed
+primitive, list and struct vectors.
 
 The adapter follows `duckdb/extension-template-rs` at
 `a679601f8e133db7546777c6637bc7a6c2d2780e` and pins `duckdb-neo = 0.20000.2`.
@@ -29,6 +29,7 @@ SPUR_REMOTE=0 CARGO_TARGET_DIR=/tmp/spur-graph-duckdb-target scripts/spur-cargo 
 SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
   SPUR_HISTORY_CATALOG=/tmp/spur-graph-duckdb-target/release/examples/history_catalog \
   SPUR_TEMPORAL_EXAMPLES_DIR=/tmp/spur-graph-duckdb-target/release/examples \
+  SPUR_FILE_FACTS_ORACLE=/tmp/spur-graph-duckdb-target/release/examples/reference_file_facts \
   /tmp/spur-graph-duckdb-test/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -v
 ```
 
@@ -68,6 +69,122 @@ vectors across chunk boundaries and Parquet persistence. `reference_symbols`
 provides an independent direct-Rust oracle for a Git batch frame;
 `catalog_git_sources` inventories a frozen Git tree using the SPUR language
 registry.
+
+## Typed single-file facts
+
+```sql
+spur_graph_file_facts(logical_path VARCHAR, source VARCHAR) -> STRUCT(
+    nodes STRUCT(...)[], edges STRUCT(...)[], spans STRUCT(...)[],
+    macro_invocations STRUCT(...)[], macro_scopes STRUCT(...)[]
+)
+```
+
+Each list preserves all native fields, including nullable edge targets,
+binding/import/receiver/scope evidence, confidence and nested macro attributes
+and resolution candidates. IDs/ranges retain integer precision; confidence
+scores use `FLOAT`. Enum labels follow native serialization; payload variants
+use explicit typed structs with inactive payloads NULL. Inspect the complete
+type with `DESCRIBE SELECT spur_graph_file_facts('input.rs', '')` or the
+[independent native parity contract](tests/test_file_facts.py).
+
+The path must be a nonempty relative logical path that does not escape its
+root; the file need not exist. Source is UTF-8 `VARCHAR`. NULL in either argument
+returns NULL. Invalid/unsupported paths raise SQL errors; `TRY(...)` converts
+them to NULL. Empty valid source returns non-NULL native facts and may include
+a file node/span. The API performs no file discovery, reads or Git operations.
+
+Extraction and pending-reference resolution cover **one file**. Cross-file
+references can remain unresolved, with native evidence retained. Each call
+creates fresh local numeric IDs. Join `(blob_oid, logical_path, extractor_sha,
+local_id)`; use the same input key with textual macro/symbol IDs. Native AST
+extraction still parses a whole source blob for each missing key; SQL batching
+does not make parser computation SIMD or replace repository-wide resolution.
+
+[examples/file_facts.sql](examples/file_facts.sql) accepts already staged
+`staged_sources(blob_oid VARCHAR, logical_path VARCHAR, source VARCHAR,
+extractor_sha VARCHAR)` and a separate `source_lineage` relation containing
+those three key columns plus arbitrary caller lineage columns (reserve
+`extraction_status`). Cache keys must be non-NULL. Duplicate source rows are
+deduplicated; conflicting source values for one key are rejected. The caller
+must supply the actual blob identity and loaded extractor version; an artifact
+SHA-256 is one suitable `extractor_sha`. Stage only keys for that loaded version.
+
+The safe full-facts cache key is **`(blob_oid, logical_path, extractor_sha)`**.
+Identical bytes at different paths can produce different file facts; the
+temporal-symbol `(blob_oid, language)` identity below does not apply here. The
+script materializes an anti-join of missing keys, stores the typed extraction
+result once, then expands each of the five lists into a separate table. DuckDB
+`TRY` can internally retry a failed vector row-by-row; there is no exactly-once
+native parser-call guarantee on error. `fact_ordinal` retains list position.
+For example, resolve edge sources without mixing file-local IDs:
+
+```sql
+SELECT e.logical_path, e.edge_id, n.label
+FROM file_facts_edges e JOIN file_facts_nodes n
+  USING (blob_oid, logical_path, extractor_sha)
+WHERE e.source_node_id = n.node_id;
+```
+
+`file_facts_cache` retains every parent and its status: `ok`, `empty_source`,
+`empty_facts` (all five lists empty), `null_input` or `extraction_error` (a
+non-NULL input whose `TRY` result is NULL; no error text is retained).
+`file_facts_occurrences` preserves every caller row, including duplicate
+commit/parent occurrences and NULL root parents. Absent cache keys get
+`not_cached`. Join occurrences to child tables on all three cache-key columns.
+Empty lists emit no children; never infer completion from child row counts.
+
+Run this self-contained example after building/packaging above. It stages one
+synthetic blob and two parent occurrences, runs the exact SQL twice, and writes
+the database plus seven typed Parquet snapshots in `/tmp/spur-file-facts-demo`:
+
+```sh
+SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
+SPUR_FILE_FACTS_SQL="$PWD/crates/spur-graph-duckdb/examples/file_facts.sql" \
+/tmp/spur-graph-duckdb-test/bin/python - <<'PY'
+import hashlib, os
+from pathlib import Path
+import duckdb
+
+extension = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve()
+workflow = Path(os.environ['SPUR_FILE_FACTS_SQL']).read_text()
+extractor_sha = hashlib.sha256(extension.read_bytes()).hexdigest()
+output = Path('/tmp/spur-file-facts-demo')
+output.mkdir(exist_ok=True)
+os.chdir(output)
+with duckdb.connect('facts.duckdb', config={'allow_unsigned_extensions': True}) as con:
+    con.execute("LOAD '" + str(extension).replace("'", "''") + "'")
+    con.execute('''CREATE TEMP TABLE staged_sources AS
+        SELECT 'demo-blob'::VARCHAR blob_oid, 'src/demo.rs'::VARCHAR logical_path,
+               'fn helper() {} fn entry() { helper(); remote_call(); }'::VARCHAR source,
+               ?::VARCHAR extractor_sha''', [extractor_sha])
+    con.execute('''CREATE TEMP TABLE source_lineage AS
+        SELECT 'demo-repo' repository, 'merge' commit_oid, p.parent_oid,
+               blob_oid, logical_path, extractor_sha
+        FROM staged_sources CROSS JOIN (VALUES ('p1'), ('p2')) p(parent_oid)''')
+    con.execute(workflow)
+    print('first run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])
+    con.execute(workflow)
+    print('second run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])
+    print(con.execute('SELECT blob_oid, logical_path, status FROM file_facts_cache').fetchall())
+print(output)
+PY
+```
+
+Use one cache writer and no surrounding transaction. The database transaction
+commits before Parquet export; snapshots are replaced on rerun and the file set
+is not published atomically. Child tables cover all cached versions; occurrences
+reflect the current caller relation. All statuses, including failures/NULL, are
+cached: delete the exact cache key explicitly to retry it, then rerun to rebuild
+children/snapshots. A changed extractor hash creates new keys. An incompatible
+output schema requires an explicit cache migration or fresh database.
+
+Run the focused real-engine workflow checks with the pinned test environment:
+
+```sh
+SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
+  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover \
+  -s crates/spur-graph-duckdb/tests -p test_file_facts_pipeline.py -v
+```
 
 ## Repository ingestion example
 
@@ -183,5 +300,5 @@ These experiments batch SQL staging and reuse content-addressed facts. Native
 AST extraction still parses a whole source blob for each distinct parse key.
 Input byte budgets do not bound AST, nested-vector or output memory; Parquet
 row-group layout also affects cache-read memory and throughput. Production
-admission/backpressure policy, call edges, community distribution and WASM
-support remain separate integration work.
+admission/backpressure policy, temporal call-edge integration, community
+distribution and WASM support remain separate integration work.
