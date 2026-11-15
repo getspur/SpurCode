@@ -85,23 +85,13 @@ fn assert_call(
             edge.relation == RelationKind::Calls
                 && edge.source_node_id == owner
                 && edge.target_label.as_deref() == Some(name)
+                && edge.scope_text.as_deref() == scope
         })
         .collect();
     let expected = target.map(|decl| definition(facts, source, decl));
-    let edge = calls
-        .iter()
-        .find(|edge| edge.target_node_id == expected && edge.scope_text.as_deref() == scope)
-        .unwrap_or_else(|| {
-            let mut parser = tree_sitter::Parser::new();
-            parser
-                .set_language(&tree_sitter_rust::LANGUAGE.into())
-                .unwrap();
-            let tree = parser.parse(source, None).unwrap();
-            panic!(
-                "{caller}: missing {scope:?}::{name} -> {expected:?}; calls: {calls:?}; syntax: {}",
-                tree.root_node().to_sexp()
-            )
-        });
+    assert_eq!(calls.len(), 1, "{caller}: {scope:?}::{name}: {calls:?}");
+    let edge = calls[0];
+    assert_eq!(edge.target_node_id, expected, "{caller}: {scope:?}::{name}");
     assert_eq!(edge.receiver_text.as_deref(), receiver, "{caller}::{name}");
     if expected.is_some() {
         assert_eq!(edge.confidence, Confidence::Heuristic);
@@ -275,6 +265,8 @@ fn caller() {
     wrapper!(::foreign::helper(), foreign::nested::helper(), Vec::<u8>::new(),
         LocalFactory::make::<u8>(), foreign::make::<u8>());
 }
+fn generic_only() { wrapper!(LocalFactory::make::<u8>(), foreign::make::<u8>()); }
+fn generic_nested() { wrapper!(Vec::<Option<u8>>::new(), LocalFactory::make::<Option<u8>>()); }
 "#;
     let facts = extract(source);
     assert_call(
@@ -319,6 +311,35 @@ fn caller() {
         "caller",
         "make",
         Some("foreign"),
+        None,
+        None,
+    );
+    for caller in ["generic_only", "generic_nested"] {
+        assert_call(
+            &facts,
+            source,
+            caller,
+            "make",
+            Some("LocalFactory"),
+            None,
+            Some("fn make"),
+        );
+    }
+    assert_call(
+        &facts,
+        source,
+        "generic_only",
+        "make",
+        Some("foreign"),
+        None,
+        None,
+    );
+    assert_call(
+        &facts,
+        source,
+        "generic_nested",
+        "new",
+        Some("Vec::<Option<u8>>"),
         None,
         None,
     );
