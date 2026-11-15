@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::str;
 
 use anyhow::{anyhow, Context as _};
@@ -356,6 +356,57 @@ impl BytesExtractor {
             );
         }
         Ok(extracted_symbols(&self.config, source, &captures))
+    }
+
+    /// Extract native graph facts for one supplied file without filesystem or
+    /// repository access, using this extractor's configured language.
+    ///
+    /// The logical path need not exist. It must be nonempty UTF-8 and relative,
+    /// with no parent components or drive prefix. Separators and harmless `.`
+    /// components are normalized lexically. Each call starts fresh numeric IDs;
+    /// pending-edge resolution considers only this file, so references needing
+    /// other files may remain unresolved with their native evidence intact.
+    pub fn extract_file_facts(
+        &mut self,
+        logical_path: &Path,
+        bytes: &[u8],
+    ) -> Result<GraphFacts, ExtractError> {
+        let logical_path = logical_path
+            .to_str()
+            .ok_or_else(|| ExtractError::Extraction("logical path must be UTF-8".into()))?;
+        // Native fact paths use slash separators, including on Windows. Validate
+        // that spelling so a backslash cannot hide a root or parent component.
+        let logical_path = logical_path.replace('\\', "/");
+        let mut path = PathBuf::new();
+        for component in Path::new(&logical_path).components() {
+            match component {
+                Component::Normal(part) => path.push(part),
+                Component::CurDir => {}
+                _ => {
+                    return Err(ExtractError::Extraction(
+                        "logical path must be relative with no parent components".into(),
+                    ));
+                }
+            }
+        }
+        if path.as_os_str().is_empty() {
+            return Err(ExtractError::Extraction(
+                "logical path must name a file".into(),
+            ));
+        }
+        let path_bytes = path.as_os_str().as_encoded_bytes();
+        if path_bytes.first().is_some_and(u8::is_ascii_alphabetic)
+            && path_bytes.get(1) == Some(&b':')
+        {
+            return Err(ExtractError::Extraction(
+                "logical path must not have a drive prefix".into(),
+            ));
+        }
+
+        let mut builder = FactBuilder::new(Path::new(""));
+        self.extract_graph_facts(&mut builder, &path, bytes)?;
+        builder.resolve_pending_edges();
+        Ok(builder.into_facts())
     }
 
     pub(crate) fn extract_graph_facts(
