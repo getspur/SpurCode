@@ -1,0 +1,1009 @@
+{
+  "phase": "ingest",
+  "all_checks_passed": true,
+  "runtime": {
+    "version": "v2.0.0",
+    "threads": 10,
+    "memory_limit": "19.1 GiB"
+  },
+  "pid": 63988,
+  "python": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+  "script_sha256": "eb85255ac8a978f8c32cd882fe90bd1fd04d89e082c149395c86ea5d7edbf92a",
+  "workflow_sha256": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6",
+  "extension_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+  "baseline_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "snapshot_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+  "snapshot_commit": "61ba3d200439a541dce4c1617ca9277be7d438af",
+  "admitted_sources": 4098,
+  "seconds": 92.700269541936,
+  "receipts": [
+    {
+      "name": "schema",
+      "sql": "SELECT table_catalog,table_name,column_name,data_type\n       FROM information_schema.columns WHERE table_schema='main'\n       ORDER BY table_catalog,table_name,ordinal_position",
+      "params": [],
+      "rows": [
+        {
+          "table_catalog": "frozen",
+          "table_name": "admission",
+          "column_name": "path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "admission",
+          "column_name": "accepted",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "edge_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "source_node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "target_node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "relation",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "target_label",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "import_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "receiver_text",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "scope_text",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "confidence",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "confidence_score",
+          "data_type": "FLOAT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "edge_kind",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "bind_method",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "evidence_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "directed",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "change_kind",
+          "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "facts",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "facts",
+          "column_name": "value",
+          "data_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "git_blob_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "bytes",
+          "data_type": "BIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "suffix",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "area",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "status",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "error",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "site_id",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "file_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "caller_stable_symbol_id",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "enclosing",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "raw_macro_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "normalized_macro_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "attributes",
+          "data_type": "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "test_context",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "debug_assertions_candidate",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "execution_phase",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "resolution",
+          "data_type": "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "sink_family_candidate",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "scope",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "file_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "stable_key",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "label",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "kind",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "file_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "source_span_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "first_seen_run_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "source",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "source_bytes",
+          "data_type": "BLOB"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "file_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "sha256",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "span_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "file_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "start_byte",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "end_byte",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "start_line",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "end_line",
+          "data_type": "UINTEGER"
+        }
+      ],
+      "seconds": 0.029084374895319343
+    },
+    {
+      "name": "runtime",
+      "sql": "SELECT version() version,current_setting('threads') threads,\n     current_setting('memory_limit') memory_limit",
+      "params": [],
+      "rows": [
+        {
+          "version": "v2.0.0",
+          "threads": 10,
+          "memory_limit": "19.1 GiB"
+        }
+      ],
+      "seconds": 0.0008592088706791401
+    },
+    {
+      "name": "loaded_extension",
+      "sql": "SELECT extension_name,loaded,extension_version\n       FROM duckdb_extensions() WHERE extension_name='spur_graph'",
+      "params": [],
+      "rows": [
+        {
+          "extension_name": "spur_graph",
+          "loaded": true,
+          "extension_version": "0.1.0"
+        }
+      ],
+      "seconds": 0.003771791933104396
+    },
+    {
+      "name": "source_byte_verification",
+      "sql": "SELECT s.logical_path,s.source,s.source_bytes,s.file_oid,s.sha256,i.git_blob_oid\n      FROM frozen.main.sources s JOIN frozen.main.inventory i ON i.path=s.logical_path\n      ORDER BY s.logical_path",
+      "params": [],
+      "input_rows": 4098,
+      "result_storage": "source-manifest.jsonl",
+      "verified_utf8_sha256_git_blob": true,
+      "manifest_sha256": "a7159df8f5e93ab45d5804a9fd6abb6284012c483b2c916feda66944316a247b"
+    },
+    {
+      "name": "pipeline_deltas",
+      "sql": "SELECT\n       (SELECT count(*) FROM file_facts_missing) missing,\n       (SELECT count(*) FROM file_facts_extracted) extracted,\n       (SELECT count(*) FROM file_facts_child_refresh) child_refresh,\n       (SELECT count(*) FROM file_facts_child_removed) child_removed",
+      "params": [],
+      "rows": [
+        {
+          "missing": 4098,
+          "extracted": 4098,
+          "child_refresh": 8196,
+          "child_removed": 0
+        }
+      ],
+      "seconds": 0.0016368329524993896
+    },
+    {
+      "name": "controlled_calls",
+      "sql": "WITH ns AS (SELECT unnest(value.nodes) n FROM validation_controls),\n       es AS (SELECT unnest(value.edges) e FROM validation_controls)\n       SELECT src.n.label caller,e.e.target_label,e.e.scope_text,e.e.target_node_id,\n              dst.n.label target_name,owner.n.label target_owner,e.e.bind_method\n       FROM es e JOIN ns src ON src.n.node_id=e.e.source_node_id\n       LEFT JOIN ns dst ON dst.n.node_id=e.e.target_node_id\n       LEFT JOIN es parent ON parent.e.relation='contains' AND parent.e.target_node_id=dst.n.node_id\n       LEFT JOIN ns owner ON owner.n.node_id=parent.e.source_node_id\n       WHERE e.e.relation='calls' AND src.n.label IN\n        ('observed_macro','observed_helper','observed_local_macro','observed_mixed_macro')\n       ORDER BY caller,e.e.target_label,e.e.scope_text NULLS FIRST",
+      "params": [],
+      "rows": [
+        {
+          "caller": "observed_helper",
+          "target_label": "helper",
+          "scope_text": null,
+          "target_node_id": 10,
+          "target_name": "helper",
+          "target_owner": "control.rs",
+          "bind_method": "singleton"
+        },
+        {
+          "caller": "observed_local_macro",
+          "target_label": "new",
+          "scope_text": "LocalFactory",
+          "target_node_id": 4,
+          "target_name": "new",
+          "target_owner": "LocalFactory",
+          "bind_method": "macro_body_singleton"
+        },
+        {
+          "caller": "observed_macro",
+          "target_label": "default",
+          "scope_text": "Vec",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "bind_method": null
+        },
+        {
+          "caller": "observed_macro",
+          "target_label": "new",
+          "scope_text": "Vec",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "bind_method": null
+        },
+        {
+          "caller": "observed_mixed_macro",
+          "target_label": "helper",
+          "scope_text": null,
+          "target_node_id": 10,
+          "target_name": "helper",
+          "target_owner": "control.rs",
+          "bind_method": "macro_body_singleton"
+        },
+        {
+          "caller": "observed_mixed_macro",
+          "target_label": "new",
+          "scope_text": "LocalFactory",
+          "target_node_id": 4,
+          "target_name": "new",
+          "target_owner": "LocalFactory",
+          "bind_method": "macro_body_singleton"
+        },
+        {
+          "caller": "observed_mixed_macro",
+          "target_label": "new",
+          "scope_text": "Vec::<u8>",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "bind_method": null
+        }
+      ],
+      "seconds": 0.0058977080043405294
+    }
+  ],
+  "workflow_statements": [
+    {
+      "index": 0,
+      "sql": "BEGIN TRANSACTION;\n\n-- This physical staging boundary also rejects contradictory source values\n-- (including NULL versus non-NULL) for one key before any extraction occurs.\n",
+      "seconds": 0.00026112492196261883,
+      "result": []
+    },
+    {
+      "index": 1,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_sources AS\nSELECT DISTINCT blob_oid, logical_path, source, extractor_sha FROM staged_sources;\n\n",
+      "seconds": 0.048035833053290844,
+      "result": [
+        [
+          4098
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "sql": "SELECT CASE WHEN EXISTS (\n    SELECT 1 FROM file_facts_sources\n    WHERE blob_oid IS NULL OR logical_path IS NULL OR extractor_sha IS NULL\n) THEN error('staged_sources requires non-NULL blob_oid, logical_path and extractor_sha')\nELSE true END;\n\n",
+      "seconds": 0.0026676661800593138,
+      "result": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "sql": "SELECT CASE WHEN EXISTS (\n    SELECT 1 FROM file_facts_sources\n    GROUP BY blob_oid, logical_path, extractor_sha HAVING count(*) > 1\n) THEN error('staged_sources has conflicting source values for one cache key')\nELSE true END;\n\n-- Bind the full native type without executing extraction on any input row.\n",
+      "seconds": 0.0023674580734223127,
+      "result": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "index": 4,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_cache AS\nSELECT blob_oid, logical_path, extractor_sha,\n       TRY(spur_graph_file_facts(logical_path, source)) AS facts,\n       NULL::VARCHAR AS status\nFROM file_facts_sources WHERE false;\n\n",
+      "seconds": 0.0005192919634282589,
+      "result": []
+    },
+    {
+      "index": 5,
+      "sql": "CREATE UNIQUE INDEX IF NOT EXISTS file_facts_cache_key\nON file_facts_cache (blob_oid, logical_path, extractor_sha);\n\n-- Materialize the anti-join BEFORE evaluating the native scalar. The path is\n-- part of the full-facts identity even for identical bytes and language.\n",
+      "seconds": 0.005708541953936219,
+      "result": []
+    },
+    {
+      "index": 6,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_missing AS\nSELECT s.* FROM file_facts_sources s\nANTI JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);\n\n-- One stored result per missing key. Later status/child projections read this\n-- table or the durable cache; none invokes the scalar again. DuckDB TRY may\n-- internally retry a failed vector row-by-row to isolate errors.\n",
+      "seconds": 0.022200583014637232,
+      "result": [
+        [
+          4098
+        ]
+      ]
+    },
+    {
+      "index": 7,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_extracted AS\nSELECT blob_oid, logical_path, extractor_sha,\n       source IS NULL AS input_is_null, source = '' AS source_is_empty,\n       TRY(spur_graph_file_facts(logical_path, source)) AS facts\nFROM file_facts_missing;\n\n",
+      "seconds": 82.69371412484907,
+      "result": [
+        [
+          4098
+        ]
+      ]
+    },
+    {
+      "index": 8,
+      "sql": "INSERT INTO file_facts_cache\nSELECT blob_oid, logical_path, extractor_sha, facts,\n       CASE WHEN input_is_null THEN 'null_input'\n            WHEN facts IS NULL THEN 'extraction_error'\n            WHEN source_is_empty THEN 'empty_source'\n            WHEN len(facts.nodes) + len(facts.edges) + len(facts.spans)\n                 + len(facts.macro_invocations) + len(facts.macro_scopes) = 0\n                 THEN 'empty_facts'\n            ELSE 'ok' END AS status\nFROM file_facts_extracted;\n\n-- Capture layout completeness BEFORE creating missing tables. Legacy caches,\n-- a dropped checkpoint or any missing child require one cache-driven repair.\n",
+      "seconds": 0.31751370802521706,
+      "result": [
+        [
+          4098
+        ]
+      ]
+    },
+    {
+      "index": 9,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_layout AS\nSELECT count(*) <> 6 AS bootstrap\nFROM duckdb_tables()\nWHERE database_name = current_database() AND schema_name = current_schema()\n  AND NOT temporary AND table_name IN (\n      'file_facts_child_state', 'file_facts_nodes', 'file_facts_edges',\n      'file_facts_spans', 'file_facts_macro_invocations', 'file_facts_macro_scopes'\n  );\n\n",
+      "seconds": 0.002220249967649579,
+      "result": [
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "index": 10,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_child_state AS\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_cache WHERE false;\n\n-- C = current cache keys, S = checkpoint, M = newly extracted keys.\n-- Refresh (C - S) UNION M, or all C during bootstrap; remove S - C.\n-- M forces replacement after a supported cache delete/retry even if S has it.\n",
+      "seconds": 0.0004857501480728388,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 11,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_refresh AS\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_cache\nWHERE (SELECT bootstrap FROM file_facts_child_layout)\nUNION\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_cache\nANTI JOIN file_facts_child_state USING (blob_oid, logical_path, extractor_sha)\nUNION\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_extracted;\n\n",
+      "seconds": 0.005000666948035359,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    },
+    {
+      "index": 12,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_removed AS\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_child_state\nANTI JOIN file_facts_cache USING (blob_oid, logical_path, extractor_sha);\n\n",
+      "seconds": 0.0012084590271115303,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 13,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_invalidated AS\nSELECT * FROM file_facts_child_refresh\nUNION\nSELECT * FROM file_facts_child_removed;\n\n-- Select wide payloads once, before the five independent expansions. A replay\n-- materializes no facts; cache-hit detection only compares the three key columns.\n",
+      "seconds": 0.0031144998501986265,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    },
+    {
+      "index": 14,
+      "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_refresh_facts AS\nSELECT c.* FROM file_facts_cache c\nJOIN file_facts_child_refresh r USING (blob_oid, logical_path, extractor_sha);\n\n-- Bind existing child schemas without replacing intact physical tables.\n",
+      "seconds": 0.642943583894521,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    },
+    {
+      "index": 15,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_nodes AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, node.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.nodes) WITH ORDINALITY AS children(node, fact_ordinal) WHERE false;\n\n",
+      "seconds": 0.004881000146269798,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 16,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_edges AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, edge.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.edges) WITH ORDINALITY AS children(edge, fact_ordinal) WHERE false;\n\n",
+      "seconds": 0.0012221671640872955,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 17,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_spans AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, span.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.spans) WITH ORDINALITY AS children(span, fact_ordinal) WHERE false;\n\n",
+      "seconds": 0.0006198750343173742,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 18,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_macro_invocations AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, invocation.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_invocations) WITH ORDINALITY AS children(invocation, fact_ordinal) WHERE false;\n\n",
+      "seconds": 0.0009478749707341194,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 19,
+      "sql": "CREATE TABLE IF NOT EXISTS file_facts_macro_scopes AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, macro_scope.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_scopes) WITH ORDINALITY AS children(macro_scope, fact_ordinal) WHERE false;\n\n-- Bootstrap must also clear rows whose keys are absent from a lost checkpoint.\n-- These constant predicates skip full deletion on established layouts.\n",
+      "seconds": 0.0005274580325931311,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 20,
+      "sql": "DELETE FROM file_facts_nodes WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+      "seconds": 0.0008145831525325775,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 21,
+      "sql": "DELETE FROM file_facts_edges WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+      "seconds": 0.0005391249433159828,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 22,
+      "sql": "DELETE FROM file_facts_spans WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+      "seconds": 0.00043724989518523216,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 23,
+      "sql": "DELETE FROM file_facts_macro_invocations WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+      "seconds": 0.0004738329444080591,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 24,
+      "sql": "DELETE FROM file_facts_macro_scopes WHERE (SELECT bootstrap FROM file_facts_child_layout);\n\n",
+      "seconds": 0.0004279578570276499,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 25,
+      "sql": "DELETE FROM file_facts_nodes USING file_facts_child_invalidated k\nWHERE file_facts_nodes.blob_oid = k.blob_oid\n  AND file_facts_nodes.logical_path = k.logical_path\n  AND file_facts_nodes.extractor_sha = k.extractor_sha;\n",
+      "seconds": 0.0008872079197317362,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 26,
+      "sql": "DELETE FROM file_facts_edges USING file_facts_child_invalidated k\nWHERE file_facts_edges.blob_oid = k.blob_oid\n  AND file_facts_edges.logical_path = k.logical_path\n  AND file_facts_edges.extractor_sha = k.extractor_sha;\n",
+      "seconds": 0.000748499995097518,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 27,
+      "sql": "DELETE FROM file_facts_spans USING file_facts_child_invalidated k\nWHERE file_facts_spans.blob_oid = k.blob_oid\n  AND file_facts_spans.logical_path = k.logical_path\n  AND file_facts_spans.extractor_sha = k.extractor_sha;\n",
+      "seconds": 0.000589708099141717,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 28,
+      "sql": "DELETE FROM file_facts_macro_invocations USING file_facts_child_invalidated k\nWHERE file_facts_macro_invocations.blob_oid = k.blob_oid\n  AND file_facts_macro_invocations.logical_path = k.logical_path\n  AND file_facts_macro_invocations.extractor_sha = k.extractor_sha;\n",
+      "seconds": 0.0006521670147776604,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 29,
+      "sql": "DELETE FROM file_facts_macro_scopes USING file_facts_child_invalidated k\nWHERE file_facts_macro_scopes.blob_oid = k.blob_oid\n  AND file_facts_macro_scopes.logical_path = k.logical_path\n  AND file_facts_macro_scopes.extractor_sha = k.extractor_sha;\n\n-- UNNEST(NULL) and UNNEST([]) emit zero rows. Keep one list per expansion:\n-- simultaneous list joins multiply rows. Ordinals retain native list positions.\n",
+      "seconds": 0.0006183749064803123,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 30,
+      "sql": "INSERT INTO file_facts_nodes\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, node.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.nodes) WITH ORDINALITY AS children(node, fact_ordinal);\n\n",
+      "seconds": 0.8262077090330422,
+      "result": [
+        [
+          223108
+        ]
+      ]
+    },
+    {
+      "index": 31,
+      "sql": "INSERT INTO file_facts_edges\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, edge.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.edges) WITH ORDINALITY AS children(edge, fact_ordinal);\n\n",
+      "seconds": 1.069356249878183,
+      "result": [
+        [
+          930416
+        ]
+      ]
+    },
+    {
+      "index": 32,
+      "sql": "INSERT INTO file_facts_spans\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, span.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.spans) WITH ORDINALITY AS children(span, fact_ordinal);\n\n",
+      "seconds": 0.5701899169944227,
+      "result": [
+        [
+          223108
+        ]
+      ]
+    },
+    {
+      "index": 33,
+      "sql": "INSERT INTO file_facts_macro_invocations\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, invocation.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_invocations) WITH ORDINALITY AS children(invocation, fact_ordinal);\n\n",
+      "seconds": 0.664003707934171,
+      "result": [
+        [
+          103268
+        ]
+      ]
+    },
+    {
+      "index": 34,
+      "sql": "INSERT INTO file_facts_macro_scopes\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, macro_scope.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_scopes) WITH ORDINALITY AS children(macro_scope, fact_ordinal);\n\n-- Checkpoint all parents, including NULL/error/empty facts with no children.\n",
+      "seconds": 0.48169270902872086,
+      "result": [
+        [
+          38788
+        ]
+      ]
+    },
+    {
+      "index": 35,
+      "sql": "DELETE FROM file_facts_child_state USING file_facts_child_removed k\nWHERE file_facts_child_state.blob_oid = k.blob_oid\n  AND file_facts_child_state.logical_path = k.logical_path\n  AND file_facts_child_state.extractor_sha = k.extractor_sha;\n",
+      "seconds": 0.0009589591063559055,
+      "result": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "index": 36,
+      "sql": "INSERT INTO file_facts_child_state\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_child_refresh\nANTI JOIN file_facts_child_state USING (blob_oid, logical_path, extractor_sha);\n\n-- Preserve caller multiplicity, root parents (NULL), merge parents and repeats.\n-- Lineage keys absent from the cache stay visible with status not_cached.\n",
+      "seconds": 0.002615999896079302,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    },
+    {
+      "index": 37,
+      "sql": "CREATE OR REPLACE TABLE file_facts_occurrences AS\nSELECT l.*, coalesce(c.status, 'not_cached') AS extraction_status\nFROM source_lineage l\nLEFT JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);\n\n",
+      "seconds": 0.007377292029559612,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    },
+    {
+      "index": 38,
+      "sql": "COMMIT;\n\n-- Typed snapshots of the durable cache, its children and current caller\n-- occurrences. Reruns replace these files. Export after committing the database;\n-- this file set is not an atomic multi-file publication/checkpoint protocol.\n",
+      "seconds": 1.8716613329015672,
+      "result": []
+    },
+    {
+      "index": 39,
+      "sql": "COPY file_facts_cache TO 'file-facts-cache.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.8128863340243697,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    },
+    {
+      "index": 40,
+      "sql": "COPY file_facts_nodes TO 'file-facts-nodes.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.07229354092851281,
+      "result": [
+        [
+          223108
+        ]
+      ]
+    },
+    {
+      "index": 41,
+      "sql": "COPY file_facts_edges TO 'file-facts-edges.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.25223454204387963,
+      "result": [
+        [
+          930416
+        ]
+      ]
+    },
+    {
+      "index": 42,
+      "sql": "COPY file_facts_spans TO 'file-facts-spans.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.036184375174343586,
+      "result": [
+        [
+          223108
+        ]
+      ]
+    },
+    {
+      "index": 43,
+      "sql": "COPY file_facts_macro_invocations TO 'file-facts-macro_invocations.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.15862508304417133,
+      "result": [
+        [
+          103268
+        ]
+      ]
+    },
+    {
+      "index": 44,
+      "sql": "COPY file_facts_macro_scopes TO 'file-facts-macro_scopes.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.022127707954496145,
+      "result": [
+        [
+          38788
+        ]
+      ]
+    },
+    {
+      "index": 45,
+      "sql": "COPY file_facts_occurrences TO 'file-facts-occurrences.parquet' (FORMAT PARQUET);\n",
+      "seconds": 0.006516499910503626,
+      "result": [
+        [
+          8196
+        ]
+      ]
+    }
+  ]
+}

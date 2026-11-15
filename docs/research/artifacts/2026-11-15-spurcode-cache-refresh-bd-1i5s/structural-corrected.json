@@ -1,0 +1,3659 @@
+{
+  "format_version": 1,
+  "status": "audit_executed",
+  "display_limit": 25,
+  "expected_ingestion_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "extension_provenance_verified": false,
+  "definitions": {
+    "identity": "IDs are qualified by logical_path; macro scopes use raw scope (stable_symbol_id, kind).",
+    "resolved_only": "calls with a non-null target ID matching exactly one node in the same logical_path; no semantic correctness assertion",
+    "unresolved": "calls with NULL target_node_id; target_label is evidence only",
+    "call_denominator": "all typed edges with relation = 'calls'; unique + null + dangling + ambiguous targets partition it",
+    "denominators": "inventory row/byte totals include every status; grouping displays can truncate but full counts remain",
+    "invariants": "affected_rows counts offending records except duplicate-path and mismatch checks, which count groups/paths",
+    "span_bounds": "byte ranges are half-open; end equal to source byte length is valid; absent/duplicate source rows counted separately",
+    "diagnostics": "stable-key duplication, overloaded labels, unresolved calls and file-only extraction are not automatically invalid",
+    "exploration": "one-hop recorded call edges around explicit owner/method candidates; zero seeds is an observable result",
+    "scope": "structural audit only; no extraction, global binding, parser fallback, semantic accuracy or speed verdict"
+  },
+  "queries": {
+    "schema": {
+      "count_sql": "SELECT count(*) FROM (SELECT table_name, column_name, data_type, ordinal_position\nFROM information_schema.columns\nWHERE table_catalog = current_database() AND table_schema = 'main'\n  AND table_name IN (?, ?, ?, ?, ?, ?, ?, ?)\nORDER BY table_name, ordinal_position) AS audit_count",
+      "count_params": [
+        "inventory",
+        "sources",
+        "facts",
+        "nodes",
+        "edges",
+        "spans",
+        "macro_invocations",
+        "macro_scopes"
+      ],
+      "total_rows": 67,
+      "sql": "SELECT table_name, column_name, data_type, ordinal_position\nFROM information_schema.columns\nWHERE table_catalog = current_database() AND table_schema = 'main'\n  AND table_name IN (?, ?, ?, ?, ?, ?, ?, ?)\nORDER BY table_name, ordinal_position\nLIMIT ?",
+      "params": [
+        "inventory",
+        "sources",
+        "facts",
+        "nodes",
+        "edges",
+        "spans",
+        "macro_invocations",
+        "macro_scopes",
+        256
+      ],
+      "limit": 256,
+      "columns": [
+        "table_name",
+        "column_name",
+        "data_type",
+        "ordinal_position"
+      ],
+      "rows": [
+        {
+          "table_name": "edges",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "edges",
+          "column_name": "edge_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "edges",
+          "column_name": "source_node_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "edges",
+          "column_name": "target_node_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "edges",
+          "column_name": "relation",
+          "data_type": "VARCHAR",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "edges",
+          "column_name": "target_label",
+          "data_type": "VARCHAR",
+          "ordinal_position": 6
+        },
+        {
+          "table_name": "edges",
+          "column_name": "import_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 7
+        },
+        {
+          "table_name": "edges",
+          "column_name": "receiver_text",
+          "data_type": "VARCHAR",
+          "ordinal_position": 8
+        },
+        {
+          "table_name": "edges",
+          "column_name": "scope_text",
+          "data_type": "VARCHAR",
+          "ordinal_position": 9
+        },
+        {
+          "table_name": "edges",
+          "column_name": "confidence",
+          "data_type": "VARCHAR",
+          "ordinal_position": 10
+        },
+        {
+          "table_name": "edges",
+          "column_name": "confidence_score",
+          "data_type": "FLOAT",
+          "ordinal_position": 11
+        },
+        {
+          "table_name": "edges",
+          "column_name": "edge_kind",
+          "data_type": "VARCHAR",
+          "ordinal_position": 12
+        },
+        {
+          "table_name": "edges",
+          "column_name": "bind_method",
+          "data_type": "VARCHAR",
+          "ordinal_position": 13
+        },
+        {
+          "table_name": "edges",
+          "column_name": "evidence_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 14
+        },
+        {
+          "table_name": "edges",
+          "column_name": "directed",
+          "data_type": "BOOLEAN",
+          "ordinal_position": 15
+        },
+        {
+          "table_name": "edges",
+          "column_name": "change_kind",
+          "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))",
+          "ordinal_position": 16
+        },
+        {
+          "table_name": "facts",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "facts",
+          "column_name": "value",
+          "data_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "git_blob_oid",
+          "data_type": "VARCHAR",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "bytes",
+          "data_type": "BIGINT",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "suffix",
+          "data_type": "VARCHAR",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "area",
+          "data_type": "VARCHAR",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "status",
+          "data_type": "VARCHAR",
+          "ordinal_position": 6
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "error",
+          "data_type": "VARCHAR",
+          "ordinal_position": 7
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "site_id",
+          "data_type": "VARCHAR",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "file_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "caller_stable_symbol_id",
+          "data_type": "VARCHAR",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "enclosing",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)",
+          "ordinal_position": 6
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "raw_macro_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 7
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "normalized_macro_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 8
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]",
+          "ordinal_position": 9
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]",
+          "ordinal_position": 10
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "attributes",
+          "data_type": "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]",
+          "ordinal_position": 11
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "test_context",
+          "data_type": "VARCHAR",
+          "ordinal_position": 12
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "debug_assertions_candidate",
+          "data_type": "BOOLEAN",
+          "ordinal_position": 13
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "execution_phase",
+          "data_type": "VARCHAR",
+          "ordinal_position": 14
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "resolution",
+          "data_type": "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))",
+          "ordinal_position": 15
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "sink_family_candidate",
+          "data_type": "VARCHAR",
+          "ordinal_position": 16
+        },
+        {
+          "table_name": "macro_scopes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "macro_scopes",
+          "column_name": "scope",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "macro_scopes",
+          "column_name": "file_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "macro_scopes",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "macro_scopes",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "macro_scopes",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]",
+          "ordinal_position": 6
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "node_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "stable_key",
+          "data_type": "VARCHAR",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "label",
+          "data_type": "VARCHAR",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "kind",
+          "data_type": "VARCHAR",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "file_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 6
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "source_span_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 7
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "first_seen_run_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 8
+        },
+        {
+          "table_name": "sources",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "sources",
+          "column_name": "source",
+          "data_type": "VARCHAR",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "sources",
+          "column_name": "source_bytes",
+          "data_type": "BLOB",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "sources",
+          "column_name": "file_oid",
+          "data_type": "VARCHAR",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "sources",
+          "column_name": "sha256",
+          "data_type": "VARCHAR",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "spans",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR",
+          "ordinal_position": 1
+        },
+        {
+          "table_name": "spans",
+          "column_name": "span_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 2
+        },
+        {
+          "table_name": "spans",
+          "column_name": "file_id",
+          "data_type": "UBIGINT",
+          "ordinal_position": 3
+        },
+        {
+          "table_name": "spans",
+          "column_name": "start_byte",
+          "data_type": "UINTEGER",
+          "ordinal_position": 4
+        },
+        {
+          "table_name": "spans",
+          "column_name": "end_byte",
+          "data_type": "UINTEGER",
+          "ordinal_position": 5
+        },
+        {
+          "table_name": "spans",
+          "column_name": "start_line",
+          "data_type": "UINTEGER",
+          "ordinal_position": 6
+        },
+        {
+          "table_name": "spans",
+          "column_name": "end_line",
+          "data_type": "UINTEGER",
+          "ordinal_position": 7
+        }
+      ],
+      "displayed_rows": 67,
+      "truncated": false
+    },
+    "inventory_totals": {
+      "count_sql": "SELECT count(*) FROM (SELECT count(*) AS inventory_rows,\n      count(DISTINCT path) AS distinct_paths, coalesce(sum(bytes), 0) AS bytes,\n      count(*) FILTER (WHERE path IS NULL) AS null_paths,\n      count(*) FILTER (WHERE error IS NOT NULL) AS rows_with_errors\n    FROM main.inventory) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT count(*) AS inventory_rows,\n      count(DISTINCT path) AS distinct_paths, coalesce(sum(bytes), 0) AS bytes,\n      count(*) FILTER (WHERE path IS NULL) AS null_paths,\n      count(*) FILTER (WHERE error IS NOT NULL) AS rows_with_errors\n    FROM main.inventory\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "inventory_rows",
+        "distinct_paths",
+        "bytes",
+        "null_paths",
+        "rows_with_errors"
+      ],
+      "rows": [
+        {
+          "inventory_rows": 4404,
+          "distinct_paths": 4404,
+          "bytes": 124274585,
+          "null_paths": 0,
+          "rows_with_errors": 305
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "inventory_by_status": {
+      "count_sql": "SELECT count(*) FROM (SELECT status, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY status ORDER BY inventory_rows DESC, status) AS audit_count",
+      "count_params": [],
+      "total_rows": 3,
+      "sql": "SELECT status, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY status ORDER BY inventory_rows DESC, status\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "status",
+        "inventory_rows",
+        "bytes"
+      ],
+      "rows": [
+        {
+          "status": "extracted",
+          "inventory_rows": 4098,
+          "bytes": 58857333
+        },
+        {
+          "status": "path_admission_failed",
+          "inventory_rows": 305,
+          "bytes": 65417213
+        },
+        {
+          "status": "symlink",
+          "inventory_rows": 1,
+          "bytes": 39
+        }
+      ],
+      "displayed_rows": 3,
+      "truncated": false
+    },
+    "inventory_by_suffix": {
+      "count_sql": "SELECT count(*) FROM (SELECT suffix, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY suffix ORDER BY inventory_rows DESC, suffix) AS audit_count",
+      "count_params": [],
+      "total_rows": 56,
+      "sql": "SELECT suffix, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY suffix ORDER BY inventory_rows DESC, suffix\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "suffix",
+        "inventory_rows",
+        "bytes"
+      ],
+      "rows": [
+        {
+          "suffix": ".rs",
+          "inventory_rows": 1726,
+          "bytes": 27874179
+        },
+        {
+          "suffix": ".md",
+          "inventory_rows": 1320,
+          "bytes": 23341913
+        },
+        {
+          "suffix": ".json",
+          "inventory_rows": 431,
+          "bytes": 3855052
+        },
+        {
+          "suffix": ".py",
+          "inventory_rows": 204,
+          "bytes": 1420701
+        },
+        {
+          "suffix": ".ts",
+          "inventory_rows": 109,
+          "bytes": 20586
+        },
+        {
+          "suffix": ".sh",
+          "inventory_rows": 101,
+          "bytes": 417068
+        },
+        {
+          "suffix": ".ipynb",
+          "inventory_rows": 79,
+          "bytes": 32111294
+        },
+        {
+          "suffix": ".yaml",
+          "inventory_rows": 53,
+          "bytes": 216311
+        },
+        {
+          "suffix": ".toml",
+          "inventory_rows": 48,
+          "bytes": 90928
+        },
+        {
+          "suffix": ".log",
+          "inventory_rows": 41,
+          "bytes": 113883
+        },
+        {
+          "suffix": ".sql",
+          "inventory_rows": 36,
+          "bytes": 205767
+        },
+        {
+          "suffix": ".scm",
+          "inventory_rows": 35,
+          "bytes": 53870
+        },
+        {
+          "suffix": ".tape",
+          "inventory_rows": 24,
+          "bytes": 18668
+        },
+        {
+          "suffix": "",
+          "inventory_rows": 23,
+          "bytes": 87431
+        },
+        {
+          "suffix": ".tf",
+          "inventory_rows": 21,
+          "bytes": 187992
+        },
+        {
+          "suffix": ".txt",
+          "inventory_rows": 18,
+          "bytes": 599042
+        },
+        {
+          "suffix": ".jpg",
+          "inventory_rows": 10,
+          "bytes": 1722706
+        },
+        {
+          "suffix": ".webm",
+          "inventory_rows": 10,
+          "bytes": 27989742
+        },
+        {
+          "suffix": ".js",
+          "inventory_rows": 9,
+          "bytes": 25015
+        },
+        {
+          "suffix": ".jsonl",
+          "inventory_rows": 8,
+          "bytes": 259299
+        },
+        {
+          "suffix": ".lock",
+          "inventory_rows": 8,
+          "bytes": 935474
+        },
+        {
+          "suffix": ".yml",
+          "inventory_rows": 8,
+          "bytes": 65101
+        },
+        {
+          "suffix": ".onnx",
+          "inventory_rows": 7,
+          "bytes": 998
+        },
+        {
+          "suffix": ".hcl",
+          "inventory_rows": 6,
+          "bytes": 60693
+        },
+        {
+          "suffix": ".html",
+          "inventory_rows": 5,
+          "bytes": 70558
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "inventory_by_area": {
+      "count_sql": "SELECT count(*) FROM (SELECT area, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY area ORDER BY inventory_rows DESC, area) AS audit_count",
+      "count_params": [],
+      "total_rows": 45,
+      "sql": "SELECT area, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY area ORDER BY inventory_rows DESC, area\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "area",
+        "inventory_rows",
+        "bytes"
+      ],
+      "rows": [
+        {
+          "area": "docs",
+          "inventory_rows": 1566,
+          "bytes": 64456369
+        },
+        {
+          "area": "spur-graph",
+          "inventory_rows": 815,
+          "bytes": 10794236
+        },
+        {
+          "area": "spur-core",
+          "inventory_rows": 316,
+          "bytes": 6966240
+        },
+        {
+          "area": "spur-tui",
+          "inventory_rows": 296,
+          "bytes": 4700582
+        },
+        {
+          "area": "scripts",
+          "inventory_rows": 155,
+          "bytes": 1330330
+        },
+        {
+          "area": "spur-cli",
+          "inventory_rows": 135,
+          "bytes": 1255778
+        },
+        {
+          "area": "spur-acp",
+          "inventory_rows": 133,
+          "bytes": 1414359
+        },
+        {
+          "area": "spur-solver",
+          "inventory_rows": 130,
+          "bytes": 6839012
+        },
+        {
+          "area": "infra",
+          "inventory_rows": 86,
+          "bytes": 633131
+        },
+        {
+          "area": "spur-analyst",
+          "inventory_rows": 86,
+          "bytes": 752738
+        },
+        {
+          "area": "vendor",
+          "inventory_rows": 78,
+          "bytes": 622597
+        },
+        {
+          "area": "spur-pm",
+          "inventory_rows": 76,
+          "bytes": 762721
+        },
+        {
+          "area": "spur-context-service",
+          "inventory_rows": 52,
+          "bytes": 2146619
+        },
+        {
+          "area": "spur-graph-duckdb",
+          "inventory_rows": 44,
+          "bytes": 753761
+        },
+        {
+          "area": "spur-utilities",
+          "inventory_rows": 40,
+          "bytes": 417932
+        },
+        {
+          "area": "spur-license",
+          "inventory_rows": 37,
+          "bytes": 222106
+        },
+        {
+          "area": "spur-context",
+          "inventory_rows": 36,
+          "bytes": 330166
+        },
+        {
+          "area": "spur-bot",
+          "inventory_rows": 34,
+          "bytes": 354778
+        },
+        {
+          "area": "spur-code-eval",
+          "inventory_rows": 32,
+          "bytes": 576380
+        },
+        {
+          "area": ".spur",
+          "inventory_rows": 26,
+          "bytes": 240194
+        },
+        {
+          "area": "root",
+          "inventory_rows": 22,
+          "bytes": 15926582
+        },
+        {
+          "area": "spur-mcp",
+          "inventory_rows": 22,
+          "bytes": 151369
+        },
+        {
+          "area": "spur-jev",
+          "inventory_rows": 21,
+          "bytes": 140485
+        },
+        {
+          "area": "spur-telemetry",
+          "inventory_rows": 20,
+          "bytes": 93365
+        },
+        {
+          "area": "spur-cost",
+          "inventory_rows": 17,
+          "bytes": 202639
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "inventory_by_area_status_suffix": {
+      "count_sql": "SELECT count(*) FROM (SELECT area, status, suffix, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY area, status, suffix ORDER BY inventory_rows DESC, area, status, suffix) AS audit_count",
+      "count_params": [],
+      "total_rows": 221,
+      "sql": "SELECT area, status, suffix, count(*) AS inventory_rows,\n          coalesce(sum(bytes), 0) AS bytes FROM main.inventory\n        GROUP BY area, status, suffix ORDER BY inventory_rows DESC, area, status, suffix\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "area",
+        "status",
+        "suffix",
+        "inventory_rows",
+        "bytes"
+      ],
+      "rows": [
+        {
+          "area": "docs",
+          "status": "extracted",
+          "suffix": ".md",
+          "inventory_rows": 1168,
+          "bytes": 21988465
+        },
+        {
+          "area": "spur-graph",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 345,
+          "bytes": 5676649
+        },
+        {
+          "area": "spur-core",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 307,
+          "bytes": 6951876
+        },
+        {
+          "area": "spur-tui",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 284,
+          "bytes": 4664495
+        },
+        {
+          "area": "docs",
+          "status": "extracted",
+          "suffix": ".json",
+          "inventory_rows": 187,
+          "bytes": 2690048
+        },
+        {
+          "area": "spur-graph",
+          "status": "extracted",
+          "suffix": ".json",
+          "inventory_rows": 168,
+          "bytes": 331403
+        },
+        {
+          "area": "spur-graph",
+          "status": "extracted",
+          "suffix": ".py",
+          "inventory_rows": 117,
+          "bytes": 22320
+        },
+        {
+          "area": "spur-graph",
+          "status": "extracted",
+          "suffix": ".ts",
+          "inventory_rows": 108,
+          "bytes": 15532
+        },
+        {
+          "area": "spur-acp",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 96,
+          "bytes": 1325052
+        },
+        {
+          "area": "spur-analyst",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 81,
+          "bytes": 726280
+        },
+        {
+          "area": "scripts",
+          "status": "extracted",
+          "suffix": ".sh",
+          "inventory_rows": 78,
+          "bytes": 309510
+        },
+        {
+          "area": "spur-solver",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 75,
+          "bytes": 1341151
+        },
+        {
+          "area": "vendor",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 70,
+          "bytes": 546622
+        },
+        {
+          "area": "docs",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "inventory_rows": 69,
+          "bytes": 16624151
+        },
+        {
+          "area": "spur-pm",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 68,
+          "bytes": 747306
+        },
+        {
+          "area": "spur-cli",
+          "status": "extracted",
+          "suffix": ".md",
+          "inventory_rows": 63,
+          "bytes": 506616
+        },
+        {
+          "area": "spur-cli",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 58,
+          "bytes": 669086
+        },
+        {
+          "area": "spur-solver",
+          "status": "extracted",
+          "suffix": ".yaml",
+          "inventory_rows": 49,
+          "bytes": 197749
+        },
+        {
+          "area": "spur-context-service",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 45,
+          "bytes": 1911971
+        },
+        {
+          "area": "docs",
+          "status": "path_admission_failed",
+          "suffix": ".log",
+          "inventory_rows": 41,
+          "bytes": 113883
+        },
+        {
+          "area": "spur-utilities",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 37,
+          "bytes": 416315
+        },
+        {
+          "area": "spur-graph",
+          "status": "path_admission_failed",
+          "suffix": ".scm",
+          "inventory_rows": 35,
+          "bytes": 53870
+        },
+        {
+          "area": "spur-license",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 33,
+          "bytes": 213659
+        },
+        {
+          "area": "docs",
+          "status": "extracted",
+          "suffix": ".py",
+          "inventory_rows": 30,
+          "bytes": 222539
+        },
+        {
+          "area": "spur-code-eval",
+          "status": "extracted",
+          "suffix": ".rs",
+          "inventory_rows": 27,
+          "bytes": 562504
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "inventory_errors": {
+      "count_sql": "SELECT count(*) FROM (SELECT path, status, suffix, area,\n      left(error, 500) AS error_excerpt, length(error) AS error_characters\n    FROM main.inventory WHERE error IS NOT NULL ORDER BY path, status, error) AS audit_count",
+      "count_params": [],
+      "total_rows": 305,
+      "sql": "SELECT path, status, suffix, area,\n      left(error, 500) AS error_excerpt, length(error) AS error_characters\n    FROM main.inventory WHERE error IS NOT NULL ORDER BY path, status, error\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "path",
+        "status",
+        "suffix",
+        "area",
+        "error_excerpt",
+        "error_characters"
+      ],
+      "rows": [
+        {
+          "path": ".githooks/pre-commit",
+          "status": "path_admission_failed",
+          "suffix": "",
+          "area": ".githooks",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": ".gitignore",
+          "status": "path_admission_failed",
+          "suffix": "",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": ".gitmodules",
+          "status": "path_admission_failed",
+          "suffix": "",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": ".spur/config.toml.example",
+          "status": "path_admission_failed",
+          "suffix": ".example",
+          "area": ".spur",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-10-31-panic-graph-experiment.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-11-01-panic-implementation-grounding.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-11-02-panic-evidence-validation.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-11-02-rust-gap-closure-grounding.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-11-02-rust-graph-coverage.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-11-02-spur-notebook-new-build-check.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "2026-11-02-spur-notebook-panic-evaluation.ipynb",
+          "status": "path_admission_failed",
+          "suffix": ".ipynb",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "Cargo.lock",
+          "status": "path_admission_failed",
+          "suffix": ".lock",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "LICENSE",
+          "status": "path_admission_failed",
+          "suffix": "",
+          "area": "root",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q1.smt2",
+          "status": "path_admission_failed",
+          "suffix": ".smt2",
+          "area": "spur-acp",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q2.smt2",
+          "status": "path_admission_failed",
+          "suffix": ".smt2",
+          "area": "spur-acp",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q3.smt2",
+          "status": "path_admission_failed",
+          "suffix": ".smt2",
+          "area": "spur-acp",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q4.smt2",
+          "status": "path_admission_failed",
+          "suffix": ".smt2",
+          "area": "spur-acp",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-cli/assets/skills/writing-skills/graphviz-conventions.dot",
+          "status": "path_admission_failed",
+          "suffix": ".dot",
+          "area": "spur-cli",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-context-service/Cargo.lock",
+          "status": "path_admission_failed",
+          "suffix": ".lock",
+          "area": "spur-context-service",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-context/tests/fixtures/multi_model_session.jsonl",
+          "status": "path_admission_failed",
+          "suffix": ".jsonl",
+          "area": "spur-context",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-context/tests/fixtures/real/claude_heterogeneous.jsonl",
+          "status": "path_admission_failed",
+          "suffix": ".jsonl",
+          "area": "spur-context",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-context/tests/fixtures/real/codex_heterogeneous.jsonl",
+          "status": "path_admission_failed",
+          "suffix": ".jsonl",
+          "area": "spur-context",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-core/tests/continuation_properties.proptest-regressions",
+          "status": "path_admission_failed",
+          "suffix": ".proptest-regressions",
+          "area": "spur-core",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-core/tests/fixtures/codex/sample_rollout.jsonl",
+          "status": "path_admission_failed",
+          "suffix": ".jsonl",
+          "area": "spur-core",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        },
+        {
+          "path": "crates/spur-embedding-worker/tests/fixtures/mul_1.onnx",
+          "status": "path_admission_failed",
+          "suffix": ".onnx",
+          "area": "spur-embedding-worker",
+          "error_excerpt": "Exact-path empty-source extension probe returned NULL under TRY; reason samples retained separately",
+          "error_characters": 99
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "extraction_totals": {
+      "count_sql": "SELECT count(*) FROM (SELECT\n      (SELECT count(*) FROM main.sources) AS source_rows,\n      (SELECT count(*) FROM main.facts) AS fact_rows,\n      (SELECT count(*) FROM main.facts WHERE value IS NULL) AS null_fact_rows) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT\n      (SELECT count(*) FROM main.sources) AS source_rows,\n      (SELECT count(*) FROM main.facts) AS fact_rows,\n      (SELECT count(*) FROM main.facts WHERE value IS NULL) AS null_fact_rows\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "source_rows",
+        "fact_rows",
+        "null_fact_rows"
+      ],
+      "rows": [
+        {
+          "source_rows": 4098,
+          "fact_rows": 4098,
+          "null_fact_rows": 0
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "typed_counts": {
+      "count_sql": "SELECT count(*) FROM (SELECT 'nodes' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.nodes)), 0) FROM main.facts) AS raw_rows\n        FROM main.nodes\nUNION ALL\nSELECT 'edges' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.edges)), 0) FROM main.facts) AS raw_rows\n        FROM main.edges\nUNION ALL\nSELECT 'spans' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.spans)), 0) FROM main.facts) AS raw_rows\n        FROM main.spans\nUNION ALL\nSELECT 'macro_invocations' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.macro_invocations)), 0) FROM main.facts) AS raw_rows\n        FROM main.macro_invocations\nUNION ALL\nSELECT 'macro_scopes' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.macro_scopes)), 0) FROM main.facts) AS raw_rows\n        FROM main.macro_scopes\nORDER BY collection) AS audit_count",
+      "count_params": [],
+      "total_rows": 5,
+      "sql": "SELECT 'nodes' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.nodes)), 0) FROM main.facts) AS raw_rows\n        FROM main.nodes\nUNION ALL\nSELECT 'edges' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.edges)), 0) FROM main.facts) AS raw_rows\n        FROM main.edges\nUNION ALL\nSELECT 'spans' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.spans)), 0) FROM main.facts) AS raw_rows\n        FROM main.spans\nUNION ALL\nSELECT 'macro_invocations' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.macro_invocations)), 0) FROM main.facts) AS raw_rows\n        FROM main.macro_invocations\nUNION ALL\nSELECT 'macro_scopes' AS collection, count(*) AS typed_rows,\n          count(DISTINCT logical_path) AS paths,\n          (SELECT coalesce(sum(array_length(value.macro_scopes)), 0) FROM main.facts) AS raw_rows\n        FROM main.macro_scopes\nORDER BY collection\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "collection",
+        "typed_rows",
+        "paths",
+        "raw_rows"
+      ],
+      "rows": [
+        {
+          "collection": "edges",
+          "typed_rows": 463851,
+          "paths": 3892,
+          "raw_rows": 463851
+        },
+        {
+          "collection": "macro_invocations",
+          "typed_rows": 51634,
+          "paths": 1452,
+          "raw_rows": 51634
+        },
+        {
+          "collection": "macro_scopes",
+          "typed_rows": 19394,
+          "paths": 1452,
+          "raw_rows": 19394
+        },
+        {
+          "collection": "nodes",
+          "typed_rows": 111554,
+          "paths": 4098,
+          "raw_rows": 111554
+        },
+        {
+          "collection": "spans",
+          "typed_rows": 111554,
+          "paths": 4098,
+          "raw_rows": 111554
+        }
+      ],
+      "displayed_rows": 5,
+      "truncated": false
+    },
+    "node_kinds": {
+      "count_sql": "SELECT count(*) FROM (SELECT kind, count(*) AS rows FROM main.nodes\n        GROUP BY kind ORDER BY rows DESC, kind) AS audit_count",
+      "count_params": [],
+      "total_rows": 19,
+      "sql": "SELECT kind, count(*) AS rows FROM main.nodes\n        GROUP BY kind ORDER BY rows DESC, kind\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "kind",
+        "rows"
+      ],
+      "rows": [
+        {
+          "kind": "field",
+          "rows": 31481
+        },
+        {
+          "kind": "function",
+          "rows": 22457
+        },
+        {
+          "kind": "section",
+          "rows": 16853
+        },
+        {
+          "kind": "method",
+          "rows": 9970
+        },
+        {
+          "kind": "module",
+          "rows": 9770
+        },
+        {
+          "kind": "constant",
+          "rows": 4626
+        },
+        {
+          "kind": "enum_variant",
+          "rows": 4402
+        },
+        {
+          "kind": "file",
+          "rows": 4098
+        },
+        {
+          "kind": "struct",
+          "rows": 3194
+        },
+        {
+          "kind": "impl",
+          "rows": 2845
+        },
+        {
+          "kind": "enum",
+          "rows": 956
+        },
+        {
+          "kind": "type_alias",
+          "rows": 300
+        },
+        {
+          "kind": "resource",
+          "rows": 196
+        },
+        {
+          "kind": "trait",
+          "rows": 120
+        },
+        {
+          "kind": "class",
+          "rows": 112
+        },
+        {
+          "kind": "macro",
+          "rows": 102
+        },
+        {
+          "kind": "mcp_tool",
+          "rows": 63
+        },
+        {
+          "kind": "interface",
+          "rows": 5
+        },
+        {
+          "kind": "extern_block",
+          "rows": 4
+        }
+      ],
+      "displayed_rows": 19,
+      "truncated": false
+    },
+    "edge_relations": {
+      "count_sql": "SELECT count(*) FROM (SELECT relation, count(*) AS rows FROM main.edges\n        GROUP BY relation ORDER BY rows DESC, relation) AS audit_count",
+      "count_params": [],
+      "total_rows": 9,
+      "sql": "SELECT relation, count(*) AS rows FROM main.edges\n        GROUP BY relation ORDER BY rows DESC, relation\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "relation",
+        "rows"
+      ],
+      "rows": [
+        {
+          "relation": "calls",
+          "rows": 268211
+        },
+        {
+          "relation": "contains",
+          "rows": 107456
+        },
+        {
+          "relation": "defines",
+          "rows": 59797
+        },
+        {
+          "relation": "imports",
+          "rows": 22885
+        },
+        {
+          "relation": "references",
+          "rows": 1769
+        },
+        {
+          "relation": "implements",
+          "rows": 1422
+        },
+        {
+          "relation": "constructs",
+          "rows": 1097
+        },
+        {
+          "relation": "links",
+          "rows": 1027
+        },
+        {
+          "relation": "extends",
+          "rows": 187
+        }
+      ],
+      "displayed_rows": 9,
+      "truncated": false
+    },
+    "edge_confidence_binding": {
+      "count_sql": "SELECT count(*) FROM (SELECT relation, confidence, bind_method, edge_kind, count(*) AS rows FROM main.edges\n        GROUP BY relation, confidence, bind_method, edge_kind ORDER BY rows DESC, relation, confidence, bind_method, edge_kind) AS audit_count",
+      "count_params": [],
+      "total_rows": 24,
+      "sql": "SELECT relation, confidence, bind_method, edge_kind, count(*) AS rows FROM main.edges\n        GROUP BY relation, confidence, bind_method, edge_kind ORDER BY rows DESC, relation, confidence, bind_method, edge_kind\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "relation",
+        "confidence",
+        "bind_method",
+        "edge_kind",
+        "rows"
+      ],
+      "rows": [
+        {
+          "relation": "calls",
+          "confidence": "syntax_exact",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 175747
+        },
+        {
+          "relation": "contains",
+          "confidence": "syntax_exact",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 107456
+        },
+        {
+          "relation": "defines",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 59797
+        },
+        {
+          "relation": "calls",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 57852
+        },
+        {
+          "relation": "calls",
+          "confidence": "syntax_exact",
+          "bind_method": "singleton",
+          "edge_kind": null,
+          "rows": 25107
+        },
+        {
+          "relation": "imports",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 22505
+        },
+        {
+          "relation": "calls",
+          "confidence": "heuristic",
+          "bind_method": "macro_body_singleton",
+          "edge_kind": null,
+          "rows": 4821
+        },
+        {
+          "relation": "calls",
+          "confidence": "syntax_exact",
+          "bind_method": "scope_match",
+          "edge_kind": null,
+          "rows": 3416
+        },
+        {
+          "relation": "implements",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 1208
+        },
+        {
+          "relation": "links",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 1027
+        },
+        {
+          "relation": "references",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": "references_address",
+          "rows": 790
+        },
+        {
+          "relation": "references",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": "references_hof",
+          "rows": 689
+        },
+        {
+          "relation": "constructs",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 623
+        },
+        {
+          "relation": "calls",
+          "confidence": "syntax_exact",
+          "bind_method": "method_crate_singleton",
+          "edge_kind": null,
+          "rows": 583
+        },
+        {
+          "relation": "imports",
+          "confidence": "heuristic",
+          "bind_method": "import_path",
+          "edge_kind": null,
+          "rows": 380
+        },
+        {
+          "relation": "calls",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": "calls_dyn",
+          "rows": 344
+        },
+        {
+          "relation": "constructs",
+          "confidence": "syntax_exact",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 305
+        },
+        {
+          "relation": "references",
+          "confidence": "heuristic",
+          "bind_method": "address_module_scope",
+          "edge_kind": "references_address",
+          "rows": 290
+        },
+        {
+          "relation": "calls",
+          "confidence": "syntax_exact",
+          "bind_method": "fqn",
+          "edge_kind": null,
+          "rows": 277
+        },
+        {
+          "relation": "implements",
+          "confidence": "heuristic",
+          "bind_method": "relational",
+          "edge_kind": null,
+          "rows": 214
+        },
+        {
+          "relation": "extends",
+          "confidence": "heuristic",
+          "bind_method": null,
+          "edge_kind": null,
+          "rows": 182
+        },
+        {
+          "relation": "constructs",
+          "confidence": "heuristic",
+          "bind_method": "macro_body_singleton",
+          "edge_kind": null,
+          "rows": 169
+        },
+        {
+          "relation": "calls",
+          "confidence": "syntax_exact",
+          "bind_method": "same_file_duplicate",
+          "edge_kind": null,
+          "rows": 64
+        },
+        {
+          "relation": "extends",
+          "confidence": "heuristic",
+          "bind_method": "relational",
+          "edge_kind": null,
+          "rows": 5
+        }
+      ],
+      "displayed_rows": 24,
+      "truncated": false
+    },
+    "nodes_id_health": {
+      "count_sql": "SELECT count(*) FROM (SELECT count(*) AS rows,\n          count(*) FILTER (WHERE node_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, node_id FROM main.nodes\n            WHERE node_id IS NOT NULL GROUP BY logical_path, node_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.nodes) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT count(*) AS rows,\n          count(*) FILTER (WHERE node_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, node_id FROM main.nodes\n            WHERE node_id IS NOT NULL GROUP BY logical_path, node_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.nodes\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "rows",
+        "missing_ids",
+        "missing_paths",
+        "duplicate_id_groups"
+      ],
+      "rows": [
+        {
+          "rows": 111554,
+          "missing_ids": 0,
+          "missing_paths": 0,
+          "duplicate_id_groups": 0
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "nodes_duplicate_ids": {
+      "count_sql": "SELECT count(*) FROM (SELECT logical_path,\n          node_id AS local_id, count(*) AS copies\n        FROM main.nodes WHERE node_id IS NOT NULL\n        GROUP BY logical_path, node_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT logical_path,\n          node_id AS local_id, count(*) AS copies\n        FROM main.nodes WHERE node_id IS NOT NULL\n        GROUP BY logical_path, node_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "local_id",
+        "copies"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "edges_id_health": {
+      "count_sql": "SELECT count(*) FROM (SELECT count(*) AS rows,\n          count(*) FILTER (WHERE edge_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, edge_id FROM main.edges\n            WHERE edge_id IS NOT NULL GROUP BY logical_path, edge_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.edges) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT count(*) AS rows,\n          count(*) FILTER (WHERE edge_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, edge_id FROM main.edges\n            WHERE edge_id IS NOT NULL GROUP BY logical_path, edge_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.edges\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "rows",
+        "missing_ids",
+        "missing_paths",
+        "duplicate_id_groups"
+      ],
+      "rows": [
+        {
+          "rows": 463851,
+          "missing_ids": 0,
+          "missing_paths": 0,
+          "duplicate_id_groups": 0
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "edges_duplicate_ids": {
+      "count_sql": "SELECT count(*) FROM (SELECT logical_path,\n          edge_id AS local_id, count(*) AS copies\n        FROM main.edges WHERE edge_id IS NOT NULL\n        GROUP BY logical_path, edge_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT logical_path,\n          edge_id AS local_id, count(*) AS copies\n        FROM main.edges WHERE edge_id IS NOT NULL\n        GROUP BY logical_path, edge_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "local_id",
+        "copies"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "spans_id_health": {
+      "count_sql": "SELECT count(*) FROM (SELECT count(*) AS rows,\n          count(*) FILTER (WHERE span_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, span_id FROM main.spans\n            WHERE span_id IS NOT NULL GROUP BY logical_path, span_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.spans) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT count(*) AS rows,\n          count(*) FILTER (WHERE span_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, span_id FROM main.spans\n            WHERE span_id IS NOT NULL GROUP BY logical_path, span_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.spans\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "rows",
+        "missing_ids",
+        "missing_paths",
+        "duplicate_id_groups"
+      ],
+      "rows": [
+        {
+          "rows": 111554,
+          "missing_ids": 0,
+          "missing_paths": 0,
+          "duplicate_id_groups": 0
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "spans_duplicate_ids": {
+      "count_sql": "SELECT count(*) FROM (SELECT logical_path,\n          span_id AS local_id, count(*) AS copies\n        FROM main.spans WHERE span_id IS NOT NULL\n        GROUP BY logical_path, span_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT logical_path,\n          span_id AS local_id, count(*) AS copies\n        FROM main.spans WHERE span_id IS NOT NULL\n        GROUP BY logical_path, span_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "local_id",
+        "copies"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "macro_invocations_id_health": {
+      "count_sql": "SELECT count(*) FROM (SELECT count(*) AS rows,\n          count(*) FILTER (WHERE site_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, site_id FROM main.macro_invocations\n            WHERE site_id IS NOT NULL GROUP BY logical_path, site_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.macro_invocations) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT count(*) AS rows,\n          count(*) FILTER (WHERE site_id IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, site_id FROM main.macro_invocations\n            WHERE site_id IS NOT NULL GROUP BY logical_path, site_id\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.macro_invocations\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "rows",
+        "missing_ids",
+        "missing_paths",
+        "duplicate_id_groups"
+      ],
+      "rows": [
+        {
+          "rows": 51634,
+          "missing_ids": 0,
+          "missing_paths": 0,
+          "duplicate_id_groups": 0
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "macro_invocations_duplicate_ids": {
+      "count_sql": "SELECT count(*) FROM (SELECT logical_path,\n          site_id AS local_id, count(*) AS copies\n        FROM main.macro_invocations WHERE site_id IS NOT NULL\n        GROUP BY logical_path, site_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT logical_path,\n          site_id AS local_id, count(*) AS copies\n        FROM main.macro_invocations WHERE site_id IS NOT NULL\n        GROUP BY logical_path, site_id HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "local_id",
+        "copies"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "macro_scopes_id_health": {
+      "count_sql": "SELECT count(*) FROM (SELECT count(*) AS rows,\n          count(*) FILTER (WHERE \"scope\".stable_symbol_id IS NULL OR \"scope\".kind IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, \"scope\".stable_symbol_id, \"scope\".kind FROM main.macro_scopes\n            WHERE \"scope\".stable_symbol_id IS NOT NULL GROUP BY logical_path, \"scope\".stable_symbol_id, \"scope\".kind\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.macro_scopes) AS audit_count",
+      "count_params": [],
+      "total_rows": 1,
+      "sql": "SELECT count(*) AS rows,\n          count(*) FILTER (WHERE \"scope\".stable_symbol_id IS NULL OR \"scope\".kind IS NULL) AS missing_ids,\n          count(*) FILTER (WHERE logical_path IS NULL) AS missing_paths,\n          (SELECT count(*) FROM (\n            SELECT logical_path, \"scope\".stable_symbol_id, \"scope\".kind FROM main.macro_scopes\n            WHERE \"scope\".stable_symbol_id IS NOT NULL GROUP BY logical_path, \"scope\".stable_symbol_id, \"scope\".kind\n            HAVING count(*) > 1) d) AS duplicate_id_groups\n        FROM main.macro_scopes\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "rows",
+        "missing_ids",
+        "missing_paths",
+        "duplicate_id_groups"
+      ],
+      "rows": [
+        {
+          "rows": 19394,
+          "missing_ids": 0,
+          "missing_paths": 0,
+          "duplicate_id_groups": 0
+        }
+      ],
+      "displayed_rows": 1,
+      "truncated": false
+    },
+    "macro_scopes_duplicate_ids": {
+      "count_sql": "SELECT count(*) FROM (SELECT logical_path,\n          \"scope\".stable_symbol_id AS local_id, \"scope\".kind, count(*) AS copies\n        FROM main.macro_scopes WHERE \"scope\".stable_symbol_id IS NOT NULL\n        GROUP BY logical_path, \"scope\".stable_symbol_id, \"scope\".kind HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id, \"scope\".kind) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT logical_path,\n          \"scope\".stable_symbol_id AS local_id, \"scope\".kind, count(*) AS copies\n        FROM main.macro_scopes WHERE \"scope\".stable_symbol_id IS NOT NULL\n        GROUP BY logical_path, \"scope\".stable_symbol_id, \"scope\".kind HAVING count(*) > 1\n        ORDER BY copies DESC, logical_path, local_id, \"scope\".kind\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "local_id",
+        "kind",
+        "copies"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "orphan_examples": {
+      "count_sql": "SELECT count(*) FROM (SELECT 'node_span' AS reference, n.logical_path,\n      n.node_id AS local_id, n.source_span_id AS missing_id\n    FROM main.nodes n WHERE NOT EXISTS (SELECT 1 FROM main.spans s\n      WHERE s.logical_path = n.logical_path AND s.span_id = n.source_span_id)\n    UNION ALL SELECT 'edge_source', e.logical_path, e.edge_id, e.source_node_id\n    FROM main.edges e WHERE NOT EXISTS (SELECT 1 FROM main.nodes n\n      WHERE n.logical_path = e.logical_path AND n.node_id = e.source_node_id)\n    UNION ALL SELECT 'edge_target', e.logical_path, e.edge_id, e.target_node_id\n    FROM main.edges e WHERE e.target_node_id IS NOT NULL AND NOT EXISTS (\n      SELECT 1 FROM main.nodes n WHERE n.logical_path = e.logical_path AND n.node_id = e.target_node_id)\n    ORDER BY reference, logical_path, local_id, missing_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT 'node_span' AS reference, n.logical_path,\n      n.node_id AS local_id, n.source_span_id AS missing_id\n    FROM main.nodes n WHERE NOT EXISTS (SELECT 1 FROM main.spans s\n      WHERE s.logical_path = n.logical_path AND s.span_id = n.source_span_id)\n    UNION ALL SELECT 'edge_source', e.logical_path, e.edge_id, e.source_node_id\n    FROM main.edges e WHERE NOT EXISTS (SELECT 1 FROM main.nodes n\n      WHERE n.logical_path = e.logical_path AND n.node_id = e.source_node_id)\n    UNION ALL SELECT 'edge_target', e.logical_path, e.edge_id, e.target_node_id\n    FROM main.edges e WHERE e.target_node_id IS NOT NULL AND NOT EXISTS (\n      SELECT 1 FROM main.nodes n WHERE n.logical_path = e.logical_path AND n.node_id = e.target_node_id)\n    ORDER BY reference, logical_path, local_id, missing_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "reference",
+        "logical_path",
+        "local_id",
+        "missing_id"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "invalid_span_examples": {
+      "count_sql": "SELECT count(*) FROM (WITH source_sizes AS (\n  SELECT logical_path, count(*) AS source_rows,\n         min(octet_length(source_bytes)) AS byte_length\n  FROM main.sources GROUP BY logical_path\n)\n    SELECT s.logical_path, s.span_id, s.start_byte, s.end_byte, z.byte_length\n    FROM main.spans s LEFT JOIN source_sizes z USING (logical_path)\n    WHERE s.start_byte IS NULL OR s.end_byte IS NULL OR s.start_byte > s.end_byte\n       OR (z.source_rows = 1 AND (s.start_byte > z.byte_length OR s.end_byte > z.byte_length))\nORDER BY logical_path, span_id, start_byte, end_byte) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH source_sizes AS (\n  SELECT logical_path, count(*) AS source_rows,\n         min(octet_length(source_bytes)) AS byte_length\n  FROM main.sources GROUP BY logical_path\n)\n    SELECT s.logical_path, s.span_id, s.start_byte, s.end_byte, z.byte_length\n    FROM main.spans s LEFT JOIN source_sizes z USING (logical_path)\n    WHERE s.start_byte IS NULL OR s.end_byte IS NULL OR s.start_byte > s.end_byte\n       OR (z.source_rows = 1 AND (s.start_byte > z.byte_length OR s.end_byte > z.byte_length))\nORDER BY logical_path, span_id, start_byte, end_byte\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "span_id",
+        "start_byte",
+        "end_byte",
+        "byte_length"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "nodes_raw_typed_count_mismatches": {
+      "count_sql": "SELECT count(*) FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.nodes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.nodes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.nodes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.nodes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "raw_rows",
+        "typed_rows"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "edges_raw_typed_count_mismatches": {
+      "count_sql": "SELECT count(*) FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.edges)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.edges GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.edges)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.edges GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "raw_rows",
+        "typed_rows"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "spans_raw_typed_count_mismatches": {
+      "count_sql": "SELECT count(*) FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.spans)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.spans GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.spans)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.spans GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "raw_rows",
+        "typed_rows"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "macro_invocations_raw_typed_count_mismatches": {
+      "count_sql": "SELECT count(*) FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_invocations)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_invocations GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_invocations)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_invocations GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "raw_rows",
+        "typed_rows"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "macro_scopes_raw_typed_count_mismatches": {
+      "count_sql": "SELECT count(*) FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_scopes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_scopes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_scopes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_scopes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)\nORDER BY logical_path\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "raw_rows",
+        "typed_rows"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "structural_invariants": {
+      "count_sql": "SELECT count(*) FROM (SELECT 'inventory_duplicate_paths' AS invariant, count(*) AS affected_rows FROM (SELECT path\n        FROM main.inventory GROUP BY path HAVING count(*) > 1) bad\nUNION ALL\nSELECT 'sources_duplicate_paths' AS invariant, count(*) AS affected_rows FROM (SELECT logical_path\n        FROM main.sources GROUP BY logical_path HAVING count(*) > 1) bad\nUNION ALL\nSELECT 'facts_duplicate_paths' AS invariant, count(*) AS affected_rows FROM (SELECT logical_path\n        FROM main.facts GROUP BY logical_path HAVING count(*) > 1) bad\nUNION ALL\nSELECT 'sources_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.sources t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'facts_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.facts t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'nodes_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.nodes t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'edges_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.edges t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'spans_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.spans t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'macro_invocations_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.macro_invocations t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'macro_scopes_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.macro_scopes t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'nodes_without_span' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.nodes n WHERE NOT EXISTS (\n      SELECT 1 FROM main.spans s WHERE s.logical_path = n.logical_path\n      AND s.span_id = n.source_span_id)) bad\nUNION ALL\nSELECT 'edges_without_source_node' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.edges e WHERE NOT EXISTS (\n      SELECT 1 FROM main.nodes n WHERE n.logical_path = e.logical_path\n      AND n.node_id = e.source_node_id)) bad\nUNION ALL\nSELECT 'edges_with_nonnull_missing_target' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.edges e\n    WHERE e.target_node_id IS NOT NULL AND NOT EXISTS (\n      SELECT 1 FROM main.nodes n WHERE n.logical_path = e.logical_path\n      AND n.node_id = e.target_node_id)) bad\nUNION ALL\nSELECT 'spans_without_unique_source_bytes' AS invariant, count(*) AS affected_rows FROM (WITH source_sizes AS (\n  SELECT logical_path, count(*) AS source_rows,\n         min(octet_length(source_bytes)) AS byte_length\n  FROM main.sources GROUP BY logical_path\n)\n    SELECT 1 FROM main.spans s LEFT JOIN source_sizes z USING (logical_path)\n    WHERE z.source_rows IS DISTINCT FROM 1 OR z.byte_length IS NULL) bad\nUNION ALL\nSELECT 'invalid_byte_spans' AS invariant, count(*) AS affected_rows FROM (WITH source_sizes AS (\n  SELECT logical_path, count(*) AS source_rows,\n         min(octet_length(source_bytes)) AS byte_length\n  FROM main.sources GROUP BY logical_path\n)\n    SELECT s.logical_path, s.span_id, s.start_byte, s.end_byte, z.byte_length\n    FROM main.spans s LEFT JOIN source_sizes z USING (logical_path)\n    WHERE s.start_byte IS NULL OR s.end_byte IS NULL OR s.start_byte > s.end_byte\n       OR (z.source_rows = 1 AND (s.start_byte > z.byte_length OR s.end_byte > z.byte_length))) bad\nUNION ALL\nSELECT 'invalid_line_spans' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.spans\n    WHERE start_line IS NULL OR end_line IS NULL OR start_line < 1 OR start_line > end_line) bad\nUNION ALL\nSELECT 'nodes_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.nodes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.nodes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'edges_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.edges)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.edges GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'spans_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.spans)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.spans GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'macro_invocations_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_invocations)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_invocations GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'macro_scopes_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_scopes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_scopes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nORDER BY invariant) AS audit_count",
+      "count_params": [],
+      "total_rows": 21,
+      "sql": "SELECT 'inventory_duplicate_paths' AS invariant, count(*) AS affected_rows FROM (SELECT path\n        FROM main.inventory GROUP BY path HAVING count(*) > 1) bad\nUNION ALL\nSELECT 'sources_duplicate_paths' AS invariant, count(*) AS affected_rows FROM (SELECT logical_path\n        FROM main.sources GROUP BY logical_path HAVING count(*) > 1) bad\nUNION ALL\nSELECT 'facts_duplicate_paths' AS invariant, count(*) AS affected_rows FROM (SELECT logical_path\n        FROM main.facts GROUP BY logical_path HAVING count(*) > 1) bad\nUNION ALL\nSELECT 'sources_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.sources t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'facts_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.facts t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'nodes_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.nodes t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'edges_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.edges t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'spans_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.spans t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'macro_invocations_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.macro_invocations t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'macro_scopes_without_inventory' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.macro_scopes t\n        WHERE NOT EXISTS (SELECT 1 FROM main.inventory i WHERE i.path = t.logical_path)) bad\nUNION ALL\nSELECT 'nodes_without_span' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.nodes n WHERE NOT EXISTS (\n      SELECT 1 FROM main.spans s WHERE s.logical_path = n.logical_path\n      AND s.span_id = n.source_span_id)) bad\nUNION ALL\nSELECT 'edges_without_source_node' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.edges e WHERE NOT EXISTS (\n      SELECT 1 FROM main.nodes n WHERE n.logical_path = e.logical_path\n      AND n.node_id = e.source_node_id)) bad\nUNION ALL\nSELECT 'edges_with_nonnull_missing_target' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.edges e\n    WHERE e.target_node_id IS NOT NULL AND NOT EXISTS (\n      SELECT 1 FROM main.nodes n WHERE n.logical_path = e.logical_path\n      AND n.node_id = e.target_node_id)) bad\nUNION ALL\nSELECT 'spans_without_unique_source_bytes' AS invariant, count(*) AS affected_rows FROM (WITH source_sizes AS (\n  SELECT logical_path, count(*) AS source_rows,\n         min(octet_length(source_bytes)) AS byte_length\n  FROM main.sources GROUP BY logical_path\n)\n    SELECT 1 FROM main.spans s LEFT JOIN source_sizes z USING (logical_path)\n    WHERE z.source_rows IS DISTINCT FROM 1 OR z.byte_length IS NULL) bad\nUNION ALL\nSELECT 'invalid_byte_spans' AS invariant, count(*) AS affected_rows FROM (WITH source_sizes AS (\n  SELECT logical_path, count(*) AS source_rows,\n         min(octet_length(source_bytes)) AS byte_length\n  FROM main.sources GROUP BY logical_path\n)\n    SELECT s.logical_path, s.span_id, s.start_byte, s.end_byte, z.byte_length\n    FROM main.spans s LEFT JOIN source_sizes z USING (logical_path)\n    WHERE s.start_byte IS NULL OR s.end_byte IS NULL OR s.start_byte > s.end_byte\n       OR (z.source_rows = 1 AND (s.start_byte > z.byte_length OR s.end_byte > z.byte_length))) bad\nUNION ALL\nSELECT 'invalid_line_spans' AS invariant, count(*) AS affected_rows FROM (SELECT 1 FROM main.spans\n    WHERE start_line IS NULL OR end_line IS NULL OR start_line < 1 OR start_line > end_line) bad\nUNION ALL\nSELECT 'nodes_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.nodes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.nodes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'edges_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.edges)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.edges GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'spans_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.spans)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.spans GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'macro_invocations_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_invocations)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_invocations GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nUNION ALL\nSELECT 'macro_scopes_raw_typed_count_mismatch_paths' AS invariant, count(*) AS affected_rows FROM (WITH raw_counts AS (\n          SELECT logical_path, coalesce(sum(array_length(value.macro_scopes)), 0) AS raw_rows\n          FROM main.facts GROUP BY logical_path\n        ), typed AS (SELECT logical_path, count(*) AS typed_rows\n          FROM main.macro_scopes GROUP BY logical_path)\n        SELECT coalesce(r.logical_path, t.logical_path) AS logical_path,\n          coalesce(raw_rows, 0) AS raw_rows, coalesce(typed_rows, 0) AS typed_rows\n        FROM raw_counts r FULL OUTER JOIN typed t ON r.logical_path = t.logical_path\n        WHERE coalesce(raw_rows, 0) <> coalesce(typed_rows, 0)) bad\nORDER BY invariant\nLIMIT ?",
+      "params": [
+        100
+      ],
+      "limit": 100,
+      "columns": [
+        "invariant",
+        "affected_rows"
+      ],
+      "rows": [
+        {
+          "invariant": "edges_raw_typed_count_mismatch_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "edges_with_nonnull_missing_target",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "edges_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "edges_without_source_node",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "facts_duplicate_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "facts_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "invalid_byte_spans",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "invalid_line_spans",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "inventory_duplicate_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "macro_invocations_raw_typed_count_mismatch_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "macro_invocations_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "macro_scopes_raw_typed_count_mismatch_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "macro_scopes_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "nodes_raw_typed_count_mismatch_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "nodes_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "nodes_without_span",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "sources_duplicate_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "sources_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "spans_raw_typed_count_mismatch_paths",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "spans_without_inventory",
+          "affected_rows": 0
+        },
+        {
+          "invariant": "spans_without_unique_source_bytes",
+          "affected_rows": 0
+        }
+      ],
+      "displayed_rows": 21,
+      "truncated": false
+    },
+    "stable_key_duplicate_groups": {
+      "count_sql": "SELECT count(*) FROM (SELECT stable_key, count(*) AS copies,\n      count(DISTINCT logical_path) AS paths, count(DISTINCT label) AS labels,\n      count(DISTINCT kind) AS kinds FROM main.nodes WHERE stable_key IS NOT NULL\n    GROUP BY stable_key HAVING count(*) > 1\nORDER BY copies DESC, stable_key) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "SELECT stable_key, count(*) AS copies,\n      count(DISTINCT logical_path) AS paths, count(DISTINCT label) AS labels,\n      count(DISTINCT kind) AS kinds FROM main.nodes WHERE stable_key IS NOT NULL\n    GROUP BY stable_key HAVING count(*) > 1\nORDER BY copies DESC, stable_key\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "stable_key",
+        "copies",
+        "paths",
+        "labels",
+        "kinds"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "stable_key_duplicate_evidence": {
+      "count_sql": "SELECT count(*) FROM (WITH duplicate_keys AS (SELECT stable_key, count(*) AS copies,\n      count(DISTINCT logical_path) AS paths, count(DISTINCT label) AS labels,\n      count(DISTINCT kind) AS kinds FROM main.nodes WHERE stable_key IS NOT NULL\n    GROUP BY stable_key HAVING count(*) > 1)\n    SELECT n.logical_path, n.node_id, n.stable_key, n.label, n.kind, n.source_span_id,\n      d.copies, d.paths FROM main.nodes n JOIN duplicate_keys d USING (stable_key)\n    ORDER BY d.copies DESC, n.stable_key, n.logical_path, n.node_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH duplicate_keys AS (SELECT stable_key, count(*) AS copies,\n      count(DISTINCT logical_path) AS paths, count(DISTINCT label) AS labels,\n      count(DISTINCT kind) AS kinds FROM main.nodes WHERE stable_key IS NOT NULL\n    GROUP BY stable_key HAVING count(*) > 1)\n    SELECT n.logical_path, n.node_id, n.stable_key, n.label, n.kind, n.source_span_id,\n      d.copies, d.paths FROM main.nodes n JOIN duplicate_keys d USING (stable_key)\n    ORDER BY d.copies DESC, n.stable_key, n.logical_path, n.node_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "node_id",
+        "stable_key",
+        "label",
+        "kind",
+        "source_span_id",
+        "copies",
+        "paths"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "extraction_by_status_area": {
+      "count_sql": "SELECT count(*) FROM (WITH health AS (WITH nc AS (\n      SELECT logical_path, count(*) AS nodes,\n        count(*) FILTER (WHERE kind = 'file') AS file_nodes\n      FROM main.nodes GROUP BY logical_path\n    ), ec AS (SELECT logical_path, count(*) AS edges FROM main.edges GROUP BY logical_path),\n    fc AS (SELECT logical_path, count(*) AS fact_rows,\n      count(*) FILTER (WHERE value IS NOT NULL) AS nonnull_fact_rows\n      FROM main.facts GROUP BY logical_path)\n    SELECT i.path, i.status, i.area, i.suffix, coalesce(fc.fact_rows, 0) AS fact_rows,\n      coalesce(nc.nodes, 0) AS nodes, coalesce(ec.edges, 0) AS edges,\n      CASE WHEN fc.fact_rows IS NULL THEN 'no_fact_row'\n           WHEN fc.nonnull_fact_rows = 0 THEN 'null_facts'\n           WHEN coalesce(nc.nodes, 0) = 0 THEN 'empty_nodes'\n           WHEN nc.nodes = nc.file_nodes THEN 'file_only' ELSE 'symbols_present' END AS extraction\n    FROM main.inventory i LEFT JOIN fc ON fc.logical_path = i.path\n    LEFT JOIN nc ON nc.logical_path = i.path LEFT JOIN ec ON ec.logical_path = i.path)\n    SELECT status, area, extraction, count(*) AS inventory_rows FROM health\n    GROUP BY status, area, extraction ORDER BY inventory_rows DESC, status, area, extraction) AS audit_count",
+      "count_params": [],
+      "total_rows": 83,
+      "sql": "WITH health AS (WITH nc AS (\n      SELECT logical_path, count(*) AS nodes,\n        count(*) FILTER (WHERE kind = 'file') AS file_nodes\n      FROM main.nodes GROUP BY logical_path\n    ), ec AS (SELECT logical_path, count(*) AS edges FROM main.edges GROUP BY logical_path),\n    fc AS (SELECT logical_path, count(*) AS fact_rows,\n      count(*) FILTER (WHERE value IS NOT NULL) AS nonnull_fact_rows\n      FROM main.facts GROUP BY logical_path)\n    SELECT i.path, i.status, i.area, i.suffix, coalesce(fc.fact_rows, 0) AS fact_rows,\n      coalesce(nc.nodes, 0) AS nodes, coalesce(ec.edges, 0) AS edges,\n      CASE WHEN fc.fact_rows IS NULL THEN 'no_fact_row'\n           WHEN fc.nonnull_fact_rows = 0 THEN 'null_facts'\n           WHEN coalesce(nc.nodes, 0) = 0 THEN 'empty_nodes'\n           WHEN nc.nodes = nc.file_nodes THEN 'file_only' ELSE 'symbols_present' END AS extraction\n    FROM main.inventory i LEFT JOIN fc ON fc.logical_path = i.path\n    LEFT JOIN nc ON nc.logical_path = i.path LEFT JOIN ec ON ec.logical_path = i.path)\n    SELECT status, area, extraction, count(*) AS inventory_rows FROM health\n    GROUP BY status, area, extraction ORDER BY inventory_rows DESC, status, area, extraction\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "status",
+        "area",
+        "extraction",
+        "inventory_rows"
+      ],
+      "rows": [
+        {
+          "status": "extracted",
+          "area": "docs",
+          "extraction": "symbols_present",
+          "inventory_rows": 1369
+        },
+        {
+          "status": "extracted",
+          "area": "spur-graph",
+          "extraction": "symbols_present",
+          "inventory_rows": 613
+        },
+        {
+          "status": "extracted",
+          "area": "spur-core",
+          "extraction": "symbols_present",
+          "inventory_rows": 312
+        },
+        {
+          "status": "extracted",
+          "area": "spur-tui",
+          "extraction": "symbols_present",
+          "inventory_rows": 288
+        },
+        {
+          "status": "extracted",
+          "area": "spur-graph",
+          "extraction": "file_only",
+          "inventory_rows": 153
+        },
+        {
+          "status": "path_admission_failed",
+          "area": "docs",
+          "extraction": "no_fact_row",
+          "inventory_rows": 151
+        },
+        {
+          "status": "extracted",
+          "area": "spur-cli",
+          "extraction": "symbols_present",
+          "inventory_rows": 131
+        },
+        {
+          "status": "extracted",
+          "area": "spur-solver",
+          "extraction": "symbols_present",
+          "inventory_rows": 127
+        },
+        {
+          "status": "extracted",
+          "area": "spur-acp",
+          "extraction": "symbols_present",
+          "inventory_rows": 124
+        },
+        {
+          "status": "extracted",
+          "area": "spur-analyst",
+          "extraction": "symbols_present",
+          "inventory_rows": 85
+        },
+        {
+          "status": "extracted",
+          "area": "spur-pm",
+          "extraction": "symbols_present",
+          "inventory_rows": 75
+        },
+        {
+          "status": "extracted",
+          "area": "vendor",
+          "extraction": "symbols_present",
+          "inventory_rows": 73
+        },
+        {
+          "status": "extracted",
+          "area": "scripts",
+          "extraction": "symbols_present",
+          "inventory_rows": 65
+        },
+        {
+          "status": "extracted",
+          "area": "infra",
+          "extraction": "symbols_present",
+          "inventory_rows": 64
+        },
+        {
+          "status": "extracted",
+          "area": "scripts",
+          "extraction": "file_only",
+          "inventory_rows": 51
+        },
+        {
+          "status": "extracted",
+          "area": "spur-context-service",
+          "extraction": "symbols_present",
+          "inventory_rows": 50
+        },
+        {
+          "status": "path_admission_failed",
+          "area": "spur-graph",
+          "extraction": "no_fact_row",
+          "inventory_rows": 49
+        },
+        {
+          "status": "extracted",
+          "area": "docs",
+          "extraction": "file_only",
+          "inventory_rows": 46
+        },
+        {
+          "status": "extracted",
+          "area": "spur-graph-duckdb",
+          "extraction": "symbols_present",
+          "inventory_rows": 40
+        },
+        {
+          "status": "extracted",
+          "area": "spur-utilities",
+          "extraction": "symbols_present",
+          "inventory_rows": 39
+        },
+        {
+          "status": "path_admission_failed",
+          "area": "scripts",
+          "extraction": "no_fact_row",
+          "inventory_rows": 38
+        },
+        {
+          "status": "extracted",
+          "area": "spur-license",
+          "extraction": "symbols_present",
+          "inventory_rows": 35
+        },
+        {
+          "status": "extracted",
+          "area": "spur-code-eval",
+          "extraction": "symbols_present",
+          "inventory_rows": 31
+        },
+        {
+          "status": "extracted",
+          "area": ".spur",
+          "extraction": "symbols_present",
+          "inventory_rows": 25
+        },
+        {
+          "status": "extracted",
+          "area": "spur-bot",
+          "extraction": "symbols_present",
+          "inventory_rows": 23
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "file_only_empty_examples": {
+      "count_sql": "SELECT count(*) FROM (WITH health AS (WITH nc AS (\n      SELECT logical_path, count(*) AS nodes,\n        count(*) FILTER (WHERE kind = 'file') AS file_nodes\n      FROM main.nodes GROUP BY logical_path\n    ), ec AS (SELECT logical_path, count(*) AS edges FROM main.edges GROUP BY logical_path),\n    fc AS (SELECT logical_path, count(*) AS fact_rows,\n      count(*) FILTER (WHERE value IS NOT NULL) AS nonnull_fact_rows\n      FROM main.facts GROUP BY logical_path)\n    SELECT i.path, i.status, i.area, i.suffix, coalesce(fc.fact_rows, 0) AS fact_rows,\n      coalesce(nc.nodes, 0) AS nodes, coalesce(ec.edges, 0) AS edges,\n      CASE WHEN fc.fact_rows IS NULL THEN 'no_fact_row'\n           WHEN fc.nonnull_fact_rows = 0 THEN 'null_facts'\n           WHEN coalesce(nc.nodes, 0) = 0 THEN 'empty_nodes'\n           WHEN nc.nodes = nc.file_nodes THEN 'file_only' ELSE 'symbols_present' END AS extraction\n    FROM main.inventory i LEFT JOIN fc ON fc.logical_path = i.path\n    LEFT JOIN nc ON nc.logical_path = i.path LEFT JOIN ec ON ec.logical_path = i.path)\n    SELECT * FROM health WHERE extraction <> 'symbols_present' ORDER BY path, status, area) AS audit_count",
+      "count_params": [],
+      "total_rows": 603,
+      "sql": "WITH health AS (WITH nc AS (\n      SELECT logical_path, count(*) AS nodes,\n        count(*) FILTER (WHERE kind = 'file') AS file_nodes\n      FROM main.nodes GROUP BY logical_path\n    ), ec AS (SELECT logical_path, count(*) AS edges FROM main.edges GROUP BY logical_path),\n    fc AS (SELECT logical_path, count(*) AS fact_rows,\n      count(*) FILTER (WHERE value IS NOT NULL) AS nonnull_fact_rows\n      FROM main.facts GROUP BY logical_path)\n    SELECT i.path, i.status, i.area, i.suffix, coalesce(fc.fact_rows, 0) AS fact_rows,\n      coalesce(nc.nodes, 0) AS nodes, coalesce(ec.edges, 0) AS edges,\n      CASE WHEN fc.fact_rows IS NULL THEN 'no_fact_row'\n           WHEN fc.nonnull_fact_rows = 0 THEN 'null_facts'\n           WHEN coalesce(nc.nodes, 0) = 0 THEN 'empty_nodes'\n           WHEN nc.nodes = nc.file_nodes THEN 'file_only' ELSE 'symbols_present' END AS extraction\n    FROM main.inventory i LEFT JOIN fc ON fc.logical_path = i.path\n    LEFT JOIN nc ON nc.logical_path = i.path LEFT JOIN ec ON ec.logical_path = i.path)\n    SELECT * FROM health WHERE extraction <> 'symbols_present' ORDER BY path, status, area\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "path",
+        "status",
+        "area",
+        "suffix",
+        "fact_rows",
+        "nodes",
+        "edges",
+        "extraction"
+      ],
+      "rows": [
+        {
+          "path": ".githooks/pre-commit",
+          "status": "path_admission_failed",
+          "area": ".githooks",
+          "suffix": "",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": ".gitignore",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": "",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": ".gitmodules",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": "",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": ".spur/config.toml.example",
+          "status": "path_admission_failed",
+          "area": ".spur",
+          "suffix": ".example",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-10-31-panic-graph-experiment.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-11-01-panic-implementation-grounding.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-11-02-panic-evidence-validation.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-11-02-rust-gap-closure-grounding.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-11-02-rust-graph-coverage.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-11-02-spur-notebook-new-build-check.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "2026-11-02-spur-notebook-panic-evaluation.ipynb",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".ipynb",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "Cargo.lock",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": ".lock",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "LICENSE",
+          "status": "path_admission_failed",
+          "area": "root",
+          "suffix": "",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "crates/spur-acp/tests/fixtures/agent_delayed_available_commands.sh",
+          "status": "extracted",
+          "area": "spur-acp",
+          "suffix": ".sh",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 6,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-acp/tests/fixtures/agent_held_prompt.sh",
+          "status": "extracted",
+          "area": "spur-acp",
+          "suffix": ".sh",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 10,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-acp/tests/fixtures/agent_logout_request.sh",
+          "status": "extracted",
+          "area": "spur-acp",
+          "suffix": ".sh",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 8,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-acp/tests/fixtures/agent_trailing_notification.sh",
+          "status": "extracted",
+          "area": "spur-acp",
+          "suffix": ".sh",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 6,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-acp/tests/fixtures/load_error_stub.mjs",
+          "status": "extracted",
+          "area": "spur-acp",
+          "suffix": ".mjs",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 9,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q1.smt2",
+          "status": "path_admission_failed",
+          "area": "spur-acp",
+          "suffix": ".smt2",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q2.smt2",
+          "status": "path_admission_failed",
+          "area": "spur-acp",
+          "suffix": ".smt2",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q3.smt2",
+          "status": "path_admission_failed",
+          "area": "spur-acp",
+          "suffix": ".smt2",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "crates/spur-acp/verification/pi_standardizer/q4.smt2",
+          "status": "path_admission_failed",
+          "area": "spur-acp",
+          "suffix": ".smt2",
+          "fact_rows": 0,
+          "nodes": 0,
+          "edges": 0,
+          "extraction": "no_fact_row"
+        },
+        {
+          "path": "crates/spur-analyst/src/mcp/value/arrow.rs",
+          "status": "extracted",
+          "area": "spur-analyst",
+          "suffix": ".rs",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 0,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-bot/tests/telegram_format/golden/llm-output-1.expected.json",
+          "status": "extracted",
+          "area": "spur-bot",
+          "suffix": ".json",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 0,
+          "extraction": "file_only"
+        },
+        {
+          "path": "crates/spur-bot/tests/telegram_format/golden/llm-output-2.expected.json",
+          "status": "extracted",
+          "area": "spur-bot",
+          "suffix": ".json",
+          "fact_rows": 1,
+          "nodes": 1,
+          "edges": 0,
+          "extraction": "file_only"
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "call_rates_by_area": {
+      "count_sql": "SELECT count(*) FROM (WITH areas AS (\n  SELECT path, CASE WHEN count(DISTINCT struct_pack(v := area)) = 1\n                   THEN min(area) END AS area,\n         count(*) AS inventory_rows,\n         count(DISTINCT struct_pack(v := area)) AS area_variants\n  FROM main.inventory GROUP BY path\n), node_ids AS (\n  SELECT logical_path, node_id, count(*) AS copies\n  FROM main.nodes GROUP BY logical_path, node_id\n), call_rows AS (\n      SELECT e.*, a.area,\n        CASE WHEN a.inventory_rows IS NULL THEN 'missing_inventory'\n             WHEN a.area_variants > 1 THEN 'ambiguous_area' ELSE 'inventory_area' END AS area_basis,\n        coalesce(n.copies, 0) AS target_copies\n      FROM main.edges e LEFT JOIN areas a ON a.path = e.logical_path\n      LEFT JOIN node_ids n ON n.logical_path = e.logical_path AND n.node_id = e.target_node_id\n      WHERE e.relation = 'calls'\n    ) SELECT area, area_basis, count(*) AS calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL) AS nonnull_target_calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL AND target_copies = 1) AS resolved_only_calls,\n      count(*) FILTER (WHERE target_node_id IS NULL) AS unresolved_calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL AND target_copies = 0) AS dangling_target_calls,\n      count(*) FILTER (WHERE target_copies > 1) AS ambiguous_target_calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL AND target_copies = 1)::DOUBLE / count(*) AS resolved_only_rate,\n      count(*) FILTER (WHERE target_node_id IS NULL)::DOUBLE / count(*) AS unresolved_rate\n    FROM call_rows GROUP BY area, area_basis\nORDER BY calls DESC, area, area_basis) AS audit_count",
+      "count_params": [],
+      "total_rows": 37,
+      "sql": "WITH areas AS (\n  SELECT path, CASE WHEN count(DISTINCT struct_pack(v := area)) = 1\n                   THEN min(area) END AS area,\n         count(*) AS inventory_rows,\n         count(DISTINCT struct_pack(v := area)) AS area_variants\n  FROM main.inventory GROUP BY path\n), node_ids AS (\n  SELECT logical_path, node_id, count(*) AS copies\n  FROM main.nodes GROUP BY logical_path, node_id\n), call_rows AS (\n      SELECT e.*, a.area,\n        CASE WHEN a.inventory_rows IS NULL THEN 'missing_inventory'\n             WHEN a.area_variants > 1 THEN 'ambiguous_area' ELSE 'inventory_area' END AS area_basis,\n        coalesce(n.copies, 0) AS target_copies\n      FROM main.edges e LEFT JOIN areas a ON a.path = e.logical_path\n      LEFT JOIN node_ids n ON n.logical_path = e.logical_path AND n.node_id = e.target_node_id\n      WHERE e.relation = 'calls'\n    ) SELECT area, area_basis, count(*) AS calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL) AS nonnull_target_calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL AND target_copies = 1) AS resolved_only_calls,\n      count(*) FILTER (WHERE target_node_id IS NULL) AS unresolved_calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL AND target_copies = 0) AS dangling_target_calls,\n      count(*) FILTER (WHERE target_copies > 1) AS ambiguous_target_calls,\n      count(*) FILTER (WHERE target_node_id IS NOT NULL AND target_copies = 1)::DOUBLE / count(*) AS resolved_only_rate,\n      count(*) FILTER (WHERE target_node_id IS NULL)::DOUBLE / count(*) AS unresolved_rate\n    FROM call_rows GROUP BY area, area_basis\nORDER BY calls DESC, area, area_basis\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "area",
+        "area_basis",
+        "calls",
+        "nonnull_target_calls",
+        "resolved_only_calls",
+        "unresolved_calls",
+        "dangling_target_calls",
+        "ambiguous_target_calls",
+        "resolved_only_rate",
+        "unresolved_rate"
+      ],
+      "rows": [
+        {
+          "area": "spur-core",
+          "area_basis": "inventory_area",
+          "calls": 64826,
+          "nonnull_target_calls": 7393,
+          "resolved_only_calls": 7393,
+          "unresolved_calls": 57433,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.11404374787893747,
+          "unresolved_rate": 0.8859562521210625
+        },
+        {
+          "area": "spur-graph",
+          "area_basis": "inventory_area",
+          "calls": 56952,
+          "nonnull_target_calls": 7771,
+          "resolved_only_calls": 7771,
+          "unresolved_calls": 49181,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.13644823711195392,
+          "unresolved_rate": 0.863551762888046
+        },
+        {
+          "area": "spur-tui",
+          "area_basis": "inventory_area",
+          "calls": 42342,
+          "nonnull_target_calls": 5581,
+          "resolved_only_calls": 5581,
+          "unresolved_calls": 36761,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.13180766142364556,
+          "unresolved_rate": 0.8681923385763545
+        },
+        {
+          "area": "spur-context-service",
+          "area_basis": "inventory_area",
+          "calls": 17786,
+          "nonnull_target_calls": 3058,
+          "resolved_only_calls": 3058,
+          "unresolved_calls": 14728,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.1719329809962892,
+          "unresolved_rate": 0.8280670190037108
+        },
+        {
+          "area": "spur-acp",
+          "area_basis": "inventory_area",
+          "calls": 9879,
+          "nonnull_target_calls": 1162,
+          "resolved_only_calls": 1162,
+          "unresolved_calls": 8717,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.11762324121874684,
+          "unresolved_rate": 0.8823767587812532
+        },
+        {
+          "area": "spur-solver",
+          "area_basis": "inventory_area",
+          "calls": 9006,
+          "nonnull_target_calls": 1377,
+          "resolved_only_calls": 1377,
+          "unresolved_calls": 7629,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.15289806795469688,
+          "unresolved_rate": 0.8471019320453032
+        },
+        {
+          "area": "spur-pm",
+          "area_basis": "inventory_area",
+          "calls": 7632,
+          "nonnull_target_calls": 848,
+          "resolved_only_calls": 848,
+          "unresolved_calls": 6784,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.1111111111111111,
+          "unresolved_rate": 0.8888888888888888
+        },
+        {
+          "area": "spur-cli",
+          "area_basis": "inventory_area",
+          "calls": 7233,
+          "nonnull_target_calls": 893,
+          "resolved_only_calls": 893,
+          "unresolved_calls": 6340,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.12346191068712845,
+          "unresolved_rate": 0.8765380893128716
+        },
+        {
+          "area": "spur-analyst",
+          "area_basis": "inventory_area",
+          "calls": 6750,
+          "nonnull_target_calls": 626,
+          "resolved_only_calls": 626,
+          "unresolved_calls": 6124,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.09274074074074073,
+          "unresolved_rate": 0.9072592592592592
+        },
+        {
+          "area": "spur-code-eval",
+          "area_basis": "inventory_area",
+          "calls": 5128,
+          "nonnull_target_calls": 760,
+          "resolved_only_calls": 760,
+          "unresolved_calls": 4368,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.1482059282371295,
+          "unresolved_rate": 0.8517940717628705
+        },
+        {
+          "area": "scripts",
+          "area_basis": "inventory_area",
+          "calls": 4599,
+          "nonnull_target_calls": 975,
+          "resolved_only_calls": 975,
+          "unresolved_calls": 3624,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.21200260926288322,
+          "unresolved_rate": 0.7879973907371167
+        },
+        {
+          "area": "vendor",
+          "area_basis": "inventory_area",
+          "calls": 4245,
+          "nonnull_target_calls": 171,
+          "resolved_only_calls": 171,
+          "unresolved_calls": 4074,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.040282685512367494,
+          "unresolved_rate": 0.9597173144876325
+        },
+        {
+          "area": "spur-graph-duckdb",
+          "area_basis": "inventory_area",
+          "calls": 3697,
+          "nonnull_target_calls": 626,
+          "resolved_only_calls": 626,
+          "unresolved_calls": 3071,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.16932648093048416,
+          "unresolved_rate": 0.8306735190695158
+        },
+        {
+          "area": "spur-utilities",
+          "area_basis": "inventory_area",
+          "calls": 3683,
+          "nonnull_target_calls": 473,
+          "resolved_only_calls": 473,
+          "unresolved_calls": 3210,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.12842791202823786,
+          "unresolved_rate": 0.8715720879717621
+        },
+        {
+          "area": "spur-bot",
+          "area_basis": "inventory_area",
+          "calls": 2981,
+          "nonnull_target_calls": 273,
+          "resolved_only_calls": 273,
+          "unresolved_calls": 2708,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.091580006709158,
+          "unresolved_rate": 0.908419993290842
+        },
+        {
+          "area": "spur-worktree",
+          "area_basis": "inventory_area",
+          "calls": 1997,
+          "nonnull_target_calls": 180,
+          "resolved_only_calls": 180,
+          "unresolved_calls": 1817,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.09013520280420631,
+          "unresolved_rate": 0.9098647971957937
+        },
+        {
+          "area": "docs",
+          "area_basis": "inventory_area",
+          "calls": 1907,
+          "nonnull_target_calls": 214,
+          "resolved_only_calls": 214,
+          "unresolved_calls": 1693,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.11221814368117462,
+          "unresolved_rate": 0.8877818563188253
+        },
+        {
+          "area": "spur-context",
+          "area_basis": "inventory_area",
+          "calls": 1719,
+          "nonnull_target_calls": 99,
+          "resolved_only_calls": 99,
+          "unresolved_calls": 1620,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.05759162303664921,
+          "unresolved_rate": 0.9424083769633508
+        },
+        {
+          "area": "spur-embedding",
+          "area_basis": "inventory_area",
+          "calls": 1700,
+          "nonnull_target_calls": 157,
+          "resolved_only_calls": 157,
+          "unresolved_calls": 1543,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.09235294117647058,
+          "unresolved_rate": 0.9076470588235294
+        },
+        {
+          "area": "spur-mcp",
+          "area_basis": "inventory_area",
+          "calls": 1576,
+          "nonnull_target_calls": 170,
+          "resolved_only_calls": 170,
+          "unresolved_calls": 1406,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.10786802030456853,
+          "unresolved_rate": 0.8921319796954315
+        },
+        {
+          "area": "spur-license",
+          "area_basis": "inventory_area",
+          "calls": 1572,
+          "nonnull_target_calls": 165,
+          "resolved_only_calls": 165,
+          "unresolved_calls": 1407,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.1049618320610687,
+          "unresolved_rate": 0.8950381679389313
+        },
+        {
+          "area": "xtask",
+          "area_basis": "inventory_area",
+          "calls": 1367,
+          "nonnull_target_calls": 248,
+          "resolved_only_calls": 248,
+          "unresolved_calls": 1119,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.18141916605705927,
+          "unresolved_rate": 0.8185808339429408
+        },
+        {
+          "area": "infra",
+          "area_basis": "inventory_area",
+          "calls": 1302,
+          "nonnull_target_calls": 215,
+          "resolved_only_calls": 215,
+          "unresolved_calls": 1087,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.1651305683563748,
+          "unresolved_rate": 0.8348694316436251
+        },
+        {
+          "area": "spur-context-auth",
+          "area_basis": "inventory_area",
+          "calls": 1231,
+          "nonnull_target_calls": 95,
+          "resolved_only_calls": 95,
+          "unresolved_calls": 1136,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.07717303005686434,
+          "unresolved_rate": 0.9228269699431356
+        },
+        {
+          "area": "spur-embedding-worker",
+          "area_basis": "inventory_area",
+          "calls": 1211,
+          "nonnull_target_calls": 72,
+          "resolved_only_calls": 72,
+          "unresolved_calls": 1139,
+          "dangling_target_calls": 0,
+          "ambiguous_target_calls": 0,
+          "resolved_only_rate": 0.05945499587118084,
+          "unresolved_rate": 0.9405450041288191
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "unresolved_call_labels": {
+      "count_sql": "SELECT count(*) FROM (WITH areas AS (\n  SELECT path, CASE WHEN count(DISTINCT struct_pack(v := area)) = 1\n                   THEN min(area) END AS area,\n         count(*) AS inventory_rows,\n         count(DISTINCT struct_pack(v := area)) AS area_variants\n  FROM main.inventory GROUP BY path\n)\n    SELECT a.area, e.target_label, e.bind_method, e.confidence, count(*) AS calls\n    FROM main.edges e LEFT JOIN areas a ON a.path = e.logical_path\n    WHERE e.relation = 'calls' AND e.target_node_id IS NULL\n    GROUP BY a.area, e.target_label, e.bind_method, e.confidence\n    ORDER BY calls DESC, a.area, e.target_label, e.bind_method, e.confidence) AS audit_count",
+      "count_params": [],
+      "total_rows": 18575,
+      "sql": "WITH areas AS (\n  SELECT path, CASE WHEN count(DISTINCT struct_pack(v := area)) = 1\n                   THEN min(area) END AS area,\n         count(*) AS inventory_rows,\n         count(DISTINCT struct_pack(v := area)) AS area_variants\n  FROM main.inventory GROUP BY path\n)\n    SELECT a.area, e.target_label, e.bind_method, e.confidence, count(*) AS calls\n    FROM main.edges e LEFT JOIN areas a ON a.path = e.logical_path\n    WHERE e.relation = 'calls' AND e.target_node_id IS NULL\n    GROUP BY a.area, e.target_label, e.bind_method, e.confidence\n    ORDER BY calls DESC, a.area, e.target_label, e.bind_method, e.confidence\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "area",
+        "target_label",
+        "bind_method",
+        "confidence",
+        "calls"
+      ],
+      "rows": [
+        {
+          "area": "spur-core",
+          "target_label": "new",
+          "bind_method": null,
+          "confidence": "heuristic",
+          "calls": 4525
+        },
+        {
+          "area": "spur-core",
+          "target_label": "expect",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 4274
+        },
+        {
+          "area": "spur-tui",
+          "target_label": "new",
+          "bind_method": null,
+          "confidence": "heuristic",
+          "calls": 3506
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "unwrap",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 3293
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "expect",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 2620
+        },
+        {
+          "area": "spur-core",
+          "target_label": "into",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 2492
+        },
+        {
+          "area": "spur-core",
+          "target_label": "clone",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 2327
+        },
+        {
+          "area": "spur-core",
+          "target_label": "unwrap",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 2269
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "new",
+          "bind_method": null,
+          "confidence": "heuristic",
+          "calls": 2198
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "clone",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 2077
+        },
+        {
+          "area": "spur-tui",
+          "target_label": "into",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1927
+        },
+        {
+          "area": "spur-core",
+          "target_label": "to_string",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1827
+        },
+        {
+          "area": "spur-core",
+          "target_label": "Some",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1698
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "iter",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1546
+        },
+        {
+          "area": "spur-tui",
+          "target_label": "Some",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1250
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "map",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1210
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "to_owned",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1081
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "Ok",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1067
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "Some",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 1058
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "path",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 981
+        },
+        {
+          "area": "spur-tui",
+          "target_label": "to_string",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 981
+        },
+        {
+          "area": "spur-tui",
+          "target_label": "unwrap",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 961
+        },
+        {
+          "area": "spur-graph",
+          "target_label": "join",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 921
+        },
+        {
+          "area": "spur-core",
+          "target_label": "path",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 917
+        },
+        {
+          "area": "spur-core",
+          "target_label": "iter",
+          "bind_method": null,
+          "confidence": "syntax_exact",
+          "calls": 913
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "overloaded_names": {
+      "count_sql": "SELECT count(*) FROM (SELECT label, count(*) AS definitions, count(DISTINCT logical_path) AS paths\n    FROM main.nodes WHERE kind IN ('function', 'method') AND label IS NOT NULL\n    GROUP BY label HAVING count(*) > 1\nORDER BY definitions DESC, label) AS audit_count",
+      "count_params": [],
+      "total_rows": 2069,
+      "sql": "SELECT label, count(*) AS definitions, count(DISTINCT logical_path) AS paths\n    FROM main.nodes WHERE kind IN ('function', 'method') AND label IS NOT NULL\n    GROUP BY label HAVING count(*) > 1\nORDER BY definitions DESC, label\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "label",
+        "definitions",
+        "paths"
+      ],
+      "rows": [
+        {
+          "label": "new",
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "label": "drop",
+          "definitions": 182,
+          "paths": 124
+        },
+        {
+          "label": "default",
+          "definitions": 129,
+          "paths": 105
+        },
+        {
+          "label": "from",
+          "definitions": 129,
+          "paths": 53
+        },
+        {
+          "label": "fmt",
+          "definitions": 125,
+          "paths": 70
+        },
+        {
+          "label": "main",
+          "definitions": 83,
+          "paths": 82
+        },
+        {
+          "label": "validate",
+          "definitions": 71,
+          "paths": 47
+        },
+        {
+          "label": "run",
+          "definitions": 69,
+          "paths": 56
+        },
+        {
+          "label": "key",
+          "definitions": 63,
+          "paths": 60
+        },
+        {
+          "label": "render",
+          "definitions": 63,
+          "paths": 61
+        },
+        {
+          "label": "build",
+          "definitions": 51,
+          "paths": 40
+        },
+        {
+          "label": "name",
+          "definitions": 50,
+          "paths": 42
+        },
+        {
+          "label": "run_git",
+          "definitions": 50,
+          "paths": 46
+        },
+        {
+          "label": "shutdown",
+          "definitions": 48,
+          "paths": 29
+        },
+        {
+          "label": "emit",
+          "definitions": 44,
+          "paths": 33
+        },
+        {
+          "label": "run_br",
+          "definitions": 44,
+          "paths": 44
+        },
+        {
+          "label": "as_str",
+          "definitions": 43,
+          "paths": 27
+        },
+        {
+          "label": "git",
+          "definitions": 40,
+          "paths": 38
+        },
+        {
+          "label": "get",
+          "definitions": 39,
+          "paths": 32
+        },
+        {
+          "label": "register",
+          "definitions": 39,
+          "paths": 34
+        },
+        {
+          "label": "init_repo",
+          "definitions": 36,
+          "paths": 34
+        },
+        {
+          "label": "initialize",
+          "definitions": 36,
+          "paths": 18
+        },
+        {
+          "label": "prompt",
+          "definitions": 36,
+          "paths": 19
+        },
+        {
+          "label": "__init__",
+          "definitions": 34,
+          "paths": 17
+        },
+        {
+          "label": "cancel",
+          "definitions": 34,
+          "paths": 17
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "overloaded_name_examples": {
+      "count_sql": "SELECT count(*) FROM (WITH overloaded AS (SELECT label, count(*) AS definitions, count(DISTINCT logical_path) AS paths\n    FROM main.nodes WHERE kind IN ('function', 'method') AND label IS NOT NULL\n    GROUP BY label HAVING count(*) > 1)\n    SELECT n.logical_path, n.node_id, n.label, n.kind, s.start_byte, s.end_byte,\n      o.definitions, o.paths FROM main.nodes n JOIN overloaded o USING (label)\n    LEFT JOIN main.spans s ON s.logical_path = n.logical_path AND s.span_id = n.source_span_id\n    WHERE n.kind IN ('function', 'method')\n    ORDER BY o.definitions DESC, n.label, n.logical_path, n.node_id, s.start_byte, s.end_byte) AS audit_count",
+      "count_params": [],
+      "total_rows": 9956,
+      "sql": "WITH overloaded AS (SELECT label, count(*) AS definitions, count(DISTINCT logical_path) AS paths\n    FROM main.nodes WHERE kind IN ('function', 'method') AND label IS NOT NULL\n    GROUP BY label HAVING count(*) > 1)\n    SELECT n.logical_path, n.node_id, n.label, n.kind, s.start_byte, s.end_byte,\n      o.definitions, o.paths FROM main.nodes n JOIN overloaded o USING (label)\n    LEFT JOIN main.spans s ON s.logical_path = n.logical_path AND s.span_id = n.source_span_id\n    WHERE n.kind IN ('function', 'method')\n    ORDER BY o.definitions DESC, n.label, n.logical_path, n.node_id, s.start_byte, s.end_byte\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "node_id",
+        "label",
+        "kind",
+        "start_byte",
+        "end_byte",
+        "definitions",
+        "paths"
+      ],
+      "rows": [
+        {
+          "logical_path": "crates/spur-acp/src/agent_model_catalog.rs",
+          "node_id": 22,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 1852,
+          "end_byte": 2274,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/agent_model_catalog.rs",
+          "node_id": 39,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 4403,
+          "end_byte": 4610,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/capability_evidence.rs",
+          "node_id": 64,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 3288,
+          "end_byte": 3768,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/cli_wrap_adapter.rs",
+          "node_id": 12,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 2843,
+          "end_byte": 3240,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/mod.rs",
+          "node_id": 12,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 2361,
+          "end_byte": 2608,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/native.rs",
+          "node_id": 27,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 8932,
+          "end_byte": 9763,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/native.rs",
+          "node_id": 42,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 10189,
+          "end_byte": 10674,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/native.rs",
+          "node_id": 213,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 73493,
+          "end_byte": 73913,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/stdio_adapter.rs",
+          "node_id": 13,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 3297,
+          "end_byte": 3729,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/connection/stream_json_adapter.rs",
+          "node_id": 13,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 2768,
+          "end_byte": 3235,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/domain/delegation.rs",
+          "node_id": 5,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 960,
+          "end_byte": 1035,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/domain/delegation.rs",
+          "node_id": 110,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 13216,
+          "end_byte": 13373,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/domain/delegation.rs",
+          "node_id": 117,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 14620,
+          "end_byte": 14672,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/orphan_registry.rs",
+          "node_id": 13,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 728,
+          "end_byte": 850,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/orphan_sweeper.rs",
+          "node_id": 13,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 612,
+          "end_byte": 868,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/protocol/claude_events.rs",
+          "node_id": 43,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 2931,
+          "end_byte": 3051,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/registry.rs",
+          "node_id": 8,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 445,
+          "end_byte": 534,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/session_liveness.rs",
+          "node_id": 5,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 437,
+          "end_byte": 548,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/spur_agent_caps.rs",
+          "node_id": 128,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 20660,
+          "end_byte": 21597,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/types.rs",
+          "node_id": 5,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 420,
+          "end_byte": 489,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/types.rs",
+          "node_id": 13,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 1198,
+          "end_byte": 1256,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/src/types.rs",
+          "node_id": 73,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 9675,
+          "end_byte": 9764,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-acp/tests/agent_model_catalog.rs",
+          "node_id": 21,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 20971,
+          "end_byte": 21101,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-analyst/src/doc_nav/artifact.rs",
+          "node_id": 14,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 1475,
+          "end_byte": 1898,
+          "definitions": 566,
+          "paths": 352
+        },
+        {
+          "logical_path": "crates/spur-analyst/src/embedding/model_cache.rs",
+          "node_id": 12,
+          "label": "new",
+          "kind": "method",
+          "start_byte": 871,
+          "end_byte": 1013,
+          "definitions": 566,
+          "paths": 352
+        }
+      ],
+      "displayed_rows": 25,
+      "truncated": true
+    },
+    "exploration_seeds": {
+      "count_sql": "SELECT count(*) FROM (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n)\n    SELECT q.*, s.start_byte, s.end_byte, s.start_line, s.end_line FROM seeds q\n    LEFT JOIN main.spans s ON s.logical_path = q.logical_path AND s.span_id = q.source_span_id\n    ORDER BY q.owner_label, q.method_label, q.logical_path, q.node_id, s.start_byte, s.end_byte) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n)\n    SELECT q.*, s.start_byte, s.end_byte, s.start_line, s.end_line FROM seeds q\n    LEFT JOIN main.spans s ON s.logical_path = q.logical_path AND s.span_id = q.source_span_id\n    ORDER BY q.owner_label, q.method_label, q.logical_path, q.node_id, s.start_byte, s.end_byte\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "node_id",
+        "label",
+        "kind",
+        "source_span_id",
+        "owner_label",
+        "method_label",
+        "start_byte",
+        "end_byte",
+        "start_line",
+        "end_line"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "exploration_outgoing_counts": {
+      "count_sql": "SELECT count(*) FROM (WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.source_node_id))\n        SELECT relation, confidence, bind_method, target_node_id IS NOT NULL AS has_target_id,\n          count(*) AS edges FROM selected GROUP BY ALL\n        ORDER BY edges DESC, relation, confidence, bind_method, has_target_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.source_node_id))\n        SELECT relation, confidence, bind_method, target_node_id IS NOT NULL AS has_target_id,\n          count(*) AS edges FROM selected GROUP BY ALL\n        ORDER BY edges DESC, relation, confidence, bind_method, has_target_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "relation",
+        "confidence",
+        "bind_method",
+        "has_target_id",
+        "edges"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "exploration_outgoing_examples": {
+      "count_sql": "SELECT count(*) FROM (WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.source_node_id)),\n        labels AS (SELECT logical_path, node_id, count(*) AS copies,\n          CASE WHEN count(*) = 1 THEN min(label) END AS node_label\n          FROM main.nodes GROUP BY logical_path, node_id)\n        SELECT e.logical_path, e.edge_id, e.source_node_id, e.target_node_id,\n          left(src.node_label, 500) AS source_label, src.copies AS source_node_matches,\n          left(dst.node_label, 500) AS target_node_label, dst.copies AS target_node_matches,\n          left(e.target_label, 500) AS recorded_target_label, length(e.target_label) AS target_label_characters,\n          e.confidence, e.confidence_score, e.bind_method, e.edge_kind,\n          left(e.receiver_text, 500) AS receiver_excerpt,\n          length(e.receiver_text) AS receiver_characters,\n          left(e.scope_text, 500) AS scope_excerpt, length(e.scope_text) AS scope_characters\n        FROM selected e LEFT JOIN labels src\n          ON src.logical_path = e.logical_path AND src.node_id = e.source_node_id\n        LEFT JOIN labels dst ON dst.logical_path = e.logical_path AND dst.node_id = e.target_node_id\n        ORDER BY e.logical_path, e.edge_id, e.source_node_id, e.target_node_id, e.target_label) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.source_node_id)),\n        labels AS (SELECT logical_path, node_id, count(*) AS copies,\n          CASE WHEN count(*) = 1 THEN min(label) END AS node_label\n          FROM main.nodes GROUP BY logical_path, node_id)\n        SELECT e.logical_path, e.edge_id, e.source_node_id, e.target_node_id,\n          left(src.node_label, 500) AS source_label, src.copies AS source_node_matches,\n          left(dst.node_label, 500) AS target_node_label, dst.copies AS target_node_matches,\n          left(e.target_label, 500) AS recorded_target_label, length(e.target_label) AS target_label_characters,\n          e.confidence, e.confidence_score, e.bind_method, e.edge_kind,\n          left(e.receiver_text, 500) AS receiver_excerpt,\n          length(e.receiver_text) AS receiver_characters,\n          left(e.scope_text, 500) AS scope_excerpt, length(e.scope_text) AS scope_characters\n        FROM selected e LEFT JOIN labels src\n          ON src.logical_path = e.logical_path AND src.node_id = e.source_node_id\n        LEFT JOIN labels dst ON dst.logical_path = e.logical_path AND dst.node_id = e.target_node_id\n        ORDER BY e.logical_path, e.edge_id, e.source_node_id, e.target_node_id, e.target_label\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "edge_id",
+        "source_node_id",
+        "target_node_id",
+        "source_label",
+        "source_node_matches",
+        "target_node_label",
+        "target_node_matches",
+        "recorded_target_label",
+        "target_label_characters",
+        "confidence",
+        "confidence_score",
+        "bind_method",
+        "edge_kind",
+        "receiver_excerpt",
+        "receiver_characters",
+        "scope_excerpt",
+        "scope_characters"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "exploration_incoming_counts": {
+      "count_sql": "SELECT count(*) FROM (WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.target_node_id))\n        SELECT relation, confidence, bind_method, target_node_id IS NOT NULL AS has_target_id,\n          count(*) AS edges FROM selected GROUP BY ALL\n        ORDER BY edges DESC, relation, confidence, bind_method, has_target_id) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.target_node_id))\n        SELECT relation, confidence, bind_method, target_node_id IS NOT NULL AS has_target_id,\n          count(*) AS edges FROM selected GROUP BY ALL\n        ORDER BY edges DESC, relation, confidence, bind_method, has_target_id\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "relation",
+        "confidence",
+        "bind_method",
+        "has_target_id",
+        "edges"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    },
+    "exploration_incoming_examples": {
+      "count_sql": "SELECT count(*) FROM (WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.target_node_id)),\n        labels AS (SELECT logical_path, node_id, count(*) AS copies,\n          CASE WHEN count(*) = 1 THEN min(label) END AS node_label\n          FROM main.nodes GROUP BY logical_path, node_id)\n        SELECT e.logical_path, e.edge_id, e.source_node_id, e.target_node_id,\n          left(src.node_label, 500) AS source_label, src.copies AS source_node_matches,\n          left(dst.node_label, 500) AS target_node_label, dst.copies AS target_node_matches,\n          left(e.target_label, 500) AS recorded_target_label, length(e.target_label) AS target_label_characters,\n          e.confidence, e.confidence_score, e.bind_method, e.edge_kind,\n          left(e.receiver_text, 500) AS receiver_excerpt,\n          length(e.receiver_text) AS receiver_characters,\n          left(e.scope_text, 500) AS scope_excerpt, length(e.scope_text) AS scope_characters\n        FROM selected e LEFT JOIN labels src\n          ON src.logical_path = e.logical_path AND src.node_id = e.source_node_id\n        LEFT JOIN labels dst ON dst.logical_path = e.logical_path AND dst.node_id = e.target_node_id\n        ORDER BY e.logical_path, e.edge_id, e.source_node_id, e.target_node_id, e.target_label) AS audit_count",
+      "count_params": [],
+      "total_rows": 0,
+      "sql": "WITH selected AS (WITH seeds AS (\n  SELECT n.logical_path, n.node_id, n.label, n.kind, n.source_span_id,\n         wanted.owner_label, wanted.method_label\n  FROM main.nodes n\n  CROSS JOIN (VALUES ('Connection', 'Query'), ('Parser', 'ParseQuery'))\n    AS wanted(owner_label, method_label)\n  WHERE (n.label = wanted.method_label OR\n         n.label = wanted.owner_label || '::' || wanted.method_label OR\n         n.label = 'duckdb::' || wanted.owner_label || '::' || wanted.method_label)\n    AND (n.label <> wanted.method_label OR EXISTS (\n      SELECT 1 FROM main.edges c JOIN main.nodes p\n        ON p.logical_path = c.logical_path AND p.node_id = c.source_node_id\n      WHERE c.logical_path = n.logical_path AND c.target_node_id = n.node_id\n        AND c.relation = 'contains'\n        AND p.label IN (wanted.owner_label, 'duckdb::' || wanted.owner_label)))\n) SELECT e.* FROM main.edges e\n        WHERE e.relation = 'calls' AND EXISTS (SELECT 1 FROM seeds q\n          WHERE q.logical_path = e.logical_path AND q.node_id = e.target_node_id)),\n        labels AS (SELECT logical_path, node_id, count(*) AS copies,\n          CASE WHEN count(*) = 1 THEN min(label) END AS node_label\n          FROM main.nodes GROUP BY logical_path, node_id)\n        SELECT e.logical_path, e.edge_id, e.source_node_id, e.target_node_id,\n          left(src.node_label, 500) AS source_label, src.copies AS source_node_matches,\n          left(dst.node_label, 500) AS target_node_label, dst.copies AS target_node_matches,\n          left(e.target_label, 500) AS recorded_target_label, length(e.target_label) AS target_label_characters,\n          e.confidence, e.confidence_score, e.bind_method, e.edge_kind,\n          left(e.receiver_text, 500) AS receiver_excerpt,\n          length(e.receiver_text) AS receiver_characters,\n          left(e.scope_text, 500) AS scope_excerpt, length(e.scope_text) AS scope_characters\n        FROM selected e LEFT JOIN labels src\n          ON src.logical_path = e.logical_path AND src.node_id = e.source_node_id\n        LEFT JOIN labels dst ON dst.logical_path = e.logical_path AND dst.node_id = e.target_node_id\n        ORDER BY e.logical_path, e.edge_id, e.source_node_id, e.target_node_id, e.target_label\nLIMIT ?",
+      "params": [
+        25
+      ],
+      "limit": 25,
+      "columns": [
+        "logical_path",
+        "edge_id",
+        "source_node_id",
+        "target_node_id",
+        "source_label",
+        "source_node_matches",
+        "target_node_label",
+        "target_node_matches",
+        "recorded_target_label",
+        "target_label_characters",
+        "confidence",
+        "confidence_score",
+        "bind_method",
+        "edge_kind",
+        "receiver_excerpt",
+        "receiver_characters",
+        "scope_excerpt",
+        "scope_characters"
+      ],
+      "rows": [],
+      "displayed_rows": 0,
+      "truncated": false
+    }
+  },
+  "database": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/cache.pending.duckdb",
+  "runtime": {
+    "duckdb": "2.0.0",
+    "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "reader_sha256": "94b50b05a9cffb3d0c53d1e11ae2199adc526f7f23e89028bf6c9c5f15b1fce3",
+    "read_only": true,
+    "extension_loaded_by_reader": false
+  }
+}

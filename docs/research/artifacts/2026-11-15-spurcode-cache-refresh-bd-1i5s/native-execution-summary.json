@@ -1,0 +1,59 @@
+{
+  "record_kind": "summary_from_completed_phase_files",
+  "origin": "native terminal execution during Notebook MCP Transport closed",
+  "commands": [
+    {
+      "phase": "plan",
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/refresh.py",
+        "--phase",
+        "plan"
+      ],
+      "pid": 61684,
+      "source_archive": "refresh-preflight.py",
+      "exit_code": 0,
+      "phase_result": "phase-plan.json"
+    },
+    {
+      "phase": "ingest",
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/refresh.py",
+        "--phase",
+        "ingest"
+      ],
+      "pid": 63988,
+      "source_archive": "refresh-ingest.py",
+      "exit_code": 0,
+      "phase_result": "phase-ingest.json"
+    },
+    {
+      "phase": "replay",
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/refresh.py",
+        "--phase",
+        "replay"
+      ],
+      "pid": 66981,
+      "source_archive": "refresh-ingest.py",
+      "exit_code": 0,
+      "phase_result": "phase-replay.json"
+    },
+    {
+      "phase": "verify",
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/refresh.py",
+        "--phase",
+        "verify"
+      ],
+      "pid": 67798,
+      "source_archive": "refresh-ingest.py",
+      "exit_code": 0,
+      "phase_result": "phase-verify.json"
+    }
+  ],
+  "publication_result": "published.json"
+}

@@ -1,0 +1,129 @@
+{
+  "issue": "bd-1i5s",
+  "status": "data_verified_notebook_blocked",
+  "data_workflow_complete": true,
+  "notebook_attachment_verified": false,
+  "published": {
+    "database": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/cache.duckdb",
+    "database_sha256": "ad6f7d3874b4829e9754df2ac7ab7ed0bafc7004d241561a2ad8e52fdd81172b",
+    "extension_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+    "baseline_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "snapshot_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+    "snapshot_commit": "61ba3d200439a541dce4c1617ca9277be7d438af",
+    "all_checks_passed": true
+  },
+  "inventory_rows": 4404,
+  "admitted_sources": 4098,
+  "rust_files": 1726,
+  "versioned_cache_keys": 8196,
+  "rust_before_after": [
+    {
+      "extractor_sha": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+      "calls": 257163,
+      "local_targets": 32253,
+      "unresolved": 224910,
+      "local_target_pct": 12.54185088834708
+    },
+    {
+      "extractor_sha": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+      "calls": 259828,
+      "local_targets": 32414,
+      "unresolved": 227414,
+      "local_target_pct": 12.475175885585848
+    }
+  ],
+  "all_non_edge_collections_identical_files": 4098,
+  "changed_rust_edge_lists": 952,
+  "child_parity": {
+    "nodes": [
+      {
+        "missing": 0,
+        "extra": 0
+      }
+    ],
+    "edges": [
+      {
+        "missing": 0,
+        "extra": 0
+      }
+    ],
+    "spans": [
+      {
+        "missing": 0,
+        "extra": 0
+      }
+    ],
+    "macro_invocations": [
+      {
+        "missing": 0,
+        "extra": 0
+      }
+    ],
+    "macro_scopes": [
+      {
+        "missing": 0,
+        "extra": 0
+      }
+    ]
+  },
+  "replay_deltas": [
+    {
+      "missing": 0,
+      "extracted": 0,
+      "child_refresh": 0,
+      "child_removed": 0
+    }
+  ],
+  "runtime": {
+    "version": "v2.0.0",
+    "threads": 10,
+    "memory_limit": "19.1 GiB"
+  },
+  "observed_seconds": {
+    "ingest": 92.700269541936,
+    "replay": 2.2499369168654084,
+    "verify": 14.748353332979605
+  },
+  "extraction_materialization_seconds": 82.69371412484907,
+  "structural_audits": {
+    "baseline": {
+      "queries": 43,
+      "invariants": 21,
+      "affected_rows": 0
+    },
+    "corrected": {
+      "queries": 43,
+      "invariants": 21,
+      "affected_rows": 0
+    }
+  },
+  "fresh_process_ids": {
+    "ingest": 63988,
+    "replay": 66981,
+    "verify": 67798
+  },
+  "real_vec_control": [
+    {
+      "caller": "rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes",
+      "target_label": "new",
+      "scope_text": "Vec",
+      "target_node_id": null,
+      "bind_method": null
+    }
+  ],
+  "notebook": {
+    "parent_error": "Transport closed",
+    "fresh_client_issue": "bd-3uj7",
+    "fresh_client_delegation": "97e46361-9569-4149-8390-37ab74ec8293",
+    "fresh_client_outcome": "blocked_notebook_mcp_capabilities_unavailable",
+    "fresh_client_receipts_sha256": "a8615ee80b2abbce59a7541028adc0370b2b529d4a886de4c7905f4f2bbd967c",
+    "no_successful_refresh_execution_or_attachment_receipts": true,
+    "initial_insert_outcome_unknown": true
+  },
+  "limits": [
+    "Local-target rate is not precision. Fewer unresolved records do not imply newly resolved calls when the denominator changes.",
+    "One cold ingest and one replay, including exports; no native-versus-extension or full temporal-history speed claim.",
+    "File-local extraction still leaves 224910 recorded Rust calls unresolved; no compiler macro expansion.",
+    "Unmodified structural reader carries old expected-ingestion hash as contract reference; actual corrected provenance is authenticated separately."
+  ]
+}

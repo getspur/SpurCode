@@ -1,0 +1,518 @@
+{
+  "phase": "plan",
+  "all_checks_passed": true,
+  "runtime": {
+    "version": "v2.0.0",
+    "threads": 10,
+    "memory_limit": "19.1 GiB"
+  },
+  "pid": 61684,
+  "python": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+  "script_sha256": "677222ba278229d43915d54fce4bba99d0976c78a702f3c5d726a6b3e4f54b7b",
+  "workflow_sha256": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6",
+  "extension_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+  "baseline_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "snapshot_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+  "snapshot_commit": "61ba3d200439a541dce4c1617ca9277be7d438af",
+  "admitted_sources": 4098,
+  "seconds": 1.064601665828377,
+  "receipts": [
+    {
+      "name": "schema",
+      "sql": "SELECT table_catalog,table_name,column_name,data_type\n       FROM information_schema.columns WHERE table_schema='main'\n       ORDER BY table_catalog,table_name,ordinal_position",
+      "params": [],
+      "rows": [
+        {
+          "table_catalog": "frozen",
+          "table_name": "admission",
+          "column_name": "path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "admission",
+          "column_name": "accepted",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "edge_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "source_node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "target_node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "relation",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "target_label",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "import_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "receiver_text",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "scope_text",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "confidence",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "confidence_score",
+          "data_type": "FLOAT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "edge_kind",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "bind_method",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "evidence_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "directed",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "edges",
+          "column_name": "change_kind",
+          "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "facts",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "facts",
+          "column_name": "value",
+          "data_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "git_blob_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "bytes",
+          "data_type": "BIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "suffix",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "area",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "status",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "inventory",
+          "column_name": "error",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "site_id",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "file_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "caller_stable_symbol_id",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "enclosing",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "raw_macro_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "normalized_macro_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "attributes",
+          "data_type": "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "test_context",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "debug_assertions_candidate",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "execution_phase",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "resolution",
+          "data_type": "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_invocations",
+          "column_name": "sink_family_candidate",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "scope",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "file_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "macro_scopes",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "stable_key",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "label",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "kind",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "file_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "source_span_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "nodes",
+          "column_name": "first_seen_run_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "source",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "source_bytes",
+          "data_type": "BLOB"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "file_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "sources",
+          "column_name": "sha256",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "span_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "file_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "start_byte",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "end_byte",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "start_line",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_catalog": "frozen",
+          "table_name": "spans",
+          "column_name": "end_line",
+          "data_type": "UINTEGER"
+        }
+      ],
+      "seconds": 0.06092354096472263
+    },
+    {
+      "name": "runtime",
+      "sql": "SELECT version() version,current_setting('threads') threads,\n     current_setting('memory_limit') memory_limit",
+      "params": [],
+      "rows": [
+        {
+          "version": "v2.0.0",
+          "threads": 10,
+          "memory_limit": "19.1 GiB"
+        }
+      ],
+      "seconds": 0.00145212491042912
+    },
+    {
+      "name": "loaded_extension",
+      "sql": "SELECT extension_name,loaded,extension_version\n       FROM duckdb_extensions() WHERE extension_name='spur_graph'",
+      "params": [],
+      "rows": [
+        {
+          "extension_name": "spur_graph",
+          "loaded": true,
+          "extension_version": "0.1.0"
+        }
+      ],
+      "seconds": 0.008636957965791225
+    },
+    {
+      "name": "source_byte_verification",
+      "sql": "SELECT s.logical_path,s.source,s.source_bytes,s.file_oid,s.sha256,i.git_blob_oid\n      FROM frozen.main.sources s JOIN frozen.main.inventory i ON i.path=s.logical_path\n      ORDER BY s.logical_path",
+      "params": [],
+      "input_rows": 4098,
+      "result_storage": "source-manifest.jsonl",
+      "verified_utf8_sha256_git_blob": true,
+      "manifest_sha256": "a7159df8f5e93ab45d5804a9fd6abb6284012c483b2c916feda66944316a247b"
+    },
+    {
+      "name": "inventory",
+      "sql": "SELECT status,count(*) files,sum(bytes) bytes FROM frozen.main.inventory GROUP BY status ORDER BY status",
+      "params": [],
+      "rows": [
+        {
+          "status": "extracted",
+          "files": 4098,
+          "bytes": 58857333
+        },
+        {
+          "status": "path_admission_failed",
+          "files": 305,
+          "bytes": 65417213
+        },
+        {
+          "status": "symlink",
+          "files": 1,
+          "bytes": 39
+        }
+      ],
+      "seconds": 0.005335584050044417
+    },
+    {
+      "name": "admission",
+      "sql": "SELECT accepted,count(*) files FROM frozen.main.admission GROUP BY accepted ORDER BY accepted",
+      "params": [],
+      "rows": [
+        {
+          "accepted": false,
+          "files": 305
+        },
+        {
+          "accepted": true,
+          "files": 4098
+        }
+      ],
+      "seconds": 0.0024537499994039536
+    }
+  ],
+  "workflow_statements": []
+}

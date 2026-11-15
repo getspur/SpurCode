@@ -1,0 +1,382 @@
+[
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-cache.parquet",
+    "rows": 8196,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "facts",
+        "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+      ],
+      [
+        "status",
+        "VARCHAR"
+      ]
+    ],
+    "bytes": 34078869,
+    "sha256": "acb916d36a7f4c14868ea186eda5f324cfdc6fb7a225600bbf3e9378aa0241c8"
+  },
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-nodes.parquet",
+    "rows": 223108,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "fact_ordinal",
+        "BIGINT"
+      ],
+      [
+        "node_id",
+        "UBIGINT"
+      ],
+      [
+        "stable_key",
+        "VARCHAR"
+      ],
+      [
+        "label",
+        "VARCHAR"
+      ],
+      [
+        "kind",
+        "VARCHAR"
+      ],
+      [
+        "file_id",
+        "UBIGINT"
+      ],
+      [
+        "source_span_id",
+        "UBIGINT"
+      ],
+      [
+        "first_seen_run_id",
+        "UBIGINT"
+      ]
+    ],
+    "bytes": 8714198,
+    "sha256": "419a821c374ed0fd4cd58b88e86472939051cc3fb4adac695eb24682a3b296fa"
+  },
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-edges.parquet",
+    "rows": 930416,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "fact_ordinal",
+        "BIGINT"
+      ],
+      [
+        "edge_id",
+        "UBIGINT"
+      ],
+      [
+        "source_node_id",
+        "UBIGINT"
+      ],
+      [
+        "target_node_id",
+        "UBIGINT"
+      ],
+      [
+        "relation",
+        "VARCHAR"
+      ],
+      [
+        "target_label",
+        "VARCHAR"
+      ],
+      [
+        "import_path",
+        "VARCHAR"
+      ],
+      [
+        "receiver_text",
+        "VARCHAR"
+      ],
+      [
+        "scope_text",
+        "VARCHAR"
+      ],
+      [
+        "confidence",
+        "VARCHAR"
+      ],
+      [
+        "confidence_score",
+        "FLOAT"
+      ],
+      [
+        "edge_kind",
+        "VARCHAR"
+      ],
+      [
+        "bind_method",
+        "VARCHAR"
+      ],
+      [
+        "evidence_id",
+        "UBIGINT"
+      ],
+      [
+        "directed",
+        "BOOLEAN"
+      ],
+      [
+        "change_kind",
+        "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+      ]
+    ],
+    "bytes": 16296197,
+    "sha256": "824756043d0b089d5eb81eae8be9f48cf88ddb72479b64f6988c9b840a4ed732"
+  },
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-spans.parquet",
+    "rows": 223108,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "fact_ordinal",
+        "BIGINT"
+      ],
+      [
+        "span_id",
+        "UBIGINT"
+      ],
+      [
+        "file_id",
+        "UBIGINT"
+      ],
+      [
+        "start_byte",
+        "UINTEGER"
+      ],
+      [
+        "end_byte",
+        "UINTEGER"
+      ],
+      [
+        "start_line",
+        "UINTEGER"
+      ],
+      [
+        "end_line",
+        "UINTEGER"
+      ]
+    ],
+    "bytes": 3832055,
+    "sha256": "4f328f8036a1640742e78d1e13389589313da798139aaf7a41744c9854123bf8"
+  },
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-macro_invocations.parquet",
+    "rows": 103268,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "fact_ordinal",
+        "BIGINT"
+      ],
+      [
+        "site_id",
+        "VARCHAR"
+      ],
+      [
+        "file_path",
+        "VARCHAR"
+      ],
+      [
+        "source_oid",
+        "VARCHAR"
+      ],
+      [
+        "caller_stable_symbol_id",
+        "VARCHAR"
+      ],
+      [
+        "enclosing",
+        "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+      ],
+      [
+        "raw_macro_path",
+        "VARCHAR"
+      ],
+      [
+        "normalized_macro_path",
+        "VARCHAR"
+      ],
+      [
+        "byte_range",
+        "UBIGINT[]"
+      ],
+      [
+        "line_range",
+        "UBIGINT[]"
+      ],
+      [
+        "attributes",
+        "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+      ],
+      [
+        "test_context",
+        "VARCHAR"
+      ],
+      [
+        "debug_assertions_candidate",
+        "BOOLEAN"
+      ],
+      [
+        "execution_phase",
+        "VARCHAR"
+      ],
+      [
+        "resolution",
+        "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+      ],
+      [
+        "sink_family_candidate",
+        "VARCHAR"
+      ]
+    ],
+    "bytes": 11485121,
+    "sha256": "e4aa97c8b25715b8f9b5d6dae2194d1fcd669ab526f2fe54f77a0be124b3e089"
+  },
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-macro_scopes.parquet",
+    "rows": 38788,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "fact_ordinal",
+        "BIGINT"
+      ],
+      [
+        "scope",
+        "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+      ],
+      [
+        "file_path",
+        "VARCHAR"
+      ],
+      [
+        "source_oid",
+        "VARCHAR"
+      ],
+      [
+        "byte_range",
+        "UBIGINT[]"
+      ],
+      [
+        "line_range",
+        "UBIGINT[]"
+      ]
+    ],
+    "bytes": 1569582,
+    "sha256": "3aa7029ddb4460737b29b2e9b74e0f26c060ad95d4a3cb9cf979ea235e0f5453"
+  },
+  {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/parquet/file-facts-occurrences.parquet",
+    "rows": 8196,
+    "schema": [
+      [
+        "blob_oid",
+        "VARCHAR"
+      ],
+      [
+        "logical_path",
+        "VARCHAR"
+      ],
+      [
+        "extractor_sha",
+        "VARCHAR"
+      ],
+      [
+        "repository",
+        "VARCHAR"
+      ],
+      [
+        "snapshot_commit",
+        "VARCHAR"
+      ],
+      [
+        "role",
+        "VARCHAR"
+      ],
+      [
+        "source_sha256",
+        "VARCHAR"
+      ],
+      [
+        "extraction_status",
+        "VARCHAR"
+      ]
+    ],
+    "bytes": 962121,
+    "sha256": "7f65908493888c5ece5e90c94aeba4c606d04afef3560dfd3c1747f6b083f62b"
+  }
+]
