@@ -168,3 +168,82 @@ fn source_validation_retains_each_files_original_inventory() {
     forged.files[1].declarations.graph_content_hash = graph.graph_content_hash.clone();
     assert!(forged.validate_sources(&graph, &sources(&inputs)).is_err());
 }
+
+#[test]
+fn collected_call_bodies_require_exact_unique_function_symbols() {
+    use spur_graph::panic_evidence::{collect_rust_call_sites, PanicEvidenceSource};
+    let inputs = vec![(
+        "a.rs".into(),
+        b"fn caller(a: Option<u8>) { a.unwrap(); leaf(); }\n".to_vec(),
+    )];
+    let graph = graph(&inputs);
+    let caller = graph
+        .symbols
+        .iter()
+        .position(|s| s.entity_name == "caller")
+        .unwrap();
+    let collect = |graph: &GraphIndexArtifact| {
+        collect_rust_call_sites(
+            graph,
+            &[PanicEvidenceSource {
+                file_path: "a.rs",
+                bytes: &inputs[0].1,
+            }],
+        )
+        .unwrap()
+    };
+    let expected = &graph.symbols[caller].stable_symbol_id;
+    for kind in ["function", "method"] {
+        let mut changed = graph.clone();
+        changed.symbols[caller].symbol_kind = kind.into();
+        let set = collect(&changed);
+        assert_eq!(set.bodies.len(), 1);
+        assert_eq!(
+            set.bodies[0].definition_stable_symbol_id.as_ref(),
+            Some(expected)
+        );
+    }
+    for mismatch in [
+        "missing",
+        "cross_file",
+        "kind",
+        "name",
+        "bytes",
+        "lines",
+        "empty_id",
+        "duplicate_id",
+        "duplicate_candidate",
+    ] {
+        let mut changed = graph.clone();
+        match mismatch {
+            "missing" => {
+                changed.symbols.remove(caller);
+            }
+            "cross_file" => changed.symbols[caller].file_path = "unrelated.json".into(),
+            "kind" => changed.symbols[caller].symbol_kind = "module".into(),
+            "name" => changed.symbols[caller].entity_name = "other".into(),
+            "bytes" => changed.symbols[caller].byte_range[0] += 1,
+            "lines" => changed.symbols[caller].line_range[0] += 1,
+            "empty_id" => changed.symbols[caller].stable_symbol_id.clear(),
+            "duplicate_id" => {
+                let mut duplicate = changed.symbols[caller].clone();
+                duplicate.file_path = "unrelated.json".into();
+                duplicate.symbol_kind = "field".into();
+                changed.symbols.push(duplicate);
+            }
+            "duplicate_candidate" => {
+                let mut duplicate = changed.symbols[caller].clone();
+                duplicate.stable_symbol_id = "other-candidate-id".into();
+                changed.symbols.push(duplicate);
+            }
+            _ => unreachable!(),
+        }
+        let set = collect(&changed);
+        assert_eq!(set.bodies.len(), 1, "{mismatch}");
+        assert_eq!(set.sites.len(), 2, "{mismatch}");
+        assert!(
+            set.bodies[0].definition_stable_symbol_id.is_none(),
+            "{mismatch}"
+        );
+    }
+}
