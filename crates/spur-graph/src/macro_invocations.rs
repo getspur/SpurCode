@@ -278,6 +278,21 @@ impl MacroInvocationEvidenceSet {
                 scope.line_range,
             )?;
         }
+        // Keep the complete caller identity so colliding IDs cannot hide a
+        // matching function. Build once instead of scanning every symbol per site.
+        let function_symbols: BTreeSet<_> = artifact
+            .symbols
+            .iter()
+            .filter(|symbol| matches!(symbol.symbol_kind.as_str(), "function" | "method"))
+            .map(|symbol| {
+                (
+                    symbol.stable_symbol_id.as_str(),
+                    symbol.file_path.as_str(),
+                    symbol.byte_range,
+                    symbol.line_range,
+                )
+            })
+            .collect();
         let mut sites = BTreeSet::new();
         for row in &self.rows {
             location(
@@ -333,11 +348,12 @@ impl MacroInvocationEvidenceSet {
                         "macro caller differs from enclosing function"
                     );
                     ensure!(
-                        artifact.symbols.iter().any(|s| s.stable_symbol_id == caller
-                            && s.file_path == row.file_path
-                            && matches!(s.symbol_kind.as_str(), "function" | "method")
-                            && s.byte_range == enclosing.byte_range
-                            && s.line_range == enclosing.line_range),
+                        function_symbols.contains(&(
+                            caller,
+                            row.file_path.as_str(),
+                            enclosing.byte_range,
+                            enclosing.line_range,
+                        )),
                         "macro caller is not an actual graph function symbol"
                     );
                 }
