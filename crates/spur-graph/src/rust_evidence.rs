@@ -289,6 +289,9 @@ impl RustEvidenceSet {
     ) -> anyhow::Result<()> {
         authenticate_sources(graph, sources)?;
         self.validate_stored(graph)?;
+        // Validators borrow this view; only its original inventory changes.
+        // Avoid cloning the large symbol and edge tables for every Rust file.
+        let mut view = None;
         for file in &self.files {
             let source = *sources
                 .iter()
@@ -303,7 +306,7 @@ impl RustEvidenceSet {
                 .iter()
                 .find(|o| o.graph_content_hash == file.origin_graph_content_hash)
                 .context("Rust source origin missing")?;
-            let mut view = graph.clone();
+            let view = view.get_or_insert_with(|| graph.clone());
             view.set_macro_evidence(None)?;
             view.set_rust_evidence(None)?;
             view.graph_content_hash = origin.graph_content_hash.clone();
@@ -320,15 +323,15 @@ impl RustEvidenceSet {
                 .collect();
             // Current graph owners remain authoritative; do not rewrite any
             // nested header, ID, path or source binding to the aggregate hash.
-            file.declarations.validate(&view, &[source])?;
-            let calls = collect_calls(&view, source)?;
+            file.declarations.validate(view, &[source])?;
+            let calls = collect_calls(view, source)?;
             ensure!(
                 file.calls == calls,
                 "Rust call availability/evidence differs from canonical source collection"
             );
             if let RustCallEvidence::Complete { evidence } = &file.calls {
                 evidence.validate(
-                    &view,
+                    view,
                     &[PanicEvidenceSource {
                         file_path: source.file_path,
                         bytes: source.bytes,
