@@ -69,6 +69,88 @@ class FileFactsPipelineTests(unittest.TestCase):
     def scalar(self, sql):
         return self.rows(sql)[0][0]
 
+    def cache_keys(self):
+        return self.rows(f"SELECT {KEY} FROM file_facts_cache ORDER BY ALL")
+
+    def child_snapshot(self, where="true"):
+        return {collection: self.rows(
+            f"SELECT * FROM file_facts_{collection} WHERE {where} ORDER BY ALL"
+        ) for collection in CHILDREN}
+
+    def child_table_oids(self):
+        names = ", ".join(f"'file_facts_{collection}'" for collection in CHILDREN)
+        result = self.rows(f"""
+            SELECT table_name, table_oid FROM duckdb_tables()
+            WHERE database_name = current_database() AND schema_name = 'main'
+              AND NOT temporary AND table_name IN ({names}) ORDER BY table_name
+        """)
+        self.assertEqual(len(result), len(CHILDREN))
+        return result
+
+    def assert_full_children(self):
+        # This oracle expands the complete cache, with no incremental state/delta logic.
+        # EXCEPT ALL in both directions catches missing, extra and duplicate native rows.
+        for collection, child in CHILDREN.items():
+            reference = f"""
+                SELECT {KEY}, fact_ordinal, {child}.* FROM file_facts_cache,
+                UNNEST(facts.{collection}) WITH ORDINALITY AS u({child}, fact_ordinal)
+            """
+            actual = f"SELECT * FROM file_facts_{collection}"
+            with self.subTest(collection=collection, check="types"):
+                self.assertEqual(
+                    [(c[0], c[1]) for c in self.rows(f"DESCRIBE {actual}")],
+                    [(c[0], c[1]) for c in self.rows(f"DESCRIBE {reference}")],
+                )
+            for left, right in ((reference, actual), (actual, reference)):
+                with self.subTest(collection=collection, check="multiset", left=left):
+                    self.assertEqual(self.rows(f"({left}) EXCEPT ALL ({right})"), [])
+            with self.subTest(collection=collection, check="key_and_ordinal"):
+                self.assertEqual(self.rows(f"""
+                    SELECT {KEY}, fact_ordinal FROM file_facts_{collection}
+                    GROUP BY {KEY}, fact_ordinal HAVING count(*) > 1
+                """), [])
+
+    def assert_key_relation(self, table, expected, temporary):
+        # Assert absence as a contract failure before binding a missing relation.
+        metadata = self.rows(f"""
+            SELECT temporary, column_count FROM duckdb_tables()
+            WHERE table_name = '{table}' AND schema_name = 'main'
+              AND (database_name = current_database() OR temporary)
+        """)
+        self.assertEqual(metadata, [(temporary, 3)],
+                         f"{table} must exist as a key-only {'TEMP' if temporary else 'durable'} table")
+        self.assertEqual([(c[0], c[1]) for c in self.rows(f"DESCRIBE {table}")],
+                         [(column, "VARCHAR") for column in KEY.split(", ")])
+        self.assertCountEqual(self.rows(f"SELECT * FROM {table}"), expected)
+
+    def assert_child_state(self):
+        self.assert_key_relation("file_facts_child_state", self.cache_keys(), temporary=False)
+
+    def assert_child_deltas(self, refresh=(), removed=()):
+        for suffix, expected in (("refresh", refresh), ("removed", removed)):
+            with self.subTest(delta=suffix):
+                self.assert_key_relation(f"file_facts_child_{suffix}", expected, temporary=True)
+
+    def seed_native_children(self):
+        # Every full-key component matters; local IDs overlap across these parents.
+        self.stage([
+            ("blob", "src/one.rs", RUST, "v1"),
+            ("blob", "src/two.rs", RUST, "v1"),
+            ("blob", "src/one.rs", RUST, "v2"),
+        ])
+        self.run_pipeline()
+        self.assert_full_children()
+        for collection in CHILDREN:
+            self.assertGreater(self.scalar(f"SELECT count(*) FROM file_facts_{collection}"), 0)
+
+    def reopen(self):
+        self.con.close()
+        self.con = duckdb.connect(self.database, config={"allow_unsigned_extensions": True})
+        self.addCleanup(self.con.close)
+        extension = str(Path(os.environ["SPUR_GRAPH_EXTENSION"]).resolve()).replace("'", "''")
+        self.con.execute(f"LOAD '{extension}'")
+        self.con.execute("SET threads = 2")
+
     def test_path_dependent_keys_and_duplicate_lineage(self):
         self.stage([
             ("same-blob", "src/one.rs", RUST, "v1"),
@@ -203,6 +285,208 @@ class FileFactsPipelineTests(unittest.TestCase):
                     self.run_pipeline()
                 self.con.execute("ROLLBACK")
                 self.con.execute("DELETE FROM staged_sources")
+
+    def test_complete_cache_oracle_covers_every_native_collection(self):
+        self.seed_native_children()
+        self.stage([("null", "null.rs", None, "v1"), ("empty", "empty.rs", "", "v1")])
+        self.run_pipeline()
+        self.assert_full_children()
+
+    def test_noop_reuses_child_tables_and_has_zero_deltas(self):
+        self.seed_native_children()
+        before, oids = self.child_snapshot(), self.child_table_oids()
+        self.run_pipeline()
+        self.assert_full_children()
+        self.assertEqual(self.child_snapshot(), before)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+        with self.subTest(check="physical_table_reuse"):
+            self.assertEqual(self.child_table_oids(), oids)
+        self.assert_child_deltas()
+        self.assert_child_state()
+
+    def test_reopen_preserves_checkpoint_and_child_content(self):
+        self.seed_native_children()
+        before = self.child_snapshot()
+        self.reopen()
+        # The checkpoint itself must survive, before the next run can recreate anything.
+        with self.subTest(check="durable_checkpoint"):
+            self.assert_child_state()
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+        self.assertEqual(self.child_snapshot(), before)
+        self.assert_full_children()
+        self.assert_child_deltas()
+        self.assert_child_state()
+        # Internal OIDs are deliberately never compared across connections.
+
+    def test_lineage_refreshes_independently_of_child_deltas(self):
+        self.seed_native_children()
+        before = self.child_snapshot()
+        self.con.execute("""
+            INSERT INTO source_lineage VALUES
+            ('old', 'repo', 'c0', NULL, 'blob', 'src/one.rs', 'v1')
+        """)
+        self.run_pipeline()
+        self.con.execute("DELETE FROM source_lineage")
+        lineage = [
+            ("root", "repo", "c0", None, "blob", "src/one.rs", "v1"),
+            ("merge-a", "repo", "c2", "c0", "blob", "src/one.rs", "v1"),
+            ("merge-b", "repo", "c2", "c1", "blob", "src/one.rs", "v1"),
+            ("merge-b", "repo", "c2", "c1", "blob", "src/one.rs", "v1"),
+            ("absent", "repo", "c2", "c1", "absent", "missing.rs", "v1"),
+        ]
+        self.con.executemany("INSERT INTO source_lineage VALUES (?, ?, ?, ?, ?, ?, ?)", lineage)
+        self.run_pipeline()
+        self.assertCountEqual(self.rows("SELECT * FROM file_facts_occurrences"),
+                              [row + ("not_cached" if row[0] == "absent" else "ok",) for row in lineage])
+        self.assertEqual(self.child_snapshot(), before)
+        self.assert_full_children()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+        self.assert_child_deltas()
+        self.assert_child_state()
+
+    def test_append_path_and_extractor_version_retain_existing_children(self):
+        self.stage([("blob", "src/one.rs", RUST, "v1")])
+        self.run_pipeline()
+        original_key = "blob_oid = 'blob' AND logical_path = 'src/one.rs' AND extractor_sha = 'v1'"
+        before, oids = self.child_snapshot(original_key), self.child_table_oids()
+        additions = [
+            ("blob", "src/two.rs", RUST, "v1"),
+            ("blob", "src/one.rs", RUST, "v2"),
+            ("new-blob", "src/one.rs", RUST, "v1"),
+        ]
+        self.stage(additions)
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), len(additions))
+        self.assertEqual(self.child_snapshot(original_key), before)
+        self.assert_full_children()
+        with self.subTest(check="physical_table_reuse"):
+            self.assertEqual(self.child_table_oids(), oids)
+        self.assert_child_deltas(refresh=[(blob, path, version) for blob, path, _, version in additions])
+        self.assert_child_state()
+
+    def test_cache_deletion_without_restaging_removes_children_state_and_updates_lineage(self):
+        self.seed_native_children()
+        self.con.execute("""
+            INSERT INTO source_lineage VALUES
+            ('deleted', 'repo', 'c0', NULL, 'blob', 'src/one.rs', 'v1'),
+            ('retained', 'repo', 'c0', NULL, 'blob', 'src/one.rs', 'v2')
+        """)
+        self.con.execute("DELETE FROM staged_sources")
+        self.con.execute("""
+            DELETE FROM file_facts_cache
+            WHERE blob_oid = 'blob' AND logical_path = 'src/one.rs' AND extractor_sha = 'v1'
+        """)
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_cache"), 2)
+        self.assertEqual(dict(self.rows("SELECT occurrence_id, extraction_status FROM file_facts_occurrences")),
+                         {"deleted": "not_cached", "retained": "ok"})
+        self.assert_full_children()
+        self.assert_child_deltas(removed=[("blob", "src/one.rs", "v1")])
+        self.assert_child_state()
+
+    def test_deleted_and_retried_key_replaces_prior_children_without_duplicates(self):
+        self.seed_native_children()
+        before = self.child_snapshot()
+        # S and final C still contain this key: the fresh extraction must force replacement.
+        self.con.execute("""
+            DELETE FROM file_facts_cache
+            WHERE blob_oid = 'blob' AND logical_path = 'src/one.rs' AND extractor_sha = 'v1'
+        """)
+        self.run_pipeline()
+        self.assertEqual(self.rows(f"SELECT {KEY} FROM file_facts_extracted"),
+                         [("blob", "src/one.rs", "v1")])
+        self.assertEqual(self.child_snapshot(), before)
+        self.assert_full_children()
+        self.assert_child_deltas(refresh=[("blob", "src/one.rs", "v1")])
+        self.assert_child_state()
+        self.run_pipeline()
+        self.assertEqual(self.child_snapshot(), before)
+        self.assert_child_deltas()
+
+    def test_checkpoint_covers_null_error_and_empty_parents(self):
+        self.stage([
+            ("good", "good.rs", RUST, "v1"),
+            ("null", "null.rs", None, "v1"),
+            ("unsupported", "bad.unknown", RUST, "v1"),
+            ("invalid", "../escape.rs", RUST, "v1"),
+            ("empty", "empty.rs", "", "v1"),
+        ])
+        self.run_pipeline()
+        # Seed a typed, all-empty cached payload too; native empty-source facts may
+        # still contain a file node. This is a new cache key, not a payload update.
+        self.con.execute("""
+            INSERT INTO file_facts_cache
+            SELECT 'empty-facts', 'empty-facts.rs', 'v1',
+                   struct_update(facts, nodes := [], edges := [], spans := [],
+                                 macro_invocations := [], macro_scopes := []), 'empty_facts'
+            FROM file_facts_cache WHERE blob_oid = 'good'
+        """)
+        self.run_pipeline()
+        self.assertEqual(dict(self.rows("SELECT blob_oid, status FROM file_facts_cache")), {
+            "good": "ok", "null": "null_input", "unsupported": "extraction_error",
+            "invalid": "extraction_error", "empty": "empty_source", "empty-facts": "empty_facts",
+        })
+        self.assert_full_children()
+        with self.subTest(check="all_parent_checkpoint_coverage"):
+            self.assert_child_state()
+        self.assert_child_deltas(refresh=[("empty-facts", "empty-facts.rs", "v1")])
+        self.run_pipeline()
+        self.assert_child_deltas()
+        self.assert_child_state()
+
+    def test_legacy_cache_without_checkpoint_bootstraps_once_without_extraction(self):
+        self.seed_native_children()
+        self.stage([("null", "null.rs", None, "v1")])
+        self.run_pipeline()
+        before, keys = self.child_snapshot(), self.cache_keys()
+        # Cache plus full children but no checkpoint is the legacy on-disk layout.
+        self.con.execute("DROP TABLE IF EXISTS file_facts_child_state")
+        self.con.execute("DELETE FROM staged_sources")
+        self.reopen()
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+        self.assertEqual(self.child_snapshot(), before)
+        self.assert_full_children()
+        self.assert_child_deltas(refresh=keys)
+        self.assert_child_state()
+        oids = self.child_table_oids()
+        self.run_pipeline()
+        self.assertEqual(self.child_table_oids(), oids)
+        self.assert_child_deltas()
+
+    def test_missing_child_table_repairs_all_collections_from_cache(self):
+        self.seed_native_children()
+        before, keys = self.child_snapshot(), self.cache_keys()
+        self.con.execute("DELETE FROM staged_sources")
+        for collection in CHILDREN:
+            with self.subTest(missing_collection=collection):
+                self.con.execute(f"DROP TABLE file_facts_{collection}")
+                self.run_pipeline()
+                self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+                self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+                self.assertEqual(self.child_snapshot(), before)
+                self.assert_full_children()
+                self.assert_child_deltas(refresh=keys)
+                self.assert_child_state()
+
+    def test_empty_stage_has_stable_tables_state_and_zero_deltas_after_reopen(self):
+        self.run_pipeline()
+        for reopen in (False, True):
+            with self.subTest(reopen=reopen):
+                if reopen:
+                    self.reopen()
+                oids = self.child_table_oids()
+                self.run_pipeline()
+                self.assertEqual(self.cache_keys(), [])
+                self.assert_full_children()
+                with self.subTest(check="physical_table_reuse"):
+                    self.assertEqual(self.child_table_oids(), oids)
+                self.assert_child_deltas()
+                self.assert_child_state()
 
 
 if __name__ == "__main__":
