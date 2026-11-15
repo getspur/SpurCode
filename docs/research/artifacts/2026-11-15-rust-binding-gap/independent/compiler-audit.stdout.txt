@@ -1,0 +1,112 @@
+{
+  "frozen_sources_equal_git_revision": {
+    "crates/spur-graph-duckdb/src/file_facts.rs": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+    "crates/spur-graph/src/schema.rs": "4db25ddab005ab64bb993c8a573c7591d8026f1eddb89beb8a99fff3c6b7dd04"
+  },
+  "source_piece_sha256": {
+    "NativeLabel": "ae877fe70e3b53080a74509377cf62bcc94a25546b18cae4c0df3168df0556bc",
+    "labels": "98f7afc57d5efcd5cedc26ccdf9d5a5c0496b8deedeca404df6c4442957cc455",
+    "RelationKind": "a44c765420e1c0fe91abaeb26b1b615d7eeabe622b4eb752f9ccce4ece287d5f"
+  },
+  "invocation_sha256": "e21daa4c0c1641797024c0a8f2d3e02bd5e46882d411443f1058bb993d06c61e",
+  "semicolon_byte_offset": 4967,
+  "compiler_version_matches_saved": true,
+  "receiver_stdout": "3:999\n",
+  "mir_function_scoped_targets": {
+    "observed": "Vec::<u8>::len",
+    "expected": "Domain::len"
+  },
+  "macro_runtime_labels": [
+    "imports",
+    "calls",
+    "constructs",
+    "contains",
+    "implements",
+    "defines",
+    "references",
+    "extends",
+    "links",
+    "touches",
+    "produces",
+    "consumes",
+    "binds",
+    "emits"
+  ],
+  "macro_source_equals_parent": true,
+  "macro_expanded_equals_parent": true,
+  "control_extractions": {
+    "receiver-control": {
+      "nodes": 7,
+      "edges": 11,
+      "macro_invocations": 1,
+      "generated_bodies": [],
+      "len_calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 5,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "len",
+          "import_path": null,
+          "receiver_text": "v",
+          "scope_text": "Vec<u8>",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": null,
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        },
+        {
+          "edge_id": 9,
+          "source_node_id": 6,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "len",
+          "import_path": null,
+          "receiver_text": "d",
+          "scope_text": "Domain",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": null,
+          "evidence_id": 9,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "full_receipt_equals_parent": true
+    },
+    "macro-control": {
+      "nodes": 20,
+      "edges": 36,
+      "macro_invocations": 15,
+      "generated_bodies": [],
+      "len_calls": [],
+      "full_receipt_equals_parent": true
+    },
+    "macro-expanded": {
+      "nodes": 22,
+      "edges": 42,
+      "macro_invocations": 14,
+      "generated_bodies": [
+        {
+          "node": {
+            "node_id": 21,
+            "stable_key": "45ccc7e9351fa94f",
+            "label": "label",
+            "kind": "method",
+            "file_id": 1,
+            "source_span_id": 21,
+            "first_seen_run_id": 1
+          },
+          "source": "fn label(self) -> &'static str {\n        match self {\n            Self::Imports =>\n\n                \"imports\",\n            Self::Calls => \"calls\",\n            Self::Constructs => \"constructs\",\n            Self::Contains => \"contains\",\n            Self::Implements => \"implements\",\n            Self::Defines => \"defines\",\n            Self::References => \"references\",\n            Self::Extends => \"extends\",\n            Self::Links => \"links\",\n            Self::Touches => \"touches\",\n            Self::Produces => \"produces\",\n            Self::Consumes => \"consumes\",\n            Self::Binds => \"binds\",\n            Self::Emits => \"emits\",\n        }\n    }"
+        }
+      ],
+      "len_calls": [],
+      "full_receipt_equals_parent": true
+    }
+  },
+  "all_assertions_passed": true
+}

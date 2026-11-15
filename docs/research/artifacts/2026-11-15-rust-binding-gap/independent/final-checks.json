@@ -1,0 +1,568 @@
+{
+  "schema_first": [
+    [
+      "edges",
+      "logical_path",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "edge_id",
+      "UBIGINT"
+    ],
+    [
+      "edges",
+      "source_node_id",
+      "UBIGINT"
+    ],
+    [
+      "edges",
+      "target_node_id",
+      "UBIGINT"
+    ],
+    [
+      "edges",
+      "relation",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "target_label",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "import_path",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "receiver_text",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "scope_text",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "confidence",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "confidence_score",
+      "FLOAT"
+    ],
+    [
+      "edges",
+      "edge_kind",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "bind_method",
+      "VARCHAR"
+    ],
+    [
+      "edges",
+      "evidence_id",
+      "UBIGINT"
+    ],
+    [
+      "edges",
+      "directed",
+      "BOOLEAN"
+    ],
+    [
+      "edges",
+      "change_kind",
+      "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+    ],
+    [
+      "inventory",
+      "path",
+      "VARCHAR"
+    ],
+    [
+      "inventory",
+      "git_blob_oid",
+      "VARCHAR"
+    ],
+    [
+      "inventory",
+      "bytes",
+      "BIGINT"
+    ],
+    [
+      "inventory",
+      "suffix",
+      "VARCHAR"
+    ],
+    [
+      "inventory",
+      "area",
+      "VARCHAR"
+    ],
+    [
+      "inventory",
+      "status",
+      "VARCHAR"
+    ],
+    [
+      "inventory",
+      "error",
+      "VARCHAR"
+    ],
+    [
+      "nodes",
+      "logical_path",
+      "VARCHAR"
+    ],
+    [
+      "nodes",
+      "node_id",
+      "UBIGINT"
+    ],
+    [
+      "nodes",
+      "stable_key",
+      "VARCHAR"
+    ],
+    [
+      "nodes",
+      "label",
+      "VARCHAR"
+    ],
+    [
+      "nodes",
+      "kind",
+      "VARCHAR"
+    ],
+    [
+      "nodes",
+      "file_id",
+      "UBIGINT"
+    ],
+    [
+      "nodes",
+      "source_span_id",
+      "UBIGINT"
+    ],
+    [
+      "nodes",
+      "first_seen_run_id",
+      "UBIGINT"
+    ],
+    [
+      "sources",
+      "logical_path",
+      "VARCHAR"
+    ],
+    [
+      "sources",
+      "source",
+      "VARCHAR"
+    ],
+    [
+      "sources",
+      "source_bytes",
+      "BLOB"
+    ],
+    [
+      "sources",
+      "file_oid",
+      "VARCHAR"
+    ],
+    [
+      "sources",
+      "sha256",
+      "VARCHAR"
+    ],
+    [
+      "spans",
+      "logical_path",
+      "VARCHAR"
+    ],
+    [
+      "spans",
+      "span_id",
+      "UBIGINT"
+    ],
+    [
+      "spans",
+      "file_id",
+      "UBIGINT"
+    ],
+    [
+      "spans",
+      "start_byte",
+      "UINTEGER"
+    ],
+    [
+      "spans",
+      "end_byte",
+      "UINTEGER"
+    ],
+    [
+      "spans",
+      "start_line",
+      "UINTEGER"
+    ],
+    [
+      "spans",
+      "end_line",
+      "UINTEGER"
+    ]
+  ],
+  "inventory_git_revision": {
+    "revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+    "inventory_rows": 4404,
+    "matched_git_blob_oids": 4404
+  },
+  "all_36_saved_source_sample_spans_equal_frozen": [
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 33,
+      "start_line": 36,
+      "end_line": 38
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 34,
+      "start_line": 40,
+      "end_line": 99
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 35,
+      "start_line": 40,
+      "end_line": 99
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 38,
+      "start_line": 40,
+      "end_line": 99
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 72,
+      "start_line": 246,
+      "end_line": 252
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 146,
+      "start_line": 36,
+      "end_line": 38
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 148,
+      "start_line": 40,
+      "end_line": 99
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 160,
+      "start_line": 148,
+      "end_line": 216
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 161,
+      "start_line": 148,
+      "end_line": 216
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-acp/src/agent_model_catalog.rs",
+      "edge_id": 260,
+      "start_line": 376,
+      "end_line": 415
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-analyst/src/db/sql.rs",
+      "edge_id": 297,
+      "start_line": 89,
+      "end_line": 154
+    },
+    {
+      "receipt": "source_examples",
+      "path": "crates/spur-analyst/src/db/sql.rs",
+      "edge_id": 298,
+      "start_line": 89,
+      "end_line": 154
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 151,
+      "start_line": 40,
+      "end_line": 99
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 159,
+      "start_line": 148,
+      "end_line": 216
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 173,
+      "start_line": 265,
+      "end_line": 544
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 194,
+      "start_line": 265,
+      "end_line": 544
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/compat_spike.rs",
+      "edge_id": 227,
+      "start_line": 560,
+      "end_line": 607
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/skip_perm_spike.rs",
+      "edge_id": 46,
+      "start_line": 166,
+      "end_line": 317
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/skip_perm_spike.rs",
+      "edge_id": 66,
+      "start_line": 166,
+      "end_line": 317
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/examples/skip_perm_spike.rs",
+      "edge_id": 122,
+      "start_line": 166,
+      "end_line": 317
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/src/adapter/config_options.rs",
+      "edge_id": 218,
+      "start_line": 293,
+      "end_line": 298
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/src/adapter/config_options.rs",
+      "edge_id": 220,
+      "start_line": 293,
+      "end_line": 298
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/src/adapter/config_options.rs",
+      "edge_id": 313,
+      "start_line": 614,
+      "end_line": 641
+    },
+    {
+      "receipt": "exact_owner_hint_samples_limit_12",
+      "path": "crates/spur-acp/src/adapter/config_options.rs",
+      "edge_id": 315,
+      "start_line": 614,
+      "end_line": 641
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/orchestrator.rs",
+      "edge_id": 505,
+      "start_line": 456,
+      "end_line": 656
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/scheduler.rs",
+      "edge_id": 369,
+      "start_line": 430,
+      "end_line": 474
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/scheduler.rs",
+      "edge_id": 370,
+      "start_line": 430,
+      "end_line": 474
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/scheduler.rs",
+      "edge_id": 371,
+      "start_line": 430,
+      "end_line": 474
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/scheduler.rs",
+      "edge_id": 372,
+      "start_line": 430,
+      "end_line": 474
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/status.rs",
+      "edge_id": 354,
+      "start_line": 82,
+      "end_line": 109
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/status.rs",
+      "edge_id": 355,
+      "start_line": 111,
+      "end_line": 200
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/status.rs",
+      "edge_id": 356,
+      "start_line": 111,
+      "end_line": 200
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/status.rs",
+      "edge_id": 357,
+      "start_line": 111,
+      "end_line": 200
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/status.rs",
+      "edge_id": 358,
+      "start_line": 202,
+      "end_line": 222
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/loops/status.rs",
+      "edge_id": 359,
+      "start_line": 202,
+      "end_line": 222
+    },
+    {
+      "receipt": "explicit_crate_paths_limit_12",
+      "path": "crates/spur-core/src/plan/projector.rs",
+      "edge_id": 1651,
+      "start_line": 86,
+      "end_line": 140
+    }
+  ],
+  "managed_runtime_and_bounded_catalog_receipts_verified": true,
+  "saved_notebook_stdout_matches_complete_28_receipts": true,
+  "saved_rust_cell_wrappers_verified": [
+    {
+      "id": "df8084cc-0ab2-4415-be3e-c6cbddf4ce32",
+      "version": 1882,
+      "exec_count": 148
+    },
+    {
+      "id": "b5da469c-9c37-4462-a32f-60b0558968c7",
+      "version": 1968,
+      "exec_count": 154
+    },
+    {
+      "id": "c8c0322a-132e-483d-a42c-86714c35d5e0",
+      "version": 2036,
+      "exec_count": 153
+    }
+  ],
+  "limitations": [
+    "Live notebook MCP returned worker not authorized to read this notebook or cell; no raw notebook access used; notebook and managed runtime evaluated from saved receipts only.",
+    "Live code_read_symbol exceeded its 15000ms deadline. Native seam receipt was independently matched verbatim to frozen source bytes with the same file_oid.",
+    "Catalog graph results are paginated; conclusions bounded to returned cards and managed 1.5.5/osx_arm64 availability, not native2 compatibility.",
+    "No full workspace build, expansion, accuracy/precision/recall or throughput test.",
+    "Initial temp-directory compiler lookup found default 1.96.0 and failed a version assertion before compilation. Preserved under initial-default-toolchain-*; reproduction explicitly selected already-installed 1.94.1."
+  ],
+  "concurrent_parent_changes_re_reviewed": {
+    "/Users/kevintruong/project/SpurCode/docs/research/2026-11-15-rust-binding-gap.md": {
+      "before": "abef33435ea0b79629691f159eee6342805dc7905b8d56f4987ae836c4884e9f",
+      "after": "d2f78250c7b44fd472d36185b937077efcdf528d464f73b30254ab7f7ca74e2d"
+    },
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/evaluate_gap.py": {
+      "before": "648f97974c54cfdc47247db84a35e726ece319257fbb0196b36966fdac905ffc",
+      "after": "b10552cf50f883de02b52239bfc729626b943eaf4b62c087589ecf6ff55eb8db"
+    },
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/notebook-cells.json": {
+      "before": "74e41eac31cb8eced7904c16ad415e7536e094b78cedf14eafe007789f0db100",
+      "after": "5cc0052e3f6588dca55bfd6897efa07eac78130ab8981faf771d61292a844917"
+    },
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/notebook-evaluation.json": {
+      "before": "339c5a793c45ba041d6b9c9e82897892335069ff247a796fc3eca50194a8fcab",
+      "after": "45c30d341dbcf81e5489c9e8f016519aac65c6c1f16271256d4d46f0ae378b56"
+    }
+  },
+  "changes_interpretation": "Concurrent parent modifications, not audit writes. Latest report adds a file-local extraction seam paragraph, independently checked against immutable source; runner adds execution-provenance receipt; notebook receipts refresh execution identity with unchanged result values.",
+  "input_file_count": 35,
+  "unchanged_input_file_count": 31,
+  "current_parent_file_hashes": {
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/README.md": "29146552b22ade8def4886b373684ac5d0d5ded2de7bfa4dcb9fa2e42de1e423",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/binding-analysis.json": "6c8f183e6c6f7e02d1f52e12bb11231cf361d43fb259c08f144375b4b0bcade3",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/binding-pilot.json": "d8300f42717271157bdb5286e726cb6ce4f1cc922ab88024a8570ef8ce7d6535",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/binding_pilot.py": "5594ea4856896707aa4c9593abd5d04dec4423c8fba53d659885cc64ff22e8e2",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/compiler-controls.json": "2dcab9ef47213a2280eff51c3a7f82521fde026227f062e8c08ba5f3d398ade2",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/compiler-expectations.json": "53c067d898c17fcd16c18aa558cbfab38b956569753ecea1a515ded7d63e55ff",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/evaluate_gap.py": "b10552cf50f883de02b52239bfc729626b943eaf4b62c087589ecf6ff55eb8db",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/execution-provenance.json": "e3b3c97da0ea133fbe8477f6387197e1c287635a94fb8f66ec33fe71a628c399",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/macro-control": "7670eedf862b5c2da8dab8c500f33cb5b4c89aa75c734803e0ae7aeda0ca38b5",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/macro-control.rs": "32599da67b0836df03cc539f09a54a76147b85ee8676e67f5c400182958cf9b6",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/macro-expanded.rs": "98c6aedf099e8a93ebdb3ed88c838fa72783552bcb47a994f94b480a0f66d8bd",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/manifest.json": "be3d51b797c0b423626b7d31e1e7433a1fe10f4e2748fd91a2068be38d56b87e",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-compiler-catalog.json": "323d9404864502cab2b3b4a0ae113a94abb5c82f3ffea4ab2d6f52d855587b69",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-function-managed-runtime.json": "39ca1b576094eeb09add5a080c74aa77b4f62ca1ba3ca1d4c58182b475bd20f3",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-function-reference.json": "c7a74ee894c52a4dbf0dc8a5f30801650bf1c46b9e3acb6cc3d23f9f31ada0b6",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-graph-catalog.json": "4f2153b744c087651818474b36b146c597a0ba80dd58bea793d9d064a2b4b943",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-membership.json": "82bb61055cbc96a3598436231c861acfdac219ffbf640ff39b27082ac2cb792b",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-onager-catalog.json": "4581cef2096fcc9e1c9f45106c40d964778bed038cb4aaa41740d0d2301b02bd",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-rust-catalog.json": "a9d7c6595fe73a427e9ae51d1276d7efc50970e4b849db50497eaeabf8c06b27",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/mcp-spur-graph-catalog.json": "d6dfa0bc796e30307726b1421e300f3b5626bf3cf75e595c83723776fe59703a",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/notebook-cells.json": "5cc0052e3f6588dca55bfd6897efa07eac78130ab8981faf771d61292a844917",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/notebook-evaluation.json": "45c30d341dbcf81e5489c9e8f016519aac65c6c1f16271256d4d46f0ae378b56",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/notebook-initial-control-failure.json": "c42d0520a1702880f7c35a38a90052bcf6c7de8539e63d804cf487ac53c87c6a",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner-analysis.json": "868de9df08397718bb0d0dc4cbaf3684891c5a3d55039e04535adc989b12fc69",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner-run.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner-run.stdout.txt": "8fffd0170ba74a5bda3d2f98d90cc7c10a3604c29764d1051b7d749853f05aba",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner-wide-sample-failure.txt": "d2fbac25b0e717d75a914bfbf1ec9aacf21c2f18fea6f0829a024a4b62a1fdd9",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner_diagnostics.py": "9b2f401377476943d9bd3c43612d2d36a96f3424cc39ba7507c7c55e74e3c2ae",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/package-catalog.json": "b7fcd0dad70156afc1ef021fde449f7e75b044ed4d8a1e33d0e7123636df145d",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/protocol.json": "d3b26be23518fa5c812b7d00ea8489ac0c7add973fd65a45393ed5f4f5498ea2",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/receiver-control": "e5991061f308277eaa4d46369569634f26c7e9e2df92ffffc74ad5846d172b28",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/receiver-control.mir": "394e10c45a1a6ae0b4a7629e54dd47bd41733a44f5ce939be21f5f5658071180",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/receiver-control.rs": "1f6fa34bd4bee7b2e95f648fbb914346691178e6bffdddc87e614cde0fabd34b",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/retention-final.json": "f601e08b372ce329393fceea733466f1dac7baacfd46d7bfd87d05479fd93bfa",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/user-file-retention.json": "50ef3d5f7efec85650648ff2805c97c26e5694c2b706be1d7a7783b353b6567a"
+  },
+  "latest_execution_provenance_matches": true,
+  "snapshot_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+  "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "worker_git_status": "",
+  "worker_git_diff": "",
+  "all_assertions_passed": true
+}

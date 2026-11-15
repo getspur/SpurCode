@@ -1,0 +1,20 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2060,
+  "id": "f46d8cc9-8b59-479f-833c-a57a152de7c4",
+  "kind": "markdown",
+  "version": 2055,
+  "cell_etag": "cell:sha256:e52f42633ea2c10557a5884cb4349582ee5c7e645d46618fe2f487a13b559072",
+  "source": "Rust binding gap evaluation: all 259,828 recorded calls retained; 32,414 local targets and 227,414 unresolved. Candidate-only global label matching partitions the unresolved population into 90,529 zero / 37,939 single / 98,946 multiple candidates and produces 9,778,507 pairs. Exact package + lexical owner + method matching gives 6,373 single candidates, still unverified.\n\nThe typed receiver control compiled and ran (`3:999`); MIR distinguishes `Vec::<u8>::len` from `Domain::len`, while native extraction leaves both targets NULL. The real frozen `labels!` fixture has zero generated `label` bodies before compiler expansion and one afterward; all 14 compiled label outputs match. This establishes one declarative-macro control, not workspace/procedural-macro coverage.\n\nExtension MCP observed managed DuckDB 1.5.5 separately; experiments used pinned native DuckDB 2.0.0 with the approved extension. No runtime upgrade, source-graph mutation or candidate promotion. Source-sampling OOM was corrected by materializing 12 narrow keys before joining source blobs under the same 1GB cap.\n\nEvidence and reproducible scripts: `/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/`. Report: `/Users/kevintruong/project/SpurCode/docs/research/2026-11-15-rust-binding-gap.md`. Independent evidence review is pending.",
+  "exec_count": null,
+  "status": "idle",
+  "outputs": [],
+  "metadata": {
+    "spur": {
+      "version": 2055,
+      "last_edited_by": "brain"
+    }
+  },
+  "output_indices": []
+}

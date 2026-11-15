@@ -1,0 +1,150 @@
+{
+  "audit_id": "8b35df97-80a1-4b6f-b376-ab78d629e49e",
+  "task_id": "bd-j85a",
+  "message": "Completed independent read-only review of the Rust binding-gap report for parent bd-1uf4. No critical, important or minor report defects found. All reported counts and isolated compiler/extension controls independently reproduce. Latest concurrent parent metadata changes re-reviewed and retained in before/after hash ledger; live notebook access denial is an explicit limitation. Worker diff is empty. Awaiting parent review; no closure, merge or approval performed.",
+  "evidence": {
+    "kind": "completion",
+    "parent_issue": "bd-1uf4",
+    "plan_id": "e33b08d8-77e3-4b78-9442-5999c30717eb",
+    "plan_task_id": "rust-binding-gap-evidence-review",
+    "findings": {
+      "critical": [],
+      "important": [],
+      "minor": []
+    },
+    "review_path": "/private/tmp/spur-rust-binding-audit-6mpf6brm/review.md",
+    "review_sha256": "574ebf9bb29f7bd8415e3942114c5b0dea7bd2bd837000321fa3c241ce549943",
+    "report_sha256_reviewed": "d2f78250c7b44fd472d36185b937077efcdf528d464f73b30254ab7f7ca74e2d",
+    "source_revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+    "counts": {
+      "calls": 259828,
+      "unique_call_keys": 259828,
+      "local_targets": 32414,
+      "unresolved": 227414,
+      "local_target_pct": 12.475175885585848,
+      "receiver": 139808,
+      "scope": 54768,
+      "qualified": 288,
+      "evidence_partition": {
+        "bare": 46940,
+        "receiver": 125418,
+        "scope": 54768,
+        "qualified": 288
+      },
+      "file_candidates": {
+        "zero": 210038,
+        "one": 12222,
+        "multiple": 5154
+      },
+      "package_candidates": {
+        "zero": 151578,
+        "one": 30799,
+        "multiple": 45037
+      },
+      "global_candidates": {
+        "zero": 90529,
+        "one": 37939,
+        "multiple": 98946
+      },
+      "candidate_pairs": 9778507,
+      "maximum_fanout": 566,
+      "singletons_with_receiver": 25654,
+      "owner_candidates": {
+        "zero": 220907,
+        "one": 6373,
+        "multiple": 134
+      },
+      "spelling": {
+        "std_core_alloc": 4126,
+        "crate": 1598,
+        "workspace": 2372,
+        "dependency_alias": 5830,
+        "other": 41130,
+        "no_hint": 172358
+      },
+      "package_unknown_call_rows": 240
+    },
+    "conservation": "All unresolved partitions and candidate tables preserve 227414 distinct original keys; all 259828 call keys unique; zero missing inventory call rows; 40 manifest hashes and 39 packages independently match; all 4404 inventory blob OIDs match frozen revision.",
+    "compiler": {
+      "rustc": "1.94.1 (e408947bf)",
+      "receiver_stdout": "3:999\n",
+      "mir": {
+        "observed": "Vec::<u8>::len",
+        "expected": "Domain::len"
+      },
+      "both_len_targets_null": true,
+      "generated_label_bodies_before": 0,
+      "generated_label_bodies_after": 1,
+      "macro_outputs": 14,
+      "full_extractions_equal_parent": [
+        "receiver-control",
+        "macro-control",
+        "macro-expanded"
+      ],
+      "macro_and_expanded_text_equal_parent": true,
+      "missing_semicolon_failure_reproduced": true,
+      "all_36_source_sample_spans_match": true
+    },
+    "runtimes": {
+      "native": "2.0.0",
+      "managed_receipts": "1.5.5",
+      "native_functions_before_load": 0,
+      "native_functions_after_load": [
+        "spur_graph_file_facts",
+        "spur_graph_symbol_changes",
+        "spur_graph_symbols"
+      ],
+      "managed_membership": 0,
+      "managed_file_facts_matches": 0,
+      "catalog_scope": "Returned cards and 1.5.5/osx_arm64 availability only; graph results paginated, no native2 compatibility or exhaustive Rust compiler claim."
+    },
+    "preservation": {
+      "snapshot_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+      "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+      "both_unchanged": true,
+      "worker_status": "",
+      "worker_diff": "",
+      "initial_inputs": 35,
+      "unchanged_inputs": 31,
+      "parent_concurrent_changes": [
+        "report",
+        "evaluate_gap.py",
+        "notebook-cells.json",
+        "notebook-evaluation.json"
+      ],
+      "parent_changes_re_reviewed": true,
+      "risk_signal_id": "65b3657e-4bb3-4fba-b1c4-fac451d850c5"
+    },
+    "limitations": [
+      "Live notebook MCP denied worker authorization; saved Rust cell source/output and managed MCP receipts reviewed, no raw notebook disk reads or edits.",
+      "Live code_read_symbol timed out; native seam receipt matched verbatim to frozen bytes with identical file_oid.",
+      "Isolated declarative macro and receiver controls only; no full workspace compiler expansion, proc/derive coverage, corpus accuracy/precision/recall, or speedup claim.",
+      "Initial temp default compiler 1.96.0 rejected at version assertion before compile; selected already-installed 1.94.1; failed attempt retained."
+    ],
+    "commands": [
+      "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python /private/tmp/spur-rust-binding-audit-6mpf6brm/recompute.py",
+      "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python /private/tmp/spur-rust-binding-audit-6mpf6brm/compiler_audit.py",
+      "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python /private/tmp/spur-rust-binding-audit-6mpf6brm/final_checks.py"
+    ],
+    "command_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "artifacts": [
+      "review.md",
+      "recomputed.json",
+      "compiler-audit.json",
+      "final-checks.json",
+      "input-hashes-before.json",
+      "input-hashes-after.json",
+      "observed-parent-concurrent-changes.json",
+      "audit-artifact-hashes.json"
+    ],
+    "no_parent_scripts_executed": true,
+    "no_production_changes": true,
+    "no_workspace_build": true,
+    "no_install_upgrade_network": true,
+    "no_merge_or_closure": true
+  }
+}

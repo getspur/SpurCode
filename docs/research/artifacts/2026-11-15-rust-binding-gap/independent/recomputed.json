@@ -1,0 +1,1072 @@
+[
+  {
+    "name": "schema_first",
+    "sql": "SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_catalog='frozen' ORDER BY table_name,ordinal_position",
+    "params": [],
+    "rows": [
+      {
+        "table_name": "admission",
+        "column_name": "path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "admission",
+        "column_name": "accepted",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "edge_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "source_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "target_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "relation",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "target_label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "import_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "receiver_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "scope_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "confidence",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "confidence_score",
+        "data_type": "FLOAT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "edge_kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "bind_method",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "evidence_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "directed",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "change_kind",
+        "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+      },
+      {
+        "table_name": "facts",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "facts",
+        "column_name": "value",
+        "data_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "git_blob_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "bytes",
+        "data_type": "BIGINT"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "suffix",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "area",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "status",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "error",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "site_id",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "file_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "source_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "caller_stable_symbol_id",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "enclosing",
+        "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "raw_macro_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "normalized_macro_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "byte_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "line_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "attributes",
+        "data_type": "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "test_context",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "debug_assertions_candidate",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "execution_phase",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "resolution",
+        "data_type": "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "sink_family_candidate",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "scope",
+        "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "file_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "source_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "byte_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "line_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "stable_key",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "source_span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "first_seen_run_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "source",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "source_bytes",
+        "data_type": "BLOB"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "file_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "sha256",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "start_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "end_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "start_line",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "end_line",
+        "data_type": "UINTEGER"
+      }
+    ]
+  },
+  {
+    "name": "runtime",
+    "sql": "SELECT version() AS version",
+    "params": [],
+    "rows": [
+      {
+        "version": "v2.0.0"
+      }
+    ]
+  },
+  {
+    "name": "raw_counts",
+    "sql": "SELECT count(*) AS calls,count(DISTINCT (logical_path,edge_id)) AS unique_keys,count(*) FILTER(WHERE target_node_id IS NULL) AS unresolved,count(*) FILTER(WHERE target_node_id IS NOT NULL) AS local_targets,100.0*count(*) FILTER(WHERE target_node_id IS NOT NULL)/count(*) AS local_target_pct FROM frozen.main.edges WHERE relation='calls' AND ends_with(logical_path,'.rs')",
+    "params": [],
+    "rows": [
+      {
+        "calls": 259828,
+        "unique_keys": 259828,
+        "unresolved": 227414,
+        "local_targets": 32414,
+        "local_target_pct": 12.475175885585848
+      }
+    ]
+  },
+  {
+    "name": "hint_counts",
+    "sql": "SELECT count(*) FILTER(WHERE receiver_text IS NOT NULL) AS receiver,count(*) FILTER(WHERE scope_text IS NOT NULL) AS scope,count(*) FILTER(WHERE contains(target_label,'::')) AS qualified,count(*) FILTER(WHERE target_label IS NULL) AS null_labels,count(*) FILTER(WHERE receiver_text IS NOT NULL AND trim(receiver_text)='') AS empty_receiver,count(*) FILTER(WHERE scope_text IS NOT NULL AND trim(scope_text)='') AS empty_scope FROM frozen.main.edges WHERE relation='calls' AND ends_with(logical_path,'.rs') AND target_node_id IS NULL",
+    "params": [],
+    "rows": [
+      {
+        "receiver": 139808,
+        "scope": 54768,
+        "qualified": 288,
+        "null_labels": 0,
+        "empty_receiver": 0,
+        "empty_scope": 0
+      }
+    ]
+  },
+  {
+    "name": "evidence_partition",
+    "sql": "SELECT CASE WHEN contains(target_label,'::') THEN 'qualified' WHEN length(trim(scope_text))>0 THEN 'scope' WHEN length(trim(receiver_text))>0 THEN 'receiver' ELSE 'bare' END AS evidence,count(*) AS sites FROM frozen.main.edges WHERE relation='calls' AND ends_with(logical_path,'.rs') AND target_node_id IS NULL GROUP BY 1 ORDER BY 1",
+    "params": [],
+    "rows": [
+      {
+        "evidence": "bare",
+        "sites": 46940
+      },
+      {
+        "evidence": "qualified",
+        "sites": 288
+      },
+      {
+        "evidence": "receiver",
+        "sites": 125418
+      },
+      {
+        "evidence": "scope",
+        "sites": 54768
+      }
+    ]
+  },
+  {
+    "name": "package_sanity",
+    "sql": "SELECT count(*) AS inventory_paths,count(DISTINCT path) AS unique_paths,count(*) FILTER(WHERE package IS NULL) AS unknown_paths FROM package_paths",
+    "params": [],
+    "rows": [
+      {
+        "inventory_paths": 1726,
+        "unique_paths": 1726,
+        "unknown_paths": 7
+      }
+    ]
+  },
+  {
+    "name": "unmapped_calls",
+    "sql": "SELECT count(*) AS missing_inventory FROM frozen.main.edges e LEFT JOIN package_paths p ON p.path=e.logical_path WHERE relation='calls' AND ends_with(e.logical_path,'.rs') AND p.path IS NULL",
+    "params": [],
+    "rows": [
+      {
+        "missing_inventory": 0
+      }
+    ]
+  },
+  {
+    "name": "package_unknown_calls",
+    "sql": "SELECT count(*) AS calls,count(*) FILTER(WHERE package IS NULL) AS unknown_package FROM frozen.main.edges e LEFT JOIN package_paths p ON e.logical_path=p.path WHERE e.relation='calls' AND ends_with(e.logical_path,'.rs')",
+    "params": [],
+    "rows": [
+      {
+        "calls": 259828,
+        "unknown_package": 240
+      }
+    ]
+  },
+  {
+    "name": "file_multiplicity",
+    "sql": "SELECT CASE WHEN candidates=0 THEN 'zero' WHEN candidates=1 THEN 'one' ELSE 'multiple' END AS multiplicity,count(*) AS sites,sum(candidates) AS pairs FROM file_candidates GROUP BY 1 ORDER BY 1",
+    "params": [],
+    "rows": [
+      {
+        "multiplicity": "multiple",
+        "sites": 5154,
+        "pairs": 18549
+      },
+      {
+        "multiplicity": "one",
+        "sites": 12222,
+        "pairs": 12222
+      },
+      {
+        "multiplicity": "zero",
+        "sites": 210038,
+        "pairs": 0
+      }
+    ]
+  },
+  {
+    "name": "file_row_conservation",
+    "sql": "SELECT count(*) AS rows,count(DISTINCT (logical_path,edge_id)) AS keys FROM file_candidates",
+    "params": [],
+    "rows": [
+      {
+        "rows": 227414,
+        "keys": 227414
+      }
+    ]
+  },
+  {
+    "name": "package_multiplicity",
+    "sql": "SELECT CASE WHEN candidates=0 THEN 'zero' WHEN candidates=1 THEN 'one' ELSE 'multiple' END AS multiplicity,count(*) AS sites,sum(candidates) AS pairs FROM package_candidates GROUP BY 1 ORDER BY 1",
+    "params": [],
+    "rows": [
+      {
+        "multiplicity": "multiple",
+        "sites": 45037,
+        "pairs": 1111643
+      },
+      {
+        "multiplicity": "one",
+        "sites": 30799,
+        "pairs": 30799
+      },
+      {
+        "multiplicity": "zero",
+        "sites": 151578,
+        "pairs": 0
+      }
+    ]
+  },
+  {
+    "name": "package_row_conservation",
+    "sql": "SELECT count(*) AS rows,count(DISTINCT (logical_path,edge_id)) AS keys FROM package_candidates",
+    "params": [],
+    "rows": [
+      {
+        "rows": 227414,
+        "keys": 227414
+      }
+    ]
+  },
+  {
+    "name": "global_multiplicity",
+    "sql": "SELECT CASE WHEN candidates=0 THEN 'zero' WHEN candidates=1 THEN 'one' ELSE 'multiple' END AS multiplicity,count(*) AS sites,sum(candidates) AS pairs FROM global_candidates GROUP BY 1 ORDER BY 1",
+    "params": [],
+    "rows": [
+      {
+        "multiplicity": "multiple",
+        "sites": 98946,
+        "pairs": 9740568
+      },
+      {
+        "multiplicity": "one",
+        "sites": 37939,
+        "pairs": 37939
+      },
+      {
+        "multiplicity": "zero",
+        "sites": 90529,
+        "pairs": 0
+      }
+    ]
+  },
+  {
+    "name": "global_row_conservation",
+    "sql": "SELECT count(*) AS rows,count(DISTINCT (logical_path,edge_id)) AS keys FROM global_candidates",
+    "params": [],
+    "rows": [
+      {
+        "rows": 227414,
+        "keys": 227414
+      }
+    ]
+  },
+  {
+    "name": "fanout",
+    "sql": "SELECT count(*) AS input_sites,count(*) FILTER(WHERE candidates=0) AS dropped,sum(candidates) AS pairs,max(candidates) AS maximum_fanout,count(*) FILTER(WHERE candidates=1 AND receiver_text IS NOT NULL) AS singleton_with_receiver FROM global_candidates",
+    "params": [],
+    "rows": [
+      {
+        "input_sites": 227414,
+        "dropped": 90529,
+        "pairs": 9778507,
+        "maximum_fanout": 566,
+        "singleton_with_receiver": 25654
+      }
+    ]
+  },
+  {
+    "name": "owner_multiplicity",
+    "sql": "SELECT CASE WHEN candidates=0 THEN 'zero' WHEN candidates=1 THEN 'one' ELSE 'multiple' END AS multiplicity,count(*) AS sites,sum(candidates) AS pairs FROM owner_candidates GROUP BY 1 ORDER BY 1",
+    "params": [],
+    "rows": [
+      {
+        "multiplicity": "multiple",
+        "sites": 134,
+        "pairs": 289
+      },
+      {
+        "multiplicity": "one",
+        "sites": 6373,
+        "pairs": 6373
+      },
+      {
+        "multiplicity": "zero",
+        "sites": 220907,
+        "pairs": 0
+      }
+    ]
+  },
+  {
+    "name": "owner_conservation",
+    "sql": "SELECT count(*) AS rows,count(DISTINCT (logical_path,edge_id)) AS keys FROM owner_candidates",
+    "params": [],
+    "rows": [
+      {
+        "rows": 227414,
+        "keys": 227414
+      }
+    ]
+  },
+  {
+    "name": "spelling_partition",
+    "sql": "WITH hints AS (SELECT *,split_part(coalesce(nullif(scope_text,''),CASE WHEN contains(target_label,'::') THEN target_label END),'::',1) AS root FROM unresolved) SELECT CASE WHEN root IN ('std','core','alloc') THEN 'std_core_alloc_spelling' WHEN root='crate' THEN 'crate_spelling' WHEN root IN (SELECT alias FROM workspace_roots) THEN 'workspace_crate_spelling' WHEN EXISTS(SELECT 1 FROM dependency_roots d WHERE d.package=h.package AND d.alias=h.root) THEN 'declared_dependency_alias_spelling' WHEN root IS NOT NULL THEN 'other_scope_or_qualified_spelling' ELSE 'no_scope_or_qualified_spelling' END AS evidence,count(*) AS sites FROM hints h GROUP BY 1 ORDER BY 1",
+    "params": [],
+    "rows": [
+      {
+        "evidence": "crate_spelling",
+        "sites": 1598
+      },
+      {
+        "evidence": "declared_dependency_alias_spelling",
+        "sites": 5830
+      },
+      {
+        "evidence": "no_scope_or_qualified_spelling",
+        "sites": 172358
+      },
+      {
+        "evidence": "other_scope_or_qualified_spelling",
+        "sites": 41130
+      },
+      {
+        "evidence": "std_core_alloc_spelling",
+        "sites": 4126
+      },
+      {
+        "evidence": "workspace_crate_spelling",
+        "sites": 2372
+      }
+    ]
+  },
+  {
+    "name": "null_target_hints_top",
+    "sql": "SELECT target_label,count(*) AS sites FROM unresolved GROUP BY 1 ORDER BY 2 DESC,1 LIMIT 30",
+    "params": [],
+    "rows": [
+      {
+        "target_label": "new",
+        "sites": 14696
+      },
+      {
+        "target_label": "expect",
+        "sites": 11318
+      },
+      {
+        "target_label": "unwrap",
+        "sites": 9983
+      },
+      {
+        "target_label": "clone",
+        "sites": 8933
+      },
+      {
+        "target_label": "into",
+        "sites": 7191
+      },
+      {
+        "target_label": "Some",
+        "sites": 5948
+      },
+      {
+        "target_label": "to_string",
+        "sites": 5541
+      },
+      {
+        "target_label": "iter",
+        "sites": 5006
+      },
+      {
+        "target_label": "map",
+        "sites": 4637
+      },
+      {
+        "target_label": "Ok",
+        "sites": 4432
+      },
+      {
+        "target_label": "join",
+        "sites": 4051
+      },
+      {
+        "target_label": "len",
+        "sites": 3695
+      },
+      {
+        "target_label": "to_owned",
+        "sites": 3348
+      },
+      {
+        "target_label": "path",
+        "sites": 3173
+      },
+      {
+        "target_label": "contains",
+        "sites": 2606
+      },
+      {
+        "target_label": "is_empty",
+        "sites": 2568
+      },
+      {
+        "target_label": "default",
+        "sites": 2374
+      },
+      {
+        "target_label": "collect",
+        "sites": 2310
+      },
+      {
+        "target_label": "get",
+        "sites": 2294
+      },
+      {
+        "target_label": "push",
+        "sites": 2219
+      },
+      {
+        "target_label": "as_str",
+        "sites": 2053
+      },
+      {
+        "target_label": "as_ref",
+        "sites": 1982
+      },
+      {
+        "target_label": "as_deref",
+        "sites": 1741
+      },
+      {
+        "target_label": "map_err",
+        "sites": 1695
+      },
+      {
+        "target_label": "and_then",
+        "sites": 1546
+      },
+      {
+        "target_label": "Err",
+        "sites": 1450
+      },
+      {
+        "target_label": "lock",
+        "sites": 1369
+      },
+      {
+        "target_label": "tempdir",
+        "sites": 1352
+      },
+      {
+        "target_label": "any",
+        "sites": 1345
+      },
+      {
+        "target_label": "from",
+        "sites": 1342
+      }
+    ]
+  },
+  {
+    "name": "owner_positive_samples",
+    "sql": "SELECT logical_path,edge_id,target_label,receiver_text,scope_text,package,candidates FROM owner_candidates WHERE logical_path='crates/spur-acp/examples/compat_spike.rs' AND candidates=1 ORDER BY edge_id LIMIT 12",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 151,
+        "target_label": "from_name",
+        "receiver_text": null,
+        "scope_text": "AgentKind",
+        "package": "spur-acp",
+        "candidates": 1
+      },
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 159,
+        "target_label": "new",
+        "receiver_text": null,
+        "scope_text": "SpurAgentCaps",
+        "package": "spur-acp",
+        "candidates": 1
+      },
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 173,
+        "target_label": "new_with_kind",
+        "receiver_text": null,
+        "scope_text": "NativeAcpConnection",
+        "package": "spur-acp",
+        "candidates": 1
+      },
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 194,
+        "target_label": "new",
+        "receiver_text": null,
+        "scope_text": "SpurAgentCaps",
+        "package": "spur-acp",
+        "candidates": 1
+      },
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 227,
+        "target_label": "new",
+        "receiver_text": null,
+        "scope_text": "SessionId",
+        "package": "spur-acp",
+        "candidates": 1
+      }
+    ]
+  },
+  {
+    "name": "singleton_candidate_targets",
+    "sql": "SELECT u.logical_path,u.edge_id,u.target_label,u.receiver_text,u.scope_text,n.logical_path AS candidate_path,n.node_id AS candidate_node,n.label FROM unresolved u JOIN global_candidates g USING(logical_path,edge_id) JOIN callable n ON n.label=u.leaf WHERE g.candidates=1 AND u.logical_path='crates/spur-acp/examples/compat_spike.rs' AND u.target_label IN ('skip','args') ORDER BY edge_id",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 33,
+        "target_label": "skip",
+        "receiver_text": "std::env::args()",
+        "scope_text": null,
+        "candidate_path": "crates/spur-core/src/plan/outcomes.rs",
+        "candidate_node": 152,
+        "label": "skip"
+      },
+      {
+        "logical_path": "crates/spur-acp/examples/compat_spike.rs",
+        "edge_id": 146,
+        "target_label": "args",
+        "receiver_text": null,
+        "scope_text": "std::env",
+        "candidate_path": "crates/spur-embedding/src/discovery.rs",
+        "candidate_node": 9,
+        "label": "args"
+      }
+    ]
+  },
+  {
+    "name": "macro_piece_nodes",
+    "sql": "SELECT n.logical_path,n.node_id,n.label,n.kind,s.start_byte,s.end_byte,s.start_line,s.end_line FROM frozen.main.nodes n JOIN frozen.main.spans s ON s.logical_path=n.logical_path AND s.span_id=n.source_span_id WHERE (n.logical_path='crates/spur-graph/src/schema.rs' AND n.label='RelationKind' AND n.kind='enum') OR (n.logical_path='crates/spur-graph-duckdb/src/file_facts.rs' AND n.label IN ('NativeLabel','labels')) ORDER BY n.logical_path,n.node_id",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "node_id": 91,
+        "label": "NativeLabel",
+        "kind": "trait",
+        "start_byte": 4201,
+        "end_byte": 4258,
+        "start_line": 173,
+        "end_line": 175
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "node_id": 93,
+        "label": "labels",
+        "kind": "macro",
+        "start_byte": 4340,
+        "end_byte": 4604,
+        "start_line": 178,
+        "end_line": 186
+      },
+      {
+        "logical_path": "crates/spur-graph/src/schema.rs",
+        "node_id": 168,
+        "label": "RelationKind",
+        "kind": "enum",
+        "start_byte": 15653,
+        "end_byte": 15864,
+        "start_line": 448,
+        "end_line": 463
+      }
+    ]
+  },
+  {
+    "name": "labels_macro_invocations",
+    "sql": "SELECT logical_path,raw_macro_path,normalized_macro_path,byte_range,line_range,resolution FROM frozen.main.macro_invocations WHERE logical_path='crates/spur-graph-duckdb/src/file_facts.rs' AND normalized_macro_path='labels' ORDER BY byte_range[1]",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          4606,
+          4967
+        ],
+        "line_range": [
+          188,
+          194
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          4969,
+          5075
+        ],
+        "line_range": [
+          195,
+          197
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5077,
+          5271
+        ],
+        "line_range": [
+          198,
+          201
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5273,
+          5460
+        ],
+        "line_range": [
+          202,
+          205
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5462,
+          5613
+        ],
+        "line_range": [
+          206,
+          209
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5615,
+          5798
+        ],
+        "line_range": [
+          210,
+          213
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      },
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5800,
+          5913
+        ],
+        "line_range": [
+          214,
+          216
+        ],
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

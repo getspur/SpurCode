@@ -1,0 +1,485 @@
+{
+  "checks": {
+    "frozen_sources_equal_git_revision": {
+      "crates/spur-graph-duckdb/src/file_facts.rs": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+      "crates/spur-graph/src/schema.rs": "4db25ddab005ab64bb993c8a573c7591d8026f1eddb89beb8a99fff3c6b7dd04"
+    },
+    "source_piece_sha256": {
+      "NativeLabel": "ae877fe70e3b53080a74509377cf62bcc94a25546b18cae4c0df3168df0556bc",
+      "labels": "98f7afc57d5efcd5cedc26ccdf9d5a5c0496b8deedeca404df6c4442957cc455",
+      "RelationKind": "a44c765420e1c0fe91abaeb26b1b615d7eeabe622b4eb752f9ccce4ece287d5f"
+    },
+    "invocation_sha256": "e21daa4c0c1641797024c0a8f2d3e02bd5e46882d411443f1058bb993d06c61e",
+    "semicolon_byte_offset": 4967
+  },
+  "receipts": [
+    {
+      "name": "schema_first",
+      "sql": "SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_catalog='frozen' AND table_name IN ('nodes','spans','sources','macro_invocations') ORDER BY table_name,ordinal_position",
+      "params": [],
+      "rows": [
+        {
+          "table_name": "macro_invocations",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "site_id",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "file_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "source_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "caller_stable_symbol_id",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "enclosing",
+          "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "raw_macro_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "normalized_macro_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "byte_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "line_range",
+          "data_type": "UBIGINT[]"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "attributes",
+          "data_type": "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "test_context",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "debug_assertions_candidate",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "execution_phase",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "resolution",
+          "data_type": "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+        },
+        {
+          "table_name": "macro_invocations",
+          "column_name": "sink_family_candidate",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "stable_key",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "label",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "kind",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "file_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "source_span_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "nodes",
+          "column_name": "first_seen_run_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "source",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "source_bytes",
+          "data_type": "BLOB"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "file_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "sha256",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "span_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "file_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "start_byte",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "end_byte",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "start_line",
+          "data_type": "UINTEGER"
+        },
+        {
+          "table_name": "spans",
+          "column_name": "end_line",
+          "data_type": "UINTEGER"
+        }
+      ]
+    },
+    {
+      "name": "functions_schema",
+      "sql": "SELECT column_name,data_type FROM information_schema.columns WHERE false",
+      "params": [],
+      "rows": []
+    },
+    {
+      "name": "runtime",
+      "sql": "SELECT version() AS version",
+      "params": [],
+      "rows": [
+        {
+          "version": "v2.0.0"
+        }
+      ]
+    },
+    {
+      "name": "functions_before",
+      "sql": "SELECT function_name FROM duckdb_functions() WHERE starts_with(function_name,'spur_graph') ORDER BY 1",
+      "params": [],
+      "rows": []
+    },
+    {
+      "name": "functions_after",
+      "sql": "SELECT function_name,function_type FROM duckdb_functions() WHERE starts_with(function_name,'spur_graph') ORDER BY 1",
+      "params": [],
+      "rows": [
+        {
+          "function_name": "spur_graph_file_facts",
+          "function_type": "scalar"
+        },
+        {
+          "function_name": "spur_graph_symbol_changes",
+          "function_type": "scalar"
+        },
+        {
+          "function_name": "spur_graph_symbols",
+          "function_type": "scalar"
+        }
+      ]
+    },
+    {
+      "name": "frozen_pieces",
+      "sql": "SELECT n.logical_path,n.node_id,n.label,n.kind,p.start_byte,p.end_byte,p.start_line,p.end_line FROM frozen.main.nodes n JOIN frozen.main.spans p ON p.logical_path=n.logical_path AND p.span_id=n.source_span_id WHERE (n.logical_path='crates/spur-graph/src/schema.rs' AND n.label='RelationKind' AND n.kind='enum') OR (n.logical_path='crates/spur-graph-duckdb/src/file_facts.rs' AND n.label IN ('labels','NativeLabel')) ORDER BY n.logical_path,n.node_id",
+      "params": [],
+      "rows": [
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "node_id": 91,
+          "label": "NativeLabel",
+          "kind": "trait",
+          "start_byte": 4201,
+          "end_byte": 4258,
+          "start_line": 173,
+          "end_line": 175
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "node_id": 93,
+          "label": "labels",
+          "kind": "macro",
+          "start_byte": 4340,
+          "end_byte": 4604,
+          "start_line": 178,
+          "end_line": 186
+        },
+        {
+          "logical_path": "crates/spur-graph/src/schema.rs",
+          "node_id": 168,
+          "label": "RelationKind",
+          "kind": "enum",
+          "start_byte": 15653,
+          "end_byte": 15864,
+          "start_line": 448,
+          "end_line": 463
+        }
+      ]
+    },
+    {
+      "name": "frozen_labels_invocations",
+      "sql": "SELECT logical_path,byte_range,line_range,resolution FROM frozen.main.macro_invocations WHERE logical_path='crates/spur-graph-duckdb/src/file_facts.rs' AND normalized_macro_path='labels' ORDER BY byte_range[1]",
+      "params": [],
+      "rows": [
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            4606,
+            4967
+          ],
+          "line_range": [
+            188,
+            194
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            4969,
+            5075
+          ],
+          "line_range": [
+            195,
+            197
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            5077,
+            5271
+          ],
+          "line_range": [
+            198,
+            201
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            5273,
+            5460
+          ],
+          "line_range": [
+            202,
+            205
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            5462,
+            5613
+          ],
+          "line_range": [
+            206,
+            209
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            5615,
+            5798
+          ],
+          "line_range": [
+            210,
+            213
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "byte_range": [
+            5800,
+            5913
+          ],
+          "line_range": [
+            214,
+            216
+          ],
+          "resolution": {
+            "kind": "local_definition_candidate",
+            "definition": {
+              "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+              "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+              "byte_range": [
+                4340,
+                4604
+              ],
+              "line_range": [
+                178,
+                186
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "args": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/private/tmp/spur-rust-binding-audit-6mpf6brm",
+      "environment_overrides": {},
+      "returncode": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "stderr": ""
+    }
+  ]
+}
