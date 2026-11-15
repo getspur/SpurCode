@@ -1,0 +1,816 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "cells": [
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "c2722514-5b9c-4ceb-a6c0-cdd843df5fe1",
+      "kind": "markdown",
+      "version": 2140,
+      "cell_etag": "cell:sha256:2e35f47cf2cafa9750e5949359f38f1edd8783a8e7dfc12c7f41080e84527216",
+      "source": "**Direct DuckDB 2.0 notebook analysis of Rust call bindings**\n\nThe notebook runtime has now changed to DuckDB 2.0.0. The following SQL cells load the approved local `spur_graph` extension directly, attach the frozen SpurCode snapshot read-only, and analyze recorded call edges. This replaces the earlier need for a separate native runner for this section.\n\nSource revision: `61ba3d200439a541dce4c1617ca9277be7d438af`. Baseline: 259,828 recorded Rust call edges, 32,414 with local target IDs (12.4752%). Node IDs must always be joined with `logical_path`; they are local to a file.\n\nThe package chart keeps all 39 result groups in the table and displays groups with at least 100 recorded calls. These are local-binding fractions, not accuracy scores. The source and compiler controls below show why structural validity alone does not prove target correctness. Temporary `spur_rust_*` tables/views remain available to subsequent SQL cells.",
+      "exec_count": null,
+      "status": "idle",
+      "outputs": [],
+      "metadata": {
+        "spur": {
+          "version": 2140,
+          "last_edited_by": "brain"
+        }
+      },
+      "output_indices": []
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "9fb655d8-ab91-4268-ad83-4016870abe2f",
+      "kind": "code",
+      "version": 2063,
+      "cell_etag": "cell:sha256:0f79b8e720fdbf9b9dd50d1dfdfaade5fb791b431eb1946d285b7a9251a4feb0",
+      "source": "SELECT version() AS engine_version,\n       current_setting('allow_unsigned_extensions') AS allow_unsigned_extensions,\n       (SELECT count(*) FROM duckdb_functions() WHERE function_name LIKE 'spur_graph%') AS spur_graph_functions_before_load;",
+      "exec_count": 2,
+      "status": "success",
+      "outputs": [
+        "┌────────────────┬───────────────────────────┬──────────────────────────────────┐\n│ engine_version │ allow_unsigned_extensions │ spur_graph_functions_before_load │\n│    varchar     │          boolean          │              int64               │\n├────────────────┼───────────────────────────┼──────────────────────────────────┤\n│ v2.0.0         │ true                      │                                0 │\n└────────────────┴───────────────────────────┴──────────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2063,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "8d1ef774-691c-4d28-9494-ab65f9a3d3ff",
+          "source_version": 2063,
+          "execution_identity": "20e7b3cadab36cfdfda50e0d0d92bd7d01208e186bd95a4b2816881cef70ca09",
+          "output_hash": "b99e96088e204d9dca1daa028763d69d89130e03b19aa21a386d12612f13123b",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "cdb72c52-ed01-44cf-9bc5-a38ce6c6bfe9",
+      "kind": "code",
+      "version": 2067,
+      "cell_etag": "cell:sha256:b0e8d83b2cba17846963b07a573c0e2fb0ac929c49fe89affe82e5d283541a27",
+      "source": "LOAD '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension';\nSELECT version() AS engine_version, extension_name, loaded, extension_version\nFROM duckdb_extensions()\nWHERE extension_name = 'spur_graph';",
+      "exec_count": 3,
+      "status": "success",
+      "outputs": [
+        "┌────────────────┬────────────────┬─────────┬───────────────────┐\n│ engine_version │ extension_name │ loaded  │ extension_version │\n│    varchar     │    varchar     │ boolean │      varchar      │\n├────────────────┼────────────────┼─────────┼───────────────────┤\n│ v2.0.0         │ spur_graph     │ true    │ 0.1.0             │\n└────────────────┴────────────────┴─────────┴───────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2067,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "b78e7790-d753-4976-85ef-5b846a52fc13",
+          "source_version": 2067,
+          "execution_identity": "4f9a295809feb93dfb4b44c3e43c29a9d5415ea79cbbd825b5972a0b28dd1537",
+          "output_hash": "d5a9ce07a944e45b3762d90aa9a58d02c36d9dc18a71bdecb0d4486d1bab3c09",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "102b27ce-9c90-4d0c-a12d-b359582f45be",
+      "kind": "code",
+      "version": 2071,
+      "cell_etag": "cell:sha256:542a1a55516af93f9a78d3c2570bf597dd22e227e3f290ed02c44ea37033a8e3",
+      "source": "ATTACH IF NOT EXISTS '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-project-quality/snapshot.duckdb' AS spur_rust_snapshot (READ_ONLY);\nSELECT table_name, column_name, left(data_type, 90) AS data_type_preview\nFROM information_schema.columns\nWHERE table_catalog = 'spur_rust_snapshot'\n  AND table_name IN ('inventory', 'nodes', 'edges', 'spans', 'sources', 'facts')\nORDER BY table_name, ordinal_position;",
+      "exec_count": 4,
+      "status": "success",
+      "outputs": [
+        "┌────────────┬────────────────┬───────────────────┐\n│ table_name │  column_name   │ data_type_preview │\n│  varchar   │    varchar     │      varchar      │\n├────────────┼────────────────┼───────────────────┤\n│ edges      │ logical_path   │ VARCHAR           │\n│ edges      │ edge_id        │ UBIGINT           │\n│ edges      │ source_node_id │ UBIGINT           │\n│ edges      │ target_node_id │ UBIGINT           │\n│ edges      │ relation       │ VARCHAR           │\n│ edges      │ target_label   │ VARCHAR           │\n│ edges      │ import_path    │ VARCHAR           │\n│ edges      │ receiver_text  │ VARCHAR           │\n│ edges      │ scope_text     │ VARCHAR           │\n│ edges      │ confidence     │ VARCHAR           │\n│   ·        │     ·          │  ·                │\n│   ·        │     ·          │  ·                │\n│   ·        │     ·          │  ·                │\n│ sources    │ source_bytes   │ BLOB              │\n│ sources    │ file_oid       │ VARCHAR           │\n│ sources    │ sha256         │ VARCHAR           │\n│ spans      │ logical_path   │ VARCHAR           │\n│ spans      │ span_id        │ UBIGINT           │\n│ spans      │ file_id        │ UBIGINT           │\n│ spans      │ start_byte     │ UINTEGER          │\n│ spans      │ end_byte       │ UINTEGER          │\n│ spans      │ start_line     │ UINTEGER          │\n│ spans      │ end_line       │ UINTEGER          │\n└────────────┴────────────────┴───────────────────┘\n  45 rows (20 shown)                    3 columns\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2071,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "e38ebfdb-b762-4985-a136-13d098671142",
+          "source_version": 2071,
+          "execution_identity": "59fd254171f697579ece35b571e16a3732f768eda06a16f4ca6c1c547a49005f",
+          "output_hash": "4bbdbb0fc84ada7fffedb2a3450d035cdffaf415814e86b3ab6ddf4dedb35b3b",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "c4eff936-2a56-4ca9-bb73-e2b28d8d8d4a",
+      "kind": "code",
+      "version": 2075,
+      "cell_etag": "cell:sha256:080f6f8a68a76066d588a99c593cf02b119b29a467dedeededfb260d3d66b274",
+      "source": "SELECT table_name, string_agg(column_name, ', ' ORDER BY ordinal_position) AS columns\nFROM information_schema.columns\nWHERE table_catalog = 'spur_rust_snapshot'\n  AND table_name IN ('inventory', 'nodes', 'edges', 'spans', 'sources', 'facts')\nGROUP BY table_name ORDER BY table_name;",
+      "exec_count": 5,
+      "status": "success",
+      "outputs": [
+        "┌────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n│ table_name │                                                                                                     columns                                                                                                     │\n│  varchar   │                                                                                                     varchar                                                                                                     │\n├────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤\n│ edges      │ logical_path, edge_id, source_node_id, target_node_id, relation, target_label, import_path, receiver_text, scope_text, confidence, confidence_score, edge_kind, bind_method, evidence_id, directed, change_kind │\n│ facts      │ logical_path, value                                                                                                                                                                                             │\n│ inventory  │ path, git_blob_oid, bytes, suffix, area, status, error                                                                                                                                                          │\n│ nodes      │ logical_path, node_id, stable_key, label, kind, file_id, source_span_id, first_seen_run_id                                                                                                                      │\n│ sources    │ logical_path, source, source_bytes, file_oid, sha256                                                                                                                                                            │\n│ spans      │ logical_path, span_id, file_id, start_byte, end_byte, start_line, end_line                                                                                                                                      │\n└────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2075,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "43e41f99-93e8-4f33-aa99-51a9ca9188a8",
+          "source_version": 2075,
+          "execution_identity": "f12232f48039574428725b6591f099e1c2929103d95536851032c30a0f797bfd",
+          "output_hash": "9914fab0bb765f72498b2ee19b9fee011d416378cbc21e24a80c1d43a004d788",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "9d149c27-1217-4daf-a178-17e3b42a96c8",
+      "kind": "code",
+      "version": 2079,
+      "cell_etag": "cell:sha256:6e691370f88774bdf81909bc94cc67d28e633b31b544f80b347499a34df2f238",
+      "source": "CREATE OR REPLACE TEMP TABLE spur_rust_package_roots(directory, package) AS\nSELECT * FROM (VALUES\n('crates/spur-core/tests/fixtures/code_graph_sample', 'code_graph_sample'),\n('crates/spur-graph/tests/wrapper-regressions', 'spur-ort-wrapper-regressions'),\n('infra/spur-context-service/poc/auth-client', 'spur-context-auth-client'),\n('docs/spikes/duckdb-loadable-ext-probe', 'spur-probe-duckdb-extension'),\n('crates/spur-utilities/commands', 'spur-commands'),\n('crates/spur-utilities/mentions', 'spur-mentions'),\n('docs/spikes/duckdb-vtab-probe', 'duckdb-vtab-probe'),\n('crates/spur-embedding-worker', 'spur-embedding-worker'),\n('crates/spur-utilities/facade', 'spur-utilities'),\n('crates/spur-context-fetcher', 'spur-context-fetcher'),\n('crates/spur-context-service', 'spur-context-service'),\n('crates/spur-context-source', 'spur-context-source'),\n('crates/tree-sitter-mermaid', 'tree-sitter-mermaid'),\n('crates/spur-license-admin', 'spur-license-admin'),\n('crates/spur-context-auth', 'spur-context-auth'),\n('crates/spur-graph-duckdb', 'spur-graph-duckdb'),\n('crates/spur-interactive', 'spur-interactive'),\n('crates/spur-test-madsim', 'spur-test-madsim'),\n('crates/spur-blob-store', 'spur-blob-store'),\n('crates/spur-code-eval', 'spur-code-eval'),\n('crates/spur-embedding', 'spur-embedding'),\n('crates/spur-telemetry', 'spur-telemetry'),\n('crates/spur-worktree', 'spur-worktree'),\n('crates/spur-analyst', 'spur-analyst'),\n('crates/spur-context', 'spur-context'),\n('crates/spur-license', 'spur-license'),\n('crates/spur-solver', 'spur-solver'),\n('crates/spur-graph', 'spur-graph'),\n('crates/spur-core', 'spur-core'),\n('crates/spur-cost', 'spur-cost'),\n('crates/spur-acp', 'spur-acp'),\n('crates/spur-bot', 'spur-bot'),\n('crates/spur-cli', 'spur-cli'),\n('crates/spur-jev', 'spur-jev'),\n('crates/spur-mcp', 'spur-mcp'),\n('crates/spur-tui', 'spur-tui'),\n('crates/spur-pm', 'spur-pm'),\n('vendor/ort', 'ort'),\n('xtask', 'xtask')\n) AS roots(directory, package);\n\nCREATE OR REPLACE TEMP TABLE spur_rust_package_paths AS\nSELECT i.path,\n       (SELECT r.package FROM spur_rust_package_roots r\n        WHERE r.directory = '.' OR starts_with(i.path, r.directory || '/')\n        ORDER BY length(r.directory) DESC, r.directory LIMIT 1) AS package\nFROM spur_rust_snapshot.main.inventory i WHERE i.suffix = '.rs';\n\nCREATE OR REPLACE TEMP TABLE spur_rust_name_counts AS\nSELECT n.logical_path, n.label, count(*) AS definitions\nFROM spur_rust_snapshot.main.nodes n JOIN spur_rust_package_paths p ON p.path = n.logical_path\nWHERE n.kind IN ('function', 'method') GROUP BY ALL;\n\nCREATE OR REPLACE TEMP TABLE spur_rust_local_calls AS\nSELECT e.logical_path, e.edge_id, p.package,\n       e.source_node_id, e.target_node_id, e.target_label, e.scope_text,\n       left(e.receiver_text, 120) AS receiver_preview,\n       e.receiver_text IS NOT NULL AS has_receiver,\n       e.confidence, e.confidence_score, e.bind_method, e.edge_kind,\n       src.label AS caller, src.kind AS caller_kind, src.stable_key AS caller_key,\n       dst.node_id IS NOT NULL AS target_exists,\n       dst.label AS target_name, dst.kind AS target_kind, dst.stable_key AS target_key,\n       dst.source_span_id AS target_span_id, src.source_span_id AS caller_span_id,\n       e.target_node_id IS NOT NULL AS has_local_target,\n       coalesce(names.definitions, 0) AS same_file_name_definitions,\n       CASE WHEN e.logical_path LIKE 'vendor/%' THEN 'vendor'\n            WHEN e.logical_path LIKE '%/tests/%' THEN 'tests_directory'\n            WHEN e.logical_path LIKE '%/examples/%' THEN 'examples_directory'\n            WHEN e.logical_path LIKE '%/benches/%' THEN 'benches_directory'\n            ELSE 'other_source_paths' END AS path_category\nFROM spur_rust_snapshot.main.edges e\nJOIN spur_rust_package_paths p ON p.path = e.logical_path\nLEFT JOIN spur_rust_snapshot.main.nodes src ON src.logical_path = e.logical_path AND src.node_id = e.source_node_id\nLEFT JOIN spur_rust_snapshot.main.nodes dst ON dst.logical_path = e.logical_path AND dst.node_id = e.target_node_id\nLEFT JOIN spur_rust_name_counts names ON names.logical_path = e.logical_path\n AND names.label = regexp_extract(e.target_label, '([^:]+)$', 1)\nWHERE e.relation = 'calls';\n\nSELECT count(*) AS recorded_calls,\n       count(DISTINCT (logical_path, edge_id)) AS unique_call_keys,\n       count(*) FILTER (WHERE has_local_target) AS local_targets,\n       count(*) FILTER (WHERE NOT has_local_target) AS unresolved,\n       round(100.0 * count(*) FILTER (WHERE has_local_target) / count(*), 4) AS local_target_pct,\n       count(*) FILTER (WHERE has_local_target AND NOT target_exists) AS missing_target_nodes,\n       count(*) FILTER (WHERE caller IS NULL) AS missing_caller_nodes\nFROM spur_rust_local_calls;",
+      "exec_count": 6,
+      "status": "success",
+      "outputs": [
+        "┌────────────────┬──────────────────┬───────────────┬────────────┬──────────────────┬──────────────────────┬──────────────────────┐\n│ recorded_calls │ unique_call_keys │ local_targets │ unresolved │ local_target_pct │ missing_target_nodes │ missing_caller_nodes │\n│     int64      │      int64       │     int64     │   int64    │      double      │        int64         │        int64         │\n├────────────────┼──────────────────┼───────────────┼────────────┼──────────────────┼──────────────────────┼──────────────────────┤\n│         259828 │           259828 │         32414 │     227414 │          12.4752 │                    0 │                    0 │\n└────────────────┴──────────────────┴───────────────┴────────────┴──────────────────┴──────────────────────┴──────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2079,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "925ab28b-841e-4994-9d76-9c7d9c778f9e",
+          "source_version": 2079,
+          "execution_identity": "5b3fe7922705378961349b621f94ae7c22e9f8ec60f2d12a1fafe0e456d907f5",
+          "output_hash": "a7c645131b86e60663024ebabf84291e03162af906ec03dcb797a6ed1db2287a",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "926f5db5-7606-4ef8-be93-cc0cf1d0ca6f",
+      "kind": "code",
+      "version": 2083,
+      "cell_etag": "cell:sha256:28118127e7e8f20c1110fe64ee30740b803bb3447b704712b149d4085726dcb0",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_package_rates AS\nSELECT coalesce(package, '<unknown package>') AS package,\n       count(*) AS recorded_calls,\n       count(*) FILTER (WHERE has_local_target) AS local_targets,\n       count(*) FILTER (WHERE NOT has_local_target) AS unresolved,\n       round(100.0 * count(*) FILTER (WHERE has_local_target) / count(*), 4) AS local_target_pct\nFROM spur_rust_local_calls GROUP BY package;\nCOPY (SELECT * FROM spur_rust_package_rates ORDER BY recorded_calls DESC, package)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/packages.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_package_rates ORDER BY recorded_calls DESC, package;",
+      "exec_count": 7,
+      "status": "success",
+      "outputs": [
+        "┌─────────────────────────────┬────────────────┬───────────────┬────────────┬──────────────────┐\n│           package           │ recorded_calls │ local_targets │ unresolved │ local_target_pct │\n│           varchar           │     int64      │     int64     │   int64    │      double      │\n├─────────────────────────────┼────────────────┼───────────────┼────────────┼──────────────────┤\n│ spur-core                   │          65492 │          7442 │      58050 │          11.3632 │\n│ spur-graph                  │          56292 │          7723 │      48569 │          13.7195 │\n│ spur-tui                    │          42979 │          5650 │      37329 │           13.146 │\n│ spur-context-service        │          17904 │          3054 │      14850 │          17.0576 │\n│ spur-acp                    │           9834 │          1150 │       8684 │          11.6941 │\n│ spur-solver                 │           9120 │          1382 │       7738 │          15.1535 │\n│ spur-pm                     │           7656 │           848 │       6808 │          11.0763 │\n│ spur-cli                    │           6909 │           870 │       6039 │          12.5923 │\n│ spur-analyst                │           6789 │           623 │       6166 │           9.1766 │\n│ spur-code-eval              │           5209 │           761 │       4448 │          14.6093 │\n│       ·                     │             ·  │             · │         ·  │              ·   │\n│       ·                     │             ·  │             · │         ·  │              ·   │\n│       ·                     │             ·  │             · │         ·  │              ·   │\n│ spur-blob-store             │            574 │            74 │        500 │           12.892 │\n│ spur-interactive            │            352 │            25 │        327 │           7.1023 │\n│ spur-license-admin          │            320 │            12 │        308 │             3.75 │\n│ <unknown package>           │            240 │            28 │        212 │          11.6667 │\n│ duckdb-vtab-probe           │            173 │            32 │        141 │          18.4971 │\n│ spur-context-source         │            172 │            51 │        121 │          29.6512 │\n│ spur-probe-duckdb-extension │             30 │             0 │         30 │              0.0 │\n│ tree-sitter-mermaid         │             19 │             0 │         19 │              0.0 │\n│ code_graph_sample           │              4 │             4 │          0 │            100.0 │\n│ spur-test-madsim            │              3 │             0 │          3 │              0.0 │\n└─────────────────────────────┴────────────────┴───────────────┴────────────┴──────────────────┘\n  39 rows (20 shown)                                                                 5 columns\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2083,
+          "last_edited_by": "brain",
+          "code_type": "sql",
+          "perspective": {
+            "schema_version": 1,
+            "default_tab": "explore",
+            "config": {
+              "plugin": "Y Bar",
+              "columns": [
+                "local_target_pct"
+              ],
+              "group_by": [
+                "package"
+              ],
+              "aggregates": {
+                "local_target_pct": "sum"
+              },
+              "filter": [
+                [
+                  "recorded_calls",
+                  ">=",
+                  100
+                ]
+              ],
+              "sort": [
+                [
+                  "local_target_pct",
+                  "desc"
+                ]
+              ],
+              "settings": false
+            }
+          }
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "077c102c-6210-4255-b87e-2a466c75dde8",
+          "source_version": 2083,
+          "execution_identity": "5ac2a3b18118a63933c126112eff8ce0aff7f7a580be7aae9513332b7d1003ee",
+          "output_hash": "2f6482208c1230a596b61ffb00860dc4b0474e965b2bf409304afa8a10279faa",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "a621ff2d-9444-40d6-a82d-9513cb46a47f",
+      "kind": "code",
+      "version": 2087,
+      "cell_etag": "cell:sha256:de2e6395043c767ec2c2448bc458611bd56609e02133ab40517673524b3c8d14",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_binding_evidence AS\nSELECT CASE WHEN has_local_target THEN 'local_target' ELSE 'unresolved' END AS population,\n       coalesce(confidence, '<null>') AS confidence,\n       coalesce(bind_method, '<null>') AS bind_method,\n       coalesce(edge_kind, '<null>') AS edge_kind,\n       count(*) AS calls, min(confidence_score) AS min_score, max(confidence_score) AS max_score\nFROM spur_rust_local_calls GROUP BY ALL;\nCOPY (SELECT * FROM spur_rust_binding_evidence ORDER BY population, calls DESC)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/binding-evidence.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_binding_evidence ORDER BY population, calls DESC;",
+      "exec_count": 8,
+      "status": "success",
+      "outputs": [
+        "┌──────────────┬──────────────┬────────────────────────┬───────────┬────────┬───────────┬───────────┐\n│  population  │  confidence  │      bind_method       │ edge_kind │ calls  │ min_score │ max_score │\n│   varchar    │   varchar    │        varchar         │  varchar  │ int64  │   float   │   float   │\n├──────────────┼──────────────┼────────────────────────┼───────────┼────────┼───────────┼───────────┤\n│ local_target │ syntax_exact │ singleton              │ <null>    │  23593 │       1.0 │       1.0 │\n│ local_target │ heuristic    │ macro_body_singleton   │ <null>    │   4977 │       0.8 │       0.8 │\n│ local_target │ syntax_exact │ scope_match            │ <null>    │   3421 │       1.0 │       1.0 │\n│ local_target │ syntax_exact │ fqn                    │ <null>    │    276 │       1.0 │       1.0 │\n│ local_target │ syntax_exact │ same_file_duplicate    │ <null>    │     64 │       1.0 │       1.0 │\n│ local_target │ heuristic    │ <null>                 │ calls_dyn │     56 │       0.8 │       0.8 │\n│ local_target │ syntax_exact │ method_crate_singleton │ <null>    │     27 │       1.0 │       1.0 │\n│ unresolved   │ syntax_exact │ <null>                 │ <null>    │ 172358 │       1.0 │       1.0 │\n│ unresolved   │ heuristic    │ <null>                 │ <null>    │  54768 │       0.8 │       0.8 │\n│ unresolved   │ heuristic    │ <null>                 │ calls_dyn │    288 │       0.8 │       0.8 │\n└──────────────┴──────────────┴────────────────────────┴───────────┴────────┴───────────┴───────────┘\n  10 rows                                                                                 7 columns\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2087,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "e87a243a-bbab-4ffd-9127-f112898c74ba",
+          "source_version": 2087,
+          "execution_identity": "01687e786d7ed99d07cfa864edb64df6526aed326af73df1d5ba40b0a400b0fc",
+          "output_hash": "1d8eba01682a3cd3e46268746f4696e004474f2f640045b57ee5513e02710e24",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "742b7b13-0e36-4fe9-b310-e37ce0fe74a3",
+      "kind": "code",
+      "version": 2091,
+      "cell_etag": "cell:sha256:9117b94081e93f7ebd0a8d5c7dfc90acef4ae30152611c31c632d69112c18cdb",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_target_diagnostics AS\nSELECT count(*) AS local_target_calls,\n       count(*) FILTER (WHERE NOT target_exists) AS missing_target_nodes,\n       count(*) FILTER (WHERE target_kind NOT IN ('function', 'method')) AS targets_of_other_kinds,\n       count(*) FILTER (WHERE target_name != regexp_extract(target_label, '([^:]+)$', 1)) AS target_leaf_name_differs,\n       count(*) FILTER (WHERE source_node_id = target_node_id) AS self_edges,\n       count(*) FILTER (WHERE same_file_name_definitions > 1) AS multiple_same_name_definitions,\n       count(*) FILTER (WHERE same_file_name_definitions = 1) AS one_same_name_definition,\n       count(*) FILTER (WHERE same_file_name_definitions = 0) AS zero_function_method_name_definitions\nFROM spur_rust_local_calls WHERE has_local_target;\nCOPY (SELECT * FROM spur_rust_target_diagnostics)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/target-diagnostics.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_target_diagnostics;",
+      "exec_count": 9,
+      "status": "success",
+      "outputs": [
+        "┌────────────────────┬──────────────────────┬────────────────────────┬──────────────────────────┬────────────┬────────────────────────────────┬──────────────────────────┬───────────────────────────────────────┐\n│ local_target_calls │ missing_target_nodes │ targets_of_other_kinds │ target_leaf_name_differs │ self_edges │ multiple_same_name_definitions │ one_same_name_definition │ zero_function_method_name_definitions │\n│       int64        │        int64         │         int64          │          int64           │   int64    │             int64              │          int64           │                 int64                 │\n├────────────────────┼──────────────────────┼────────────────────────┼──────────────────────────┼────────────┼────────────────────────────────┼──────────────────────────┼───────────────────────────────────────┤\n│              32414 │                    0 │                      0 │                        0 │         89 │                           1149 │                    31265 │                                     0 │\n└────────────────────┴──────────────────────┴────────────────────────┴──────────────────────────┴────────────┴────────────────────────────────┴──────────────────────────┴───────────────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2091,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "8171bbb3-3bbd-4363-b58c-c9f49b573e26",
+          "source_version": 2091,
+          "execution_identity": "79ffab2b50412f744192e89c1023aeb72dccb1b5ce3d41f973e6dd9bdbcb3d58",
+          "output_hash": "045ba316a3a36e54ac492dd57631086c9d0322dde30dab69e649906a4f68771a",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "80e6594e-9540-4f90-a396-ecc9cf9268da",
+      "kind": "code",
+      "version": 2095,
+      "cell_etag": "cell:sha256:b51a71fdbd37cb430733f6f20e1f69f105547f91bc673118299b2ebdf5c6974d",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_top_local_targets AS\nSELECT logical_path, target_node_id, target_name, target_kind, count(*) AS recorded_calls,\n       count(DISTINCT source_node_id) AS distinct_caller_nodes,\n       string_agg(DISTINCT coalesce(bind_method, '<null>'), ', ' ORDER BY coalesce(bind_method, '<null>')) AS binding_methods\nFROM spur_rust_local_calls WHERE has_local_target\nGROUP BY ALL ORDER BY recorded_calls DESC, logical_path, target_node_id LIMIT 15;\nCOPY (SELECT * FROM spur_rust_top_local_targets)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/top-local-targets.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_top_local_targets;",
+      "exec_count": 10,
+      "status": "success",
+      "outputs": [
+        "┌──────────────────────────────────────────────────────┬────────────────┬────────────────────────┬─────────────┬────────────────┬───────────────────────┬───────────────────────────────────┐\n│                     logical_path                     │ target_node_id │      target_name       │ target_kind │ recorded_calls │ distinct_caller_nodes │          binding_methods          │\n│                       varchar                        │     uint64     │        varchar         │   varchar   │     int64      │         int64         │              varchar              │\n├──────────────────────────────────────────────────────┼────────────────┼────────────────────────┼─────────────┼────────────────┼───────────────────────┼───────────────────────────────────┤\n│ crates/spur-tui/src/views/issue_browser.rs           │             83 │ new                    │ method      │             67 │                    46 │ macro_body_singleton, scope_match │\n│ crates/spur-tui/src/views/plan_inspector.rs          │             73 │ new_for_plan           │ method      │             54 │                    54 │ scope_match                       │\n│ crates/spur-tui/src/components/input_bar.rs          │             98 │ new                    │ method      │             52 │                    52 │ macro_body_singleton, scope_match │\n│ crates/spur-tui/src/views/plan_inspector.rs          │            172 │ view_context_for_tests │ function    │             50 │                    50 │ singleton                         │\n│ crates/spur-core/tests/code_graph_e2e.rs             │             24 │ cwd_lock               │ function    │             49 │                    49 │ singleton                         │\n│ crates/spur-core/tests/code_graph_e2e.rs             │             32 │ enter_dir              │ function    │             49 │                    49 │ singleton                         │\n│ crates/spur-tui/tests/session_picker_interactions.rs │              4 │ synopsis               │ function    │             48 │                    48 │ singleton                         │\n│ crates/spur-core/tests/code_graph_e2e.rs             │             34 │ test_server            │ function    │             47 │                    47 │ singleton                         │\n│ crates/spur-core/tests/code_graph_e2e.rs             │             66 │ call_tool              │ function    │             47 │                    47 │ macro_body_singleton, singleton   │\n│ crates/spur-core/src/session_synopsis/projection.rs  │             22 │ new                    │ method      │             46 │                    46 │ scope_match                       │\n│ crates/spur-core/tests/code_graph_e2e.rs             │             76 │ tool_body              │ function    │             44 │                    44 │ singleton                         │\n│ crates/spur-core/tests/reconciler_tick.rs            │              5 │ run_br                 │ function    │             43 │                    43 │ singleton                         │\n│ crates/spur-tui/tests/session_picker_interactions.rs │              2 │ test_ctx               │ function    │             43 │                    43 │ macro_body_singleton, singleton   │\n│ crates/spur-context-service/tests/mcp_test.rs        │            146 │ new                    │ method      │             42 │                    42 │ scope_match                       │\n│ crates/spur-tui/tests/session_picker_interactions.rs │              6 │ session                │ function    │             42 │                    42 │ macro_body_singleton, singleton   │\n└──────────────────────────────────────────────────────┴────────────────┴────────────────────────┴─────────────┴────────────────┴───────────────────────┴───────────────────────────────────┘\n  15 rows                                                                                                                                                                         7 columns\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2095,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "03027c72-9acc-405e-a3fa-aad39b6210bd",
+          "source_version": 2095,
+          "execution_identity": "65691e706bb03265a551818784a2e59791fd51fcc367f1bf6f3e739b29ee77ef",
+          "output_hash": "2c142d803a852520a341f75eebe8153b1cd4dad94d0ef94106a9fcc95c930554",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "b0621ff3-a496-469a-803a-430ba7dbf0a7",
+      "kind": "code",
+      "version": 2099,
+      "cell_etag": "cell:sha256:cf6e6c9265283afe406456572621dab3131567ec0a548ae26c4b2c465b1e50ee",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_path_rates AS\nSELECT path_category, count(*) AS recorded_calls,\n       count(*) FILTER (WHERE has_local_target) AS local_targets,\n       count(*) FILTER (WHERE NOT has_local_target) AS unresolved,\n       round(100.0 * count(*) FILTER (WHERE has_local_target) / count(*), 4) AS local_target_pct\nFROM spur_rust_local_calls GROUP BY path_category;\nCOPY (SELECT * FROM spur_rust_path_rates ORDER BY recorded_calls DESC)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/path-categories.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_path_rates ORDER BY recorded_calls DESC;",
+      "exec_count": 11,
+      "status": "success",
+      "outputs": [
+        "┌────────────────────┬────────────────┬───────────────┬────────────┬──────────────────┐\n│   path_category    │ recorded_calls │ local_targets │ unresolved │ local_target_pct │\n│      varchar       │     int64      │     int64     │   int64    │      double      │\n├────────────────────┼────────────────┼───────────────┼────────────┼──────────────────┤\n│ other_source_paths │         164977 │         21636 │     143341 │          13.1146 │\n│ tests_directory    │          86843 │         10223 │      76620 │          11.7718 │\n│ vendor             │           4265 │           170 │       4095 │           3.9859 │\n│ benches_directory  │           2042 │           232 │       1810 │          11.3614 │\n│ examples_directory │           1701 │           153 │       1548 │           8.9947 │\n└────────────────────┴────────────────┴───────────────┴────────────┴──────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2099,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "0f733119-93b1-4e63-b638-8f9ec86cf780",
+          "source_version": 2099,
+          "execution_identity": "471807ce9fe20c69bb809dac42f84d8d2e875c7c7a1ef56023aea91598c0b7d8",
+          "output_hash": "339fc74b7a2502ef6900289444c9096c1409566926edcd0e8c0fcd5a074fd0e4",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "bf0e03c8-a719-4827-abd8-595f882e4616",
+      "kind": "code",
+      "version": 2103,
+      "cell_etag": "cell:sha256:6cdbd629d11715c9e281adde088ff873eb0b6d2263513f435c587d254f09139a",
+      "source": "CREATE OR REPLACE TEMP TABLE spur_rust_fresh_facts AS\nSELECT s.logical_path, spur_graph_file_facts(s.logical_path, s.source) AS fresh_value\nFROM spur_rust_snapshot.main.sources s\nWHERE s.logical_path IN (\n 'crates/spur-graph-duckdb/src/lib.rs',\n 'crates/spur-graph-duckdb/src/file_facts.rs',\n 'crates/spur-graph/src/extract/tree_sitter.rs',\n 'crates/spur-acp/src/agent_model_catalog.rs',\n 'crates/spur-graph/src/schema.rs',\n 'crates/spur-graph/src/mcp/mod.rs'\n);\nCREATE OR REPLACE TEMP VIEW spur_rust_fresh_comparison AS\nSELECT f.logical_path,\n       len(f.fresh_value.nodes) AS nodes,\n       len(f.fresh_value.edges) AS edges,\n       len(f.fresh_value.spans) AS spans,\n       len(f.fresh_value.macro_invocations) AS macro_invocations,\n       len(f.fresh_value.macro_scopes) AS macro_scopes,\n       f.fresh_value IS NOT DISTINCT FROM stored.value AS all_five_collections_match\nFROM spur_rust_fresh_facts f\nJOIN spur_rust_snapshot.main.facts stored USING (logical_path);\nCOPY (SELECT * FROM spur_rust_fresh_comparison ORDER BY logical_path)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/fresh-extraction.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_fresh_comparison ORDER BY logical_path;",
+      "exec_count": 12,
+      "status": "success",
+      "outputs": [
+        "┌──────────────────────────────────────────────┬───────┬───────┬───────┬───────────────────┬──────────────┬────────────────────────────┐\n│                 logical_path                 │ nodes │ edges │ spans │ macro_invocations │ macro_scopes │ all_five_collections_match │\n│                   varchar                    │ int64 │ int64 │ int64 │       int64       │    int64     │          boolean           │\n├──────────────────────────────────────────────┼───────┼───────┼───────┼───────────────────┼──────────────┼────────────────────────────┤\n│ crates/spur-acp/src/agent_model_catalog.rs   │    65 │   262 │    65 │                11 │           10 │ true                       │\n│ crates/spur-graph-duckdb/src/file_facts.rs   │   136 │   449 │   136 │                 9 │            4 │ true                       │\n│ crates/spur-graph-duckdb/src/lib.rs          │    41 │   267 │    41 │                 8 │            9 │ true                       │\n│ crates/spur-graph/src/extract/tree_sitter.rs │   359 │  3169 │   359 │               296 │          128 │ true                       │\n│ crates/spur-graph/src/mcp/mod.rs             │   911 │  5518 │   911 │               646 │          232 │ true                       │\n│ crates/spur-graph/src/schema.rs              │   343 │   876 │   343 │                57 │           30 │ true                       │\n└──────────────────────────────────────────────┴───────┴───────┴───────┴───────────────────┴──────────────┴────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2103,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "4fca49ec-05b2-43ed-94cd-d22ee9470847",
+          "source_version": 2103,
+          "execution_identity": "43536a654db6a23c525f46ab1873da6fb658c2ebd950695d25afb4f2b3af626d",
+          "output_hash": "a3845300b8951f3a5c6e0d2d763bb95705f3432d8283f25cf32e65d2ab088f61",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "50aabed2-ef79-44d4-a316-d829bc3756cd",
+      "kind": "code",
+      "version": 2107,
+      "cell_etag": "cell:sha256:c393cb47eaec9719b167c0d7dc6be68c0ec2f5c889e7ca1363dd26dfb5113dfb",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_binding_shares AS\nSELECT coalesce(bind_method, '<null>') AS bind_method, confidence, count(*) AS local_calls,\n       round(100.0 * count(*) / sum(count(*)) OVER (), 4) AS share_of_local_targets_pct,\n       round(100.0 * count(*) / (SELECT count(*) FROM spur_rust_local_calls), 4) AS share_of_all_calls_pct\nFROM spur_rust_local_calls WHERE has_local_target GROUP BY ALL;\nCOPY (SELECT * FROM spur_rust_binding_shares ORDER BY local_calls DESC)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/binding-shares.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_binding_shares ORDER BY local_calls DESC;",
+      "exec_count": 13,
+      "status": "success",
+      "outputs": [
+        "┌────────────────────────┬──────────────┬─────────────┬────────────────────────────┬────────────────────────┐\n│      bind_method       │  confidence  │ local_calls │ share_of_local_targets_pct │ share_of_all_calls_pct │\n│        varchar         │   varchar    │    int64    │           double           │         double         │\n├────────────────────────┼──────────────┼─────────────┼────────────────────────────┼────────────────────────┤\n│ singleton              │ syntax_exact │       23593 │                    72.7865 │                 9.0802 │\n│ macro_body_singleton   │ heuristic    │        4977 │                    15.3545 │                 1.9155 │\n│ scope_match            │ syntax_exact │        3421 │                    10.5541 │                 1.3166 │\n│ fqn                    │ syntax_exact │         276 │                     0.8515 │                 0.1062 │\n│ same_file_duplicate    │ syntax_exact │          64 │                     0.1974 │                 0.0246 │\n│ <null>                 │ heuristic    │          56 │                     0.1728 │                 0.0216 │\n│ method_crate_singleton │ syntax_exact │          27 │                     0.0833 │                 0.0104 │\n└────────────────────────┴──────────────┴─────────────┴────────────────────────────┴────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2107,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "7e0abc72-f4b5-4360-a421-4078e2e8e91d",
+          "source_version": 2107,
+          "execution_identity": "19904c817de25e06855094dd2064b5b994fb7d79f5e0114c16f9159e61ac29da",
+          "output_hash": "994bf4636aeaaf0925e39528194fd516442ee37c8161d9c3e65c00768c522604",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "6688dadc-1e9e-4829-8b0b-6e14fe02b01f",
+      "kind": "code",
+      "version": 2111,
+      "cell_etag": "cell:sha256:4c672c533d76d813eb293b79ddcfe64656803b57b33db741d366c05f38ca4851",
+      "source": "CREATE OR REPLACE TEMP TABLE spur_rust_sample_keys AS\nWITH ranked AS (\n SELECT logical_path, edge_id, coalesce(bind_method, '<null>') AS method,\n        row_number() OVER (PARTITION BY coalesce(bind_method, '<null>') ORDER BY logical_path, edge_id) AS rn\n FROM spur_rust_local_calls WHERE has_local_target\n)\nSELECT logical_path, edge_id, 'method:' || method AS sample_reason FROM ranked WHERE rn = 1\nUNION ALL\nSELECT logical_path, edge_id, 'macro_body_new' FROM (\n SELECT logical_path, edge_id FROM spur_rust_local_calls\n WHERE has_local_target AND bind_method = 'macro_body_singleton' AND target_name = 'new'\n ORDER BY logical_path, edge_id LIMIT 1\n)\nUNION ALL\nSELECT logical_path, edge_id, 'self_edge' FROM (\n SELECT logical_path, edge_id FROM spur_rust_local_calls\n WHERE has_local_target AND source_node_id = target_node_id\n ORDER BY logical_path, edge_id LIMIT 1\n);\nCREATE OR REPLACE TEMP TABLE spur_rust_source_samples AS\nSELECT k.sample_reason, c.logical_path, c.edge_id, c.caller, c.target_name,\n       c.bind_method, c.confidence, c.scope_text, c.receiver_preview,\n       c.same_file_name_definitions, ps.start_line AS caller_start_line,\n       pt.start_line AS target_start_line, s.file_oid,\n       substring(hex(s.source_bytes), 2 * CAST(ps.start_byte AS BIGINT) + 1,\n                 2 * CAST(ps.end_byte - ps.start_byte AS BIGINT)) AS caller_source_hex,\n       substring(hex(s.source_bytes), 2 * CAST(pt.start_byte AS BIGINT) + 1,\n                 2 * CAST(pt.end_byte - pt.start_byte AS BIGINT)) AS target_source_hex\nFROM spur_rust_sample_keys k\nJOIN spur_rust_local_calls c ON c.logical_path = k.logical_path AND c.edge_id = k.edge_id\nJOIN spur_rust_snapshot.main.spans ps ON ps.logical_path = c.logical_path AND ps.span_id = c.caller_span_id\nJOIN spur_rust_snapshot.main.spans pt ON pt.logical_path = c.logical_path AND pt.span_id = c.target_span_id\nJOIN spur_rust_snapshot.main.sources s ON s.logical_path = c.logical_path;\nCOPY (SELECT * FROM spur_rust_source_samples ORDER BY sample_reason, logical_path, edge_id)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/resolved-samples.json' (FORMAT JSON, ARRAY true);\nSELECT sample_reason, logical_path, caller, target_name, bind_method,\n       caller_start_line, target_start_line, same_file_name_definitions\nFROM spur_rust_source_samples ORDER BY sample_reason;",
+      "exec_count": 14,
+      "status": "success",
+      "outputs": [
+        "┌───────────────────────────────┬─────────────────────────────────────────────────────┬──────────────────────────────────────────────────────────────────────────────┬────────────────────────────┬────────────────────────┬───────────────────┬───────────────────┬────────────────────────────┐\n│         sample_reason         │                    logical_path                     │                                    caller                                    │        target_name         │      bind_method       │ caller_start_line │ target_start_line │ same_file_name_definitions │\n│            varchar            │                       varchar                       │                                   varchar                                    │          varchar           │        varchar         │      uint32       │      uint32       │           int64            │\n├───────────────────────────────┼─────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────┼────────────────────────────┼────────────────────────┼───────────────────┼───────────────────┼────────────────────────────┤\n│ macro_body_new                │ crates/spur-acp/src/capability_evidence.rs          │ rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes │ new                        │ macro_body_singleton   │               561 │               112 │                          1 │\n│ method:<null>                 │ crates/spur-cli/src/cmd/upgrade.rs                  │ run_with_io                                                                  │ run                        │ NULL                   │                49 │                16 │                          4 │\n│ method:fqn                    │ crates/spur-acp/src/connection/native.rs            │ new_session_from_raw_value_recovers_models_plane                             │ new_session_from_raw_value │ fqn                    │              6551 │              1158 │                          1 │\n│ method:macro_body_singleton   │ crates/spur-acp/examples/compat_spike.rs            │ format_initialize_report                                                     │ yes_no                     │ macro_body_singleton   │               130 │               238 │                          1 │\n│ method:method_crate_singleton │ crates/spur-acp/src/connection/native.rs            │ closing_root_retires_all_subagent_descendants                                │ drop                       │ method_crate_singleton │              5570 │              2213 │                          1 │\n│ method:same_file_duplicate    │ crates/spur-analyst/src/embedding/sidecar_client.rs │ sidecar_round_trip                                                           │ sidecar_round_trip_inner   │ same_file_duplicate    │                69 │                76 │                          2 │\n│ method:scope_match            │ crates/spur-acp/examples/compat_spike.rs            │ parse                                                                        │ parse_from                 │ scope_match            │                36 │                40 │                          1 │\n│ method:singleton              │ crates/spur-acp/examples/compat_spike.rs            │ parse_from                                                                   │ next_arg                   │ singleton              │                40 │               110 │                          1 │\n│ self_edge                     │ crates/spur-acp/src/config/layered.rs               │ merge_at                                                                     │ merge_at                   │ scope_match            │                21 │                21 │                          1 │\n└───────────────────────────────┴─────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────────────────────┴────────────────────────────┴────────────────────────┴───────────────────┴───────────────────┴────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2111,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "513e60f6-b1a7-4e9e-bc99-2d2d13b9fbcd",
+          "source_version": 2111,
+          "execution_identity": "ef390b2a43ba7d9d85b881904e37712be64ae8f84b7e2d193b0ed5cbe3684add",
+          "output_hash": "b2e05fbf1f2209bd3066a9e68bae441181a6549b4d8bfe479280d3f406ab68c4",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "67b1d3f2-2877-43dd-8c9d-6611e93cba37",
+      "kind": "code",
+      "version": 2115,
+      "cell_etag": "cell:sha256:30ccc31481406779e050790867213ab0e677f125cd9b43dc2a363edc95dd53c9",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_name_review AS\nSELECT bind_method, target_name, count(*) AS local_target_calls\nFROM spur_rust_local_calls\nWHERE has_local_target AND target_name IN ('new', 'drop')\nGROUP BY ALL;\nCOPY (SELECT * FROM spur_rust_name_review ORDER BY target_name, local_target_calls DESC)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/name-review-candidates.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_name_review ORDER BY target_name, local_target_calls DESC;",
+      "exec_count": 15,
+      "status": "success",
+      "outputs": [
+        "┌────────────────────────┬─────────────┬────────────────────┐\n│      bind_method       │ target_name │ local_target_calls │\n│        varchar         │   varchar   │       int64        │\n├────────────────────────┼─────────────┼────────────────────┤\n│ method_crate_singleton │ drop        │                 26 │\n│ macro_body_singleton   │ drop        │                  1 │\n│ scope_match            │ new         │               1577 │\n│ macro_body_singleton   │ new         │                120 │\n└────────────────────────┴─────────────┴────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2115,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "fbaf121b-9126-4159-82e9-7b8d6d21fbbb",
+          "source_version": 2115,
+          "execution_identity": "6f80d16123478522c4334a03ff6627d0072f415047e223292eabca83cb0ca567",
+          "output_hash": "472d76452de2e47a6f3872729d36d8e77cd6df983ab42ada32966c64b7f403bb",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "61fa1864-44cb-4e86-9571-ff5ce03c95d3",
+      "kind": "code",
+      "version": 2119,
+      "cell_etag": "cell:sha256:9eddf4aa4dedb3f3a94d039d853cfd81d118bfa6a41a6aa404a18bd437a78ea9",
+      "source": "CREATE OR REPLACE TEMP TABLE spur_rust_collision_facts AS\nSELECT spur_graph_file_facts('name-collision-control.rs', content) AS value\nFROM read_text('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/name-collision-control.rs');\nCREATE OR REPLACE TEMP VIEW spur_rust_collision_calls AS\nWITH nodes AS (SELECT unnest(value.nodes) AS n FROM spur_rust_collision_facts),\n     edges AS (SELECT unnest(value.edges) AS e FROM spur_rust_collision_facts)\nSELECT src.n.label AS caller, e.e.target_label, e.e.target_node_id,\n       dst.n.label AS stored_target_name, e.e.bind_method, e.e.confidence,\n       e.e.scope_text, e.e.receiver_text\nFROM edges e\nLEFT JOIN nodes src ON src.n.node_id = e.e.source_node_id\nLEFT JOIN nodes dst ON dst.n.node_id = e.e.target_node_id\nWHERE e.e.relation = 'calls' AND src.n.label IN ('observed_macro', 'observed_drop', 'observed_helper');\nCOPY (SELECT * FROM spur_rust_collision_calls ORDER BY caller, target_label)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/name-collision-extraction.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_collision_calls ORDER BY caller, target_label;",
+      "exec_count": 16,
+      "status": "success",
+      "outputs": [
+        "┌─────────────────┬──────────────┬────────────────┬────────────────────┬──────────────────────┬──────────────┬──────────────────┬───────────────┐\n│     caller      │ target_label │ target_node_id │ stored_target_name │     bind_method      │  confidence  │    scope_text    │ receiver_text │\n│     varchar     │   varchar    │     uint64     │      varchar       │       varchar        │   varchar    │     varchar      │    varchar    │\n├─────────────────┼──────────────┼────────────────┼────────────────────┼──────────────────────┼──────────────┼──────────────────┼───────────────┤\n│ observed_drop   │ drop         │           NULL │ NULL               │ NULL                 │ syntax_exact │ NULL             │ NULL          │\n│ observed_drop   │ lock         │           NULL │ NULL               │ NULL                 │ syntax_exact │ NULL             │ lock          │\n│ observed_drop   │ new          │           NULL │ NULL               │ NULL                 │ heuristic    │ std::sync::Mutex │ NULL          │\n│ observed_drop   │ unwrap       │           NULL │ NULL               │ NULL                 │ syntax_exact │ NULL             │ lock.lock()   │\n│ observed_helper │ helper       │             10 │ helper             │ singleton            │ syntax_exact │ NULL             │ NULL          │\n│ observed_macro  │ default      │           NULL │ NULL               │ NULL                 │ heuristic    │ Vec              │ NULL          │\n│ observed_macro  │ new          │              4 │ new                │ macro_body_singleton │ heuristic    │ NULL             │ NULL          │\n└─────────────────┴──────────────┴────────────────┴────────────────────┴──────────────────────┴──────────────┴──────────────────┴───────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2119,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "7dd64a7b-d333-4714-a594-5e1d8652427d",
+          "source_version": 2119,
+          "execution_identity": "a99ac5850190027336a21e11c6d2a4f6e72383d2f9cde87a1e012fe6fce120ee",
+          "output_hash": "8927cb66beed0204cf32540ff17119f2817c25e3e0f3e71139244c963f86dcd3",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "d495bc13-617d-4e56-b554-4bd684b5ac21",
+      "kind": "code",
+      "version": 2123,
+      "cell_etag": "cell:sha256:50508143b55ac6cb223a6bd7b9c1d4d4eaac02e013e67f62212f0ff957010e25",
+      "source": "{\n let art = std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets\");\n let source = art.join(\"name-collision-control.rs\");\n let mir_path = art.join(\"name-collision-control.mir\");\n let binary = art.join(\"name-collision-control\");\n let mut receipts = Vec::new();\n let version = std::process::Command::new(\"rustc\").env(\"RUSTUP_TOOLCHAIN\", \"1.94.1\").args([\"--version\", \"--verbose\"]).output()?;\n std::fs::write(art.join(\"compiler-version.txt\"), &version.stdout)?;\n assert!(version.status.success() && String::from_utf8_lossy(&version.stdout).starts_with(\"rustc 1.94.1\"));\n for (label, args) in [\n  (\"mir\", vec![\"--edition=2021\", \"--crate-name\", \"name_collision_control\", \"--emit=mir\", source.to_str().unwrap(), \"-o\", mir_path.to_str().unwrap()]),\n  (\"binary\", vec![\"--edition=2021\", \"--crate-name\", \"name_collision_control\", source.to_str().unwrap(), \"-o\", binary.to_str().unwrap()])\n ] {\n  let r = std::process::Command::new(\"rustc\").env(\"RUSTUP_TOOLCHAIN\", \"1.94.1\").args(&args).output()?;\n  std::fs::write(art.join(format!(\"compiler-{label}.stderr.txt\")), &r.stderr)?;\n  receipts.push(serde_json::json!({\"program\":\"rustc\",\"environment\":{\"RUSTUP_TOOLCHAIN\":\"1.94.1\"},\"args\":args,\"exit_code\":r.status.code(),\"stdout\":String::from_utf8_lossy(&r.stdout),\"stderr\":String::from_utf8_lossy(&r.stderr)}));\n  assert!(r.status.success(), \"Compiler control failed; inspect saved stderr\");\n }\n let run = std::process::Command::new(&binary).output()?;\n std::fs::write(art.join(\"compiler-control.stdout.txt\"), &run.stdout)?;\n assert!(run.status.success() && run.stdout == b\"binding-control-ok\\n\");\n let mir = std::fs::read_to_string(&mir_path)?;\n let macro_fn = mir.split(\"fn observed_macro(\").nth(1).unwrap().split(\"\\nfn \").next().unwrap();\n let drop_fn = mir.split(\"fn observed_drop(\").nth(1).unwrap().split(\"\\nfn \").next().unwrap();\n let helper_fn = mir.split(\"fn observed_helper(\").nth(1).unwrap().split(\"\\nfn \").next().unwrap();\n assert!(macro_fn.contains(\"Vec::<u8>::new(\"));\n assert!(drop_fn.contains(\"std::mem::drop::<std::sync::MutexGuard\"));\n assert!(helper_fn.contains(\"helper()\"));\n let proof = serde_json::json!({\"rustc_version\":String::from_utf8_lossy(&version.stdout),\"commands\":receipts,\n \"runtime\":{\"program\":binary,\"exit_code\":run.status.code(),\"stdout\":String::from_utf8_lossy(&run.stdout)},\n \"function_scoped_mir_checks\":{\"observed_macro\":\"Vec::<u8>::new\",\"observed_drop\":\"std::mem::drop::<std::sync::MutexGuard\",\"observed_helper\":\"helper\"},\n \"all_expectations_passed\":true,\"limits\":\"Isolated fixture; not corpus-wide compiler analysis\"});\n std::fs::write(art.join(\"name-collision-compiler.json\"), serde_json::to_vec_pretty(&proof)?)?;\n println!(\"Compiler control passed: Vec::new, std::mem::drop<MutexGuard> and helper identified independently; runtime binding-control-ok.\");\n}",
+      "exec_count": 155,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Compiler control passed: Vec::new, std::mem::drop<MutexGuard> and helper identified independently; runtime binding-control-ok.\n"
+        },
+        {
+          "output_type": "execute_result",
+          "execution_count": 155,
+          "data": {
+            "text/plain": "()"
+          },
+          "metadata": {}
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2123,
+          "last_edited_by": "brain",
+          "code_type": "rust"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "0b0a14a5-b689-409f-8846-5534eb28ebc2",
+          "source_version": 2123,
+          "execution_identity": "23dd3d7e938bd90b24d4b4e29a34233d080691fbb23280253ff09f2273891b1e",
+          "output_hash": "ed200cc950b40571070ef9b00c50d875bbb25a2ca38ada005148072de8b647c0",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0,
+        1
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "aa99ddfa-194d-4766-a442-b2dad8ac9f74",
+      "kind": "code",
+      "version": 2128,
+      "cell_etag": "cell:sha256:70a7a32b753ec8ec6c25a4c3473d7ff65f848676d9e27311038a9bb568e0ca39",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_collision_result AS\nWITH nodes AS (SELECT unnest(value.nodes) AS n FROM spur_rust_collision_facts),\n     contains_edges AS (\n       SELECT e FROM (SELECT unnest(value.edges) AS e FROM spur_rust_collision_facts) WHERE e.relation = 'contains'\n     )\nSELECT c.caller, c.target_label, c.stored_target_name, parent.n.label AS stored_target_owner,\n       c.bind_method,\n       CASE c.caller\n        WHEN 'observed_macro' THEN proof.function_scoped_mir_checks.observed_macro\n        WHEN 'observed_drop' THEN proof.function_scoped_mir_checks.observed_drop\n        WHEN 'observed_helper' THEN proof.function_scoped_mir_checks.observed_helper\n       END AS compiler_target,\n       CASE WHEN c.caller = 'observed_macro' AND parent.n.label = 'LocalFactory' THEN 'wrong_target'\n            WHEN c.target_node_id IS NULL THEN 'unresolved'\n            WHEN c.caller = 'observed_helper' AND c.stored_target_name = 'helper' THEN 'matches_control'\n            ELSE 'inspect' END AS control_result\nFROM spur_rust_collision_calls c\nLEFT JOIN contains_edges e ON e.e.target_node_id = c.target_node_id\nLEFT JOIN nodes parent ON parent.n.node_id = e.e.source_node_id\nCROSS JOIN read_json('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/name-collision-compiler.json') proof\nWHERE (c.caller = 'observed_macro' AND c.target_label = 'new')\n   OR (c.caller = 'observed_drop' AND c.target_label = 'drop')\n   OR (c.caller = 'observed_helper' AND c.target_label = 'helper');\nCOPY (SELECT * FROM spur_rust_collision_result ORDER BY caller)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/name-collision-result.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_collision_result ORDER BY caller;",
+      "exec_count": 17,
+      "status": "success",
+      "outputs": [
+        "┌─────────────────┬──────────────┬────────────────────┬───────────────────────────┬──────────────────────┬────────────────────────────────────────┬─────────────────┐\n│     caller      │ target_label │ stored_target_name │    stored_target_owner    │     bind_method      │            compiler_target             │ control_result  │\n│     varchar     │   varchar    │      varchar       │          varchar          │       varchar        │                varchar                 │     varchar     │\n├─────────────────┼──────────────┼────────────────────┼───────────────────────────┼──────────────────────┼────────────────────────────────────────┼─────────────────┤\n│ observed_drop   │ drop         │ NULL               │ NULL                      │ NULL                 │ std::mem::drop::<std::sync::MutexGuard │ unresolved      │\n│ observed_helper │ helper       │ helper             │ name-collision-control.rs │ singleton            │ helper                                 │ matches_control │\n│ observed_macro  │ new          │ new                │ LocalFactory              │ macro_body_singleton │ Vec::<u8>::new                         │ wrong_target    │\n└─────────────────┴──────────────┴────────────────────┴───────────────────────────┴──────────────────────┴────────────────────────────────────────┴─────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2128,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "9dffcb72-1b52-44ec-ab7a-4b5f1b176ffe",
+          "source_version": 2128,
+          "execution_identity": "e23887f8c65ed8ec32f9f77fca9f1b169c5849933acea61326696fa3d31c9986",
+          "output_hash": "f9d2ae71a5b0ad089e2093e869e0a0f708f54188a39be7533d8062466120f66c",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "6dbb871c-0e53-4c62-9f6c-25d55a625d2a",
+      "kind": "code",
+      "version": 2132,
+      "cell_etag": "cell:sha256:4a01e56e02b6e6194fb3f3fbbd3c946f9462d9c172e2ec98392914d2727147a0",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_notebook_checks AS\nSELECT version() AS engine_version,\n       (SELECT loaded FROM duckdb_extensions() WHERE extension_name = 'spur_graph') AS extension_loaded,\n       count(*) AS recorded_calls, count(DISTINCT (logical_path, edge_id)) AS unique_call_keys,\n       count(*) FILTER (WHERE has_local_target) AS local_targets,\n       count(*) FILTER (WHERE NOT has_local_target) AS unresolved,\n       round(100.0 * count(*) FILTER (WHERE has_local_target) / count(*), 4) AS local_target_pct,\n       count(*) FILTER (WHERE has_local_target AND NOT target_exists) AS missing_target_nodes,\n       (SELECT count(*) FROM spur_rust_fresh_comparison) AS fresh_files,\n       (SELECT bool_and(all_five_collections_match) FROM spur_rust_fresh_comparison) AS fresh_fact_parity,\n       (SELECT count(*) FROM spur_rust_collision_result WHERE control_result = 'wrong_target') AS wrong_target_controls_reproduced\nFROM spur_rust_local_calls;\nCOPY (SELECT * FROM spur_rust_notebook_checks)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/notebook-checks.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_notebook_checks;",
+      "exec_count": 18,
+      "status": "success",
+      "outputs": [
+        "┌────────────────┬──────────────────┬────────────────┬──────────────────┬───────────────┬────────────┬──────────────────┬──────────────────────┬─────────────┬───────────────────┬──────────────────────────────────┐\n│ engine_version │ extension_loaded │ recorded_calls │ unique_call_keys │ local_targets │ unresolved │ local_target_pct │ missing_target_nodes │ fresh_files │ fresh_fact_parity │ wrong_target_controls_reproduced │\n│    varchar     │     boolean      │     int64      │      int64       │     int64     │   int64    │      double      │        int64         │    int64    │      boolean      │              int64               │\n├────────────────┼──────────────────┼────────────────┼──────────────────┼───────────────┼────────────┼──────────────────┼──────────────────────┼─────────────┼───────────────────┼──────────────────────────────────┤\n│ v2.0.0         │ true             │         259828 │           259828 │         32414 │     227414 │          12.4752 │                    0 │           6 │ true              │                                1 │\n└────────────────┴──────────────────┴────────────────┴──────────────────┴───────────────┴────────────┴──────────────────┴──────────────────────┴─────────────┴───────────────────┴──────────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2132,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "fa919f91-15b9-4aa7-9c97-cfa346b419f5",
+          "source_version": 2132,
+          "execution_identity": "f054e521b807e63cc7449cd81666240f23287fdf08e07ecd512ed0445d24b4b0",
+          "output_hash": "74627261fba3884dd784831c1f948eab8e837f591dae856a81a2d99f1ebd6a59",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "b7ea321c-d285-42cb-969f-503e32b9fbbd",
+      "kind": "code",
+      "version": 2136,
+      "cell_etag": "cell:sha256:afbba961ce2521cb8e7e58734a912a9cdbac8fb7831a4ba933b90ddcb008335e",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_caller_rates AS\nSELECT logical_path, source_node_id, caller, caller_kind, count(*) AS recorded_calls,\n       count(*) FILTER (WHERE has_local_target) AS local_targets,\n       count(*) FILTER (WHERE NOT has_local_target) AS unresolved,\n       round(100.0 * count(*) FILTER (WHERE has_local_target) / count(*), 4) AS local_target_pct\nFROM spur_rust_local_calls GROUP BY ALL;\nCOPY (SELECT * FROM spur_rust_caller_rates ORDER BY local_targets DESC, logical_path, source_node_id LIMIT 15)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/top-callers.json' (FORMAT JSON, ARRAY true);\nSELECT * FROM spur_rust_caller_rates ORDER BY local_targets DESC, logical_path, source_node_id LIMIT 15;",
+      "exec_count": 19,
+      "status": "success",
+      "outputs": [
+        "┌─────────────────────────────────────────────────────┬────────────────┬─────────────────────────────────────────────────────────────────┬─────────────┬────────────────┬───────────────┬────────────┬──────────────────┐\n│                    logical_path                     │ source_node_id │                             caller                              │ caller_kind │ recorded_calls │ local_targets │ unresolved │ local_target_pct │\n│                       varchar                       │     uint64     │                             varchar                             │   varchar   │     int64      │     int64     │   int64    │      double      │\n├─────────────────────────────────────────────────────┼────────────────┼─────────────────────────────────────────────────────────────────┼─────────────┼────────────────┼───────────────┼────────────┼──────────────────┤\n│ crates/spur-acp/src/connection/native.rs            │            255 │ acp_thread_main                                                 │ function    │            321 │            31 │        290 │           9.6573 │\n│ crates/spur-graph/src/extract/languages.rs          │             43 │ config                                                          │ method      │             21 │            21 │          0 │            100.0 │\n│ crates/spur-cli/src/main.rs                         │            218 │ run                                                             │ function    │            179 │            20 │        159 │          11.1732 │\n│ crates/spur-core/src/mcp/plan.rs                    │             25 │ plan_tool_definition                                            │ function    │             20 │            20 │          0 │            100.0 │\n│ crates/spur-core/src/skills/projection/reconcile.rs │             40 │ reconcile_with_linker_deferred_with_hints                       │ function    │             68 │            20 │         48 │          29.4118 │\n│ crates/spur-context-service/src/lambda.rs           │            163 │ handle_api_gateway_request                                      │ function    │             34 │            19 │         15 │          55.8824 │\n│ crates/spur-context-service/src/lambda.rs           │            360 │ handle_api_gateway_request                                      │ function    │             44 │            18 │         26 │          40.9091 │\n│ crates/spur-context-service/src/translate.rs        │             61 │ translate_artifact_to_ducklake                                  │ function    │             41 │            18 │         23 │          43.9024 │\n│ crates/spur-core/src/plan/projector.rs              │             69 │ project_plan_from_beads                                         │ function    │            133 │            18 │        115 │          13.5338 │\n│ crates/spur-graph/src/store/lance_sections.rs       │            410 │ graph_real_worker_matches_legacy_reference_and_exports_sidecars │ function    │            104 │            18 │         86 │          17.3077 │\n│ crates/spur-graph/src/store/parquet.rs              │            158 │ write_artifact_parquet                                          │ function    │             96 │            18 │         78 │            18.75 │\n│ crates/spur-graph/src/extract/tree_sitter.rs        │            134 │ resolve_bare_pending_edge                                       │ function    │             44 │            17 │         27 │          38.6364 │\n│ crates/spur-cli/src/commands/init.rs                │              4 │ run                                                             │ function    │             78 │            16 │         62 │          20.5128 │\n│ crates/spur-tui/src/views/session_picker.rs         │             93 │ render_populated                                                │ method      │            131 │            16 │        115 │          12.2137 │\n│ crates/spur-cli/src/commands/graph.rs               │             22 │ build_with_temporal_jobs_override                               │ function    │             79 │            15 │         64 │          18.9873 │\n└─────────────────────────────────────────────────────┴────────────────┴─────────────────────────────────────────────────────────────────┴─────────────┴────────────────┴───────────────┴────────────┴──────────────────┘\n  15 rows                                                                                                                                                                                                     8 columns\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2136,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "f7d5c8bb-1df2-4f05-900f-2f1e90d35642",
+          "source_version": 2136,
+          "execution_identity": "55799f9964a3b5a0c1f5a9d9e796bd334f56d5d98018c362c26461ab9de05188",
+          "output_hash": "937fa44e6915690f1c776ac5734acdf15fac0f8c27e2cd6c58fdfc72ae2576fc",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2145,
+      "id": "ff73ba5b-1b0e-4964-83ae-c54242326dd6",
+      "kind": "code",
+      "version": 2142,
+      "cell_etag": "cell:sha256:364fcc97664de36ba8062feee6b5a0ca2d7daecf3861ff44526b6b7a53af1105",
+      "source": "CREATE OR REPLACE TEMP VIEW spur_rust_sample_owners AS\nSELECT s.sample_reason, s.logical_path, s.edge_id, s.caller, s.target_name,\n       owner.label AS target_owner, owner.kind AS owner_kind\nFROM spur_rust_source_samples s\nJOIN spur_rust_local_calls c ON c.logical_path = s.logical_path AND c.edge_id = s.edge_id\nLEFT JOIN spur_rust_snapshot.main.edges e ON e.logical_path = c.logical_path\n  AND e.target_node_id = c.target_node_id AND e.relation = 'contains'\nLEFT JOIN spur_rust_snapshot.main.nodes owner ON owner.logical_path = e.logical_path AND owner.node_id = e.source_node_id;\nCOPY (SELECT * FROM spur_rust_sample_owners ORDER BY sample_reason)\nTO '/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-local-targets/sample-owners.json' (FORMAT JSON, ARRAY true);\nSELECT sample_reason, caller, target_owner, target_name FROM spur_rust_sample_owners ORDER BY sample_reason;",
+      "exec_count": 20,
+      "status": "success",
+      "outputs": [
+        "┌───────────────────────────────┬──────────────────────────────────────────────────────────────────────────────┬─────────────────────────────────────────────────────┬────────────────────────────┐\n│         sample_reason         │                                    caller                                    │                    target_owner                     │        target_name         │\n│            varchar            │                                   varchar                                    │                       varchar                       │          varchar           │\n├───────────────────────────────┼──────────────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────┼────────────────────────────┤\n│ macro_body_new                │ rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes │ EvidenceEpoch                                       │ new                        │\n│ method:<null>                 │ run_with_io                                                                  │ CommandRunner                                       │ run                        │\n│ method:fqn                    │ new_session_from_raw_value_recovers_models_plane                             │ crates/spur-acp/src/connection/native.rs            │ new_session_from_raw_value │\n│ method:macro_body_singleton   │ format_initialize_report                                                     │ crates/spur-acp/examples/compat_spike.rs            │ yes_no                     │\n│ method:method_crate_singleton │ closing_root_retires_all_subagent_descendants                                │ Drop for NativeAcpConnection                        │ drop                       │\n│ method:same_file_duplicate    │ sidecar_round_trip                                                           │ crates/spur-analyst/src/embedding/sidecar_client.rs │ sidecar_round_trip_inner   │\n│ method:scope_match            │ parse                                                                        │ ProbeArgs                                           │ parse_from                 │\n│ method:singleton              │ parse_from                                                                   │ crates/spur-acp/examples/compat_spike.rs            │ next_arg                   │\n│ self_edge                     │ merge_at                                                                     │ crates/spur-acp/src/config/layered.rs               │ merge_at                   │\n└───────────────────────────────┴──────────────────────────────────────────────────────────────────────────────┴─────────────────────────────────────────────────────┴────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2142,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2141,
+      "id": "7f3b7397-8227-4558-845a-34c0e576a28e",
+      "kind": "markdown",
+      "version": 2141,
+      "cell_etag": "cell:sha256:9f4df98b4919cd668ed4f382cbcb476cd1104af7f57d98b49b5ce4744e864237",
+      "source": "**Observed results**\n\nThe extension is loaded and callable directly in notebook SQL on DuckDB 2.0.0. All 259,828 call keys are retained; 32,414 have local targets and 227,414 remain unresolved. All local target IDs exist, point to functions/methods, and match the stored final name.\n\nOf local bindings, 23,593 (72.79%) use `singleton`, 4,977 (15.35%) use `macro_body_singleton`, and 3,421 (10.55%) use `scope_match`. Package fractions include spur-graph 13.7195%, spur-core 11.3632%, spur-tui 13.1460%, and spur-context-service 17.0576%. Six fresh `spur_graph_file_facts` extractions exactly match all five frozen fact collections.\n\n**A confirmed correctness gap:** the isolated compiler control binds a macro's `Vec::new()` to the unrelated `LocalFactory::new()` in the extension, while Rust MIR identifies `Vec::<u8>::new`. The helper positive control resolves correctly; `drop(guard)` stays unresolved in this fixture. Corpus samples show analogous suspicious records. The 120 macro-constructor records and 27 drop records form review populations, not counts of proven errors. Follow-up defect: `bd-38yz`.\n\nThere are also 1,149 local-target records with multiple same-file name definitions and 89 self-edges; neither diagnostic alone proves an error. The sampled self-edge is real recursion. `syntax_exact` describes stored extraction evidence and is not a compiler-backed accuracy guarantee.\n\nExplore directly with `SELECT * FROM spur_rust_package_rates`, `spur_rust_binding_shares`, `spur_rust_caller_rates`, `spur_rust_source_samples`, or `spur_rust_collision_result`. Recorded edge counts are not raw textual call-site counts. Source snapshot and existing user files remain unchanged.",
+      "exec_count": null,
+      "status": "idle",
+      "outputs": [],
+      "metadata": {
+        "spur": {
+          "version": 2141,
+          "last_edited_by": "brain"
+        }
+      },
+      "output_indices": []
+    }
+  ]
+}

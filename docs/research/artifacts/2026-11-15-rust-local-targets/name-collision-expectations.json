@@ -1,0 +1,8 @@
+{
+  "observed_macro_expected_target": "Vec::<u8>::new",
+  "observed_drop_expected_target_prefix": "std::mem::drop::<std::sync::MutexGuard",
+  "observed_helper_expected_target": "helper",
+  "runtime_stdout": "binding-control-ok\n",
+  "hypothesis": "Name-only fallback can bind the Vec constructor or std::mem::drop to unrelated project methods with the same leaf name.",
+  "limits": "Isolated semantic counterexample; no corpus precision estimate and no claim that every new/drop binding is incorrect."
+}
