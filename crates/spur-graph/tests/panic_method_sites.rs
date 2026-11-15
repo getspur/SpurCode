@@ -428,3 +428,83 @@ fn roundtrip_ordering_and_supplied_file_coverage_are_deterministic() -> anyhow::
     assert!(bad.validate(&graph, &input).is_err());
     Ok(())
 }
+
+#[test]
+fn method_callers_require_global_unique_ids_even_outside_the_file() -> anyhow::Result<()> {
+    let (graph, _) = fixture()?;
+    let caller = graph
+        .symbols
+        .iter()
+        .find(|s| s.entity_name == "repeat")
+        .unwrap();
+    for cross_file in [false, true] {
+        for first in [false, true] {
+            let mut changed = graph.clone();
+            let mut duplicate = caller.clone();
+            if cross_file {
+                duplicate.file_path = "unrelated.json".into();
+                duplicate.symbol_kind = "field".into();
+            }
+            if first {
+                changed.symbols.insert(0, duplicate);
+            } else {
+                changed.symbols.push(duplicate);
+            }
+            let set = collect_method_call_sites(&changed, &sources(SOURCE))?;
+            assert_eq!(set.sites.len(), 4);
+            assert!(
+                set.sites.iter().all(|s| s.caller_stable_symbol_id.is_none()
+                    && s.lexical_phase == MethodCallLexicalPhase::Unknown),
+                "cross_file={cross_file}, first={first}"
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn method_caller_candidates_match_the_complete_function_identity() -> anyhow::Result<()> {
+    let (graph, _) = fixture()?;
+    let caller = graph
+        .symbols
+        .iter()
+        .find(|s| s.entity_name == "repeat")
+        .unwrap();
+    for mismatch in ["path", "kind", "name", "bytes", "lines"] {
+        let mut changed = graph.clone();
+        let mut decoy = caller.clone();
+        decoy.stable_symbol_id = "different-candidate-id".into();
+        match mismatch {
+            "path" => decoy.file_path = "unrelated.json".into(),
+            "kind" => decoy.symbol_kind = "field".into(),
+            "name" => decoy.entity_name = "other".into(),
+            "bytes" => decoy.byte_range[0] += 1,
+            "lines" => decoy.line_range[0] += 1,
+            _ => unreachable!(),
+        }
+        changed.symbols.insert(0, decoy);
+        let set = collect_method_call_sites(&changed, &sources(SOURCE))?;
+        assert_eq!(set.sites.len(), 4);
+        assert!(
+            set.sites
+                .iter()
+                .all(|s| s.caller_stable_symbol_id.as_deref()
+                    == Some(caller.stable_symbol_id.as_str())
+                    && s.lexical_phase == MethodCallLexicalPhase::FunctionBodySyntax),
+            "{mismatch}"
+        );
+    }
+    let mut method_graph = graph;
+    method_graph
+        .symbols
+        .iter_mut()
+        .find(|s| s.entity_name == "repeat")
+        .unwrap()
+        .symbol_kind = "method".into();
+    let set = collect_method_call_sites(&method_graph, &sources(SOURCE))?;
+    assert!(set
+        .sites
+        .iter()
+        .all(|s| s.caller_stable_symbol_id.is_some()));
+    Ok(())
+}
