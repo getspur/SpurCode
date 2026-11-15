@@ -1527,7 +1527,15 @@ pub(crate) fn emit_edges(
             }
             "macro_call" => {
                 let source_id = nearest_parent(file_node_id, definitions, capture.node).node_id;
-                for callee in contained_capture_text(capture, source, captures, "macro_call.name") {
+                for arguments in captures.iter().filter(|hit| {
+                    hit.name == "macro_call.args"
+                        && hit.pattern_index == capture.pattern_index
+                        && hit.match_index == capture.match_index
+                }) {
+                    let Some((callee, scope_text)) = rust_macro_callee(arguments.node, source)
+                    else {
+                        continue;
+                    };
                     builder.pending_edges.push(PendingEdge {
                         source: source_id,
                         target_name: callee,
@@ -1536,7 +1544,7 @@ pub(crate) fn emit_edges(
                         edge_kind: None,
                         origin: crate::extract::tree_sitter::CallOrigin::MacroBody,
                         receiver_text: None,
-                        scope_text: None,
+                        scope_text,
                     });
                 }
             }
@@ -1573,6 +1581,107 @@ pub(crate) fn emit_edges(
                 });
             }
             _ => {}
+        }
+    }
+}
+
+// Macro token trees expose path punctuation as siblings, not scoped_identifier
+// fields. Anchor recovery at each argument list so mixed/nested calls cannot
+// borrow a qualifier (or a turbofish type argument) from another callee.
+fn rust_macro_callee(arguments: Node<'_>, source: &str) -> Option<(String, Option<String>)> {
+    let mut callee = previous_macro_token(arguments)?;
+    if matches!(callee.kind(), ">" | ">>") {
+        let type_arguments = macro_type_arguments_start(callee)?;
+        let separator = previous_macro_token(type_arguments)?;
+        if separator.kind() != "::" {
+            return None;
+        }
+        callee = previous_macro_token(separator)?;
+    }
+    if callee.kind() == "scoped_identifier" {
+        let name = callee.child_by_field_name("name")?;
+        let scope = callee
+            .child_by_field_name("path")
+            .map(|path| child_text(path, source).to_owned());
+        return Some((child_text(name, source).to_owned(), scope));
+    }
+    if callee.kind() != "identifier" {
+        return None;
+    }
+    let scope = previous_macro_token(callee)
+        .filter(|separator| separator.kind() == "::")
+        .map(|separator| {
+            let start = previous_macro_token(separator)
+                .and_then(macro_path_start)
+                .unwrap_or(separator);
+            // A leading `::callee()` is explicitly qualified too; do not turn
+            // an empty path into permission for bare-name fallback.
+            if start == separator {
+                "::".to_owned()
+            } else {
+                source[start.start_byte()..separator.start_byte()]
+                    .trim()
+                    .to_owned()
+            }
+        });
+    Some((child_text(callee, source).to_owned(), scope))
+}
+
+fn previous_macro_token(mut node: Node<'_>) -> Option<Node<'_>> {
+    loop {
+        node = node.prev_sibling()?;
+        if !matches!(node.kind(), "line_comment" | "block_comment") {
+            return Some(node);
+        }
+    }
+}
+
+fn macro_type_arguments_start(mut node: Node<'_>) -> Option<Node<'_>> {
+    let mut depth = 0isize;
+    loop {
+        match node.kind() {
+            ">" => depth += 1,
+            ">>" => depth += 2,
+            "<" => depth -= 1,
+            "<<" => depth -= 2,
+            _ => {}
+        }
+        if depth <= 0 {
+            return (depth == 0).then_some(node);
+        }
+        node = previous_macro_token(node)?;
+    }
+}
+
+fn macro_path_start(mut node: Node<'_>) -> Option<Node<'_>> {
+    loop {
+        if matches!(node.kind(), ">" | ">>") {
+            node = macro_type_arguments_start(node)?;
+            let Some(separator) = previous_macro_token(node).filter(|n| n.kind() == "::") else {
+                // `<Type as Trait>` can itself be the qualifier.
+                return Some(node);
+            };
+            node = previous_macro_token(separator)?;
+        }
+        if !matches!(
+            node.kind(),
+            "identifier" | "self" | "super" | "crate" | "scoped_identifier"
+        ) {
+            return None;
+        }
+        let Some(separator) = previous_macro_token(node).filter(|n| n.kind() == "::") else {
+            return Some(node);
+        };
+        match previous_macro_token(separator) {
+            Some(previous)
+                if matches!(
+                    previous.kind(),
+                    "identifier" | "self" | "super" | "crate" | "scoped_identifier" | ">" | ">>"
+                ) =>
+            {
+                node = previous;
+            }
+            _ => return Some(separator),
         }
     }
 }

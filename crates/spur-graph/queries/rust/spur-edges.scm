@@ -100,18 +100,15 @@
 ; flat `token_tree` (see tree-sitter-rust node-types.json: token_tree
 ; accepts only identifier/_literal/token_tree/etc., not call_expression),
 ; so `(call_expression …)` above never matches inside json!{}, format!(),
-; tracing::info!(), etc. The two patterns below capture name+paren-args
-; pairs inside macro bodies. The `"(" ")"` anchors constrain the trailing
+; tracing::info!(), etc. Capture each preceding named token and paren-args
+; pair inside macro bodies. With turbofish syntax that token can be a type
+; argument rather than the callee; native extraction recovers the callee and
+; its qualifier from the argument list's own token siblings.
+; The `"(" ")"` anchors constrain the trailing
 ; token_tree to a parenthesized one, filtering indexing (`out[0]`) and
 ; block (`else { 1 }`) false positives while keeping real call shapes.
 ; Verified by crates/spur-graph/tests/rust_macro_token_tree_query.rs.
 (token_tree
-  (identifier) @macro_call.name
+  (_) @macro_call.name
   .
-  (token_tree "(" ")")) @macro_call
-
-(token_tree
-  (scoped_identifier
-    name: (identifier) @macro_call.name)
-  .
-  (token_tree "(" ")")) @macro_call
+  (token_tree "(" ")") @macro_call.args) @macro_call
