@@ -1,0 +1,726 @@
+{
+  "revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+  "summary": {
+    "rechecked": 79,
+    "accepted_on_actual_source": 79,
+    "remaining_failures": 0,
+    "additional_nodes": 5202,
+    "additional_macro_invocations": 0
+  },
+  "sql": "CREATE TABLE recheck AS SELECT path,TRY(spur_graph_file_facts(path,source)) AS value FROM inputs",
+  "rows": [
+    {
+      "path": "2026-10-31-panic-graph-experiment.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 731,
+      "edges": 2797,
+      "spans": 731,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "2026-11-01-panic-implementation-grounding.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 97,
+      "edges": 324,
+      "spans": 97,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "2026-11-02-panic-evidence-validation.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 103,
+      "edges": 599,
+      "spans": 103,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "2026-11-02-rust-gap-closure-grounding.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 224,
+      "edges": 802,
+      "spans": 224,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "2026-11-02-rust-graph-coverage.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 182,
+      "edges": 857,
+      "spans": 182,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "2026-11-02-spur-notebook-new-build-check.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 90,
+      "edges": 388,
+      "spans": 90,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "2026-11-02-spur-notebook-panic-evaluation.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 117,
+      "edges": 606,
+      "spans": 117,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "crates/spur-graph/docs/parquet-exact-search-row-group-pruning.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 90,
+      "edges": 95,
+      "spans": 90,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "crates/spur-graph/tests/fixtures/semantic_benchmark/notebook/analysis.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 11,
+      "edges": 18,
+      "spans": 11,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/architecture/2026-06-14-spur-notebook-architecture.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 30,
+      "edges": 29,
+      "spans": 30,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/rca/2026-05-28-jute-deck-mode-analysis.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 46,
+      "edges": 45,
+      "spans": 46,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/rca/2026-05-29-data-science-notebook-duckdb-proposal.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 20,
+      "edges": 19,
+      "spans": 20,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/research/2026-10-24-spur-graph-symbolic-engineering-research.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 31,
+      "edges": 48,
+      "spans": 31,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/research/2026-10-27-beads-maintenance-analysis.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 35,
+      "edges": 120,
+      "spans": 35,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/research/2026-10-27-spur-process-performance.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 23,
+      "edges": 81,
+      "spans": 23,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/notebooks/2026-08-26-code-mcp-current-architecture-audit.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 80,
+      "edges": 79,
+      "spans": 80,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-29-data-science-notebook-duckdb-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 33,
+      "edges": 32,
+      "spans": 33,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-31-notebook-dag-mode-ui-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 32,
+      "edges": 31,
+      "spans": 32,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-31-open-design-jute-host-shell-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 27,
+      "edges": 26,
+      "spans": 27,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-31-spur-flight-gateway-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 70,
+      "edges": 69,
+      "spans": 70,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-01-jute-app-notebook-as-application-container-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 18,
+      "edges": 43,
+      "spans": 18,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-01-open-design-asset-library-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 30,
+      "edges": 29,
+      "spans": 30,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-01-open-design-deck-mode-m2-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 29,
+      "edges": 28,
+      "spans": 29,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-01-open-design-deck-mode-m4-runtime-access-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 36,
+      "edges": 35,
+      "spans": 36,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-01-per-cell-kernel-routing-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 31,
+      "edges": 30,
+      "spans": 31,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-02-notebook-port-integration-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 62,
+      "edges": 61,
+      "spans": 62,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-02-rust-go-kernels-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 28,
+      "edges": 27,
+      "spans": 28,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-notebook-ai-node-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 30,
+      "edges": 29,
+      "spans": 30,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-notebook-ai-node-ui-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 11,
+      "edges": 14,
+      "spans": 11,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-notebook-generic-sidebar-utilities-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 27,
+      "edges": 26,
+      "spans": 27,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-notebook-polyglot-cell-ui-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 4,
+      "edges": 5,
+      "spans": 4,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-oauth2-authcode-browser-flow-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 27,
+      "edges": 28,
+      "spans": 27,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-oauth2-refresh-grant-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 25,
+      "edges": 26,
+      "spans": 25,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-rest-table-gateway-write-actions-spec.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 38,
+      "edges": 37,
+      "spans": 38,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-03-static-connection-headers-google-ads-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 27,
+      "edges": 28,
+      "spans": 27,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-04-code-graph-ontology-tier0-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 49,
+      "edges": 66,
+      "spans": 49,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-04-code-graph-ontology-tier0-spec-live-evidence.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 18,
+      "edges": 43,
+      "spans": 18,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-04-rest-function-as-table-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 78,
+      "edges": 174,
+      "spans": 78,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-05-code-graph-binding-precision-tier1-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 33,
+      "edges": 32,
+      "spans": 33,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-05-code-graph-tier2-fusion-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 18,
+      "edges": 43,
+      "spans": 18,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-06-spur-app-packaging-delivery-research.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 18,
+      "edges": 43,
+      "spans": 18,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-07-knowledge-context-api-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 36,
+      "edges": 35,
+      "spans": 36,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-08-everything-as-table-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 40,
+      "edges": 39,
+      "spans": 40,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-09-code-graph-workbench-app-integration.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 19,
+      "edges": 18,
+      "spans": 19,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-09-notebook-sidebar-ai-agent-integration.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 17,
+      "edges": 16,
+      "spans": 17,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-10-app-platform-contract-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 23,
+      "edges": 22,
+      "spans": 23,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-10-spur-app-sdk-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 21,
+      "edges": 20,
+      "spans": 21,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-10-spur-graph-jupyter-notebook-support-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 20,
+      "edges": 19,
+      "spans": 20,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-18-knowledge-context-pack-v2-graph-reasoning-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 44,
+      "edges": 43,
+      "spans": 44,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-07-23-spur-launch-video-concepts.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 39,
+      "edges": 73,
+      "spans": 39,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-07-31-skills-catalog-mcp-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 154,
+      "edges": 185,
+      "spans": 154,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-07-api-connection-navigate-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 114,
+      "edges": 113,
+      "spans": 114,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-08-brain-agent-type-switch-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 125,
+      "edges": 124,
+      "spans": 125,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-17-spur-cli-owned-skill-assets-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 27,
+      "edges": 26,
+      "spans": 27,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-18-spur-solver-z3opt-semantics-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 36,
+      "edges": 35,
+      "spans": 36,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-20-declarative-solver-rule-manifests-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 38,
+      "edges": 37,
+      "spans": 38,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-20-generic-solver-rule-families-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 67,
+      "edges": 66,
+      "spans": 67,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-21-configure-settings-browser-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 100,
+      "edges": 99,
+      "spans": 100,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-21-data-integrity-solver-family-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 51,
+      "edges": 55,
+      "spans": 51,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-21-graph-analyst-storage-effectiveness.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 86,
+      "edges": 104,
+      "spans": 86,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-23-structured-language-extraction-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 85,
+      "edges": 84,
+      "spans": 85,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-24-code-overlay-fsmonitor-cache-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 59,
+      "edges": 58,
+      "spans": 59,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-24-domain-z3opt-objective-rules-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 54,
+      "edges": 53,
+      "spans": 54,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-24-notebook-extract-language-resolution-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 80,
+      "edges": 79,
+      "spans": 80,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-25-code-overlay-generation-indexes-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 54,
+      "edges": 53,
+      "spans": 54,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-26-code-overlay-validation-lease-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 91,
+      "edges": 90,
+      "spans": 91,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-27-code-intelligence-industry-benchmark-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 79,
+      "edges": 78,
+      "spans": 79,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-27-external-code-parquet-serving-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 62,
+      "edges": 61,
+      "spans": 62,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-27-origin-faithful-memory-benchmark-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 82,
+      "edges": 81,
+      "spans": 82,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-27-spur-mentions-notebook-integration-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 56,
+      "edges": 55,
+      "spans": 56,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-29-code-intelligence-source-availability-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 85,
+      "edges": 84,
+      "spans": 85,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-30-html-css-extraction-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 62,
+      "edges": 61,
+      "spans": 62,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-30-mcp-probe-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 36,
+      "edges": 35,
+      "spans": 36,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-30-mcp-server-gateway-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 62,
+      "edges": 61,
+      "spans": 62,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-31-builtin-mcp-toggles-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 31,
+      "edges": 30,
+      "spans": 31,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-09-01-dynamic-acp-capability-evidence-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 35,
+      "edges": 34,
+      "spans": 35,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-09-04-immediate-interactive-shutdown-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 15,
+      "edges": 14,
+      "spans": 15,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "docs/superpowers/specs/ns-spec-v0.2-design.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 375,
+      "edges": 396,
+      "spans": 375,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    {
+      "path": "duckdb-extension-journey-interactive-20261027.ipynb",
+      "accepted_on_actual_source": true,
+      "nodes": 33,
+      "edges": 141,
+      "spans": 33,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    }
+  ],
+  "scope": "Separate diagnostic recheck, not merged into primary snapshot. Original Rust-only counts unchanged.",
+  "finding": "Empty-source admission is not a reliable capability test for formats requiring nonempty valid input, including notebooks."
+}

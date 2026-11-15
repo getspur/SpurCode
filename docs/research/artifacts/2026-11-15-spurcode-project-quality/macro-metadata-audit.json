@@ -1,0 +1,75 @@
+{
+  "results": {
+    "scope_source_integrity": {
+      "scopes": 19394,
+      "missing_sources": 0,
+      "path_mismatches": 0,
+      "oid_mismatches": 0,
+      "invalid_byte_ranges": 0,
+      "invalid_line_ranges": 0
+    },
+    "invocation_owner_references": {
+      "invocations": 51634,
+      "nonnull_caller_ids": 51272,
+      "caller_ids_without_matching_node": 0
+    },
+    "scope_owner_references": {
+      "scopes": 19394,
+      "scope_ids_without_matching_node": 0
+    },
+    "definition_reference_integrity": {
+      "definition_candidates": 149,
+      "definition_sources_absent": 0,
+      "definition_oid_mismatches": 0,
+      "invalid_definition_byte_ranges": 0,
+      "invalid_definition_line_ranges": 0
+    }
+  },
+  "queries": [
+    {
+      "name": "scope_source_integrity",
+      "sql": "WITH source_info AS MATERIALIZED (SELECT logical_path,file_oid,\noctet_length(source_bytes) AS bytes,length(source)-length(replace(source,chr(10),''))+1 AS lines FROM sources) SELECT count(*) AS scopes,\ncount(*) FILTER(WHERE s.logical_path IS NULL) AS missing_sources,\ncount(*) FILTER(WHERE m.file_path IS DISTINCT FROM m.logical_path) AS path_mismatches,\ncount(*) FILTER(WHERE m.source_oid IS DISTINCT FROM s.file_oid) AS oid_mismatches,\ncount(*) FILTER(WHERE array_length(m.byte_range) IS DISTINCT FROM 2 OR m.byte_range[1] IS NULL OR m.byte_range[2] IS NULL OR m.byte_range[1]>m.byte_range[2] OR m.byte_range[2]>s.bytes) AS invalid_byte_ranges,\ncount(*) FILTER(WHERE array_length(m.line_range) IS DISTINCT FROM 2 OR m.line_range[1] IS NULL OR m.line_range[2] IS NULL OR m.line_range[1]<1 OR m.line_range[1]>m.line_range[2] OR m.line_range[2]>s.lines) AS invalid_line_ranges\nFROM macro_scopes m JOIN inventory i ON i.path=m.logical_path\nLEFT JOIN source_info s ON s.logical_path=m.logical_path WHERE i.suffix='.rs' ",
+      "params": [],
+      "result": {
+        "scopes": 19394,
+        "missing_sources": 0,
+        "path_mismatches": 0,
+        "oid_mismatches": 0,
+        "invalid_byte_ranges": 0,
+        "invalid_line_ranges": 0
+      }
+    },
+    {
+      "name": "invocation_owner_references",
+      "sql": "SELECT count(*) AS invocations,\ncount(*) FILTER(WHERE caller_stable_symbol_id IS NOT NULL) AS nonnull_caller_ids,\ncount(*) FILTER(WHERE caller_stable_symbol_id IS NOT NULL AND NOT EXISTS(\nSELECT 1 FROM nodes n WHERE n.logical_path=m.logical_path AND n.stable_key=m.caller_stable_symbol_id)) AS caller_ids_without_matching_node\nFROM macro_invocations m JOIN inventory i ON i.path=m.logical_path WHERE i.suffix='.rs' ",
+      "params": [],
+      "result": {
+        "invocations": 51634,
+        "nonnull_caller_ids": 51272,
+        "caller_ids_without_matching_node": 0
+      }
+    },
+    {
+      "name": "scope_owner_references",
+      "sql": "SELECT count(*) AS scopes,count(*) FILTER(WHERE NOT EXISTS(\nSELECT 1 FROM nodes n WHERE n.logical_path=m.logical_path AND n.stable_key=m.\"scope\".stable_symbol_id)) AS scope_ids_without_matching_node\nFROM macro_scopes m JOIN inventory i ON i.path=m.logical_path WHERE i.suffix='.rs' ",
+      "params": [],
+      "result": {
+        "scopes": 19394,
+        "scope_ids_without_matching_node": 0
+      }
+    },
+    {
+      "name": "definition_reference_integrity",
+      "sql": "WITH source_info AS MATERIALIZED (SELECT logical_path,file_oid,\noctet_length(source_bytes) AS bytes,length(source)-length(replace(source,chr(10),''))+1 AS lines FROM sources) SELECT count(*) AS definition_candidates,\ncount(*) FILTER(WHERE s.logical_path IS NULL) AS definition_sources_absent,\ncount(*) FILTER(WHERE m.resolution.definition.source_oid IS DISTINCT FROM s.file_oid) AS definition_oid_mismatches,\ncount(*) FILTER(WHERE array_length(m.resolution.definition.byte_range) IS DISTINCT FROM 2 OR m.resolution.definition.byte_range[1] IS NULL OR m.resolution.definition.byte_range[2] IS NULL OR m.resolution.definition.byte_range[1]>m.resolution.definition.byte_range[2] OR m.resolution.definition.byte_range[2]>s.bytes) AS invalid_definition_byte_ranges,\ncount(*) FILTER(WHERE array_length(m.resolution.definition.line_range) IS DISTINCT FROM 2 OR m.resolution.definition.line_range[1] IS NULL OR m.resolution.definition.line_range[2] IS NULL OR m.resolution.definition.line_range[1]<1 OR m.resolution.definition.line_range[1]>m.resolution.definition.line_range[2] OR m.resolution.definition.line_range[2]>s.lines) AS invalid_definition_line_ranges\nFROM macro_invocations m JOIN inventory i ON i.path=m.logical_path\nLEFT JOIN source_info s ON s.logical_path=m.resolution.definition.file_path\nWHERE i.suffix='.rs' AND m.resolution.definition IS NOT NULL",
+      "params": [],
+      "result": {
+        "definition_candidates": 149,
+        "definition_sources_absent": 0,
+        "definition_oid_mismatches": 0,
+        "invalid_definition_byte_ranges": 0,
+        "invalid_definition_line_ranges": 0
+      }
+    }
+  ],
+  "scope": "Diagnostics of explicit metadata references only. A present source/owner/definition candidate does not establish compiler expansion or semantic binding correctness."
+}

@@ -1,0 +1,1956 @@
+[
+  {
+    "name": "schema_first",
+    "sql": "SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_name IN ('inventory','sources','facts','nodes','edges','spans','macro_invocations','macro_scopes') ORDER BY table_name,ordinal_position",
+    "params": [],
+    "rows": [
+      {
+        "table_name": "edges",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "edge_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "source_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "target_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "relation",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "target_label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "import_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "receiver_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "scope_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "confidence",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "confidence_score",
+        "data_type": "FLOAT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "edge_kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "bind_method",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "evidence_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "directed",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "change_kind",
+        "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+      },
+      {
+        "table_name": "facts",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "facts",
+        "column_name": "value",
+        "data_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "git_blob_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "bytes",
+        "data_type": "BIGINT"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "suffix",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "area",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "status",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "error",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "site_id",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "file_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "source_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "caller_stable_symbol_id",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "enclosing",
+        "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "raw_macro_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "normalized_macro_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "byte_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "line_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "attributes",
+        "data_type": "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "test_context",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "debug_assertions_candidate",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "execution_phase",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "resolution",
+        "data_type": "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+      },
+      {
+        "table_name": "macro_invocations",
+        "column_name": "sink_family_candidate",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "scope",
+        "data_type": "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "file_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "source_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "byte_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "macro_scopes",
+        "column_name": "line_range",
+        "data_type": "UBIGINT[]"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "stable_key",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "source_span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "first_seen_run_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "source",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "source_bytes",
+        "data_type": "BLOB"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "file_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "sources",
+        "column_name": "sha256",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "start_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "end_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "start_line",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "end_line",
+        "data_type": "UINTEGER"
+      }
+    ]
+  },
+  {
+    "name": "all_source_byte_hashes",
+    "sql": "SELECT count(*) AS sources,\ncount(*) FILTER(WHERE sha256(source_bytes)<>sha256 OR encode(source)<>source_bytes) AS mismatches\nFROM sources",
+    "params": [],
+    "rows": [
+      {
+        "sources": 4098,
+        "mismatches": 0
+      }
+    ]
+  },
+  {
+    "name": "span_bounds_by_suffix",
+    "sql": "WITH source_info AS MATERIALIZED (\nSELECT logical_path,octet_length(source_bytes) AS byte_length,\n length(source)-length(replace(source,chr(10),''))+1 AS line_count FROM sources)\nSELECT i.suffix,count(*) AS spans,\ncount(*) FILTER(WHERE p.start_byte IS NULL OR p.end_byte IS NULL OR p.start_byte>p.end_byte OR p.end_byte>s.byte_length) AS invalid_byte_bounds,\ncount(*) FILTER(WHERE p.start_line IS NULL OR p.end_line IS NULL OR p.start_line<1 OR p.end_line<p.start_line OR p.end_line>s.line_count) AS invalid_line_bounds\nFROM spans p JOIN source_info s USING(logical_path) JOIN inventory i ON i.path=p.logical_path\nGROUP BY i.suffix ORDER BY spans DESC",
+    "params": [],
+    "rows": [
+      {
+        "suffix": ".rs",
+        "spans": 62327,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".json",
+        "spans": 19384,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".md",
+        "spans": 18104,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".yaml",
+        "spans": 4373,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".toml",
+        "spans": 2344,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".py",
+        "spans": 2144,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".yml",
+        "spans": 515,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".tf",
+        "spans": 483,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".sql",
+        "spans": 451,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".c",
+        "spans": 410,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".sh",
+        "spans": 347,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".ts",
+        "spans": 244,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".h",
+        "spans": 124,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".js",
+        "spans": 60,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".mjs",
+        "spans": 58,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".html",
+        "spans": 56,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".cjs",
+        "spans": 37,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".hpp",
+        "spans": 23,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".cpp",
+        "spans": 20,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".css",
+        "spans": 19,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".tsx",
+        "spans": 18,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".hcl",
+        "spans": 8,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      },
+      {
+        "suffix": ".jsx",
+        "spans": 5,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      }
+    ]
+  },
+  {
+    "name": "rust_coverage",
+    "sql": "SELECT status,count(*) AS files,sum(bytes) AS bytes\nFROM inventory WHERE suffix='.rs' GROUP BY status ORDER BY status",
+    "params": [],
+    "rows": [
+      {
+        "status": "extracted",
+        "files": 1726,
+        "bytes": 27874179
+      }
+    ]
+  },
+  {
+    "name": "rust_yield",
+    "sql": "WITH yield AS (\nSELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols FROM nodes GROUP BY logical_path)\nSELECT count(*) AS admitted_rust_files,sum(y.symbols) AS symbols,\ncount(*) FILTER(WHERE y.symbols=0) AS file_only\nFROM inventory i JOIN yield y ON i.path=y.logical_path WHERE i.suffix='.rs' AND i.status='extracted' ",
+    "params": [],
+    "rows": [
+      {
+        "admitted_rust_files": 1726,
+        "symbols": 60601,
+        "file_only": 6
+      }
+    ]
+  },
+  {
+    "name": "rust_call_binding",
+    "sql": "SELECT count(*) AS calls,\ncount(*) FILTER(WHERE e.target_node_id IS NOT NULL) AS local_targets,\ncount(*) FILTER(WHERE e.target_node_id IS NULL) AS unresolved\nFROM edges e JOIN inventory i ON i.path=e.logical_path WHERE i.suffix='.rs' AND e.relation='calls' ",
+    "params": [],
+    "rows": [
+      {
+        "calls": 259828,
+        "local_targets": 32414,
+        "unresolved": 227414
+      }
+    ]
+  },
+  {
+    "name": "rust_node_kinds",
+    "sql": "SELECT n.kind,count(*) AS nodes FROM nodes n JOIN inventory i\nON i.path=n.logical_path WHERE i.suffix='.rs' GROUP BY n.kind ORDER BY nodes DESC",
+    "params": [],
+    "rows": [
+      {
+        "kind": "function",
+        "nodes": 21226
+      },
+      {
+        "kind": "field",
+        "nodes": 14822
+      },
+      {
+        "kind": "method",
+        "nodes": 9353
+      },
+      {
+        "kind": "enum_variant",
+        "nodes": 4004
+      },
+      {
+        "kind": "struct",
+        "nodes": 3117
+      },
+      {
+        "kind": "impl",
+        "nodes": 2845
+      },
+      {
+        "kind": "constant",
+        "nodes": 2179
+      },
+      {
+        "kind": "file",
+        "nodes": 1726
+      },
+      {
+        "kind": "module",
+        "nodes": 1648
+      },
+      {
+        "kind": "enum",
+        "nodes": 953
+      },
+      {
+        "kind": "type_alias",
+        "nodes": 235
+      },
+      {
+        "kind": "trait",
+        "nodes": 120
+      },
+      {
+        "kind": "mcp_tool",
+        "nodes": 63
+      },
+      {
+        "kind": "macro",
+        "nodes": 32
+      },
+      {
+        "kind": "extern_block",
+        "nodes": 4
+      }
+    ]
+  },
+  {
+    "name": "rust_call_binding_by_crate",
+    "sql": "SELECT i.area,count(*) AS calls,\ncount(*) FILTER(WHERE e.target_node_id IS NOT NULL) AS local_targets,\ncount(*) FILTER(WHERE e.target_node_id IS NULL) AS unresolved\nFROM edges e JOIN inventory i ON i.path=e.logical_path WHERE i.suffix='.rs' AND e.relation='calls'\nGROUP BY i.area ORDER BY calls DESC",
+    "params": [],
+    "rows": [
+      {
+        "area": "spur-core",
+        "calls": 65496,
+        "local_targets": 7446,
+        "unresolved": 58050
+      },
+      {
+        "area": "spur-graph",
+        "calls": 57260,
+        "local_targets": 7741,
+        "unresolved": 49519
+      },
+      {
+        "area": "spur-tui",
+        "calls": 42979,
+        "local_targets": 5650,
+        "unresolved": 37329
+      },
+      {
+        "area": "spur-context-service",
+        "calls": 17904,
+        "local_targets": 3054,
+        "unresolved": 14850
+      },
+      {
+        "area": "spur-acp",
+        "calls": 9834,
+        "local_targets": 1150,
+        "unresolved": 8684
+      },
+      {
+        "area": "spur-solver",
+        "calls": 9120,
+        "local_targets": 1382,
+        "unresolved": 7738
+      },
+      {
+        "area": "spur-pm",
+        "calls": 7656,
+        "local_targets": 848,
+        "unresolved": 6808
+      },
+      {
+        "area": "spur-cli",
+        "calls": 6909,
+        "local_targets": 870,
+        "unresolved": 6039
+      },
+      {
+        "area": "spur-analyst",
+        "calls": 6789,
+        "local_targets": 623,
+        "unresolved": 6166
+      },
+      {
+        "area": "spur-code-eval",
+        "calls": 5209,
+        "local_targets": 761,
+        "unresolved": 4448
+      },
+      {
+        "area": "vendor",
+        "calls": 4265,
+        "local_targets": 170,
+        "unresolved": 4095
+      },
+      {
+        "area": "spur-utilities",
+        "calls": 3726,
+        "local_targets": 484,
+        "unresolved": 3242
+      },
+      {
+        "area": "spur-bot",
+        "calls": 3035,
+        "local_targets": 275,
+        "unresolved": 2760
+      },
+      {
+        "area": "spur-worktree",
+        "calls": 2023,
+        "local_targets": 185,
+        "unresolved": 1838
+      },
+      {
+        "area": "spur-embedding",
+        "calls": 1753,
+        "local_targets": 157,
+        "unresolved": 1596
+      },
+      {
+        "area": "spur-mcp",
+        "calls": 1599,
+        "local_targets": 171,
+        "unresolved": 1428
+      },
+      {
+        "area": "spur-license",
+        "calls": 1582,
+        "local_targets": 165,
+        "unresolved": 1417
+      },
+      {
+        "area": "spur-context",
+        "calls": 1564,
+        "local_targets": 99,
+        "unresolved": 1465
+      },
+      {
+        "area": "xtask",
+        "calls": 1376,
+        "local_targets": 248,
+        "unresolved": 1128
+      },
+      {
+        "area": "spur-context-auth",
+        "calls": 1244,
+        "local_targets": 95,
+        "unresolved": 1149
+      },
+      {
+        "area": "spur-embedding-worker",
+        "calls": 1233,
+        "local_targets": 73,
+        "unresolved": 1160
+      },
+      {
+        "area": "spur-cost",
+        "calls": 1081,
+        "local_targets": 123,
+        "unresolved": 958
+      },
+      {
+        "area": "spur-graph-duckdb",
+        "calls": 1028,
+        "local_targets": 52,
+        "unresolved": 976
+      },
+      {
+        "area": "spur-telemetry",
+        "calls": 1007,
+        "local_targets": 149,
+        "unresolved": 858
+      },
+      {
+        "area": "spur-jev",
+        "calls": 949,
+        "local_targets": 117,
+        "unresolved": 832
+      },
+      {
+        "area": "infra",
+        "calls": 679,
+        "local_targets": 44,
+        "unresolved": 635
+      },
+      {
+        "area": "spur-context-fetcher",
+        "calls": 645,
+        "local_targets": 60,
+        "unresolved": 585
+      },
+      {
+        "area": "spur-blob-store",
+        "calls": 574,
+        "local_targets": 74,
+        "unresolved": 500
+      },
+      {
+        "area": "docs",
+        "calls": 443,
+        "local_targets": 60,
+        "unresolved": 383
+      },
+      {
+        "area": "spur-interactive",
+        "calls": 352,
+        "local_targets": 25,
+        "unresolved": 327
+      },
+      {
+        "area": "spur-license-admin",
+        "calls": 320,
+        "local_targets": 12,
+        "unresolved": 308
+      },
+      {
+        "area": "spur-context-source",
+        "calls": 172,
+        "local_targets": 51,
+        "unresolved": 121
+      },
+      {
+        "area": "tree-sitter-mermaid",
+        "calls": 19,
+        "local_targets": 0,
+        "unresolved": 19
+      },
+      {
+        "area": "spur-test-madsim",
+        "calls": 3,
+        "local_targets": 0,
+        "unresolved": 3
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/lib.rs:105",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/lib.rs",
+      "source_offset",
+      105,
+      105
+    ],
+    "rows": [
+      {
+        "node_id": 25,
+        "stable_key": "9ba5312b42a36c2a",
+        "label": "source_offset",
+        "kind": "function",
+        "start_byte": 3661,
+        "end_byte": 3916,
+        "start_line": 105,
+        "end_line": 111,
+        "source_span_hex": "666E20736F757263655F6F66667365742876616C75653A204F7074696F6E3C267536343E2C206669656C643A202673747229202D3E20526573756C743C7573697A653E207B0A202020207573697A653A3A7472795F66726F6D282A72657175697265642876616C75652C206669656C64293F292E6D61705F657272287C5F7C207B0A20202020202020204572726F723A3A696E76616C69645F696E70757428666F726D617421280A20202020202020202020202022737075725F67726170685F73796D626F6C5F6368616E6765733A207B6669656C647D206578636565647320686F7374207573697A65220A202020202020202029290A202020207D290A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "44e41722573ed9f2c243f4882c40d7bc143fc1c45c7053aaefdf357fe044abd6"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/lib.rs:113",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/lib.rs",
+      "read_symbols",
+      113,
+      113
+    ],
+    "rows": [
+      {
+        "node_id": 26,
+        "stable_key": "08b7ee66fb11d9b1",
+        "label": "read_symbols",
+        "kind": "function",
+        "start_byte": 3918,
+        "end_byte": 5135,
+        "start_line": 113,
+        "end_line": 138,
+        "source_span_hex": "666E20726561645F73796D626F6C732873796D626F6C733A20456C656D656E74733C275F2C2053796D626F6C466163745265616465723C275F3E3E29202D3E20526573756C743C5665633C45787472616374656453796D626F6C3E3E207B0A2020202073796D626F6C730A20202020202020202E6974657228290A20202020202020202E6D6170287C73796D626F6C7C207B0A2020202020202020202020206C65742073796D626F6C203D2072657175697265642873796D626F6C2C202273796D626F6C206C69737420656C656D656E7422293F3B0A2020202020202020202020204F6B2845787472616374656453796D626F6C207B0A20202020202020202020202020202020656E746974795F6E616D653A2072657175697265642873796D626F6C2E656E746974795F6E616D652C2022656E746974795F6E616D6522293F2E746F5F6F776E656428292C0A2020202020202020202020202020202073796D626F6C5F6B696E643A2072657175697265642873796D626F6C2E73796D626F6C5F6B696E642C202273796D626F6C5F6B696E6422293F2E746F5F6F776E656428292C0A20202020202020202020202020202020656E636C6F73696E675F73636F70653A2073796D626F6C2E656E636C6F73696E675F73636F70652E6D6170287374723A3A746F5F6F776E6564292C0A20202020202020202020202020202020627974655F72616E67653A205B0A2020202020202020202020202020202020202020736F757263655F6F66667365742873796D626F6C2E627974655F73746172742C2022627974655F737461727422293F2C0A2020202020202020202020202020202020202020736F757263655F6F66667365742873796D626F6C2E627974655F656E642C2022627974655F656E6422293F2C0A202020202020202020202020202020205D2C0A202020202020202020202020202020206C696E655F72616E67653A205B0A2020202020202020202020202020202020202020736F757263655F6F66667365742873796D626F6C2E6C696E655F73746172742C20226C696E655F737461727422293F2C0A2020202020202020202020202020202020202020736F757263655F6F66667365742873796D626F6C2E6C696E655F656E642C20226C696E655F656E6422293F2C0A202020202020202020202020202020205D2C0A20202020202020202020202020202020616E63686F725F686173683A2072657175697265642873796D626F6C2E616E63686F725F686173682C2022616E63686F725F6861736822293F2E746F5F6F776E656428292C0A20202020202020202020202020202020746F6B656E733A2072657175697265642873796D626F6C2E746F6B656E732C2022746F6B656E7322293F0A20202020202020202020202020202020202020202E6974657228290A20202020202020202020202020202020202020202E6D6170287C746F6B656E7C20726571756972656428746F6B656E2C2022746F6B656E206C69737420656C656D656E7422292E6D6170287374723A3A746F5F6F776E656429290A20202020202020202020202020202020202020202E636F6C6C6563743A3A3C526573756C743C5F3E3E28293F2C0A2020202020202020202020207D290A20202020202020207D290A20202020202020202E636F6C6C65637428290A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "1c8e8b49d594b98196ae82ec315add5b158d7e0996532e17e98dee8f3beb4233"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/lib.rs:378",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/lib.rs",
+      "entrypoint",
+      378,
+      378
+    ],
+    "rows": [
+      {
+        "node_id": 41,
+        "stable_key": "7232a72b274ed13f",
+        "label": "entrypoint",
+        "kind": "function",
+        "start_byte": 14625,
+        "end_byte": 16344,
+        "start_line": 378,
+        "end_line": 414,
+        "source_span_hex": "70756220666E20656E747279706F696E7428657874656E73696F6E3A2026457874656E73696F6E29202D3E20526573756C743C28293E207B0A2020202066696C655F66616374733A3A726567697374657228657874656E73696F6E293F3B0A202020205363616C617246756E6374696F6E4275696C6465723A3A6E6577280A202020202020202022737075725F67726170685F73796D626F6C73222C0A20202020202020205369676E61747572654275696C6465723A3A6E657728290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E28226C6F676963616C5F706174682229290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E2822736F757263652229290A2020202020202020202020202E72657475726E5F74797065284C6973743A3A3C53796D626F6C466163743E3A3A6C6F676963616C5F7479706528657874656E73696F6E293F290A2020202020202020202020202E646F63756D656E746174696F6E280A2020202020202020202020202020202046756E6374696F6E446F63756D656E746174696F6E4275696C6465723A3A6E657728290A20202020202020202020202020202020202020202E6465736372697074696F6E28224578747261637420535055522073796D626F6C2066616374732066726F6D20736F757263652074657874207573696E6720746865206C616E6775616765206F6620697473206C6F676963616C207061746822290A20202020202020202020202020202020202020202E6164645F6578616D706C6528225061727365205275737420736F75726365222C202253454C45435420756E6E65737428737075725F67726170685F73796D626F6C732827696E7075742E7273272C202770756220666E20616C7068612829207B7D27292C20726563757273697665203A3D20747275652922290A20202020202020202020202020202020202020202E6164645F63617465676F72792822737075725F677261706822292C0A202020202020202020202020292C0A2020202020202020506172736553796D626F6C732C0A20202020290A202020202E776974685F696E697428290A202020202E726567697374657228657874656E73696F6E293F3B0A0A202020205363616C617246756E6374696F6E4275696C6465723A3A6E6577280A202020202020202022737075725F67726170685F73796D626F6C5F6368616E676573222C0A20202020202020205369676E61747572654275696C6465723A3A6E657728290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E2822706174682229290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E28226F6C645F706174682229290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E28226B696E642229290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C4C6973743C53796D626F6C466163743E3E28226F6C645F73796D626F6C732229290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C4C6973743C53796D626F6C466163743E3E28226E65775F73796D626F6C732229290A2020202020202020202020202E72657475726E5F747970652853796D626F6C446966663A3A6C6F676963616C5F7479706528657874656E73696F6E293F290A2020202020202020202020202E646F63756D656E746174696F6E280A2020202020202020202020202020202046756E6374696F6E446F63756D656E746174696F6E4275696C6465723A3A6E657728290A20202020202020202020202020202020202020202E6465736372697074696F6E28224D61746368206F726465726564206578747261637465642073796D626F6C20666163747320666F72206F6E652066696C652D6368616E676520706169723B2070726F6A65637420636F6D6D697420616E6420706172656E74206C696E656167652073657061726174656C7922290A20202020202020202020202020202020202020202E6164645F63617465676F72792822737075725F677261706822292C0A202020202020202020202020292C0A20202020202020204D6174636853796D626F6C732C0A20202020290A202020202E726567697374657228657874656E73696F6E290A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "cb4cb19d195ea0e10d07247298d2adfaa23450f263f63dbfd4e552646ac7f851"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/file_facts.rs:173",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "NativeLabel",
+      173,
+      173
+    ],
+    "rows": [
+      {
+        "node_id": 91,
+        "stable_key": "fcc55dd7c72cb5cc",
+        "label": "NativeLabel",
+        "kind": "trait",
+        "start_byte": 4201,
+        "end_byte": 4258,
+        "start_line": 173,
+        "end_line": 175,
+        "source_span_hex": "7472616974204E61746976654C6162656C207B0A20202020666E206C6162656C2873656C6629202D3E202627737461746963207374723B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "ae877fe70e3b53080a74509377cf62bcc94a25546b18cae4c0df3168df0556bc"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/file_facts.rs:178",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      178,
+      178
+    ],
+    "rows": [
+      {
+        "node_id": 93,
+        "stable_key": "48bfe21ab35c0473",
+        "label": "labels",
+        "kind": "macro",
+        "start_byte": 4340,
+        "end_byte": 4604,
+        "start_line": 178,
+        "end_line": 186,
+        "source_span_hex": "6D6163726F5F72756C657321206C6162656C73207B0A20202020282474793A6964656E74207B2024282476617269616E743A6964656E74203D3E20246C6162656C3A6C69746572616C292C2A2024282C293F207D29203D3E207B0A2020202020202020696D706C204E61746976654C6162656C20666F7220247479207B0A202020202020202020202020666E206C6162656C2873656C6629202D3E20262773746174696320737472207B0A202020202020202020202020202020206D617463682073656C66207B20242853656C663A3A2476617269616E74203D3E20246C6162656C292C2A207D0A2020202020202020202020207D0A20202020202020207D0A202020207D3B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "98f7afc57d5efcd5cedc26ccdf9d5a5c0496b8deedeca404df6c4442957cc455"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/file_facts.rs:437",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "reserve_ranges",
+      437,
+      437
+    ],
+    "rows": [
+      {
+        "node_id": 126,
+        "stable_key": "32a74e8263772da1",
+        "label": "reserve_ranges",
+        "kind": "function",
+        "start_byte": 12842,
+        "end_byte": 13245,
+        "start_line": 437,
+        "end_line": 447,
+        "source_span_hex": "666E20726573657276655F72616E676573286669656C64733A20266D7574204368696C6472656E4D75743C275F3E2C20696E64696365733A205B7573697A653B20325D2C20726F77733A207573697A6529202D3E20526573756C743C28293E207B0A202020206C657420636F6F7264696E61746573203D20726F77730A20202020202020202E636865636B65645F6D756C2832290A20202020202020202E6F6B5F6F725F656C7365287C7C204572726F723A3A696E76616C69645F696E7075742822737075725F67726170685F66696C655F66616374733A2072616E6765206368696C642073697A65206F766572666C6F772229293F3B0A20202020666F7220696E64657820696E20696E6469636573207B0A20202020202020206669656C64730A2020202020202020202020202E6765745F766563746F725F61745F6D75743A3A3C4C6973743C7536343E3E28696E646578293F0A2020202020202020202020202E7365745F6368696C645F73697A6528636F6F7264696E61746573293F3B0A202020207D0A202020204F6B282829290A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "a7fb97fc54f6932e86e22efbbcd041334931e54cb6726f2f7bdc5fd63d1c3141"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/file_facts.rs:537",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "exec",
+      537,
+      537
+    ],
+    "rows": [
+      {
+        "node_id": 134,
+        "stable_key": "95cc3c8b360be0b5",
+        "label": "exec",
+        "kind": "method",
+        "start_byte": 16984,
+        "end_byte": 19287,
+        "start_line": 537,
+        "end_line": 588,
+        "source_span_hex": "666E2065786563280A20202020202020202673656C662C0A20202020202020205F636F6E746578743A2026436F6E746578742C0A20202020202020205F62696E645F646174613A204F7074696F6E3C2653656C663A3A42696E64446174613E2C0A2020202020202020696E69745F646174613A204F7074696F6E3C266D75742053656C663A3A496E6974446174613E2C0A2020202020202020766563746F72733A20266D757420566563746F72436F6C6C656374696F6E2C0A20202020202020206F75747075743A20566563746F723C275F2C20556E6B6E6F776E3E2C0A2020202029202D3E20526573756C743C28293E207B0A20202020202020206C65742070617273657273203D20696E69745F646174610A2020202020202020202020202E6F6B5F6F725F656C7365287C7C204572726F723A3A696E7465726E616C2822737075725F67726170685F66696C655F66616374733A206D697373696E6720776F726B65722073746174652229293F3B0A20202020202020206C6574207061746873203D20766563746F72732E6765745F766563746F725F61743A3A3C537472696E673E2830293F3B0A20202020202020206C657420736F7572636573203D20766563746F72732E6765745F766563746F725F61743A3A3C537472696E673E2831293F3B0A20202020202020206C6574207061746873203D2070617468732E72656164657228293F3B0A20202020202020206C657420736F7572636573203D20736F75726365732E72656164657228293F3B0A20202020202020206C6574206D757420726F7773203D205665633A3A776974685F636170616369747928766563746F72732E726F775F636F756E7428293F293B0A2020202020202020666F7220696E64657820696E20302E2E766563746F72732E726F775F636F756E7428293F207B0A2020202020202020202020206C65742028536F6D652870617468292C20536F6D6528736F757263652929203D202870617468732E67657428696E646578293F2C20736F75726365732E67657428696E646578293F2920656C7365207B0A20202020202020202020202020202020726F77732E70757368284E6F6E65293B0A20202020202020202020202020202020636F6E74696E75653B0A2020202020202020202020207D3B0A2020202020202020202020206C65742070617468203D20506174683A3A6E65772870617468293B0A2020202020202020202020206C6574206C616E6775616765203D204C616E67756167653A3A66726F6D5F706174682870617468292E6F6B5F6F725F656C7365287C7C207B0A202020202020202020202020202020204572726F723A3A696E76616C69645F696E70757428666F726D617421280A202020202020202020202020202020202020202022737075725F67726170685F66696C655F66616374733A20756E737570706F72746564206C616E677561676520666F7220706174683A207B7D222C0A2020202020202020202020202020202020202020706174682E646973706C617928290A2020202020202020202020202020202029290A2020202020202020202020207D293F3B0A2020202020202020202020206966206C657420456E7472793A3A566163616E7428656E74727929203D20706172736572732E656E747279286C616E677561676529207B0A20202020202020202020202020202020656E7472792E696E73657274284279746573457874726163746F723A3A666F725F6C616E6775616765286C616E6775616765292E6D61705F6572722865787472616374696F6E5F6572726F72293F293B0A2020202020202020202020207D0A2020202020202020202020206C657420706172736572203D20706172736572730A202020202020202020202020202020202E6765745F6D757428266C616E6775616765290A202020202020202020202020202020202E6F6B5F6F725F656C7365287C7C204572726F723A3A696E7465726E616C2822737075725F67726170685F66696C655F66616374733A20706172736572207374617465206D697373696E672229293F3B0A2020202020202020202020202F2F20546865207075726520636F7265206D6574686F64206F776E7320706174682076616C69646174696F6E2C2061206672657368206275696C6465722F4944732C0A2020202020202020202020202F2F206E6F7465626F6F6B2068616E646C696E6720616E64206E6174697665206F6E652D66696C652070656E64696E672D65646765207265736F6C7574696F6E2E0A202020202020202020202020726F77732E7075736828536F6D65280A202020202020202020202020202020207061727365720A20202020202020202020202020202020202020202E657874726163745F66696C655F666163747328706174682C20736F757263652E61735F62797465732829290A20202020202020202020202020202020202020202E6D61705F6572722865787472616374696F6E5F6572726F72293F0A20202020202020202020202020202020202020202E696E746F28292C0A20202020202020202020202029293B0A20202020202020207D0A20202020202020202F2F20457874726163742066697273743A2061206661696C696E67206368756E6B206C6561766573206F757470757420756E746F75636865642C20696E636C7564696E670A20202020202020202F2F207768656E204475636B4442277320545259207265747269657320696E646976696475616C20726F77732061667465722061206261746368206572726F722E0A20202020202020206C6574206D7574206F7574707574203D206F75747075742E636173743A3A3C46696C6546616374733E28293F3B0A2020202020202020726573657276655F6F757470757428266D7574206F75747075742C2026726F7773293F3B0A20202020202020206C6574206D757420777269746572203D206F75747075742E726F775F77726974657228293F3B0A2020202020202020666F722028696E6465782C20726F772920696E20726F77732E6974657228292E656E756D65726174652829207B0A2020202020202020202020207772697465722E7365745F6F7074696F6E28696E6465782C20726F772E61735F7265662829293F3B0A20202020202020207D0A20202020202020204F6B282829290A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "ce08b5d682e8595e67d8462fed732cd48ef1220a1534bb9a31ccbbdaa044ee62"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph-duckdb/src/file_facts.rs:595",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "register",
+      595,
+      595
+    ],
+    "rows": [
+      {
+        "node_id": 136,
+        "stable_key": "3b6507c721fb2912",
+        "label": "register",
+        "kind": "function",
+        "start_byte": 19448,
+        "end_byte": 20113,
+        "start_line": 595,
+        "end_line": 607,
+        "source_span_hex": "7075622863726174652920666E20726567697374657228657874656E73696F6E3A2026457874656E73696F6E29202D3E20526573756C743C28293E207B0A202020205363616C617246756E6374696F6E4275696C6465723A3A6E6577280A202020202020202022737075725F67726170685F66696C655F6661637473222C0A20202020202020205369676E61747572654275696C6465723A3A6E657728290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E28226C6F676963616C5F706174682229290A2020202020202020202020202E706172616D2846756E6374696F6E506172616D657465723A3A6E65773A3A3C537472696E673E2822736F757263652229290A2020202020202020202020202E72657475726E5F747970652846696C6546616374733A3A6C6F676963616C5F7479706528657874656E73696F6E293F290A2020202020202020202020202E646F63756D656E746174696F6E2846756E6374696F6E446F63756D656E746174696F6E4275696C6465723A3A6E657728290A202020202020202020202020202020202E6465736372697074696F6E282245787472616374206E6174697665206F6E652D66696C652067726170682066616374733B206A6F696E206C6F63616C2049447320776974682074686520696E707574206B657920616E642072657461696E20706174682F626C6F622F76657273696F6E206C696E6561676522290A202020202020202020202020202020202E6164645F63617465676F72792822737075725F67726170682229292C0A2020202020202020506172736546696C6546616374732C0A20202020292E776974685F696E697428292E726567697374657228657874656E73696F6E290A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "9bba50ad41dcca76150cc491ed868ac52f1787dae4d0bf6900c234a1d5f71c61"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/extract/tree_sitter.rs:369",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/extract/tree_sitter.rs",
+      "extract_file_facts",
+      369,
+      369
+    ],
+    "rows": [
+      {
+        "node_id": 109,
+        "stable_key": "398c9f6ebab14d21",
+        "label": "extract_file_facts",
+        "kind": "method",
+        "start_byte": 12234,
+        "end_byte": 13925,
+        "start_line": 369,
+        "end_line": 410,
+        "source_span_hex": "70756220666E20657874726163745F66696C655F6661637473280A2020202020202020266D75742073656C662C0A20202020202020206C6F676963616C5F706174683A2026506174682C0A202020202020202062797465733A20265B75385D2C0A2020202029202D3E20526573756C743C477261706846616374732C20457874726163744572726F723E207B0A20202020202020206C6574206C6F676963616C5F70617468203D206C6F676963616C5F706174680A2020202020202020202020202E746F5F73747228290A2020202020202020202020202E6F6B5F6F725F656C7365287C7C20457874726163744572726F723A3A45787472616374696F6E28226C6F676963616C2070617468206D757374206265205554462D38222E696E746F282929293F3B0A20202020202020202F2F204E617469766520666163742070617468732075736520736C61736820736570617261746F72732C20696E636C7564696E67206F6E2057696E646F77732E2056616C69646174650A20202020202020202F2F2074686174207370656C6C696E6720736F2061206261636B736C6173682063616E6E6F742068696465206120726F6F74206F7220706172656E7420636F6D706F6E656E742E0A20202020202020206C6574206C6F676963616C5F70617468203D206C6F676963616C5F706174682E7265706C61636528275C5C272C20222F22293B0A20202020202020206C6574206D75742070617468203D20506174684275663A3A6E657728293B0A2020202020202020666F7220636F6D706F6E656E7420696E20506174683A3A6E657728266C6F676963616C5F70617468292E636F6D706F6E656E74732829207B0A2020202020202020202020206D6174636820636F6D706F6E656E74207B0A20202020202020202020202020202020436F6D706F6E656E743A3A4E6F726D616C287061727429203D3E20706174682E707573682870617274292C0A20202020202020202020202020202020436F6D706F6E656E743A3A437572446972203D3E207B7D0A202020202020202020202020202020205F203D3E207B0A202020202020202020202020202020202020202072657475726E2045727228457874726163744572726F723A3A45787472616374696F6E280A202020202020202020202020202020202020202020202020226C6F676963616C2070617468206D7573742062652072656C61746976652077697468206E6F20706172656E7420636F6D706F6E656E7473222E696E746F28292C0A202020202020202020202020202020202020202029293B0A202020202020202020202020202020207D0A2020202020202020202020207D0A20202020202020207D0A2020202020202020696620706174682E61735F6F735F73747228292E69735F656D7074792829207B0A20202020202020202020202072657475726E2045727228457874726163744572726F723A3A45787472616374696F6E280A20202020202020202020202020202020226C6F676963616C2070617468206D757374206E616D6520612066696C65222E696E746F28292C0A20202020202020202020202029293B0A20202020202020207D0A20202020202020206C657420706174685F6279746573203D20706174682E61735F6F735F73747228292E61735F656E636F6465645F627974657328293B0A2020202020202020696620706174685F62797465732E666972737428292E69735F736F6D655F616E642875383A3A69735F61736369695F616C7068616265746963290A202020202020202020202020262620706174685F62797465732E676574283129203D3D20536F6D65282662273A27290A20202020202020207B0A20202020202020202020202072657475726E2045727228457874726163744572726F723A3A45787472616374696F6E280A20202020202020202020202020202020226C6F676963616C2070617468206D757374206E6F742068617665206120647269766520707265666978222E696E746F28292C0A20202020202020202020202029293B0A20202020202020207D0A0A20202020202020206C6574206D7574206275696C646572203D20466163744275696C6465723A3A6E657728506174683A3A6E657728222229293B0A202020202020202073656C662E657874726163745F67726170685F666163747328266D7574206275696C6465722C2026706174682C206279746573293F3B0A20202020202020206275696C6465722E7265736F6C76655F70656E64696E675F656467657328293B0A20202020202020204F6B286275696C6465722E696E746F5F66616374732829290A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "3992037fa4b950204c103ecf30abe2d56034b849a343aee0eb90f73dfdfc6991"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:113",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "dispatch",
+      113,
+      113
+    ],
+    "rows": [
+      {
+        "node_id": 22,
+        "stable_key": "64cf9a79b4b90a76",
+        "label": "dispatch",
+        "kind": "method",
+        "start_byte": 4069,
+        "end_byte": 5914,
+        "start_line": 113,
+        "end_line": 154,
+        "source_span_hex": "707562206173796E6320666E206469737061746368282673656C662C206E616D653A20267374722C206D757420617267733A2056616C756529202D3E20436F64654772617068526573756C74207B0A20202020202020206C65742070726F6A656374203D20657874726163745F70726F6A65637428266D757420617267732C202673656C662E6C6F63616C5F70726F6A65637473293F3B0A20202020202020206C657420696E686572697465645F726F6F74203D2070726F6A6563740A2020202020202020202020202E61735F72656628290A2020202020202020202020202E6D6170287C70726F6A6563747C2070726F6A6563742E726F6F742E636C6F6E652829290A2020202020202020202020202E6F725F656C73652873636F7065645F776F726B747265655F726F6F74293B0A2020202020202020235B6366672874657374295D0A20202020202020206C65742073636F70655F62617272696572203D2050524F4A4543545F53434F50455F424152524945525F464F525F544553542E7472795F77697468284172633A3A636C6F6E65292E6F6B28293B0A20202020202020206C6574206D6F64756C65203D2073656C662E636C6F6E6528293B0A20202020202020206C657420746F6F6C5F6E616D65203D206E616D652E746F5F737472696E6728293B0A20202020202020206C65742074696D656F7574203D20636F64655F746F6F6C5F74696D656F757428293B0A2020202020202020235B63666728616E7928746573742C2066656174757265203D2022746573742D737570706F72742229295D0A20202020202020206C657420746573745F64656C6179203D20434F44455F544F4F4C5F44454C41595F4F564552524944452E7472795F77697468287C64656C61797C202A64656C6179292E6F6B28293B0A20202020202020206C6574206D7574207461736B203D20746F6B696F3A3A737061776E287B0A2020202020202020202020206C657420746F6F6C5F6E616D65203D20746F6F6C5F6E616D652E636C6F6E6528293B0A2020202020202020202020206173796E63206D6F7665207B0A202020202020202020202020202020206C65742072756E203D206173796E63206D6F7665207B0A2020202020202020202020202020202020202020235B63666728616E7928746573742C2066656174757265203D2022746573742D737570706F72742229295D0A20202020202020202020202020202020202020206966206C657420536F6D652864656C617929203D20746573745F64656C61792E66696C746572287C64656C61797C202164656C61792E69735F7A65726F282929207B0A202020202020202020202020202020202020202020202020746F6B696F3A3A74696D653A3A736C6565702864656C6179292E61776169743B0A20202020202020202020202020202020202020207D0A202020202020202020202020202020202020202072756E5F73636F7065645F636F64655F746F6F6C286D6F64756C652C2026746F6F6C5F6E616D652C20617267732C20696E686572697465645F726F6F742C2070726F6A656374292E61776169740A202020202020202020202020202020207D3B0A20202020202020202020202020202020235B6366672874657374295D0A202020202020202020202020202020206966206C657420536F6D65286261727269657229203D2073636F70655F62617272696572207B0A202020202020202020202020202020202020202072657475726E2050524F4A4543545F53434F50455F424152524945525F464F525F544553542E73636F706528626172726965722C2072756E292E61776169743B0A202020202020202020202020202020207D0A2020202020202020202020202020202072756E2E61776169740A2020202020202020202020207D0A20202020202020207D293B0A20202020202020206D6174636820746F6B696F3A3A74696D653A3A74696D656F75742874696D656F75742C20266D7574207461736B292E6177616974207B0A2020202020202020202020204F6B284F6B28726573756C742929203D3E20726573756C742C0A2020202020202020202020204F6B28457272286A6F696E5F6572726F722929203D3E20457272284D637048616E646C65724572726F723A3A496E7465726E616C28666F726D617421280A2020202020202020202020202020202022636F646520677261706820746F6F6C20607B746F6F6C5F6E616D657D60207461736B206661696C65643A207B6A6F696E5F6572726F727D220A20202020202020202020202029290A2020202020202020202020202E696E746F2829292C0A202020202020202020202020457272285F656C617073656429203D3E207B0A202020202020202020202020202020207461736B2E61626F727428293B0A2020202020202020202020202020202045727228636F64655F746F6F6C5F646561646C696E655F65786365656465642826746F6F6C5F6E616D652C2074696D656F757429290A2020202020202020202020207D0A20202020202020207D0A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "6cbdeb8aaa8c9b2123388639923cb5c50197eaff1b8a2e83119dde188b89aeab"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:156",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "dispatch_current_project",
+      156,
+      156
+    ],
+    "rows": [
+      {
+        "node_id": 23,
+        "stable_key": "03b1457e6bb91135",
+        "label": "dispatch_current_project",
+        "kind": "method",
+        "start_byte": 5920,
+        "end_byte": 8852,
+        "start_line": 156,
+        "end_line": 238,
+        "source_span_hex": "6173796E6320666E2064697370617463685F63757272656E745F70726F6A656374282673656C662C206E616D653A20267374722C20617267733A2056616C756529202D3E20436F64654772617068526573756C74207B0A2020202020202020235B6366672874657374295D0A2020202020202020776169745F666F725F70726F6A6563745F73636F70655F6F7665726C61705F666F725F7465737428292E61776169743B0A20202020202020206C6574205F72756E74696D655F6C6966656379636C65203D2073656C662E646570732E6F7665726C61795F72756E74696D655F6C6966656379636C6528293B0A20202020202020206D61746368206E616D65207B0A20202020202020202020202022636F64655F7265736F6C766522203D3E207B0A20202020202020202020202020202020636F64655F7265736F6C76655F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F73796D626F6C5F73656172636822207C2022636F64655F73656172636822203D3E207B0A20202020202020202020202020202020636F64655F7365617263685F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F66696C655F73796D626F6C7322203D3E207B0A20202020202020202020202020202020636F64655F66696C655F73796D626F6C735F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F73796D626F6C5F696E666F22203D3E207B0A20202020202020202020202020202020636F64655F73796D626F6C5F696E666F5F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F726561645F73796D626F6C22203D3E207B0A20202020202020202020202020202020636F64655F726561645F73796D626F6C5F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F63616C6C65727322203D3E207B0A20202020202020202020202020202020636F64655F63616C6C6572735F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F63616C6C65657322203D3E207B0A20202020202020202020202020202020636F64655F63616C6C6565735F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F737562677261706822203D3E207B0A20202020202020202020202020202020636F64655F73756267726170685F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A20202020202020202020202022636F64655F73796D626F6C5F686973746F727922203D3E207B0A20202020202020202020202020202020636F64655F73796D626F6C5F686973746F72795F726573706F6E7365280A202020202020202020202020202020202020202026617267732C0A20202020202020202020202020202020202020204172633A3A636C6F6E65282673656C662E646570732E72656275696C645F636F6F7264696E61746F72292C0A202020202020202020202020202020202020202073656C662E646570732E6F7665726C61795F66736D6F6E69746F725F6175746F2C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A2020202020202020202020207D0A2020202020202020202020206F74686572203D3E20457272284D637048616E646C65724572726F723A3A496E76616C6964506172616D7328666F726D617421280A2020202020202020202020202020202022756E6B6E6F776E20636F6465206772617068204D435020746F6F6C3A207B6F746865727D220A20202020202020202020202029290A2020202020202020202020202E696E746F2829292C0A20202020202020207D0A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "aeb819c3332069a6c49ad5d0a2fd7b809152f94eb59c7aaff30ee12d6f5a8080"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:263",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "call",
+      263,
+      263
+    ],
+    "rows": [
+      {
+        "node_id": 26,
+        "stable_key": "6cf1db6444e65c20",
+        "label": "call",
+        "kind": "method",
+        "start_byte": 9862,
+        "end_byte": 10550,
+        "start_line": 263,
+        "end_line": 283,
+        "source_span_hex": "6173796E6320666E2063616C6C280A20202020202020202673656C662C0A20202020202020206374783A20737075725F6D63703A3A546F6F6C43616C6C436F6E746578743C275F3E2C0A20202020202020206E616D653A20267374722C0A2020202020202020617267733A2056616C75652C0A2020202029202D3E20526573756C743C737075725F6D63703A3A546F6F6C526573706F6E73652C20737075725F6D63703A3A4D63704572726F723E207B0A20202020202020206D617463682073656C662E6469737061746368286E616D652C2061726773292E6177616974207B0A2020202020202020202020204F6B28626F647929203D3E204F6B28737075725F6D63703A3A546F6F6C526573706F6E73653A3A6A736F6E5F74657874280A202020202020202020202020202020206374782E726571756573745F69645F76616C756528292C0A20202020202020202020202020202020626F64792C0A20202020202020202020202029292C0A202020202020202020202020457272286572726F7229203D3E207B0A202020202020202020202020202020206C657420726573706F6E7365203D206572726F722E696E746F5F6572726F725F726573706F6E736528292E61776169743B0A2020202020202020202020202020202045727228737075725F6D63703A3A4D63704572726F723A3A6E6577280A2020202020202020202020202020202020202020737075725F6D63703A3A4572726F72436F646528726573706F6E73652E636F646520617320693332292C0A2020202020202020202020202020202020202020726573706F6E73652E6D6573736167652C0A2020202020202020202020202020202020202020726573706F6E73652E646174612C0A2020202020202020202020202020202029290A2020202020202020202020207D0A20202020202020207D0A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "be20f093e96f59aab18ea578c215c23f348d425aa59cf2a399df75292e03650b"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:685",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "exact_scan",
+      685,
+      685
+    ],
+    "rows": [
+      {
+        "node_id": 71,
+        "stable_key": "070cb92615717733",
+        "label": "exact_scan",
+        "kind": "method",
+        "start_byte": 25232,
+        "end_byte": 25554,
+        "start_line": 685,
+        "end_line": 691,
+        "source_span_hex": "6173796E6320666E2065786163745F7363616E282673656C662C206B65793A20264F7665726C617952756E74696D654B657929202D3E20616E79686F773A3A526573756C743C4275696C744F7665726C617947656E65726174696F6E3E207B0A20202020202020206C6574206B6579203D206B65792E636C6F6E6528293B0A20202020202020206C6574206275696C646572203D2073656C662E636C6F6E6528293B0A2020202020202020746F6B696F3A3A7461736B3A3A737061776E5F626C6F636B696E67286D6F7665207C7C206275696C6465722E6275696C645F657861637428266B657929290A2020202020202020202020202E61776169740A2020202020202020202020202E636F6E7465787428226F7665726C61792067656E65726174696F6E206275696C646572207461736B206661696C656422293F0A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "1a44615086dbf019da04ae0b35952725a7fd19cccb7db21bcc62aa5076c8ebee"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:693",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "rebuild_incremental",
+      693,
+      693
+    ],
+    "rows": [
+      {
+        "node_id": 72,
+        "stable_key": "65ea6530947a17a0",
+        "label": "rebuild_incremental",
+        "kind": "method",
+        "start_byte": 25560,
+        "end_byte": 26034,
+        "start_line": 693,
+        "end_line": 703,
+        "source_span_hex": "6173796E6320666E2072656275696C645F696E6372656D656E74616C280A20202020202020202673656C662C0A20202020202020206B65793A20264F7665726C617952756E74696D654B65792C0A20202020202020205F70726576696F75733A204275696C744F7665726C617947656E65726174696F6E2C0A20202020202020205F6368616E6765645F70617468733A2042547265655365743C506174684275663E2C0A2020202029202D3E20616E79686F773A3A526573756C743C4275696C744F7665726C617947656E65726174696F6E3E207B0A20202020202020202F2F2050726F7669646572206576656E74732063686F6F7365207768656E20746F2072656275696C642E2054686520657861637420736E617073686F74206275696C6465720A20202020202020202F2F2072656D61696E732074686520617574686F726974617469766520706174682F7374617465206F7261636C6520616E64204F7665726C617947656E65726174696F6E0A20202020202020202F2F20706572666F726D7320746865207374727563747572616C6C7920736861726564206368616E6765642D70617468207570646174652E0A202020202020202073656C662E65786163745F7363616E286B6579292E61776169740A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "b4941b7260db1773dae8124c764256895c2804d3ff0727fd40d4759d07a62ff1"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:64",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "rust_matches_native_with_nested_macro_scopes_attributes_and_local_definition",
+      64,
+      64
+    ],
+    "rows": [
+      {
+        "node_id": 6,
+        "stable_key": "85e5ba281f6388ca",
+        "label": "rust_matches_native_with_nested_macro_scopes_attributes_and_local_definition",
+        "kind": "function",
+        "start_byte": 2178,
+        "end_byte": 3327,
+        "start_line": 64,
+        "end_line": 96,
+        "source_span_hex": "666E20727573745F6D6174636865735F6E61746976655F776974685F6E65737465645F6D6163726F5F73636F7065735F617474726962757465735F616E645F6C6F63616C5F646566696E6974696F6E2829207B0A202020206C6574206661637473203D206173736572745F6E61746976655F70617269747928227669727475616C2FE99BAA2F6C69622E7273222C20525553542E61735F62797465732829293B0A2020202061737365727421282166616374732E6D6163726F5F73636F7065732E69735F656D7074792829293B0A202020206C6574206C6F63616C203D2066616374730A20202020202020202E6D6163726F5F696E766F636174696F6E730A20202020202020202E6974657228290A20202020202020202E66696E64287C726F777C20726F772E6E6F726D616C697A65645F6D6163726F5F70617468203D3D20226C6F63616C22290A20202020202020202E756E7772617028293B0A2020202061737365727421286D61746368657321280A20202020202020206C6F63616C2E7265736F6C7574696F6E2C0A20202020202020204D6163726F5265736F6C7574696F6E45766964656E63653A3A4C6F63616C446566696E6974696F6E43616E646964617465207B202E2E207D0A2020202029293B0A20202020666F722072617720696E205B0A20202020202020202223215B616C6C6F7728646561645F636F6465295D222C0A202020202020202022235B6366672874657374295D222C0A202020202020202022235B6366675F617474722866656174757265203D205C2265787472615C222C2074657374295D222C0A202020205D207B0A202020202020202061737365727421286C6F63616C2E617474726962757465732E6974657228292E616E79287C617474727C20617474722E7261775F74657874203D3D2072617729293B0A202020207D0A20202020617373657274212866616374730A20202020202020202E6D6163726F5F696E766F636174696F6E730A20202020202020202E6974657228290A20202020202020202E616E79287C726F777C20726F772E6E6F726D616C697A65645F6D6163726F5F70617468203D3D20226173736572742229293B0A202020202F2F2041206D6163726F277320746F6B656E2D7472656520636F6E74656E747320646F206E6F74206265636F6D65206120646972656374206E657374656420696E766F636174696F6E2E0A2020202061737365727421282166616374730A20202020202020202E6D6163726F5F696E766F636174696F6E730A20202020202020202E6974657228290A20202020202020202E616E79287C726F777C20726F772E6E6F726D616C697A65645F6D6163726F5F70617468203D3D202270616E69632229293B0A20202020617373657274212866616374730A20202020202020202E65646765730A20202020202020202E6974657228290A20202020202020202E616E79287C656467657C207B20656467652E72656C6174696F6E203D3D2052656C6174696F6E4B696E643A3A43616C6C7320262620656467652E7461726765745F6E6F64655F69642E69735F736F6D652829207D29293B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "0cd0500f23694ef45d315fde60e1511d21c2063a2a79196e3451998b8bfad423"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:209",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "empty_source_preserves_native_file_facts",
+      209,
+      209
+    ],
+    "rows": [
+      {
+        "node_id": 13,
+        "stable_key": "4d52afe0ec27628e",
+        "label": "empty_source_preserves_native_file_facts",
+        "kind": "function",
+        "start_byte": 7567,
+        "end_byte": 7975,
+        "start_line": 209,
+        "end_line": 222,
+        "source_span_hex": "666E20656D7074795F736F757263655F7072657365727665735F6E61746976655F66696C655F66616374732829207B0A20202020666F72207061746820696E205B0A2020202020202020227669727475616C2F656D7074792E7273222C0A2020202020202020227669727475616C2F656D7074792E637070222C0A2020202020202020227669727475616C2F656D7074792E7079222C0A2020202020202020227669727475616C2F656D7074792E6D64222C0A2020202020202020227669727475616C2F656D7074792E6A736F6E222C0A2020202020202020227669727475616C2F656D7074792E79616D6C222C0A2020202020202020227669727475616C2F656D7074792E746F6D6C222C0A202020205D207B0A20202020202020206173736572745F6E61746976655F70617269747928706174682C20622222293B0A202020207D0A202020206173736572745F6E61746976655F70617269747928227669727475616C2F656D7074792E6970796E62222C20627223227B2263656C6C73223A5B5D2C226D65746164617461223A7B7D7D2223293B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "a3a26ba52ea71b645e7ee3687433ed79b7f97acd91d56b33f85c5ad43ec3bf84"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:225",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "errors_propagate_and_do_not_poison_reused_extractor",
+      225,
+      225
+    ],
+    "rows": [
+      {
+        "node_id": 14,
+        "stable_key": "8a3e693ce88e230f",
+        "label": "errors_propagate_and_do_not_poison_reused_extractor",
+        "kind": "function",
+        "start_byte": 7985,
+        "end_byte": 9024,
+        "start_line": 225,
+        "end_line": 251,
+        "source_span_hex": "666E206572726F72735F70726F7061676174655F616E645F646F5F6E6F745F706F69736F6E5F7265757365645F657874726163746F722829207B0A202020206C65742070617468203D20506174683A3A6E657728227669727475616C2F736F757263652E727322293B0A202020206C6574206D757420657874726163746F72203D204279746573457874726163746F723A3A666F725F6C616E6775616765284C616E67756167653A3A52757374292E756E7772617028293B0A2020202061737365727421286D61746368657321280A2020202020202020657874726163746F722E657874726163745F66696C655F666163747328706174682C20265B307866665D292C0A202020202020202045727228457874726163744572726F723A3A496E76616C696455746638285F29290A2020202029293B0A202020206173736572745F73616D655F6661637473280A202020202020202026657874726163746F722E657874726163745F66696C655F666163747328706174682C20525553542E61735F62797465732829292E756E7772617028292C0A2020202020202020266E61746976655F66696C6528227669727475616C2F736F757263652E7273222C20525553542E61735F62797465732829292C0A20202020293B0A0A202020206C6574206D7574206E6F7465626F6F6B203D204279746573457874726163746F723A3A666F725F6C616E6775616765284C616E67756167653A3A4A7570797465724E6F7465626F6F6B292E756E7772617028293B0A20202020666F7220627974657320696E205B6222222E61735F736C69636528292C2062226E6F742061206E6F7465626F6F6B222C20265B307866665D5D207B0A202020202020202061737365727421286D61746368657321280A2020202020202020202020206E6F7465626F6F6B2E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F6261642E6970796E6222292C206279746573292C0A20202020202020202020202045727228457874726163744572726F723A3A45787472616374696F6E285F29290A202020202020202029293B0A202020207D0A202020206C6574206279746573203D20627223227B2263656C6C73223A5B5D2C226D65746164617461223A7B7D7D22233B0A202020206173736572745F73616D655F6661637473280A2020202020202020266E6F7465626F6F6B0A2020202020202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F676F6F642E6970796E6222292C206279746573290A2020202020202020202020202E756E7772617028292C0A2020202020202020266E61746976655F66696C6528227669727475616C2F676F6F642E6970796E62222C206279746573292C0A20202020293B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "c82897349f6f61f93c67f4bc2edd9b5b544e766b5700a87755e56f5f01bd1995"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:310",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "repeated_calls_start_fresh_ids_and_do_not_resolve_against_previous_files",
+      310,
+      310
+    ],
+    "rows": [
+      {
+        "node_id": 18,
+        "stable_key": "fa62a5f666f840e6",
+        "label": "repeated_calls_start_fresh_ids_and_do_not_resolve_against_previous_files",
+        "kind": "function",
+        "start_byte": 10882,
+        "end_byte": 12087,
+        "start_line": 310,
+        "end_line": 339,
+        "source_span_hex": "666E2072657065617465645F63616C6C735F73746172745F66726573685F6964735F616E645F646F5F6E6F745F7265736F6C76655F616761696E73745F70726576696F75735F66696C65732829207B0A202020206C6574206D757420657874726163746F72203D204279746573457874726163746F723A3A666F725F6C616E6775616765284C616E67756167653A3A507974686F6E292E756E7772617028293B0A202020206C657420646566696E6974696F6E73203D2062226465662072656D6F74655F63616C6C28293A5C6E2020202072657475726E20315C6E223B0A202020206C65742063616C6C73203D2062226465662063616C6C657228293A5C6E2020202072657475726E2072656D6F74655F63616C6C28295C6E223B0A202020206C6574206669727374203D20657874726163746F720A20202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F72656D6F74652E707922292C20646566696E6974696F6E73290A20202020202020202E756E7772617028293B0A202020206C6574207365636F6E64203D20657874726163746F720A20202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F63616C6C65722E707922292C2063616C6C73290A20202020202020202E756E7772617028293B0A202020206173736572745F73616D655F6661637473282666697273742C20266E61746976655F66696C6528227669727475616C2F72656D6F74652E7079222C20646566696E6974696F6E7329293B0A202020206173736572745F73616D655F666163747328267365636F6E642C20266E61746976655F66696C6528227669727475616C2F63616C6C65722E7079222C2063616C6C7329293B0A2020202061737365727421287365636F6E642E65646765732E6974657228292E616E79287C656467657C207B0A2020202020202020656467652E72656C6174696F6E203D3D2052656C6174696F6E4B696E643A3A43616C6C730A202020202020202020202020262620656467652E7461726765745F6C6162656C2E61735F64657265662829203D3D20536F6D65282272656D6F74655F63616C6C22290A202020202020202020202020262620656467652E7461726765745F6E6F64655F69642E69735F6E6F6E6528290A202020207D29293B0A202020206173736572745F73616D655F6661637473280A202020202020202026657874726163746F720A2020202020202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F72656D6F74652E707922292C20646566696E6974696F6E73290A2020202020202020202020202E756E7772617028292C0A20202020202020202666697273742C0A20202020293B0A202020206173736572745F73616D655F6661637473280A202020202020202026657874726163746F720A2020202020202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F63616C6C65722E707922292C2063616C6C73290A2020202020202020202020202E756E7772617028292C0A2020202020202020267365636F6E642C0A20202020293B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "50e0abae19ea9a8c1b9e53e18ba0d01a283f0fb81fc54b41b4174930c188f2c6"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:342",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "reused_rust_extractor_does_not_leak_macro_evidence_or_local_bindings",
+      342,
+      342
+    ],
+    "rows": [
+      {
+        "node_id": 19,
+        "stable_key": "6fe38ae2d6f8c22c",
+        "label": "reused_rust_extractor_does_not_leak_macro_evidence_or_local_bindings",
+        "kind": "function",
+        "start_byte": 12097,
+        "end_byte": 12836,
+        "start_line": 342,
+        "end_line": 359,
+        "source_span_hex": "666E207265757365645F727573745F657874726163746F725F646F65735F6E6F745F6C65616B5F6D6163726F5F65766964656E63655F6F725F6C6F63616C5F62696E64696E67732829207B0A202020206C6574206D757420657874726163746F72203D204279746573457874726163746F723A3A666F725F6C616E6775616765284C616E67756167653A3A52757374292E756E7772617028293B0A202020206C6574206669727374203D20657874726163746F720A20202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F6C69622E727322292C20525553542E61735F62797465732829290A20202020202020202E756E7772617028293B0A202020206C657420706C61696E203D20657874726163746F720A20202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F706C61696E2E727322292C206222666E20706C61696E2829207B7D22290A20202020202020202E756E7772617028293B0A202020206173736572745F73616D655F66616374732826706C61696E2C20266E61746976655F66696C6528227669727475616C2F706C61696E2E7273222C206222666E20706C61696E2829207B7D2229293B0A202020206173736572742128706C61696E2E6D6163726F5F696E766F636174696F6E732E69735F656D7074792829293B0A202020206173736572742128706C61696E2E6D6163726F5F73636F7065732E69735F656D7074792829293B0A202020206173736572745F73616D655F6661637473280A202020202020202026657874726163746F720A2020202020202020202020202E657874726163745F66696C655F666163747328506174683A3A6E657728227669727475616C2F6C69622E727322292C20525553542E61735F62797465732829290A2020202020202020202020202E756E7772617028292C0A20202020202020202666697273742C0A20202020293B0A7D",
+        "signature_bytes_present": true,
+        "span_sha256": "08094d5ba3fd5ca7a902f71fce442fddbe1f554af994dba8b7bc6bb7d0b0c9dc"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:8582",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "code_tool_dispatch_returns_when_the_call_exceeds_the_deadline",
+      8582,
+      8582
+    ],
+    "rows": [
+      {
+        "node_id": 786,
+        "stable_key": "e4cc5d520fa1bb64",
+        "label": "code_tool_dispatch_returns_when_the_call_exceeds_the_deadline",
+        "kind": "function",
+        "start_byte": 297890,
+        "end_byte": 299380,
+        "start_line": 8582,
+        "end_line": 8622,
+        "source_span_hex": "6173796E6320666E20636F64655F746F6F6C5F64697370617463685F72657475726E735F7768656E5F7468655F63616C6C5F657863656564735F7468655F646561646C696E652829207B0A20202020202020206C6574206D6F64756C65203D2047726170684D63704D6F64756C653A3A64656661756C7428293B0A20202020202020206C65742073746172746564203D20496E7374616E743A3A6E6F7728293B0A0A20202020202020206C6574206572726F72203D20434F44455F544F4F4C5F54494D454F55545F4F564552524944450A2020202020202020202020202E73636F7065284475726174696F6E3A3A66726F6D5F6D696C6C6973283330292C206173796E63207B0A20202020202020202020202020202020434F44455F544F4F4C5F44454C41595F4F564552524944450A20202020202020202020202020202020202020202E73636F7065284475726174696F6E3A3A66726F6D5F6D696C6C697328323530292C206173796E63206D6F7665207B0A2020202020202020202020202020202020202020202020206D6F64756C650A202020202020202020202020202020202020202020202020202020202E64697370617463682822636F64655F7265736F6C7665222C206A736F6E21287B2273656C6563746F72223A20226D697373696E675F73796D626F6C227D29290A202020202020202020202020202020202020202020202020202020202E61776169740A20202020202020202020202020202020202020207D290A20202020202020202020202020202020202020202E61776169740A2020202020202020202020207D290A2020202020202020202020202E61776169740A2020202020202020202020202E6578706563745F6572722822612063616C6C20706173742074686520646561646C696E652072657475726E7320616E206572726F7222293B0A20202020202020206C657420726573706F6E7365203D206572726F722E696E746F5F6572726F725F726573706F6E736528292E61776169743B0A0A20202020202020206173736572745F65712128726573706F6E73652E636F64652C20434F44455F47524150485F54494D454F55545F4552524F525F434F4445293B0A202020202020202061737365727421280A202020202020202020202020726573706F6E73652E6D6573736167652E636F6E7461696E732822636F64655F7265736F6C766522292C0A2020202020202020202020202274696D656F7574206E616D65732074686520746F6F6C3A207B7D222C0A202020202020202020202020726573706F6E73652E6D6573736167650A2020202020202020293B0A20202020202020206173736572745F657121280A202020202020202020202020726573706F6E73652E646174612E61735F72656628292E616E645F7468656E287C646174617C20646174612E67657428226B696E642229292C0A202020202020202020202020536F6D6528266A736F6E21282274696D656F75742229290A2020202020202020293B0A20202020202020206173736572745F657121280A202020202020202020202020726573706F6E73650A202020202020202020202020202020202E646174610A202020202020202020202020202020202E61735F72656628290A202020202020202020202020202020202E616E645F7468656E287C646174617C20646174612E676574282274696D656F75745F6D732229292C0A202020202020202020202020536F6D6528266A736F6E2128333029290A2020202020202020293B0A202020202020202061737365727421280A202020202020202020202020737461727465642E656C61707365642829203C204475726174696F6E3A3A66726F6D5F6D696C6C697328313530292C0A20202020202020202020202022646561646C696E652072657475726E73206265666F72652074686520626C6F636B65642063616C6C2066696E69736865732C20656C6170736564207B3A3F7D222C0A202020202020202020202020737461727465642E656C617073656428290A2020202020202020293B0A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "cb7d12d1d038618826abd275736ef3b2a944d283ba62a5f5ae6ad90f44780ecc"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/src/mcp/mod.rs:8625",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/src/mcp/mod.rs",
+      "code_tool_dispatch_keeps_the_caller_worktree_under_the_deadline",
+      8625,
+      8625
+    ],
+    "rows": [
+      {
+        "node_id": 787,
+        "stable_key": "33edd5d0e5d7ad6b",
+        "label": "code_tool_dispatch_keeps_the_caller_worktree_under_the_deadline",
+        "kind": "function",
+        "start_byte": 299405,
+        "end_byte": 300315,
+        "start_line": 8625,
+        "end_line": 8649,
+        "source_span_hex": "6173796E6320666E20636F64655F746F6F6C5F64697370617463685F6B656570735F7468655F63616C6C65725F776F726B747265655F756E6465725F7468655F646561646C696E652829207B0A20202020202020206C657420646972203D2074656D7066696C653A3A74656D7064697228292E657870656374282274656D7064697222293B0A20202020202020206C657420726F6F74203D206469722E7061746828293B0A2020202020202020696E69745F6769745F7265706F28726F6F74293B0A20202020202020206C6574206172746966616374203D2061727469666163745F66726F6D5F736F7572636528726F6F742C202270756220666E20646561646C696E655F73636F70655F73796D626F6C2829207B7D5C6E22293B0A202020202020202077726974655F63757272656E745F617274696661637428726F6F742C20266172746966616374293B0A20202020202020206C6574206D6F64756C65203D2047726170684D63704D6F64756C653A3A64656661756C7428293B0A20202020202020206C657420726F6F74203D20726F6F742E746F5F706174685F62756628293B0A0A20202020202020206C657420626F6479203D20776974685F776F726B747265655F726F6F745F666F725F7265717565737428726F6F742C206173796E63206D6F7665207B0A2020202020202020202020206D6F64756C650A202020202020202020202020202020202E6469737061746368280A202020202020202020202020202020202020202022636F64655F73796D626F6C5F736561726368222C0A20202020202020202020202020202020202020206A736F6E21287B227175657279223A2022646561646C696E655F73636F70655F73796D626F6C222C20226D6F6465223A20226578616374227D292C0A20202020202020202020202020202020290A202020202020202020202020202020202E61776169740A20202020202020207D290A20202020202020202E61776169740A20202020202020202E657870656374282273636F706564207365617263682072657475726E7320696E736964652074686520646561646C696E6522293B0A0A20202020202020206173736572745F657121280A202020202020202020202020626F64795B2263616E64696461746573225D5B305D5B22656E746974795F6E616D65225D2C0A20202020202020202020202022646561646C696E655F73636F70655F73796D626F6C220A2020202020202020293B0A202020207D",
+        "signature_bytes_present": true,
+        "span_sha256": "11a1abbd397ba1914d23c6ae77807dd592e8fbda39e7b1ff2295541a38f11e49"
+      }
+    ]
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:12",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "local",
+      12,
+      12
+    ],
+    "rows": []
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:13",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "helper",
+      13,
+      13
+    ],
+    "rows": []
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:17",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "outer",
+      17,
+      17
+    ],
+    "rows": []
+  },
+  {
+    "name": "crates/spur-graph/tests/extract_file_facts.rs:20",
+    "sql": "SELECT n.node_id,n.stable_key,n.label,n.kind,\np.start_byte,p.end_byte,p.start_line,p.end_line,\nsubstring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,\n          2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_span_hex\nFROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id\nJOIN sources s ON n.logical_path=s.logical_path\nWHERE n.logical_path=? AND regexp_extract(n.label,'([^:]+)$',1)=?\n AND n.kind<>'file' AND p.start_line<=? AND p.end_line>=?\nORDER BY p.start_line,n.node_id",
+    "params": [
+      "crates/spur-graph/tests/extract_file_facts.rs",
+      "inner",
+      20,
+      20
+    ],
+    "rows": []
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:188",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      188,
+      188
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "c8d810b2173269b8af2d2c1beb765bec0e1cdf7b4df6e82f3667950d173baed0",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          4606,
+          4967
+        ],
+        "line_range": [
+          188,
+          194
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C73212852656C6174696F6E4B696E64207B0A20202020496D706F727473203D3E2022696D706F727473222C2043616C6C73203D3E202263616C6C73222C20436F6E73747275637473203D3E2022636F6E73747275637473222C0A20202020436F6E7461696E73203D3E2022636F6E7461696E73222C20496D706C656D656E7473203D3E2022696D706C656D656E7473222C20446566696E6573203D3E2022646566696E6573222C0A202020205265666572656E636573203D3E20227265666572656E636573222C20457874656E6473203D3E2022657874656E6473222C204C696E6B73203D3E20226C696E6B73222C0A20202020546F7563686573203D3E2022746F7563686573222C2050726F6475636573203D3E202270726F6475636573222C20436F6E73756D6573203D3E2022636F6E73756D6573222C0A2020202042696E6473203D3E202262696E6473222C20456D697473203D3E2022656D697473222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:195",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      195,
+      195
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "7e6b1595149335430e8b7328b7d235609a9200815b14efaa46fd8b2d3a0a56e1",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          4969,
+          5075
+        ],
+        "line_range": [
+          195,
+          197
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C732128436F6E666964656E6365207B0A2020202053796E7461784578616374203D3E202273796E7461785F6578616374222C20486575726973746963203D3E2022686575726973746963222C20556E6B6E6F776E203D3E2022756E6B6E6F776E222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:198",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      198,
+      198
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "dd343ba30955e6bab7adb9251798fa95f005ad1e3066223b47980841c060e83a",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5077,
+          5271
+        ],
+        "line_range": [
+          198,
+          201
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C7321284772617068456467654B696E64207B0A2020202043616C6C73203D3E202263616C6C73222C2043616C6C7344796E203D3E202263616C6C735F64796E222C205265666572656E636573486F66203D3E20227265666572656E6365735F686F66222C0A202020205265666572656E6365734F74686572203D3E20227265666572656E6365735F6F74686572222C205265666572656E63657341646472657373203D3E20227265666572656E6365735F61646472657373222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:202",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      202,
+      202
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "9eb3678256050c83de723b964a9724b4b972149da0df78f0603f91ea2baa95ba",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5273,
+          5460
+        ],
+        "line_range": [
+          202,
+          205
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C7321284D6163726F53636F70654B696E64207B0A2020202046696C65203D3E202266696C65222C204D6F64756C65203D3E20226D6F64756C65222C2046756E6374696F6E203D3E202266756E6374696F6E222C20436F6E7374203D3E2022636F6E7374222C0A20202020537461746963203D3E2022737461746963222C2054797065203D3E202274797065222C20496D706C203D3E2022696D706C222C20556E6B6E6F776E203D3E2022756E6B6E6F776E222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:206",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      206,
+      206
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "c0660d8f515b973ff65135e245e14f5eb71fbf94833d09882c50b8da9ccf1308",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5462,
+          5613
+        ],
+        "line_range": [
+          206,
+          209
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C7321284D6163726F54657374436F6E74657874207B0A20202020556E737065636966696564203D3E2022756E737065636966696564222C205465737441747472696275746543616E646964617465203D3E2022746573745F6174747269627574655F63616E646964617465222C0A20202020436F6E646974696F6E616C203D3E2022636F6E646974696F6E616C222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:210",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      210,
+      210
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "d77c604bf980dec75dc9046b9b128c233dc937a021b1650f583057fe4ced64e9",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5615,
+          5798
+        ],
+        "line_range": [
+          210,
+          213
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C7321284D6163726F457865637574696F6E5068617365207B0A20202020556E6B6E6F776E203D3E2022756E6B6E6F776E222C2046756E6374696F6E426F647953796E746178203D3E202266756E6374696F6E5F626F64795F73796E746178222C0A202020204974656D53796E746178203D3E20226974656D5F73796E746178222C20436F6E7374436F6E7465787453796E746178203D3E2022636F6E73745F636F6E746578745F73796E746178222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "macro-crates/spur-graph-duckdb/src/file_facts.rs:214",
+    "sql": "SELECT m.*,s.file_oid,\nsubstring(hex(s.source_bytes),2*CAST(m.byte_range[1] AS BIGINT)+1,\n 2*CAST(m.byte_range[2]-m.byte_range[1] AS BIGINT)) AS invocation_hex\nFROM macro_invocations m JOIN sources s USING(logical_path)\nWHERE m.logical_path=? AND m.normalized_macro_path=?\n AND m.line_range[1]<=? AND m.line_range[2]>=?\nORDER BY m.site_id",
+    "params": [
+      "crates/spur-graph-duckdb/src/file_facts.rs",
+      "labels",
+      214,
+      214
+    ],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "site_id": "4c3bdc0d976870bf64139794f6042215c449ead3af119a425026b95b60e4de9a",
+        "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "caller_stable_symbol_id": null,
+        "enclosing": {
+          "stable_symbol_id": "34cc6dd97469ef06",
+          "kind": "file"
+        },
+        "raw_macro_path": "labels",
+        "normalized_macro_path": "labels",
+        "byte_range": [
+          5800,
+          5913
+        ],
+        "line_range": [
+          214,
+          216
+        ],
+        "attributes": [],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "item_syntax",
+        "resolution": {
+          "kind": "local_definition_candidate",
+          "definition": {
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "source_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+            "byte_range": [
+              4340,
+              4604
+            ],
+            "line_range": [
+              178,
+              186
+            ]
+          }
+        },
+        "sink_family_candidate": null,
+        "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+        "invocation_hex": "6C6162656C7321284D6163726F53696E6B46616D696C79207B0A2020202050616E6963203D3E202270616E6963222C20417373657274696F6E203D3E2022617373657274696F6E222C204465627567417373657274696F6E203D3E202264656275675F617373657274696F6E222C0A7D29",
+        "source_oid_matches": true,
+        "signature_bytes_present": true
+      }
+    ]
+  },
+  {
+    "name": "rust_macro_totals",
+    "sql": "SELECT\n(SELECT count(*) FROM macro_invocations m JOIN inventory i ON i.path=m.logical_path WHERE i.suffix='.rs') AS invocations,\n(SELECT count(*) FROM macro_scopes m JOIN inventory i ON i.path=m.logical_path WHERE i.suffix='.rs') AS scopes",
+    "params": [],
+    "rows": [
+      {
+        "invocations": 51634,
+        "scopes": 19394
+      }
+    ]
+  },
+  {
+    "name": "rust_macro_context_resolution",
+    "sql": "SELECT m.test_context,m.execution_phase,\nm.resolution.kind AS resolution_kind,count(*) AS sites\nFROM macro_invocations m JOIN inventory i ON i.path=m.logical_path WHERE i.suffix='.rs'\nGROUP BY ALL ORDER BY sites DESC",
+    "params": [],
+    "rows": [
+      {
+        "test_context": "conditional",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 20643
+      },
+      {
+        "test_context": "test_attribute_candidate",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 16405
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 11697
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "explicit_path_candidate",
+        "sites": 1768
+      },
+      {
+        "test_context": "conditional",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "explicit_path_candidate",
+        "sites": 434
+      },
+      {
+        "test_context": "test_attribute_candidate",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "explicit_path_candidate",
+        "sites": 252
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "const_context_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 130
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "item_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 91
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "local_definition_candidate",
+        "sites": 59
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "item_syntax",
+        "resolution_kind": "local_definition_candidate",
+        "sites": 56
+      },
+      {
+        "test_context": "unspecified",
+        "execution_phase": "item_syntax",
+        "resolution_kind": "explicit_path_candidate",
+        "sites": 25
+      },
+      {
+        "test_context": "conditional",
+        "execution_phase": "item_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 22
+      },
+      {
+        "test_context": "conditional",
+        "execution_phase": "item_syntax",
+        "resolution_kind": "local_definition_candidate",
+        "sites": 20
+      },
+      {
+        "test_context": "conditional",
+        "execution_phase": "function_body_syntax",
+        "resolution_kind": "local_definition_candidate",
+        "sites": 14
+      },
+      {
+        "test_context": "conditional",
+        "execution_phase": "const_context_syntax",
+        "resolution_kind": "unresolved",
+        "sites": 12
+      },
+      {
+        "test_context": "conditional",
+        "execution_phase": "item_syntax",
+        "resolution_kind": "explicit_path_candidate",
+        "sites": 6
+      }
+    ]
+  },
+  {
+    "name": "rust_macro_bounds_and_source_identity",
+    "sql": "WITH source_info AS MATERIALIZED (\nSELECT logical_path,file_oid,octet_length(source_bytes) AS byte_length,\n length(source)-length(replace(source,chr(10),''))+1 AS line_count FROM sources)\nSELECT count(*) AS invocations,\ncount(*) FILTER(WHERE m.file_path IS DISTINCT FROM m.logical_path) AS file_path_mismatches,\ncount(*) FILTER(WHERE m.source_oid IS DISTINCT FROM s.file_oid) AS source_oid_mismatches,\ncount(*) FILTER(WHERE array_length(m.byte_range) IS DISTINCT FROM 2 OR m.byte_range[1] IS NULL OR m.byte_range[2] IS NULL OR m.byte_range[1]>m.byte_range[2] OR m.byte_range[2]>s.byte_length) AS invalid_byte_bounds,\ncount(*) FILTER(WHERE array_length(m.line_range) IS DISTINCT FROM 2 OR m.line_range[1] IS NULL OR m.line_range[2] IS NULL OR m.line_range[1]<1 OR m.line_range[1]>m.line_range[2] OR m.line_range[2]>s.line_count) AS invalid_line_bounds\nFROM macro_invocations m JOIN source_info s USING(logical_path)\nJOIN inventory i ON i.path=m.logical_path WHERE i.suffix='.rs' ",
+    "params": [],
+    "rows": [
+      {
+        "invocations": 51634,
+        "file_path_mismatches": 0,
+        "source_oid_mismatches": 0,
+        "invalid_byte_bounds": 0,
+        "invalid_line_bounds": 0
+      }
+    ]
+  },
+  {
+    "name": "rust_test_marker_file_diagnostics",
+    "sql": "WITH yield AS (\nSELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols FROM nodes GROUP BY logical_path), marked AS (\nSELECT i.path,coalesce(y.symbols,0) AS symbols,array_length(regexp_extract_all(s.source,?)) AS marker_lines\nFROM inventory i JOIN sources s ON i.path=s.logical_path LEFT JOIN yield y ON i.path=y.logical_path\nWHERE i.suffix='.rs' AND i.status='extracted')\nSELECT count(*) AS files,count(*) FILTER(WHERE marker_lines>0) AS files_with_test_markers,\ncount(*) FILTER(WHERE marker_lines>0 AND symbols=0) AS file_only_with_test_markers,\nsum(marker_lines) AS candidate_test_attribute_lines FROM marked",
+    "params": [
+      "(?m)^[ \\t]*#\\[(?:test|tokio::test|async_std::test)(?:\\]|\\()"
+    ],
+    "rows": [
+      {
+        "files": 1726,
+        "files_with_test_markers": 1107,
+        "file_only_with_test_markers": 0,
+        "candidate_test_attribute_lines": 9653
+      }
+    ]
+  },
+  {
+    "name": "file_only_rust_examples_limit_20",
+    "sql": "WITH yield AS (\nSELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols FROM nodes GROUP BY logical_path)\nSELECT i.path,i.bytes FROM inventory i JOIN yield y ON i.path=y.logical_path\nWHERE i.suffix='.rs' AND i.status='extracted' AND y.symbols=0 ORDER BY i.bytes DESC,i.path LIMIT 20",
+    "params": [],
+    "rows": [
+      {
+        "path": "crates/spur-tui/src/mentions/code_graph/expansion.rs",
+        "bytes": 542
+      },
+      {
+        "path": "crates/spur-utilities/facade/src/lib.rs",
+        "bytes": 322
+      },
+      {
+        "path": "crates/spur-context-service/src/abuse.rs",
+        "bytes": 97
+      },
+      {
+        "path": "crates/spur-analyst/src/mcp/value/arrow.rs",
+        "bytes": 84
+      },
+      {
+        "path": "crates/spur-graph/src/graph/algorithms.rs",
+        "bytes": 54
+      },
+      {
+        "path": "crates/spur-graph/src/store/snapshot.rs",
+        "bytes": 50
+      }
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "symbol": {
+    "qualified_name": "source_offset",
+    "entity_name": "source_offset",
+    "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+    "line_range": [
+      105,
+      111
+    ],
+    "symbol_kind": "function",
+    "enclosing_scope": null,
+    "uri": "graph://symbol/9ba5312b42a36c2a",
+    "id": "9ba5312b42a36c2a"
+  },
+  "source": "fn source_offset(value: Option<&u64>, field: &str) -> Result<usize> {\n    usize::try_from(*required(value, field)?).map_err(|_| {\n        Error::invalid_input(format!(\n            \"spur_graph_symbol_changes: {field} exceeds host usize\"\n        ))\n    })\n}\n",
+  "line_range": {
+    "start": 105,
+    "end": 111
+  },
+  "file_oid": "57de9d14f2aa1b8e0d36c533e7d28e2c4310189c",
+  "context_lines": 0,
+  "graph_content_hash": "c4290b43ee7d88f187e6a13535f74becc7d6229067b6d4802e6d1ff653ced0c8",
+  "graph_index_version": "4",
+  "graph_built_at": "2026-11-15T06:59:21.625Z",
+  "indexed_head_oid": "b5e1246cc9706f9938bcff6f6a4233d8a6c12199",
+  "worktree_head_oid": null,
+  "worktree_dirty": true,
+  "response_file_oids_match": null,
+  "rebuild_status": "not_needed"
+}

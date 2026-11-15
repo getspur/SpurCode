@@ -1,0 +1,32 @@
+[
+  {
+    "path": "crates/spur-tui/src/mentions/code_graph/expansion.rs",
+    "bytes": 542,
+    "source": "//! Compatibility re-export of the shared code-mention expansion (sud-m4).\n//!\n//! Discovery/validation/expansion live in `spur_mentions::code::expansion`\n//! behind the `code` feature; this path (`crate::mentions::code_graph::\n//! expansion`) stays stable for the submit router and integration tests\n//! (decoupling spec \u00a73.4, \u00a74.5 \u2014 expansion stays callable from the TUI).\n\npub use spur_mentions::code::expansion::{\n    expand, failure_reason_label, ExpandedMention, ReplacedWith, CONTEXT_HEADER_CAP_BYTES,\n    PER_PROMPT_CAP_BYTES,\n};\n"
+  },
+  {
+    "path": "crates/spur-utilities/facade/src/lib.rs",
+    "bytes": 322,
+    "source": "//! Facade for the `spur-utilities` crate family (spec \u00a72.3).\n//!\n//! Re-exports only: [`commands`] (`spur-commands`) and [`mentions`]\n//! (`spur-mentions`). No types, no logic, and the facade never enables the\n//! `code` feature of `spur-mentions`.\n\npub use spur_commands as commands;\npub use spur_mentions as mentions;\n"
+  },
+  {
+    "path": "crates/spur-context-service/src/abuse.rs",
+    "bytes": 97,
+    "source": "//! Re-exported source URL validation and abuse prevention API.\n\npub use spur_context_source::*;\n"
+  },
+  {
+    "path": "crates/spur-analyst/src/mcp/value/arrow.rs",
+    "bytes": 84,
+    "source": "// Intentionally empty. Keep this module file while `mcp/mod.rs` still declares it.\n"
+  },
+  {
+    "path": "crates/spur-graph/src/graph/algorithms.rs",
+    "bytes": 54,
+    "source": "// Reserved for Phase-1 operational graph algorithms.\n"
+  },
+  {
+    "path": "crates/spur-graph/src/store/snapshot.rs",
+    "bytes": 50,
+    "source": "// Reserved for future persisted graph snapshots.\n"
+  }
+]

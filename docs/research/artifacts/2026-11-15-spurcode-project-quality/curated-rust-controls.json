@@ -1,0 +1,270 @@
+{
+  "revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+  "selection": "Source-verified functions, async and trait methods, real #[test]/#[tokio::test] functions, macro definition and seven invocations; raw-string fixture names are negative controls. Frozen before reading full extraction facts; not exhaustive accuracy.",
+  "positive_definitions": [
+    {
+      "case_id": "crates/spur-graph-duckdb/src/lib.rs:105",
+      "path": "crates/spur-graph-duckdb/src/lib.rs",
+      "line": 105,
+      "name_tail": "source_offset",
+      "source_signature": "fn source_offset(value: Option<&u64>, field: &str) -> Result<usize> {",
+      "category": "function"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/lib.rs:113",
+      "path": "crates/spur-graph-duckdb/src/lib.rs",
+      "line": 113,
+      "name_tail": "read_symbols",
+      "source_signature": "fn read_symbols(symbols: Elements<'_, SymbolFactReader<'_>>) -> Result<Vec<ExtractedSymbol>> {",
+      "category": "function"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/lib.rs:378",
+      "path": "crates/spur-graph-duckdb/src/lib.rs",
+      "line": 378,
+      "name_tail": "entrypoint",
+      "source_signature": "pub fn entrypoint(extension: &Extension) -> Result<()> {",
+      "category": "function"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:173",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 173,
+      "name_tail": "NativeLabel",
+      "source_signature": "trait NativeLabel {",
+      "category": "trait"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:178",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 178,
+      "name_tail": "labels",
+      "source_signature": "macro_rules! labels {",
+      "category": "macro"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:437",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 437,
+      "name_tail": "reserve_ranges",
+      "source_signature": "fn reserve_ranges(fields: &mut ChildrenMut<'_>, indices: [usize; 2], rows: usize) -> Result<()> {",
+      "category": "function"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:537",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 537,
+      "name_tail": "exec",
+      "source_signature": "    fn exec(",
+      "category": "trait_method"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:595",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 595,
+      "name_tail": "register",
+      "source_signature": "pub(crate) fn register(extension: &Extension) -> Result<()> {",
+      "category": "function"
+    },
+    {
+      "case_id": "crates/spur-graph/src/extract/tree_sitter.rs:369",
+      "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+      "line": 369,
+      "name_tail": "extract_file_facts",
+      "source_signature": "    pub fn extract_file_facts(",
+      "category": "method"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:113",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 113,
+      "name_tail": "dispatch",
+      "source_signature": "    pub async fn dispatch(&self, name: &str, mut args: Value) -> CodeGraphResult {",
+      "category": "async_method"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:156",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 156,
+      "name_tail": "dispatch_current_project",
+      "source_signature": "    async fn dispatch_current_project(&self, name: &str, args: Value) -> CodeGraphResult {",
+      "category": "async_method"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:263",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 263,
+      "name_tail": "call",
+      "source_signature": "    async fn call(",
+      "category": "async_trait_method"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:685",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 685,
+      "name_tail": "exact_scan",
+      "source_signature": "    async fn exact_scan(&self, key: &OverlayRuntimeKey) -> anyhow::Result<BuiltOverlayGeneration> {",
+      "category": "async_trait_method"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:693",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 693,
+      "name_tail": "rebuild_incremental",
+      "source_signature": "    async fn rebuild_incremental(",
+      "category": "async_trait_method"
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:64",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 64,
+      "name_tail": "rust_matches_native_with_nested_macro_scopes_attributes_and_local_definition",
+      "source_signature": "fn rust_matches_native_with_nested_macro_scopes_attributes_and_local_definition() {",
+      "category": "test_function"
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:209",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 209,
+      "name_tail": "empty_source_preserves_native_file_facts",
+      "source_signature": "fn empty_source_preserves_native_file_facts() {",
+      "category": "test_function"
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:225",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 225,
+      "name_tail": "errors_propagate_and_do_not_poison_reused_extractor",
+      "source_signature": "fn errors_propagate_and_do_not_poison_reused_extractor() {",
+      "category": "test_function"
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:310",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 310,
+      "name_tail": "repeated_calls_start_fresh_ids_and_do_not_resolve_against_previous_files",
+      "source_signature": "fn repeated_calls_start_fresh_ids_and_do_not_resolve_against_previous_files() {",
+      "category": "test_function"
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:342",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 342,
+      "name_tail": "reused_rust_extractor_does_not_leak_macro_evidence_or_local_bindings",
+      "source_signature": "fn reused_rust_extractor_does_not_leak_macro_evidence_or_local_bindings() {",
+      "category": "test_function"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:8582",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 8582,
+      "name_tail": "code_tool_dispatch_returns_when_the_call_exceeds_the_deadline",
+      "source_signature": "    async fn code_tool_dispatch_returns_when_the_call_exceeds_the_deadline() {",
+      "category": "async_test_function"
+    },
+    {
+      "case_id": "crates/spur-graph/src/mcp/mod.rs:8625",
+      "path": "crates/spur-graph/src/mcp/mod.rs",
+      "line": 8625,
+      "name_tail": "code_tool_dispatch_keeps_the_caller_worktree_under_the_deadline",
+      "source_signature": "    async fn code_tool_dispatch_keeps_the_caller_worktree_under_the_deadline() {",
+      "category": "async_test_function"
+    }
+  ],
+  "negative_raw_string_definitions": [
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:12",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 12,
+      "name_tail": "local",
+      "source_signature": "macro_rules! local { () => { helper() }; }",
+      "category": "macro_in_raw_string",
+      "expected_nodes": 0
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:13",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 13,
+      "name_tail": "helper",
+      "source_signature": "fn helper() {}",
+      "category": "function_in_raw_string",
+      "expected_nodes": 0
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:17",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 17,
+      "name_tail": "outer",
+      "source_signature": "    fn outer() {",
+      "category": "function_in_raw_string",
+      "expected_nodes": 0
+    },
+    {
+      "case_id": "crates/spur-graph/tests/extract_file_facts.rs:20",
+      "path": "crates/spur-graph/tests/extract_file_facts.rs",
+      "line": 20,
+      "name_tail": "inner",
+      "source_signature": "        fn inner() { assert!(true); }",
+      "category": "function_in_raw_string",
+      "expected_nodes": 0
+    }
+  ],
+  "local_macro_invocations": [
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:188",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 188,
+      "macro_path": "labels",
+      "source_signature": "labels!(RelationKind {"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:195",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 195,
+      "macro_path": "labels",
+      "source_signature": "labels!(Confidence {"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:198",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 198,
+      "macro_path": "labels",
+      "source_signature": "labels!(GraphEdgeKind {"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:202",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 202,
+      "macro_path": "labels",
+      "source_signature": "labels!(MacroScopeKind {"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:206",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 206,
+      "macro_path": "labels",
+      "source_signature": "labels!(MacroTestContext {"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:210",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 210,
+      "macro_path": "labels",
+      "source_signature": "labels!(MacroExecutionPhase {"
+    },
+    {
+      "case_id": "crates/spur-graph-duckdb/src/file_facts.rs:214",
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "line": 214,
+      "macro_path": "labels",
+      "source_signature": "labels!(MacroSinkFamily {"
+    }
+  ],
+  "source_files_sha256": {
+    "crates/spur-graph-duckdb/src/lib.rs": "c50c50f654262c75a0839ef9fcc75d8dbbabe94237e6fa117aa45218959553e0",
+    "crates/spur-graph-duckdb/src/file_facts.rs": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+    "crates/spur-graph/src/extract/tree_sitter.rs": "a05b8aab68ca9090084d98345f0b31b2101e37663d1b0674cb062d1546a7562c",
+    "crates/spur-graph/src/mcp/mod.rs": "5b29483e7a5526293a625ee1306b386b1bd0e33b67172ec636350394030285cf",
+    "crates/spur-graph/tests/extract_file_facts.rs": "6b845c94775554889904fe5c7b56805c07b11134a4e63b730fa5525d64c1fc4e"
+  }
+}

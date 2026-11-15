@@ -1,0 +1,30 @@
+{
+  "symbol": {
+    "qualified_name": "register",
+    "entity_name": "register",
+    "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+    "line_range": [
+      595,
+      607
+    ],
+    "symbol_kind": "function",
+    "enclosing_scope": null,
+    "uri": "graph://symbol/3b6507c721fb2912",
+    "id": "3b6507c721fb2912"
+  },
+  "source": "pub(crate) fn register(extension: &Extension) -> Result<()> {\n    ScalarFunctionBuilder::new(\n        \"spur_graph_file_facts\",\n        SignatureBuilder::new()\n            .param(FunctionParameter::new::<String>(\"logical_path\"))\n            .param(FunctionParameter::new::<String>(\"source\"))\n            .return_type(FileFacts::logical_type(extension)?)\n            .documentation(FunctionDocumentationBuilder::new()\n                .description(\"Extract native one-file graph facts; join local IDs with the input key and retain path/blob/version lineage\")\n                .add_category(\"spur_graph\")),\n        ParseFileFacts,\n    ).with_init().register(extension)\n}\n",
+  "line_range": {
+    "start": 595,
+    "end": 607
+  },
+  "file_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec",
+  "context_lines": 0,
+  "graph_content_hash": "c4290b43ee7d88f187e6a13535f74becc7d6229067b6d4802e6d1ff653ced0c8",
+  "graph_index_version": "4",
+  "graph_built_at": "2026-11-15T06:59:21.625Z",
+  "indexed_head_oid": "b5e1246cc9706f9938bcff6f6a4233d8a6c12199",
+  "worktree_head_oid": null,
+  "worktree_dirty": true,
+  "response_file_oids_match": null,
+  "rebuild_status": "not_needed"
+}

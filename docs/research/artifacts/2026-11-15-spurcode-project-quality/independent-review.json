@@ -1,0 +1,207 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "ff41cb7c-3613-4912-8080-f3021a139112",
+  "delegation_id": "e712941fd23a474a",
+  "brain_session_id": "62837664bb0ba1c9",
+  "message": "Independent read-only evidence review complete for canonical bd-2wwc (parent bd-w606): no critical, important, or minor findings in the reviewed inventory, immutable sources, ingestion protocol, Rust-specific script/results, approved generic reader/results, or retained controls. All independent checks below passed. Worker diff remains empty. No source edits, new ingestion, builds/tests, notebook reads/writes, commits, merge, or issue close performed.",
+  "evidence": {
+    "artifact_directory": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-project-quality",
+    "canonical_issue": "bd-2wwc",
+    "execution_notes": [
+      "Initial exact edges set comparison could not spill beside the shared read-only database; rerun with temp_directory in an automatically cleaned /private/tmp directory completed successfully. No database/artifact change.",
+      "Final git diff --exit-code, git diff --cached --exit-code, and git status --porcelain=v1 all returned clean/empty. Snapshot hash unchanged."
+    ],
+    "findings": {
+      "critical": [],
+      "important": [],
+      "minor": []
+    },
+    "hashes": {
+      "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+      "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+      "tracked_inventory_sha256": "91370c9a4b0808b71e3dd1e4c863df154ec9d4d9d3fc40b894bd4b772d441803",
+      "freeze_script_sha256": "4ba8a65400ea23933dd408bf22f18c0373382cd0635b4dad219984f58f629009",
+      "ingest_script_sha256": "0ee68159752e348030c39cd35cfbf4413a2aa9564bea791b8399175a3fe16f5e",
+      "approved_generic_reader_sha256": "94b50b05a9cffb3d0c53d1e11ae2199adc526f7f23e89028bf6c9c5f15b1fce3",
+      "rust_script_sha256": "f4fb2638ed2c8e3a666016f5076a661caab357414cfb2b167181614e701484e5",
+      "controls_sha256": "a1233d5013242bfb5a3ddffef054f9aeb6e049d6ee9a4dd48c2d93b2d6383a78",
+      "rust_quality_sha256": "f598da34177c4dc167d78d5ffb60f80d621e4871334a38fcbb5713f9b603c189",
+      "rust_queries_sha256": "b10bcf18ff862165af3f475ae969d0af0a92d06fb42dc5a7c5f89096c5eb8fb3",
+      "generic_notebook_audit_sha256": "d2d9d46fdd4d3f8e41bfefadbe365ba131719ada8a48818ca90c56d68ad47afd",
+      "ingest_result_sha256": "5f58cfadb50aabf329c5b9c16de23b6e4121a1bfe38efc5d5ec50936fb5dcc5d",
+      "schema_sha256": "155040dcfff7c727f176546bfe539630fd56542990378e99a289a1de020db96c",
+      "file_only_evidence_sha256": "3a651e80c287440c9bff039dc67d02f21667f64e74fd6334f3533f1a9e16795b",
+      "snapshot_sha256_before_and_after": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+      "source_mapping_canonical_json_sha256": "9e6eb5ad4422af4c1e6f412baf86ac3bbed94517ac8eb4e48c55d129ed56d9f4"
+    },
+    "independently_reproduced": {
+      "schema": "information_schema.columns queried before data SQL; exact retained schema.json equality",
+      "rust_sql_receipts": {
+        "queries": 45,
+        "exact_result_mismatches": 0,
+        "method": "Reexecuted SQL/params from rust-quality-queries.json read-only; compared all cursor output columns, excluding explicitly added Python-derived span/signature audit fields."
+      },
+      "generic_sql_receipts": {
+        "queries": 43,
+        "count_result_and_truncation_mismatches": 0,
+        "method": "Reexecuted every count_sql/count_params and sql/params from notebook-quality-audit.json; exact columns/rows/counts/display limits/truncation equality."
+      },
+      "typed_counts": {
+        "nodes": 111554,
+        "edges": 466565,
+        "spans": 111554,
+        "macro_invocations": 51634,
+        "macro_scopes": 19394
+      },
+      "raw_typed_exact_symmetric_difference": {
+        "nodes": 0,
+        "edges": 0,
+        "spans": 0,
+        "macro_invocations": 0,
+        "macro_scopes": 0
+      },
+      "raw_typed_sql_template": "WITH frozen AS (SELECT logical_path,item.* FROM facts,UNNEST(value.COLLECTION) AS u(item)), deltas AS ((SELECT ALL_SCHEMA_COLUMNS FROM frozen EXCEPT ALL SELECT ALL_SCHEMA_COLUMNS FROM COLLECTION) UNION ALL (SELECT ALL_SCHEMA_COLUMNS FROM COLLECTION EXCEPT ALL SELECT ALL_SCHEMA_COLUMNS FROM frozen)) SELECT count(*) FROM deltas",
+      "orphan_source_nodes": 0,
+      "orphan_nonnull_targets": 0,
+      "missing_node_spans": 0,
+      "duplicate_path_node_ids": 0,
+      "duplicate_path_span_ids": 0,
+      "numeric_identity_warning": {
+        "nodes": 111554,
+        "distinct_unqualified_node_ids": 1329,
+        "interpretation": "Numeric IDs restart per file; logical_path qualification is required and used."
+      },
+      "generic_structural_invariants": {
+        "checks": 21,
+        "affected_rows_each": 0
+      },
+      "id_health": "All five collections: zero missing IDs/paths or duplicate qualified-ID groups; macro scopes qualified by logical_path + scope.stable_symbol_id + scope.kind.",
+      "rust": {
+        "nodes": 62327,
+        "non_file_nodes": 60601,
+        "file_only": 6,
+        "span_byte_and_line_bounds_mismatches": 0,
+        "span_byte_endpoint_line_mismatches": 0,
+        "calls": 259828,
+        "local_target_calls": 32414,
+        "unresolved_calls": 227414,
+        "local_target_percent": 12.475175885585848
+      },
+      "macro": {
+        "invocations": 51634,
+        "scopes": 19394,
+        "invocation_path_oid_byte_line_mismatches": 0,
+        "scope_path_oid_byte_line_mismatches": 0,
+        "invocation_raw_path_plus_bang_mismatches": 0,
+        "local_definition_range_oid_mismatches": 0,
+        "attribute_range_raw_text_mismatches": 0,
+        "resolution_counts": {
+          "unresolved": 49000,
+          "explicit_path_candidate": 2485,
+          "local_definition_candidate": 149
+        },
+        "test_context_counts": {
+          "conditional": 21151,
+          "test_attribute_candidate": 16657,
+          "unspecified": 13826
+        }
+      },
+      "macro_line_range_contract": "Pinned crates/spur-graph/src/extract/rust_macros.rs:204-215 computes [line(start),line(end-1)]. All 19394 scopes and 51634 invocations match. The 1452 newline-terminated file scopes end at the last included content line; treating end_line as line(end_byte) would falsely flag them.",
+      "controls": {
+        "positive_definitions": 21,
+        "positive_passed": 21,
+        "raw_string_negatives": 4,
+        "negative_passed": 4,
+        "labels_macro_invocations": 7,
+        "macro_passed": 7,
+        "method": "Verified control source-file SHA256 and exact pinned source signature lines, qualified node/span matches and bytes, true #[test]/#[tokio::test] contexts, raw-string delimiters, and seven local_definition_candidate invocations mapping to labels! definition bytes [4340,4604], lines [178,186], Git OID 9b2a9a128ae5053355933e3bee89224c8b2530ec."
+      },
+      "file_only_sources": "All six retained file-only source evidence rows exactly match database/Git-verified source and byte length; three comments-only stubs and three re-export facades, no demonstrated hidden ordinary Rust function bodies.",
+      "lexical_test_diagnostics": {
+        "files": 1726,
+        "files_with_markers": 1107,
+        "file_only_with_markers": 0,
+        "candidate_test_attribute_lines": 9653
+      },
+      "generic_cpp_exploration_seed_rows": 0
+    },
+    "interpretation_limits": [
+      "Selected semantic controls are not exhaustive AST accuracy/recall; source bounds and exact byte fidelity alone do not prove semantic completeness.",
+      "Rust test-marker regex is lexical diagnostic only; comments/raw strings and other attributes prevent interpreting it as an AST test denominator.",
+      "Macro invocation/local-definition evidence does not establish compiler expansion, cfg evaluation, or generated function bodies.",
+      "Explicit-path/local-definition candidates retain uncertainty; NULL targets remain unresolved and no target_label is promoted to a binding.",
+      "Rust-only 1726-file metrics are kept separate from mixed-format generic whole-corpus metrics; no staged notebook virtual source is included in Rust counts.",
+      "Prior DuckDB ingestion receipt matches frozen baseline, but file/language/workload mix differs; this review makes no speedup, full-history, exhaustive accuracy, or native API parity claim.",
+      "Review covers retained scripts and JSON/SQL/source evidence; no raw notebook or unpublished parent narrative reviewed."
+    ],
+    "inventory_verification": {
+      "oracle": "git -C /Users/kevintruong/project/SpurCode ls-tree -r -z -l 61ba3d200439a541dce4c1617ca9277be7d438af; independently reconstructed exact JSON bytes including path/mode/type/blob/length/suffix, then compared all inventory DB mappings",
+      "exact_inventory_equal": true,
+      "files": 4404,
+      "bytes": 124274585,
+      "statuses": [
+        {
+          "status": "extracted",
+          "files": 4098,
+          "bytes": 58857333
+        },
+        {
+          "status": "path_admission_failed",
+          "files": 305,
+          "bytes": 65417213
+        },
+        {
+          "status": "symlink",
+          "files": 1,
+          "bytes": 39
+        }
+      ],
+      "admission_rows": 4403,
+      "admitted": 4098,
+      "admission_status_mismatches": 0,
+      "null_facts": 0,
+      "staged_sources": 4098,
+      "distinct_staged_blobs": 4078,
+      "staged_bytes": 58857333,
+      "source_oracle": "All staged rows: UTF-8 re-encoding equals source_bytes, SHA256 equals stored sha256, Git blob SHA1(header+bytes) equals file_oid and pinned inventory OID, length equals inventory; independently reread every distinct admitted blob with git cat-file --batch and matched its SHA256 and blob hash.",
+      "source_mismatches": 0,
+      "source_mapping_digest_encoding": "SHA256(json.dumps(sorted (logical_path,file_oid,sha256,len(source_bytes)) tuples by logical_path,separators=(',',':')).encode())",
+      "rust_files": 1726,
+      "rust_bytes": 27874179,
+      "rust_extracted": 1726,
+      "notebook_inventory": {
+        "files": 79,
+        "bytes": 32111294,
+        "status": "path_admission_failed",
+        "staged": 0,
+        "raw_notebooks_inspected": false
+      }
+    },
+    "kind": "completion",
+    "parent_issue": "bd-w606",
+    "plan_id": "410b06e7-a983-4812-b57c-8f14717244ae",
+    "protocol_review": {
+      "prior_harness": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-project-quality/ingest_snapshot.py",
+      "harness_only_change": "area(path) mapping from DuckDB area names to crate/top-level directory",
+      "preserves_all_statuses": true,
+      "exact_path_probe": true,
+      "try_isolates_failed_inputs": true,
+      "failed_rows_retained_with_retry_error": true,
+      "path_qualified_numeric_joins": true,
+      "no_unresolved_labels_rebound": true,
+      "generic_reader_exact_approved_sha": true,
+      "generic_reader_tests_rerun": false,
+      "baseline_ingestion_equals_prior_ingest_result": true
+    },
+    "revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+    "runtime": {
+      "python": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+      "duckdb": "2.0.0",
+      "read_only": true,
+      "threads": 2,
+      "memory_limit": "1GB",
+      "extension_loaded": false,
+      "production_tests_run": false
+    }
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "status": "rust_snapshot_experiment_completed",
+  "revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+  "rust_files": 1726,
+  "rust_bytes": 27874179,
+  "rust_symbols": 60601,
+  "rust_spans": 62327,
+  "rust_calls": {
+    "calls": 259828,
+    "local_targets": 32414,
+    "unresolved": 227414
+  },
+  "local_target_percent": 12.475175885585848,
+  "controls": {
+    "definitions": {
+      "passed": 21,
+      "total": 21
+    },
+    "raw_string_negatives": {
+      "passed": 4,
+      "total": 4
+    },
+    "local_macro_evidence": {
+      "passed": 7,
+      "total": 7
+    }
+  },
+  "macro_totals": {
+    "invocations": 51634,
+    "scopes": 19394
+  },
+  "macro_reference_diagnostics": {
+    "scope_source_integrity": {
+      "scopes": 19394,
+      "missing_sources": 0,
+      "path_mismatches": 0,
+      "oid_mismatches": 0,
+      "invalid_byte_ranges": 0,
+      "invalid_line_ranges": 0
+    },
+    "invocation_owner_references": {
+      "invocations": 51634,
+      "nonnull_caller_ids": 51272,
+      "caller_ids_without_matching_node": 0
+    },
+    "scope_owner_references": {
+      "scopes": 19394,
+      "scope_ids_without_matching_node": 0
+    },
+    "definition_reference_integrity": {
+      "definition_candidates": 149,
+      "definition_sources_absent": 0,
+      "definition_oid_mismatches": 0,
+      "invalid_definition_byte_ranges": 0,
+      "invalid_definition_line_ranges": 0
+    }
+  },
+  "macro_resolution_counts": {
+    "unresolved": 49000,
+    "explicit_path_candidate": 2485,
+    "local_definition_candidate": 149
+  },
+  "test_marker_diagnostics": {
+    "files": 1726,
+    "files_with_test_markers": 1107,
+    "file_only_with_test_markers": 0,
+    "candidate_test_attribute_lines": 9653
+  },
+  "primary_mixed_ingestion": {
+    "status": "completed",
+    "repo": "/Users/kevintruong/project/SpurCode",
+    "revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+    "counts": {
+      "inventory": 4404,
+      "sources": 4098,
+      "facts": 4098,
+      "nodes": 111554,
+      "edges": 466565,
+      "spans": 111554,
+      "macro_invocations": 51634,
+      "macro_scopes": 19394
+    },
+    "statuses": {
+      "path_admission_failed": 305,
+      "symlink": 1,
+      "extracted": 4098
+    },
+    "timings_seconds": {
+      "inventory_and_path_admission": 4.54957375000231,
+      "git_blob_read_hash_utf8_and_staging": 4.073758499929681,
+      "extension_sql_extraction": 100.1617754579056,
+      "typed_collection_materialization": 3.549747334094718
+    },
+    "tracked_inventory_sha256": "91370c9a4b0808b71e3dd1e4c863df154ec9d4d9d3fc40b894bd4b772d441803",
+    "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "duckdb": "2.0.0",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "runner_sha256": "0ee68159752e348030c39cd35cfbf4413a2aa9564bea791b8399175a3fe16f5e",
+    "resources": {
+      "threads": 2,
+      "memory_limit": "1GB",
+      "reason": "Controlled experiment on memory-pressured 24GB host; disk spill enabled; not a production setting"
+    },
+    "host": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "database_bytes": 83898368,
+    "limitations": [
+      "Single pinned snapshot, no temporal-history claim",
+      "Path-admission rejects remain in denominator; exact errors sampled by suffix",
+      "TRY extraction failures retain rows and exact retry errors",
+      "Tree-sitter syntax-error/recovery counters are not exposed by this extension",
+      "File-local extraction does not supply repository-wide binding"
+    ]
+  },
+  "admission_recheck": {
+    "rechecked": 79,
+    "accepted_on_actual_source": 79,
+    "remaining_failures": 0,
+    "additional_nodes": 5202,
+    "additional_macro_invocations": 0
+  },
+  "source_hashes": {
+    "sources": 4098,
+    "mismatches": 0
+  },
+  "structural_checks": 21,
+  "nonzero_structural_checks": 0,
+  "independent_review": {
+    "findings": {
+      "critical": [],
+      "important": [],
+      "minor": []
+    },
+    "rust_sql_receipts": 45,
+    "generic_sql_receipts": 43,
+    "all_five_raw_typed_exact_deltas": {
+      "nodes": 0,
+      "edges": 0,
+      "spans": 0,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    }
+  },
+  "database_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+  "limits": [
+    "Selected semantic controls, not exhaustive recall/precision",
+    "Lexical test attributes may be comments or raw-string fixture text",
+    "Macro evidence does not establish expansion into generated function bodies",
+    "Non-null file-local call targets are not a global or semantically proven binding",
+    "Non-Rust spans, especially notebook virtual sources, require format-specific interpretation",
+    "Initial empty-source admission falsely rejects79notebooks; actual-source recheck is separate, not merged",
+    "Primary timing is mixed-format, not Rust-only; no speedup or history claim",
+    "Three native source/identity cross-checks are not full API parity"
+  ]
+}
