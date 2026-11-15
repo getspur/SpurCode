@@ -736,12 +736,52 @@ fn parquet_macro_queries_reject_missing_source_manifest_rows() {
 
     let mut incomplete = artifact.clone();
     incomplete.file_manifests.retain(|f| f.path != "empty.rs");
-    let (reduced, _) = disk(&incomplete);
-    fs::copy(
-        reduced.path().join("file_manifests.parquet"),
-        out.path().join("file_manifests.parquet"),
-    )
-    .unwrap();
+    // The normal artifact writer rejects inconsistent evidence. Corrupt the
+    // persisted table directly to exercise the reader's cardinality check.
+    {
+        use arrow_array::{BooleanArray, StringArray};
+        use arrow_select::filter::filter_record_batch;
+        use parquet::{
+            arrow::{arrow_reader::ParquetRecordBatchReaderBuilder, ArrowWriter},
+            file::properties::WriterProperties,
+        };
+        let path = out.path().join("file_manifests.parquet");
+        let reader =
+            ParquetRecordBatchReaderBuilder::try_new(fs::File::open(&path).unwrap()).unwrap();
+        let schema = reader.schema().clone();
+        let metadata = reader
+            .metadata()
+            .file_metadata()
+            .key_value_metadata()
+            .cloned();
+        let batches = reader
+            .build()
+            .unwrap()
+            .collect::<std::result::Result<Vec<_>, _>>()
+            .unwrap();
+        let properties = WriterProperties::builder()
+            .set_key_value_metadata(metadata)
+            .build();
+        let mut writer = ArrowWriter::try_new(
+            fs::File::create(&path).unwrap(),
+            schema.clone(),
+            Some(properties),
+        )
+        .unwrap();
+        let path_column = schema.index_of("path").unwrap();
+        for batch in batches {
+            let paths = batch
+                .column(path_column)
+                .as_any()
+                .downcast_ref::<StringArray>()
+                .unwrap();
+            let keep = BooleanArray::from_iter(paths.iter().map(|p| p != Some("empty.rs")));
+            writer
+                .write(&filter_record_batch(&batch, &keep).unwrap())
+                .unwrap();
+        }
+        writer.close().unwrap();
+    }
     // Keep the original manifest, both checksummed macro tables, and a valid
     // supporting Parquet table; only a zero-site source row has been omitted.
     let mut facts = Vec::new();
@@ -779,5 +819,101 @@ fn parquet_macro_queries_reject_missing_source_manifest_rows() {
     assert_eq!(
         parquet.macro_invocations(&Filter::default()).unwrap(),
         valid
+    );
+}
+
+#[test]
+fn stored_macro_callers_require_the_complete_function_identity() {
+    let (_root, artifact) = fixture();
+    let caller = artifact
+        .symbols
+        .iter()
+        .position(|symbol| symbol.entity_name == "a")
+        .unwrap();
+
+    for mismatch in [
+        "id",
+        "path",
+        "kind",
+        "byte_start",
+        "byte_end",
+        "line_start",
+        "line_end",
+        "missing",
+    ] {
+        let mut changed = artifact.clone();
+        let symbol = &mut changed.symbols[caller];
+        match mismatch {
+            "id" => symbol.stable_symbol_id.push_str("-different"),
+            "path" => symbol.file_path = "b.rs".into(),
+            "kind" => symbol.symbol_kind = "module".into(),
+            "byte_start" => symbol.byte_range[0] += 1,
+            "byte_end" => symbol.byte_range[1] += 1,
+            "line_start" => symbol.line_range[0] += 1,
+            "line_end" => symbol.line_range[1] += 1,
+            "missing" => {
+                changed.symbols.remove(caller);
+            }
+            _ => unreachable!(),
+        }
+        // Even an unrelated filter must validate every persisted caller.
+        let error = InMemoryClient::new(Arc::new(changed))
+            .macro_invocations(&file("empty.rs"))
+            .unwrap_err();
+        assert!(
+            format!("{error:#}").contains("macro caller is not an actual graph function symbol"),
+            "{mismatch}: {error:#}"
+        );
+    }
+}
+
+#[test]
+fn stored_macro_callers_accept_functions_methods_and_full_key_collisions() {
+    let (_root, artifact) = fixture();
+    let caller = artifact
+        .symbols
+        .iter()
+        .position(|symbol| symbol.entity_name == "a")
+        .unwrap();
+    let expected = InMemoryClient::new(Arc::new(artifact.clone()))
+        .macro_invocations(&file("a.rs"))
+        .unwrap();
+
+    for kind in ["function", "method"] {
+        let mut changed = artifact.clone();
+        changed.symbols[caller].symbol_kind = kind.into();
+        let actual = InMemoryClient::new(Arc::new(changed))
+            .macro_invocations(&file("a.rs"))
+            .unwrap();
+        assert_eq!(actual, expected, "{kind}");
+    }
+
+    // A map that keeps only the first or last symbol for an ID would lose
+    // the genuine match. Membership must include path and both ranges.
+    for first in [false, true] {
+        let mut changed = artifact.clone();
+        let mut collision = changed.symbols[caller].clone();
+        collision.file_path = "b.rs".into();
+        collision.byte_range[1] += 1;
+        collision.line_range[1] += 1;
+        if first {
+            changed.symbols.insert(0, collision);
+        } else {
+            changed.symbols.push(collision);
+        }
+        let actual = InMemoryClient::new(Arc::new(changed))
+            .macro_invocations(&file("a.rs"))
+            .unwrap();
+        assert_eq!(actual, expected, "collision first={first}");
+    }
+
+    let mut duplicated = artifact.clone();
+    duplicated.symbols.push(duplicated.symbols[caller].clone());
+    assert_eq!(
+        InMemoryClient::new(Arc::new(duplicated))
+            .macro_invocations(&file("a.rs"))
+            .unwrap(),
+        expected,
+        "identical graph keys must preserve existential caller matching"
     );
 }
