@@ -69,7 +69,7 @@ FROM file_facts_extracted;
 CREATE OR REPLACE TEMP TABLE file_facts_child_layout AS
 SELECT count(*) <> 6 AS bootstrap
 FROM duckdb_tables()
-WHERE database_name = current_database() AND schema_name = 'main'
+WHERE database_name = current_database() AND schema_name = current_schema()
   AND NOT temporary AND table_name IN (
       'file_facts_child_state', 'file_facts_nodes', 'file_facts_edges',
       'file_facts_spans', 'file_facts_macro_invocations', 'file_facts_macro_scopes'
