@@ -34,6 +34,32 @@ fn main() {
 }
 "#;
 
+// The compiler-valid scope-probes.rs fixture from the parent review. Keep it
+// inline so both public extraction paths run without research artifact sync.
+const SCOPE_PROBES: &str = r#"#![allow(dead_code)]
+struct Factory;
+impl Factory {
+    fn new() -> Self { Self }
+    fn via_self() -> Self {
+        let mut items = vec![Self::new()];
+        items.pop().unwrap()
+    }
+}
+fn plain() { let _ = vec![Factory::new()]; }
+fn spaced() { let _ = vec![Factory :: new()]; }
+fn block_before_separator() { let _ = vec![Factory /* qualifier */ :: new()]; }
+fn block_after_separator() { let _ = vec![Factory:: /* callee */ new()]; }
+fn line_before_separator() {
+    let _ = vec![Factory // qualifier
+        :: new()];
+}
+fn main() {
+    plain(); spaced(); block_before_separator(); block_after_separator();
+    line_before_separator(); let _ = Factory::via_self();
+    println!("scope-probe-ok");
+}
+"#;
+
 fn extract(source: &str) -> GraphFacts {
     let path = Path::new("src/lib.rs");
     let bytes = BytesExtractor::for_language(Language::Rust)
@@ -98,6 +124,49 @@ fn assert_call(
         assert_eq!(edge.confidence_score, 0.8);
         assert_eq!(edge.bind_method.as_deref(), Some("macro_body_singleton"));
     }
+}
+
+fn assert_scope_probe(caller: &str, scope: &str) {
+    let facts = extract(SCOPE_PROBES);
+    assert_call(
+        &facts,
+        SCOPE_PROBES,
+        caller,
+        "new",
+        Some(scope),
+        None,
+        Some("fn new"),
+    );
+}
+
+#[test]
+fn plain_qualifier_keeps_constructor_scope() {
+    assert_scope_probe("plain", "Factory");
+}
+
+#[test]
+fn spaced_qualifier_keeps_constructor_scope() {
+    assert_scope_probe("spaced", "Factory");
+}
+
+#[test]
+fn block_comment_before_separator_keeps_constructor_scope() {
+    assert_scope_probe("block_before_separator", "Factory");
+}
+
+#[test]
+fn line_comment_before_separator_keeps_constructor_scope() {
+    assert_scope_probe("line_before_separator", "Factory");
+}
+
+#[test]
+fn block_comment_after_separator_keeps_constructor_scope() {
+    assert_scope_probe("block_after_separator", "Factory");
+}
+
+#[test]
+fn self_qualifier_keeps_constructor_scope() {
+    assert_scope_probe("via_self", "Self");
 }
 
 #[test]
