@@ -413,3 +413,127 @@ fn generic_nested() { wrapper!(Vec::<Option<u8>>::new(), LocalFactory::make::<Op
         None,
     );
 }
+
+fn assert_multisegment_path(path: &str) {
+    let source = format!(
+        "mod outer {{ pub mod local {{ pub fn deep() -> u8 {{ 7 }} }} }}\n\
+         fn caller() {{ let _ = vec![{path}]; }}\n"
+    );
+    let facts = extract(&source);
+    assert_call(
+        &facts,
+        &source,
+        "caller",
+        "deep",
+        Some("outer::local"),
+        None,
+        Some("pub fn deep() -> u8 { 7 }"),
+    );
+}
+
+#[test]
+fn multisegment_plain_path_keeps_local_target() {
+    assert_multisegment_path("outer::local::deep()");
+}
+
+#[test]
+fn multisegment_spaced_path_keeps_local_target() {
+    assert_multisegment_path("outer :: local :: deep()");
+}
+
+#[test]
+fn multisegment_internal_block_comment_keeps_local_target() {
+    assert_multisegment_path("outer /* qualifier */ :: local::deep()");
+}
+
+#[test]
+fn multisegment_internal_line_comment_keeps_local_target() {
+    assert_multisegment_path("outer // qualifier\n :: local::deep()");
+}
+
+#[test]
+fn multisegment_trailing_block_comment_keeps_local_target() {
+    assert_multisegment_path("outer::local /* qualifier */ ::deep()");
+}
+
+#[test]
+fn multisegment_trailing_line_comment_keeps_local_target() {
+    assert_multisegment_path("outer::local // qualifier\n ::deep()");
+}
+
+#[test]
+fn multisegment_all_comments_keep_local_target() {
+    assert_multisegment_path("outer /* a */ :: /* b */ local /* c */ :: /* d */ deep /* e */ ()");
+}
+
+#[test]
+fn multisegment_trivia_keeps_each_owner_and_unknown_scope() {
+    let source = r#"
+mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }
+mod other { pub mod local { pub fn deep() -> u8 { 8 } } }
+fn helper() -> u8 { 9 }
+struct Factory;
+impl Factory { fn new() -> Self { Self } }
+fn caller() {
+    wrapper!(outer /* qualifier */ :: local :: deep(),
+        nested!([other // qualifier
+            :: local /* trailing */ :: deep(), foreign /* qualifier */ :: local :: helper()]),
+        helper(), Vec /* qualifier */ :: new());
+}
+"#;
+    let facts = extract(source);
+    for (scope, target) in [
+        ("outer::local", Some("pub fn deep() -> u8 { 7 }")),
+        ("other::local", Some("pub fn deep() -> u8 { 8 }")),
+    ] {
+        assert_call(&facts, source, "caller", "deep", Some(scope), None, target);
+    }
+    assert_call(
+        &facts,
+        source,
+        "caller",
+        "helper",
+        Some("foreign::local"),
+        None,
+        None,
+    );
+    assert_call(
+        &facts,
+        source,
+        "caller",
+        "helper",
+        None,
+        None,
+        Some("fn helper() -> u8 { 9 }"),
+    );
+    assert_call(&facts, source, "caller", "new", Some("Vec"), None, None);
+    let caller = definition(&facts, source, "fn caller");
+    assert_eq!(
+        facts
+            .edges
+            .iter()
+            .filter(|edge| edge.relation == RelationKind::Calls && edge.source_node_id == caller)
+            .count(),
+        5
+    );
+}
+
+#[test]
+fn generic_qualifiers_keep_token_boundaries_and_literal_contents() {
+    let source = r##"
+fn helper() {}
+fn caller() {
+    wrapper!(<Type as Trait>::helper(),
+        Const::<{ r#" a /* literal */ // literal "# }>::helper(),
+        :: foreign /* qualifier */ :: nested :: helper());
+}
+"##;
+    let facts = extract(source);
+    for scope in [
+        "<Type as Trait>",
+        r##"Const::<{ r#" a /* literal */ // literal "# }>"##,
+        "::foreign::nested",
+    ] {
+        assert_call(&facts, source, "caller", "helper", Some(scope), None, None);
+    }
+}
