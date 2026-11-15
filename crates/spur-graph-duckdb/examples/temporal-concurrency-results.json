@@ -1,0 +1,913 @@
+{
+  "schema_version": 1,
+  "issue": "bd-tz4k",
+  "date_utc": "2026-11-15",
+  "notebook": {
+    "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+    "id": "nb-0532cd73b116e20ad9508402",
+    "execution": "Rust cells launch frozen native extension through Python DuckDB 2.0.0"
+  },
+  "method": {
+    "source_order": [
+      1,
+      4,
+      4,
+      1
+    ],
+    "fresh_application_outputs": true,
+    "os_cache": "warm; not flushed",
+    "overlap_between_timed_trials": false,
+    "source_parity_excluded_columns": [
+      "parsed_at"
+    ],
+    "memory_metric": "Darwin ru_maxrss bytes; sum of individual process maxima is an upper envelope, not simultaneous RSS",
+    "physical_outputs": "extension immutable pair shards/views; native flattened Parquet",
+    "threading": "DuckDB default10 per producer unchanged; native CLI4jobs and64MiBcache",
+    "limits": "source plans18530894byte/2048row limits unchanged; not RSS limits"
+  },
+  "profile": {
+    "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-profile-analysis.json",
+    "sha256": "09a4d7e3b7a6cbf2044c1d54d019032c0fd88332ac2518f9314a36adafd93887"
+  },
+  "prefixes": [
+    {
+      "reachable_commits": 372,
+      "source_keys": 3698,
+      "symbol_facts": 83934,
+      "successful_empty_keys": 303,
+      "groups": [
+        {
+          "producer_processes": 1,
+          "runs": [
+            {
+              "repeat": 0,
+              "wall_seconds": 16.151949708815664,
+              "aggregate_cpu_seconds": 16.008576,
+              "max_worker_rss_bytes": 358023168,
+              "sum_individual_worker_peaks_bytes": 358023168,
+              "worker_source_bytes": [
+                29168895
+              ],
+              "worker_wall_seconds": [
+                15.917059167055413
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-372-w1-r0/result.json",
+                "sha256": "a244d7fd1d94b8b5ae6875e992c7327b287611748229ee458e72103df436fa72"
+              }
+            },
+            {
+              "repeat": 1,
+              "wall_seconds": 15.260232333093882,
+              "aggregate_cpu_seconds": 15.587781999999999,
+              "max_worker_rss_bytes": 367034368,
+              "sum_individual_worker_peaks_bytes": 367034368,
+              "worker_source_bytes": [
+                29168895
+              ],
+              "worker_wall_seconds": [
+                15.102311791852117
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-372-w1-r1/result.json",
+                "sha256": "58b9e59cfc8c673b95fee6d7684e1b296fe521aa01ddab07c8a05d16428dd867"
+              }
+            }
+          ],
+          "median_wall_seconds": 15.706091020954773,
+          "median_aggregate_cpu_seconds": 15.798179000000001
+        },
+        {
+          "producer_processes": 4,
+          "runs": [
+            {
+              "repeat": 0,
+              "wall_seconds": 9.57523866603151,
+              "aggregate_cpu_seconds": 20.599223,
+              "max_worker_rss_bytes": 290684928,
+              "sum_individual_worker_peaks_bytes": 753778688,
+              "worker_source_bytes": [
+                18528142,
+                5264865,
+                4675741,
+                700147
+              ],
+              "worker_wall_seconds": [
+                9.36818258301355,
+                2.9414698749314994,
+                6.635382292093709,
+                2.2483904999680817
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-372-w4-r0/result.json",
+                "sha256": "5e93c1ef2230b623147dba81ae1f8d8ffe5f0fa62585010f1c527e6497d70071"
+              }
+            },
+            {
+              "repeat": 1,
+              "wall_seconds": 7.983666332904249,
+              "aggregate_cpu_seconds": 18.567204,
+              "max_worker_rss_bytes": 291717120,
+              "sum_individual_worker_peaks_bytes": 756482048,
+              "worker_source_bytes": [
+                18528142,
+                5264865,
+                4675741,
+                700147
+              ],
+              "worker_wall_seconds": [
+                7.818615708034486,
+                2.456994041800499,
+                5.427559624891728,
+                1.9120427079033107
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-372-w4-r1/result.json",
+                "sha256": "74f59aa6e66ff2605228e784b24bf0289c1111088b9ae2ade23ac3230f44c62b"
+              }
+            }
+          ],
+          "median_wall_seconds": 8.77945249946788,
+          "median_aggregate_cpu_seconds": 19.5832135
+        }
+      ],
+      "source_wall_ratio": 1.788960191071905,
+      "suite": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/suite-372.json",
+        "sha256": "f8de302a1fbac1614907d355123eeee8d53ab42cd9699fc1d833b83bf2b50b5d"
+      },
+      "source_parity": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-parity-372.json",
+        "sha256": "334b0f6da06c3659e5f465e6c6f4dc39fbdd6982d11202a835da63d2dbba18d1"
+      }
+    },
+    {
+      "reachable_commits": 1987,
+      "source_keys": 19604,
+      "symbol_facts": 337699,
+      "successful_empty_keys": 1953,
+      "groups": [
+        {
+          "producer_processes": 1,
+          "runs": [
+            {
+              "repeat": 0,
+              "wall_seconds": 96.5642526249867,
+              "aggregate_cpu_seconds": 97.184957,
+              "max_worker_rss_bytes": 576159744,
+              "sum_individual_worker_peaks_bytes": 576159744,
+              "worker_source_bytes": [
+                153493818
+              ],
+              "worker_wall_seconds": [
+                96.37276170798577
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-1987-w1-r0/result.json",
+                "sha256": "96f4fc9350682bcdc35ffd78acd56c9e08079671502d87368944578ee168d8ae"
+              }
+            },
+            {
+              "repeat": 1,
+              "wall_seconds": 93.06836845912039,
+              "aggregate_cpu_seconds": 94.3969,
+              "max_worker_rss_bytes": 544047104,
+              "sum_individual_worker_peaks_bytes": 544047104,
+              "worker_source_bytes": [
+                153493818
+              ],
+              "worker_wall_seconds": [
+                92.89431895804591
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-1987-w1-r1/result.json",
+                "sha256": "54eb8d7484a89f350ea6369ed6bfae226818875125468f3b973ebb01cf40f5d9"
+              }
+            }
+          ],
+          "median_wall_seconds": 94.81631054205354,
+          "median_aggregate_cpu_seconds": 95.7909285
+        },
+        {
+          "producer_processes": 4,
+          "runs": [
+            {
+              "repeat": 0,
+              "wall_seconds": 38.01924133300781,
+              "aggregate_cpu_seconds": 117.502321,
+              "max_worker_rss_bytes": 437960704,
+              "sum_individual_worker_peaks_bytes": 1362395136,
+              "worker_source_bytes": [
+                38228655,
+                38186736,
+                38431486,
+                38646941
+              ],
+              "worker_wall_seconds": [
+                37.82210537488572,
+                30.57408787496388,
+                18.561101666884497,
+                29.87500562518835
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-1987-w4-r0/result.json",
+                "sha256": "3b81b1328ca8a82b50850cacd67f8c5e2df977f1c2ecfdaf509faf1989428486"
+              }
+            },
+            {
+              "repeat": 1,
+              "wall_seconds": 36.2446756248828,
+              "aggregate_cpu_seconds": 113.51176000000001,
+              "max_worker_rss_bytes": 458866688,
+              "sum_individual_worker_peaks_bytes": 1423769600,
+              "worker_source_bytes": [
+                38228655,
+                38186736,
+                38431486,
+                38646941
+              ],
+              "worker_wall_seconds": [
+                36.059613042045385,
+                29.54331220802851,
+                18.14424716704525,
+                28.721283917082474
+              ],
+              "result": {
+                "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-1987-w4-r1/result.json",
+                "sha256": "202f7d0425cc1ff2b4ce7964caa77cbda1fdbda6917ae7c952f4326db30da200"
+              }
+            }
+          ],
+          "median_wall_seconds": 37.13195847894531,
+          "median_aggregate_cpu_seconds": 115.5070405
+        }
+      ],
+      "source_wall_ratio": 2.553496083321773,
+      "suite": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/suite-1987.json",
+        "sha256": "b0f1fdaf227eea92d1c43c2e20d74135a468199e7af367464cc23202548a066c"
+      },
+      "source_parity": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-parity-1987.json",
+        "sha256": "9581ad644d175fbb3e83694b521c252d68cbe579a6d6401f15e49bd17c3f1cff"
+      }
+    }
+  ],
+  "fresh_end_to_end": [
+    {
+      "name": "fresh-pipeline-1987-w4",
+      "order": [
+        "extension",
+        "native"
+      ],
+      "extension_ingest_seconds": 57.18185012484901,
+      "native_ingest_seconds": 103.31543674995191,
+      "extension_serial_stages": [
+        {
+          "exit_code": 0,
+          "peak_rss_bytes": 84983808,
+          "stage": "inventory",
+          "system_seconds": 0.158855,
+          "user_seconds": 0.833364,
+          "wall_seconds": 1.0073067920748144
+        },
+        {
+          "exit_code": 0,
+          "peak_rss_bytes": 190136320,
+          "stage": "prepare",
+          "system_seconds": 2.214757,
+          "user_seconds": 7.446332,
+          "wall_seconds": 8.534767874982208
+        },
+        {
+          "exit_code": 0,
+          "peak_rss_bytes": 1293860864,
+          "stage": "pairs",
+          "system_seconds": 0.910087,
+          "user_seconds": 15.668636,
+          "wall_seconds": 9.99868974997662
+        }
+      ],
+      "extension_source": {
+        "aggregate_cpu_seconds": 115.806689,
+        "complete": true,
+        "sum_individual_worker_peaks_bytes": 1385922560,
+        "wall_seconds": 37.5701702919323,
+        "worker_input_bytes": [
+          38228655,
+          38186736,
+          38431486,
+          38646941
+        ]
+      },
+      "native_resources": {
+        "exit_code": 0,
+        "peak_rss_bytes": 792543232,
+        "stage": "native-cli-j4-cache64m",
+        "system_seconds": 103.973533,
+        "user_seconds": 154.799318,
+        "wall_seconds": 103.31543674995191
+      },
+      "validation_resources": {
+        "exit_code": 0,
+        "peak_rss_bytes": 1690451968,
+        "stage": "compare",
+        "system_seconds": 1.06745,
+        "user_seconds": 24.264401,
+        "wall_seconds": 7.95038904203102
+      },
+      "exact_table_checks": {
+        "commits": {
+          "actual_minus_reference": 0,
+          "author_fields": "enriched with exact GitCLI bulk metadata format",
+          "equal": true,
+          "reference_minus_actual": 0
+        },
+        "symbol_snapshots": {
+          "actual_minus_reference": 0,
+          "actual_rows": 550720,
+          "actual_schema": [
+            [
+              "key_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "key_commit",
+              "VARCHAR"
+            ],
+            [
+              "file_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "entity_name",
+              "VARCHAR"
+            ],
+            [
+              "symbol_kind",
+              "VARCHAR"
+            ],
+            [
+              "enclosing_scope",
+              "VARCHAR"
+            ],
+            [
+              "byte_range_start",
+              "BIGINT"
+            ],
+            [
+              "byte_range_end",
+              "BIGINT"
+            ],
+            [
+              "line_range_start",
+              "BIGINT"
+            ],
+            [
+              "line_range_end",
+              "BIGINT"
+            ],
+            [
+              "anchor_hash",
+              "VARCHAR"
+            ],
+            [
+              "tokens",
+              "VARCHAR[]"
+            ]
+          ],
+          "equal": true,
+          "reference_minus_actual": 0,
+          "reference_rows": 550720,
+          "reference_schema": [
+            [
+              "key_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "key_commit",
+              "VARCHAR"
+            ],
+            [
+              "file_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "entity_name",
+              "VARCHAR"
+            ],
+            [
+              "symbol_kind",
+              "VARCHAR"
+            ],
+            [
+              "enclosing_scope",
+              "VARCHAR"
+            ],
+            [
+              "byte_range_start",
+              "BIGINT"
+            ],
+            [
+              "byte_range_end",
+              "BIGINT"
+            ],
+            [
+              "line_range_start",
+              "BIGINT"
+            ],
+            [
+              "line_range_end",
+              "BIGINT"
+            ],
+            [
+              "anchor_hash",
+              "VARCHAR"
+            ],
+            [
+              "tokens",
+              "VARCHAR[]"
+            ]
+          ],
+          "schema_equal": true
+        },
+        "temporal_edges": {
+          "actual_minus_reference": 0,
+          "actual_rows": 614805,
+          "actual_schema": [
+            [
+              "source_kind",
+              "VARCHAR"
+            ],
+            [
+              "source_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "source_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "source_commit",
+              "VARCHAR"
+            ],
+            [
+              "target_kind",
+              "VARCHAR"
+            ],
+            [
+              "target_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "target_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "target_commit",
+              "VARCHAR"
+            ],
+            [
+              "relation",
+              "VARCHAR"
+            ],
+            [
+              "parent",
+              "VARCHAR"
+            ],
+            [
+              "change_kind",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_commit",
+              "VARCHAR"
+            ]
+          ],
+          "equal": true,
+          "reference_minus_actual": 0,
+          "reference_rows": 614805,
+          "reference_schema": [
+            [
+              "source_kind",
+              "VARCHAR"
+            ],
+            [
+              "source_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "source_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "source_commit",
+              "VARCHAR"
+            ],
+            [
+              "target_kind",
+              "VARCHAR"
+            ],
+            [
+              "target_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "target_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "target_commit",
+              "VARCHAR"
+            ],
+            [
+              "relation",
+              "VARCHAR"
+            ],
+            [
+              "parent",
+              "VARCHAR"
+            ],
+            [
+              "change_kind",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_commit",
+              "VARCHAR"
+            ]
+          ],
+          "schema_equal": true
+        }
+      },
+      "diagnostics": {
+        "actual_rows": 306,
+        "reference_rows": 306,
+        "scope": "counts only; extension retains structured per-change diagnostic provenance"
+      },
+      "result": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/fresh-pipeline-1987-w4/result.json",
+        "sha256": "c97ca8624c2294f8857f69e84764ab5c49fb869fefe0855baa2bcfb025bfeeaf"
+      },
+      "parity": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/fresh-pipeline-1987-w4/parity.json",
+        "sha256": "7e21b24602659981857359f48abe005e11600ec8a4d8cfc3147b6d43d5ee03b4"
+      },
+      "configuration": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/fresh-pipeline-1987-w4/configuration.json",
+        "sha256": "f6acc0836bb96392f23c5ad9daeb77e1d712ffc09100d1dbc73bfaee6cf816b6"
+      }
+    },
+    {
+      "name": "fresh-pipeline-1987-w4-r1",
+      "order": [
+        "native",
+        "extension"
+      ],
+      "extension_ingest_seconds": 59.16725950012915,
+      "native_ingest_seconds": 101.97387270908803,
+      "extension_serial_stages": [
+        {
+          "exit_code": 0,
+          "peak_rss_bytes": 84197376,
+          "stage": "inventory",
+          "system_seconds": 0.11760899999999999,
+          "user_seconds": 0.8651399999999999,
+          "wall_seconds": 0.8368269999045879
+        },
+        {
+          "exit_code": 0,
+          "peak_rss_bytes": 189792256,
+          "stage": "prepare",
+          "system_seconds": 2.444218,
+          "user_seconds": 8.11876,
+          "wall_seconds": 9.211321124807
+        },
+        {
+          "exit_code": 0,
+          "peak_rss_bytes": 1345716224,
+          "stage": "pairs",
+          "system_seconds": 0.79462,
+          "user_seconds": 15.967368,
+          "wall_seconds": 10.005166500108317
+        }
+      ],
+      "extension_source": {
+        "aggregate_cpu_seconds": 123.022339,
+        "complete": true,
+        "sum_individual_worker_peaks_bytes": 1408172032,
+        "wall_seconds": 39.03908412484452,
+        "worker_input_bytes": [
+          38228655,
+          38186736,
+          38431486,
+          38646941
+        ]
+      },
+      "native_resources": {
+        "exit_code": 0,
+        "peak_rss_bytes": 853377024,
+        "stage": "native-cli-j4-cache64m",
+        "system_seconds": 103.097147,
+        "user_seconds": 156.299677,
+        "wall_seconds": 101.97387270908803
+      },
+      "validation_resources": {
+        "exit_code": 0,
+        "peak_rss_bytes": 1786839040,
+        "stage": "compare",
+        "system_seconds": 0.9339299999999999,
+        "user_seconds": 23.882101,
+        "wall_seconds": 7.5007300830911845
+      },
+      "exact_table_checks": {
+        "commits": {
+          "actual_minus_reference": 0,
+          "author_fields": "enriched with exact GitCLI bulk metadata format",
+          "equal": true,
+          "reference_minus_actual": 0
+        },
+        "symbol_snapshots": {
+          "actual_minus_reference": 0,
+          "actual_rows": 550720,
+          "actual_schema": [
+            [
+              "key_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "key_commit",
+              "VARCHAR"
+            ],
+            [
+              "file_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "entity_name",
+              "VARCHAR"
+            ],
+            [
+              "symbol_kind",
+              "VARCHAR"
+            ],
+            [
+              "enclosing_scope",
+              "VARCHAR"
+            ],
+            [
+              "byte_range_start",
+              "BIGINT"
+            ],
+            [
+              "byte_range_end",
+              "BIGINT"
+            ],
+            [
+              "line_range_start",
+              "BIGINT"
+            ],
+            [
+              "line_range_end",
+              "BIGINT"
+            ],
+            [
+              "anchor_hash",
+              "VARCHAR"
+            ],
+            [
+              "tokens",
+              "VARCHAR[]"
+            ]
+          ],
+          "equal": true,
+          "reference_minus_actual": 0,
+          "reference_rows": 550720,
+          "reference_schema": [
+            [
+              "key_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "key_commit",
+              "VARCHAR"
+            ],
+            [
+              "file_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "entity_name",
+              "VARCHAR"
+            ],
+            [
+              "symbol_kind",
+              "VARCHAR"
+            ],
+            [
+              "enclosing_scope",
+              "VARCHAR"
+            ],
+            [
+              "byte_range_start",
+              "BIGINT"
+            ],
+            [
+              "byte_range_end",
+              "BIGINT"
+            ],
+            [
+              "line_range_start",
+              "BIGINT"
+            ],
+            [
+              "line_range_end",
+              "BIGINT"
+            ],
+            [
+              "anchor_hash",
+              "VARCHAR"
+            ],
+            [
+              "tokens",
+              "VARCHAR[]"
+            ]
+          ],
+          "schema_equal": true
+        },
+        "temporal_edges": {
+          "actual_minus_reference": 0,
+          "actual_rows": 614805,
+          "actual_schema": [
+            [
+              "source_kind",
+              "VARCHAR"
+            ],
+            [
+              "source_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "source_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "source_commit",
+              "VARCHAR"
+            ],
+            [
+              "target_kind",
+              "VARCHAR"
+            ],
+            [
+              "target_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "target_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "target_commit",
+              "VARCHAR"
+            ],
+            [
+              "relation",
+              "VARCHAR"
+            ],
+            [
+              "parent",
+              "VARCHAR"
+            ],
+            [
+              "change_kind",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_commit",
+              "VARCHAR"
+            ]
+          ],
+          "equal": true,
+          "reference_minus_actual": 0,
+          "reference_rows": 614805,
+          "reference_schema": [
+            [
+              "source_kind",
+              "VARCHAR"
+            ],
+            [
+              "source_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "source_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "source_commit",
+              "VARCHAR"
+            ],
+            [
+              "target_kind",
+              "VARCHAR"
+            ],
+            [
+              "target_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "target_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "target_commit",
+              "VARCHAR"
+            ],
+            [
+              "relation",
+              "VARCHAR"
+            ],
+            [
+              "parent",
+              "VARCHAR"
+            ],
+            [
+              "change_kind",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_path_b64",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_stable_symbol_id",
+              "VARCHAR"
+            ],
+            [
+              "rename_prev_commit",
+              "VARCHAR"
+            ]
+          ],
+          "schema_equal": true
+        }
+      },
+      "diagnostics": {
+        "actual_rows": 306,
+        "reference_rows": 306,
+        "scope": "counts only; extension retains structured per-change diagnostic provenance"
+      },
+      "result": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/fresh-pipeline-1987-w4-r1/result.json",
+        "sha256": "394a228ce802699559499d534e60b26d5b22152bbaaa1a49f0b2154a9b9b8ac6"
+      },
+      "parity": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/fresh-pipeline-1987-w4-r1/parity.json",
+        "sha256": "9a553820be95a048978a30b1a6b7a46e8099d9f58d1c42080d91067311462a05"
+      },
+      "configuration": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/fresh-pipeline-1987-w4-r1/configuration.json",
+        "sha256": "ccf23ffebf3553a096ab72f13cc5f7c6c69c9f48ee4dbe8be2032afd0f2e9e70"
+      }
+    }
+  ],
+  "limits": [
+    "bounded prefix observations; no new full-history timing",
+    "small repetition counts do not establish a stable general speed ratio",
+    "native baseline differs from prior63.821669874945655s observation; cause not isolated",
+    "diagnostic comparison is counts only",
+    "unchanged parser and extension implementation"
+  ],
+  "controller_sha256": {
+    "run_source_trial.py": "6f19aa6a5635968e2aff60c23fd154739e800d0d06963c82c37c3ec830a6e852",
+    "run_source_suite.py": "897a98f0da58d0ede8d63ba7f66fb3c9f293c697a519d8d2cf45fb6e021d9595",
+    "compare_source_facts.py": "08d2604f06e784aada84695d30a46726b4150f947c1f8deb5c8edbc34db07ed3",
+    "run_fresh_pipeline.py": "184edc0ce247bff1ef174be341c7f1f2062583eaf2af93098e15ca2edabe21fa",
+    "run_fresh_pipeline_reverse.py": "7537bceb7de65080ee94e51f8873d6d6fdf7572a0712663eda2b9d081c777cc6",
+    "summarize_results.py": "91deb4031f4265f329beb8237ab5d49d6b2aa50de878dd51f9c806ef0defb6e0"
+  }
+}

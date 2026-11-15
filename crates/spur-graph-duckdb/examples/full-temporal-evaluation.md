@@ -11,6 +11,10 @@ native row parity.
 The bounded comparison establishes that
 moving the work behind a DuckDB extension does not by itself beat the tuned
 legacy walker.
+The subsequent [producer concurrency evaluation](temporal-concurrency-evaluation.md)
+reduces the source-stage midpoint from 94.82 s to 37.13 s on 1,987 commits and
+adds two fresh four-producer pipelines with exact native graph parity. It
+records separate timings and the native baseline's inter-session variation.
 
 The frozen input is `8d3673cfd16c231f5e941386dec4c7744e7c21b6`. The scope is its
 entire reachable DAG, including every merge parent, rather than first-parent
@@ -46,8 +50,9 @@ metadata/plans, 94.51 s extracting source facts and 10.06 s deriving temporal
 pairs. Peak stage RSS was 1.27 GB; the separate parity query peaked at 1.65 GB.
 Source extraction dominates that fresh-cache workload. That stage combines
 blob reads, native extraction and typed persistence; its timing does not
-isolate parser CPU. The tuned legacy walker remains faster at every measured
-size.
+isolate parser CPU. The tuned legacy walker was faster at every size in these
+original single-producer extension observations; the concurrency follow-up
+measures the separate four-producer configuration.
 
 gix is a separate semantic variant. Its 1,987-commit observation took 33.42 s,
 but emitted 561,242 snapshots and 615,085 edges. Concrete differences include
