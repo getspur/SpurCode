@@ -6,6 +6,7 @@ use anyhow::{ensure, Context as _};
 use serde::{Deserialize, Serialize};
 use tree_sitter::{Node, Parser};
 
+use super::method_sites::CallerSymbols;
 use super::{collect_method_call_sites, MethodCallSourceScope, PanicEvidenceSource};
 use crate::GraphIndexArtifact;
 
@@ -167,6 +168,7 @@ fn collect_source(
     let mut owners = BTreeMap::new();
     let mut bodies = BTreeMap::new();
     let mut calls = Vec::new();
+    let mut caller_symbols = None;
     while let Some(node) = pending.pop() {
         if matches!(
             node.kind(),
@@ -185,7 +187,13 @@ fn collect_source(
             );
         }
         if let Some((root, kind)) = explicit_body(node) {
-            let body = body_evidence(path, oid, root, kind, definition(graph, path, text, node));
+            let definition = if node.kind() == "function_item" {
+                let symbols = caller_symbols.get_or_insert_with(|| CallerSymbols::new(graph, path));
+                definition(symbols, text, node)
+            } else {
+                None
+            };
+            let body = body_evidence(path, oid, root, kind, definition);
             owners.insert(node.id(), (root, body.body_id.clone()));
             bodies.insert(body.body_id.clone(), body);
         }
@@ -346,12 +354,7 @@ fn body_evidence(
     }
 }
 
-fn definition(
-    graph: &GraphIndexArtifact,
-    path: &str,
-    text: &str,
-    node: Node<'_>,
-) -> Option<String> {
+fn definition(symbols: &CallerSymbols<'_>, text: &str, node: Node<'_>) -> Option<String> {
     if node.kind() != "function_item" {
         return None;
     }
@@ -362,28 +365,13 @@ fn definition(
             .filter(|&&b| b == b'\n')
             .count()
     };
-    let candidates: Vec<_> = graph
-        .symbols
-        .iter()
-        .filter(|s| {
-            s.file_path == path
-                && s.entity_name == name
-                && matches!(s.symbol_kind.as_str(), "function" | "method")
-                && s.byte_range == range(node)
-                && s.line_range == [line(node.start_byte()), line(node.end_byte() - 1)]
-                && !s.stable_symbol_id.is_empty()
-        })
-        .collect();
-    let [symbol] = candidates.as_slice() else {
-        return None;
-    };
-    (graph
-        .symbols
-        .iter()
-        .filter(|s| s.stable_symbol_id == symbol.stable_symbol_id)
-        .count()
-        == 1)
-        .then(|| symbol.stable_symbol_id.clone())
+    symbols
+        .find_unique(
+            name,
+            range(node),
+            [line(node.start_byte()), line(node.end_byte() - 1)],
+        )
+        .map(|symbol| symbol.stable_symbol_id.clone())
 }
 
 fn range(node: Node<'_>) -> [usize; 2] {

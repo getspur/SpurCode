@@ -12,13 +12,13 @@ use crate::{GraphIndexArtifact, GraphSymbolArtifact};
 
 // Preserve candidate order and count matching IDs across all graph symbols,
 // including non-function symbols outside this source file.
-struct CallerSymbols<'a> {
+pub(super) struct CallerSymbols<'a> {
     candidates: Vec<&'a GraphSymbolArtifact>,
     id_counts: HashMap<&'a str, usize>,
 }
 
 impl<'a> CallerSymbols<'a> {
-    fn new(graph: &'a GraphIndexArtifact, file_path: &str) -> Self {
+    pub(super) fn new(graph: &'a GraphIndexArtifact, file_path: &str) -> Self {
         let candidates: Vec<_> = graph
             .symbols
             .iter()
@@ -41,6 +41,21 @@ impl<'a> CallerSymbols<'a> {
             candidates,
             id_counts,
         }
+    }
+
+    pub(super) fn find_unique(
+        &self,
+        name: &str,
+        byte_range: [usize; 2],
+        line_range: [usize; 2],
+    ) -> Option<&'a GraphSymbolArtifact> {
+        let mut candidates = self.candidates.iter().copied().filter(|s| {
+            s.entity_name == name && s.byte_range == byte_range && s.line_range == line_range
+        });
+        let caller = candidates.next()?;
+        (candidates.next().is_none()
+            && self.id_counts.get(caller.stable_symbol_id.as_str()) == Some(&1))
+        .then_some(caller)
     }
 }
 
@@ -199,28 +214,14 @@ fn provenance(
                 let name = owner
                     .child_by_field_name("name")
                     .and_then(|n| source.get(n.byte_range()));
-                let candidates: Vec<_> = caller_symbols
-                    .candidates
-                    .iter()
-                    .copied()
-                    .filter(|s| {
-                        s.byte_range == range(owner)
-                            && s.line_range == lines(source, range(owner))
-                            && Some(s.entity_name.as_str()) == name
-                    })
-                    .collect();
-                if let [caller] = candidates.as_slice() {
-                    if caller_symbols
-                        .id_counts
-                        .get(caller.stable_symbol_id.as_str())
-                        == Some(&1)
-                    {
-                        return (
-                            FunctionBodySyntax,
-                            Some(caller.stable_symbol_id.clone()),
-                            owners,
-                        );
-                    }
+                if let Some(caller) = name.and_then(|name| {
+                    caller_symbols.find_unique(name, range(owner), lines(source, range(owner)))
+                }) {
+                    return (
+                        FunctionBodySyntax,
+                        Some(caller.stable_symbol_id.clone()),
+                        owners,
+                    );
                 }
                 return (Unknown, None, owners);
             }
