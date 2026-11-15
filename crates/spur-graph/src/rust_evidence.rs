@@ -243,6 +243,7 @@ impl RustEvidenceSet {
                 "ambiguous Rust origin hash"
             );
         }
+        let symbols = GraphSymbolLookup::new(graph);
         let mut used = BTreeSet::new();
         let mut declaration_ids = BTreeSet::new();
         let mut call_ids = BTreeSet::new();
@@ -255,7 +256,7 @@ impl RustEvidenceSet {
                     && file.source_oid == manifest.content_oid,
                 "Rust source identity differs from authoritative graph"
             );
-            validate_graph_symbols(graph, &file.file_path, file.byte_length)?;
+            validate_graph_symbols(&symbols, &file.file_path, file.byte_length)?;
             let origin = origins
                 .get(file.origin_graph_content_hash.as_str())
                 .context("Rust source origin missing")?;
@@ -270,9 +271,9 @@ impl RustEvidenceSet {
                 "Rust source differs from original binding"
             );
             used.insert(file.origin_graph_content_hash.as_str());
-            validate_declarations(graph, file, &mut declaration_ids)?;
+            validate_declarations(graph, &symbols, file, &mut declaration_ids)?;
             if let RustCallEvidence::Complete { evidence } = &file.calls {
-                validate_calls(graph, file, evidence, &mut call_ids)?;
+                validate_calls(&symbols, file, evidence, &mut call_ids)?;
             }
         }
         ensure!(used.len() == origins.len(), "unreferenced Rust origin");
@@ -466,6 +467,7 @@ fn authenticate_sources(
     sources: &[RustDeclarationSource<'_>],
 ) -> anyhow::Result<()> {
     let domain = graph_domain(graph)?;
+    let symbols = GraphSymbolLookup::new(graph);
     let mut paths = BTreeSet::new();
     for source in sources {
         ensure!(
@@ -479,7 +481,7 @@ fn authenticate_sources(
             git_blob_oid(source.bytes) == manifest.content_oid,
             "source bytes do not match graph manifest blob OID"
         );
-        validate_graph_symbols(graph, source.file_path, source.bytes.len())?;
+        validate_graph_symbols(&symbols, source.file_path, source.bytes.len())?;
     }
     ensure!(
         paths == domain.keys().copied().collect(),
@@ -559,20 +561,43 @@ fn lines(value: [usize; 2], limit: usize) -> anyhow::Result<()> {
     );
     Ok(())
 }
+// Keep duplicates ambiguous even when identical or outside the Rust file domain.
+// Per-file rows retain graph order so validation reports the same first error.
+struct GraphSymbolLookup<'a> {
+    by_id: BTreeMap<&'a str, Option<&'a GraphSymbolArtifact>>,
+    by_file: BTreeMap<&'a str, Vec<&'a GraphSymbolArtifact>>,
+}
+
+impl<'a> GraphSymbolLookup<'a> {
+    fn new(graph: &'a GraphIndexArtifact) -> Self {
+        let mut by_id = BTreeMap::new();
+        let mut by_file: BTreeMap<&str, Vec<&GraphSymbolArtifact>> = BTreeMap::new();
+        for symbol in &graph.symbols {
+            by_id
+                .entry(symbol.stable_symbol_id.as_str())
+                .and_modify(|found| *found = None)
+                .or_insert(Some(symbol));
+            by_file
+                .entry(symbol.file_path.as_str())
+                .or_default()
+                .push(symbol);
+        }
+        Self { by_id, by_file }
+    }
+}
+
 fn validate_graph_symbols(
-    graph: &GraphIndexArtifact,
+    symbols: &GraphSymbolLookup<'_>,
     file_path: &str,
     byte_length: usize,
 ) -> anyhow::Result<()> {
-    for s in graph.symbols.iter().filter(|s| s.file_path == file_path) {
+    for s in symbols.by_file.get(file_path).into_iter().flatten() {
         ensure!(
             !s.stable_symbol_id.is_empty()
-                && graph
-                    .symbols
-                    .iter()
-                    .filter(|other| other.stable_symbol_id == s.stable_symbol_id)
-                    .count()
-                    == 1,
+                && symbols
+                    .by_id
+                    .get(s.stable_symbol_id.as_str())
+                    .is_some_and(Option::is_some),
             "ambiguous graph symbol identity"
         );
         range(s.byte_range, byte_length)?;
@@ -581,20 +606,17 @@ fn validate_graph_symbols(
     Ok(())
 }
 fn symbol<'a>(
-    graph: &'a GraphIndexArtifact,
+    symbols: &GraphSymbolLookup<'a>,
     file: &RustEvidenceFile,
     id: &str,
 ) -> anyhow::Result<&'a GraphSymbolArtifact> {
-    let found: Vec<_> = graph
-        .symbols
-        .iter()
-        .filter(|s| s.stable_symbol_id == id)
-        .collect();
-    ensure!(
-        found.len() == 1 && found[0].file_path == file.file_path,
-        "Rust evidence graph symbol absent, ambiguous or cross-file"
-    );
-    Ok(found[0])
+    symbols
+        .by_id
+        .get(id)
+        .copied()
+        .flatten()
+        .filter(|s| s.file_path == file.file_path)
+        .context("Rust evidence graph symbol absent, ambiguous or cross-file")
 }
 fn owner_id(owner: &RustDeclarationOwner) -> &str {
     match owner {
@@ -603,7 +625,7 @@ fn owner_id(owner: &RustDeclarationOwner) -> &str {
     }
 }
 fn owner(
-    graph: &GraphIndexArtifact,
+    symbols: &GraphSymbolLookup<'_>,
     file: &RustEvidenceFile,
     owner: &RustDeclarationOwner,
     child: [usize; 2],
@@ -614,7 +636,7 @@ fn owner(
             "Rust declaration file owner mismatch"
         ),
         RustDeclarationOwner::Symbol { stable_symbol_id } => ensure!(
-            contains(symbol(graph, file, stable_symbol_id)?.byte_range, child),
+            contains(symbol(symbols, file, stable_symbol_id)?.byte_range, child),
             "Rust declaration symbol owner does not contain child"
         ),
     }
@@ -677,6 +699,7 @@ fn texts(
 
 fn validate_declarations(
     graph: &GraphIndexArtifact,
+    symbols: &GraphSymbolLookup<'_>,
     file: &RustEvidenceFile,
     ids: &mut BTreeSet<String>,
 ) -> anyhow::Result<()> {
@@ -735,7 +758,7 @@ fn validate_declarations(
     for row in &set.rows {
         binding(file, &row.file_path, &row.stable_file_id, &row.source_oid)?;
         let found = declaration_symbol(
-            graph,
+            symbols,
             file,
             &row.stable_symbol_id,
             row.full_range,
@@ -748,13 +771,13 @@ fn validate_declarations(
             contains(row.full_range, row.type_range),
             "tuple type outside declaration"
         );
-        owner(graph, file, &row.structural_owner, row.full_range)?;
+        owner(symbols, file, &row.structural_owner, row.full_range)?;
         ensure!(
             parent(graph, &row.stable_symbol_id)? == owner_id(&row.structural_owner)
                 && row.lexical_owner == row.structural_owner,
             "tuple actual graph owner mismatch"
         );
-        let owner_symbol = symbol(graph, file, owner_id(&row.structural_owner))?;
+        let owner_symbol = symbol(symbols, file, owner_id(&row.structural_owner))?;
         ensure!(
             matches!(owner_symbol.symbol_kind.as_str(), "struct" | "enum_variant"),
             "invalid tuple owner kind"
@@ -773,7 +796,7 @@ fn validate_declarations(
     for row in &set.extern_blocks {
         binding(file, &row.file_path, &row.stable_file_id, &row.source_oid)?;
         let found = declaration_symbol(
-            graph,
+            symbols,
             file,
             &row.stable_symbol_id,
             row.full_range,
@@ -785,7 +808,7 @@ fn validate_declarations(
             found.entity_name == row.entity_name && found.qualified_name == row.qualified_name,
             "extern block graph name mismatch"
         );
-        owner(graph, file, &row.structural_owner, row.full_range)?;
+        owner(symbols, file, &row.structural_owner, row.full_range)?;
         ensure!(
             parent(graph, &row.stable_symbol_id)? == owner_id(&row.structural_owner)
                 && row.lexical_owner == row.structural_owner,
@@ -818,7 +841,7 @@ fn validate_declarations(
     for row in &set.foreign_functions {
         binding(file, &row.file_path, &row.stable_file_id, &row.source_oid)?;
         let found = declaration_symbol(
-            graph,
+            symbols,
             file,
             &row.stable_symbol_id,
             row.full_range,
@@ -835,13 +858,13 @@ fn validate_declarations(
             .iter()
             .find(|b| b.stable_symbol_id == owner_id(&row.structural_owner))
             .context("foreign function missing extern block")?;
-        owner(graph, file, &row.structural_owner, row.full_range)?;
+        owner(symbols, file, &row.structural_owner, row.full_range)?;
         ensure!(
             parent(graph, &row.stable_symbol_id)? == block.stable_symbol_id
                 && row.lexical_owner == block.lexical_owner,
             "foreign function actual graph owner mismatch"
         );
-        owner(graph, file, &row.lexical_owner, row.full_range)?;
+        owner(symbols, file, &row.lexical_owner, row.full_range)?;
         ensure!(
             row.body == RustDeclarationBody::AbsentForeignDeclaration,
             "foreign function must have absent body"
@@ -868,7 +891,7 @@ fn validate_declarations(
 }
 
 fn declaration_symbol<'a>(
-    graph: &'a GraphIndexArtifact,
+    symbols: &GraphSymbolLookup<'a>,
     file: &RustEvidenceFile,
     id: &str,
     full: [usize; 2],
@@ -879,7 +902,7 @@ fn declaration_symbol<'a>(
     ensure!(ids.insert(id.into()), "duplicate Rust declaration ID");
     range(full, file.byte_length)?;
     lines(line, file.byte_length)?;
-    let found = symbol(graph, file, id)?;
+    let found = symbol(symbols, file, id)?;
     ensure!(
         found.symbol_kind == kind && found.byte_range == full && found.line_range == line,
         "Rust declaration disagrees with graph symbol kind/range"
@@ -913,7 +936,7 @@ fn foreign_metadata(
 }
 
 fn validate_calls(
-    graph: &GraphIndexArtifact,
+    symbols: &GraphSymbolLookup<'_>,
     file: &RustEvidenceFile,
     set: &RustCallSiteEvidenceSet,
     ids: &mut BTreeSet<String>,
@@ -969,7 +992,7 @@ fn validate_calls(
             "duplicate or invalid Rust body ID"
         );
         if let Some(id) = &body.definition_stable_symbol_id {
-            let found = symbol(graph, file, id)?;
+            let found = symbol(symbols, file, id)?;
             ensure!(
                 matches!(
                     body.kind,
