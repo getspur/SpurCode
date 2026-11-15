@@ -1,0 +1,48 @@
+{
+  "issue": "bd-189b",
+  "main_head": "337345bf84aa30939344983b9edd5d0cc93d8c36",
+  "artifact_build_commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+  "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension",
+  "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "oracle": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/reference_file_facts",
+  "oracle_sha256": "be17bd345a8b7abb78e77e2efdcb8c6b4a154eb436dc9ff04d5503ea9686ac90",
+  "runtime_code_equals_tested_artifact": true,
+  "only_code_tree_difference_since_build": [
+    "crates/spur-graph-duckdb/README.md"
+  ],
+  "plan": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-14-duckdb-full-temporal/extension-comparison/reachable1987-extension-r0/plan.json",
+  "plan_sha256": "c6ebdbf22e40caf1bee26979f2415de4d672875db258bdf19610c30bbc32e861",
+  "repository": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-14-duckdb-full-temporal/legacy-comparison/reachable372-cli-j4-cache64m-r0.git",
+  "threads": [
+    1,
+    2,
+    4
+  ],
+  "orders": [
+    [
+      1,
+      2,
+      4
+    ],
+    [
+      4,
+      1,
+      2
+    ],
+    [
+      2,
+      4,
+      1
+    ]
+  ],
+  "observations_per_thread": 3,
+  "row_group_size": 128,
+  "memory_limit": "4GB",
+  "cold_definition": "Fresh database/fact cache, OS pages warm; build/preparation/startup/verification excluded from query timings.",
+  "scope": "Bounded distinct historical source-plan entries, not all commit/path occurrences or full-history temporal reconstruction.",
+  "workflows": [
+    "generic",
+    "parquet_missing_key_semijoin"
+  ],
+  "production_code_changes": false
+}

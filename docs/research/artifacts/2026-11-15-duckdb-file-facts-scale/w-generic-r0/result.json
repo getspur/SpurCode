@@ -1,0 +1,174 @@
+{
+  "name": "w-generic-r0",
+  "mode": "workflow",
+  "threads": 4,
+  "variant": "generic",
+  "extractor_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "artifact_build_commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+  "main_code_snapshot": "337345bf84aa30939344983b9edd5d0cc93d8c36",
+  "memory_limit": "4GB",
+  "logical_cpus": 10,
+  "system_load_start": [
+    9.2783203125,
+    13.41552734375,
+    19.1259765625
+  ],
+  "inputs": [
+    19604,
+    153493818
+  ],
+  "input_statuses": [
+    [
+      "encoding_error",
+      1
+    ],
+    [
+      "ok",
+      19603
+    ]
+  ],
+  "workflow_sql_sha256": "f9042afda72340172f464cfdb397aff6b0a88a18d5939dd107d92a0aad4ce48f",
+  "cold": {
+    "timing": {
+      "wall_seconds": 101.35389079106972,
+      "user_seconds": 101.376735,
+      "sys_seconds": 1.943038,
+      "average_cpu_cores": 1.0193962184735734,
+      "process_lifetime_peak_rss_bytes": 1901019136,
+      "minor_faults": 238984,
+      "major_faults": 219,
+      "voluntary_context_switches": 306,
+      "involuntary_context_switches": 115902
+    },
+    "missing": 19604,
+    "extracted": 19604
+  },
+  "statuses": [
+    [
+      "empty_source",
+      2
+    ],
+    [
+      "null_input",
+      1
+    ],
+    [
+      "ok",
+      19601
+    ]
+  ],
+  "fact_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "child_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "occurrences": 19604,
+  "encoding_diagnostic_occurrences": 1,
+  "same_connection_replay": {
+    "timing": {
+      "wall_seconds": 7.71026458311826,
+      "user_seconds": 11.645942000000005,
+      "sys_seconds": 0.6542439999999998,
+      "average_cpu_cores": 1.5953001180960051,
+      "process_lifetime_peak_rss_bytes": 2116894720,
+      "minor_faults": 60950,
+      "major_faults": 7,
+      "voluntary_context_switches": 222,
+      "involuntary_context_switches": 14822
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "exact_differences": [
+    0,
+    0
+  ],
+  "restart_replay": {
+    "timing": {
+      "wall_seconds": 6.129996957955882,
+      "user_seconds": 10.35233599999998,
+      "sys_seconds": 0.5531109999999999,
+      "average_cpu_cores": 1.7790297572409441,
+      "process_lifetime_peak_rss_bytes": 2681962496,
+      "minor_faults": 40808,
+      "major_faults": 0,
+      "voluntary_context_switches": 254,
+      "involuntary_context_switches": 13887
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "typed_parquet_without_extension": [
+    {
+      "table": "cache",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "occurrences",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "nodes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "edges",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "spans",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_invocations",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_scopes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    }
+  ],
+  "status": "passed",
+  "system_load_end": [
+    15.6171875,
+    13.41552734375,
+    18.2822265625
+  ]
+}

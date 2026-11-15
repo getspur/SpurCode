@@ -1,0 +1,186 @@
+{
+  "name": "i-generic-p10",
+  "mode": "incremental",
+  "threads": 4,
+  "variant": "generic",
+  "extractor_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "artifact_build_commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+  "main_code_snapshot": "337345bf84aa30939344983b9edd5d0cc93d8c36",
+  "memory_limit": "4GB",
+  "logical_cpus": 10,
+  "system_load_start": [
+    9.34912109375,
+    9.6572265625,
+    11.5869140625
+  ],
+  "inputs": [
+    19604,
+    153493818
+  ],
+  "input_statuses": [
+    [
+      "encoding_error",
+      1
+    ],
+    [
+      "ok",
+      19603
+    ]
+  ],
+  "eviction": {
+    "wall_seconds": 0.07692129188217223,
+    "user_seconds": 0.07223900000000003,
+    "sys_seconds": 0.007542999999999994,
+    "average_cpu_cores": 1.037190068547078,
+    "process_lifetime_peak_rss_bytes": 101220352,
+    "minor_faults": 795,
+    "major_faults": 0,
+    "voluntary_context_switches": 52,
+    "involuntary_context_switches": 217
+  },
+  "simulated_miss_percent": 10,
+  "workflow_sql_sha256": "f9042afda72340172f464cfdb397aff6b0a88a18d5939dd107d92a0aad4ce48f",
+  "incremental": {
+    "timing": {
+      "wall_seconds": 16.415474832989275,
+      "user_seconds": 19.909188,
+      "sys_seconds": 0.6470339999999999,
+      "average_cpu_cores": 1.252246566678004,
+      "process_lifetime_peak_rss_bytes": 2635579392,
+      "minor_faults": 159237,
+      "major_faults": 1,
+      "voluntary_context_switches": 334,
+      "involuntary_context_switches": 12644
+    },
+    "missing": 1963,
+    "extracted": 1963
+  },
+  "statuses": [
+    [
+      "empty_source",
+      2
+    ],
+    [
+      "null_input",
+      1
+    ],
+    [
+      "ok",
+      19601
+    ]
+  ],
+  "fact_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "child_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "occurrences": 19604,
+  "encoding_diagnostic_occurrences": 1,
+  "same_connection_replay": {
+    "timing": {
+      "wall_seconds": 3.2747160841245204,
+      "user_seconds": 5.230378999999999,
+      "sys_seconds": 0.18767599999999995,
+      "average_cpu_cores": 1.6545113716166602,
+      "process_lifetime_peak_rss_bytes": 2816786432,
+      "minor_faults": 45052,
+      "major_faults": 0,
+      "voluntary_context_switches": 435,
+      "involuntary_context_switches": 6262
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "exact_differences": [
+    0,
+    0
+  ],
+  "restart_replay": {
+    "timing": {
+      "wall_seconds": 3.3020923750009388,
+      "user_seconds": 5.475427000000003,
+      "sys_seconds": 0.11959300000000006,
+      "average_cpu_cores": 1.6943862753077623,
+      "process_lifetime_peak_rss_bytes": 2997108736,
+      "minor_faults": 11960,
+      "major_faults": 0,
+      "voluntary_context_switches": 131,
+      "involuntary_context_switches": 13442
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "typed_parquet_without_extension": [
+    {
+      "table": "cache",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "occurrences",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "nodes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "edges",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "spans",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_invocations",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_scopes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    }
+  ],
+  "status": "passed",
+  "system_load_end": [
+    8.8095703125,
+    9.4580078125,
+    11.44482421875
+  ]
+}

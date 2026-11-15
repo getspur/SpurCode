@@ -1,0 +1,137 @@
+{
+    "io": {
+        "total_bytes_read": 36795950,
+        "total_bytes_written": 0
+    },
+    "operator": [
+        {
+            "extra_info": {},
+            "intermediate_rows": 0,
+            "intermediate_size_bytes": 0,
+            "timing": 0.002271416,
+            "type": "RESULT_COLLECTOR",
+            "children": [
+                {
+                    "extra_info": {},
+                    "intermediate_rows": 1,
+                    "intermediate_size_bytes": 8,
+                    "timing": 0.373794499,
+                    "type": "CREATE_TABLE_AS",
+                    "children": [
+                        {
+                            "extra_info": {
+                                "Projections": [
+                                    "blob_oid",
+                                    "logical_path",
+                                    "facts"
+                                ],
+                                "Estimated Cardinality": "19604"
+                            },
+                            "intermediate_rows": 19604,
+                            "intermediate_size_bytes": 348423328,
+                            "timing": 119.63686805200005,
+                            "type": "PROJECTION",
+                            "children": [
+                                {
+                                    "extra_info": {
+                                        "Function": "READ_PARQUET",
+                                        "Projections": [
+                                            "blob_oid",
+                                            "logical_path",
+                                            "source"
+                                        ],
+                                        "Estimated Cardinality": "19604",
+                                        "Total Files Read": "1",
+                                        "Filename(s)": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts-scale/sources.parquet"
+                                    },
+                                    "intermediate_rows": 19604,
+                                    "intermediate_size_bytes": 950672,
+                                    "row_groups_scanned": 154,
+                                    "rows_scanned": 19604,
+                                    "timing": 0.27003653299999986,
+                                    "total_row_groups_to_scan": 154,
+                                    "type": "TABLE_SCAN"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "optimizer": {
+        "aggregate_function_rewriter": 0.000008958,
+        "aggregate_reuse": 0.000007041,
+        "build_side_probe_side": 0.000002209,
+        "column_lifetime": 0.000006958,
+        "common_aggregate": 6.67e-7,
+        "common_subexpressions": 0.000006542,
+        "common_subplan": 0.000012583,
+        "cte_filter_pusher": 0.000001042,
+        "cte_inlining": 4.99e-7,
+        "deliminator": 0.000001,
+        "duplicate_groups": 0.000003708,
+        "empty_result_pullup": 4.16e-7,
+        "expression_rewriter": 0.0000235,
+        "filter_pullup": 0.000001333,
+        "filter_pushdown": 0.000013208,
+        "grouping_sets": 8.75e-7,
+        "in_clause": 0.000001667,
+        "join_elimination": 0.000003417,
+        "join_filter_pushdown": 0.000001125,
+        "join_order": 0.001091208,
+        "late_materialization": 0.000001917,
+        "limit_pushdown": 6.66e-7,
+        "outer_join_simplification": 0.000004917,
+        "partial_aggregate_pushdown": 0.000002709,
+        "partitioned_execution": 0.000001125,
+        "projection_placement": 0.000005917,
+        "projection_pullup": 0.000011667,
+        "redundant_order_keys": 0.000001333,
+        "regex_range": 0.000001292,
+        "reorder_filter": 0.000001084,
+        "row_group_pruner": 8.33e-7,
+        "row_number_rewriter": 7.5e-7,
+        "sampling_pushdown": 9.17e-7,
+        "scalar_fn_pushdown": 0.000003167,
+        "statistics_propagation": 0.000527833,
+        "top_n": 5.83e-7,
+        "top_n_window_elimination": 0.000004458,
+        "total_time": 0.001902583,
+        "type_pushdown": 0.000005333,
+        "unnest_rewriter": 0.000002041,
+        "unused_columns": 0.00002025,
+        "window_self_join": 7.09e-7
+    },
+    "physical_planner": {
+        "column_binding": 0.000006125,
+        "create_plan": 0.00043275,
+        "resolve_types": 0.0000015,
+        "total_time": 0.000448666
+    },
+    "planner": {
+        "binding_time": 0.002838542,
+        "total_time": 0.002943167
+    },
+    "query": {
+        "cpu_time": 120.28297050000005,
+        "sql": "CREATE TABLE facts AS\n                SELECT blob_oid,logical_path,TRY(spur_graph_file_facts(logical_path,source)) facts FROM inputs",
+        "total_intermediate_rows": 39209,
+        "total_intermediate_size_bytes": 349374008,
+        "total_row_groups_scanned": 154,
+        "total_row_groups_to_scan": 154,
+        "total_rows_scanned": 19604,
+        "total_time": 121.33272
+    },
+    "storage": {
+        "commit_local_storage_latency": 0.508751083,
+        "write_to_wal_latency": 0.520548292
+    },
+    "system": {
+        "blocked_thread_time": 0.000347,
+        "peak_buffer_memory": 182114812,
+        "peak_streaming_buffer_size": 0,
+        "peak_temp_dir_size": 0,
+        "total_memory_allocated": 0
+    }
+}

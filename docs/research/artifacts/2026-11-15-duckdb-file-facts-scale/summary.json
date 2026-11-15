@@ -1,0 +1,513 @@
+{
+  "protocol": {
+    "issue": "bd-189b",
+    "main_head": "337345bf84aa30939344983b9edd5d0cc93d8c36",
+    "artifact_build_commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+    "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension",
+    "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "oracle": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/reference_file_facts",
+    "oracle_sha256": "be17bd345a8b7abb78e77e2efdcb8c6b4a154eb436dc9ff04d5503ea9686ac90",
+    "runtime_code_equals_tested_artifact": true,
+    "only_code_tree_difference_since_build": [
+      "crates/spur-graph-duckdb/README.md"
+    ],
+    "plan": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-14-duckdb-full-temporal/extension-comparison/reachable1987-extension-r0/plan.json",
+    "plan_sha256": "c6ebdbf22e40caf1bee26979f2415de4d672875db258bdf19610c30bbc32e861",
+    "repository": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-14-duckdb-full-temporal/legacy-comparison/reachable372-cli-j4-cache64m-r0.git",
+    "threads": [
+      1,
+      2,
+      4
+    ],
+    "orders": [
+      [
+        1,
+        2,
+        4
+      ],
+      [
+        4,
+        1,
+        2
+      ],
+      [
+        2,
+        4,
+        1
+      ]
+    ],
+    "observations_per_thread": 3,
+    "row_group_size": 128,
+    "memory_limit": "4GB",
+    "cold_definition": "Fresh database/fact cache, OS pages warm; build/preparation/startup/verification excluded from query timings.",
+    "scope": "Bounded distinct historical source-plan entries, not all commit/path occurrences or full-history temporal reconstruction.",
+    "workflows": [
+      "generic",
+      "parquet_missing_key_semijoin"
+    ],
+    "production_code_changes": false
+  },
+  "inputs": {
+    "rows": 19604,
+    "source_bytes": 153493818,
+    "frozen_head": "bbfd653e2ccdf03a65aae08d6a19221a6b4a8588",
+    "plan_sha256": "c6ebdbf22e40caf1bee26979f2415de4d672875db258bdf19610c30bbc32e861",
+    "languages": {
+      "Cpp": 18449,
+      "Sql": 356,
+      "C": 606,
+      "Yaml": 35,
+      "Markdown": 34,
+      "Python": 114,
+      "Json": 7,
+      "Javascript": 2,
+      "Shell": 1
+    },
+    "row_group_size": 128,
+    "row_groups": 154,
+    "max_source_bytes": 7721190,
+    "pilot_rows": 32,
+    "pilot_bytes": 13234149,
+    "valid_utf8_rows": 19603,
+    "valid_utf8_bytes": 151671080,
+    "encoding_errors": [
+      {
+        "blob_oid": "9dc1cfcdd38131eb7ca31c5045c5d0adb529815f",
+        "logical_path": "test/sql/copy/test_csv_header.hpp",
+        "byte_length": 1822738,
+        "error": "'utf-8' codec can't decode byte 0x8b in position 108: invalid start byte",
+        "raw_sha256": "28d6ea1b78103b45c7f29245ed730d5e17a353b5460e7ae9b1016b5e8acd2c5f"
+      }
+    ],
+    "preparation_seconds": 0.9900322919711471,
+    "sha256": {
+      "sources.parquet": "e1aefc5fcb74bd1975c8a2e88a2acfa85b130321009988be592f23a5263fbef3",
+      "pilot.parquet": "ae64530298acea88d2d08c16f0600f882a8ceb9c90ea5b043b1b3170b3608103"
+    }
+  },
+  "fact_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "errors": 1,
+  "native_extraction_errors": 0,
+  "native_pilot_exact_rows": 31,
+  "direct": {
+    "1": {
+      "n": 3,
+      "wall_seconds": [
+        121.33633254095912,
+        128.66761841694824,
+        132.21004812512547
+      ],
+      "median_seconds": 128.66761841694824,
+      "min_seconds": 121.33633254095912,
+      "max_seconds": 132.21004812512547,
+      "cpu_seconds": [
+        114.11945,
+        117.710324,
+        113.26459999999999
+      ],
+      "average_cpu_cores": [
+        0.9405216690678949,
+        0.9148403106254671,
+        0.8567019043273078
+      ],
+      "process_lifetime_peak_rss_bytes": [
+        679854080,
+        771964928,
+        788791296
+      ]
+    },
+    "2": {
+      "n": 3,
+      "wall_seconds": [
+        62.81512783304788,
+        73.31843804218806,
+        67.64926283317618
+      ],
+      "median_seconds": 67.64926283317618,
+      "min_seconds": 62.81512783304788,
+      "max_seconds": 73.31843804218806,
+      "cpu_seconds": [
+        116.947059,
+        116.153673,
+        119.97746099999999
+      ],
+      "average_cpu_cores": [
+        1.8617658362620186,
+        1.5842355088520048,
+        1.773522075116557
+      ],
+      "process_lifetime_peak_rss_bytes": [
+        1308262400,
+        1189675008,
+        1042726912
+      ]
+    },
+    "4": {
+      "n": 3,
+      "wall_seconds": [
+        47.6181379170157,
+        57.66013408289291,
+        56.39671491691843
+      ],
+      "median_seconds": 56.39671491691843,
+      "min_seconds": 47.6181379170157,
+      "max_seconds": 57.66013408289291,
+      "cpu_seconds": [
+        122.31014800000001,
+        126.437155,
+        126.778184
+      ],
+      "average_cpu_cores": [
+        2.568562177150865,
+        2.192800225164798,
+        2.2479710775133794
+      ],
+      "process_lifetime_peak_rss_bytes": [
+        1054916608,
+        1175666688,
+        1222082560
+      ]
+    }
+  },
+  "workflow": {
+    "generic": {
+      "cold": {
+        "n": 2,
+        "wall_seconds": [
+          122.01268320903182,
+          101.35389079106972
+        ],
+        "median_seconds": 111.68328700005077,
+        "min_seconds": 101.35389079106972,
+        "max_seconds": 122.01268320903182,
+        "cpu_seconds": [
+          124.681803,
+          103.319773
+        ],
+        "average_cpu_cores": [
+          1.021875756853863,
+          1.0193962184735734
+        ],
+        "process_lifetime_peak_rss_bytes": [
+          2152710144,
+          1901019136
+        ]
+      },
+      "same_connection_replay": {
+        "n": 2,
+        "wall_seconds": [
+          9.420301125152037,
+          7.71026458311826
+        ],
+        "median_seconds": 8.565282854135148,
+        "min_seconds": 7.71026458311826,
+        "max_seconds": 9.420301125152037,
+        "cpu_seconds": [
+          14.114934000000002,
+          12.300186000000005
+        ],
+        "average_cpu_cores": [
+          1.498352739734973,
+          1.5953001180960051
+        ],
+        "process_lifetime_peak_rss_bytes": [
+          2546401280,
+          2116894720
+        ]
+      },
+      "restart_replay": {
+        "n": 2,
+        "wall_seconds": [
+          7.3200333749409765,
+          6.129996957955882
+        ],
+        "median_seconds": 6.725015166448429,
+        "min_seconds": 6.129996957955882,
+        "max_seconds": 7.3200333749409765,
+        "cpu_seconds": [
+          12.172003999999996,
+          10.90544699999998
+        ],
+        "average_cpu_cores": [
+          1.662834494944928,
+          1.7790297572409441
+        ],
+        "process_lifetime_peak_rss_bytes": [
+          2912419840,
+          2681962496
+        ]
+      }
+    },
+    "parquet": {
+      "cold": {
+        "n": 2,
+        "wall_seconds": [
+          21.21533437492326,
+          60.77316220803186
+        ],
+        "median_seconds": 40.99424829147756,
+        "min_seconds": 21.21533437492326,
+        "max_seconds": 60.77316220803186,
+        "cpu_seconds": [
+          69.66310500000002,
+          141.658752
+        ],
+        "average_cpu_cores": [
+          3.283620411957424,
+          2.330942588030711
+        ],
+        "process_lifetime_peak_rss_bytes": [
+          2292776960,
+          2266513408
+        ]
+      },
+      "same_connection_replay": {
+        "n": 2,
+        "wall_seconds": [
+          3.9445290418807417,
+          11.501768250018358
+        ],
+        "median_seconds": 7.72314864594955,
+        "min_seconds": 3.9445290418807417,
+        "max_seconds": 11.501768250018358,
+        "cpu_seconds": [
+          6.477609999999994,
+          14.970653000000006
+        ],
+        "average_cpu_cores": [
+          1.6421757657820375,
+          1.3015957785426697
+        ],
+        "process_lifetime_peak_rss_bytes": [
+          2754658304,
+          2266513408
+        ]
+      },
+      "restart_replay": {
+        "n": 2,
+        "wall_seconds": [
+          3.3707802079152316,
+          8.11610716721043
+        ],
+        "median_seconds": 5.743443687562831,
+        "min_seconds": 3.3707802079152316,
+        "max_seconds": 8.11610716721043,
+        "cpu_seconds": [
+          6.173445000000001,
+          12.614908000000002
+        ],
+        "average_cpu_cores": [
+          1.8314587778531453,
+          1.5543052525187202
+        ],
+        "process_lifetime_peak_rss_bytes": [
+          3058139136,
+          2860630016
+        ]
+      }
+    }
+  },
+  "incremental": {
+    "i-parquet-p10": {
+      "variant": "parquet",
+      "percent": 10,
+      "missing": 1963,
+      "timing": {
+        "wall_seconds": 15.644186124904081,
+        "user_seconds": 25.603782000000002,
+        "sys_seconds": 1.020211,
+        "average_cpu_cores": 1.7018458350873935,
+        "process_lifetime_peak_rss_bytes": 2072838144,
+        "minor_faults": 140994,
+        "major_faults": 112,
+        "voluntary_context_switches": 585,
+        "involuntary_context_switches": 19362
+      },
+      "restart_replay": {
+        "timing": {
+          "wall_seconds": 8.501563124824315,
+          "user_seconds": 12.758487000000002,
+          "sys_seconds": 0.4424640000000002,
+          "average_cpu_cores": 1.552767509477594,
+          "process_lifetime_peak_rss_bytes": 3068379136,
+          "minor_faults": 20195,
+          "major_faults": 0,
+          "voluntary_context_switches": 223,
+          "involuntary_context_switches": 10878
+        },
+        "missing": 0,
+        "extracted": 0
+      }
+    },
+    "i-generic-p10": {
+      "variant": "generic",
+      "percent": 10,
+      "missing": 1963,
+      "timing": {
+        "wall_seconds": 16.415474832989275,
+        "user_seconds": 19.909188,
+        "sys_seconds": 0.6470339999999999,
+        "average_cpu_cores": 1.252246566678004,
+        "process_lifetime_peak_rss_bytes": 2635579392,
+        "minor_faults": 159237,
+        "major_faults": 1,
+        "voluntary_context_switches": 334,
+        "involuntary_context_switches": 12644
+      },
+      "restart_replay": {
+        "timing": {
+          "wall_seconds": 3.3020923750009388,
+          "user_seconds": 5.475427000000003,
+          "sys_seconds": 0.11959300000000006,
+          "average_cpu_cores": 1.6943862753077623,
+          "process_lifetime_peak_rss_bytes": 2997108736,
+          "minor_faults": 11960,
+          "major_faults": 0,
+          "voluntary_context_switches": 131,
+          "involuntary_context_switches": 13442
+        },
+        "missing": 0,
+        "extracted": 0
+      }
+    },
+    "i-parquet-p1": {
+      "variant": "parquet",
+      "percent": 1,
+      "missing": 188,
+      "timing": {
+        "wall_seconds": 10.790668625151739,
+        "user_seconds": 19.10519,
+        "sys_seconds": 0.643409,
+        "average_cpu_cores": 1.8301552652602464,
+        "process_lifetime_peak_rss_bytes": 1755578368,
+        "minor_faults": 107761,
+        "major_faults": 1,
+        "voluntary_context_switches": 101,
+        "involuntary_context_switches": 12217
+      },
+      "restart_replay": {
+        "timing": {
+          "wall_seconds": 8.846128792036325,
+          "user_seconds": 14.383986999999998,
+          "sys_seconds": 0.5344409999999999,
+          "average_cpu_cores": 1.6864357676354682,
+          "process_lifetime_peak_rss_bytes": 2629713920,
+          "minor_faults": 45144,
+          "major_faults": 0,
+          "voluntary_context_switches": 98,
+          "involuntary_context_switches": 9648
+        },
+        "missing": 0,
+        "extracted": 0
+      }
+    },
+    "i-generic-p1": {
+      "variant": "generic",
+      "percent": 1,
+      "missing": 188,
+      "timing": {
+        "wall_seconds": 11.083811874967068,
+        "user_seconds": 14.562152000000001,
+        "sys_seconds": 1.012145,
+        "average_cpu_cores": 1.40513906007145,
+        "process_lifetime_peak_rss_bytes": 1839185920,
+        "minor_faults": 124779,
+        "major_faults": 111,
+        "voluntary_context_switches": 466,
+        "involuntary_context_switches": 35027
+      },
+      "restart_replay": {
+        "timing": {
+          "wall_seconds": 8.952257042052224,
+          "user_seconds": 13.204622999999998,
+          "sys_seconds": 0.608584,
+          "average_cpu_cores": 1.5429859682439866,
+          "process_lifetime_peak_rss_bytes": 2712666112,
+          "minor_faults": 21521,
+          "major_faults": 0,
+          "voluntary_context_switches": 211,
+          "involuntary_context_switches": 19562
+        },
+        "missing": 0,
+        "extracted": 0
+      }
+    }
+  },
+  "all_compared_facts_exact": true,
+  "run_names": [
+    "cached-trace",
+    "d-t1-r0",
+    "d-t1-r1",
+    "d-t1-r2",
+    "d-t2-r0",
+    "d-t2-r1",
+    "d-t2-r2",
+    "d-t4-r0",
+    "d-t4-r1",
+    "d-t4-r2",
+    "i-generic-p1",
+    "i-generic-p10",
+    "i-parquet-p1",
+    "i-parquet-p10",
+    "pilot",
+    "profile-t4",
+    "w-generic-r0",
+    "w-generic-r1",
+    "w-parquet-r0",
+    "w-parquet-r1"
+  ],
+  "script_sha256": "5b54906db838b1f791e3236ed8bff2564e8df88cf59eac30f9e8ab1c679a7c1c",
+  "direct_speedup_1_to_4": 2.2814736391383197,
+  "workflow_speedup": 2.7243647988361577,
+  "typed_parquet_checks": 63,
+  "all_replays_extract_zero": true,
+  "cached_replay_trace": {
+    "staging_validation_cache_setup": 0.1158476653508842,
+    "extraction": 0.001226375112310052,
+    "child_tables": 2.6550036671105772,
+    "lineage": 0.012155375210568309,
+    "parquet_export": 0.8753688740544021
+  },
+  "profile_assessment": {
+    "sample": "docs/research/artifacts/2026-11-15-duckdb-file-facts-scale/profile-control/sample.txt",
+    "capture_exit": 0,
+    "symbolication_attempt_exit": 0,
+    "rust_function_names_available": false,
+    "finding": "Native extension frames dominate active captured work, but stripped addresses do not identify individual Rust functions. DuckDB operator profiles isolate extraction/result projection; do not infer a per-function hotspot from flat addresses.",
+    "profiled_run_excluded_from_timing_medians": true
+  },
+  "environment_snapshots": [
+    {
+      "utc": "2026-11-15T04:41:16.943458+00:00",
+      "logical_cpus": 10,
+      "load_average": [
+        16.69140625,
+        25.615234375,
+        24.8671875
+      ],
+      "note": "Shared-host snapshot during benchmark; not an idle-host guarantee."
+    }
+  ],
+  "runtime": {
+    "duckdb_version": "2.0.0",
+    "native_module_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "machine": "arm64",
+    "os": "Darwin",
+    "logical_cpus": 10
+  },
+  "raw_encoding_bytes_verified": [
+    {
+      "blob_oid": "9dc1cfcdd38131eb7ca31c5045c5d0adb529815f",
+      "logical_path": "test/sql/copy/test_csv_header.hpp",
+      "bytes": 1822738,
+      "sha256": "28d6ea1b78103b45c7f29245ed730d5e17a353b5460e7ae9b1016b5e8acd2c5f"
+    }
+  ]
+}

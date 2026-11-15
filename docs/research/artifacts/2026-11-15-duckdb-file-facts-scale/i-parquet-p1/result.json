@@ -1,0 +1,186 @@
+{
+  "name": "i-parquet-p1",
+  "mode": "incremental",
+  "threads": 4,
+  "variant": "parquet",
+  "extractor_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "artifact_build_commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+  "main_code_snapshot": "337345bf84aa30939344983b9edd5d0cc93d8c36",
+  "memory_limit": "4GB",
+  "logical_cpus": 10,
+  "system_load_start": [
+    17.333984375,
+    11.90625,
+    12.8212890625
+  ],
+  "inputs": [
+    19604,
+    153493818
+  ],
+  "input_statuses": [
+    [
+      "encoding_error",
+      1
+    ],
+    [
+      "ok",
+      19603
+    ]
+  ],
+  "eviction": {
+    "wall_seconds": 0.03357312502339482,
+    "user_seconds": 0.035770000000000024,
+    "sys_seconds": 0.009127999999999997,
+    "average_cpu_cores": 1.337319655787588,
+    "process_lifetime_peak_rss_bytes": 100958208,
+    "minor_faults": 773,
+    "major_faults": 0,
+    "voluntary_context_switches": 52,
+    "involuntary_context_switches": 252
+  },
+  "simulated_miss_percent": 1,
+  "workflow_sql_sha256": "6dc65907c58b85452e145d561db1f4d39768bf90dfe890255564a8d72d583250",
+  "incremental": {
+    "timing": {
+      "wall_seconds": 10.790668625151739,
+      "user_seconds": 19.10519,
+      "sys_seconds": 0.643409,
+      "average_cpu_cores": 1.8301552652602464,
+      "process_lifetime_peak_rss_bytes": 1755578368,
+      "minor_faults": 107761,
+      "major_faults": 1,
+      "voluntary_context_switches": 101,
+      "involuntary_context_switches": 12217
+    },
+    "missing": 188,
+    "extracted": 188
+  },
+  "statuses": [
+    [
+      "empty_source",
+      2
+    ],
+    [
+      "null_input",
+      1
+    ],
+    [
+      "ok",
+      19601
+    ]
+  ],
+  "fact_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "child_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "occurrences": 19604,
+  "encoding_diagnostic_occurrences": 1,
+  "same_connection_replay": {
+    "timing": {
+      "wall_seconds": 9.128960957983509,
+      "user_seconds": 14.990473000000001,
+      "sys_seconds": 0.434759,
+      "average_cpu_cores": 1.689702921394383,
+      "process_lifetime_peak_rss_bytes": 1975631872,
+      "minor_faults": 21916,
+      "major_faults": 0,
+      "voluntary_context_switches": 184,
+      "involuntary_context_switches": 7920
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "exact_differences": [
+    0,
+    0
+  ],
+  "restart_replay": {
+    "timing": {
+      "wall_seconds": 8.846128792036325,
+      "user_seconds": 14.383986999999998,
+      "sys_seconds": 0.5344409999999999,
+      "average_cpu_cores": 1.6864357676354682,
+      "process_lifetime_peak_rss_bytes": 2629713920,
+      "minor_faults": 45144,
+      "major_faults": 0,
+      "voluntary_context_switches": 98,
+      "involuntary_context_switches": 9648
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "typed_parquet_without_extension": [
+    {
+      "table": "cache",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "occurrences",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "nodes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "edges",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "spans",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_invocations",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_scopes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    }
+  ],
+  "status": "passed",
+  "system_load_end": [
+    14.822265625,
+    11.794921875,
+    12.72021484375
+  ]
+}

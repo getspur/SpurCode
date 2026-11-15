@@ -1,0 +1,186 @@
+{
+  "name": "i-generic-p1",
+  "mode": "incremental",
+  "threads": 4,
+  "variant": "generic",
+  "extractor_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "artifact_build_commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+  "main_code_snapshot": "337345bf84aa30939344983b9edd5d0cc93d8c36",
+  "memory_limit": "4GB",
+  "logical_cpus": 10,
+  "system_load_start": [
+    9.943359375,
+    10.09521484375,
+    12.287109375
+  ],
+  "inputs": [
+    19604,
+    153493818
+  ],
+  "input_statuses": [
+    [
+      "encoding_error",
+      1
+    ],
+    [
+      "ok",
+      19603
+    ]
+  ],
+  "eviction": {
+    "wall_seconds": 0.03020462510176003,
+    "user_seconds": 0.03264499999999998,
+    "sys_seconds": 0.01461599999999999,
+    "average_cpu_cores": 1.564694143389519,
+    "process_lifetime_peak_rss_bytes": 102563840,
+    "minor_faults": 779,
+    "major_faults": 93,
+    "voluntary_context_switches": 52,
+    "involuntary_context_switches": 408
+  },
+  "simulated_miss_percent": 1,
+  "workflow_sql_sha256": "f9042afda72340172f464cfdb397aff6b0a88a18d5939dd107d92a0aad4ce48f",
+  "incremental": {
+    "timing": {
+      "wall_seconds": 11.083811874967068,
+      "user_seconds": 14.562152000000001,
+      "sys_seconds": 1.012145,
+      "average_cpu_cores": 1.40513906007145,
+      "process_lifetime_peak_rss_bytes": 1839185920,
+      "minor_faults": 124779,
+      "major_faults": 111,
+      "voluntary_context_switches": 466,
+      "involuntary_context_switches": 35027
+    },
+    "missing": 188,
+    "extracted": 188
+  },
+  "statuses": [
+    [
+      "empty_source",
+      2
+    ],
+    [
+      "null_input",
+      1
+    ],
+    [
+      "ok",
+      19601
+    ]
+  ],
+  "fact_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "child_counts": {
+    "nodes": 357302,
+    "edges": 1013352,
+    "spans": 357302,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "occurrences": 19604,
+  "encoding_diagnostic_occurrences": 1,
+  "same_connection_replay": {
+    "timing": {
+      "wall_seconds": 8.865762166911736,
+      "user_seconds": 12.888397999999999,
+      "sys_seconds": 0.4973839999999998,
+      "average_cpu_cores": 1.5098286811660264,
+      "process_lifetime_peak_rss_bytes": 2295250944,
+      "minor_faults": 39542,
+      "major_faults": 1,
+      "voluntary_context_switches": 352,
+      "involuntary_context_switches": 17033
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "exact_differences": [
+    0,
+    0
+  ],
+  "restart_replay": {
+    "timing": {
+      "wall_seconds": 8.952257042052224,
+      "user_seconds": 13.204622999999998,
+      "sys_seconds": 0.608584,
+      "average_cpu_cores": 1.5429859682439866,
+      "process_lifetime_peak_rss_bytes": 2712666112,
+      "minor_faults": 21521,
+      "major_faults": 0,
+      "voluntary_context_switches": 211,
+      "involuntary_context_switches": 19562
+    },
+    "missing": 0,
+    "extracted": 0
+  },
+  "typed_parquet_without_extension": [
+    {
+      "table": "cache",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "occurrences",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "nodes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "edges",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "spans",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_invocations",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    },
+    {
+      "table": "macro_scopes",
+      "differences": [
+        0,
+        0
+      ],
+      "types_equal": true
+    }
+  ],
+  "status": "passed",
+  "system_load_end": [
+    17.333984375,
+    11.90625,
+    12.8212890625
+  ]
+}
