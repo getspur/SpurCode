@@ -1,0 +1,1265 @@
+[
+  {
+    "name": "native_surface_before_load",
+    "sql": "SELECT function_name FROM duckdb_functions() WHERE function_name LIKE 'spur_graph%' ORDER BY function_name",
+    "params": [],
+    "rows": []
+  },
+  {
+    "name": "schema_first",
+    "sql": "SELECT table_catalog,table_name,column_name,data_type FROM information_schema.columns WHERE table_catalog='frozen' AND table_name IN ('nodes','edges','spans','inventory','sources') ORDER BY table_name,ordinal_position",
+    "params": [],
+    "rows": [
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "edge_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "source_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "target_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "relation",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "target_label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "import_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "receiver_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "scope_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "confidence",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "confidence_score",
+        "data_type": "FLOAT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "edge_kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "bind_method",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "evidence_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "directed",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "edges",
+        "column_name": "change_kind",
+        "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "git_blob_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "bytes",
+        "data_type": "BIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "suffix",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "area",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "status",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "inventory",
+        "column_name": "error",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "stable_key",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "source_span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "nodes",
+        "column_name": "first_seen_run_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "sources",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "sources",
+        "column_name": "source",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "sources",
+        "column_name": "source_bytes",
+        "data_type": "BLOB"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "sources",
+        "column_name": "file_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "sources",
+        "column_name": "sha256",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "start_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "end_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "start_line",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_catalog": "frozen",
+        "table_name": "spans",
+        "column_name": "end_line",
+        "data_type": "UINTEGER"
+      }
+    ]
+  },
+  {
+    "name": "runtime",
+    "sql": "SELECT version() AS engine_version",
+    "params": [],
+    "rows": [
+      {
+        "engine_version": "v2.0.0"
+      }
+    ]
+  },
+  {
+    "name": "native_extension_function_surface",
+    "sql": "SELECT function_name,function_type,parameters,parameter_types,return_type FROM duckdb_functions() WHERE function_name LIKE 'spur_graph%' ORDER BY function_name",
+    "params": [],
+    "rows": [
+      {
+        "function_name": "spur_graph_file_facts",
+        "function_type": "scalar",
+        "parameters": [
+          "logical_path",
+          "source"
+        ],
+        "parameter_types": [
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "return_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+      },
+      {
+        "function_name": "spur_graph_symbol_changes",
+        "function_type": "scalar",
+        "parameters": [
+          "path",
+          "old_path",
+          "kind",
+          "old_symbols",
+          "new_symbols"
+        ],
+        "parameter_types": [
+          "VARCHAR",
+          "VARCHAR",
+          "VARCHAR",
+          "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]",
+          "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]"
+        ],
+        "return_type": "STRUCT(changes STRUCT(symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), stable_symbol_id VARCHAR, file_path VARCHAR, change_kind VARCHAR, previous_stable_symbol_id VARCHAR)[], diagnostics VARCHAR[])"
+      },
+      {
+        "function_name": "spur_graph_symbols",
+        "function_type": "scalar",
+        "parameters": [
+          "logical_path",
+          "source"
+        ],
+        "parameter_types": [
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "return_type": "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]"
+      }
+    ]
+  },
+  {
+    "name": "native_loaded_extensions",
+    "sql": "SELECT extension_name,loaded,installed,extension_version FROM duckdb_extensions() WHERE loaded ORDER BY extension_name",
+    "params": [],
+    "rows": [
+      {
+        "extension_name": "core_functions",
+        "loaded": true,
+        "installed": true,
+        "extension_version": "v2.0.0"
+      },
+      {
+        "extension_name": "icu",
+        "loaded": true,
+        "installed": true,
+        "extension_version": "v2.0.0"
+      },
+      {
+        "extension_name": "json",
+        "loaded": true,
+        "installed": true,
+        "extension_version": "v2.0.0"
+      },
+      {
+        "extension_name": "parquet",
+        "loaded": true,
+        "installed": true,
+        "extension_version": "v2.0.0"
+      },
+      {
+        "extension_name": "spur_graph",
+        "loaded": true,
+        "installed": false,
+        "extension_version": "0.1.0"
+      }
+    ]
+  },
+  {
+    "name": "call_partition",
+    "sql": "SELECT count(*) AS calls,\ncount(*) FILTER(WHERE target_node_id IS NOT NULL) AS local_targets,\ncount(*) FILTER(WHERE target_node_id IS NULL) AS unresolved,\ncount(*) FILTER(WHERE target_node_id IS NULL AND target_label IS NULL) AS unresolved_without_label,\ncount(*) FILTER(WHERE target_node_id IS NULL AND receiver_text IS NOT NULL AND length(trim(receiver_text))>0) AS unresolved_receiver_evidence,\ncount(*) FILTER(WHERE target_node_id IS NULL AND target_label LIKE '%::%') AS unresolved_qualified_label,\ncount(*) FILTER(WHERE target_node_id IS NULL AND import_path IS NOT NULL) AS unresolved_import_path,\ncount(*) FILTER(WHERE target_node_id IS NULL AND scope_text IS NOT NULL) AS unresolved_scope_text\nFROM rust_edges",
+    "params": [],
+    "rows": [
+      {
+        "calls": 259828,
+        "local_targets": 32414,
+        "unresolved": 227414,
+        "unresolved_without_label": 0,
+        "unresolved_receiver_evidence": 139808,
+        "unresolved_qualified_label": 288,
+        "unresolved_import_path": 0,
+        "unresolved_scope_text": 54768
+      }
+    ]
+  },
+  {
+    "name": "unresolved_top_labels_limit_30",
+    "sql": "SELECT target_label,count(*) AS sites FROM rust_edges WHERE target_node_id IS NULL GROUP BY target_label ORDER BY sites DESC,target_label LIMIT 30",
+    "params": [],
+    "rows": [
+      {
+        "target_label": "new",
+        "sites": 14696
+      },
+      {
+        "target_label": "expect",
+        "sites": 11318
+      },
+      {
+        "target_label": "unwrap",
+        "sites": 9983
+      },
+      {
+        "target_label": "clone",
+        "sites": 8933
+      },
+      {
+        "target_label": "into",
+        "sites": 7191
+      },
+      {
+        "target_label": "Some",
+        "sites": 5948
+      },
+      {
+        "target_label": "to_string",
+        "sites": 5541
+      },
+      {
+        "target_label": "iter",
+        "sites": 5006
+      },
+      {
+        "target_label": "map",
+        "sites": 4637
+      },
+      {
+        "target_label": "Ok",
+        "sites": 4432
+      },
+      {
+        "target_label": "join",
+        "sites": 4051
+      },
+      {
+        "target_label": "len",
+        "sites": 3695
+      },
+      {
+        "target_label": "to_owned",
+        "sites": 3348
+      },
+      {
+        "target_label": "path",
+        "sites": 3173
+      },
+      {
+        "target_label": "contains",
+        "sites": 2606
+      },
+      {
+        "target_label": "is_empty",
+        "sites": 2568
+      },
+      {
+        "target_label": "default",
+        "sites": 2374
+      },
+      {
+        "target_label": "collect",
+        "sites": 2310
+      },
+      {
+        "target_label": "get",
+        "sites": 2294
+      },
+      {
+        "target_label": "push",
+        "sites": 2219
+      },
+      {
+        "target_label": "as_str",
+        "sites": 2053
+      },
+      {
+        "target_label": "as_ref",
+        "sites": 1982
+      },
+      {
+        "target_label": "as_deref",
+        "sites": 1741
+      },
+      {
+        "target_label": "map_err",
+        "sites": 1695
+      },
+      {
+        "target_label": "and_then",
+        "sites": 1546
+      },
+      {
+        "target_label": "Err",
+        "sites": 1450
+      },
+      {
+        "target_label": "lock",
+        "sites": 1369
+      },
+      {
+        "target_label": "tempdir",
+        "sites": 1352
+      },
+      {
+        "target_label": "any",
+        "sites": 1345
+      },
+      {
+        "target_label": "from",
+        "sites": 1342
+      }
+    ]
+  },
+  {
+    "name": "qualified_roots_limit_30",
+    "sql": "SELECT split_part(target_label,'::',1) AS root,count(*) AS sites FROM rust_edges WHERE target_node_id IS NULL AND target_label LIKE '%::%' GROUP BY root ORDER BY sites DESC,root LIMIT 30",
+    "params": [],
+    "rows": [
+      {
+        "root": "crate",
+        "sites": 56
+      },
+      {
+        "root": "GraphQueryClient",
+        "sites": 37
+      },
+      {
+        "root": "AgentConnection",
+        "sites": 25
+      },
+      {
+        "root": "Array",
+        "sites": 25
+      },
+      {
+        "root": "JobStore",
+        "sites": 22
+      },
+      {
+        "root": "OutcomeStore",
+        "sites": 16
+      },
+      {
+        "root": "BeadsAdvanced",
+        "sites": 14
+      },
+      {
+        "root": "PeerMailboxLedger",
+        "sites": 14
+      },
+      {
+        "root": "spur_blob_store",
+        "sites": 10
+      },
+      {
+        "root": "spur_pm",
+        "sites": 10
+      },
+      {
+        "root": "ExternalPmSync",
+        "sites": 8
+      },
+      {
+        "root": "PmLike",
+        "sites": 8
+      },
+      {
+        "root": "ApiKeyStore",
+        "sites": 7
+      },
+      {
+        "root": "spur_core",
+        "sites": 6
+      },
+      {
+        "root": "MentionSource",
+        "sites": 4
+      },
+      {
+        "root": "ReconcilerDispatch",
+        "sites": 4
+      },
+      {
+        "root": "spur_acp",
+        "sites": 4
+      },
+      {
+        "root": "super",
+        "sites": 3
+      },
+      {
+        "root": "CatalogLeaseStore",
+        "sites": 2
+      },
+      {
+        "root": "CredentialStore",
+        "sites": 2
+      },
+      {
+        "root": "OverlayGenerationBuilder",
+        "sites": 2
+      },
+      {
+        "root": "RuntimeSubscriptionFactory",
+        "sites": 2
+      },
+      {
+        "root": "BufRead",
+        "sites": 1
+      },
+      {
+        "root": "EvidenceProvider",
+        "sites": 1
+      },
+      {
+        "root": "McpEventSink",
+        "sites": 1
+      },
+      {
+        "root": "QuerySource",
+        "sites": 1
+      },
+      {
+        "root": "SessionMentionSource",
+        "sites": 1
+      },
+      {
+        "root": "Write",
+        "sites": 1
+      },
+      {
+        "root": "spur_license",
+        "sites": 1
+      }
+    ]
+  },
+  {
+    "name": "receiver_scope_examples_limit_20",
+    "sql": "SELECT logical_path,edge_id,source_node_id,target_label,receiver_text,scope_text,confidence,bind_method,import_path FROM rust_edges WHERE target_node_id IS NULL ORDER BY hash(logical_path,edge_id) LIMIT 20",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-context-service/tests/mcp_test.rs",
+        "edge_id": 867,
+        "source_node_id": 222,
+        "target_label": "owner",
+        "receiver_text": "record",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-graph/src/query_hot_index.rs",
+        "edge_id": 374,
+        "source_node_id": 99,
+        "target_label": "then_with",
+        "receiver_text": "left.file_path\n        .cmp(right.file_path)",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/picker_popover.rs",
+        "edge_id": 137,
+        "source_node_id": 18,
+        "target_label": "to_string",
+        "receiver_text": "\"crates/spur-tui/src/views/session_detail.rs\"",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-utilities/commands/tests/submit_classify.rs",
+        "edge_id": 61,
+        "source_node_id": 31,
+        "target_label": "path",
+        "receiver_text": "tmp",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-graph/src/panic_evidence/method_sites.rs",
+        "edge_id": 33,
+        "source_node_id": 7,
+        "target_label": "is_none",
+        "receiver_text": "candidates.next()",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-context-service/src/translate.rs",
+        "edge_id": 903,
+        "source_node_id": 141,
+        "target_label": "to_string",
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-worktree/src/manager.rs",
+        "edge_id": 1048,
+        "source_node_id": 168,
+        "target_label": "expect",
+        "receiver_text": "manager\n            .run_git(&[\"branch\", \"spur/worker-legacy-deadbeef\"], None)\n            .await",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-graph/src/store/commit_index.rs",
+        "edge_id": 52,
+        "source_node_id": 21,
+        "target_label": "join",
+        "receiver_text": "worktree",
+        "scope_text": "Path",
+        "confidence": "heuristic",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-pm/src/beads_crate/issue_tracker.rs",
+        "edge_id": 600,
+        "source_node_id": 49,
+        "target_label": "unwrap",
+        "receiver_text": "adapter\n            .write(move |s| {\n                s.delete_issue(&deleted_id_for_write, \"test\", \"deleted\", None)?;\n                Ok(())\n            })\n            .await",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-graph/tests/macro_invocation_artifacts.rs",
+        "edge_id": 103,
+        "source_node_id": 13,
+        "target_label": "as_array",
+        "receiver_text": "next[\"scopes\"]",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-acp/tests/executor_events_roundtrip.rs",
+        "edge_id": 124,
+        "source_node_id": 10,
+        "target_label": "set_session_model",
+        "receiver_text": "connection",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-core/src/plan/reconciler/mod.rs",
+        "edge_id": 605,
+        "source_node_id": 183,
+        "target_label": "unwrap_or_default",
+        "receiver_text": "adjacency\n            .edges",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-context-service/src/source_sidecar.rs",
+        "edge_id": 118,
+        "source_node_id": 19,
+        "target_label": "column_by_name",
+        "receiver_text": "batch",
+        "scope_text": "RecordBatch",
+        "confidence": "heuristic",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-core/tests/mutation_phase_2c.rs",
+        "edge_id": 418,
+        "source_node_id": 22,
+        "target_label": "Some",
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-license/src/community.rs",
+        "edge_id": 147,
+        "source_node_id": 35,
+        "target_label": "Count",
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/plan_stage_board.rs",
+        "edge_id": 230,
+        "source_node_id": 34,
+        "target_label": "count",
+        "receiver_text": "rendered\n            .lines()\n            .filter(|line| {\n                line.starts_with('\u2502') && line.chars().filter(|ch| *ch == '\u2500').count() >= 8\n            })",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-core/src/skills/mod.rs",
+        "edge_id": 634,
+        "source_node_id": 162,
+        "target_label": "as_deref",
+        "receiver_text": "parsed.description",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-graph/tests/panic_compiler_evidence.rs",
+        "edge_id": 137,
+        "source_node_id": 29,
+        "target_label": "clone",
+        "receiver_text": "f\n        .graph\n        .symbols\n        .iter()\n        .find(|s| s.entity_name == \"other\")\n        .unwrap()\n        .stable_symbol_id",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "edge_id": 230,
+        "source_node_id": 18,
+        "target_label": "get",
+        "receiver_text": "post",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      },
+      {
+        "logical_path": "crates/spur-context-service/src/api_key_authorizer.rs",
+        "edge_id": 242,
+        "source_node_id": 90,
+        "target_label": "expect",
+        "receiver_text": "authorize_api_key(&request, &store, KeyEnvironment::Live, now)\n                    .await",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "bind_method": null,
+        "import_path": null
+      }
+    ]
+  },
+  {
+    "name": "rust_callable_kinds",
+    "sql": "SELECT n.kind,count(*) AS nodes FROM nodes n JOIN inventory i ON i.path=n.logical_path WHERE i.suffix='.rs' GROUP BY n.kind ORDER BY nodes DESC",
+    "params": [],
+    "rows": [
+      {
+        "kind": "function",
+        "nodes": 21226
+      },
+      {
+        "kind": "field",
+        "nodes": 14822
+      },
+      {
+        "kind": "method",
+        "nodes": 9353
+      },
+      {
+        "kind": "enum_variant",
+        "nodes": 4004
+      },
+      {
+        "kind": "struct",
+        "nodes": 3117
+      },
+      {
+        "kind": "impl",
+        "nodes": 2845
+      },
+      {
+        "kind": "constant",
+        "nodes": 2179
+      },
+      {
+        "kind": "file",
+        "nodes": 1726
+      },
+      {
+        "kind": "module",
+        "nodes": 1648
+      },
+      {
+        "kind": "enum",
+        "nodes": 953
+      },
+      {
+        "kind": "type_alias",
+        "nodes": 235
+      },
+      {
+        "kind": "trait",
+        "nodes": 120
+      },
+      {
+        "kind": "mcp_tool",
+        "nodes": 63
+      },
+      {
+        "kind": "macro",
+        "nodes": 32
+      },
+      {
+        "kind": "extern_block",
+        "nodes": 4
+      }
+    ]
+  },
+  {
+    "name": "callable_owner_examples_limit_20",
+    "sql": "SELECT n.logical_path,n.node_id,n.label,n.kind,p.label AS parent_label,p.kind AS parent_kind FROM nodes n JOIN inventory i ON i.path=n.logical_path LEFT JOIN edges e ON e.logical_path=n.logical_path AND e.target_node_id=n.node_id AND e.relation='contains' LEFT JOIN nodes p ON p.logical_path=e.logical_path AND p.node_id=e.source_node_id WHERE i.suffix='.rs' AND n.kind IN ('function','method') ORDER BY hash(n.logical_path,n.node_id) LIMIT 20",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-solver/src/encode.rs",
+        "node_id": 51,
+        "label": "push_u64",
+        "kind": "method",
+        "parent_label": "SmtBuilder",
+        "parent_kind": "impl"
+      },
+      {
+        "logical_path": "crates/spur-core/src/orchestrator/loop_runtime.rs",
+        "node_id": 159,
+        "label": "wait_for_state",
+        "kind": "function",
+        "parent_label": "tests",
+        "parent_kind": "module"
+      },
+      {
+        "logical_path": "crates/spur-solver/src/constraint_spec.rs",
+        "node_id": 59,
+        "label": "section_detail",
+        "kind": "function",
+        "parent_label": "crates/spur-solver/src/constraint_spec.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-graph/src/mcp/mod.rs",
+        "node_id": 739,
+        "label": "owned_callee_summary",
+        "kind": "function",
+        "parent_label": "crates/spur-graph/src/mcp/mod.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-graph/src/panic_evidence/method_sites.rs",
+        "node_id": 11,
+        "label": "range",
+        "kind": "function",
+        "parent_label": "crates/spur-graph/src/panic_evidence/method_sites.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-context-service/src/artifact_cache.rs",
+        "node_id": 174,
+        "label": "reserve",
+        "kind": "method",
+        "parent_label": "CapacityReservation",
+        "parent_kind": "impl"
+      },
+      {
+        "logical_path": "crates/spur-core/src/explore/apply.rs",
+        "node_id": 17,
+        "label": "remove",
+        "kind": "function",
+        "parent_label": "crates/spur-core/src/explore/apply.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-tui/tests/tombstone_input_routing.rs",
+        "node_id": 5,
+        "label": "session",
+        "kind": "function",
+        "parent_label": "crates/spur-tui/tests/tombstone_input_routing.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-graph/src/selector.rs",
+        "node_id": 39,
+        "label": "artifact",
+        "kind": "function",
+        "parent_label": "tests",
+        "parent_kind": "module"
+      },
+      {
+        "logical_path": "crates/spur-context-service/tests/worker_test.rs",
+        "node_id": 30,
+        "label": "prepared_job_carries_serving_artifact_lineage",
+        "kind": "function",
+        "parent_label": "crates/spur-context-service/tests/worker_test.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-tui/src/views/session_detail/state.rs",
+        "node_id": 6,
+        "label": "new_for_palette_test",
+        "kind": "method",
+        "parent_label": "SessionDetailView",
+        "parent_kind": "impl"
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/agents_tree.rs",
+        "node_id": 13,
+        "label": "tick",
+        "kind": "method",
+        "parent_label": "AgentsTree",
+        "parent_kind": "impl"
+      },
+      {
+        "logical_path": "crates/spur-core/src/mcp/signals.rs",
+        "node_id": 14,
+        "label": "report_signal_inner",
+        "kind": "method",
+        "parent_label": "WorkerSignalMcpToolModule",
+        "parent_kind": "impl"
+      },
+      {
+        "logical_path": "crates/spur-core/src/spur_ext_interp.rs",
+        "node_id": 24,
+        "label": "helper_rejects_missing_schema",
+        "kind": "function",
+        "parent_label": "tests",
+        "parent_kind": "module"
+      },
+      {
+        "logical_path": "crates/spur-core/src/session_synopsis/projection.rs",
+        "node_id": 76,
+        "label": "ring_caps_user_at_100_and_agent_at_200",
+        "kind": "function",
+        "parent_label": "tests",
+        "parent_kind": "module"
+      },
+      {
+        "logical_path": "crates/spur-solver/src/rules/families/scheduling/compile.rs",
+        "node_id": 94,
+        "label": "status",
+        "kind": "function",
+        "parent_label": "tests",
+        "parent_kind": "module"
+      },
+      {
+        "logical_path": "xtask/src/main.rs",
+        "node_id": 70,
+        "label": "dist_fetch_path_command",
+        "kind": "function",
+        "parent_label": "xtask/src/main.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-core/tests/merge_plan_restart_recovery.rs",
+        "node_id": 11,
+        "label": "t_v0d_3_merge_plan_works_after_restart_on_persisted_plan",
+        "kind": "function",
+        "parent_label": "crates/spur-core/tests/merge_plan_restart_recovery.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-graph/src/git.rs",
+        "node_id": 77,
+        "label": "fsmonitor_status_route",
+        "kind": "function",
+        "parent_label": "crates/spur-graph/src/git.rs",
+        "parent_kind": "file"
+      },
+      {
+        "logical_path": "crates/spur-graph/src/mcp/mod.rs",
+        "node_id": 776,
+        "label": "symbols_by_files",
+        "kind": "method",
+        "parent_label": "GraphQueryClient for CountingGraphQueryClient",
+        "parent_kind": "impl"
+      }
+    ]
+  },
+  {
+    "name": "import_examples_limit_20",
+    "sql": "SELECT e.logical_path,e.target_label,e.import_path,e.scope_text,count(*) AS sites FROM edges e JOIN inventory i ON i.path=e.logical_path WHERE i.suffix='.rs' AND e.relation='imports' GROUP BY ALL ORDER BY sites DESC,e.logical_path,e.target_label LIMIT 20",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "AgentKind",
+        "import_path": "spur_acp::AgentKind",
+        "scope_text": null,
+        "sites": 14
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "Rect",
+        "import_path": "ratatui::{backend::TestBackend, layout::Rect, Terminal}",
+        "scope_text": null,
+        "sites": 12
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "Terminal",
+        "import_path": "ratatui::{backend::TestBackend, layout::Rect, Terminal}",
+        "scope_text": null,
+        "sites": 12
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "TestBackend",
+        "import_path": "ratatui::{backend::TestBackend, layout::Rect, Terminal}",
+        "scope_text": null,
+        "sites": 12
+      },
+      {
+        "logical_path": "crates/spur-tui/src/app/tests/session_tests.rs",
+        "target_label": "*",
+        "import_path": "super::super::super::*",
+        "scope_text": null,
+        "sites": 11
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "ReactTrace",
+        "import_path": "crate::components::react_trace::ReactTrace",
+        "scope_text": null,
+        "sites": 10
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/mod.rs",
+        "target_label": "StateLookup",
+        "import_path": "crate::components::markdown_stream::StateLookup",
+        "scope_text": null,
+        "sites": 8
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/render.rs",
+        "target_label": "*",
+        "import_path": "super::*",
+        "scope_text": null,
+        "sites": 8
+      },
+      {
+        "logical_path": "crates/spur-tui/src/views/session_detail/mod.rs",
+        "target_label": "*",
+        "import_path": "super::*",
+        "scope_text": null,
+        "sites": 8
+      },
+      {
+        "logical_path": "crates/spur-acp/src/domain/events.rs",
+        "target_label": "*",
+        "import_path": "super::*",
+        "scope_text": null,
+        "sites": 7
+      },
+      {
+        "logical_path": "crates/spur-core/src/orchestrator/session_discovery.rs",
+        "target_label": "*",
+        "import_path": "super::*",
+        "scope_text": null,
+        "sites": 7
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "ScrollAnchor",
+        "import_path": "crate::components::react_trace::types::ScrollAnchor",
+        "scope_text": null,
+        "sites": 7
+      },
+      {
+        "logical_path": "crates/spur-tui/src/components/react_trace/streaming_tests.rs",
+        "target_label": "StateLookup",
+        "import_path": "crate::components::markdown_stream::StateLookup",
+        "scope_text": null,
+        "sites": 7
+      },
+      {
+        "logical_path": "crates/spur-tui/tests/markdown_stream_tests.rs",
+        "target_label": "scan_authoritative_for_tests",
+        "import_path": "spur_tui::components::markdown_stream::scan_authoritative_for_tests",
+        "scope_text": null,
+        "sites": 7
+      },
+      {
+        "logical_path": "crates/spur-worktree/src/manager.rs",
+        "target_label": "*",
+        "import_path": "super::*",
+        "scope_text": null,
+        "sites": 7
+      },
+      {
+        "logical_path": "crates/spur-acp/src/connection/native.rs",
+        "target_label": "*",
+        "import_path": "super::*",
+        "scope_text": null,
+        "sites": 6
+      },
+      {
+        "logical_path": "crates/spur-acp/src/domain/events.rs",
+        "target_label": "Uuid",
+        "import_path": "uuid::Uuid",
+        "scope_text": null,
+        "sites": 6
+      },
+      {
+        "logical_path": "crates/spur-acp/tests/executor_events_roundtrip.rs",
+        "target_label": "SpurEvent",
+        "import_path": "spur_acp::{SpurEvent, SpurEventBody}",
+        "scope_text": null,
+        "sites": 6
+      },
+      {
+        "logical_path": "crates/spur-acp/tests/executor_events_roundtrip.rs",
+        "target_label": "SpurEventBody",
+        "import_path": "spur_acp::{SpurEvent, SpurEventBody}",
+        "scope_text": null,
+        "sites": 6
+      },
+      {
+        "logical_path": "crates/spur-core/src/spur_ext_interp.rs",
+        "target_label": "DelegationId",
+        "import_path": "spur_acp::domain::delegation::DelegationId",
+        "scope_text": null,
+        "sites": 6
+      }
+    ]
+  },
+  {
+    "name": "enum_relation_kind_source",
+    "sql": "SELECT n.logical_path,n.node_id,n.label,n.kind,p.start_byte,p.end_byte,p.start_line,p.end_line,substring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,2*CAST(p.end_byte-p.start_byte AS BIGINT)) AS source_hex FROM nodes n JOIN spans p ON p.logical_path=n.logical_path AND p.span_id=n.source_span_id JOIN sources s ON s.logical_path=n.logical_path WHERE n.label='RelationKind' AND n.kind='enum' ORDER BY n.logical_path,n.node_id LIMIT 10",
+    "params": [],
+    "rows": [
+      {
+        "logical_path": "crates/spur-graph/src/schema.rs",
+        "node_id": 168,
+        "label": "RelationKind",
+        "kind": "enum",
+        "start_byte": 15653,
+        "end_byte": 15864,
+        "start_line": 448,
+        "end_line": 463,
+        "source_hex": "70756220656E756D2052656C6174696F6E4B696E64207B0A20202020496D706F7274732C0A2020202043616C6C732C0A20202020436F6E737472756374732C0A20202020436F6E7461696E732C0A20202020496D706C656D656E74732C0A20202020446566696E65732C0A202020205265666572656E6365732C0A20202020457874656E64732C0A202020204C696E6B732C0A20202020546F75636865732C0A2020202050726F64756365732C0A20202020436F6E73756D65732C0A2020202042696E64732C0A20202020456D6974732C0A7D"
+      }
+    ]
+  }
+]

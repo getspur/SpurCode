@@ -1,0 +1,157 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+// HINT: See also -Z dump-mir for MIR at specific points during compilation.
+fn <impl at /Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/receiver-control.rs:2:1: 2:12>::len(_1: &Domain) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 999_usize;
+        return;
+    }
+}
+
+fn observed(_1: Vec<u8>) -> usize {
+    debug v => _1;
+    let mut _0: usize;
+    let mut _2: &std::vec::Vec<u8>;
+
+    bb0: {
+        _2 = &_1;
+        _0 = Vec::<u8>::len(move _2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> [return: bb2, unwind continue];
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate(cleanup)];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn expected(_1: Domain) -> usize {
+    debug d => const Domain;
+    let mut _0: usize;
+    let mut _2: &Domain;
+
+    bb0: {
+        _2 = &_1;
+        _0 = Domain::len(move _2) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let _3: (&usize, &usize);
+    let mut _4: &usize;
+    let _5: usize;
+    let mut _6: std::vec::Vec<u8>;
+    let mut _7: std::boxed::Box<[u8]>;
+    let mut _8: *mut u8;
+    let mut _9: std::boxed::Box<[u8; 3]>;
+    let mut _10: &usize;
+    let _11: usize;
+    let mut _13: core::fmt::rt::Argument<'_>;
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let mut _15: &[u8; 7];
+    let _16: &[core::fmt::rt::Argument<'_>; 2];
+    let mut _17: &usize;
+    let mut _18: &usize;
+    let mut _19: *const [u8; 3];
+    let mut _20: std::ptr::NonNull<[u8; 3]>;
+    let mut _21: std::ptr::Unique<[u8; 3]>;
+    let mut _22: *const [u8; 3];
+    let mut _23: *const ();
+    let mut _24: usize;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: bool;
+    scope 1 {
+        debug args => _3;
+        let _12: [core::fmt::rt::Argument<'_>; 2];
+        scope 2 {
+            debug args => _12;
+        }
+    }
+
+    bb0: {
+        _8 = alloc::alloc::exchange_malloc(const <[u8; 3] as std::mem::SizedTypeProperties>::SIZE, const <[u8; 3] as std::mem::SizedTypeProperties>::ALIGN) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _19 = move _8 as *const [u8; 3] (Transmute);
+        _20 = NonNull::<[u8; 3]> { pointer: move _19 };
+        _21 = Unique::<[u8; 3]> { pointer: move _20, _marker: const PhantomData::<[u8; 3]> };
+        _9 = Box::<[u8; 3]>(move _21, const std::alloc::Global);
+        _22 = copy ((_9.0: std::ptr::Unique<[u8; 3]>).0: std::ptr::NonNull<[u8; 3]>) as *const [u8; 3] (Transmute);
+        _23 = copy _22 as *const () (PtrToPtr);
+        _24 = copy _23 as usize (Transmute);
+        _25 = Ne(const <[u8; 3] as std::mem::SizedTypeProperties>::SIZE, const 0_usize);
+        _26 = Eq(copy _24, const 0_usize);
+        _27 = BitAnd(copy _26, copy _25);
+        _28 = Not(copy _27);
+        assert(copy _28, "null pointer dereference occurred") -> [success: bb9, unwind unreachable];
+    }
+
+    bb2: {
+        _5 = observed(move _6) -> [return: bb3, unwind continue];
+    }
+
+    bb3: {
+        _4 = &_5;
+        _11 = expected(const Domain) -> [return: bb4, unwind continue];
+    }
+
+    bb4: {
+        _10 = &_11;
+        _3 = (move _4, move _10);
+        _17 = copy (_3.0: &usize);
+        _13 = core::fmt::rt::Argument::<'_>::new_display::<usize>(copy _17) -> [return: bb5, unwind continue];
+    }
+
+    bb5: {
+        _18 = copy (_3.1: &usize);
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<usize>(copy _18) -> [return: bb6, unwind continue];
+    }
+
+    bb6: {
+        _12 = [move _13, move _14];
+        _15 = const b"\xc0\x01:\xc0\x01\n\x00";
+        _16 = &_12;
+        _2 = Arguments::<'_>::new::<7, 2>(move _15, copy _16) -> [return: bb7, unwind continue];
+    }
+
+    bb7: {
+        _1 = _print(move _2) -> [return: bb8, unwind continue];
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9: {
+        (*_22) = [const 1_u8, const 2_u8, const 3_u8];
+        _7 = copy _9 as std::boxed::Box<[u8]> (PointerCoercion(Unsize, Implicit));
+        _6 = slice::<impl [u8]>::into_vec::<std::alloc::Global>(move _7) -> [return: bb2, unwind continue];
+    }
+}
+
+alloc1 (size: 7, align: 1) {
+    c0 01 3a c0 01 0a 00                            │ ..:....
+}

@@ -1,0 +1,650 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "cells": [
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2054,
+      "id": "df8084cc-0ab2-4415-be3e-c6cbddf4ce32",
+      "kind": "code",
+      "version": 1882,
+      "cell_etag": "cell:sha256:be1e5b9bbd273eeeee9bd72b0fc711e64ce8cae87800a8f17bad270276a33fb5",
+      "source": "{\n    let art = std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap\");\n    let result = std::process::Command::new(\"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\")\n        .arg(art.join(\"binding_pilot.py\")).output()?;\n    assert!(result.status.success(), \"Pilot failed: {}\", String::from_utf8_lossy(&result.stderr));\n    println!(\"{}\", String::from_utf8_lossy(&result.stdout));\n}",
+      "exec_count": 148,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "  \"runtime\": [\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"engine_version\": \"v2.0.0\"\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    }\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "  ],\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "  \"call_partition\": [\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"calls\": 259828,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"local_targets\": 32414,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"unresolved\": 227414,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"unresolved_without_label\": 0,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"unresolved_receiver_evidence\": 139808,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"unresolved_qualified_label\": 288,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"unresolved_import_path\": 0,\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"unresolved_scope_text\": 54768\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    }\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "  ],\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "  \"rust_callable_kinds\": [\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"function\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 21226\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"field\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 14822\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"method\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 9353\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"enum_variant\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 4004\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"struct\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 3117\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"impl\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 2845\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"constant\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 2179\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"file\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 1726\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"module\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 1648\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"enum\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 953\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"type_alias\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 235\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"trait\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 120\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"mcp_tool\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 63\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"macro\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 32\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    },\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    {\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"kind\": \"extern_block\",\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "      \"nodes\": 4\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "    }\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "  ]\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "}\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "\n"
+        },
+        {
+          "output_type": "execute_result",
+          "execution_count": 148,
+          "data": {
+            "text/plain": "()"
+          },
+          "metadata": {}
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 1882,
+          "last_edited_by": "brain",
+          "code_type": "rust"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "c4a6255e-f4de-40c0-a289-4a8bb3080011",
+          "source_version": 1882,
+          "execution_identity": "be8ded2a3217acdca3b569c98a4f0cea1a031f1294a1e4db18f6f24e8b41b8e0",
+          "output_hash": "44d028f89561ab6f69953e7903531d996bf19a3674c4de41cad7ce5c67669d62",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2060,
+      "id": "b5da469c-9c37-4462-a32f-60b0558968c7",
+      "kind": "code",
+      "version": 1968,
+      "cell_etag": "cell:sha256:1c201e045e4ce98f606deed440016a537576a884954ecc04d64f9bb674f12f0e",
+      "source": "{\n let art = Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap\");\n let result = Command::new(\"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\").arg(art.join(\"evaluate_gap.py\")).output()?;\n assert!(result.status.success(), \"Gap evaluation failed: {}\", String::from_utf8_lossy(&result.stderr));\n println!(\"{}\", String::from_utf8_lossy(&result.stdout));\n}",
+      "exec_count": 154,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\"complete\":true,\"receipts\":28,\"receiver\":{\"nodes\":7,\"edges\":11,\"macro_invocations\":1,\"generated_label_bodies\":[],\"len_calls\":[{\"edge\":{\"edge_id\":8,\"source_node_id\":5,\"target_node_id\":null,\"relation\":\"calls\",\"target_label\":\"len\",\"import_path\":null,\"receiver_text\":\"v\",\"scope_text\":\"Vec<u8>\",\"confidence\":\"heuristic\",\"confidence_score\":0.800000011920929,\"edge_kind\":null,\"bind_method\":null,\"evidence_id\":8,\"directed\":true,\"change_kind\":null},\"caller\":\"observed\",\"target\":null,\"target_source\":null},{\"edge\":{\"edge_id\":9,\"source_node_id\":6,\"target_node_id\":null,\"relation\":\"calls\",\"target_label\":\"len\",\"import_path\":null,\"receiver_text\":\"d\",\"scope_text\":\"Domain\",\"confidence\":\"heuristic\",\"confidence_score\":0.800000011920929,\"edge_kind\":null,\"bind_method\":null,\"evidence_id\":9,\"directed\":true,\"change_kind\":null},\"caller\":\"expected\",\"target\":null,\"target_source\":null}]},\"macro_before\":0,\"macro_after\":1}\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "\n"
+        },
+        {
+          "output_type": "execute_result",
+          "execution_count": 154,
+          "data": {
+            "text/plain": "()"
+          },
+          "metadata": {}
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 1968,
+          "last_edited_by": "brain",
+          "code_type": "rust"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "617c34b0-e416-4f87-b535-a2c79e3f940a",
+          "source_version": 1968,
+          "execution_identity": "cbca0996374a8c21b4750ec04beedb78205c1039bfcdd3d622ad3158c977f88a",
+          "output_hash": "2b50d6d748b4c5ca78d162ddf22fa061997555ec38700237f22802a9904f8aa5",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "notebook_id": "nb-0532cd73b116e20ad9508402",
+      "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+      "revision": 2054,
+      "id": "c8c0322a-132e-483d-a42c-86714c35d5e0",
+      "kind": "code",
+      "version": 2036,
+      "cell_etag": "cell:sha256:a3537d8da2406951425886652e68b923c3110ea1599f650f0889dc25bc4e4cb7",
+      "source": "{\n let art = Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap\");\n let result = Command::new(\"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\").arg(art.join(\"owner_diagnostics.py\")).output()?;\n std::fs::write(art.join(\"owner-run.stderr.txt\"), &result.stderr)?;\n std::fs::write(art.join(\"owner-run.stdout.txt\"), &result.stdout)?;\n assert!(result.status.success(), \"Owner diagnostics failed; see owner-run.stderr.txt\");\n println!(\"{}\", String::from_utf8_lossy(&result.stdout));\n}",
+      "exec_count": 153,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{\"exact_owner_hint_candidates\":[{\"multiplicity\":\"multiple\",\"sites\":134,\"pairs\":289},{\"multiplicity\":\"one\",\"sites\":6373,\"pairs\":6373},{\"multiplicity\":\"zero\",\"sites\":220907,\"pairs\":0}],\"explicit_spelling_partition\":[{\"evidence\":\"crate_spelling\",\"sites\":1598},{\"evidence\":\"declared_dependency_alias_spelling\",\"sites\":5830},{\"evidence\":\"no_scope_or_qualified_spelling\",\"sites\":172358},{\"evidence\":\"other_scope_or_qualified_spelling\",\"sites\":41130},{\"evidence\":\"std_core_alloc_spelling\",\"sites\":4126},{\"evidence\":\"workspace_crate_spelling\",\"sites\":2372}]}\n",
+            "\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "execution_count": 153,
+          "data": {
+            "text/plain": "()"
+          },
+          "metadata": {}
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 2036,
+          "last_edited_by": "brain",
+          "code_type": "rust"
+        },
+        "spur_output_provenance": {
+          "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+          "run_id": "7c484971-9ecc-4a38-906e-bb9dd97803ca",
+          "source_version": 2036,
+          "execution_identity": "23b8c5e3fcdc4bd9cf6acacf74b7133a14adbfb9d0e6128488cbfaf8b31b6374",
+          "output_hash": "39a2ef77876b7d5d8a19820bf0ea8496fc0adf82becf0fbbc5d4df734ed89ac5",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0,
+        1
+      ]
+    }
+  ]
+}

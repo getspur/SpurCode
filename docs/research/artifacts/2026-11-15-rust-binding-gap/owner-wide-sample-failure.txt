@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner_diagnostics.py", line 40, in <module>
+    q('exact_owner_hint_samples_limit_12', """SELECT e.logical_path,e.edge_id,e.target_label,e.receiver_text,e.scope_text,e.owner_candidates,n.label AS caller,p.start_line,p.end_line,
+    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    substring(hex(s.source_bytes),2*CAST(p.start_byte AS BIGINT)+1,2*CAST(least(p.end_byte-p.start_byte,6000) AS BIGINT)) AS caller_source_hex
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    JOIN frozen.main.sources s ON s.logical_path=e.logical_path WHERE owner_candidates=1
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ORDER BY e.logical_path,e.edge_id LIMIT 12""")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-binding-gap/owner_diagnostics.py", line 17, in q
+    cur = c.execute(sql)
+_duckdb.OutOfMemoryException: Out of Memory Error: could not allocate block of size 256.0 KiB (953.6 MiB/953.6 MiB used)
+
+Possible solutions:
+* Reducing the number of threads (SET threads=X)
+* Disabling insertion-order preservation (SET preserve_insertion_order=false)
+* Increasing the memory limit (SET memory_limit='...GB')
+
+See also https://duckdb.org/docs/current/guides/performance/how_to_tune_workloads

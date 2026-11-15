@@ -1,0 +1,16 @@
+{
+  "input_snapshot": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-spurcode-project-quality/snapshot.duckdb",
+  "input_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+  "source_revision": "61ba3d200439a541dce4c1617ca9277be7d438af",
+  "analysis_base_commit": "027e6b6d314d3f79c2c4039c136e4abb389db0ab",
+  "rust_calls": 259828,
+  "local_target_calls": 32414,
+  "unresolved_calls": 227414,
+  "plan": "Quantify source-evidence strata and name-only candidate ambiguity; no candidate promoted to bound edge. Compiler experiments isolated, dependency-free, source-backed macro and positive/negative receiver controls.",
+  "limits": [
+    "Primary snapshot immutable; no runtime/production/graph writes",
+    "Library-like names are not proof of target ownership",
+    "Source singletons and crate names are candidates, not compiler-checked bindings",
+    "Compiler expansion fixtures do not establish whole-workspace proc-macro coverage"
+  ]
+}
