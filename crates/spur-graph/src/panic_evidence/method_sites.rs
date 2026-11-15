@@ -1,12 +1,48 @@
 //! Syntax collection only; deliberately independent of deduplicated Calls edges.
 
+use std::collections::HashMap;
+
 use anyhow::Context as _;
 use tree_sitter::{Node, Parser};
 
 use super::{
     CompilerTargetState, MethodCallLexicalOwner, MethodCallLexicalPhase, MethodCallSiteEvidence,
 };
-use crate::GraphIndexArtifact;
+use crate::{GraphIndexArtifact, GraphSymbolArtifact};
+
+// Preserve candidate order and count matching IDs across all graph symbols,
+// including non-function symbols outside this source file.
+struct CallerSymbols<'a> {
+    candidates: Vec<&'a GraphSymbolArtifact>,
+    id_counts: HashMap<&'a str, usize>,
+}
+
+impl<'a> CallerSymbols<'a> {
+    fn new(graph: &'a GraphIndexArtifact, file_path: &str) -> Self {
+        let candidates: Vec<_> = graph
+            .symbols
+            .iter()
+            .filter(|s| {
+                s.file_path == file_path
+                    && matches!(s.symbol_kind.as_str(), "function" | "method")
+                    && !s.stable_symbol_id.is_empty()
+            })
+            .collect();
+        let mut id_counts: HashMap<_, usize> = candidates
+            .iter()
+            .map(|s| (s.stable_symbol_id.as_str(), 0))
+            .collect();
+        for symbol in &graph.symbols {
+            if let Some(count) = id_counts.get_mut(symbol.stable_symbol_id.as_str()) {
+                *count += 1;
+            }
+        }
+        Self {
+            candidates,
+            id_counts,
+        }
+    }
+}
 
 pub(super) fn collect_in_source(
     graph: &GraphIndexArtifact,
@@ -22,6 +58,7 @@ pub(super) fn collect_in_source(
     let root = tree.root_node();
     let mut pending = vec![root];
     let mut sites = Vec::new();
+    let mut caller_symbols = None;
     while let Some(node) = pending.pop() {
         // A token tree is intentionally opaque, even if its bytes resemble Rust.
         if matches!(
@@ -31,8 +68,10 @@ pub(super) fn collect_in_source(
             continue;
         }
         if let Some((method, receiver)) = method_parts(node, source) {
+            let caller_symbols =
+                caller_symbols.get_or_insert_with(|| CallerSymbols::new(graph, file_path));
             let (lexical_phase, caller_stable_symbol_id, lexical_owners) =
-                provenance(graph, file_path, source, node);
+                provenance(caller_symbols, source, node);
             let byte_range = range(node);
             let method_byte_range = range(method);
             let receiver_byte_range = range(receiver);
@@ -118,8 +157,7 @@ fn is_owner(node: Node<'_>) -> bool {
 }
 
 fn provenance(
-    graph: &GraphIndexArtifact,
-    file_path: &str,
+    caller_symbols: &CallerSymbols<'_>,
     source: &str,
     site: Node<'_>,
 ) -> (
@@ -161,25 +199,21 @@ fn provenance(
                 let name = owner
                     .child_by_field_name("name")
                     .and_then(|n| source.get(n.byte_range()));
-                let candidates: Vec<_> = graph
-                    .symbols
+                let candidates: Vec<_> = caller_symbols
+                    .candidates
                     .iter()
+                    .copied()
                     .filter(|s| {
-                        s.file_path == file_path
-                            && matches!(s.symbol_kind.as_str(), "function" | "method")
-                            && s.byte_range == range(owner)
+                        s.byte_range == range(owner)
                             && s.line_range == lines(source, range(owner))
                             && Some(s.entity_name.as_str()) == name
-                            && !s.stable_symbol_id.is_empty()
                     })
                     .collect();
                 if let [caller] = candidates.as_slice() {
-                    if graph
-                        .symbols
-                        .iter()
-                        .filter(|s| s.stable_symbol_id == caller.stable_symbol_id)
-                        .count()
-                        == 1
+                    if caller_symbols
+                        .id_counts
+                        .get(caller.stable_symbol_id.as_str())
+                        == Some(&1)
                     {
                         return (
                             FunctionBodySyntax,
