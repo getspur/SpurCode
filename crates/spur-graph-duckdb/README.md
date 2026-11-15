@@ -114,6 +114,8 @@ See the [full-history evaluation](examples/full-temporal-evaluation.md) for
 equivalent-workload measurements, coverage and remaining integration limits.
 The [producer concurrency follow-up](examples/temporal-concurrency-evaluation.md)
 measures one versus four source producers with exact source and graph parity.
+The [scheduling experiment](examples/temporal-scheduling-evaluation.md) then
+tests assignment by prior batch processing time with four producers in both arms.
 
 `history_catalog REPO COMMIT OUTPUT` inventories every commit reachable from a
 frozen commit, including every merge parent and the root comparison. It writes

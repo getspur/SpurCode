@@ -127,6 +127,10 @@ connection reuse and different DuckDB thread counts are further hypotheses;
 these measurements do not isolate their benefits. The next change should
 measure one of those variables at a time.
 
+The subsequent [cost-aware scheduling experiment](temporal-scheduling-evaluation.md)
+compares matched four-producer assignments and records a 21.16% source-stage
+reduction with exact fact and graph checks, while retaining its calibration cost.
+
 ## Reproduction and evidence
 
 The [compact results](temporal-concurrency-results.json) retain individual

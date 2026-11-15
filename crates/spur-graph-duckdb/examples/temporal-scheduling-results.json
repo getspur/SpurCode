@@ -1,0 +1,442 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-15",
+  "issue": "bd-1pnb",
+  "review_issue": "bd-4px7",
+  "head": "bbfd653e2ccdf03a65aae08d6a19221a6b4a8588",
+  "commits": 1987,
+  "processes_per_arm": 4,
+  "source_keys": 19604,
+  "symbols": 337699,
+  "successful_empty_keys": 1953,
+  "binary_skips": 1,
+  "method": {
+    "source_order": [
+      "bytes",
+      "cost",
+      "cost",
+      "bytes"
+    ],
+    "fresh_application_artifacts": true,
+    "os_cache": "warm; not flushed",
+    "timed_trial_overlap": false,
+    "source_parity_excluded_columns": [
+      "parsed_at"
+    ],
+    "unchanged": "whole batches, byte/row budgets, producer/extension and per-process DuckDB default10threads",
+    "within_worker_order": "ascending original batch ID in both policies",
+    "training_scope": "prior same-workload observation; not an unseen-history predictor or free new calibration",
+    "timed_scope": "source worker launch through completion/receipt collection; excludes frozen schedule construction, training and later validation",
+    "rss_scope": "Darwin wait4 bytes; sum of individual process peaks excludes controller and is not simultaneous sampled RSS"
+  },
+  "policies": [
+    {
+      "policy": "bytes",
+      "assignment": {
+        "plans": [
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes/worker-0.json",
+            "sha256": "2770852e9718dbf1f266a5815634282cefd9e2b0d58fb8d320d3e314dae4e710"
+          },
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes/worker-1.json",
+            "sha256": "b0c0ac842999da4a6fae4d63854aa6c69c107dd0aad7947d46f8cd52aee68fce"
+          },
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes/worker-2.json",
+            "sha256": "e313bb7eac67d12856313277a205af58ede15e6616b8483a16a6dc4cc55af9b7"
+          },
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes/worker-3.json",
+            "sha256": "8eb84b617686f8f1a14fa9029b19e688236c3e75811c57325e658420a8da45c7"
+          }
+        ],
+        "predicted_processing_seconds": [
+          32.922090666368604,
+          25.237137875985354,
+          14.551150749903172,
+          23.48612841591239
+        ],
+        "solver_coarse_makespan_ticks": 36,
+        "worker_batch_ids": [
+          [
+            5,
+            7,
+            8,
+            10,
+            13,
+            16
+          ],
+          [
+            4,
+            6,
+            9,
+            14,
+            15,
+            18,
+            20
+          ],
+          [
+            1,
+            3,
+            11,
+            17
+          ],
+          [
+            0,
+            2,
+            12,
+            19
+          ]
+        ],
+        "worker_input_bytes": [
+          38228655,
+          38186736,
+          38431486,
+          38646941
+        ]
+      },
+      "runs": [
+        {
+          "repeat": 0,
+          "start_utc": "2026-11-15T01:14:33.131484+00:00",
+          "end_utc": "2026-11-15T01:15:07.692395+00:00",
+          "wall_seconds": 34.56052595912479,
+          "aggregate_cpu_seconds": 107.654963,
+          "sum_individual_worker_peaks_bytes": 1395703808,
+          "max_worker_rss_bytes": 441991168,
+          "worker_wall_seconds": [
+            34.382739540888,
+            28.506628749892116,
+            16.559913625009358,
+            26.39554504211992
+          ],
+          "result": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes-r0/result.json",
+            "sha256": "3ad013c2cdce4edd02e2bd3bea2c917628c9578a4f9ca2e7dbdecd14942b8cc4"
+          },
+          "configuration": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes-r0/configuration.json",
+            "sha256": "038d067c893e6b84b6b1cb14747069de93f65708e0a3c7282b5f4a36c6bea76b"
+          }
+        },
+        {
+          "repeat": 1,
+          "start_utc": "2026-11-15T01:16:05.322437+00:00",
+          "end_utc": "2026-11-15T01:16:43.364997+00:00",
+          "wall_seconds": 38.042168208863586,
+          "aggregate_cpu_seconds": 112.577632,
+          "sum_individual_worker_peaks_bytes": 1382531072,
+          "max_worker_rss_bytes": 435404800,
+          "worker_wall_seconds": [
+            37.87727554189041,
+            30.231242124922574,
+            17.053844709182158,
+            28.610203959047794
+          ],
+          "result": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes-r1/result.json",
+            "sha256": "cedc4aa084eb0052c12f16abcf13e2abd4231d09311c54e55c3f696a727699cf"
+          },
+          "configuration": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/bytes-r1/configuration.json",
+            "sha256": "252a4631be1031ec6f5a16174cea9d0107d54be2ca864da1884383a12099a628"
+          }
+        }
+      ],
+      "median_wall_seconds": 36.30134708399419,
+      "median_aggregate_cpu_seconds": 110.1162975,
+      "largest_sum_individual_peaks_bytes": 1395703808
+    },
+    {
+      "policy": "cost",
+      "assignment": {
+        "plans": [
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost/worker-0.json",
+            "sha256": "34a8546e7ca9dbe5df3fc0d8cbe9e0db32e128423a9bf262e8ae1e7f011201d9"
+          },
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost/worker-1.json",
+            "sha256": "c1fc9cad7c1b08bff7a18200655a8eb3443a821f542d7d28a1c248799df3edcf"
+          },
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost/worker-2.json",
+            "sha256": "70a621f2ab31ad1b03170123f31ba2f726aa9589854c5b5c2f71e8a29ec5a945"
+          },
+          {
+            "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost/worker-3.json",
+            "sha256": "47623d8aa7e77c4d4a49908f03ee991201810750994b9c49824ac75c8b8d6b36"
+          }
+        ],
+        "predicted_processing_seconds": [
+          23.50455425097607,
+          24.349975041113794,
+          23.54515237407759,
+          24.796826042002067
+        ],
+        "solver_coarse_makespan_ticks": 28,
+        "worker_batch_ids": [
+          [
+            1,
+            5,
+            11,
+            14,
+            15,
+            17
+          ],
+          [
+            3,
+            6,
+            10,
+            13
+          ],
+          [
+            0,
+            4,
+            9,
+            16,
+            18,
+            19,
+            20
+          ],
+          [
+            2,
+            7,
+            8,
+            12
+          ]
+        ],
+        "worker_input_bytes": [
+          38964800,
+          36932662,
+          42587580,
+          35008776
+        ]
+      },
+      "runs": [
+        {
+          "repeat": 0,
+          "start_utc": "2026-11-15T01:15:07.832839+00:00",
+          "end_utc": "2026-11-15T01:15:36.697497+00:00",
+          "wall_seconds": 28.864301291992888,
+          "aggregate_cpu_seconds": 112.821741,
+          "sum_individual_worker_peaks_bytes": 1556742144,
+          "max_worker_rss_bytes": 437649408,
+          "worker_wall_seconds": [
+            27.13322954205796,
+            27.88185316696763,
+            27.97833037492819,
+            28.703749833861366
+          ],
+          "result": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost-r0/result.json",
+            "sha256": "82483deab2d9df02a81ce35fa1185d2f556efb37e3b2fe86a6c53395b40e9478"
+          },
+          "configuration": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost-r0/configuration.json",
+            "sha256": "598d86310b6d69e3c5e2c98bcb504483bbbebe890ee3ae9d50d3e85565e91b60"
+          }
+        },
+        {
+          "repeat": 1,
+          "start_utc": "2026-11-15T01:15:36.824320+00:00",
+          "end_utc": "2026-11-15T01:16:05.198902+00:00",
+          "wall_seconds": 28.374244291801006,
+          "aggregate_cpu_seconds": 112.317849,
+          "sum_individual_worker_peaks_bytes": 1558511616,
+          "max_worker_rss_bytes": 431030272,
+          "worker_wall_seconds": [
+            26.786392332985997,
+            27.48725250014104,
+            27.464879542123526,
+            28.229733624961227
+          ],
+          "result": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost-r1/result.json",
+            "sha256": "8c0f7e418cda9e5946443e7cf2f9faa0fab9be3c70a34acfb2cfb3434e725ae0"
+          },
+          "configuration": {
+            "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/cost-r1/configuration.json",
+            "sha256": "3ba6e12b04cccdef46ef34bda7857737524255be58cfe419319ef47881f84e9b"
+          }
+        }
+      ],
+      "median_wall_seconds": 28.619272791896947,
+      "median_aggregate_cpu_seconds": 112.569795,
+      "largest_sum_individual_peaks_bytes": 1558511616
+    }
+  ],
+  "source_wall_ratio": 1.2684231129126484,
+  "source_elapsed_reduction_percent": 21.161953781831922,
+  "source_seconds_saved": 7.682074292097241,
+  "calibration": {
+    "wall_seconds": 96.5642526249867,
+    "source_seconds_including_new_calibration": 125.18352541688364,
+    "hypothetical_amortization_repetitions": 13,
+    "amortization_scope": "arithmetic assuming repeated identical cold ingests and stable saving; not a deployment recommendation, excludes other phases",
+    "costs_definition": "consecutive checkpoint wall deltas, starting at initialized",
+    "checkpoint_processing_seconds": 96.19650770816952,
+    "training_stdout": {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-1987-w1-r0/worker-0/stdout",
+      "sha256": "d1929b2fd54e4cd683f26bacaab258fd1c6f89855dd1ff36e0d3fb13e08d41d9"
+    },
+    "training_result": {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-concurrency/source-1987-w1-r0/result.json",
+      "sha256": "96f4fc9350682bcdc35ffd78acd56c9e08079671502d87368944578ee168d8ae"
+    }
+  },
+  "proofs": [
+    {
+      "policy": "bytes",
+      "status": "sat",
+      "outcome": "pass",
+      "fixed_rounded_makespan_ticks": 36,
+      "executed_request": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-bytes-executed-request.json",
+        "sha256": "34497ace18195887298bdcbc71dc44922616bbf6c4f32f9a78f0a109e4d965e4"
+      },
+      "original_persist_request": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-bytes-request.json",
+        "sha256": "728c754c97dc8a63c0166b034cb67ff60a8c13774ec6abf62c8d3fbd5606dc38"
+      },
+      "response": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-bytes-result.json",
+        "sha256": "1c52c625fed9fd779a016f36df8da970480e5cfdf3d2ff39720e67b6c120476c"
+      }
+    },
+    {
+      "policy": "cost",
+      "status": "sat",
+      "outcome": "pass",
+      "fixed_rounded_makespan_ticks": 28,
+      "executed_request": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-cost-executed-request.json",
+        "sha256": "c25c1d076d4edbd7694ab25f7eb3099219463537e609a8f2a4a7814f6a712941"
+      },
+      "original_persist_request": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-cost-request.json",
+        "sha256": "5bf889989f240263b7a92f44214e91b63c8162a8c7440a13fd287e89bed6bb3a"
+      },
+      "response": {
+        "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-cost-result.json",
+        "sha256": "5848d0429a010f20fce2319afd1ededea6fc92c1d4e86636669905b78d87d004"
+      }
+    }
+  ],
+  "proof_scope": "fixed assignment verification; durations rounded up to whole seconds, not future runtime guarantees",
+  "proof_persistence": {
+    "persist": false,
+    "reason": "existing512artifact solver persistence quota exhausted; prior artifacts retained",
+    "quota_error": {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/solve-persistence-quota-error.json",
+      "sha256": "eb8fae7702a2b9e9606dd97ce4bd851b062575a6611a2eb605af64104af25474"
+    },
+    "solver_ids": []
+  },
+  "source_parity": {
+    "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/source-parity.json",
+    "sha256": "5af28060ee78470c232d74e17405d9c26db01e725d22fc9835f6aacc1e0a8800"
+  },
+  "suite": {
+    "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/suite.json",
+    "sha256": "ad97793e8b1068c6a694038898de99de2d6a54adf1448b82fa2299b92cf6a5e6"
+  },
+  "frozen_experiment": {
+    "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/frozen-experiment.json",
+    "sha256": "dd9cea58fc5eef0358705928a242b4663e8beef3e6ce84640f584a8cafa055e8"
+  },
+  "graph_replay": {
+    "result": {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/graph-replay/result.json",
+      "sha256": "317b3ecdf26fa87fbcb01a7197b565c84fd5e10884948f48b37d579e60878a3a"
+    },
+    "parity": {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/graph-replay/parity.json",
+      "sha256": "57016c3eec3a5243133aed6a8821ec6f77bcf36e0ab1173d06193a52e0661513"
+    },
+    "configuration": {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/graph-replay/configuration.json",
+      "sha256": "bddef0faa81cdc1c5f693eff0034e737fe51c8189cbcf4eeb1ffddfccbd5d0f3"
+    },
+    "scope": "correctness replay from reused source facts and frozen metadata; not end-to-end ingestion timing",
+    "pair_stage": {
+      "exit_code": 0,
+      "peak_rss_bytes": 1297137664,
+      "system_seconds": 0.9663259999999999,
+      "user_seconds": 17.428634,
+      "wall_seconds": 11.524988583056256
+    },
+    "comparison_stage": {
+      "exit_code": 0,
+      "peak_rss_bytes": 1658929152,
+      "system_seconds": 1.089161,
+      "user_seconds": 25.729765,
+      "wall_seconds": 8.867001874838024
+    },
+    "exact_tables": {
+      "symbol_snapshots": {
+        "actual_minus_reference": 0,
+        "actual_rows": 550720,
+        "equal": true,
+        "reference_minus_actual": 0,
+        "reference_rows": 550720,
+        "schema_equal": true
+      },
+      "temporal_edges": {
+        "actual_minus_reference": 0,
+        "actual_rows": 614805,
+        "equal": true,
+        "reference_minus_actual": 0,
+        "reference_rows": 614805,
+        "schema_equal": true
+      },
+      "commits": {
+        "actual_minus_reference": 0,
+        "author_fields": "enriched with exact GitCLI bulk metadata format",
+        "equal": true,
+        "reference_minus_actual": 0
+      }
+    },
+    "diagnostics": {
+      "actual_rows": 306,
+      "reference_rows": 306,
+      "scope": "counts only; extension retains structured per-change diagnostic provenance"
+    }
+  },
+  "controllers": [
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/freeze_experiment.py",
+      "sha256": "9e6996938da1f2363f4e12dc39a7fafc01d0548fda4f410f40b4860484cb0ee2"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/run_trial.py",
+      "sha256": "90ac486e4b4588d5e8fae2f701d05f9f609aa80974001f25b6327e3308290681"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/run_suite.py",
+      "sha256": "6eaeb2a0578210ca706d8ec44d4d6e8c2a24a7cafd827275d19039553ca1f2ca"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/compare_facts.py",
+      "sha256": "ddf30679c67a1f54332cb96dc69050c3c1dcbbcc957bf80dec482ca86d78c0e1"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/replay_graph.py",
+      "sha256": "88ed670dc61c9435abaf39e0990fbedaa296979a723b8c5f3c44ab9201a8bbe3"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-temporal-scheduling/publish_results.py",
+      "sha256": "680a6ab591bb5b3cc432d162bbbaf27bf645d1e31963709096c64e35e639536a"
+    }
+  ],
+  "decision": "Keep as optional same-workload scheduling experiment when prior timings exist; no production default change or new calibration just for one ingest",
+  "limits": [
+    "two observations per policy; no confidence interval",
+    "same-workload prior timing costs, not unseen-history prediction",
+    "source-only speed ratio; graph replay reuses facts/metadata and is not end-to-end ingestion timing",
+    "higher summed RSS peaks and small aggregate CPU increase",
+    "no full-history speed estimate or new encoding-error coverage",
+    "catalog verifies supplied historical schedule, not an optimum or future runtime guarantee"
+  ]
+}
