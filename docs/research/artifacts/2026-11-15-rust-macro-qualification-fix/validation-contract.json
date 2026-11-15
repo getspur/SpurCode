@@ -1,0 +1,19 @@
+{
+  "control_sha256": "fc5406252c2d794f43ee42b2ab02006d43d556931487b94a0d71b72042ba99e6",
+  "negative": "observed_macro Vec::new remains recorded and unresolved",
+  "positive": [
+    "observed_local_macro resolves LocalFactory::new",
+    "observed_helper resolves helper",
+    "observed_mixed_macro retains unresolved Vec and resolved LocalFactory plus helper separately"
+  ],
+  "baseline_expected_wrong_constructor": true,
+  "fixed_expected_wrong_constructor": false,
+  "selection": "all original Rust files with macro_body_singleton new plus six prior contract files",
+  "non_edge_collections_must_match": [
+    "nodes",
+    "spans",
+    "macro_invocations",
+    "macro_scopes"
+  ],
+  "baseline_artifact_preserved": true
+}

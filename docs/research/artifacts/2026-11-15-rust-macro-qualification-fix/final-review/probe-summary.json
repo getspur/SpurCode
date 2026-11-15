@@ -1,0 +1,164 @@
+{
+  "fixtures": 66,
+  "native_sql_call_parity": true,
+  "path_variants": 7,
+  "single_qualifier_controls": 6,
+  "original_vec_retained_unresolved": true,
+  "local_helper": true,
+  "mixed_nested_turbofish": true,
+  "token_literal_cases": 12,
+  "prior_shape_cases": 39,
+  "prior_differences": [
+    {
+      "case": "qualified_trait_comments",
+      "before": [
+        {
+          "name": "produce",
+          "scope": "<Factory /* a */ as Make>",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "after": [
+        {
+          "name": "produce",
+          "scope": "<Factory as Make>",
+          "target": "produce",
+          "owner": "Make for Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    {
+      "case": "nested_path_spaced",
+      "before": [
+        {
+          "name": "deep",
+          "scope": "crate :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "after": [
+        {
+          "name": "deep",
+          "scope": "crate::local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    {
+      "case": "nested_path_comment",
+      "before": [
+        {
+          "name": "deep",
+          "scope": "crate /* a */ :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "after": [
+        {
+          "name": "deep",
+          "scope": "crate::local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    {
+      "case": "nested_path_line",
+      "before": [
+        {
+          "name": "deep",
+          "scope": "crate // a\n :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "after": [
+        {
+          "name": "deep",
+          "scope": "crate::local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    {
+      "case": "root_constructor_spaces",
+      "before": [
+        {
+          "name": "new",
+          "scope": "crate :: Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "after": [
+        {
+          "name": "new",
+          "scope": "crate::Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    {
+      "case": "root_constructor_comments",
+      "before": [
+        {
+          "name": "new",
+          "scope": "crate /* a */ :: Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "after": [
+        {
+          "name": "new",
+          "scope": "crate::Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    }
+  ],
+  "duckdb_version": "2.0.0"
+}

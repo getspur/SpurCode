@@ -1,0 +1,86 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2171,
+  "id": "33d3ad29-2d3f-4cac-9c01-8a90401728ab",
+  "kind": "code",
+  "version": 2161,
+  "cell_etag": "cell:sha256:b2f0c1471f959ceccc6bbcb766963841751a4f3c2b97aff8cf7a9cb494c1b36e",
+  "source": "{\n let art = std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix\");\n let final_dir = art.join(\"final-99760f547\");\n let extension = final_dir.join(\"spur_graph.duckdb_extension\");\n let python = \"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\";\n let mut runs = Vec::new();\n for (name, script, tail) in [\n  (\"validation-from-notebook\", \"validate_extension.py\", vec![\"--mode\", \"fixed\"]),\n  (\"scope-probe-from-notebook\", \"probe_scope.py\", vec![]),\n ] {\n  let output_path = final_dir.join(format!(\"{name}.json\"));\n  let mut args = vec![art.join(script).to_str().unwrap().to_owned(), \"--extension\".to_owned(), extension.to_str().unwrap().to_owned(), \"--output\".to_owned(), output_path.to_str().unwrap().to_owned()];\n  args.extend(tail.into_iter().map(str::to_owned));\n  let result = std::process::Command::new(python).args(&args).output()?;\n  std::fs::write(final_dir.join(format!(\"{name}.stdout.txt\")), &result.stdout)?;\n  std::fs::write(final_dir.join(format!(\"{name}.stderr.txt\")), &result.stderr)?;\n  runs.push(serde_json::json!({\"name\":name,\"python\":python,\"argv\":args,\"exit_code\":result.status.code()}));\n  std::fs::write(final_dir.join(\"notebook-commands.json\"),serde_json::to_vec_pretty(&runs)?)?;\n  assert!(result.status.success(), \"Fresh DuckDB2 process failed; inspect saved stdout/stderr\");\n  let report: serde_json::Value = serde_json::from_slice(&std::fs::read(&output_path)?)?;\n  println!(\"{}: DuckDB {}, extension SHA256 {}\",name,report[\"duckdb_version\"],report[\"extension_sha256\"]);\n  if name == \"validation-from-notebook\" {\n   assert_eq!(report[\"all_checks_passed\"],true);\n   for receipt in report[\"receipts\"].as_array().unwrap() {\n    if [\"selection\",\"selected_call_counts\",\"real_constructor_control\"].contains(&receipt[\"name\"].as_str().unwrap_or(\"\")) {\n     println!(\"{}: {}\",receipt[\"name\"],receipt[\"rows\"]);\n    }\n   }\n  } else {\n   assert_eq!(report[\"all_positive_controls_passed\"],true);\n   println!(\"Six scope controls: {}\",report[\"expected_local_constructor_preserved\"]);\n   println!(\"Grounded target ownership: {}\",report[\"rows\"]);\n  }\n }\n}",
+  "exec_count": 158,
+  "status": "success",
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "validation-from-notebook: DuckDB \"2.0.0\", extension SHA256 \"77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1\"\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "\"selection\": [{\"files\":52,\"original_macro_constructor_edges\":120}]\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "\"selected_call_counts\": [{\"calls\":34591,\"local_targets\":5206,\"version\":\"baseline\"},{\"calls\":34224,\"local_targets\":5039,\"version\":\"candidate\"}]\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "\"real_constructor_control\": [{\"bind_method\":null,\"caller\":\"rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes\",\"scope_text\":\"Vec\",\"target_label\":\"new\",\"target_name\":null,\"target_node_id\":null,\"target_owner\":null}]\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "scope-probe-from-notebook: DuckDB \"2.0.0\", extension SHA256 \"77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1\"\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "Six scope controls: {\"block_after_separator\":true,\"block_before_separator\":true,\"line_before_separator\":true,\"plain\":true,\"spaced\":true,\"via_self\":true}\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "Grounded target ownership: [{\"bind_method\":\"macro_body_singleton\",\"caller\":\"via_self\",\"owner\":\"Factory\",\"scope\":\"Self\",\"target\":4,\"target_name\":\"new\"},{\"bind_method\":\"macro_body_singleton\",\"caller\":\"plain\",\"owner\":\"Factory\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\"},{\"bind_method\":\"macro_body_singleton\",\"caller\":\"spaced\",\"owner\":\"Factory\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\"},{\"bind_method\":\"macro_body_singleton\",\"caller\":\"block_before_separator\",\"owner\":\"Factory\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\"},{\"bind_method\":\"macro_body_singleton\",\"caller\":\"block_after_separator\",\"owner\":\"Factory\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\"},{\"bind_method\":\"macro_body_singleton\",\"caller\":\"line_before_separator\",\"owner\":\"Factory\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\"}]\n"
+    },
+    {
+      "output_type": "execute_result",
+      "execution_count": 158,
+      "data": {
+        "text/plain": "()"
+      },
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "spur": {
+      "version": 2161,
+      "last_edited_by": "brain",
+      "code_type": "rust"
+    },
+    "spur_output_provenance": {
+      "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+      "run_id": "a6789e3f-8a0a-46e1-bd6d-636b9440adf6",
+      "source_version": 2161,
+      "execution_identity": "59ec050f0912ecb545684a888a878c51802ce68303786da121a11f8e2ea7d208",
+      "output_hash": "ac926a9ef2573bea008e3aec3978fe94c3d08af6e810ce4042f807977879a9d9",
+      "status": "succeeded",
+      "dependencies": [],
+      "published_ports": [],
+      "ports_at_start": [],
+      "lineage_complete": true
+    }
+  },
+  "output_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ]
+}

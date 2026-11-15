@@ -1,0 +1,128 @@
+[
+  {
+    "variant": "plain",
+    "test": "multisegment_plain_path_keeps_local_target",
+    "source99760": {
+      "scope_text": "outer::local",
+      "target_node_id": 4
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "ok",
+    "green_test": "ok"
+  },
+  {
+    "variant": "spaces",
+    "test": "multisegment_spaced_path_keeps_local_target",
+    "source99760": {
+      "scope_text": "outer :: local",
+      "target_node_id": null
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "FAILED",
+    "green_test": "ok"
+  },
+  {
+    "variant": "internal_block",
+    "test": "multisegment_internal_block_comment_keeps_local_target",
+    "source99760": {
+      "scope_text": "outer /* qualifier */ :: local",
+      "target_node_id": null
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "FAILED",
+    "green_test": "ok"
+  },
+  {
+    "variant": "internal_line",
+    "test": "multisegment_internal_line_comment_keeps_local_target",
+    "source99760": {
+      "scope_text": "outer // qualifier\n :: local",
+      "target_node_id": null
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "FAILED",
+    "green_test": "ok"
+  },
+  {
+    "variant": "trailing_block",
+    "test": "multisegment_trailing_block_comment_keeps_local_target",
+    "source99760": {
+      "scope_text": "outer::local",
+      "target_node_id": 4
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "ok",
+    "green_test": "ok"
+  },
+  {
+    "variant": "trailing_line",
+    "test": "multisegment_trailing_line_comment_keeps_local_target",
+    "source99760": {
+      "scope_text": "outer::local",
+      "target_node_id": 4
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "ok",
+    "green_test": "ok"
+  },
+  {
+    "variant": "all_comments",
+    "test": "multisegment_all_comments_keep_local_target",
+    "source99760": {
+      "scope_text": "outer /* a */ :: /* b */ local",
+      "target_node_id": null
+    },
+    "new_asserted": {
+      "scope_text": "outer::local",
+      "target_declaration": "pub fn deep() -> u8 { 7 }",
+      "unique_edge": true,
+      "bind_method": "macro_body_singleton",
+      "confidence_score": 0.8,
+      "bytes_filesystem_all_five_equal": true
+    },
+    "red_test": "FAILED",
+    "green_test": "ok"
+  }
+]

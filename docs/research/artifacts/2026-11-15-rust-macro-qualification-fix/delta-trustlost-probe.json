@@ -1,0 +1,42 @@
+{
+  "path": "crates/spur-graph/src/overlay_watch.rs",
+  "sql": "WITH old_call AS(SELECT e.source_node_id,e.target_label,e.scope_text,e.receiver_text,e.bind_method,e.target_node_id FROM frozen.main.edges e WHERE e.logical_path=? AND e.relation='calls' AND e.target_label='TrustLost'),\nnew_edges AS (SELECT unnest(v.edges) e FROM fresh),new_call AS (SELECT e.source_node_id,e.target_label,e.scope_text,e.receiver_text,e.bind_method,e.target_node_id FROM new_edges WHERE e.relation='calls' AND e.target_label='TrustLost')\nSELECT 'old' AS version,* FROM old_call UNION ALL SELECT 'new',* FROM new_call ORDER BY source_node_id,version",
+  "rows": [
+    {
+      "version": "old",
+      "source_node_id": 109,
+      "target_label": "TrustLost",
+      "scope_text": null,
+      "receiver_text": null,
+      "bind_method": null,
+      "target_node_id": null
+    },
+    {
+      "version": "old",
+      "source_node_id": 114,
+      "target_label": "TrustLost",
+      "scope_text": null,
+      "receiver_text": null,
+      "bind_method": null,
+      "target_node_id": null
+    },
+    {
+      "version": "old",
+      "source_node_id": 115,
+      "target_label": "TrustLost",
+      "scope_text": null,
+      "receiver_text": null,
+      "bind_method": null,
+      "target_node_id": null
+    },
+    {
+      "version": "old",
+      "source_node_id": 135,
+      "target_label": "TrustLost",
+      "scope_text": null,
+      "receiver_text": null,
+      "bind_method": null,
+      "target_node_id": null
+    }
+  ]
+}

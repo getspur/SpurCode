@@ -1,0 +1,11 @@
+{
+  "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+  "source_commit": "08fed2401",
+  "assertion_result": {
+    "passed": 0,
+    "failed": 5
+  },
+  "original_wrong_binding": "Vec::new -> Some(NodeId(4)) (LocalFactory::new), expected None",
+  "log": "red-remote.log",
+  "production_edited": false
+}

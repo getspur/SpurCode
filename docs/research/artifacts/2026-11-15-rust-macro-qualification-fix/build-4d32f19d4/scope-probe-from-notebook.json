@@ -1,0 +1,1165 @@
+{
+  "duckdb_version": "2.0.0",
+  "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/build-4d32f19d4/spur_graph.duckdb_extension",
+  "extension_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+  "source_sha256": "c218d96b2900f18649058f510596ffb3e778009cd60368390432ecf40a432ca7",
+  "rows": [
+    {
+      "caller": "via_self",
+      "scope": "Self",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    {
+      "caller": "plain",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    {
+      "caller": "spaced",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    {
+      "caller": "block_before_separator",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    {
+      "caller": "block_after_separator",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    {
+      "caller": "line_before_separator",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    }
+  ],
+  "expected_local_constructor_preserved": {
+    "plain": true,
+    "spaced": true,
+    "block_before_separator": true,
+    "block_after_separator": true,
+    "line_before_separator": true,
+    "via_self": true
+  },
+  "all_positive_controls_passed": true,
+  "facts": {
+    "nodes": [
+      {
+        "node_id": 1,
+        "stable_key": "716f8c060272c019",
+        "label": "scope-probes.rs",
+        "kind": "file",
+        "file_id": 1,
+        "source_span_id": 1,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 2,
+        "stable_key": "71c6e88c3513d4da",
+        "label": "Factory",
+        "kind": "struct",
+        "file_id": 1,
+        "source_span_id": 2,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 3,
+        "stable_key": "af84c3026aa0bd31",
+        "label": "Factory",
+        "kind": "impl",
+        "file_id": 1,
+        "source_span_id": 3,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 4,
+        "stable_key": "25d380a00475d18c",
+        "label": "new",
+        "kind": "method",
+        "file_id": 1,
+        "source_span_id": 4,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 5,
+        "stable_key": "cf34d98ae438a045",
+        "label": "via_self",
+        "kind": "method",
+        "file_id": 1,
+        "source_span_id": 5,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 6,
+        "stable_key": "38223f03e1f71494",
+        "label": "plain",
+        "kind": "function",
+        "file_id": 1,
+        "source_span_id": 6,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 7,
+        "stable_key": "0c3cbfee1ae6e775",
+        "label": "spaced",
+        "kind": "function",
+        "file_id": 1,
+        "source_span_id": 7,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 8,
+        "stable_key": "bdce5a6c35d9088a",
+        "label": "block_before_separator",
+        "kind": "function",
+        "file_id": 1,
+        "source_span_id": 8,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 9,
+        "stable_key": "1d2e35e4f91d9290",
+        "label": "block_after_separator",
+        "kind": "function",
+        "file_id": 1,
+        "source_span_id": 9,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 10,
+        "stable_key": "4b7cf4cb8e7c091e",
+        "label": "line_before_separator",
+        "kind": "function",
+        "file_id": 1,
+        "source_span_id": 10,
+        "first_seen_run_id": 1
+      },
+      {
+        "node_id": 11,
+        "stable_key": "a9631d6ded667d77",
+        "label": "main",
+        "kind": "function",
+        "file_id": 1,
+        "source_span_id": 11,
+        "first_seen_run_id": 1
+      }
+    ],
+    "edges": [
+      {
+        "edge_id": 1,
+        "source_node_id": 1,
+        "target_node_id": 2,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 1,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 2,
+        "source_node_id": 1,
+        "target_node_id": 3,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 2,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 3,
+        "source_node_id": 3,
+        "target_node_id": 4,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 3,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 4,
+        "source_node_id": 3,
+        "target_node_id": 4,
+        "relation": "defines",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "heuristic",
+        "confidence_score": 0.5,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 4,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 5,
+        "source_node_id": 3,
+        "target_node_id": 5,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 5,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 6,
+        "source_node_id": 3,
+        "target_node_id": 5,
+        "relation": "defines",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "heuristic",
+        "confidence_score": 0.5,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 6,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 7,
+        "source_node_id": 1,
+        "target_node_id": 6,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 7,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 8,
+        "source_node_id": 1,
+        "target_node_id": 7,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 8,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 9,
+        "source_node_id": 1,
+        "target_node_id": 8,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 9,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 10,
+        "source_node_id": 1,
+        "target_node_id": 9,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 10,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 11,
+        "source_node_id": 1,
+        "target_node_id": 10,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 11,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 12,
+        "source_node_id": 1,
+        "target_node_id": 11,
+        "relation": "contains",
+        "target_label": null,
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 12,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 13,
+        "source_node_id": 5,
+        "target_node_id": null,
+        "relation": "calls",
+        "target_label": "pop",
+        "import_path": null,
+        "receiver_text": "items",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 13,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 14,
+        "source_node_id": 5,
+        "target_node_id": null,
+        "relation": "calls",
+        "target_label": "unwrap",
+        "import_path": null,
+        "receiver_text": "items.pop()",
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": null,
+        "evidence_id": 14,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 15,
+        "source_node_id": 5,
+        "target_node_id": 4,
+        "relation": "calls",
+        "target_label": "new",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Self",
+        "confidence": "heuristic",
+        "confidence_score": 0.800000011920929,
+        "edge_kind": null,
+        "bind_method": "macro_body_singleton",
+        "evidence_id": 15,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 16,
+        "source_node_id": 6,
+        "target_node_id": 4,
+        "relation": "calls",
+        "target_label": "new",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Factory",
+        "confidence": "heuristic",
+        "confidence_score": 0.800000011920929,
+        "edge_kind": null,
+        "bind_method": "macro_body_singleton",
+        "evidence_id": 16,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 17,
+        "source_node_id": 7,
+        "target_node_id": 4,
+        "relation": "calls",
+        "target_label": "new",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Factory",
+        "confidence": "heuristic",
+        "confidence_score": 0.800000011920929,
+        "edge_kind": null,
+        "bind_method": "macro_body_singleton",
+        "evidence_id": 17,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 18,
+        "source_node_id": 8,
+        "target_node_id": 4,
+        "relation": "calls",
+        "target_label": "new",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Factory",
+        "confidence": "heuristic",
+        "confidence_score": 0.800000011920929,
+        "edge_kind": null,
+        "bind_method": "macro_body_singleton",
+        "evidence_id": 18,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 19,
+        "source_node_id": 9,
+        "target_node_id": 4,
+        "relation": "calls",
+        "target_label": "new",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Factory",
+        "confidence": "heuristic",
+        "confidence_score": 0.800000011920929,
+        "edge_kind": null,
+        "bind_method": "macro_body_singleton",
+        "evidence_id": 19,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 20,
+        "source_node_id": 10,
+        "target_node_id": 4,
+        "relation": "calls",
+        "target_label": "new",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Factory",
+        "confidence": "heuristic",
+        "confidence_score": 0.800000011920929,
+        "edge_kind": null,
+        "bind_method": "macro_body_singleton",
+        "evidence_id": 20,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 21,
+        "source_node_id": 11,
+        "target_node_id": 6,
+        "relation": "calls",
+        "target_label": "plain",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": "singleton",
+        "evidence_id": 21,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 22,
+        "source_node_id": 11,
+        "target_node_id": 7,
+        "relation": "calls",
+        "target_label": "spaced",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": "singleton",
+        "evidence_id": 22,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 23,
+        "source_node_id": 11,
+        "target_node_id": 8,
+        "relation": "calls",
+        "target_label": "block_before_separator",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": "singleton",
+        "evidence_id": 23,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 24,
+        "source_node_id": 11,
+        "target_node_id": 9,
+        "relation": "calls",
+        "target_label": "block_after_separator",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": "singleton",
+        "evidence_id": 24,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 25,
+        "source_node_id": 11,
+        "target_node_id": 10,
+        "relation": "calls",
+        "target_label": "line_before_separator",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": null,
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": "singleton",
+        "evidence_id": 25,
+        "directed": true,
+        "change_kind": null
+      },
+      {
+        "edge_id": 26,
+        "source_node_id": 11,
+        "target_node_id": 5,
+        "relation": "calls",
+        "target_label": "via_self",
+        "import_path": null,
+        "receiver_text": null,
+        "scope_text": "Factory",
+        "confidence": "syntax_exact",
+        "confidence_score": 1.0,
+        "edge_kind": null,
+        "bind_method": "scope_match",
+        "evidence_id": 26,
+        "directed": true,
+        "change_kind": null
+      }
+    ],
+    "spans": [
+      {
+        "span_id": 1,
+        "file_id": 1,
+        "start_byte": 0,
+        "end_byte": 704,
+        "start_line": 1,
+        "end_line": 23
+      },
+      {
+        "span_id": 2,
+        "file_id": 1,
+        "start_byte": 21,
+        "end_byte": 36,
+        "start_line": 2,
+        "end_line": 2
+      },
+      {
+        "span_id": 3,
+        "file_id": 1,
+        "start_byte": 37,
+        "end_byte": 189,
+        "start_line": 3,
+        "end_line": 9
+      },
+      {
+        "span_id": 4,
+        "file_id": 1,
+        "start_byte": 56,
+        "end_byte": 81,
+        "start_line": 4,
+        "end_line": 4
+      },
+      {
+        "span_id": 5,
+        "file_id": 1,
+        "start_byte": 86,
+        "end_byte": 187,
+        "start_line": 5,
+        "end_line": 8
+      },
+      {
+        "span_id": 6,
+        "file_id": 1,
+        "start_byte": 190,
+        "end_byte": 234,
+        "start_line": 10,
+        "end_line": 10
+      },
+      {
+        "span_id": 7,
+        "file_id": 1,
+        "start_byte": 235,
+        "end_byte": 282,
+        "start_line": 11,
+        "end_line": 11
+      },
+      {
+        "span_id": 8,
+        "file_id": 1,
+        "start_byte": 283,
+        "end_byte": 362,
+        "start_line": 12,
+        "end_line": 12
+      },
+      {
+        "span_id": 9,
+        "file_id": 1,
+        "start_byte": 363,
+        "end_byte": 437,
+        "start_line": 13,
+        "end_line": 13
+      },
+      {
+        "span_id": 10,
+        "file_id": 1,
+        "start_byte": 438,
+        "end_byte": 525,
+        "start_line": 14,
+        "end_line": 17
+      },
+      {
+        "span_id": 11,
+        "file_id": 1,
+        "start_byte": 526,
+        "end_byte": 703,
+        "start_line": 18,
+        "end_line": 22
+      }
+    ],
+    "macro_invocations": [
+      {
+        "site_id": "0168f196d2a7ed8ff93a0b0ddc905a53940e91c73ba3bceab09b5b77eb036801",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "cf34d98ae438a045",
+        "enclosing": {
+          "stable_symbol_id": "cf34d98ae438a045",
+          "kind": "function"
+        },
+        "raw_macro_path": "vec",
+        "normalized_macro_path": "vec",
+        "byte_range": [
+          134,
+          151
+        ],
+        "line_range": [
+          6,
+          6
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      },
+      {
+        "site_id": "d99de649bfb7164b88589122a4a5deccee7b5415d48fae438a22a7e5080748b7",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "38223f03e1f71494",
+        "enclosing": {
+          "stable_symbol_id": "38223f03e1f71494",
+          "kind": "function"
+        },
+        "raw_macro_path": "vec",
+        "normalized_macro_path": "vec",
+        "byte_range": [
+          211,
+          231
+        ],
+        "line_range": [
+          10,
+          10
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      },
+      {
+        "site_id": "41d793a50fb139beab7397d7fa81d52d94a75280bafb2fa20650d5ff3df0cae7",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "0c3cbfee1ae6e775",
+        "enclosing": {
+          "stable_symbol_id": "0c3cbfee1ae6e775",
+          "kind": "function"
+        },
+        "raw_macro_path": "vec",
+        "normalized_macro_path": "vec",
+        "byte_range": [
+          257,
+          279
+        ],
+        "line_range": [
+          11,
+          11
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      },
+      {
+        "site_id": "11722406064830c1cf40681f9efaa4294e3ed35c10510c81380705ea67f82306",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "bdce5a6c35d9088a",
+        "enclosing": {
+          "stable_symbol_id": "bdce5a6c35d9088a",
+          "kind": "function"
+        },
+        "raw_macro_path": "vec",
+        "normalized_macro_path": "vec",
+        "byte_range": [
+          321,
+          359
+        ],
+        "line_range": [
+          12,
+          12
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      },
+      {
+        "site_id": "47376d0e76c0ad303c2faac6532bf7df5ae819164d9bcb1fcc984ec525fcdf88",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "1d2e35e4f91d9290",
+        "enclosing": {
+          "stable_symbol_id": "1d2e35e4f91d9290",
+          "kind": "function"
+        },
+        "raw_macro_path": "vec",
+        "normalized_macro_path": "vec",
+        "byte_range": [
+          400,
+          434
+        ],
+        "line_range": [
+          13,
+          13
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      },
+      {
+        "site_id": "83369381ac9f74ab2aa2c945530d2b345fe678a6ea7873341ec780cdd31033fc",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "4b7cf4cb8e7c091e",
+        "enclosing": {
+          "stable_symbol_id": "4b7cf4cb8e7c091e",
+          "kind": "function"
+        },
+        "raw_macro_path": "vec",
+        "normalized_macro_path": "vec",
+        "byte_range": [
+          479,
+          522
+        ],
+        "line_range": [
+          15,
+          16
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      },
+      {
+        "site_id": "7232e769833f3f8854c9d008efc43ce097ba6f49b847271bec2a294d58364c92",
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "caller_stable_symbol_id": "a9631d6ded667d77",
+        "enclosing": {
+          "stable_symbol_id": "a9631d6ded667d77",
+          "kind": "function"
+        },
+        "raw_macro_path": "println",
+        "normalized_macro_path": "println",
+        "byte_range": [
+          674,
+          700
+        ],
+        "line_range": [
+          21,
+          21
+        ],
+        "attributes": [
+          {
+            "raw_text": "#![allow(dead_code)]",
+            "owner": {
+              "stable_symbol_id": "716f8c060272c019",
+              "kind": "file"
+            },
+            "byte_range": [
+              0,
+              20
+            ],
+            "line_range": [
+              1,
+              1
+            ]
+          }
+        ],
+        "test_context": "unspecified",
+        "debug_assertions_candidate": false,
+        "execution_phase": "function_body_syntax",
+        "resolution": {
+          "kind": "unresolved",
+          "definition": null
+        },
+        "sink_family_candidate": null
+      }
+    ],
+    "macro_scopes": [
+      {
+        "scope": {
+          "stable_symbol_id": "0c3cbfee1ae6e775",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          235,
+          282
+        ],
+        "line_range": [
+          11,
+          11
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "1d2e35e4f91d9290",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          363,
+          437
+        ],
+        "line_range": [
+          13,
+          13
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "38223f03e1f71494",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          190,
+          234
+        ],
+        "line_range": [
+          10,
+          10
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "4b7cf4cb8e7c091e",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          438,
+          525
+        ],
+        "line_range": [
+          14,
+          17
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "716f8c060272c019",
+          "kind": "file"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          0,
+          704
+        ],
+        "line_range": [
+          1,
+          22
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "a9631d6ded667d77",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          526,
+          703
+        ],
+        "line_range": [
+          18,
+          22
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "af84c3026aa0bd31",
+          "kind": "impl"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          37,
+          189
+        ],
+        "line_range": [
+          3,
+          9
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "bdce5a6c35d9088a",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          283,
+          362
+        ],
+        "line_range": [
+          12,
+          12
+        ]
+      },
+      {
+        "scope": {
+          "stable_symbol_id": "cf34d98ae438a045",
+          "kind": "function"
+        },
+        "file_path": "scope-probes.rs",
+        "source_oid": "365de4044791c8d02552b26fcd31b64ecc76e0ad",
+        "byte_range": [
+          86,
+          187
+        ],
+        "line_range": [
+          5,
+          8
+        ]
+      }
+    ]
+  }
+}

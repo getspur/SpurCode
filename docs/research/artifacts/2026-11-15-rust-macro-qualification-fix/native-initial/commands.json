@@ -1,0 +1,125 @@
+{
+  "runs": [
+    {
+      "name": "red-remote",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "exit_code": 101,
+      "log": "red-remote.log",
+      "log_sha256": "93d81e84f4e68683270fbdbacc3962f6d9a12b66a4937df84c5c6d7c4d1276b0",
+      "status": "FAILED",
+      "passed": 0,
+      "failed": 5,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "name": "red-strengthened",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "exit_code": 101,
+      "log": "red-strengthened.log",
+      "log_sha256": "3423f9f12ff3d07818c4858c3808e50c414b359a9d60522fe74781104e373c7f",
+      "status": "FAILED",
+      "passed": 0,
+      "failed": 5,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "name": "green-focused",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "exit_code": 0,
+      "log": "green-focused.log",
+      "log_sha256": "5d95e119ee2eba7e8430f99bc5ccfc5820262b035dcbd1c8c8eef927582b39f4",
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "name": "green-related",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts",
+      "exit_code": 0,
+      "log": "green-related.log",
+      "log_sha256": "fb75b03316178e6e9864b742497a9a48f8124c2ecc6f88a1b24efde30802c595",
+      "suites": [
+        {
+          "suite": "extract_file_facts",
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "suite": "rust_lexical_calls",
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "suite": "rust_macro_token_tree_query",
+          "status": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "suite": "rust_receiver_resolution",
+          "status": "ok",
+          "passed": 21,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    {
+      "name": "green-lib-macro",
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --lib macro",
+      "exit_code": 0,
+      "log": "green-lib-macro.log",
+      "log_sha256": "f62f05410fdd01335a6ce81f97c50dfba50754981e235f78800b95f29a44c4d7",
+      "suites": [
+        {
+          "suite": "lib macro",
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 590
+        }
+      ]
+    }
+  ],
+  "test_only_commits": {
+    "08fed2401": {
+      "commit": "08fed24010248119a0c883ed7cd65244a56b386a",
+      "changed_files": [
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+      ]
+    },
+    "3427630ba": {
+      "commit": "3427630baa2ffd3d1237cee9309758248e8497c4",
+      "changed_files": [
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+      ]
+    }
+  },
+  "fmt": {
+    "command": "scripts/spur-cargo fmt --all -- --check",
+    "exit_code": 0,
+    "log": "fmt.log"
+  }
+}

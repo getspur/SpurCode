@@ -1,0 +1,25 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2175,
+  "id": "b70b61aa-a29f-4324-b5ab-e9e80d66165d",
+  "kind": "code",
+  "version": 2172,
+  "cell_etag": "cell:sha256:556f9eb66eea5d1aae01cf4cfdd08aeb0615c9e3ed983439cb0012ff8e35defe",
+  "source": "-- Display saved SQL receipts from the fresh DuckDB 2 validation above.\n-- The retained managed connection still has the earlier extension loaded.\nWITH saved AS (\n  SELECT json FROM read_json_objects('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/validation-from-notebook.json')\n), count_rows AS (\n  SELECT docs.json AS document, item.value AS row_value\n  FROM saved docs,\n       json_each(docs.json, '$.receipts') receipt,\n       json_each(receipt.value, '$.rows') item\n  WHERE json_extract_string(receipt.value, '$.name') = 'selected_call_counts'\n)\nSELECT json_extract_string(row_value, '$.version') AS data_version,\n       CAST(json_extract(row_value, '$.calls') AS BIGINT) AS recorded_calls,\n       CAST(json_extract(row_value, '$.local_targets') AS BIGINT) AS local_targets,\n       json_extract_string(document, '$.duckdb_version') AS validation_runtime,\n       json_extract_string(document, '$.extension_sha256') AS corrected_artifact_sha256\nFROM count_rows ORDER BY data_version;",
+  "exec_count": 21,
+  "status": "success",
+  "outputs": [
+    "┌──────────────┬────────────────┬───────────────┬────────────────────┬──────────────────────────────────────────────────────────────────┐\n│ data_version │ recorded_calls │ local_targets │ validation_runtime │                    corrected_artifact_sha256                     │\n│   varchar    │     int64      │     int64     │      varchar       │                             varchar                              │\n├──────────────┼────────────────┼───────────────┼────────────────────┼──────────────────────────────────────────────────────────────────┤\n│ baseline     │          34591 │          5206 │ 2.0.0              │ 77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1 │\n│ candidate    │          34224 │          5039 │ 2.0.0              │ 77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1 │\n└──────────────┴────────────────┴───────────────┴────────────────────┴──────────────────────────────────────────────────────────────────┘\n"
+  ],
+  "metadata": {
+    "spur": {
+      "version": 2172,
+      "last_edited_by": "brain",
+      "code_type": "sql"
+    }
+  },
+  "output_indices": [
+    0
+  ]
+}

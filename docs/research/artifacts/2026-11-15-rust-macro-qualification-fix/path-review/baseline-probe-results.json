@@ -1,0 +1,504 @@
+{
+  "version": "2.0.0",
+  "artifacts": {
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/spur_graph.duckdb_extension": "77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/reference_file_facts": "5495bf87c178643b117576941939defee7494a0de01286f716da9a412c2ff4f1"
+  },
+  "cases": {
+    "vec_negative": {
+      "expression": "Vec::new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "plain": {
+      "expression": "Factory::new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "spaced": {
+      "expression": "Factory :: new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "block_before": {
+      "expression": "Factory /* a */ :: new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "block_after": {
+      "expression": "Factory :: /* a */ new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "line_before": {
+      "expression": "Factory // a\n :: new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "before_args": {
+      "expression": "Factory::new /* a */ ()",
+      "baseline": []
+    },
+    "before_args_line": {
+      "expression": "Factory::new // a\n ()",
+      "baseline": []
+    },
+    "bare": {
+      "expression": "helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "bare_comment": {
+      "expression": "helper /* a */ ()",
+      "baseline": []
+    },
+    "bare_turbofish": {
+      "expression": "generic::<u8>()",
+      "baseline": []
+    },
+    "bare_turbofish_comments": {
+      "expression": "generic /* a */ :: /* b */ <u8> /* c */ ()",
+      "baseline": []
+    },
+    "local_turbofish": {
+      "expression": "Factory::make::<u8>()",
+      "baseline": []
+    },
+    "local_turbofish_comments": {
+      "expression": "Factory /* a */ :: make /* b */ :: <u8> /* c */ ()",
+      "baseline": []
+    },
+    "external_turbofish": {
+      "expression": "Vec::<Option<u8>>::new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "leading_foreign": {
+      "expression": "::foreign::helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "leading_bare": {
+      "expression": "::helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "qualified_trait": {
+      "expression": "<Factory as Make>::produce()",
+      "baseline": [
+        {
+          "name": "produce",
+          "scope": null,
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "syntax_exact",
+          "score": 1.0
+        }
+      ]
+    },
+    "qualified_trait_comments": {
+      "expression": "<Factory /* a */ as Make>::produce()",
+      "baseline": [
+        {
+          "name": "produce",
+          "scope": null,
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "syntax_exact",
+          "score": 1.0
+        }
+      ]
+    },
+    "qualified_trait_spaces": {
+      "expression": "< Factory as Make >::produce()",
+      "baseline": [
+        {
+          "name": "produce",
+          "scope": null,
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "syntax_exact",
+          "score": 1.0
+        }
+      ]
+    },
+    "nested_path": {
+      "expression": "crate::local::deep()",
+      "baseline": [
+        {
+          "name": "deep",
+          "scope": null,
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "nested_path_spaced": {
+      "expression": "crate :: local :: deep()",
+      "baseline": [
+        {
+          "name": "deep",
+          "scope": null,
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "nested_path_comment": {
+      "expression": "crate /* a */ :: local::deep()",
+      "baseline": [
+        {
+          "name": "deep",
+          "scope": null,
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "nested_path_line": {
+      "expression": "crate // a\n :: local::deep()",
+      "baseline": [
+        {
+          "name": "deep",
+          "scope": null,
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "relative_path": {
+      "expression": "local::deep()",
+      "baseline": [
+        {
+          "name": "deep",
+          "scope": null,
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "relative_path_space": {
+      "expression": "local :: deep()",
+      "baseline": [
+        {
+          "name": "deep",
+          "scope": null,
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "root_helper": {
+      "expression": "crate::helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "self_helper": {
+      "expression": "self::helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "root_constructor": {
+      "expression": "crate::Factory::new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "root_constructor_spaces": {
+      "expression": "crate :: Factory :: new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "root_constructor_comments": {
+      "expression": "crate /* a */ :: Factory :: new()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "mixed": {
+      "expression": "Vec::new(), Factory::new(), helper()",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "nested": {
+      "expression": "{ [Vec::new(), (Factory::new(), helper())] }",
+      "baseline": [
+        {
+          "name": "new",
+          "scope": null,
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "strings": {
+      "expression": "\"Vec::new()\", r###\"Factory::new()\"###, b\"helper()\", /* helper() */ helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "char_tokens": {
+      "expression": "'(', ')', helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "comparisons": {
+      "expression": "1 > 0, helper()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "closure": {
+      "expression": "(|| helper())()",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "string_then_args": {
+      "expression": "\"Factory::new\" (helper())",
+      "baseline": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ]
+    },
+    "raw_identifier": {
+      "expression": "r#helper()",
+      "baseline": [
+        {
+          "name": "r#helper",
+          "scope": null,
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "syntax_exact",
+          "score": 1.0
+        }
+      ]
+    }
+  }
+}

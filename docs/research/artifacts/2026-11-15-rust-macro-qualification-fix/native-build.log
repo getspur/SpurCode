@@ -1,0 +1,58 @@
+   Compiling ring v0.17.14
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling spur-telemetry v1.24.0 (/private/tmp/bd-38yz-build-20261115/crates/spur-telemetry)
+   Compiling tree-sitter v0.26.13
+   Compiling spur-solver v1.24.0 (/private/tmp/bd-38yz-build-20261115/crates/spur-solver)
+   Compiling tree-sitter-mermaid v0.0.1 (/private/tmp/bd-38yz-build-20261115/crates/tree-sitter-mermaid)
+   Compiling tree-sitter-sequel v0.3.11
+   Compiling tree-sitter-go v0.25.0
+   Compiling tree-sitter-yaml v0.7.2
+   Compiling tree-sitter-json v0.24.8
+   Compiling tree-sitter-typescript v0.23.2
+   Compiling rustls v0.23.38
+   Compiling tree-sitter-python v0.25.0
+   Compiling tree-sitter-toml-ng v0.7.0
+   Compiling tree-sitter-rust v0.24.2
+   Compiling rustls-webpki v0.103.12
+   Compiling tree-sitter-html v0.23.2
+   Compiling tree-sitter-css v0.25.0
+   Compiling tree-sitter-lua v0.5.0
+   Compiling tree-sitter-md v0.5.3
+   Compiling tree-sitter-bash v0.25.1
+   Compiling blake3 v1.8.5
+   Compiling tree-sitter-cpp v0.23.4
+   Compiling tree-sitter-hcl v1.1.0
+   Compiling tree-sitter-c v0.24.2
+   Compiling spur-graph v1.24.0 (/private/tmp/bd-38yz-build-20261115/crates/spur-graph)
+   Compiling ureq v3.3.0
+   Compiling tokio-rustls v0.26.4
+   Compiling hyper-rustls v0.27.9
+   Compiling libduckdb-sys v1.20000.2
+   Compiling reqwest v0.12.28
+   Compiling zstd-safe v7.2.4
+   Compiling zstd v0.13.3
+   Compiling parquet v58.1.0
+   Compiling duckdb-neo v0.20000.2
+   Compiling spur-acp v1.24.0 (/private/tmp/bd-38yz-build-20261115/crates/spur-acp)
+   Compiling spur-mcp v1.24.0 (/private/tmp/bd-38yz-build-20261115/crates/spur-mcp)
+warning: method `as_bool` is never used
+   --> /private/tmp/bd-38yz-build-20261115/crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> /private/tmp/bd-38yz-build-20261115/crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+   Compiling spur-graph-duckdb v0.1.0 (/private/tmp/bd-38yz-build-20261115/crates/spur-graph-duckdb)
+    Finished `release` profile [optimized] target(s) in 2m 40s

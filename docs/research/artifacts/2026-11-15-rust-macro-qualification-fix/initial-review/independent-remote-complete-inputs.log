@@ -1,0 +1,208 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/bd-765s-review-ffsj8fk0  (local=/private/tmp/bd-765s-review-ffsj8fk0/spur/.spur/worktrees/bd-765s-review-ffsj8fk0)
+[build] Remote:   ~/spur/worktrees/bd-765s-review-ffsj8fk0   target=/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0   -j16
+[build] Remote build queue: admitted as ticket 2419 (slot 1/9) on spur-builder (3 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-06738bf8035cc0dbc)
+[build] Waiting for SSH-over-SSM on i-06738bf8035cc0dbc...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk and process watchdogs...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   3149 files in sync manifest (unchanged content is not transferred)
+[build] Syncing to i-06738bf8035cc0dbc:~/spur/worktrees/bd-765s-review-ffsj8fk0 ...
+[source-baseline] {"status": "warm"}
+[build] Reconstructing 1 tracked dangling symlink(s)...
+[build] Re-stamping 21 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[source-baseline] {"status": "published", "files": 3149, "tree_hash": "89257b478884cf25c82f8ef7bcf307290714d56a2d8810314eb8288cc9b13939"}
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture  -j16  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-graph v1.24.0 (/home/admin/spur/worktrees/bd-765s-review-ffsj8fk0/crates/spur-graph)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.84s
+     Running tests/bd765s_independent_review.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/bd765s_independent_review-df94a52265c263e8)
+
+running 1 test
+inside: [("new", Some("Self"), Some("new#5"))]
+mixed: [("new", Some("Alpha"), Some("new#5")), ("new", Some("foreign"), None), ("new", Some("Beta"), Some("new#9")), ("helper", None, Some("helper#15")), ("helper", Some("foreign"), None)]
+nested: [("new", Some("Alpha"), Some("new#5")), ("new", Some("foreign"), None), ("new", Some("Beta"), Some("new#9")), ("helper", None, Some("helper#15"))]
+paths: [("helper", Some("crate"), None), ("leaf", Some("local"), Some("leaf#17")), ("leaf", Some("foreign::local"), None), ("helper", Some("::"), None), ("helper", Some("self"), None), ("helper", Some("super"), None)]
+trait_forms: [("build", Some("<Genuine as Factory>"), Some("build#14")), ("build", Some("<Foreign as Factory>"), None), ("new", Some("<Foreign>"), None), ("build", Some("<<Foreign as X>::Assoc as Factory>"), None)]
+generic: [("make", Some("Alpha"), Some("make#7")), ("make", Some("foreign"), None), ("new", Some("Vec::<Option<Vec<u8>>>"), None)]
+comment_paths: [("new", Some("foreign /* comment */"), None), ("new", Some("Alpha /* c */"), None), ("helper", Some("foreign"), None)]
+noise: []
+test independent_extraction_matrix ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 14 tests
+     Running tests/extract_file_facts.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/extract_file_facts-4a7f1afe530d2a22)
+test markdown_matches_native_sections_and_unresolved_links ... ok
+test non_utf8_logical_path_is_rejected ... ok
+test configured_language_accepts_nonexistent_logical_path_without_extension ... ok
+test structured_languages_match_native_keys_and_openapi_resources ... ok
+test python_matches_native_classes_imports_and_calls ... ok
+test repeated_calls_start_fresh_ids_and_do_not_resolve_against_previous_files ... ok
+test logical_path_is_nonempty_relative_and_cannot_escape ... ok
+test reused_rust_extractor_does_not_leak_macro_evidence_or_local_bindings ... ok
+test rust_matches_native_with_nested_macro_scopes_attributes_and_local_definition ... ok
+test errors_propagate_and_do_not_poison_reused_extractor ... ok
+test notebook_matches_native_cells_markdown_and_language_overrides ... ok
+test generated_cpp_keeps_native_graph_facts_instead_of_symbol_shortcut ... ok
+test cpp_matches_native_definitions_imports_calls_and_receiver_evidence ... ok
+test empty_source_preserves_native_file_facts ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s
+
+     Running tests/rust_lexical_calls.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/rust_lexical_calls-390c56f055d30469)
+
+running 15 tests
+test local_module_alias_must_not_bind_outer_module ... ok
+test local_items_are_hoisted_only_within_their_own_block ... ok
+test type_parameter_must_not_bind_outer_module ... ok
+test local_type_must_not_bind_outer_module ... ok
+test held_out_recursion_and_homonyms_keep_exact_owners ... ok
+test qualified_self_and_super_calls_ignore_value_shadows ... ok
+test generic_free_self_calls_keep_exact_owners ... ok
+test generic_receiver_and_associated_calls_keep_existing_resolution ... ok
+test qualified_generic_free_calls_keep_exact_owners ... ok
+test imported_and_constructor_bindings_do_not_become_self_calls ... ok
+test namespace_items_shadow_for_the_whole_lexical_block ... ok
+test module_paths_ignore_expired_or_value_bindings ... ok
+test parameters_and_patterns_block_same_name_function_fallbacks ... ok
+test conditional_bindings_cover_the_body_but_exclude_initializer_and_else ... ok
+test isolated_lexical_binding_intervals_survive_renaming ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+     Running tests/rust_macro_invocations.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/rust_macro_invocations-53b913deec13b85a)
+
+running 7 tests
+test recovery_keeps_healthy_sites_without_impossible_spans ... ok
+test direct_evidence_does_not_add_macro_calls_or_change_existing_edges ... ok
+test lexical_macro_candidates_respect_order_and_nested_scope ... ok
+test alias_and_attribute_tokens_do_not_establish_namespace_or_build_conditions ... ok
+test exact_changed_bytes_rebind_identity_without_inventing_a_new_caller ... ok
+test notebook_cells_do_not_emit_physical_file_macro_evidence ... ok
+test direct_sites_have_exact_spans_callers_and_conservative_context ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/rust_macro_qualified_calls.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/rust_macro_qualified_calls-3b78644b132eda90)
+
+running 5 tests
+test nested_token_trees_keep_each_call_scope ... ok
+test local_constructor_and_bare_helper_keep_macro_heuristics ... ok
+test same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved ... ok
+test qualified_and_turbofish_paths_preserve_explicit_scope ... ok
+test recorded_vec_constructor_never_binds_to_local_factory ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/rust_macro_token_tree_query.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/rust_macro_token_tree_query-e7b4dcece71687b2)
+
+running 5 tests
+test proposed_macro_token_tree_query_captures_macro_body_calls ... ok
+test parenthesized_arg_query_filters_common_macro_token_false_positives ... ok
+test rust_spur_edges_query_marks_macro_body_calls_with_macro_capture_names ... ok
+test rust_graph_artifact_emits_macro_body_calls_without_token_tree_noise ... ok
+test rust_query_captures_direct_macro_nodes_and_exact_paths_separately ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/rust_receiver_resolution.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/rust_receiver_resolution-607877c20aa003ce)
+
+running 21 tests
+test double_reference_trait_receiver_precedes_shared_inherent ... ok
+test implicit_reference_clone_precedes_mutable_inherent ... ok
+test derived_clone_must_not_select_mutable_inherent_clone ... ok
+test borrowed_receiver_trait_borrow_precedes_mutable_inherent ... ok
+test implicit_identity_try_into_precedes_shared_inherent ... ok
+test a_shadowed_tuple_constructor_is_an_unknown_function_result ... ok
+test item_macro_impl_must_not_select_mutable_inherent_method ... ok
+test implicit_identity_into_precedes_shared_inherent ... ok
+test held_out_receiver_corpus_preserves_typed_borrowed_and_constructor_targets ... ok
+test held_out_option_sites_reject_lookalike_but_preserve_custom_unwrap ... ok
+test exact_receiver_origins_and_shadow_intervals_select_only_their_impl ... ok
+test later_typed_shadows_cannot_retype_standard_receivers ... ok
+test owned_receiver_trait_value_precedes_shared_inherent ... ok
+test owned_receiver_trait_borrow_precedes_mutable_inherent ... ok
+test standard_receivers_never_bind_to_local_method_homonyms ... ok
+test implicit_dispatch_policy_preserves_grounded_inherent_positives ... ok
+test builtin_attributes_and_uninvoked_macro_tokens_preserve_grounded_methods ... ok
+test trait_dispatch_guard_preserves_grounded_inherent_targets ... ok
+test renamed_bounded_default_and_constructor_trait_dispatch_remains_unresolved ... ok
+test expansion_uncertainty_covers_attributes_includes_and_macro_statements ... ok
+test implicit_dispatch_guards_renamed_receivers_and_other_prelude_obligations ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+     Running tests/temporal_preparsed.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/temporal_preparsed-dd6f8e0c4a1950bd)
+
+running 7 tests
+test preparsed_matching_skips_unsupported_paths_and_gitlinks ... ok
+test merge_is_parent_scoped_and_retains_first_snapshot_payload ... ok
+test preparsed_matching_keeps_last_left_duplicate_identity ... ok
+test preparsed_matching_returns_ambiguity_diagnostics_and_current_deleted_sha ... ok
+test preparsed_rename_tier_preserves_duplicate_input_order ... ok
+test rename_uses_current_path_language_and_current_sha_for_predecessor ... ok
+test preparsed_matching_matches_commit_walker_across_history ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.14s
+
+     Running tests/temporal_resolution.rs (/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0/debug/deps/temporal_resolution-4d5466887bf6911e)
+
+running 5 tests
+test resolve_symbol_at_rejects_reachable_cyclic_rename_chain ... ok
+test shallow_clone_fails_closed ... ok
+test resolve_at_intermediate_commit_returns_latest_prior_snapshot ... ok
+test property_resolve_at_anchor_matches_script ... ok
+test force_push_recovery_rebuilds_diverged_range ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+
+--- sccache stats (spur/worktrees/bd-765s-review-ffsj8fk0) ---
+Compile requests                     813
+Compile requests executed            551
+Cache hits                           439
+Cache hits (Assembler)                12
+Cache hits (C/C++)                   114
+Cache hits (Rust)                    313
+Cache misses                         107
+Cache misses (Rust)                  107
+Cache hits rate                    80.40 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)           100.00 %
+Cache hits rate (Rust)             74.52 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         107
+Compilation failures                   5
+Non-cacheable compilations             0
+[build] Done. target lives at i-06738bf8035cc0dbc:/mnt/cargo/targets/spur/worktrees/bd-765s-review-ffsj8fk0 — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000002419.

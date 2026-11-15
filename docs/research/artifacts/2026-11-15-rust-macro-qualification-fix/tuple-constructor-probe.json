@@ -1,0 +1,1035 @@
+{
+  "compiler_exit": 0,
+  "compiler_stderr": "",
+  "source": "#![allow(dead_code)]\nenum RawChange { TrustLost(u8) }\nstruct Pair(u8);\nfn case() { let _ = vec![RawChange::TrustLost(1)]; let _ = vec![Pair(2)]; }\nfn main() { case(); }\n",
+  "reports": [
+    {
+      "version": "baseline",
+      "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension",
+      "calls": [
+        {
+          "edge_id": 13,
+          "source_node_id": 8,
+          "target_node_id": 7,
+          "relation": "calls",
+          "target_label": "case",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": null,
+          "confidence": "syntax_exact",
+          "confidence_score": 1.0,
+          "edge_kind": null,
+          "bind_method": "singleton",
+          "evidence_id": 13,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "82b698bc5b875411",
+            "label": "tuple-constructor-probe.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "d232787973b54fc6",
+            "label": "RawChange",
+            "kind": "enum",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "1ae5b31bd3740e86",
+            "label": "TrustLost",
+            "kind": "enum_variant",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "17d65c53a727db2f",
+            "label": "0",
+            "kind": "field",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "17f4ceda520fa182",
+            "label": "Pair",
+            "kind": "struct",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "a969c717e0b24ce8",
+            "label": "0",
+            "kind": "field",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 7,
+            "stable_key": "7f70bc920234ef63",
+            "label": "case",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 7,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 8,
+            "stable_key": "6b480cd99347324d",
+            "label": "main",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 8,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 5,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 5,
+            "target_node_id": 6,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 9,
+            "source_node_id": 1,
+            "target_node_id": 7,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 9,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 10,
+            "source_node_id": 1,
+            "target_node_id": 8,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 10,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 11,
+            "source_node_id": 7,
+            "target_node_id": 3,
+            "relation": "constructs",
+            "target_label": "TrustLost",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 11,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 12,
+            "source_node_id": 7,
+            "target_node_id": 5,
+            "relation": "constructs",
+            "target_label": "Pair",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 12,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 13,
+            "source_node_id": 8,
+            "target_node_id": 7,
+            "relation": "calls",
+            "target_label": "case",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": "singleton",
+            "evidence_id": 13,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 169,
+            "start_line": 1,
+            "end_line": 6
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 53,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 38,
+            "end_byte": 51,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 48,
+            "end_byte": 50,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 54,
+            "end_byte": 70,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 66,
+            "end_byte": 68,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 7,
+            "file_id": 1,
+            "start_byte": 71,
+            "end_byte": 146,
+            "start_line": 4,
+            "end_line": 4
+          },
+          {
+            "span_id": 8,
+            "file_id": 1,
+            "start_byte": 147,
+            "end_byte": 168,
+            "start_line": 5,
+            "end_line": 5
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "c13b861ac633f97c5d84e55b36a7bfe1a8695b146116ee8c31182c9eacdc1fe1",
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "caller_stable_symbol_id": "7f70bc920234ef63",
+            "enclosing": {
+              "stable_symbol_id": "7f70bc920234ef63",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              91,
+              120
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "82b698bc5b875411",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          },
+          {
+            "site_id": "5b822266eab71dcda6352f0edfe08a3005d750710b5de24b98c21909c99fa21a",
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "caller_stable_symbol_id": "7f70bc920234ef63",
+            "enclosing": {
+              "stable_symbol_id": "7f70bc920234ef63",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              130,
+              143
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "82b698bc5b875411",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "7f70bc920234ef63",
+              "kind": "function"
+            },
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "byte_range": [
+              71,
+              146
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "82b698bc5b875411",
+              "kind": "file"
+            },
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "byte_range": [
+              0,
+              169
+            ],
+            "line_range": [
+              1,
+              5
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "version": "fixed_candidate",
+      "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/spur_graph.duckdb_extension",
+      "calls": [
+        {
+          "edge_id": 13,
+          "source_node_id": 8,
+          "target_node_id": 7,
+          "relation": "calls",
+          "target_label": "case",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": null,
+          "confidence": "syntax_exact",
+          "confidence_score": 1.0,
+          "edge_kind": null,
+          "bind_method": "singleton",
+          "evidence_id": 13,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "82b698bc5b875411",
+            "label": "tuple-constructor-probe.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "d232787973b54fc6",
+            "label": "RawChange",
+            "kind": "enum",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "1ae5b31bd3740e86",
+            "label": "TrustLost",
+            "kind": "enum_variant",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "17d65c53a727db2f",
+            "label": "0",
+            "kind": "field",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "17f4ceda520fa182",
+            "label": "Pair",
+            "kind": "struct",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "a969c717e0b24ce8",
+            "label": "0",
+            "kind": "field",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 7,
+            "stable_key": "7f70bc920234ef63",
+            "label": "case",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 7,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 8,
+            "stable_key": "6b480cd99347324d",
+            "label": "main",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 8,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 5,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 5,
+            "target_node_id": 6,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 9,
+            "source_node_id": 1,
+            "target_node_id": 7,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 9,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 10,
+            "source_node_id": 1,
+            "target_node_id": 8,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 10,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 11,
+            "source_node_id": 7,
+            "target_node_id": 3,
+            "relation": "constructs",
+            "target_label": "TrustLost",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "RawChange",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 11,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 12,
+            "source_node_id": 7,
+            "target_node_id": 5,
+            "relation": "constructs",
+            "target_label": "Pair",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 12,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 13,
+            "source_node_id": 8,
+            "target_node_id": 7,
+            "relation": "calls",
+            "target_label": "case",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": "singleton",
+            "evidence_id": 13,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 169,
+            "start_line": 1,
+            "end_line": 6
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 53,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 38,
+            "end_byte": 51,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 48,
+            "end_byte": 50,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 54,
+            "end_byte": 70,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 66,
+            "end_byte": 68,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 7,
+            "file_id": 1,
+            "start_byte": 71,
+            "end_byte": 146,
+            "start_line": 4,
+            "end_line": 4
+          },
+          {
+            "span_id": 8,
+            "file_id": 1,
+            "start_byte": 147,
+            "end_byte": 168,
+            "start_line": 5,
+            "end_line": 5
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "c13b861ac633f97c5d84e55b36a7bfe1a8695b146116ee8c31182c9eacdc1fe1",
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "caller_stable_symbol_id": "7f70bc920234ef63",
+            "enclosing": {
+              "stable_symbol_id": "7f70bc920234ef63",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              91,
+              120
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "82b698bc5b875411",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          },
+          {
+            "site_id": "5b822266eab71dcda6352f0edfe08a3005d750710b5de24b98c21909c99fa21a",
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "caller_stable_symbol_id": "7f70bc920234ef63",
+            "enclosing": {
+              "stable_symbol_id": "7f70bc920234ef63",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              130,
+              143
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "82b698bc5b875411",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "7f70bc920234ef63",
+              "kind": "function"
+            },
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "byte_range": [
+              71,
+              146
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "82b698bc5b875411",
+              "kind": "file"
+            },
+            "file_path": "tuple-constructor-probe.rs",
+            "source_oid": "053ddb0f4f0f2ae91065982e8ecea0b674178488",
+            "byte_range": [
+              0,
+              169
+            ],
+            "line_range": [
+              1,
+              5
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

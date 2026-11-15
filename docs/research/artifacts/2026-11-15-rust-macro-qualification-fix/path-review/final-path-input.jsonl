@@ -1,0 +1,7 @@
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer::local::deep()]; }\n"}
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer :: local :: deep()]; }\n"}
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer /* qualifier */ :: local::deep()]; }\n"}
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer // qualifier\n :: local::deep()]; }\n"}
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer::local /* qualifier */ ::deep()]; }\n"}
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer::local // qualifier\n ::deep()]; }\n"}
+{"path": "src/lib.rs", "source": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer /* a */ :: /* b */ local /* c */ :: /* d */ deep /* e */ ()]; }\n"}

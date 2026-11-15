@@ -1,0 +1,68 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2159,
+  "id": "396123db-0a53-4ac4-9099-7aa10ab127f6",
+  "kind": "code",
+  "version": 2152,
+  "cell_etag": "cell:sha256:0d744a2c943e2f61b9068302803b05e04db7f0854f3ca30f9572025c5bd8d51e",
+  "source": "{\n let art=std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix\");\n let src=art.join(\"scope-probes.rs\"); let binary=art.join(\"scope-probes\");\n let args=vec![\"--edition=2021\",\"--crate-name\",\"scope_probes\",src.to_str().unwrap(),\"-o\",binary.to_str().unwrap()];\n let compiled=std::process::Command::new(\"rustc\").env(\"RUSTUP_TOOLCHAIN\",\"1.94.1\").args(&args).output()?;\n assert!(compiled.status.success(),\"Scope fixture must compile\");\n let run=std::process::Command::new(&binary).output()?;\n assert!(run.status.success() && run.stdout==b\"scope-probe-ok\\n\");\n std::fs::write(art.join(\"scope-compiler.json\"),serde_json::to_vec_pretty(&serde_json::json!({\"rustup_toolchain\":\"1.94.1\",\"args\":args,\"compile_exit\":compiled.status.code(),\"compile_stderr\":String::from_utf8_lossy(&compiled.stderr),\"runtime_exit\":run.status.code(),\"runtime_stdout\":String::from_utf8_lossy(&run.stdout)}))?)?;\n for (name,extension) in [\n (\"baseline\",\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension\"),\n (\"candidate\",\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/candidate-9a05457df/spur_graph.duckdb_extension\")\n ] {\n  let output=art.join(format!(\"scope-probe-{name}.json\"));\n  let args=vec![art.join(\"probe_scope.py\").to_str().unwrap().to_owned(),\"--extension\".to_owned(),extension.to_owned(),\"--output\".to_owned(),output.to_str().unwrap().to_owned()];\n  let r=std::process::Command::new(\"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\").args(&args).output()?;\n  std::fs::write(art.join(format!(\"scope-{name}.stderr.txt\")),&r.stderr)?;\n  assert!(r.status.success(),\"Scope probe failed\");\n  println!(\"{name}: {}\",String::from_utf8_lossy(&r.stdout));\n }\n}",
+  "exec_count": 157,
+  "status": "success",
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "baseline: {\"duckdb_version\":\"2.0.0\",\"extension\":\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension\",\"extension_sha256\":\"e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028\",\"source_sha256\":\"c218d96b2900f18649058f510596ffb3e778009cd60368390432ecf40a432ca7\",\"rows\":[{\"caller\":\"via_self\",\"scope\":null,\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"plain\",\"scope\":null,\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"spaced\",\"scope\":null,\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"block_before_separator\",\"scope\":null,\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"block_after_separator\",\"scope\":null,\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"line_before_separator\",\"scope\":null,\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"}],\"expected_local_constructor_preserved\":{\"plain\":true,\"spaced\":true,\"block_before_separator\":true,\"block_after_separator\":true,\"line_before_separator\":true,\"via_self\":true},\"all_positive_controls_passed\":true}\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "candidate: {\"duckdb_version\":\"2.0.0\",\"extension\":\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/candidate-9a05457df/spur_graph.duckdb_extension\",\"extension_sha256\":\"4e060324485b257768b7d5b2c33cc01150932cf1776f6edb2a5f4495de5687f8\",\"source_sha256\":\"c218d96b2900f18649058f510596ffb3e778009cd60368390432ecf40a432ca7\",\"rows\":[{\"caller\":\"via_self\",\"scope\":\"Self\",\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"plain\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"spaced\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"block_before_separator\",\"scope\":\"Factory /* qualifier */\",\"target\":null,\"target_name\":null,\"owner\":null,\"bind_method\":null},{\"caller\":\"block_after_separator\",\"scope\":\"Factory\",\"target\":4,\"target_name\":\"new\",\"owner\":\"Factory\",\"bind_method\":\"macro_body_singleton\"},{\"caller\":\"line_before_separator\",\"scope\":\"Factory // qualifier\",\"target\":null,\"target_name\":null,\"owner\":null,\"bind_method\":null}],\"expected_local_constructor_preserved\":{\"plain\":true,\"spaced\":true,\"block_before_separator\":false,\"block_after_separator\":true,\"line_before_separator\":false,\"via_self\":true},\"all_positive_controls_passed\":false}\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "\n"
+    },
+    {
+      "output_type": "execute_result",
+      "execution_count": 157,
+      "data": {
+        "text/plain": "()"
+      },
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "spur": {
+      "version": 2152,
+      "last_edited_by": "brain",
+      "code_type": "rust"
+    },
+    "spur_output_provenance": {
+      "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+      "run_id": "5fc58e3e-079d-482e-99fd-759fccd1c4e7",
+      "source_version": 2152,
+      "execution_identity": "02549d2de6595bfc6abce8f18e4e221557ca38410c50a2e0406f9d550381c7bd",
+      "output_hash": "a35305f93cd1cdf4a84980cd357f98d07a6ad7aac8eb04c9cac661f45b43d183",
+      "status": "succeeded",
+      "dependencies": [],
+      "published_ports": [],
+      "ports_at_start": [],
+      "lineage_complete": true
+    }
+  },
+  "output_indices": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ]
+}

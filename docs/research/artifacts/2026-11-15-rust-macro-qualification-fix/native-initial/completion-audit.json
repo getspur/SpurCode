@@ -1,0 +1,410 @@
+{
+  "first": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": false,
+      "comment_id": "6733",
+      "audit_id": "28cb8dd2-d9dc-46aa-a884-3e3411383870",
+      "task_id": "bd-2kmz",
+      "delegation_id": "dc3a721110844605",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "28cb8dd2-d9dc-46aa-a884-3e3411383870",
+        "delegation_id": "dc3a721110844605",
+        "brain_session_id": "62837664bb0ba1c9",
+        "message": "COMPLETION: bd-38yz native macro qualification repair committed and ready for brain review. Test-first assertion RED verified; 62 native tests and formatting pass; worker tree clean. No merge or issue closure.",
+        "evidence": {
+          "artifact_directory": "/private/tmp/bd-38yz-native.VvNpUm",
+          "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+          "canonical_issue": "bd-2kmz",
+          "commands": {
+            "runs": [
+              {
+                "name": "red-remote",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+                "exit_code": 101,
+                "log": "red-remote.log",
+                "log_sha256": "93d81e84f4e68683270fbdbacc3962f6d9a12b66a4937df84c5c6d7c4d1276b0",
+                "status": "FAILED",
+                "passed": 0,
+                "failed": 5,
+                "ignored": 0,
+                "measured": 0,
+                "filtered": 0
+              },
+              {
+                "name": "red-strengthened",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+                "exit_code": 101,
+                "log": "red-strengthened.log",
+                "log_sha256": "3423f9f12ff3d07818c4858c3808e50c414b359a9d60522fe74781104e373c7f",
+                "status": "FAILED",
+                "passed": 0,
+                "failed": 5,
+                "ignored": 0,
+                "measured": 0,
+                "filtered": 0
+              },
+              {
+                "name": "green-focused",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+                "exit_code": 0,
+                "log": "green-focused.log",
+                "log_sha256": "5d95e119ee2eba7e8430f99bc5ccfc5820262b035dcbd1c8c8eef927582b39f4",
+                "status": "ok",
+                "passed": 5,
+                "failed": 0,
+                "ignored": 0,
+                "measured": 0,
+                "filtered": 0
+              },
+              {
+                "name": "green-related",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts",
+                "exit_code": 0,
+                "log": "green-related.log",
+                "log_sha256": "fb75b03316178e6e9864b742497a9a48f8124c2ecc6f88a1b24efde30802c595",
+                "suites": [
+                  {
+                    "suite": "extract_file_facts",
+                    "status": "ok",
+                    "passed": 14,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  },
+                  {
+                    "suite": "rust_lexical_calls",
+                    "status": "ok",
+                    "passed": 15,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  },
+                  {
+                    "suite": "rust_macro_token_tree_query",
+                    "status": "ok",
+                    "passed": 5,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  },
+                  {
+                    "suite": "rust_receiver_resolution",
+                    "status": "ok",
+                    "passed": 21,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  }
+                ]
+              },
+              {
+                "name": "green-lib-macro",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --lib macro",
+                "exit_code": 0,
+                "log": "green-lib-macro.log",
+                "log_sha256": "f62f05410fdd01335a6ce81f97c50dfba50754981e235f78800b95f29a44c4d7",
+                "suites": [
+                  {
+                    "suite": "lib macro",
+                    "status": "ok",
+                    "passed": 2,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 590
+                  }
+                ]
+              }
+            ],
+            "test_only_commits": {
+              "08fed2401": {
+                "commit": "08fed24010248119a0c883ed7cd65244a56b386a",
+                "changed_files": [
+                  "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+                ]
+              },
+              "3427630ba": {
+                "commit": "3427630baa2ffd3d1237cee9309758248e8497c4",
+                "changed_files": [
+                  "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+                ]
+              }
+            },
+            "fmt": {
+              "command": "scripts/spur-cargo fmt --all -- --check",
+              "exit_code": 0,
+              "log": "fmt.log"
+            }
+          },
+          "delegation_id": "dc3a721110844605",
+          "fix_commit": "9a05457df4d565979024d45296b76a8603cef99d",
+          "issue_closed": false,
+          "kind": "completion",
+          "merged": false,
+          "modified_files": {
+            "crates/spur-graph/queries/rust/spur-edges.scm": {
+              "sha256": "1072c8e13d8af9e5034496b09dd926de037144fe4d33f672c2c9b0255d245c95",
+              "git_oid": "b0cb08011eeda505766800d77fd3e20d6c2f1c5d"
+            },
+            "crates/spur-graph/src/extract/languages.rs": {
+              "sha256": "9580f36e8f794e2016b3fa95c6a7a4494db3c94ae35182d5ff8307fc576e0e62",
+              "git_oid": "ec0f0c3199f836fbb85753410817602f8acedd90"
+            },
+            "crates/spur-graph/tests/rust_macro_qualified_calls.rs": {
+              "sha256": "150004dcaac839405fc1679d0a0560b26d1618360ac699df47076e6277ea5e1f",
+              "git_oid": "a762c83fc73965ea19b5510052fb440ac108dfc3"
+            }
+          },
+          "plan_id": "1be54859-2f3f-4112-a861-831c3be27f44",
+          "production_diff": "production.patch",
+          "rationale": "Preserve each macro callee’s qualified path before native resolution so unknown paths stay unresolved and valid local calls retain their heuristic metadata.",
+          "scope_limits": [
+            "Native worker deliverable only; independent review and rebuilt DuckDB/SQL validation belong to downstream parent plan tasks."
+          ],
+          "solve": {
+            "route": "TDD-only",
+            "basis": "Parent catalog/data_integrity inspection found no implemented syntax rule or bounded choice; no solver execution or symbolic universal claim."
+          },
+          "source_explanation": {
+            "crates/spur-graph/queries/rust/spur-edges.scm": "Capture each parenthesized argument list and its preceding named token, including type arguments in turbofish syntax.",
+            "crates/spur-graph/src/extract/languages.rs": "Recover the callee and explicit path from that argument list’s own siblings; skip balanced turbofish arguments and comments, and preserve the scope on the MacroBody PendingEdge.",
+            "resolver": "Unchanged existing explicit Rust qualified-miss guard refuses unrelated bare-name fallback; unchanged metadata_for_pending_edge retains heuristic 0.8 / macro_body_singleton on resolved macro calls.",
+            "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "Compiler fixture byte-exact inline; compare all five fact collections through public BytesExtractor and repository path extraction; assert target ownership, per-callee scope, and heuristic metadata for mixed, nested, and generic calls."
+          },
+          "source_issue": "bd-38yz",
+          "test_commits": [
+            "08fed24010248119a0c883ed7cd65244a56b386a",
+            "3427630baa2ffd3d1237cee9309758248e8497c4"
+          ],
+          "unified_diff": "changes.patch",
+          "verification": {
+            "red": {
+              "exit_code": 101,
+              "passed": 0,
+              "failed": 5
+            },
+            "green_total_passed": 62,
+            "green_total_failed": 0,
+            "fmt_exit_code": 0,
+            "commands": "commands.json",
+            "baseline_failures_observed": []
+          },
+          "worker_status_porcelain": "",
+          "worker_tree_clean": true
+        }
+      }
+    },
+    "isError": false
+  },
+  "readback": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": true,
+      "comment_id": "6733",
+      "audit_id": "28cb8dd2-d9dc-46aa-a884-3e3411383870",
+      "task_id": "bd-2kmz",
+      "delegation_id": "dc3a721110844605",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "28cb8dd2-d9dc-46aa-a884-3e3411383870",
+        "delegation_id": "dc3a721110844605",
+        "brain_session_id": "62837664bb0ba1c9",
+        "message": "COMPLETION: bd-38yz native macro qualification repair committed and ready for brain review. Test-first assertion RED verified; 62 native tests and formatting pass; worker tree clean. No merge or issue closure.",
+        "evidence": {
+          "artifact_directory": "/private/tmp/bd-38yz-native.VvNpUm",
+          "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+          "canonical_issue": "bd-2kmz",
+          "commands": {
+            "runs": [
+              {
+                "name": "red-remote",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+                "exit_code": 101,
+                "log": "red-remote.log",
+                "log_sha256": "93d81e84f4e68683270fbdbacc3962f6d9a12b66a4937df84c5c6d7c4d1276b0",
+                "status": "FAILED",
+                "passed": 0,
+                "failed": 5,
+                "ignored": 0,
+                "measured": 0,
+                "filtered": 0
+              },
+              {
+                "name": "red-strengthened",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+                "exit_code": 101,
+                "log": "red-strengthened.log",
+                "log_sha256": "3423f9f12ff3d07818c4858c3808e50c414b359a9d60522fe74781104e373c7f",
+                "status": "FAILED",
+                "passed": 0,
+                "failed": 5,
+                "ignored": 0,
+                "measured": 0,
+                "filtered": 0
+              },
+              {
+                "name": "green-focused",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+                "exit_code": 0,
+                "log": "green-focused.log",
+                "log_sha256": "5d95e119ee2eba7e8430f99bc5ccfc5820262b035dcbd1c8c8eef927582b39f4",
+                "status": "ok",
+                "passed": 5,
+                "failed": 0,
+                "ignored": 0,
+                "measured": 0,
+                "filtered": 0
+              },
+              {
+                "name": "green-related",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts",
+                "exit_code": 0,
+                "log": "green-related.log",
+                "log_sha256": "fb75b03316178e6e9864b742497a9a48f8124c2ecc6f88a1b24efde30802c595",
+                "suites": [
+                  {
+                    "suite": "extract_file_facts",
+                    "status": "ok",
+                    "passed": 14,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  },
+                  {
+                    "suite": "rust_lexical_calls",
+                    "status": "ok",
+                    "passed": 15,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  },
+                  {
+                    "suite": "rust_macro_token_tree_query",
+                    "status": "ok",
+                    "passed": 5,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  },
+                  {
+                    "suite": "rust_receiver_resolution",
+                    "status": "ok",
+                    "passed": 21,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 0
+                  }
+                ]
+              },
+              {
+                "name": "green-lib-macro",
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --lib macro",
+                "exit_code": 0,
+                "log": "green-lib-macro.log",
+                "log_sha256": "f62f05410fdd01335a6ce81f97c50dfba50754981e235f78800b95f29a44c4d7",
+                "suites": [
+                  {
+                    "suite": "lib macro",
+                    "status": "ok",
+                    "passed": 2,
+                    "failed": 0,
+                    "ignored": 0,
+                    "measured": 0,
+                    "filtered": 590
+                  }
+                ]
+              }
+            ],
+            "test_only_commits": {
+              "08fed2401": {
+                "commit": "08fed24010248119a0c883ed7cd65244a56b386a",
+                "changed_files": [
+                  "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+                ]
+              },
+              "3427630ba": {
+                "commit": "3427630baa2ffd3d1237cee9309758248e8497c4",
+                "changed_files": [
+                  "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+                ]
+              }
+            },
+            "fmt": {
+              "command": "scripts/spur-cargo fmt --all -- --check",
+              "exit_code": 0,
+              "log": "fmt.log"
+            }
+          },
+          "delegation_id": "dc3a721110844605",
+          "fix_commit": "9a05457df4d565979024d45296b76a8603cef99d",
+          "issue_closed": false,
+          "kind": "completion",
+          "merged": false,
+          "modified_files": {
+            "crates/spur-graph/queries/rust/spur-edges.scm": {
+              "sha256": "1072c8e13d8af9e5034496b09dd926de037144fe4d33f672c2c9b0255d245c95",
+              "git_oid": "b0cb08011eeda505766800d77fd3e20d6c2f1c5d"
+            },
+            "crates/spur-graph/src/extract/languages.rs": {
+              "sha256": "9580f36e8f794e2016b3fa95c6a7a4494db3c94ae35182d5ff8307fc576e0e62",
+              "git_oid": "ec0f0c3199f836fbb85753410817602f8acedd90"
+            },
+            "crates/spur-graph/tests/rust_macro_qualified_calls.rs": {
+              "sha256": "150004dcaac839405fc1679d0a0560b26d1618360ac699df47076e6277ea5e1f",
+              "git_oid": "a762c83fc73965ea19b5510052fb440ac108dfc3"
+            }
+          },
+          "plan_id": "1be54859-2f3f-4112-a861-831c3be27f44",
+          "production_diff": "production.patch",
+          "rationale": "Preserve each macro callee’s qualified path before native resolution so unknown paths stay unresolved and valid local calls retain their heuristic metadata.",
+          "scope_limits": [
+            "Native worker deliverable only; independent review and rebuilt DuckDB/SQL validation belong to downstream parent plan tasks."
+          ],
+          "solve": {
+            "route": "TDD-only",
+            "basis": "Parent catalog/data_integrity inspection found no implemented syntax rule or bounded choice; no solver execution or symbolic universal claim."
+          },
+          "source_explanation": {
+            "crates/spur-graph/queries/rust/spur-edges.scm": "Capture each parenthesized argument list and its preceding named token, including type arguments in turbofish syntax.",
+            "crates/spur-graph/src/extract/languages.rs": "Recover the callee and explicit path from that argument list’s own siblings; skip balanced turbofish arguments and comments, and preserve the scope on the MacroBody PendingEdge.",
+            "resolver": "Unchanged existing explicit Rust qualified-miss guard refuses unrelated bare-name fallback; unchanged metadata_for_pending_edge retains heuristic 0.8 / macro_body_singleton on resolved macro calls.",
+            "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "Compiler fixture byte-exact inline; compare all five fact collections through public BytesExtractor and repository path extraction; assert target ownership, per-callee scope, and heuristic metadata for mixed, nested, and generic calls."
+          },
+          "source_issue": "bd-38yz",
+          "test_commits": [
+            "08fed24010248119a0c883ed7cd65244a56b386a",
+            "3427630baa2ffd3d1237cee9309758248e8497c4"
+          ],
+          "unified_diff": "changes.patch",
+          "verification": {
+            "red": {
+              "exit_code": 101,
+              "passed": 0,
+              "failed": 5
+            },
+            "green_total_passed": 62,
+            "green_total_failed": 0,
+            "fmt_exit_code": 0,
+            "commands": "commands.json",
+            "baseline_failures_observed": []
+          },
+          "worker_status_porcelain": "",
+          "worker_tree_clean": true
+        }
+      }
+    },
+    "isError": false
+  }
+}

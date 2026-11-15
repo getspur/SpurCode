@@ -1,0 +1,663 @@
+{
+  "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+  "head": "fbb3cdbe47ca10b8364b1668ed6747beef27ff9a",
+  "tree": "c0e390e7f5b00b7817a7b5b59a70ccd01bb1c43c",
+  "ordered_final_commit": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d",
+  "ordered_final_tree": "c0e390e7f5b00b7817a7b5b59a70ccd01bb1c43c",
+  "files": [
+    "crates/spur-graph/queries/rust/spur-edges.scm",
+    "crates/spur-graph/src/extract/languages.rs",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+  ],
+  "diff_sha256": "940d35ea3310e9c6b8937c2011731b2d578281b97ae2ff990d092cabd35c6db6",
+  "diff_stat": " crates/spur-graph/queries/rust/spur-edges.scm      |  17 +-\n crates/spur-graph/src/extract/languages.rs         | 161 +++++-\n .../spur-graph/tests/rust_macro_qualified_calls.rs | 539 +++++++++++++++++++++\n 3 files changed, 705 insertions(+), 12 deletions(-)\n",
+  "source_sha256": {
+    "crates/spur-graph/queries/rust/spur-edges.scm": "1072c8e13d8af9e5034496b09dd926de037144fe4d33f672c2c9b0255d245c95",
+    "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+  },
+  "source_git_blob_oid": {
+    "crates/spur-graph/queries/rust/spur-edges.scm": "b0cb08011eeda505766800d77fd3e20d6c2f1c5d",
+    "crates/spur-graph/src/extract/languages.rs": "90ef39f64a8f810d5e880a4d6515f2c55caa5065",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "d26a44ad97a37effbb4cbc844ab9c1d2f9e6ed88"
+  },
+  "commit_chain": {
+    "08fed2401": "08fed24010248119a0c883ed7cd65244a56b386a 18ee71a2c5d02414d4617f964604d28c03c04ee6 test(spur-graph): bd-38yz expose lost macro call qualification",
+    "3427630ba": "3427630baa2ffd3d1237cee9309758248e8497c4 08fed24010248119a0c883ed7cd65244a56b386a test(spur-graph): bd-38yz cover standalone macro turbofish",
+    "9a05457df": "9a05457df4d565979024d45296b76a8603cef99d 3427630baa2ffd3d1237cee9309758248e8497c4 fix(spur-graph): bd-38yz preserve macro callee qualification",
+    "ee4c7da1": "ee4c7da17813dfc6245ccda90931cbb50c917154 9a05457df4d565979024d45296b76a8603cef99d test(spur-graph): bd-3p18 cover macro qualifier trivia",
+    "99760f547": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c ee4c7da17813dfc6245ccda90931cbb50c917154 fix(spur-graph): bd-3p18 end macro scopes at qualifier tokens",
+    "102ff51ee7": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a 99760f54763a2cb365f0223f4e7a2af7e0e09c2c test(spur-graph): bd-2vu9 expose macro path trivia binding loss",
+    "4d32f19d4": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d 102ff51ee7ded958be616f0b93e9d7b5efd6d02a fix(spur-graph): bd-2vu9 normalize macro path syntax tokens"
+  },
+  "tdd_test_only_production_unchanged": true,
+  "fix_commits_tests_unchanged": true,
+  "original_11_tests_byte_identical": true,
+  "artifact_hash_maps": {
+    "native-initial": 16,
+    "native-trivia": 40,
+    "native-normalization": 35,
+    "initial-review": 17
+  },
+  "runs": [
+    {
+      "phase": "native-initial",
+      "name": "red-remote",
+      "exit": 101,
+      "results": [
+        [
+          "FAILED",
+          "0",
+          "5"
+        ]
+      ],
+      "log_sha256": "93d81e84f4e68683270fbdbacc3962f6d9a12b66a4937df84c5c6d7c4d1276b0"
+    },
+    {
+      "phase": "native-initial",
+      "name": "red-strengthened",
+      "exit": 101,
+      "results": [
+        [
+          "FAILED",
+          "0",
+          "5"
+        ]
+      ],
+      "log_sha256": "3423f9f12ff3d07818c4858c3808e50c414b359a9d60522fe74781104e373c7f"
+    },
+    {
+      "phase": "native-initial",
+      "name": "green-focused",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "5",
+          "0"
+        ]
+      ],
+      "log_sha256": "5d95e119ee2eba7e8430f99bc5ccfc5820262b035dcbd1c8c8eef927582b39f4"
+    },
+    {
+      "phase": "native-initial",
+      "name": "green-related",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "14",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0"
+        ],
+        [
+          "ok",
+          "21",
+          "0"
+        ]
+      ],
+      "log_sha256": "fb75b03316178e6e9864b742497a9a48f8124c2ecc6f88a1b24efde30802c595"
+    },
+    {
+      "phase": "native-initial",
+      "name": "green-lib-macro",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "2",
+          "0"
+        ]
+      ],
+      "log_sha256": "f62f05410fdd01335a6ce81f97c50dfba50754981e235f78800b95f29a44c4d7"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "red",
+      "exit": 200,
+      "results": [],
+      "log_sha256": "57e25727a3a0badf675efa0e3d67403877ee7c704d082c1a28c613022323d80a"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "red-assertion",
+      "exit": 101,
+      "results": [
+        [
+          "FAILED",
+          "9",
+          "2"
+        ]
+      ],
+      "log_sha256": "f0749db229fe7ce3cf21eaa47039a2414d85b19abf4a30771b995dc302dfbcd8"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-focused",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "11",
+          "0"
+        ]
+      ],
+      "log_sha256": "19f81fd2baa865f50d8635ddf5723e5cdd3e18d682a64d4b804287162d4e5e0d"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-related",
+      "exit": 101,
+      "results": [],
+      "log_sha256": "1a2497d1fbd86c2a3ebbee3f868e763a2447a01da7ddc9bf1e545ab7e3c36e30"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-related-fixtures",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "14",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0"
+        ],
+        [
+          "ok",
+          "21",
+          "0"
+        ]
+      ],
+      "log_sha256": "eee28e1ca9cbe069a4d10da0dec80bc63c6131dc65628cc9794fc60082ccc19d"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-lib-macro",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "2",
+          "0"
+        ]
+      ],
+      "log_sha256": "8f346d8078aac1a90ae7f76826e50a7b7db0cd9983287b2566c1a67f60d015b2"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "fmt",
+      "exit": 0,
+      "results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "diff-check",
+      "exit": 0,
+      "results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "native-trivia",
+      "name": "diff-check-final",
+      "exit": 0,
+      "results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "red",
+      "exit": 200,
+      "results": [],
+      "log_sha256": "2cefc36e636e91cab59af12f4f4495984b2c3e1faf7771dd12c768eaf7c92015"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "red-assertion",
+      "exit": 101,
+      "results": [
+        [
+          "FAILED",
+          "14",
+          "6"
+        ]
+      ],
+      "log_sha256": "559f8a787646c188f578896c587090c2a94f11827c24c0da1810fc99eef8bd15"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "green-focused",
+      "exit": 101,
+      "results": [
+        [
+          "FAILED",
+          "19",
+          "1"
+        ]
+      ],
+      "log_sha256": "3ba0f38f66873ebc9223f2cfd181df10a8badce6f37d5baa204bc7f6c73bf0ce"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "red-corrected",
+      "exit": 101,
+      "results": [
+        [
+          "FAILED",
+          "14",
+          "6"
+        ]
+      ],
+      "log_sha256": "c6b57b47bda557e93607daeaa99e7601db50b3e2d66ee43d5a847c4011f65372"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "green-corrected",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "20",
+          "0"
+        ]
+      ],
+      "log_sha256": "912b20594351ee9f06454fee77e673b10dc54feff9bb35239d67798945c8e3d7"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "green-related",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "14",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0"
+        ],
+        [
+          "ok",
+          "21",
+          "0"
+        ]
+      ],
+      "log_sha256": "7f5d3c2fa5a7b3a9e34ae0b4c2c1d3ec5e22f4a3f2c5d6729021a0f42a0261f8"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "green-lib-macro",
+      "exit": 0,
+      "results": [
+        [
+          "ok",
+          "2",
+          "0"
+        ]
+      ],
+      "log_sha256": "5f18dcb88280414492a46b5a2be04b26d824f6c4e85cb15ecd243047252051b1"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "fmt-complete",
+      "exit": 0,
+      "results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "native-normalization",
+      "name": "diff-check-complete",
+      "exit": 0,
+      "results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "current_binary_manifest_verified": {
+    "source_commit": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d",
+    "package_argv": [
+      "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+      "crates/spur-graph-duckdb/scripts/package_extension.py",
+      "--library",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/build-4d32f19d4/libspur_graph_duckdb.dylib",
+      "--out",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/build-4d32f19d4/spur_graph.duckdb_extension"
+    ],
+    "package_exit_code": 0,
+    "source_sha256": {
+      "crates/spur-graph/queries/rust/spur-edges.scm": "1072c8e13d8af9e5034496b09dd926de037144fe4d33f672c2c9b0255d245c95",
+      "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+      "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53",
+      "crates/spur-graph-duckdb/src/lib.rs": "c50c50f654262c75a0839ef9fcc75d8dbbabe94237e6fa117aa45218959553e0",
+      "crates/spur-graph-duckdb/src/file_facts.rs": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+      "crates/spur-graph-duckdb/Cargo.lock": "9920b3203132c3cd60633b3b248f008417f3225de0153e309f07f543ef058055"
+    },
+    "artifact_sha256": {
+      "libspur_graph_duckdb.dylib": "8648ac6abee03579d37794e34753532987a4be22f098adf1162b0be0f884769e",
+      "reference_file_facts": "396a4f05f6730ca16037c845b953fcd524768625559480a8f3f93bb3cc1df8cd",
+      "spur_graph.duckdb_extension": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+      "build.log": "67fa83705880cddfc7674c868c23c7e11098453b9314d1476961919d581a5754",
+      "build-command.json": "10f637b1ec696a578021b69a225361c9bdf0e96e521508396342a80692455f24",
+      "package.log": "8057814ed9c98c81287949fa0720b9dfdaabfe166e362b4c9d54a33dac1b022a"
+    }
+  },
+  "prior_important_finding_reproduced_then_resolved": [
+    {
+      "case": "plain",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    },
+    {
+      "case": "spaces",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer :: local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    },
+    {
+      "case": "internal_block",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer /* qualifier */ :: local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    },
+    {
+      "case": "internal_line",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer // qualifier\n :: local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    },
+    {
+      "case": "trailing_block",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    },
+    {
+      "case": "trailing_line",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    },
+    {
+      "case": "all_comments",
+      "before": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer /* a */ :: /* b */ local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "evidence_id": 7,
+          "directed": true
+        }
+      ],
+      "after": [
+        {
+          "edge_id": 7,
+          "source_node_id": 5,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 7,
+          "directed": true
+        }
+      ]
+    }
+  ],
+  "prior_review_completed_outcome": {
+    "critical": [],
+    "important": [
+      {
+        "kind": "review_finding",
+        "severity": "important",
+        "source_issue": "bd-38yz",
+        "reviewed_base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+        "reviewed_head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+        "file": "crates/spur-graph/src/extract/languages.rs",
+        "line": 1622,
+        "title": "Internal path trivia still removes genuine local macro-call bindings",
+        "fixture": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer /* qualifier */ :: local::deep()]; }\n",
+        "space_variant": "vec![outer :: local :: deep()]",
+        "baseline": "target_node_id 4, owner local, macro_body_singleton",
+        "final": "scope outer /* qualifier */ :: local or outer :: local; target_node_id null",
+        "plain_final": "outer::local::deep() -> target_node_id 4, macro_body_singleton",
+        "native_sql": "Reproduced on final reference_file_facts native CLI and final DuckDB2 spur_graph_file_facts; baseline SQL in a fresh process.",
+        "evidence_directory": "/private/tmp/bd-38yz-final-review.T3N0h9",
+        "evidence_files": [
+          "baseline-path-results.json",
+          "final-path-results.json",
+          "path-native.jsonl",
+          "path_probe.py"
+        ],
+        "recommendation": "Normalize significant path tokens for matching without restoring bare-name fallback for unknown qualified paths."
+      }
+    ],
+    "minor": []
+  },
+  "initial_review_findings": [
+    {
+      "severity": "minor",
+      "file": "crates/spur-graph/src/extract/languages.rs",
+      "line": 1622,
+      "title": "Comments in a valid local macro qualifier prevent resolution",
+      "repro": "struct Alpha; impl Alpha { fn new() -> Self { Self } } fn control() { Alpha /* c */ ::new(); } fn caller() { wrapper!(Alpha /* c */ ::new()); }",
+      "before": {
+        "production_revision": "3427630ba",
+        "direct_scope": "Alpha",
+        "direct_target": "new#4",
+        "macro_scope": null,
+        "macro_target": "new#4"
+      },
+      "after": {
+        "production_revision": "9a05457df (same bytes as d373f11bb)",
+        "direct_scope": "Alpha",
+        "direct_target": "new#4",
+        "macro_scope": "Alpha /* c */",
+        "macro_target": null
+      },
+      "cause": "source[start.start_byte()..separator.start_byte()] retains trailing block comments; existing method resolver compares impl Alpha /* c */ with impl Alpha and qualified-miss guard prevents fallback.",
+      "suggestion": "Normalize qualifier tokens for resolution while preserving external-path rejection.",
+      "evidence_logs": [
+        "baseline-comment-remote.log",
+        "fixed-comment-remote.log"
+      ]
+    }
+  ],
+  "unchanged_resolver_and_adapter": true,
+  "fresh_fmt": {
+    "command": "scripts/spur-cargo fmt --package spur-graph -- --check",
+    "exit": 0
+  },
+  "diff_check_exit": 0,
+  "worker_status": ""
+}

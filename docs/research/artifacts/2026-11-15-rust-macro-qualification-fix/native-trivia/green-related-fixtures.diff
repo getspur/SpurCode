@@ -1,0 +1,26 @@
+diff --git a/crates/spur-graph/src/extract/languages.rs b/crates/spur-graph/src/extract/languages.rs
+index ec0f0c319..003690b88 100644
+--- a/crates/spur-graph/src/extract/languages.rs
++++ b/crates/spur-graph/src/extract/languages.rs
+@@ -1611,17 +1611,15 @@ fn rust_macro_callee(arguments: Node<'_>, source: &str) -> Option<(String, Optio
+     let scope = previous_macro_token(callee)
+         .filter(|separator| separator.kind() == "::")
+         .map(|separator| {
+-            let start = previous_macro_token(separator)
+-                .and_then(macro_path_start)
+-                .unwrap_or(separator);
++            let end = previous_macro_token(separator).unwrap_or(separator);
++            let start = macro_path_start(end).unwrap_or(separator);
+             // A leading `::callee()` is explicitly qualified too; do not turn
+             // an empty path into permission for bare-name fallback.
+             if start == separator {
+                 "::".to_owned()
+             } else {
+-                source[start.start_byte()..separator.start_byte()]
+-                    .trim()
+-                    .to_owned()
++                // Comments before `::` are trivia, not part of the qualifier.
++                source[start.start_byte()..end.end_byte()].trim().to_owned()
+             }
+         });
+     Some((child_text(callee, source).to_owned(), scope))

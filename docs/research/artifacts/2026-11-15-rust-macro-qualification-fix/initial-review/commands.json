@@ -1,0 +1,45 @@
+{
+  "runs": [
+    {
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture",
+      "exit_code": 200,
+      "log": "independent-remote.log",
+      "sha256": "d338662746f9db6d0d9c016f989f214ba771fe2b594efd89b1ab2004fab84a1d",
+      "note": "sandbox network blocked before compilation"
+    },
+    {
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture",
+      "exit_code": 101,
+      "log": "independent-remote-escalated.log",
+      "sha256": "5c8227129fee437f6c022cd9f6659b6514738f96b6252d1fba18300451747cc9",
+      "note": "temporary sparse checkout omitted seven committed include_str fixtures; exact bytes restored before rerun"
+    },
+    {
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture",
+      "exit_code": 0,
+      "log": "independent-remote-complete-inputs.log",
+      "sha256": "a1b57ab11be2d4dae3ab58870c40ad69aa0c329d836b7ec30857c5fa5ea54b56",
+      "note": "80 passed; no failures/ignored/filtered"
+    },
+    {
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review comment_qualifier_observation -- --exact --nocapture",
+      "exit_code": 0,
+      "log": "baseline-comment-remote.log",
+      "sha256": "47a38a799ae9fda99baf684a0dfcb884a996c3fc98263df38c2d01b6d20a02f3",
+      "note": "pre-fix native observation"
+    },
+    {
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review comment_qualifier_observation -- --exact --nocapture",
+      "exit_code": 0,
+      "log": "fixed-comment-remote.log",
+      "sha256": "db151ba8f2fd278ad5c3bf375453a68ef9c18d2f6e64e3b3c7612a6fbeb7d459",
+      "note": "identical fixture; changed only two production files from baseline to fix"
+    }
+  ],
+  "fmt": {
+    "command": "scripts/spur-cargo fmt --all -- --check",
+    "exit_code": 0,
+    "log": "fmt-check.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

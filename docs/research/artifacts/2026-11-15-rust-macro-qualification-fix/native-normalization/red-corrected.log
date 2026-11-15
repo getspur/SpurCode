@@ -1,0 +1,125 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8  (local=/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8)
+[build] Remote:   ~/spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8   target=/mnt/cargo/targets/spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8   -j16
+[build] Remote build queue: admitted as ticket 2445 (slot 2/9) on spur-builder (3 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-06738bf8035cc0dbc)
+[build] Waiting for SSH-over-SSM on i-06738bf8035cc0dbc...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk and process watchdogs...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   2839 files in sync manifest (unchanged content is not transferred)
+[build] Syncing to i-06738bf8035cc0dbc:~/spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8 ...
+[source-baseline] {"status": "warm"}
+[build] Reconstructing 1 tracked dangling symlink(s)...
+[build] Re-stamping 2 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[source-baseline] {"status": "published", "files": 2839, "tree_hash": "11d6a43707200d816b0b4f1608c3da7e60470a03edd71e02c4dafb8089bc26c0"}
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-graph --no-default-features --test rust_macro_qualified_calls  -j16  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-graph v1.24.0 (/home/admin/spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8/crates/spur-graph)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.69s
+     Running tests/rust_macro_qualified_calls.rs (/mnt/cargo/targets/spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8/debug/deps/rust_macro_qualified_calls-3b78644b132eda90)
+
+running 20 tests
+test multisegment_trailing_block_comment_keeps_local_target ... ok
+test multisegment_spaced_path_keeps_local_target ... FAILED
+test generic_qualifiers_keep_token_boundaries_and_literal_contents ... FAILED
+test multisegment_all_comments_keep_local_target ... FAILED
+test multisegment_internal_line_comment_keeps_local_target ... FAILED
+test multisegment_internal_block_comment_keeps_local_target ... FAILED
+test multisegment_plain_path_keeps_local_target ... ok
+test multisegment_trailing_line_comment_keeps_local_target ... ok
+test multisegment_trivia_keeps_each_owner_and_unknown_scope ... FAILED
+test block_comment_before_separator_keeps_constructor_scope ... ok
+test block_comment_after_separator_keeps_constructor_scope ... ok
+test local_constructor_and_bare_helper_keep_macro_heuristics ... ok
+test plain_qualifier_keeps_constructor_scope ... ok
+test qualified_and_turbofish_paths_preserve_explicit_scope ... ok
+test nested_token_trees_keep_each_call_scope ... ok
+test line_comment_before_separator_keeps_constructor_scope ... ok
+test recorded_vec_constructor_never_binds_to_local_factory ... ok
+test spaced_qualifier_keeps_constructor_scope ... ok
+test self_qualifier_keeps_constructor_scope ... ok
+test same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved ... ok
+
+failures:
+
+---- multisegment_spaced_path_keeps_local_target stdout ----
+
+thread 'multisegment_spaced_path_keeps_local_target' (311074) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:118:5:
+assertion `left == right` failed: caller: Some("outer::local")::deep: []
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- generic_qualifiers_keep_token_boundaries_and_literal_contents stdout ----
+
+thread 'generic_qualifiers_keep_token_boundaries_and_literal_contents' (311067) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:118:5:
+assertion `left == right` failed: caller: Some("::foreign::nested")::helper: []
+  left: 0
+ right: 1
+
+---- multisegment_all_comments_keep_local_target stdout ----
+
+thread 'multisegment_all_comments_keep_local_target' (311070) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:118:5:
+assertion `left == right` failed: caller: Some("outer::local")::deep: []
+  left: 0
+ right: 1
+
+---- multisegment_internal_line_comment_keeps_local_target stdout ----
+
+thread 'multisegment_internal_line_comment_keeps_local_target' (311072) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:118:5:
+assertion `left == right` failed: caller: Some("outer::local")::deep: []
+  left: 0
+ right: 1
+
+---- multisegment_internal_block_comment_keeps_local_target stdout ----
+
+thread 'multisegment_internal_block_comment_keeps_local_target' (311071) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:118:5:
+assertion `left == right` failed: caller: Some("outer::local")::deep: []
+  left: 0
+ right: 1
+
+---- multisegment_trivia_keeps_each_owner_and_unknown_scope stdout ----
+
+thread 'multisegment_trivia_keeps_each_owner_and_unknown_scope' (311077) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:118:5:
+assertion `left == right` failed: caller: Some("outer::local")::deep: []
+  left: 0
+ right: 1
+
+
+failures:
+    generic_qualifiers_keep_token_boundaries_and_literal_contents
+    multisegment_all_comments_keep_local_target
+    multisegment_internal_block_comment_keeps_local_target
+    multisegment_internal_line_comment_keeps_local_target
+    multisegment_spaced_path_keeps_local_target
+    multisegment_trivia_keeps_each_owner_and_unknown_scope
+
+test result: FAILED. 14 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+error: test failed, to rerun pass `-p spur-graph --test rust_macro_qualified_calls`
+[build] Remote build queue: released ticket 00000000000000002445.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

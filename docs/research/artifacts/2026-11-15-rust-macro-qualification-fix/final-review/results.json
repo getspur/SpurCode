@@ -1,0 +1,1394 @@
+{
+  "CONTROL": [
+    {
+      "caller": "observed_drop",
+      "name": "lock",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "observed_drop",
+      "name": "unwrap",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "observed_drop",
+      "name": "drop",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "observed_macro",
+      "name": "default",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_macro",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_drop",
+      "name": "new",
+      "scope": "std::sync::Mutex",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_helper",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_macro",
+      "scope": null,
+      "target": 8,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_drop",
+      "scope": null,
+      "target": 9,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_helper",
+      "scope": null,
+      "target": 11,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "SCOPE_PROBES": [
+    {
+      "caller": "via_self",
+      "name": "pop",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "via_self",
+      "name": "unwrap",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "via_self",
+      "name": "new",
+      "scope": "Self",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "plain",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "spaced",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "block_before_separator",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "block_after_separator",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "line_before_separator",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "main",
+      "name": "plain",
+      "scope": null,
+      "target": 6,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "spaced",
+      "scope": null,
+      "target": 7,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "block_before_separator",
+      "scope": null,
+      "target": 8,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "block_after_separator",
+      "scope": null,
+      "target": 9,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "line_before_separator",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "via_self",
+      "scope": "Factory",
+      "target": 5,
+      "owner": "Factory",
+      "method": "scope_match",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    }
+  ],
+  "parent_control": [
+    {
+      "caller": "observed_drop",
+      "name": "lock",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "observed_drop",
+      "name": "unwrap",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "observed_drop",
+      "name": "drop",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "observed_macro",
+      "name": "default",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_macro",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_drop",
+      "name": "new",
+      "scope": "std::sync::Mutex",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_helper",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_local_macro",
+      "scope": null,
+      "target": 14,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_mixed_macro",
+      "scope": null,
+      "target": 15,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_macro",
+      "scope": null,
+      "target": 8,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_drop",
+      "scope": null,
+      "target": 9,
+      "owner": "src/lib.rs",
+      "method": "singleton",
+      "confidence": "syntax_exact",
+      "score": 1.0
+    },
+    {
+      "caller": "main",
+      "name": "observed_helper",
+      "scope": null,
+      "target": 11,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_local_macro",
+      "name": "new",
+      "scope": "LocalFactory",
+      "target": 4,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_mixed_macro",
+      "name": "new",
+      "scope": "Vec::<u8>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_mixed_macro",
+      "name": "new",
+      "scope": "LocalFactory",
+      "target": 4,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "observed_mixed_macro",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "local_constructor_and_bare_helper_keep_macro_heuristics": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "LocalFactory",
+      "target": 4,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 5,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Alpha",
+      "target": 5,
+      "owner": "Alpha",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Beta",
+      "target": 7,
+      "owner": "Beta",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "foreign",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 8,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "nested_token_trees_keep_each_call_scope": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "LocalFactory",
+      "target": 4,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 5,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "foreign",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "qualified_and_turbofish_paths_preserve_explicit_scope": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "::foreign",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "foreign::nested",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec::<u8>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "make",
+      "scope": "LocalFactory",
+      "target": 5,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "make",
+      "scope": "foreign",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "generic_only",
+      "name": "make",
+      "scope": "LocalFactory",
+      "target": 5,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "generic_only",
+      "name": "make",
+      "scope": "foreign",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "generic_nested",
+      "name": "new",
+      "scope": "Vec::<Option<u8>>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "generic_nested",
+      "name": "make",
+      "scope": "LocalFactory",
+      "target": 5,
+      "owner": "LocalFactory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "multisegment_trivia_keeps_each_owner_and_unknown_scope": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "other::local",
+      "target": 7,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "foreign::local",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 8,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_plain": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_spaces": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_internal_block": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_internal_line": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_trailing_block": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_trailing_line": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "path_all_comments": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "outer::local",
+      "target": 4,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_vec_negative": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_plain": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_spaced": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_block_before": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_block_after": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_line_before": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_before_args": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_before_args_line": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_bare": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_bare_comment": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_bare_turbofish": [
+    {
+      "caller": "caller",
+      "name": "generic",
+      "scope": null,
+      "target": 11,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_bare_turbofish_comments": [
+    {
+      "caller": "caller",
+      "name": "generic",
+      "scope": null,
+      "target": 11,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_local_turbofish": [
+    {
+      "caller": "caller",
+      "name": "make",
+      "scope": "Factory",
+      "target": 5,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_local_turbofish_comments": [
+    {
+      "caller": "caller",
+      "name": "make",
+      "scope": "Factory",
+      "target": 5,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_external_turbofish": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec::<Option<u8>>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_leading_foreign": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "::foreign",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_leading_bare": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "::",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_qualified_trait": [
+    {
+      "caller": "caller",
+      "name": "produce",
+      "scope": "<Factory as Make>",
+      "target": 9,
+      "owner": "Make for Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_qualified_trait_comments": [
+    {
+      "caller": "caller",
+      "name": "produce",
+      "scope": "<Factory as Make>",
+      "target": 9,
+      "owner": "Make for Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_qualified_trait_spaces": [
+    {
+      "caller": "caller",
+      "name": "produce",
+      "scope": "< Factory as Make >",
+      "target": 9,
+      "owner": "Make for Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_nested_path": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "crate::local",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_nested_path_spaced": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "crate::local",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_nested_path_comment": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "crate::local",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_nested_path_line": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "crate::local",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_relative_path": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "local",
+      "target": 13,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_relative_path_space": [
+    {
+      "caller": "caller",
+      "name": "deep",
+      "scope": "local",
+      "target": 13,
+      "owner": "local",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_root_helper": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "crate",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_self_helper": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "self",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_root_constructor": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "crate::Factory",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_root_constructor_spaces": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "crate::Factory",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_root_constructor_comments": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "crate::Factory",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_mixed": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_nested": [
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Vec",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "new",
+      "scope": "Factory",
+      "target": 4,
+      "owner": "Factory",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    },
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_strings": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_char_tokens": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_comparisons": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_closure": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_string_then_args": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": null,
+      "target": 10,
+      "owner": "src/lib.rs",
+      "method": "macro_body_singleton",
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "prior_raw_identifier": [
+    {
+      "caller": "caller",
+      "name": "r#helper",
+      "scope": null,
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "syntax_exact",
+      "score": 1.0
+    }
+  ],
+  "tokens_trait_plain": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "<Type as Trait>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_trait_comments": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "<Type as Trait>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_trait_nested_comments": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "<Type as Trait>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_raw_string": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::<{ r#\" a /* literal */ // literal \"# }>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_string": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::<{ \" a /* literal */ // literal \" }>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_byte_string": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::<{ b\" a /* literal */ // literal \" }>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_raw_byte_string": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::<{ br##\" a /* literal */ // literal \"## }>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_char": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::<{ ' ' }>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_char_slash": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::<{ '/' }>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_generic_paths": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "Const::< outer::local >",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_leading": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "::foreign::nested",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ],
+  "tokens_joined_identifier": [
+    {
+      "caller": "caller",
+      "name": "helper",
+      "scope": "<TypeasTrait>",
+      "target": null,
+      "owner": null,
+      "method": null,
+      "confidence": "heuristic",
+      "score": 0.800000011920929
+    }
+  ]
+}

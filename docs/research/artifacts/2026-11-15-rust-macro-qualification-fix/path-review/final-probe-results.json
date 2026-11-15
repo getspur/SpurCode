@@ -1,0 +1,1096 @@
+{
+  "version": "2.0.0",
+  "artifacts": {
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/spur_graph.duckdb_extension": "77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/reference_file_facts": "5495bf87c178643b117576941939defee7494a0de01286f716da9a412c2ff4f1"
+  },
+  "cases": {
+    "vec_negative": {
+      "expression": "Vec::new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Vec",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Vec",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "plain": {
+      "expression": "Factory::new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "spaced": {
+      "expression": "Factory :: new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "block_before": {
+      "expression": "Factory /* a */ :: new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "block_after": {
+      "expression": "Factory :: /* a */ new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "line_before": {
+      "expression": "Factory // a\n :: new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "before_args": {
+      "expression": "Factory::new /* a */ ()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "before_args_line": {
+      "expression": "Factory::new // a\n ()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "bare": {
+      "expression": "helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "bare_comment": {
+      "expression": "helper /* a */ ()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "bare_turbofish": {
+      "expression": "generic::<u8>()",
+      "final": [
+        {
+          "name": "generic",
+          "scope": null,
+          "target": "generic",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "generic",
+          "scope": null,
+          "target": "generic",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "bare_turbofish_comments": {
+      "expression": "generic /* a */ :: /* b */ <u8> /* c */ ()",
+      "final": [
+        {
+          "name": "generic",
+          "scope": null,
+          "target": "generic",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "generic",
+          "scope": null,
+          "target": "generic",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "local_turbofish": {
+      "expression": "Factory::make::<u8>()",
+      "final": [
+        {
+          "name": "make",
+          "scope": "Factory",
+          "target": "make",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "make",
+          "scope": "Factory",
+          "target": "make",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "local_turbofish_comments": {
+      "expression": "Factory /* a */ :: make /* b */ :: <u8> /* c */ ()",
+      "final": [
+        {
+          "name": "make",
+          "scope": "Factory",
+          "target": "make",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "make",
+          "scope": "Factory",
+          "target": "make",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "external_turbofish": {
+      "expression": "Vec::<Option<u8>>::new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Vec::<Option<u8>>",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Vec::<Option<u8>>",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "leading_foreign": {
+      "expression": "::foreign::helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": "::foreign",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": "::foreign",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "leading_bare": {
+      "expression": "::helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": "::",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": "::",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "qualified_trait": {
+      "expression": "<Factory as Make>::produce()",
+      "final": [
+        {
+          "name": "produce",
+          "scope": "<Factory as Make>",
+          "target": "produce",
+          "owner": "Make for Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "produce",
+          "scope": "<Factory as Make>",
+          "target": "produce",
+          "owner": "Make for Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "qualified_trait_comments": {
+      "expression": "<Factory /* a */ as Make>::produce()",
+      "final": [
+        {
+          "name": "produce",
+          "scope": "<Factory /* a */ as Make>",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "produce",
+          "scope": "<Factory /* a */ as Make>",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "qualified_trait_spaces": {
+      "expression": "< Factory as Make >::produce()",
+      "final": [
+        {
+          "name": "produce",
+          "scope": "< Factory as Make >",
+          "target": "produce",
+          "owner": "Make for Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "produce",
+          "scope": "< Factory as Make >",
+          "target": "produce",
+          "owner": "Make for Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "nested_path": {
+      "expression": "crate::local::deep()",
+      "final": [
+        {
+          "name": "deep",
+          "scope": "crate::local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "deep",
+          "scope": "crate::local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "nested_path_spaced": {
+      "expression": "crate :: local :: deep()",
+      "final": [
+        {
+          "name": "deep",
+          "scope": "crate :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "deep",
+          "scope": "crate :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "nested_path_comment": {
+      "expression": "crate /* a */ :: local::deep()",
+      "final": [
+        {
+          "name": "deep",
+          "scope": "crate /* a */ :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "deep",
+          "scope": "crate /* a */ :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "nested_path_line": {
+      "expression": "crate // a\n :: local::deep()",
+      "final": [
+        {
+          "name": "deep",
+          "scope": "crate // a\n :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "deep",
+          "scope": "crate // a\n :: local",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "relative_path": {
+      "expression": "local::deep()",
+      "final": [
+        {
+          "name": "deep",
+          "scope": "local",
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "deep",
+          "scope": "local",
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "relative_path_space": {
+      "expression": "local :: deep()",
+      "final": [
+        {
+          "name": "deep",
+          "scope": "local",
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "deep",
+          "scope": "local",
+          "target": "deep",
+          "owner": "local",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "root_helper": {
+      "expression": "crate::helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": "crate",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": "crate",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "self_helper": {
+      "expression": "self::helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": "self",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": "self",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "root_constructor": {
+      "expression": "crate::Factory::new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "crate::Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "crate::Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "root_constructor_spaces": {
+      "expression": "crate :: Factory :: new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "crate :: Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "crate :: Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "root_constructor_comments": {
+      "expression": "crate /* a */ :: Factory :: new()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "crate /* a */ :: Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "crate /* a */ :: Factory",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "mixed": {
+      "expression": "Vec::new(), Factory::new(), helper()",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Vec",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Vec",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "nested": {
+      "expression": "{ [Vec::new(), (Factory::new(), helper())] }",
+      "final": [
+        {
+          "name": "new",
+          "scope": "Vec",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "new",
+          "scope": "Vec",
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "new",
+          "scope": "Factory",
+          "target": "new",
+          "owner": "Factory",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        },
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "strings": {
+      "expression": "\"Vec::new()\", r###\"Factory::new()\"###, b\"helper()\", /* helper() */ helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "char_tokens": {
+      "expression": "'(', ')', helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "comparisons": {
+      "expression": "1 > 0, helper()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "closure": {
+      "expression": "(|| helper())()",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "string_then_args": {
+      "expression": "\"Factory::new\" (helper())",
+      "final": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native": [
+        {
+          "name": "helper",
+          "scope": null,
+          "target": "helper",
+          "owner": "src/lib.rs",
+          "method": "macro_body_singleton",
+          "confidence": "heuristic",
+          "score": 0.800000011920929
+        }
+      ],
+      "native_sql_calls_match": true
+    },
+    "raw_identifier": {
+      "expression": "r#helper()",
+      "final": [
+        {
+          "name": "r#helper",
+          "scope": null,
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "syntax_exact",
+          "score": 1.0
+        }
+      ],
+      "native": [
+        {
+          "name": "r#helper",
+          "scope": null,
+          "target": null,
+          "owner": null,
+          "method": null,
+          "confidence": "syntax_exact",
+          "score": 1.0
+        }
+      ],
+      "native_sql_calls_match": true
+    }
+  }
+}

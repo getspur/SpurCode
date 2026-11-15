@@ -1,0 +1,40 @@
+{
+  "commands": [
+    {
+      "args": [
+        "--edition=2021",
+        "--crate-name",
+        "macro_fix_control",
+        "--emit=mir",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/control.rs",
+        "-o",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/control.mir"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "args": [
+        "--edition=2021",
+        "--crate-name",
+        "macro_fix_control",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/control.rs",
+        "-o",
+        "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/control"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "mixed_mir_targets_verified": [
+    "Vec::<u8>::new",
+    "LocalFactory::new",
+    "helper"
+  ],
+  "runtime_exit": 0,
+  "runtime_stdout": "binding-control-ok\n",
+  "source": "control.rs",
+  "version": "rustc 1.94.1 (e408947bf 2026-03-25)\nbinary: rustc\ncommit-hash: e408947bfd200af42db322daf0fadfe7e26d3bd1\ncommit-date: 2026-03-25\nhost: aarch64-apple-darwin\nrelease: 1.94.1\nLLVM version: 21.1.8\n"
+}

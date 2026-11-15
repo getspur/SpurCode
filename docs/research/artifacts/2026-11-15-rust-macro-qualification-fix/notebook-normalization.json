@@ -1,0 +1,47 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2195,
+  "id": "ef8529f1-7aa7-4009-a566-7ba98b17902a",
+  "kind": "code",
+  "version": 2184,
+  "cell_etag": "cell:sha256:2caa94b54a25476190e59255650ffa2eb7a3d3829ddf211557a47301f6818136",
+  "source": "{\n let art = std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix\");\n let build = art.join(\"build-4d32f19d4\");\n let extension = build.join(\"spur_graph.duckdb_extension\");\n let python = \"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\";\n let mut runs = Vec::new();\n for (name, script, tail) in [\n  (\"validation-from-notebook\", \"validate_extension.py\", vec![\"--mode\", \"fixed\"]),\n  (\"scope-probe-from-notebook\", \"probe_scope.py\", vec![]),\n  (\"path-probe-from-notebook\", \"probe_paths.py\", vec![\"--expect-fixed\"]),\n ] {\n  let output = build.join(format!(\"{name}.json\"));\n  let mut args=vec![art.join(script).to_str().unwrap().to_owned(),\"--extension\".to_owned(),extension.to_str().unwrap().to_owned(),\"--output\".to_owned(),output.to_str().unwrap().to_owned()];\n  args.extend(tail.into_iter().map(str::to_owned));\n  let result=std::process::Command::new(python).args(&args).output()?;\n  std::fs::write(build.join(format!(\"{name}.stdout.txt\")),&result.stdout)?;\n  std::fs::write(build.join(format!(\"{name}.stderr.txt\")),&result.stderr)?;\n  runs.push(serde_json::json!({\"name\":name,\"python\":python,\"argv\":args,\"exit_code\":result.status.code()}));\n  std::fs::write(build.join(\"notebook-commands.json\"),serde_json::to_vec_pretty(&runs)?)?;\n  assert!(result.status.success(),\"Fresh DuckDB2 validation process failed; inspect saved logs\");\n  let report:serde_json::Value=serde_json::from_slice(&std::fs::read(&output)?)?;\n  println!(\"{}: DuckDB {}, extension SHA256 {}\",name,report[\"duckdb_version\"],report[\"extension_sha256\"]);\n  if name==\"scope-probe-from-notebook\" {\n   assert_eq!(report[\"all_positive_controls_passed\"],true);\n   println!(\"Six single-qualifier controls: {}\",report[\"expected_local_constructor_preserved\"]);\n  } else {\n   assert_eq!(report[\"all_checks_passed\"],true);\n   if name==\"path-probe-from-notebook\" {\n    println!(\"Seven multi-segment positives plus qualified standard-library negative: {}\",report[\"cases\"]);\n   } else {\n    for receipt in report[\"receipts\"].as_array().unwrap() {\n     if [\"selection\",\"selected_call_counts\",\"real_constructor_control\"].contains(&receipt[\"name\"].as_str().unwrap_or(\"\")) {\n      println!(\"{}: {}\",receipt[\"name\"],receipt[\"rows\"]);\n     }\n    }\n   }\n  }\n }\n}",
+  "exec_count": 160,
+  "status": "success",
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": [
+        "validation-from-notebook: DuckDB \"2.0.0\", extension SHA256 \"be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892\"\n",
+        "\"selection\": [{\"files\":52,\"original_macro_constructor_edges\":120}]\n",
+        "\"selected_call_counts\": [{\"calls\":34591,\"local_targets\":5206,\"version\":\"baseline\"},{\"calls\":34224,\"local_targets\":5039,\"version\":\"candidate\"}]\n",
+        "\"real_constructor_control\": [{\"bind_method\":null,\"caller\":\"rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes\",\"scope_text\":\"Vec\",\"target_label\":\"new\",\"target_name\":null,\"target_node_id\":null,\"target_owner\":null}]\n",
+        "scope-probe-from-notebook: DuckDB \"2.0.0\", extension SHA256 \"be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892\"\n",
+        "Six single-qualifier controls: {\"block_after_separator\":true,\"block_before_separator\":true,\"line_before_separator\":true,\"plain\":true,\"spaced\":true,\"via_self\":true}\n",
+        "path-probe-from-notebook: DuckDB \"2.0.0\", extension SHA256 \"be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892\"\n",
+        "Seven multi-segment positives plus qualified standard-library negative: {\"all_comments\":true,\"foreign_standard\":true,\"internal_block\":true,\"internal_line\":true,\"plain\":true,\"spaces\":true,\"trailing_block\":true,\"trailing_line\":true}\n"
+      ]
+    },
+    {
+      "output_type": "execute_result",
+      "execution_count": 160,
+      "data": {
+        "text/plain": "()"
+      },
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "spur": {
+      "version": 2184,
+      "last_edited_by": "brain",
+      "code_type": "rust"
+    }
+  },
+  "output_indices": [
+    0,
+    1
+  ]
+}

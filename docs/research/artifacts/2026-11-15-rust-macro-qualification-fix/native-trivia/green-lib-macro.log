@@ -1,0 +1,72 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b  (local=/Users/kevintruong/project/SpurCode/.spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b)
+[build] Remote:   ~/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b   target=/mnt/cargo/targets/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b   -j16
+[build] Remote build queue: admitted as ticket 2431 (slot 1/9) on spur-builder (3 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-06738bf8035cc0dbc)
+[build] Waiting for SSH-over-SSM on i-06738bf8035cc0dbc...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk and process watchdogs...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   4548 files in sync manifest (unchanged content is not transferred)
+[build] Syncing to i-06738bf8035cc0dbc:~/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b ...
+[source-baseline] {"status": "warm"}
+[build] Reconstructing 1 tracked dangling symlink(s)...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[source-baseline] {"status": "cached"}
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-graph --no-default-features --lib macro  -j16  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] No source content delta; capturing cargo output on VM (set SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0 to stream).
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-graph v1.24.0 (/home/admin/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b/crates/spur-graph)
+warning: function `file_oid_match_after_first_stat` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:839:19
+    |
+839 |     pub(super) fn file_oid_match_after_first_stat(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+
+warning: `spur-graph` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.89s
+     Running unittests src/lib.rs (/mnt/cargo/targets/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b/debug/deps/spur_graph-09023836fe22e86c)
+
+running 2 tests
+test extract::tree_sitter::tests::macro_body_singleton_pending_edge_is_heuristic_and_stamped ... ok
+test store::build::tests::macro_evidence_survives_worktree_delta_with_all_owner_scopes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 590 filtered out; finished in 0.15s
+
+
+--- sccache stats (spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b) ---
+Compile requests                    1628
+Compile requests executed           1105
+Cache hits                           879
+Cache hits (Assembler)                24
+Cache hits (C/C++)                   228
+Cache hits (Rust)                    627
+Cache misses                         216
+Cache misses (Rust)                  216
+Cache hits rate                    80.27 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)           100.00 %
+Cache hits rate (Rust)             74.38 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         216
+Compilation failures                  10
+Non-cacheable compilations             0
+[build] Done. target lives at i-06738bf8035cc0dbc:/mnt/cargo/targets/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000002431.

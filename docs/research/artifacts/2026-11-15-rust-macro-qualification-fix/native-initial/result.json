@@ -1,0 +1,58 @@
+{
+  "canonical_issue": "bd-2kmz",
+  "source_issue": "bd-38yz",
+  "plan_id": "1be54859-2f3f-4112-a861-831c3be27f44",
+  "delegation_id": "dc3a721110844605",
+  "rationale": "Preserve each macro callee’s qualified path before native resolution so unknown paths stay unresolved and valid local calls retain their heuristic metadata.",
+  "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+  "test_commits": [
+    "08fed24010248119a0c883ed7cd65244a56b386a",
+    "3427630baa2ffd3d1237cee9309758248e8497c4"
+  ],
+  "fix_commit": "9a05457df4d565979024d45296b76a8603cef99d",
+  "modified_files": {
+    "crates/spur-graph/queries/rust/spur-edges.scm": {
+      "sha256": "1072c8e13d8af9e5034496b09dd926de037144fe4d33f672c2c9b0255d245c95",
+      "git_oid": "b0cb08011eeda505766800d77fd3e20d6c2f1c5d"
+    },
+    "crates/spur-graph/src/extract/languages.rs": {
+      "sha256": "9580f36e8f794e2016b3fa95c6a7a4494db3c94ae35182d5ff8307fc576e0e62",
+      "git_oid": "ec0f0c3199f836fbb85753410817602f8acedd90"
+    },
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": {
+      "sha256": "150004dcaac839405fc1679d0a0560b26d1618360ac699df47076e6277ea5e1f",
+      "git_oid": "a762c83fc73965ea19b5510052fb440ac108dfc3"
+    }
+  },
+  "source_explanation": {
+    "crates/spur-graph/queries/rust/spur-edges.scm": "Capture each parenthesized argument list and its preceding named token, including type arguments in turbofish syntax.",
+    "crates/spur-graph/src/extract/languages.rs": "Recover the callee and explicit path from that argument list’s own siblings; skip balanced turbofish arguments and comments, and preserve the scope on the MacroBody PendingEdge.",
+    "resolver": "Unchanged existing explicit Rust qualified-miss guard refuses unrelated bare-name fallback; unchanged metadata_for_pending_edge retains heuristic 0.8 / macro_body_singleton on resolved macro calls.",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "Compiler fixture byte-exact inline; compare all five fact collections through public BytesExtractor and repository path extraction; assert target ownership, per-callee scope, and heuristic metadata for mixed, nested, and generic calls."
+  },
+  "verification": {
+    "red": {
+      "exit_code": 101,
+      "passed": 0,
+      "failed": 5
+    },
+    "green_total_passed": 62,
+    "green_total_failed": 0,
+    "fmt_exit_code": 0,
+    "commands": "commands.json",
+    "baseline_failures_observed": []
+  },
+  "solve": {
+    "route": "TDD-only",
+    "basis": "Parent catalog/data_integrity inspection found no implemented syntax rule or bounded choice; no solver execution or symbolic universal claim."
+  },
+  "scope_limits": [
+    "Native worker deliverable only; independent review and rebuilt DuckDB/SQL validation belong to downstream parent plan tasks."
+  ],
+  "unified_diff": "changes.patch",
+  "production_diff": "production.patch",
+  "worker_status_porcelain": "",
+  "worker_tree_clean": true,
+  "merged": false,
+  "issue_closed": false
+}

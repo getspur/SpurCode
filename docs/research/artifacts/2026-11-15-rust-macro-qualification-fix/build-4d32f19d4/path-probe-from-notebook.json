@@ -1,0 +1,2859 @@
+{
+  "duckdb_version": "2.0.0",
+  "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/build-4d32f19d4/spur_graph.duckdb_extension",
+  "extension_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+  "validator_sha256": "41fbff36fbe2122a6c41cbf5d2badf64a95b13b0e85256917c0aeb58164977d9",
+  "cases": {
+    "plain": true,
+    "spaces": true,
+    "internal_block": true,
+    "internal_line": true,
+    "trailing_block": true,
+    "trailing_line": true,
+    "all_comments": true,
+    "foreign_standard": true
+  },
+  "all_checks_passed": true,
+  "receipts": [
+    {
+      "case": "plain",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer::local::deep()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 153,
+            "start_line": 1,
+            "end_line": 5
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 152,
+            "start_line": 4,
+            "end_line": 4
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "7507e28d0f59da04513d343e6d51a056d9c5f6e3d1e941c11c1de6abe34131d6",
+            "file_path": "src/lib.rs",
+            "source_oid": "23bb21669c9a86c00ff2ec3de08bd38e2310acc7",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              149
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "23bb21669c9a86c00ff2ec3de08bd38e2310acc7",
+            "byte_range": [
+              101,
+              152
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "23bb21669c9a86c00ff2ec3de08bd38e2310acc7",
+            "byte_range": [
+              0,
+              153
+            ],
+            "line_range": [
+              1,
+              4
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "spaces",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer :: local :: deep()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 157,
+            "start_line": 1,
+            "end_line": 5
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 156,
+            "start_line": 4,
+            "end_line": 4
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "06fdb054c0c22c7f1a94606e6fc311744bb5d3f0361990b8a6895aad8a3d56c9",
+            "file_path": "src/lib.rs",
+            "source_oid": "6cb7b3bb8afc3323b2e0e8e63be5b36a22e603a4",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              153
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "6cb7b3bb8afc3323b2e0e8e63be5b36a22e603a4",
+            "byte_range": [
+              101,
+              156
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "6cb7b3bb8afc3323b2e0e8e63be5b36a22e603a4",
+            "byte_range": [
+              0,
+              157
+            ],
+            "line_range": [
+              1,
+              4
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "internal_block",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer /* qualifier */ :: local::deep()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 171,
+            "start_line": 1,
+            "end_line": 5
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 170,
+            "start_line": 4,
+            "end_line": 4
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "cbc91834438c355f56131de4609549e4d831609a2b44d23cf727667a68d3e596",
+            "file_path": "src/lib.rs",
+            "source_oid": "23f19b2a9adeeedc2197474751eb7969de855d84",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              167
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "23f19b2a9adeeedc2197474751eb7969de855d84",
+            "byte_range": [
+              101,
+              170
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "23f19b2a9adeeedc2197474751eb7969de855d84",
+            "byte_range": [
+              0,
+              171
+            ],
+            "line_range": [
+              1,
+              4
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "internal_line",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer // qualifier\n :: local::deep()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 169,
+            "start_line": 1,
+            "end_line": 6
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 168,
+            "start_line": 4,
+            "end_line": 5
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "116992befc0dc6fded3692b38cbeb35d6e779a5a8080b79a62cea7455fd65cfa",
+            "file_path": "src/lib.rs",
+            "source_oid": "9448d9959baae3c8dffd3814f4233ef95de8a702",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              165
+            ],
+            "line_range": [
+              4,
+              5
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "9448d9959baae3c8dffd3814f4233ef95de8a702",
+            "byte_range": [
+              101,
+              168
+            ],
+            "line_range": [
+              4,
+              5
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "9448d9959baae3c8dffd3814f4233ef95de8a702",
+            "byte_range": [
+              0,
+              169
+            ],
+            "line_range": [
+              1,
+              5
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "trailing_block",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer::local /* qualifier */ ::deep()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 170,
+            "start_line": 1,
+            "end_line": 5
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 169,
+            "start_line": 4,
+            "end_line": 4
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "9918129b4f237f10074c25218bbe9ebe848c021dd29736cfb63871226c25d20b",
+            "file_path": "src/lib.rs",
+            "source_oid": "580a5fde107d0b120a1b29ecd581d143defbe4ba",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              166
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "580a5fde107d0b120a1b29ecd581d143defbe4ba",
+            "byte_range": [
+              101,
+              169
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "580a5fde107d0b120a1b29ecd581d143defbe4ba",
+            "byte_range": [
+              0,
+              170
+            ],
+            "line_range": [
+              1,
+              4
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "trailing_line",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer::local // qualifier\n ::deep()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 168,
+            "start_line": 1,
+            "end_line": 6
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 167,
+            "start_line": 4,
+            "end_line": 5
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "c850687e32c7cbbaba5f76eacae1757108445112954cbcbce0b3ebd67a25c7cb",
+            "file_path": "src/lib.rs",
+            "source_oid": "7dc841582c49ead3ca8bb0aa9ccd6e61f6841cc5",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              164
+            ],
+            "line_range": [
+              4,
+              5
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "7dc841582c49ead3ca8bb0aa9ccd6e61f6841cc5",
+            "byte_range": [
+              101,
+              167
+            ],
+            "line_range": [
+              4,
+              5
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "7dc841582c49ead3ca8bb0aa9ccd6e61f6841cc5",
+            "byte_range": [
+              0,
+              168
+            ],
+            "line_range": [
+              1,
+              5
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "all_comments",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![outer /* a */ :: /* b */ local /* c */ :: /* d */ deep /* e */ ()]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": 4,
+          "relation": "calls",
+          "target_label": "deep",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "outer::local",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": "macro_body_singleton",
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": 4,
+            "relation": "calls",
+            "target_label": "deep",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "outer::local",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": "macro_body_singleton",
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 198,
+            "start_line": 1,
+            "end_line": 5
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 197,
+            "start_line": 4,
+            "end_line": 4
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "a3c78970749c780f970330e9edb88b62c4be228ebfced27c659adc49e79e61eb",
+            "file_path": "src/lib.rs",
+            "source_oid": "db63116e0b0001e7850010e4a987dfb1655a0f12",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              194
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "db63116e0b0001e7850010e4a987dfb1655a0f12",
+            "byte_range": [
+              101,
+              197
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "db63116e0b0001e7850010e4a987dfb1655a0f12",
+            "byte_range": [
+              0,
+              198
+            ],
+            "line_range": [
+              1,
+              4
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    },
+    {
+      "case": "foreign_standard",
+      "sql": "SELECT spur_graph_file_facts(?,?)",
+      "params": [
+        "src/lib.rs",
+        "#![allow(dead_code)]\nmod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn max() -> u8 { 42 }\nfn caller() { let _ = vec![std /* foreign */ :: cmp :: max(1u8,2u8)]; }\n"
+      ],
+      "calls": [
+        {
+          "edge_id": 8,
+          "source_node_id": 6,
+          "target_node_id": null,
+          "relation": "calls",
+          "target_label": "max",
+          "import_path": null,
+          "receiver_text": null,
+          "scope_text": "std::cmp",
+          "confidence": "heuristic",
+          "confidence_score": 0.800000011920929,
+          "edge_kind": null,
+          "bind_method": null,
+          "evidence_id": 8,
+          "directed": true,
+          "change_kind": null
+        }
+      ],
+      "facts": {
+        "nodes": [
+          {
+            "node_id": 1,
+            "stable_key": "b4bf8362c80d42ea",
+            "label": "src/lib.rs",
+            "kind": "file",
+            "file_id": 1,
+            "source_span_id": 1,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 2,
+            "stable_key": "0339579b43012db2",
+            "label": "outer",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 2,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 3,
+            "stable_key": "3a611c2fe800fb38",
+            "label": "local",
+            "kind": "module",
+            "file_id": 1,
+            "source_span_id": 3,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 4,
+            "stable_key": "4e58b18070ef7e25",
+            "label": "deep",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 4,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 5,
+            "stable_key": "9f0fd1c10aa5d496",
+            "label": "max",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 5,
+            "first_seen_run_id": 1
+          },
+          {
+            "node_id": 6,
+            "stable_key": "986356b3435af5a8",
+            "label": "caller",
+            "kind": "function",
+            "file_id": 1,
+            "source_span_id": 6,
+            "first_seen_run_id": 1
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": 1,
+            "source_node_id": 1,
+            "target_node_id": 2,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 1,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 2,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 2,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 3,
+            "source_node_id": 2,
+            "target_node_id": 3,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 3,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 4,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 4,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 5,
+            "source_node_id": 3,
+            "target_node_id": 4,
+            "relation": "defines",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "heuristic",
+            "confidence_score": 0.5,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 5,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 6,
+            "source_node_id": 1,
+            "target_node_id": 5,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 6,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 7,
+            "source_node_id": 1,
+            "target_node_id": 6,
+            "relation": "contains",
+            "target_label": null,
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": null,
+            "confidence": "syntax_exact",
+            "confidence_score": 1.0,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 7,
+            "directed": true,
+            "change_kind": null
+          },
+          {
+            "edge_id": 8,
+            "source_node_id": 6,
+            "target_node_id": null,
+            "relation": "calls",
+            "target_label": "max",
+            "import_path": null,
+            "receiver_text": null,
+            "scope_text": "std::cmp",
+            "confidence": "heuristic",
+            "confidence_score": 0.800000011920929,
+            "edge_kind": null,
+            "bind_method": null,
+            "evidence_id": 8,
+            "directed": true,
+            "change_kind": null
+          }
+        ],
+        "spans": [
+          {
+            "span_id": 1,
+            "file_id": 1,
+            "start_byte": 0,
+            "end_byte": 173,
+            "start_line": 1,
+            "end_line": 5
+          },
+          {
+            "span_id": 2,
+            "file_id": 1,
+            "start_byte": 21,
+            "end_byte": 78,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 3,
+            "file_id": 1,
+            "start_byte": 33,
+            "end_byte": 76,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 4,
+            "file_id": 1,
+            "start_byte": 49,
+            "end_byte": 74,
+            "start_line": 2,
+            "end_line": 2
+          },
+          {
+            "span_id": 5,
+            "file_id": 1,
+            "start_byte": 79,
+            "end_byte": 100,
+            "start_line": 3,
+            "end_line": 3
+          },
+          {
+            "span_id": 6,
+            "file_id": 1,
+            "start_byte": 101,
+            "end_byte": 172,
+            "start_line": 4,
+            "end_line": 4
+          }
+        ],
+        "macro_invocations": [
+          {
+            "site_id": "0f1c4042ecbeb8471ea4e060493286e8d3b9ed19cac06c933498f584904ddd0b",
+            "file_path": "src/lib.rs",
+            "source_oid": "6eab18a292db06234d8fad7c3ebac5ee836940a7",
+            "caller_stable_symbol_id": "986356b3435af5a8",
+            "enclosing": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "raw_macro_path": "vec",
+            "normalized_macro_path": "vec",
+            "byte_range": [
+              123,
+              169
+            ],
+            "line_range": [
+              4,
+              4
+            ],
+            "attributes": [
+              {
+                "raw_text": "#![allow(dead_code)]",
+                "owner": {
+                  "stable_symbol_id": "b4bf8362c80d42ea",
+                  "kind": "file"
+                },
+                "byte_range": [
+                  0,
+                  20
+                ],
+                "line_range": [
+                  1,
+                  1
+                ]
+              }
+            ],
+            "test_context": "unspecified",
+            "debug_assertions_candidate": false,
+            "execution_phase": "function_body_syntax",
+            "resolution": {
+              "kind": "unresolved",
+              "definition": null
+            },
+            "sink_family_candidate": null
+          }
+        ],
+        "macro_scopes": [
+          {
+            "scope": {
+              "stable_symbol_id": "986356b3435af5a8",
+              "kind": "function"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "6eab18a292db06234d8fad7c3ebac5ee836940a7",
+            "byte_range": [
+              101,
+              172
+            ],
+            "line_range": [
+              4,
+              4
+            ]
+          },
+          {
+            "scope": {
+              "stable_symbol_id": "b4bf8362c80d42ea",
+              "kind": "file"
+            },
+            "file_path": "src/lib.rs",
+            "source_oid": "6eab18a292db06234d8fad7c3ebac5ee836940a7",
+            "byte_range": [
+              0,
+              173
+            ],
+            "line_range": [
+              1,
+              4
+            ]
+          }
+        ]
+      },
+      "expected_binding_passed": true
+    }
+  ]
+}

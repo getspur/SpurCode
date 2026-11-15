@@ -1,0 +1,172 @@
+{
+  "first": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": false,
+      "comment_id": "6753",
+      "audit_id": "151f51ee-03bb-44f6-b0e0-79850ebddcd8",
+      "task_id": "bd-765s",
+      "delegation_id": "8724e838e7fc4b8d",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "151f51ee-03bb-44f6-b0e0-79850ebddcd8",
+        "delegation_id": "8724e838e7fc4b8d",
+        "brain_session_id": "62837664bb0ba1c9",
+        "message": "COMPLETION: Independent read-only review of approved native macro qualification fix 9a05457df (review checkout d373f11bb) finished. No critical or important findings; one minor commented-local-qualifier regression demonstrated on actual pre-fix and fixed native extraction. Test-first RED/GREEN verified; 80 fresh remote selected tests and formatting pass. Diff empty. No merge, closure, extension/notebook changes, or approval; parent owns decision.",
+        "evidence": {
+          "approval_owner": "parent",
+          "artifact_directory": "/private/tmp/bd-765s-review-ffsj8fk0",
+          "canonical_issue": "bd-765s",
+          "commands": {
+            "runs": [
+              {
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture",
+                "exit_code": 200,
+                "log": "independent-remote.log",
+                "sha256": "d338662746f9db6d0d9c016f989f214ba771fe2b594efd89b1ab2004fab84a1d",
+                "note": "sandbox network blocked before compilation"
+              },
+              {
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture",
+                "exit_code": 101,
+                "log": "independent-remote-escalated.log",
+                "sha256": "5c8227129fee437f6c022cd9f6659b6514738f96b6252d1fba18300451747cc9",
+                "note": "temporary sparse checkout omitted seven committed include_str fixtures; exact bytes restored before rerun"
+              },
+              {
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts --test rust_macro_invocations --test temporal_resolution --test temporal_preparsed -- --nocapture",
+                "exit_code": 0,
+                "log": "independent-remote-complete-inputs.log",
+                "sha256": "a1b57ab11be2d4dae3ab58870c40ad69aa0c329d836b7ec30857c5fa5ea54b56",
+                "note": "80 passed; no failures/ignored/filtered"
+              },
+              {
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review comment_qualifier_observation -- --exact --nocapture",
+                "exit_code": 0,
+                "log": "baseline-comment-remote.log",
+                "sha256": "47a38a799ae9fda99baf684a0dfcb884a996c3fc98263df38c2d01b6d20a02f3",
+                "note": "pre-fix native observation"
+              },
+              {
+                "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 SPUR_NOTEBOOK_REPO=/Users/kevintruong/project/spur-notebook scripts/spur-cargo test -p spur-graph --no-default-features --test bd765s_independent_review comment_qualifier_observation -- --exact --nocapture",
+                "exit_code": 0,
+                "log": "fixed-comment-remote.log",
+                "sha256": "db151ba8f2fd278ad5c3bf375453a68ef9c18d2f6e64e3b3c7612a6fbeb7d459",
+                "note": "identical fixture; changed only two production files from baseline to fix"
+              }
+            ],
+            "fmt": {
+              "command": "scripts/spur-cargo fmt --all -- --check",
+              "exit_code": 0,
+              "log": "fmt-check.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "critical_findings": 0,
+          "diff_empty": true,
+          "findings": [
+            {
+              "severity": "minor",
+              "file": "crates/spur-graph/src/extract/languages.rs",
+              "line": 1622,
+              "title": "Comments in a valid local macro qualifier prevent resolution",
+              "repro": "struct Alpha; impl Alpha { fn new() -> Self { Self } } fn control() { Alpha /* c */ ::new(); } fn caller() { wrapper!(Alpha /* c */ ::new()); }",
+              "before": {
+                "production_revision": "3427630ba",
+                "direct_scope": "Alpha",
+                "direct_target": "new#4",
+                "macro_scope": null,
+                "macro_target": "new#4"
+              },
+              "after": {
+                "production_revision": "9a05457df (same bytes as d373f11bb)",
+                "direct_scope": "Alpha",
+                "direct_target": "new#4",
+                "macro_scope": "Alpha /* c */",
+                "macro_target": null
+              },
+              "cause": "source[start.start_byte()..separator.start_byte()] retains trailing block comments; existing method resolver compares impl Alpha /* c */ with impl Alpha and qualified-miss guard prevents fallback.",
+              "suggestion": "Normalize qualifier tokens for resolution while preserving external-path rejection.",
+              "evidence_logs": [
+                "baseline-comment-remote.log",
+                "fixed-comment-remote.log"
+              ]
+            }
+          ],
+          "fresh_verification": {
+            "selected_tests_passed": 80,
+            "failed": 0,
+            "ignored": 0,
+            "filtered": 0,
+            "suites": 9,
+            "exit_code": 0,
+            "suites_detail": {
+              "independent_matrix": 1,
+              "extract_file_facts": 14,
+              "rust_lexical_calls": 15,
+              "rust_macro_invocations": 7,
+              "rust_macro_qualified_calls": 5,
+              "rust_macro_token_tree_query": 5,
+              "rust_receiver_resolution": 21,
+              "temporal_preparsed": 7,
+              "temporal_resolution": 5
+            },
+            "fmt_exit_code": 0,
+            "baseline_and_fixed_observation_runs": "both exit 0; actual rows demonstrate minor finding; each one selected observation, one filtered matrix test",
+            "independent_matrix_initial_sha256": "3dbe52738425747aa9666dee87c64b076e7c0eb49868baff0fbd11a406e84871"
+          },
+          "important_findings": 0,
+          "issue_closed": false,
+          "kind": "completion",
+          "merged": false,
+          "parent_artifact_or_notebook_changes": false,
+          "plan_id": "1be54859-2f3f-4112-a861-831c3be27f44",
+          "predecessor_fix": "9a05457df4d565979024d45296b76a8603cef99d",
+          "production_writes": false,
+          "reviewed_head": "d373f11bbc2e4b5f75a90a9cf35e47ed959fef5e",
+          "risk_signal_id": "84171be3-9771-44aa-b261-362ad3551dd2",
+          "root_cause_verified": {
+            "native_fix": true,
+            "same_callee_match_anchor": true,
+            "existing_qualified_miss_guard_used": true,
+            "no_blacklist_or_blanket_suppression": true,
+            "dedup_retains_scope": true,
+            "no_nonrust_macro_call_captures": true,
+            "resolved_macro_metadata_unchanged": "heuristic / 0.8 / macro_body_singleton",
+            "five_fact_schemas_unchanged": true,
+            "duckdb_shared_extractor": "crates/spur-graph-duckdb/src/file_facts.rs:574"
+          },
+          "scope_limits": [
+            "No extension rebuild or live SQL validation; parent downstream responsibility.",
+            "Native syntax-first extraction; no compiler expansion or full workspace test claim.",
+            "crate/self/super and leading-root unsupported helper forms stay unresolved; Self constructor and genuine local trait call resolve.",
+            "Graph-first orientation attempted; staleness unverified and exact symbol read timed out, so current source/Git fallback used.",
+            "Initial network attempt exit 200; temporary sparse-checkout fixture preparation compile failure exit 101 fixed by restoring seven exact committed fixtures; neither counted as TDD RED or product regression."
+          ],
+          "source_issue": "bd-38yz",
+          "staged_diff_empty": true,
+          "task_id": "native-macro-review",
+          "tdd": {
+            "commit_chain_test_before_fix": true,
+            "production_bytes_unchanged_in_both_test_commits": true,
+            "original_remote_assertion_red": "5 intended assertion failures, including Some(NodeId(4)) versus None for Vec::new",
+            "predecessor_green_passed": 62,
+            "all_five_original_log_hashes_verified": true,
+            "compiler_fixture_byte_exact": true,
+            "compiler_version": "rustc 1.94.1",
+            "prior_evidence": "/private/tmp/bd-38yz-native.VvNpUm"
+          },
+          "test_commits": [
+            "08fed24010248119a0c883ed7cd65244a56b386a",
+            "3427630baa2ffd3d1237cee9309758248e8497c4"
+          ],
+          "worktree_status_porcelain": ""
+        }
+      }
+    },
+    "isError": false
+  },
+  "idempotent_retry_error": "unauthorized: worker evidence: target is terminal or superseded",
+  "retry_verified": false
+}

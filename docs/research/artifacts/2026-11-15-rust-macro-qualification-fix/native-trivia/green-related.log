@@ -1,0 +1,100 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b  (local=/Users/kevintruong/project/SpurCode/.spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b)
+[build] Remote:   ~/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b   target=/mnt/cargo/targets/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b   -j16
+[build] Remote build queue: admitted as ticket 2429 (slot 1/9) on spur-builder (3 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-06738bf8035cc0dbc)
+[build] Waiting for SSH-over-SSM on i-06738bf8035cc0dbc...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk and process watchdogs...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   2839 files in sync manifest (unchanged content is not transferred)
+[build] Syncing to i-06738bf8035cc0dbc:~/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b ...
+[source-baseline] {"status": "warm"}
+[build] Reconstructing 1 tracked dangling symlink(s)...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[source-baseline] {"status": "cached"}
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-graph --no-default-features --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts  -j16  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] No source content delta; capturing cargo output on VM (set SPUR_CAPTURE_FRESH_CARGO_OUTPUT=0 to stream).
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-graph v1.24.0 (/home/admin/spur/worktrees/47417a2f-44d3-4fa4-b5a2-6f5de79f8e8b/crates/spur-graph)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation/R1/held-out.rs`: No such file or directory (os error 2)
+ --> crates/spur-graph/tests/rust_lexical_calls.rs:4:5
+  |
+4 |     include_str!("../../../docs/research/artifacts/2026-11-01-panic-implementation/R1/held-out.rs");
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fixtures/receivers/lib.rs`: No such file or directory (os error 2)
+ --> crates/spur-graph/tests/rust_receiver_resolution.rs:3:25
+  |
+3 | ... = include_str!("../../../docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fixtures/receivers/lib.rs");
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation-grounding/semantics/fixtures/lib.rs`: No such file or directory (os error 2)
+ --> crates/spur-graph/tests/rust_receiver_resolution.rs:4:23
+  |
+4 | ...&str = include_str!("../../../docs/research/artifacts/2026-11-01-panic-implementation-grounding/semantics/fixtures/lib.rs");
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation/R2/oracle.json`: No such file or directory (os error 2)
+   --> crates/spur-graph/tests/rust_receiver_resolution.rs:149:57
+    |
+149 |       let oracle: Vec<[String; 3]> = serde_json::from_str(include_str!(
+    |  _________________________________________________________^
+150 | |         "../../../docs/research/artifacts/2026-11-01-panic-implementation/R2/oracle.json"
+151 | |     ))
+    | |_____^
+
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-2/cases.json`: No such file or directory (os error 2)
+   --> crates/spur-graph/tests/rust_receiver_resolution.rs:255:26
+    |
+255 |       serde_json::from_str(include_str!(
+    |  __________________________^
+256 | |         "../../../docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-2/cases.json"
+257 | |     ))
+    | |_____^
+
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-3/cases.json`: No such file or directory (os error 2)
+   --> crates/spur-graph/tests/rust_receiver_resolution.rs:361:26
+    |
+361 |       serde_json::from_str(include_str!(
+    |  __________________________^
+362 | |         "../../../docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-3/cases.json"
+363 | |     ))
+    | |_____^
+
+error: couldn't read `crates/spur-graph/tests/../../../docs/research/artifacts/2026-11-01-panic-implementation/R2C/cases.json`: No such file or directory (os error 2)
+   --> crates/spur-graph/tests/rust_receiver_resolution.rs:418:26
+    |
+418 |       serde_json::from_str(include_str!(
+    |  __________________________^
+419 | |         "../../../docs/research/artifacts/2026-11-01-panic-implementation/R2C/cases.json"
+420 | |     ))
+    | |_____^
+
+error: could not compile `spur-graph` (test "rust_lexical_calls") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `spur-graph` (test "rust_receiver_resolution") due to 6 previous errors
+[build] Remote build queue: released ticket 00000000000000002429.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

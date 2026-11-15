@@ -1,0 +1,435 @@
+{
+  "first": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": false,
+      "comment_id": "6795",
+      "audit_id": "753ae1f3-d132-49be-bcb2-226e06f563a2",
+      "task_id": "bd-2bq3",
+      "delegation_id": "9ef02bbc9de0415d",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "753ae1f3-d132-49be-bcb2-226e06f563a2",
+        "delegation_id": "9ef02bbc9de0415d",
+        "brain_session_id": "62837664bb0ba1c9",
+        "message": "Read-only independent review complete for 18ee71a2c -> 99760f547 (same tree as fd4fc0c8 and 5fa07540): no critical, one important, no additional minor findings. Internal trivia in multi-segment qualifiers removes genuine local targets; actual baseline/final native and SQL reproduction recorded. Both TDD histories and all 56 evidence hashes verified; 51 extraction probes run. No approval, merge, closure, source/artifact/notebook changes. Remote suite rerun could not start (helper unavailable, exit 200).",
+        "evidence": {
+          "approval_issued": false,
+          "canonical_issue": "bd-2bq3",
+          "delegation_id": "9ef02bbc9de0415d",
+          "evidence_directory": "/private/tmp/bd-38yz-final-review.T3N0h9",
+          "findings": {
+            "critical": [],
+            "important": [
+              {
+                "kind": "review_finding",
+                "severity": "important",
+                "source_issue": "bd-38yz",
+                "reviewed_base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+                "reviewed_head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+                "file": "crates/spur-graph/src/extract/languages.rs",
+                "line": 1622,
+                "title": "Internal path trivia still removes genuine local macro-call bindings",
+                "fixture": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer /* qualifier */ :: local::deep()]; }\n",
+                "space_variant": "vec![outer :: local :: deep()]",
+                "baseline": "target_node_id 4, owner local, macro_body_singleton",
+                "final": "scope outer /* qualifier */ :: local or outer :: local; target_node_id null",
+                "plain_final": "outer::local::deep() -> target_node_id 4, macro_body_singleton",
+                "native_sql": "Reproduced on final reference_file_facts native CLI and final DuckDB2 spur_graph_file_facts; baseline SQL in a fresh process.",
+                "evidence_directory": "/private/tmp/bd-38yz-final-review.T3N0h9",
+                "evidence_files": [
+                  "baseline-path-results.json",
+                  "final-path-results.json",
+                  "path-native.jsonl",
+                  "path_probe.py"
+                ],
+                "recommendation": "Normalize significant path tokens for matching without restoring bare-name fallback for unknown qualified paths."
+              }
+            ],
+            "minor": []
+          },
+          "issue_closed": false,
+          "kind": "completion",
+          "limitations": [
+            "Native suite rerun could not start; GREEN suite claims are independently checked retained evidence, not fresh suite execution.",
+            "Parser/token-shape probes are not a macro-expansion or whole-workspace correctness claim.",
+            "Root crate/self/super and other unsupported local path forms remain resolver limitations; the reported finding is narrower: a final-resolved outer::local::deep path loses its target solely when legal internal trivia is added.",
+            "No final extension rebuild or 52-file corpus revalidation performed; parent owns these. Existing final source/artifact manifest hashes were checked before use.",
+            "Catalog/context-pack requests timed out; exact raw source and Git fallback used."
+          ],
+          "merged": false,
+          "notebook_modified": false,
+          "parent_artifacts_modified": false,
+          "parent_worktree": {
+            "path": "/private/tmp/bd-38yz-build-20261115",
+            "head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+            "status_porcelain": ""
+          },
+          "phase": "independent-read-only-review",
+          "plan_id": "32124bff-bbc4-41a4-a8db-f61b2a679dd5",
+          "production_source_modified": false,
+          "reviewed": {
+            "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+            "head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+            "tree": "3f0115dabff74caefe997d08e193ddb689a2b7d9",
+            "equivalent_final_heads": [
+              "5fa07540ebb8c63b822f2c16639259702555935f",
+              "fd4fc0c8be109e8c6b44068b08e059c69649ccd7"
+            ],
+            "initial_candidate_same_tree": [
+              "d373f11bbc2e4b5f75a90a9cf35e47ed959fef5e",
+              "9a05457df4d565979024d45296b76a8603cef99d"
+            ],
+            "full_diff_sha256": "99c2999309dc136789d0e703ef8fb60f33df849cd6fad09f92fab1f7fe6230e2",
+            "files": [
+              "crates/spur-graph/queries/rust/spur-edges.scm",
+              "crates/spur-graph/src/extract/languages.rs",
+              "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+            ],
+            "insertions": 531,
+            "deletions": 12
+          },
+          "reviewer_worktree": {
+            "head": "fd4fc0c8be109e8c6b44068b08e059c69649ccd7",
+            "status_porcelain": "",
+            "staged_diff_empty": true,
+            "unstaged_diff_empty": true
+          },
+          "risk_audit_comment_id": "6783",
+          "risk_signal_id": "61063ab3-47a4-4bd6-8cdb-cc79637ef70d",
+          "source_issue": "bd-38yz",
+          "task_id": "review-complete-macro-fix",
+          "verification": {
+            "evidence_manifest": "/private/tmp/bd-38yz-final-review.T3N0h9/verification.json",
+            "all_56_artifact_hashes_match": true,
+            "final_source_build_and_artifact_hashes_match": true,
+            "tdd": {
+              "initial_tests": [
+                "08fed24010248119a0c883ed7cd65244a56b386a",
+                "3427630baa2ffd3d1237cee9309758248e8497c4"
+              ],
+              "initial_fix": "9a05457df4d565979024d45296b76a8603cef99d",
+              "initial_red": "0 passed, 5 assertion failures; recorded Vec::new target Some(NodeId(4)) versus expected None",
+              "initial_green": 62,
+              "trivia_test": "645330c244f7c13077522fde38fea9bc5a4ab11e",
+              "trivia_fix": "5fa07540ebb8c63b822f2c16639259702555935f",
+              "normalized_test": "ee4c7da17813dfc6245ccda90931cbb50c917154",
+              "normalized_fix": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+              "trivia_red": "9 pass, 2 assertion failures on block/line comments",
+              "trivia_green": 68,
+              "production_bytes_unchanged_in_test_commits": true,
+              "green_tests_unmodified_by_fix_commits": true,
+              "green_source_bytes_match_final": true,
+              "compiler_fixtures_exact": true,
+              "worker_completion_audits_verified": [
+                {
+                  "issue": "bd-2kmz",
+                  "comment": "6733"
+                },
+                {
+                  "issue": "bd-3p18",
+                  "comment": "6769"
+                }
+              ]
+            },
+            "independent_extraction": {
+              "fixtures": 51,
+              "general_token_shapes": 39,
+              "multisegment_path_cases": 7,
+              "exact_artifact_and_test_fixtures": 5,
+              "native_sql_scoped_call_rows_agree": true,
+              "duckdb_version": "2.0.0",
+              "final_extension_sha256": "77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1",
+              "final_native_cli_sha256": "5495bf87c178643b117576941939defee7494a0de01286f716da9a412c2ff4f1",
+              "baseline_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+              "passed_controls": [
+                "compiler-backed Vec call retained unresolved",
+                "genuine local constructor and helper",
+                "six parent scope controls including Self",
+                "Alpha/Beta same-leaf target ownership",
+                "mixed and nested macro callee scopes",
+                "external turbofish and leading paths conservative",
+                "strings/raw strings/byte strings/chars/comments produce no new call evidence"
+              ],
+              "finding_reproductions": [
+                "outer :: local :: deep()",
+                "outer /* qualifier */ :: local::deep()",
+                "outer // qualifier\\n :: local::deep()"
+              ]
+            },
+            "source_review": {
+              "no_blanket_suppression": true,
+              "no_blacklist_or_Vec_special_case": true,
+              "no_arbitrary_traversal_bounds": true,
+              "no_duckdb_adapter_workaround": true,
+              "five_fact_schemas_unchanged": true,
+              "existing_metadata_logic_unchanged": true,
+              "resolved_macro_metadata": "heuristic / 0.8 / macro_body_singleton",
+              "rust_only_macro_call_query": true
+            },
+            "independent_fmt": {
+              "command": "scripts/spur-cargo fmt --package spur-graph -- --check",
+              "exit_code": 0
+            },
+            "diff_check_exit_code": 0,
+            "independent_test_attempts": {
+              "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts",
+              "sandbox_exit_code": 200,
+              "escalated_exit_code": 200,
+              "reason": "AWS cloud-build helper unavailable; local fallback disabled; no tests executed",
+              "logs": [
+                "/private/tmp/bd-38yz-final-review.T3N0h9/independent-native-tests.log",
+                "/private/tmp/bd-38yz-final-review.T3N0h9/independent-native-tests-remote.log"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "isError": false
+  },
+  "readback": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": true,
+      "comment_id": "6795",
+      "audit_id": "753ae1f3-d132-49be-bcb2-226e06f563a2",
+      "task_id": "bd-2bq3",
+      "delegation_id": "9ef02bbc9de0415d",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "753ae1f3-d132-49be-bcb2-226e06f563a2",
+        "delegation_id": "9ef02bbc9de0415d",
+        "brain_session_id": "62837664bb0ba1c9",
+        "message": "Read-only independent review complete for 18ee71a2c -> 99760f547 (same tree as fd4fc0c8 and 5fa07540): no critical, one important, no additional minor findings. Internal trivia in multi-segment qualifiers removes genuine local targets; actual baseline/final native and SQL reproduction recorded. Both TDD histories and all 56 evidence hashes verified; 51 extraction probes run. No approval, merge, closure, source/artifact/notebook changes. Remote suite rerun could not start (helper unavailable, exit 200).",
+        "evidence": {
+          "approval_issued": false,
+          "canonical_issue": "bd-2bq3",
+          "delegation_id": "9ef02bbc9de0415d",
+          "evidence_directory": "/private/tmp/bd-38yz-final-review.T3N0h9",
+          "findings": {
+            "critical": [],
+            "important": [
+              {
+                "kind": "review_finding",
+                "severity": "important",
+                "source_issue": "bd-38yz",
+                "reviewed_base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+                "reviewed_head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+                "file": "crates/spur-graph/src/extract/languages.rs",
+                "line": 1622,
+                "title": "Internal path trivia still removes genuine local macro-call bindings",
+                "fixture": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer /* qualifier */ :: local::deep()]; }\n",
+                "space_variant": "vec![outer :: local :: deep()]",
+                "baseline": "target_node_id 4, owner local, macro_body_singleton",
+                "final": "scope outer /* qualifier */ :: local or outer :: local; target_node_id null",
+                "plain_final": "outer::local::deep() -> target_node_id 4, macro_body_singleton",
+                "native_sql": "Reproduced on final reference_file_facts native CLI and final DuckDB2 spur_graph_file_facts; baseline SQL in a fresh process.",
+                "evidence_directory": "/private/tmp/bd-38yz-final-review.T3N0h9",
+                "evidence_files": [
+                  "baseline-path-results.json",
+                  "final-path-results.json",
+                  "path-native.jsonl",
+                  "path_probe.py"
+                ],
+                "recommendation": "Normalize significant path tokens for matching without restoring bare-name fallback for unknown qualified paths."
+              }
+            ],
+            "minor": []
+          },
+          "issue_closed": false,
+          "kind": "completion",
+          "limitations": [
+            "Native suite rerun could not start; GREEN suite claims are independently checked retained evidence, not fresh suite execution.",
+            "Parser/token-shape probes are not a macro-expansion or whole-workspace correctness claim.",
+            "Root crate/self/super and other unsupported local path forms remain resolver limitations; the reported finding is narrower: a final-resolved outer::local::deep path loses its target solely when legal internal trivia is added.",
+            "No final extension rebuild or 52-file corpus revalidation performed; parent owns these. Existing final source/artifact manifest hashes were checked before use.",
+            "Catalog/context-pack requests timed out; exact raw source and Git fallback used."
+          ],
+          "merged": false,
+          "notebook_modified": false,
+          "parent_artifacts_modified": false,
+          "parent_worktree": {
+            "path": "/private/tmp/bd-38yz-build-20261115",
+            "head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+            "status_porcelain": ""
+          },
+          "phase": "independent-read-only-review",
+          "plan_id": "32124bff-bbc4-41a4-a8db-f61b2a679dd5",
+          "production_source_modified": false,
+          "reviewed": {
+            "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+            "head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+            "tree": "3f0115dabff74caefe997d08e193ddb689a2b7d9",
+            "equivalent_final_heads": [
+              "5fa07540ebb8c63b822f2c16639259702555935f",
+              "fd4fc0c8be109e8c6b44068b08e059c69649ccd7"
+            ],
+            "initial_candidate_same_tree": [
+              "d373f11bbc2e4b5f75a90a9cf35e47ed959fef5e",
+              "9a05457df4d565979024d45296b76a8603cef99d"
+            ],
+            "full_diff_sha256": "99c2999309dc136789d0e703ef8fb60f33df849cd6fad09f92fab1f7fe6230e2",
+            "files": [
+              "crates/spur-graph/queries/rust/spur-edges.scm",
+              "crates/spur-graph/src/extract/languages.rs",
+              "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+            ],
+            "insertions": 531,
+            "deletions": 12
+          },
+          "reviewer_worktree": {
+            "head": "fd4fc0c8be109e8c6b44068b08e059c69649ccd7",
+            "status_porcelain": "",
+            "staged_diff_empty": true,
+            "unstaged_diff_empty": true
+          },
+          "risk_audit_comment_id": "6783",
+          "risk_signal_id": "61063ab3-47a4-4bd6-8cdb-cc79637ef70d",
+          "source_issue": "bd-38yz",
+          "task_id": "review-complete-macro-fix",
+          "verification": {
+            "evidence_manifest": "/private/tmp/bd-38yz-final-review.T3N0h9/verification.json",
+            "all_56_artifact_hashes_match": true,
+            "final_source_build_and_artifact_hashes_match": true,
+            "tdd": {
+              "initial_tests": [
+                "08fed24010248119a0c883ed7cd65244a56b386a",
+                "3427630baa2ffd3d1237cee9309758248e8497c4"
+              ],
+              "initial_fix": "9a05457df4d565979024d45296b76a8603cef99d",
+              "initial_red": "0 passed, 5 assertion failures; recorded Vec::new target Some(NodeId(4)) versus expected None",
+              "initial_green": 62,
+              "trivia_test": "645330c244f7c13077522fde38fea9bc5a4ab11e",
+              "trivia_fix": "5fa07540ebb8c63b822f2c16639259702555935f",
+              "normalized_test": "ee4c7da17813dfc6245ccda90931cbb50c917154",
+              "normalized_fix": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+              "trivia_red": "9 pass, 2 assertion failures on block/line comments",
+              "trivia_green": 68,
+              "production_bytes_unchanged_in_test_commits": true,
+              "green_tests_unmodified_by_fix_commits": true,
+              "green_source_bytes_match_final": true,
+              "compiler_fixtures_exact": true,
+              "worker_completion_audits_verified": [
+                {
+                  "issue": "bd-2kmz",
+                  "comment": "6733"
+                },
+                {
+                  "issue": "bd-3p18",
+                  "comment": "6769"
+                }
+              ]
+            },
+            "independent_extraction": {
+              "fixtures": 51,
+              "general_token_shapes": 39,
+              "multisegment_path_cases": 7,
+              "exact_artifact_and_test_fixtures": 5,
+              "native_sql_scoped_call_rows_agree": true,
+              "duckdb_version": "2.0.0",
+              "final_extension_sha256": "77b3bdb033296d90fa129c4a36f39d6d47a2665bf7f525433ec25585d95402b1",
+              "final_native_cli_sha256": "5495bf87c178643b117576941939defee7494a0de01286f716da9a412c2ff4f1",
+              "baseline_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+              "passed_controls": [
+                "compiler-backed Vec call retained unresolved",
+                "genuine local constructor and helper",
+                "six parent scope controls including Self",
+                "Alpha/Beta same-leaf target ownership",
+                "mixed and nested macro callee scopes",
+                "external turbofish and leading paths conservative",
+                "strings/raw strings/byte strings/chars/comments produce no new call evidence"
+              ],
+              "finding_reproductions": [
+                "outer :: local :: deep()",
+                "outer /* qualifier */ :: local::deep()",
+                "outer // qualifier\\n :: local::deep()"
+              ]
+            },
+            "source_review": {
+              "no_blanket_suppression": true,
+              "no_blacklist_or_Vec_special_case": true,
+              "no_arbitrary_traversal_bounds": true,
+              "no_duckdb_adapter_workaround": true,
+              "five_fact_schemas_unchanged": true,
+              "existing_metadata_logic_unchanged": true,
+              "resolved_macro_metadata": "heuristic / 0.8 / macro_body_singleton",
+              "rust_only_macro_call_query": true
+            },
+            "independent_fmt": {
+              "command": "scripts/spur-cargo fmt --package spur-graph -- --check",
+              "exit_code": 0
+            },
+            "diff_check_exit_code": 0,
+            "independent_test_attempts": {
+              "command": "SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts",
+              "sandbox_exit_code": 200,
+              "escalated_exit_code": 200,
+              "reason": "AWS cloud-build helper unavailable; local fallback disabled; no tests executed",
+              "logs": [
+                "/private/tmp/bd-38yz-final-review.T3N0h9/independent-native-tests.log",
+                "/private/tmp/bd-38yz-final-review.T3N0h9/independent-native-tests-remote.log"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "isError": false
+  },
+  "risk_evidence": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": false,
+      "comment_id": "6783",
+      "audit_id": "9feea7b0-631f-4c88-88ee-8c1c7d73da63",
+      "task_id": "bd-2bq3",
+      "delegation_id": "9ef02bbc9de0415d",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "9feea7b0-631f-4c88-88ee-8c1c7d73da63",
+        "delegation_id": "9ef02bbc9de0415d",
+        "brain_session_id": "62837664bb0ba1c9",
+        "message": "Independent final review reproduced an important local-call regression caused by internal whitespace/block/line comment trivia in a multi-segment macro qualifier; see evidence before integration.",
+        "evidence": {
+          "baseline": "target_node_id 4, owner local, macro_body_singleton",
+          "evidence_directory": "/private/tmp/bd-38yz-final-review.T3N0h9",
+          "evidence_files": [
+            "baseline-path-results.json",
+            "final-path-results.json",
+            "path-native.jsonl",
+            "path_probe.py"
+          ],
+          "file": "crates/spur-graph/src/extract/languages.rs",
+          "final": "scope outer /* qualifier */ :: local or outer :: local; target_node_id null",
+          "fixture": "mod outer { pub mod local { pub fn deep() -> u8 { 7 } } }\nfn caller() { let _ = vec![outer /* qualifier */ :: local::deep()]; }\n",
+          "kind": "review_finding",
+          "line": 1622,
+          "native_sql": "Reproduced on final reference_file_facts native CLI and final DuckDB2 spur_graph_file_facts; baseline SQL in a fresh process.",
+          "plain_final": "outer::local::deep() -> target_node_id 4, macro_body_singleton",
+          "recommendation": "Normalize significant path tokens for matching without restoring bare-name fallback for unknown qualified paths.",
+          "reviewed_base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+          "reviewed_head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+          "severity": "important",
+          "source_issue": "bd-38yz",
+          "space_variant": "vec![outer :: local :: deep()]",
+          "title": "Internal path trivia still removes genuine local macro-call bindings"
+        }
+      }
+    },
+    "isError": false
+  },
+  "risk_signal": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "signal_id": "61063ab3-47a4-4bd6-8cdb-cc79637ef70d",
+      "late": false,
+      "idempotent": false
+    },
+    "isError": false
+  }
+}

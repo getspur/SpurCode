@@ -1,0 +1,67 @@
+{
+  "root_issue": "bd-38yz",
+  "source_commit": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d",
+  "artifact": "build-4d32f19d4/spur_graph.duckdb_extension",
+  "artifact_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+  "runtime": "DuckDB 2.0.0 / osx_arm64 / C_STRUCT_UNSTABLE",
+  "functional_checks_passed": true,
+  "review_status": "approved",
+  "independent_review": {
+    "issue": "bd-1ytb",
+    "reviewed_head": "fbb3cdbe47ca10b8364b1668ed6747beef27ff9a",
+    "reviewed_tree": "c0e390e7f5b00b7817a7b5b59a70ccd01bb1c43c",
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "fresh_native_sql_fixtures": 66,
+    "result_sha256": "659c78a8d343e531fffdee8170468e096910dc99416a3bb5231f7a09e682c259"
+  },
+  "parent_integration": {
+    "branch": "main",
+    "commit": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d",
+    "method": "fast-forward ordered test/fix history",
+    "plan_merge_attempt": "Approved implementation already matched this tree; automatic merger treated empty read-only review cherry-pick as a conflict, resolved manually for source integration."
+  },
+  "native_tests_passed": 77,
+  "duckdb_tests_passed": 31,
+  "single_qualifier_controls": {
+    "plain": true,
+    "spaced": true,
+    "block_before_separator": true,
+    "block_after_separator": true,
+    "line_before_separator": true,
+    "via_self": true
+  },
+  "path_controls": {
+    "plain": true,
+    "spaces": true,
+    "internal_block": true,
+    "internal_line": true,
+    "trailing_block": true,
+    "trailing_line": true,
+    "all_comments": true,
+    "foreign_standard": true
+  },
+  "frozen_files": 52,
+  "original_macro_constructor_review_edges": 120,
+  "non_edge_collections_identical": true,
+  "preserved_input_hashes_match": true,
+  "evidence_sha256": {
+    "native-normalization/verification.json": "86af93ea7f435b3c50e366fd3658a8625832bec3e4099d0da91ef691183d6a85",
+    "build-4d32f19d4/build-manifest.json": "dada07979c88a9e940c0720c0577a1723bdca34ecae10c1cdebeaf434a6bd95c",
+    "build-4d32f19d4/extension-tests-command.json": "4d04732ae99e2528e3d5ff8445b2539bba3944982c2735cf443ed911f6e9a4ab",
+    "build-4d32f19d4/extension-tests.log": "5568969b29dced7e1d6a23cfeefdd1e24bddaf11a35e398260ec64c3ae29b8b1",
+    "build-4d32f19d4/validation-from-notebook.json": "1fe8d6f0463a213189e03ead186a0dbf15fba3bc8efc47d028c999a7b1f72936",
+    "build-4d32f19d4/scope-probe-from-notebook.json": "0380a1c03fe8b3a1491098a7e218d0fa8aa7e03f9db1c4f983ffed7145d82650",
+    "build-4d32f19d4/path-probe-from-notebook.json": "2ac6291c16fbe1eb8a2fe67f04e6afd724e8092b3d00eedd8bd2d5a365a458ee",
+    "notebook-normalization.json": "2dba62a91cd1ba5313fcae7931848e3229de34cbec95e95f91e0befc3e409c3b",
+    "notebook-normalization-summary-sql.json": "135b5d56a68e63901561b2a8f264b39ec82d2ec7e42df1ad1c685b9da4d62caa",
+    "notebook-accepted.json": "3caf7acee6d841de91f083711519579d56654437e6fe9e6193efa9bd995f507d",
+    "final-review/result.json": "659c78a8d343e531fffdee8170468e096910dc99416a3bb5231f7a09e682c259"
+  },
+  "limits": [
+    "Existing managed notebook SQL process retains baseline extension; validation runs in fresh native DuckDB2 processes from Rust notebook cell.",
+    "Existing cached facts require a new extractor-version key and re-ingestion.",
+    "No full-corpus precision, recall, local-target-rate, speed or compiler macro-expansion claim."
+  ]
+}

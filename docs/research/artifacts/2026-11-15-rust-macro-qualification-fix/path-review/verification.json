@@ -1,0 +1,258 @@
+{
+  "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+  "head": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+  "tree": "3f0115dabff74caefe997d08e193ddb689a2b7d9",
+  "tree_equivalence": {
+    "99760f547": "3f0115dabff74caefe997d08e193ddb689a2b7d9",
+    "5fa07540": "3f0115dabff74caefe997d08e193ddb689a2b7d9",
+    "fd4fc0c8": "3f0115dabff74caefe997d08e193ddb689a2b7d9",
+    "9a05457df": "315d1c24c05aded9dbc5083d768dcffe54e7c5ee",
+    "d373f11bb": "315d1c24c05aded9dbc5083d768dcffe54e7c5ee",
+    "ee4c7da1": "61395e1eb3b9219b7a55082eb0abf892ac634808",
+    "645330c2": "61395e1eb3b9219b7a55082eb0abf892ac634808"
+  },
+  "commit_chain": {
+    "08fed2401": "08fed24010248119a0c883ed7cd65244a56b386a 18ee71a2c5d02414d4617f964604d28c03c04ee6 test(spur-graph): bd-38yz expose lost macro call qualification",
+    "3427630ba": "3427630baa2ffd3d1237cee9309758248e8497c4 08fed24010248119a0c883ed7cd65244a56b386a test(spur-graph): bd-38yz cover standalone macro turbofish",
+    "9a05457df": "9a05457df4d565979024d45296b76a8603cef99d 3427630baa2ffd3d1237cee9309758248e8497c4 fix(spur-graph): bd-38yz preserve macro callee qualification",
+    "645330c2": "645330c244f7c13077522fde38fea9bc5a4ab11e d373f11bbc2e4b5f75a90a9cf35e47ed959fef5e test(spur-graph): bd-3p18 cover macro qualifier trivia",
+    "5fa07540": "5fa07540ebb8c63b822f2c16639259702555935f 645330c244f7c13077522fde38fea9bc5a4ab11e fix(spur-graph): bd-3p18 end macro scopes at qualifier tokens",
+    "ee4c7da1": "ee4c7da17813dfc6245ccda90931cbb50c917154 9a05457df4d565979024d45296b76a8603cef99d test(spur-graph): bd-3p18 cover macro qualifier trivia",
+    "99760f547": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c ee4c7da17813dfc6245ccda90931cbb50c917154 fix(spur-graph): bd-3p18 end macro scopes at qualifier tokens"
+  },
+  "test_only_commits": {
+    "08fed2401": [
+      "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+    ],
+    "3427630ba": [
+      "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+    ],
+    "645330c2": [
+      "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+    ],
+    "ee4c7da1": [
+      "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+    ]
+  },
+  "test_first_production_bytes_unchanged": true,
+  "full_diff_sha256": "99c2999309dc136789d0e703ef8fb60f33df849cd6fad09f92fab1f7fe6230e2",
+  "diff_stat": " crates/spur-graph/queries/rust/spur-edges.scm      |  17 +-\n crates/spur-graph/src/extract/languages.rs         | 111 +++++-\n .../spur-graph/tests/rust_macro_qualified_calls.rs | 415 +++++++++++++++++++++\n 3 files changed, 531 insertions(+), 12 deletions(-)\n",
+  "diff_check": 0,
+  "artifact_hash_maps": {
+    "native-initial": {
+      "verified_files": 16,
+      "mismatches": {}
+    },
+    "native-trivia": {
+      "verified_files": 40,
+      "mismatches": {}
+    }
+  },
+  "runs": [
+    {
+      "phase": "native-initial",
+      "name": "red-remote",
+      "exit": 101,
+      "log_sha256": "93d81e84f4e68683270fbdbacc3962f6d9a12b66a4937df84c5c6d7c4d1276b0",
+      "test_results": [
+        [
+          "FAILED",
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "phase": "native-initial",
+      "name": "red-strengthened",
+      "exit": 101,
+      "log_sha256": "3423f9f12ff3d07818c4858c3808e50c414b359a9d60522fe74781104e373c7f",
+      "test_results": [
+        [
+          "FAILED",
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "phase": "native-initial",
+      "name": "green-focused",
+      "exit": 0,
+      "log_sha256": "5d95e119ee2eba7e8430f99bc5ccfc5820262b035dcbd1c8c8eef927582b39f4",
+      "test_results": [
+        [
+          "ok",
+          "5",
+          "0"
+        ]
+      ]
+    },
+    {
+      "phase": "native-initial",
+      "name": "green-related",
+      "exit": 0,
+      "log_sha256": "fb75b03316178e6e9864b742497a9a48f8124c2ecc6f88a1b24efde30802c595",
+      "test_results": [
+        [
+          "ok",
+          "14",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0"
+        ],
+        [
+          "ok",
+          "21",
+          "0"
+        ]
+      ]
+    },
+    {
+      "phase": "native-initial",
+      "name": "green-lib-macro",
+      "exit": 0,
+      "log_sha256": "f62f05410fdd01335a6ce81f97c50dfba50754981e235f78800b95f29a44c4d7",
+      "test_results": [
+        [
+          "ok",
+          "2",
+          "0"
+        ]
+      ]
+    },
+    {
+      "phase": "native-trivia",
+      "name": "red",
+      "exit": 200,
+      "log_sha256": "57e25727a3a0badf675efa0e3d67403877ee7c704d082c1a28c613022323d80a",
+      "test_results": []
+    },
+    {
+      "phase": "native-trivia",
+      "name": "red-assertion",
+      "exit": 101,
+      "log_sha256": "f0749db229fe7ce3cf21eaa47039a2414d85b19abf4a30771b995dc302dfbcd8",
+      "test_results": [
+        [
+          "FAILED",
+          "9",
+          "2"
+        ]
+      ]
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-focused",
+      "exit": 0,
+      "log_sha256": "19f81fd2baa865f50d8635ddf5723e5cdd3e18d682a64d4b804287162d4e5e0d",
+      "test_results": [
+        [
+          "ok",
+          "11",
+          "0"
+        ]
+      ]
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-related",
+      "exit": 101,
+      "log_sha256": "1a2497d1fbd86c2a3ebbee3f868e763a2447a01da7ddc9bf1e545ab7e3c36e30",
+      "test_results": []
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-related-fixtures",
+      "exit": 0,
+      "log_sha256": "eee28e1ca9cbe069a4d10da0dec80bc63c6131dc65628cc9794fc60082ccc19d",
+      "test_results": [
+        [
+          "ok",
+          "14",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0"
+        ],
+        [
+          "ok",
+          "21",
+          "0"
+        ]
+      ]
+    },
+    {
+      "phase": "native-trivia",
+      "name": "green-lib-macro",
+      "exit": 0,
+      "log_sha256": "8f346d8078aac1a90ae7f76826e50a7b7db0cd9983287b2566c1a67f60d015b2",
+      "test_results": [
+        [
+          "ok",
+          "2",
+          "0"
+        ]
+      ]
+    },
+    {
+      "phase": "native-trivia",
+      "name": "fmt",
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    },
+    {
+      "phase": "native-trivia",
+      "name": "diff-check",
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    },
+    {
+      "phase": "native-trivia",
+      "name": "diff-check-final",
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    }
+  ],
+  "inline_fixtures_exact": true,
+  "source_sha256": {
+    "crates/spur-graph/src/extract/languages.rs": "30cc240dcb5ea74a4e9cc0d7a5b1acfe6cd43ae41160ed055a12673a63c16468",
+    "crates/spur-graph/queries/rust/spur-edges.scm": "1072c8e13d8af9e5034496b09dd926de037144fe4d33f672c2c9b0255d245c95",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "77068fd807f8f4b13b06a433ecc3f2ee0875c42050471841079d502a014be71f"
+  },
+  "final_artifact_manifest_hashes_verified": true,
+  "green_source_bytes_match_final": true,
+  "native-initial_completion_audit": {
+    "task_id": "bd-2kmz",
+    "audit_id": "28cb8dd2-d9dc-46aa-a884-3e3411383870",
+    "comment_id": "6733",
+    "idempotent_readback": true
+  },
+  "native-trivia_completion_audit": {
+    "task_id": "bd-3p18",
+    "audit_id": "c63fed98-5b3f-4fd6-a926-292c026bb697",
+    "comment_id": "6769",
+    "idempotent_readback": true
+  },
+  "build_log_tests": [],
+  "worker_status": "",
+  "parent_status": ""
+}

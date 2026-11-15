@@ -1,0 +1,20 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2200,
+  "id": "2b289a59-d9df-4df8-9504-b4e260c4239c",
+  "kind": "markdown",
+  "version": 2200,
+  "cell_etag": "cell:sha256:65148ecce6beb5685907c838e8c965bb67e32c6d74f0f339b7c92454e7d172ea",
+  "source": "## Accepted root extractor fix\n\nIntegrated into `main` at **`4d32f19d4`** after independent review with no findings. The rebuilt DuckDB **2.0.0** extension is `/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/build-4d32f19d4/spur_graph.duckdb_extension`, SHA256 **`be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892`**.\n\nValidation: **77 native tests**, **31 real DuckDB tests**, **14 qualifier controls** in Rust execution **160**, and **66 independent native/SQL fixtures**. The 52 frozen source files preserve nodes, spans, macro invocations and macro scopes exactly. Real SpurCode `Vec::new()` stays recorded with scope `Vec` and target NULL; local constructors/helpers and internal-comment paths resolve in the controlled cases.\n\nThe retained managed SQL process still has the baseline extension loaded. Load the corrected artifact in a fresh DuckDB 2.0.0 process and re-ingest with a new extractor-version key to refresh cached facts. The historical whole-project 12.48% rate was not recomputed; this remains heuristic extraction without compiler macro expansion. Earlier candidate cells are retained as evidence of the regressions found during review.",
+  "exec_count": null,
+  "status": "idle",
+  "outputs": [],
+  "metadata": {
+    "spur": {
+      "version": 2200,
+      "last_edited_by": "brain"
+    }
+  },
+  "output_indices": []
+}

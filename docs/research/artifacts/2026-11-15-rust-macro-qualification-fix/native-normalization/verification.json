@@ -1,0 +1,441 @@
+{
+  "task_id": "bd-2vu9",
+  "root_issue": "bd-38yz",
+  "plan_id": "455c060a-0257-473e-94e4-e7ac14ea7419",
+  "delegation_id": "9fe5433f2fdc4e6b",
+  "base_commit": "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+  "test_commit": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a",
+  "fix_commit": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d",
+  "changed_files": [
+    "crates/spur-graph/src/extract/languages.rs",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs"
+  ],
+  "source_sha256": {
+    "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+  },
+  "patch": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/repair.patch",
+  "patch_sha256": "8acfdb404f8c493de59c493a89b9139c00433780e91076f7a52a934fdf9479f0",
+  "clean_worker_tree": true,
+  "original_11_tests_byte_identical": true,
+  "native_green_total": 77,
+  "source99760_variants_resolved": 3,
+  "new_variants_resolved": 7,
+  "variant_matrix": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/variant-matrix.json",
+  "variant_matrix_sha256": "196361a98e1bbe3f3f672fe5754a95343dfe9c58bde7576d1be0178084a5eb8f",
+  "runs": [
+    {
+      "name": "red",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--test",
+        "rust_macro_qualified_calls"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "command_sha256": "9fd26b68c1a2bf2b6cdd9c5b8c5cf8d5e42a859322a29f06d49735a20f7807da",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "e48b43b3c32e8bc98dc445aab549c2757221cae7",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "30cc240dcb5ea74a4e9cc0d7a5b1acfe6cd43ae41160ed055a12673a63c16468",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "d4be71b3da0d0abb7c2d7e431a50710793b06659895ce55663d4ff9662815c10"
+      },
+      "started_utc": "2026-11-15T14:36:59.743147+00:00",
+      "exit_code": 200,
+      "finished_utc": "2026-11-15T14:37:21.363985+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/red.log",
+      "log_sha256": "2cefc36e636e91cab59af12f4f4495984b2c3e1faf7771dd12c768eaf7c92015",
+      "test_results": []
+    },
+    {
+      "name": "red-assertion",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--test",
+        "rust_macro_qualified_calls"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "command_sha256": "9fd26b68c1a2bf2b6cdd9c5b8c5cf8d5e42a859322a29f06d49735a20f7807da",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "e48b43b3c32e8bc98dc445aab549c2757221cae7",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "30cc240dcb5ea74a4e9cc0d7a5b1acfe6cd43ae41160ed055a12673a63c16468",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "d4be71b3da0d0abb7c2d7e431a50710793b06659895ce55663d4ff9662815c10"
+      },
+      "started_utc": "2026-11-15T14:37:31.691291+00:00",
+      "exit_code": 101,
+      "finished_utc": "2026-11-15T14:40:04.588292+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/red-assertion.log",
+      "log_sha256": "559f8a787646c188f578896c587090c2a94f11827c24c0da1810fc99eef8bd15",
+      "test_results": [
+        {
+          "status": "FAILED",
+          "passed": 14,
+          "failed": 6,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    {
+      "name": "green-focused",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--test",
+        "rust_macro_qualified_calls"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "command_sha256": "9fd26b68c1a2bf2b6cdd9c5b8c5cf8d5e42a859322a29f06d49735a20f7807da",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "e48b43b3c32e8bc98dc445aab549c2757221cae7",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "d4be71b3da0d0abb7c2d7e431a50710793b06659895ce55663d4ff9662815c10"
+      },
+      "started_utc": "2026-11-15T14:41:09.968657+00:00",
+      "exit_code": 101,
+      "finished_utc": "2026-11-15T14:42:36.306731+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/green-focused.log",
+      "log_sha256": "3ba0f38f66873ebc9223f2cfd181df10a8badce6f37d5baa204bc7f6c73bf0ce",
+      "test_results": [
+        {
+          "status": "FAILED",
+          "passed": 19,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    {
+      "name": "red-corrected",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--test",
+        "rust_macro_qualified_calls"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "command_sha256": "9fd26b68c1a2bf2b6cdd9c5b8c5cf8d5e42a859322a29f06d49735a20f7807da",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "30cc240dcb5ea74a4e9cc0d7a5b1acfe6cd43ae41160ed055a12673a63c16468",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+      },
+      "started_utc": "2026-11-15T14:43:26.082450+00:00",
+      "exit_code": 101,
+      "finished_utc": "2026-11-15T14:44:50.752759+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/red-corrected.log",
+      "log_sha256": "c6b57b47bda557e93607daeaa99e7601db50b3e2d66ee43d5a847c4011f65372",
+      "test_results": [
+        {
+          "status": "FAILED",
+          "passed": 14,
+          "failed": 6,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    {
+      "name": "green-corrected",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--test",
+        "rust_macro_qualified_calls"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+      "command_sha256": "9fd26b68c1a2bf2b6cdd9c5b8c5cf8d5e42a859322a29f06d49735a20f7807da",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+      },
+      "started_utc": "2026-11-15T14:45:01.393040+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-11-15T14:46:22.554824+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/green-corrected.log",
+      "log_sha256": "912b20594351ee9f06454fee77e673b10dc54feff9bb35239d67798945c8e3d7",
+      "test_results": [
+        {
+          "status": "ok",
+          "passed": 20,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    {
+      "name": "green-related",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--test",
+        "rust_macro_token_tree_query",
+        "--test",
+        "rust_lexical_calls",
+        "--test",
+        "rust_receiver_resolution",
+        "--test",
+        "extract_file_facts"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1",
+        "SPUR_SYNC_FULL": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_token_tree_query --test rust_lexical_calls --test rust_receiver_resolution --test extract_file_facts",
+      "command_sha256": "f29d97faed50246c89f7cd09f985cc2167ad877f899d1b549d091c8aac5d0326",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+      },
+      "started_utc": "2026-11-15T14:46:38.116532+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-11-15T14:48:23.502921+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/green-related.log",
+      "log_sha256": "7f5d3c2fa5a7b3a9e34ae0b4c2c1d3ec5e22f4a3f2c5d6729021a0f42a0261f8",
+      "test_results": [
+        {
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 21,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    {
+      "name": "green-lib-macro",
+      "argv": [
+        "scripts/spur-cargo",
+        "test",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "--lib",
+        "macro"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1",
+        "SPUR_SYNC_FULL": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_SYNC_FULL=1 scripts/spur-cargo test -p spur-graph --no-default-features --lib macro",
+      "command_sha256": "afe2ecbb2de7e69493551e25e0fbd2b8ce5da62c7f23321c1ca31f01b0da9b1d",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+      },
+      "started_utc": "2026-11-15T14:48:45.477231+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-11-15T14:49:54.786965+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/green-lib-macro.log",
+      "log_sha256": "5f18dcb88280414492a46b5a2be04b26d824f6c4e85cb15ecd243047252051b1",
+      "test_results": [
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 590
+        }
+      ]
+    },
+    {
+      "name": "fmt-complete",
+      "argv": [
+        "scripts/spur-cargo",
+        "fmt",
+        "--package",
+        "spur-graph",
+        "--",
+        "--check"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "0"
+      },
+      "command": "SPUR_REMOTE=0 scripts/spur-cargo fmt --package spur-graph -- --check",
+      "command_sha256": "981af9b1bc1d3c8e8e7115f329bf923de89af066dc6ec5bb5724ca46e3d91a54",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "102ff51ee7ded958be616f0b93e9d7b5efd6d02a",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+      },
+      "started_utc": "2026-11-15T14:47:06.070348+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-11-15T14:47:06.996580+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/fmt-complete.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    },
+    {
+      "name": "diff-check-complete",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "99760f54763a2cb365f0223f4e7a2af7e0e09c2c",
+        "HEAD"
+      ],
+      "environment": {
+        "SPUR_REMOTE": "1",
+        "SPUR_NO_LOCAL_FALLBACK": "1"
+      },
+      "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 git diff --check 99760f54763a2cb365f0223f4e7a2af7e0e09c2c HEAD",
+      "command_sha256": "b1b374a87a9408c1e27eb7fe475eeed57f5fe6116e436d1d508ec042275fa1e7",
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/a806a3da-d19b-4615-85c9-c1b522a50ae8",
+      "head": "4d32f19d4fb99893b5d713d8bf6fa12a60de669d",
+      "source_sha256": {
+        "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+        "crates/spur-graph/tests/rust_macro_qualified_calls.rs": "feda6ce2ba87e1127b8335d7e666d432c8b267d5f0ad04f1a766260011286c53"
+      },
+      "started_utc": "2026-11-15T14:50:16.349085+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-11-15T14:50:16.361584+00:00",
+      "log": "/private/tmp/bd-2vu9-macro-path.uz7f_5h5/diff-check-complete.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    }
+  ],
+  "fixture_inputs": [
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation/R1/held-out.rs",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation/R1/held-out.rs",
+      "sha256": "b7f418ce0597709b3b8f5e95fdc14cbba6babddb803a8ba7b1c9c5b11d9e972c",
+      "restored": false
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fixtures/receivers/lib.rs",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation-grounding/grounding/fixtures/receivers/lib.rs",
+      "sha256": "0bab872b895ba47002a91d79bb1a83e2385cb00df37f1688d438d7a0db9d93db",
+      "restored": false
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation-grounding/semantics/fixtures/lib.rs",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation-grounding/semantics/fixtures/lib.rs",
+      "sha256": "8cdea6c59781e165b66eb063be444cf80452b8fba35128456964e6f19d61263f",
+      "restored": false
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation/R2/oracle.json",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation/R2/oracle.json",
+      "sha256": "d05d69eb6d99c4f0f5cc36c179245e7a0ccc5e8ec2692a1d034973460b60a70f",
+      "restored": false
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-2/cases.json",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-2/cases.json",
+      "sha256": "6bf8b537550474fa03be5d35bd393f785658a260bcfb9537b2367f9c1b0743fa",
+      "restored": false
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-3/cases.json",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation/R2/attempt-3/cases.json",
+      "sha256": "cde4a142c451c17cc5a7a68d465aa7b987e33b28f181289f6ac7b105856e4427",
+      "restored": false
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-01-panic-implementation/R2C/cases.json",
+      "source": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-01-panic-implementation/R2C/cases.json",
+      "sha256": "be7fec8324b906a2d984eb73f0831575981cfc528ba5532cd7edf54ff52c83d5",
+      "restored": false
+    }
+  ],
+  "solve": "TDD-only per parent catalog: no syntax rule or invented bounded choice.",
+  "retained_failures": {
+    "red": "Sandbox AWS endpoint unavailable; no tests ran; retried remote with network access.",
+    "green-focused": "All seven reviewer variants passed, but the mixed fixture wrongly expected bare deep to resolve among three candidates. Corrected unique helper control, amended test-only commit, restored exact baseline and repeated remote assertion RED before restoring production. No resolver change."
+  },
+  "baseline_caveat": "Supplied old-extension baseline-path-results.json has all_comments=[]; do not infer 7/7 old-extension bindings from that file. Matrix uses actual 99760 evidence and committed remote tests.",
+  "warnings": "Known unrelated dead-code warnings: integration builds as_bool and SymbolEmbedder::new; lib-test build file_oid_match_after_first_stat and as_bool. No repair warnings.",
+  "limits": [
+    "Parent owns rebuilt binary/extension, notebook SQL and frozen-file checks.",
+    "No main integration, approval, or issue closure.",
+    "New matrix records assertions from public BytesExtractor/filesystem tests, not a rebuilt SQL artifact."
+  ],
+  "beads_audits_before_completion": [
+    "6802",
+    "6808",
+    "6809"
+  ]
+}

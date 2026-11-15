@@ -1,0 +1,2044 @@
+{
+  "mode": "fixed",
+  "duckdb_version": "2.0.0",
+  "extension": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/candidate-9a05457df/spur_graph.duckdb_extension",
+  "extension_sha256": "4e060324485b257768b7d5b2c33cc01150932cf1776f6edb2a5f4495de5687f8",
+  "snapshot_sha256": "c5506839a23ef728e4bec81d44e70083ea671709d38caa3d3ba7d89ddb8bc11e",
+  "control_sha256": "fc5406252c2d794f43ee42b2ab02006d43d556931487b94a0d71b72042ba99e6",
+  "validator_sha256": "b9084977b4c1f19c9a2cb6054a5acc4804e31315d4dce12da903054568eab208",
+  "receipts": [
+    {
+      "name": "schema",
+      "sql": "SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_catalog='frozen' AND table_name IN ('facts','sources','edges','inventory') ORDER BY table_name,ordinal_position",
+      "params": [],
+      "rows": [
+        {
+          "table_name": "edges",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "edge_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "source_node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "target_node_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "relation",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "target_label",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "import_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "receiver_text",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "scope_text",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "confidence",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "confidence_score",
+          "data_type": "FLOAT"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "edge_kind",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "bind_method",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "evidence_id",
+          "data_type": "UBIGINT"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "directed",
+          "data_type": "BOOLEAN"
+        },
+        {
+          "table_name": "edges",
+          "column_name": "change_kind",
+          "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+        },
+        {
+          "table_name": "facts",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "facts",
+          "column_name": "value",
+          "data_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "git_blob_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "bytes",
+          "data_type": "BIGINT"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "suffix",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "area",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "status",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "inventory",
+          "column_name": "error",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "logical_path",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "source",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "source_bytes",
+          "data_type": "BLOB"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "file_oid",
+          "data_type": "VARCHAR"
+        },
+        {
+          "table_name": "sources",
+          "column_name": "sha256",
+          "data_type": "VARCHAR"
+        }
+      ]
+    },
+    {
+      "name": "runtime",
+      "sql": "SELECT version() AS version",
+      "params": [],
+      "rows": [
+        {
+          "version": "v2.0.0"
+        }
+      ]
+    },
+    {
+      "name": "loaded_extension",
+      "sql": "SELECT extension_name,loaded,extension_version FROM duckdb_extensions() WHERE extension_name='spur_graph'",
+      "params": [],
+      "rows": [
+        {
+          "extension_name": "spur_graph",
+          "loaded": true,
+          "extension_version": "0.1.0"
+        }
+      ]
+    },
+    {
+      "name": "full_control_facts",
+      "sql": "SELECT value FROM control",
+      "params": [],
+      "rows": [
+        {
+          "value": {
+            "nodes": [
+              {
+                "node_id": 1,
+                "stable_key": "f205ef7e198d0fd5",
+                "label": "control.rs",
+                "kind": "file",
+                "file_id": 1,
+                "source_span_id": 1,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 2,
+                "stable_key": "3c7fda8a2e3626b4",
+                "label": "LocalFactory",
+                "kind": "struct",
+                "file_id": 1,
+                "source_span_id": 2,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 3,
+                "stable_key": "114767284a82939c",
+                "label": "LocalFactory",
+                "kind": "impl",
+                "file_id": 1,
+                "source_span_id": 3,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 4,
+                "stable_key": "63a91267226dc547",
+                "label": "new",
+                "kind": "method",
+                "file_id": 1,
+                "source_span_id": 4,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 5,
+                "stable_key": "8321851a059c7ad3",
+                "label": "LocalDropper",
+                "kind": "struct",
+                "file_id": 1,
+                "source_span_id": 5,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 6,
+                "stable_key": "049a553b43ebbb24",
+                "label": "Drop for LocalDropper",
+                "kind": "impl",
+                "file_id": 1,
+                "source_span_id": 6,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 7,
+                "stable_key": "34e817d37faeca50",
+                "label": "drop",
+                "kind": "method",
+                "file_id": 1,
+                "source_span_id": 7,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 8,
+                "stable_key": "25ea3ee2c3f58f0c",
+                "label": "observed_macro",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 8,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 9,
+                "stable_key": "06a96f015404fa1f",
+                "label": "observed_drop",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 9,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 10,
+                "stable_key": "1384aa0dd2f883c2",
+                "label": "helper",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 10,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 11,
+                "stable_key": "d3fabc424e8513c5",
+                "label": "observed_helper",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 11,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 12,
+                "stable_key": "a7405dce95614bc3",
+                "label": "main",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 12,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 13,
+                "stable_key": "0d06e65e870cea6a",
+                "label": "consume",
+                "kind": "macro",
+                "file_id": 1,
+                "source_span_id": 13,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 14,
+                "stable_key": "132f2c7bb27e3f61",
+                "label": "observed_local_macro",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 14,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 15,
+                "stable_key": "2dbad56ed204f47d",
+                "label": "observed_mixed_macro",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 15,
+                "first_seen_run_id": 1
+              }
+            ],
+            "edges": [
+              {
+                "edge_id": 1,
+                "source_node_id": 1,
+                "target_node_id": 2,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 1,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 2,
+                "source_node_id": 1,
+                "target_node_id": 3,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 2,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 3,
+                "source_node_id": 3,
+                "target_node_id": 4,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 3,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 4,
+                "source_node_id": 3,
+                "target_node_id": 4,
+                "relation": "defines",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "heuristic",
+                "confidence_score": 0.5,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 4,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 5,
+                "source_node_id": 1,
+                "target_node_id": 5,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 5,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 6,
+                "source_node_id": 1,
+                "target_node_id": 6,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 6,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 7,
+                "source_node_id": 6,
+                "target_node_id": 7,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 7,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 8,
+                "source_node_id": 6,
+                "target_node_id": 7,
+                "relation": "defines",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "heuristic",
+                "confidence_score": 0.5,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 8,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 9,
+                "source_node_id": 1,
+                "target_node_id": 8,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 9,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 10,
+                "source_node_id": 1,
+                "target_node_id": 9,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 10,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 11,
+                "source_node_id": 1,
+                "target_node_id": 10,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 11,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 12,
+                "source_node_id": 1,
+                "target_node_id": 11,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 12,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 13,
+                "source_node_id": 1,
+                "target_node_id": 12,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 13,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 14,
+                "source_node_id": 1,
+                "target_node_id": 13,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 14,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 15,
+                "source_node_id": 1,
+                "target_node_id": 14,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 15,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 16,
+                "source_node_id": 1,
+                "target_node_id": 15,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 16,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 17,
+                "source_node_id": 9,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "lock",
+                "import_path": null,
+                "receiver_text": "lock",
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 17,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 18,
+                "source_node_id": 9,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "unwrap",
+                "import_path": null,
+                "receiver_text": "lock.lock()",
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 18,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 19,
+                "source_node_id": 9,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "drop",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 19,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 20,
+                "source_node_id": 6,
+                "target_node_id": null,
+                "relation": "implements",
+                "target_label": "Drop",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "heuristic",
+                "confidence_score": 0.5,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 20,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 21,
+                "source_node_id": 8,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "default",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": "Vec",
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 21,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 22,
+                "source_node_id": 8,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "new",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": "Vec",
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 22,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 23,
+                "source_node_id": 9,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "new",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": "std::sync::Mutex",
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 23,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 24,
+                "source_node_id": 11,
+                "target_node_id": 10,
+                "relation": "calls",
+                "target_label": "helper",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": "singleton",
+                "evidence_id": 24,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 25,
+                "source_node_id": 12,
+                "target_node_id": 14,
+                "relation": "calls",
+                "target_label": "observed_local_macro",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": "singleton",
+                "evidence_id": 25,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 26,
+                "source_node_id": 12,
+                "target_node_id": 15,
+                "relation": "calls",
+                "target_label": "observed_mixed_macro",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": "singleton",
+                "evidence_id": 26,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 27,
+                "source_node_id": 12,
+                "target_node_id": 8,
+                "relation": "calls",
+                "target_label": "observed_macro",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": "singleton",
+                "evidence_id": 27,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 28,
+                "source_node_id": 12,
+                "target_node_id": 9,
+                "relation": "calls",
+                "target_label": "observed_drop",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": "singleton",
+                "evidence_id": 28,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 29,
+                "source_node_id": 12,
+                "target_node_id": 11,
+                "relation": "calls",
+                "target_label": "observed_helper",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": "macro_body_singleton",
+                "evidence_id": 29,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 30,
+                "source_node_id": 14,
+                "target_node_id": 4,
+                "relation": "calls",
+                "target_label": "new",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": "LocalFactory",
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": "macro_body_singleton",
+                "evidence_id": 30,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 31,
+                "source_node_id": 15,
+                "target_node_id": null,
+                "relation": "calls",
+                "target_label": "new",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": "Vec::<u8>",
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 31,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 32,
+                "source_node_id": 15,
+                "target_node_id": 4,
+                "relation": "calls",
+                "target_label": "new",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": "LocalFactory",
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": "macro_body_singleton",
+                "evidence_id": 32,
+                "directed": true,
+                "change_kind": null
+              },
+              {
+                "edge_id": 33,
+                "source_node_id": 15,
+                "target_node_id": 10,
+                "relation": "calls",
+                "target_label": "helper",
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "heuristic",
+                "confidence_score": 0.800000011920929,
+                "edge_kind": null,
+                "bind_method": "macro_body_singleton",
+                "evidence_id": 33,
+                "directed": true,
+                "change_kind": null
+              }
+            ],
+            "spans": [
+              {
+                "span_id": 1,
+                "file_id": 1,
+                "start_byte": 0,
+                "end_byte": 893,
+                "start_line": 1,
+                "end_line": 35
+              },
+              {
+                "span_id": 2,
+                "file_id": 1,
+                "start_byte": 21,
+                "end_byte": 41,
+                "start_line": 2,
+                "end_line": 2
+              },
+              {
+                "span_id": 3,
+                "file_id": 1,
+                "start_byte": 42,
+                "end_byte": 93,
+                "start_line": 3,
+                "end_line": 5
+              },
+              {
+                "span_id": 4,
+                "file_id": 1,
+                "start_byte": 66,
+                "end_byte": 91,
+                "start_line": 4,
+                "end_line": 4
+              },
+              {
+                "span_id": 5,
+                "file_id": 1,
+                "start_byte": 94,
+                "end_byte": 114,
+                "start_line": 6,
+                "end_line": 6
+              },
+              {
+                "span_id": 6,
+                "file_id": 1,
+                "start_byte": 115,
+                "end_byte": 171,
+                "start_line": 7,
+                "end_line": 9
+              },
+              {
+                "span_id": 7,
+                "file_id": 1,
+                "start_byte": 148,
+                "end_byte": 169,
+                "start_line": 8,
+                "end_line": 8
+              },
+              {
+                "span_id": 8,
+                "file_id": 1,
+                "start_byte": 172,
+                "end_byte": 273,
+                "start_line": 10,
+                "end_line": 13
+              },
+              {
+                "span_id": 9,
+                "file_id": 1,
+                "start_byte": 274,
+                "end_byte": 396,
+                "start_line": 14,
+                "end_line": 18
+              },
+              {
+                "span_id": 10,
+                "file_id": 1,
+                "start_byte": 397,
+                "end_byte": 423,
+                "start_line": 19,
+                "end_line": 19
+              },
+              {
+                "span_id": 11,
+                "file_id": 1,
+                "start_byte": 424,
+                "end_byte": 466,
+                "start_line": 20,
+                "end_line": 20
+              },
+              {
+                "span_id": 12,
+                "file_id": 1,
+                "start_byte": 467,
+                "end_byte": 653,
+                "start_line": 21,
+                "end_line": 28
+              },
+              {
+                "span_id": 13,
+                "file_id": 1,
+                "start_byte": 655,
+                "end_byte": 738,
+                "start_line": 30,
+                "end_line": 32
+              },
+              {
+                "span_id": 14,
+                "file_id": 1,
+                "start_byte": 739,
+                "end_byte": 803,
+                "start_line": 33,
+                "end_line": 33
+              },
+              {
+                "span_id": 15,
+                "file_id": 1,
+                "start_byte": 804,
+                "end_byte": 892,
+                "start_line": 34,
+                "end_line": 34
+              }
+            ],
+            "macro_invocations": [
+              {
+                "site_id": "e93f8f27acd54059d0e1dcee29085fb16b54c3e7480c7cf0d9fb5d5060c5f70f",
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "caller_stable_symbol_id": "25ea3ee2c3f58f0c",
+                "enclosing": {
+                  "stable_symbol_id": "25ea3ee2c3f58f0c",
+                  "kind": "function"
+                },
+                "raw_macro_path": "assert_eq",
+                "normalized_macro_path": "assert_eq",
+                "byte_range": [
+                  240,
+                  270
+                ],
+                "line_range": [
+                  12,
+                  12
+                ],
+                "attributes": [
+                  {
+                    "raw_text": "#![allow(dead_code)]",
+                    "owner": {
+                      "stable_symbol_id": "f205ef7e198d0fd5",
+                      "kind": "file"
+                    },
+                    "byte_range": [
+                      0,
+                      20
+                    ],
+                    "line_range": [
+                      1,
+                      1
+                    ]
+                  }
+                ],
+                "test_context": "unspecified",
+                "debug_assertions_candidate": false,
+                "execution_phase": "function_body_syntax",
+                "resolution": {
+                  "kind": "unresolved",
+                  "definition": null
+                },
+                "sink_family_candidate": "assertion"
+              },
+              {
+                "site_id": "a219a2f2fd30392701a7793c8b40029ec3f43f15036a3cddbc7e595d30fceb62",
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "caller_stable_symbol_id": "a7405dce95614bc3",
+                "enclosing": {
+                  "stable_symbol_id": "a7405dce95614bc3",
+                  "kind": "function"
+                },
+                "raw_macro_path": "assert_eq",
+                "normalized_macro_path": "assert_eq",
+                "byte_range": [
+                  582,
+                  614
+                ],
+                "line_range": [
+                  26,
+                  26
+                ],
+                "attributes": [
+                  {
+                    "raw_text": "#![allow(dead_code)]",
+                    "owner": {
+                      "stable_symbol_id": "f205ef7e198d0fd5",
+                      "kind": "file"
+                    },
+                    "byte_range": [
+                      0,
+                      20
+                    ],
+                    "line_range": [
+                      1,
+                      1
+                    ]
+                  }
+                ],
+                "test_context": "unspecified",
+                "debug_assertions_candidate": false,
+                "execution_phase": "function_body_syntax",
+                "resolution": {
+                  "kind": "unresolved",
+                  "definition": null
+                },
+                "sink_family_candidate": "assertion"
+              },
+              {
+                "site_id": "288938cf974ae490dfd9c1a6f902c094afbaa0419ee42c4754a28bc6bb2ecac4",
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "caller_stable_symbol_id": "a7405dce95614bc3",
+                "enclosing": {
+                  "stable_symbol_id": "a7405dce95614bc3",
+                  "kind": "function"
+                },
+                "raw_macro_path": "println",
+                "normalized_macro_path": "println",
+                "byte_range": [
+                  620,
+                  650
+                ],
+                "line_range": [
+                  27,
+                  27
+                ],
+                "attributes": [
+                  {
+                    "raw_text": "#![allow(dead_code)]",
+                    "owner": {
+                      "stable_symbol_id": "f205ef7e198d0fd5",
+                      "kind": "file"
+                    },
+                    "byte_range": [
+                      0,
+                      20
+                    ],
+                    "line_range": [
+                      1,
+                      1
+                    ]
+                  }
+                ],
+                "test_context": "unspecified",
+                "debug_assertions_candidate": false,
+                "execution_phase": "function_body_syntax",
+                "resolution": {
+                  "kind": "unresolved",
+                  "definition": null
+                },
+                "sink_family_candidate": null
+              },
+              {
+                "site_id": "542b6766973f6199ee444c165a2cc515c8e0501df1440ff10f9b8e7879b19737",
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "caller_stable_symbol_id": "132f2c7bb27e3f61",
+                "enclosing": {
+                  "stable_symbol_id": "132f2c7bb27e3f61",
+                  "kind": "function"
+                },
+                "raw_macro_path": "vec",
+                "normalized_macro_path": "vec",
+                "byte_range": [
+                  775,
+                  800
+                ],
+                "line_range": [
+                  33,
+                  33
+                ],
+                "attributes": [
+                  {
+                    "raw_text": "#![allow(dead_code)]",
+                    "owner": {
+                      "stable_symbol_id": "f205ef7e198d0fd5",
+                      "kind": "file"
+                    },
+                    "byte_range": [
+                      0,
+                      20
+                    ],
+                    "line_range": [
+                      1,
+                      1
+                    ]
+                  }
+                ],
+                "test_context": "unspecified",
+                "debug_assertions_candidate": false,
+                "execution_phase": "function_body_syntax",
+                "resolution": {
+                  "kind": "unresolved",
+                  "definition": null
+                },
+                "sink_family_candidate": null
+              },
+              {
+                "site_id": "543f1ddb3bd8be922b8c1f91fe701fd7ac6289c2b66b16ba0a37fc04c1390f90",
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "caller_stable_symbol_id": "2dbad56ed204f47d",
+                "enclosing": {
+                  "stable_symbol_id": "2dbad56ed204f47d",
+                  "kind": "function"
+                },
+                "raw_macro_path": "consume",
+                "normalized_macro_path": "consume",
+                "byte_range": [
+                  832,
+                  889
+                ],
+                "line_range": [
+                  34,
+                  34
+                ],
+                "attributes": [
+                  {
+                    "raw_text": "#![allow(dead_code)]",
+                    "owner": {
+                      "stable_symbol_id": "f205ef7e198d0fd5",
+                      "kind": "file"
+                    },
+                    "byte_range": [
+                      0,
+                      20
+                    ],
+                    "line_range": [
+                      1,
+                      1
+                    ]
+                  }
+                ],
+                "test_context": "unspecified",
+                "debug_assertions_candidate": false,
+                "execution_phase": "function_body_syntax",
+                "resolution": {
+                  "kind": "local_definition_candidate",
+                  "definition": {
+                    "file_path": "control.rs",
+                    "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                    "byte_range": [
+                      655,
+                      738
+                    ],
+                    "line_range": [
+                      30,
+                      32
+                    ]
+                  }
+                },
+                "sink_family_candidate": null
+              }
+            ],
+            "macro_scopes": [
+              {
+                "scope": {
+                  "stable_symbol_id": "132f2c7bb27e3f61",
+                  "kind": "function"
+                },
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "byte_range": [
+                  739,
+                  803
+                ],
+                "line_range": [
+                  33,
+                  33
+                ]
+              },
+              {
+                "scope": {
+                  "stable_symbol_id": "25ea3ee2c3f58f0c",
+                  "kind": "function"
+                },
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "byte_range": [
+                  172,
+                  273
+                ],
+                "line_range": [
+                  10,
+                  13
+                ]
+              },
+              {
+                "scope": {
+                  "stable_symbol_id": "2dbad56ed204f47d",
+                  "kind": "function"
+                },
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "byte_range": [
+                  804,
+                  892
+                ],
+                "line_range": [
+                  34,
+                  34
+                ]
+              },
+              {
+                "scope": {
+                  "stable_symbol_id": "a7405dce95614bc3",
+                  "kind": "function"
+                },
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "byte_range": [
+                  467,
+                  653
+                ],
+                "line_range": [
+                  21,
+                  28
+                ]
+              },
+              {
+                "scope": {
+                  "stable_symbol_id": "f205ef7e198d0fd5",
+                  "kind": "file"
+                },
+                "file_path": "control.rs",
+                "source_oid": "da2ce78d87a193c8b8c75b37d6264e64674c03aa",
+                "byte_range": [
+                  0,
+                  893
+                ],
+                "line_range": [
+                  1,
+                  34
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "control_calls",
+      "sql": "WITH nodes AS (SELECT unnest(value.nodes) AS n FROM control),\nedges AS (SELECT unnest(value.edges) AS e FROM control)\nSELECT src.n.label AS caller, e.e.target_label, e.e.target_node_id, dst.n.label AS target_name,\nowner.n.label AS target_owner, e.e.scope_text, e.e.receiver_text, e.e.bind_method, e.e.confidence\nFROM edges e LEFT JOIN nodes src ON src.n.node_id=e.e.source_node_id\nLEFT JOIN nodes dst ON dst.n.node_id=e.e.target_node_id\nLEFT JOIN edges parent ON parent.e.target_node_id=dst.n.node_id AND parent.e.relation='contains'\nLEFT JOIN nodes owner ON owner.n.node_id=parent.e.source_node_id\nWHERE e.e.relation='calls' AND src.n.label IN ('observed_macro','observed_helper','observed_drop','observed_local_macro','observed_mixed_macro')\nORDER BY caller,e.e.target_label,e.e.scope_text NULLS FIRST",
+      "params": [],
+      "rows": [
+        {
+          "caller": "observed_drop",
+          "target_label": "drop",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": null,
+          "receiver_text": null,
+          "bind_method": null,
+          "confidence": "syntax_exact"
+        },
+        {
+          "caller": "observed_drop",
+          "target_label": "lock",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": null,
+          "receiver_text": "lock",
+          "bind_method": null,
+          "confidence": "syntax_exact"
+        },
+        {
+          "caller": "observed_drop",
+          "target_label": "new",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": "std::sync::Mutex",
+          "receiver_text": null,
+          "bind_method": null,
+          "confidence": "heuristic"
+        },
+        {
+          "caller": "observed_drop",
+          "target_label": "unwrap",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": null,
+          "receiver_text": "lock.lock()",
+          "bind_method": null,
+          "confidence": "syntax_exact"
+        },
+        {
+          "caller": "observed_helper",
+          "target_label": "helper",
+          "target_node_id": 10,
+          "target_name": "helper",
+          "target_owner": "control.rs",
+          "scope_text": null,
+          "receiver_text": null,
+          "bind_method": "singleton",
+          "confidence": "syntax_exact"
+        },
+        {
+          "caller": "observed_local_macro",
+          "target_label": "new",
+          "target_node_id": 4,
+          "target_name": "new",
+          "target_owner": "LocalFactory",
+          "scope_text": "LocalFactory",
+          "receiver_text": null,
+          "bind_method": "macro_body_singleton",
+          "confidence": "heuristic"
+        },
+        {
+          "caller": "observed_macro",
+          "target_label": "default",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": "Vec",
+          "receiver_text": null,
+          "bind_method": null,
+          "confidence": "heuristic"
+        },
+        {
+          "caller": "observed_macro",
+          "target_label": "new",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": "Vec",
+          "receiver_text": null,
+          "bind_method": null,
+          "confidence": "heuristic"
+        },
+        {
+          "caller": "observed_mixed_macro",
+          "target_label": "helper",
+          "target_node_id": 10,
+          "target_name": "helper",
+          "target_owner": "control.rs",
+          "scope_text": null,
+          "receiver_text": null,
+          "bind_method": "macro_body_singleton",
+          "confidence": "heuristic"
+        },
+        {
+          "caller": "observed_mixed_macro",
+          "target_label": "new",
+          "target_node_id": 4,
+          "target_name": "new",
+          "target_owner": "LocalFactory",
+          "scope_text": "LocalFactory",
+          "receiver_text": null,
+          "bind_method": "macro_body_singleton",
+          "confidence": "heuristic"
+        },
+        {
+          "caller": "observed_mixed_macro",
+          "target_label": "new",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": "Vec::<u8>",
+          "receiver_text": null,
+          "bind_method": null,
+          "confidence": "heuristic"
+        }
+      ]
+    },
+    {
+      "name": "selection",
+      "sql": "SELECT count(*) AS files,(SELECT count(*) FROM frozen.main.edges e JOIN frozen.main.inventory i ON i.path=e.logical_path WHERE i.suffix='.rs' AND e.relation='calls' AND e.bind_method='macro_body_singleton' AND e.target_label='new') AS original_macro_constructor_edges FROM selected_paths",
+      "params": [],
+      "rows": [
+        {
+          "files": 52,
+          "original_macro_constructor_edges": 120
+        }
+      ]
+    },
+    {
+      "name": "per_file_parity",
+      "sql": "SELECT f.logical_path,\nf.value.nodes IS NOT DISTINCT FROM old.value.nodes AS nodes_same,\nf.value.spans IS NOT DISTINCT FROM old.value.spans AS spans_same,\nf.value.macro_invocations IS NOT DISTINCT FROM old.value.macro_invocations AS invocations_same,\nf.value.macro_scopes IS NOT DISTINCT FROM old.value.macro_scopes AS scopes_same,\nf.value.edges IS NOT DISTINCT FROM old.value.edges AS edges_same,\nlen(f.value.edges) AS new_edges,len(old.value.edges) AS old_edges\nFROM fresh f JOIN frozen.main.facts old USING(logical_path) ORDER BY f.logical_path",
+      "params": [],
+      "rows": [
+        {
+          "logical_path": "crates/spur-acp/src/agent_model_catalog.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 262,
+          "old_edges": 262
+        },
+        {
+          "logical_path": "crates/spur-acp/src/capability_evidence.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 346,
+          "old_edges": 346
+        },
+        {
+          "logical_path": "crates/spur-acp/src/spur_agent_caps.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1507,
+          "old_edges": 1496
+        },
+        {
+          "logical_path": "crates/spur-acp/tests/agent_model_catalog.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 351,
+          "old_edges": 350
+        },
+        {
+          "logical_path": "crates/spur-bot/src/runtime.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 453,
+          "old_edges": 457
+        },
+        {
+          "logical_path": "crates/spur-bot/src/telegram/format.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 770,
+          "old_edges": 772
+        },
+        {
+          "logical_path": "crates/spur-code-eval/tests/materialize.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 567,
+          "old_edges": 582
+        },
+        {
+          "logical_path": "crates/spur-core/src/mcp/context_service.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 577,
+          "old_edges": 580
+        },
+        {
+          "logical_path": "crates/spur-core/src/orchestrator.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 505,
+          "old_edges": 505
+        },
+        {
+          "logical_path": "crates/spur-core/src/orchestrator/interactive_loop.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1862,
+          "old_edges": 1879
+        },
+        {
+          "logical_path": "crates/spur-core/src/plan/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 4072,
+          "old_edges": 4101
+        },
+        {
+          "logical_path": "crates/spur-core/src/plan/projector.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1602,
+          "old_edges": 1657
+        },
+        {
+          "logical_path": "crates/spur-core/src/plan/proposers.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 148,
+          "old_edges": 151
+        },
+        {
+          "logical_path": "crates/spur-core/src/skills/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 996,
+          "old_edges": 1002
+        },
+        {
+          "logical_path": "crates/spur-core/src/skills/projection/reconcile.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 2037,
+          "old_edges": 2039
+        },
+        {
+          "logical_path": "crates/spur-core/tests/plan_snapshot_events.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 295,
+          "old_edges": 295
+        },
+        {
+          "logical_path": "crates/spur-core/tests/worker_server_dispatch.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 689,
+          "old_edges": 694
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": true,
+          "new_edges": 449,
+          "old_edges": 449
+        },
+        {
+          "logical_path": "crates/spur-graph-duckdb/src/lib.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": true,
+          "new_edges": 267,
+          "old_edges": 267
+        },
+        {
+          "logical_path": "crates/spur-graph/src/bin/memory_benchmark.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1222,
+          "old_edges": 1230
+        },
+        {
+          "logical_path": "crates/spur-graph/src/extract/tree_sitter.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 3164,
+          "old_edges": 3169
+        },
+        {
+          "logical_path": "crates/spur-graph/src/mcp/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 5505,
+          "old_edges": 5518
+        },
+        {
+          "logical_path": "crates/spur-graph/src/overlay_watch.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 721,
+          "old_edges": 730
+        },
+        {
+          "logical_path": "crates/spur-graph/src/rust_evidence.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 433,
+          "old_edges": 443
+        },
+        {
+          "logical_path": "crates/spur-graph/src/schema.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 874,
+          "old_edges": 876
+        },
+        {
+          "logical_path": "crates/spur-interactive/src/data_loop.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 352,
+          "old_edges": 355
+        },
+        {
+          "logical_path": "crates/spur-mcp/src/local_projects/store.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 508,
+          "old_edges": 511
+        },
+        {
+          "logical_path": "crates/spur-solver/src/rules/families/data_integrity/compile.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1060,
+          "old_edges": 1066
+        },
+        {
+          "logical_path": "crates/spur-tui/src/components/command_input_query_source.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 81,
+          "old_edges": 81
+        },
+        {
+          "logical_path": "crates/spur-tui/src/components/input_bar.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1760,
+          "old_edges": 1770
+        },
+        {
+          "logical_path": "crates/spur-tui/src/components/input_completion.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 783,
+          "old_edges": 786
+        },
+        {
+          "logical_path": "crates/spur-tui/src/components/issues_panel.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 629,
+          "old_edges": 633
+        },
+        {
+          "logical_path": "crates/spur-tui/src/components/markdown_stream.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 928,
+          "old_edges": 929
+        },
+        {
+          "logical_path": "crates/spur-tui/src/components/palette_overlay.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 117,
+          "old_edges": 123
+        },
+        {
+          "logical_path": "crates/spur-tui/src/mentions/datasource_source.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 136,
+          "old_edges": 137
+        },
+        {
+          "logical_path": "crates/spur-tui/src/mentions/worker_source.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 110,
+          "old_edges": 112
+        },
+        {
+          "logical_path": "crates/spur-tui/src/views/dashboard/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 905,
+          "old_edges": 907
+        },
+        {
+          "logical_path": "crates/spur-tui/src/views/explore/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1532,
+          "old_edges": 1543
+        },
+        {
+          "logical_path": "crates/spur-tui/src/views/issue_browser.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1433,
+          "old_edges": 1467
+        },
+        {
+          "logical_path": "crates/spur-tui/src/views/plan_browser.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 892,
+          "old_edges": 914
+        },
+        {
+          "logical_path": "crates/spur-tui/src/views/plan_inspector.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 2294,
+          "old_edges": 2339
+        },
+        {
+          "logical_path": "crates/spur-tui/src/views/session_picker.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1573,
+          "old_edges": 1587
+        },
+        {
+          "logical_path": "crates/spur-tui/tests/dashboard_compact_ghost_harvest.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 212,
+          "old_edges": 212
+        },
+        {
+          "logical_path": "crates/spur-tui/tests/dynamic_ghost_text_harvest.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 203,
+          "old_edges": 203
+        },
+        {
+          "logical_path": "crates/spur-utilities/commands/src/registry.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 496,
+          "old_edges": 498
+        },
+        {
+          "logical_path": "crates/spur-utilities/commands/src/submit.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 227,
+          "old_edges": 227
+        },
+        {
+          "logical_path": "crates/spur-utilities/mentions/src/cache.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 106,
+          "old_edges": 109
+        },
+        {
+          "logical_path": "crates/spur-utilities/mentions/src/code/source.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 449,
+          "old_edges": 450
+        },
+        {
+          "logical_path": "crates/spur-utilities/mentions/tests/engine_seams.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 237,
+          "old_edges": 238
+        },
+        {
+          "logical_path": "crates/spur-worktree/src/manager.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 1801,
+          "old_edges": 1824
+        },
+        {
+          "logical_path": "vendor/ort/src/execution_providers/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 198,
+          "old_edges": 199
+        },
+        {
+          "logical_path": "vendor/ort/src/value/impl_tensor/mod.rs",
+          "nodes_same": true,
+          "spans_same": true,
+          "invocations_same": true,
+          "scopes_same": true,
+          "edges_same": false,
+          "new_edges": 237,
+          "old_edges": 236
+        }
+      ]
+    },
+    {
+      "name": "selected_call_counts",
+      "sql": "WITH old_edges AS (\nSELECT e.* FROM frozen.main.edges e JOIN selected_paths p USING(logical_path)),\nnew_edges AS (SELECT f.logical_path,unnest(f.value.edges) AS e FROM fresh f)\nSELECT 'baseline' AS version,count(*) AS calls,count(*) FILTER(WHERE target_node_id IS NOT NULL) AS local_targets\nFROM old_edges WHERE relation='calls'\nUNION ALL SELECT 'candidate',count(*),count(*) FILTER(WHERE e.target_node_id IS NOT NULL) FROM new_edges WHERE e.relation='calls'",
+      "params": [],
+      "rows": [
+        {
+          "version": "baseline",
+          "calls": 34591,
+          "local_targets": 5206
+        },
+        {
+          "version": "candidate",
+          "calls": 34224,
+          "local_targets": 5039
+        }
+      ]
+    },
+    {
+      "name": "real_constructor_control",
+      "sql": "WITH f AS (\nSELECT value FROM fresh WHERE logical_path='crates/spur-acp/src/capability_evidence.rs'),\nnodes AS (SELECT unnest(value.nodes) AS n FROM f),edges AS (SELECT unnest(value.edges) AS e FROM f)\nSELECT src.n.label AS caller,e.e.target_label,e.e.target_node_id,dst.n.label AS target_name,\nowner.n.label AS target_owner,e.e.scope_text,e.e.bind_method\nFROM edges e JOIN nodes src ON src.n.node_id=e.e.source_node_id\nLEFT JOIN nodes dst ON dst.n.node_id=e.e.target_node_id\nLEFT JOIN edges parent ON parent.e.target_node_id=dst.n.node_id AND parent.e.relation='contains'\nLEFT JOIN nodes owner ON owner.n.node_id=parent.e.source_node_id\nWHERE e.e.relation='calls' AND src.n.label='rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes'\nAND regexp_extract(e.e.target_label,'([^:]+)$',1)='new' ORDER BY e.e.scope_text NULLS FIRST",
+      "params": [],
+      "rows": [
+        {
+          "caller": "rejected_evidence_demotes_while_inconclusive_evidence_preserves_prior_routes",
+          "target_label": "new",
+          "target_node_id": null,
+          "target_name": null,
+          "target_owner": null,
+          "scope_text": "Vec",
+          "bind_method": null
+        }
+      ]
+    }
+  ],
+  "all_checks_passed": true,
+  "limits": "Selected files plus controlled fixtures; no full-corpus precision, recall or performance claim."
+}

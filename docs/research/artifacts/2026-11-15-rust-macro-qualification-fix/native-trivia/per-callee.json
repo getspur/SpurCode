@@ -1,0 +1,194 @@
+[
+  {
+    "caller": "plain",
+    "test": "plain_qualifier_keeps_constructor_scope",
+    "parent_baseline_row": {
+      "caller": "plain",
+      "scope": null,
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "parent_candidate_row": {
+      "caller": "plain",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "native_red_status": "ok",
+    "native_green_status": "ok",
+    "native_green_assertions": {
+      "scope_text": "Factory",
+      "target_declaration": "Factory::new",
+      "receiver_text": null,
+      "confidence": "Heuristic",
+      "confidence_score": 0.8,
+      "bind_method": "macro_body_singleton",
+      "bytes_filesystem_equality": true
+    },
+    "native_evidence_kind": "passing public-API assertions, not a serialized current extension export"
+  },
+  {
+    "caller": "spaced",
+    "test": "spaced_qualifier_keeps_constructor_scope",
+    "parent_baseline_row": {
+      "caller": "spaced",
+      "scope": null,
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "parent_candidate_row": {
+      "caller": "spaced",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "native_red_status": "ok",
+    "native_green_status": "ok",
+    "native_green_assertions": {
+      "scope_text": "Factory",
+      "target_declaration": "Factory::new",
+      "receiver_text": null,
+      "confidence": "Heuristic",
+      "confidence_score": 0.8,
+      "bind_method": "macro_body_singleton",
+      "bytes_filesystem_equality": true
+    },
+    "native_evidence_kind": "passing public-API assertions, not a serialized current extension export"
+  },
+  {
+    "caller": "block_before_separator",
+    "test": "block_comment_before_separator_keeps_constructor_scope",
+    "parent_baseline_row": {
+      "caller": "block_before_separator",
+      "scope": null,
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "parent_candidate_row": {
+      "caller": "block_before_separator",
+      "scope": "Factory /* qualifier */",
+      "target": null,
+      "target_name": null,
+      "owner": null,
+      "bind_method": null
+    },
+    "native_red_status": "FAILED",
+    "native_green_status": "ok",
+    "native_green_assertions": {
+      "scope_text": "Factory",
+      "target_declaration": "Factory::new",
+      "receiver_text": null,
+      "confidence": "Heuristic",
+      "confidence_score": 0.8,
+      "bind_method": "macro_body_singleton",
+      "bytes_filesystem_equality": true
+    },
+    "native_evidence_kind": "passing public-API assertions, not a serialized current extension export"
+  },
+  {
+    "caller": "line_before_separator",
+    "test": "line_comment_before_separator_keeps_constructor_scope",
+    "parent_baseline_row": {
+      "caller": "line_before_separator",
+      "scope": null,
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "parent_candidate_row": {
+      "caller": "line_before_separator",
+      "scope": "Factory // qualifier",
+      "target": null,
+      "target_name": null,
+      "owner": null,
+      "bind_method": null
+    },
+    "native_red_status": "FAILED",
+    "native_green_status": "ok",
+    "native_green_assertions": {
+      "scope_text": "Factory",
+      "target_declaration": "Factory::new",
+      "receiver_text": null,
+      "confidence": "Heuristic",
+      "confidence_score": 0.8,
+      "bind_method": "macro_body_singleton",
+      "bytes_filesystem_equality": true
+    },
+    "native_evidence_kind": "passing public-API assertions, not a serialized current extension export"
+  },
+  {
+    "caller": "block_after_separator",
+    "test": "block_comment_after_separator_keeps_constructor_scope",
+    "parent_baseline_row": {
+      "caller": "block_after_separator",
+      "scope": null,
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "parent_candidate_row": {
+      "caller": "block_after_separator",
+      "scope": "Factory",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "native_red_status": "ok",
+    "native_green_status": "ok",
+    "native_green_assertions": {
+      "scope_text": "Factory",
+      "target_declaration": "Factory::new",
+      "receiver_text": null,
+      "confidence": "Heuristic",
+      "confidence_score": 0.8,
+      "bind_method": "macro_body_singleton",
+      "bytes_filesystem_equality": true
+    },
+    "native_evidence_kind": "passing public-API assertions, not a serialized current extension export"
+  },
+  {
+    "caller": "via_self",
+    "test": "self_qualifier_keeps_constructor_scope",
+    "parent_baseline_row": {
+      "caller": "via_self",
+      "scope": null,
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "parent_candidate_row": {
+      "caller": "via_self",
+      "scope": "Self",
+      "target": 4,
+      "target_name": "new",
+      "owner": "Factory",
+      "bind_method": "macro_body_singleton"
+    },
+    "native_red_status": "ok",
+    "native_green_status": "ok",
+    "native_green_assertions": {
+      "scope_text": "Self",
+      "target_declaration": "Factory::new",
+      "receiver_text": null,
+      "confidence": "Heuristic",
+      "confidence_score": 0.8,
+      "bind_method": "macro_body_singleton",
+      "bytes_filesystem_equality": true
+    },
+    "native_evidence_kind": "passing public-API assertions, not a serialized current extension export"
+  }
+]

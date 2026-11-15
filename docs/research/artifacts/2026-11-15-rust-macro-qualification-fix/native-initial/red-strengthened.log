@@ -1,0 +1,102 @@
+[spur-cargo] remote (test) → aws-my VM
+[build] Worktree: spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2  (local=/Users/kevintruong/project/SpurCode/.spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2)
+[build] Remote:   ~/spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2   target=/mnt/cargo/targets/spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2   -j16
+[build] Remote build queue: admitted as ticket 2412 (slot 1/9) on spur-builder (3 slot(s)/builder, 3 builder(s)).
+[build] SSH transport: SSH-over-SSM (instance i-06738bf8035cc0dbc)
+[build] Waiting for SSH-over-SSM on i-06738bf8035cc0dbc...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk and process watchdogs...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   2839 files in sync manifest (unchanged content is not transferred)
+[build] Syncing to i-06738bf8035cc0dbc:~/spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2 ...
+[source-baseline] {"status": "warm"}
+[build] Reconstructing 1 tracked dangling symlink(s)...
+[build] Re-stamping 1 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no files removed locally since last sync
+[source-baseline] {"status": "published", "files": 2839, "tree_hash": "f50a38386c7052262074d7802e503ddb70af8cf09b0cea655535c746a5f23425"}
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] test -p spur-graph --no-default-features --test rust_macro_qualified_calls  -j16  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] ensuring pinned toolchain (serialized)
+   Compiling spur-graph v1.24.0 (/home/admin/spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2/crates/spur-graph)
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.61s
+     Running tests/rust_macro_qualified_calls.rs (/mnt/cargo/targets/spur/worktrees/3047294f-40ce-4359-9ccb-8c78fe685cf2/debug/deps/rust_macro_qualified_calls-3b78644b132eda90)
+
+running 5 tests
+test local_constructor_and_bare_helper_keep_macro_heuristics ... FAILED
+test nested_token_trees_keep_each_call_scope ... FAILED
+test same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved ... FAILED
+test qualified_and_turbofish_paths_preserve_explicit_scope ... FAILED
+test recorded_vec_constructor_never_binds_to_local_factory ... FAILED
+
+failures:
+
+---- local_constructor_and_bare_helper_keep_macro_heuristics stdout ----
+
+thread 'local_constructor_and_bare_helper_keep_macro_heuristics' (32878) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:92:5:
+assertion `left == right` failed: caller: Some("LocalFactory")::new: []
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- nested_token_trees_keep_each_call_scope stdout ----
+
+thread 'nested_token_trees_keep_each_call_scope' (32879) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:92:5:
+assertion `left == right` failed: caller: Some("Vec")::new: []
+  left: 0
+ right: 1
+
+---- same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved stdout ----
+
+thread 'same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved' (32882) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:92:5:
+assertion `left == right` failed: caller: Some("Alpha")::new: []
+  left: 0
+ right: 1
+
+---- qualified_and_turbofish_paths_preserve_explicit_scope stdout ----
+
+thread 'qualified_and_turbofish_paths_preserve_explicit_scope' (32880) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:92:5:
+assertion `left == right` failed: caller: Some("::foreign")::helper: []
+  left: 0
+ right: 1
+
+---- recorded_vec_constructor_never_binds_to_local_factory stdout ----
+
+thread 'recorded_vec_constructor_never_binds_to_local_factory' (32881) panicked at crates/spur-graph/tests/rust_macro_qualified_calls.rs:117:5:
+assertion `left == right` failed: Vec::new must not bind LocalFactory::new
+  left: Some(NodeId(4))
+ right: None
+
+
+failures:
+    local_constructor_and_bare_helper_keep_macro_heuristics
+    nested_token_trees_keep_each_call_scope
+    qualified_and_turbofish_paths_preserve_explicit_scope
+    recorded_vec_constructor_never_binds_to_local_factory
+    same_macro_keeps_distinct_qualifiers_and_foreign_leaf_unresolved
+
+test result: FAILED. 0 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p spur-graph --test rust_macro_qualified_calls`
+[build] Remote build queue: released ticket 00000000000000002412.
+[spur-cargo] remote cargo exited 101 on aws-my — propagating (not a VM-availability issue)

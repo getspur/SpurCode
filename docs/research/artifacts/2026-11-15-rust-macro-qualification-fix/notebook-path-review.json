@@ -1,0 +1,41 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 2183,
+  "id": "004162a4-002b-42ef-a787-f1c840b645c9",
+  "kind": "code",
+  "version": 2178,
+  "cell_etag": "cell:sha256:7d147090e4e2b0f0e60200e5dce813012fbee230886f189a937cc1989e9d47d2",
+  "source": "{\n let art=std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix\");\n let source=art.join(\"path-probes.rs\"); let binary=art.join(\"path-probes\");\n let args=vec![\"--edition=2021\",\"--crate-name\",\"path_probes\",source.to_str().unwrap(),\"-o\",binary.to_str().unwrap()];\n let compiled=std::process::Command::new(\"rustc\").env(\"RUSTUP_TOOLCHAIN\",\"1.94.1\").args(&args).output()?;\n std::fs::write(art.join(\"path-compiler.stderr.txt\"),&compiled.stderr)?;\n assert!(compiled.status.success(),\"Multi-segment fixture must compile\");\n let run=std::process::Command::new(&binary).output()?;\n assert!(run.status.success() && run.stdout==b\"path-probes-ok\\n\");\n std::fs::write(art.join(\"path-compiler.json\"),serde_json::to_vec_pretty(&serde_json::json!({\"rustup_toolchain\":\"1.94.1\",\"argv\":args,\"compile_exit\":compiled.status.code(),\"run_exit\":run.status.code(),\"run_stdout\":String::from_utf8_lossy(&run.stdout)}))?)?;\n for (name,extension) in [\n (\"baseline\",\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension\"),\n (\"99760f547\",\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-rust-macro-qualification-fix/final-99760f547/spur_graph.duckdb_extension\")\n ] {\n  let output=art.join(format!(\"path-review-notebook-{name}.json\"));\n  let args=vec![art.join(\"probe_paths.py\").to_str().unwrap().to_owned(),\"--extension\".to_owned(),extension.to_owned(),\"--output\".to_owned(),output.to_str().unwrap().to_owned()];\n  let r=std::process::Command::new(\"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\").args(&args).output()?;\n  std::fs::write(art.join(format!(\"path-review-notebook-{name}.stderr.txt\")),&r.stderr)?;\n  assert!(r.status.success(),\"Diagnostic process failed\");\n  let report:serde_json::Value=serde_json::from_slice(&std::fs::read(&output)?)?;\n  println!(\"{}: {}\",name,report[\"cases\"]);\n }\n}",
+  "exec_count": 159,
+  "status": "success",
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": [
+        "baseline: {\"all_comments\":false,\"foreign_standard\":false,\"internal_block\":true,\"internal_line\":true,\"plain\":true,\"spaces\":true,\"trailing_block\":true,\"trailing_line\":true}\n",
+        "99760f547: {\"all_comments\":false,\"foreign_standard\":true,\"internal_block\":false,\"internal_line\":false,\"plain\":true,\"spaces\":false,\"trailing_block\":true,\"trailing_line\":true}\n"
+      ]
+    },
+    {
+      "output_type": "execute_result",
+      "execution_count": 159,
+      "data": {
+        "text/plain": "()"
+      },
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "spur": {
+      "version": 2178,
+      "last_edited_by": "brain",
+      "code_type": "rust"
+    }
+  },
+  "output_indices": [
+    0,
+    1
+  ]
+}

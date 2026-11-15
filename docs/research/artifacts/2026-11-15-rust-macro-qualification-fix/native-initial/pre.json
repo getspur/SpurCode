@@ -1,0 +1,44 @@
+{
+  "canonical_issue": "bd-2kmz",
+  "source_issue": "bd-38yz",
+  "plan_id": "1be54859-2f3f-4112-a861-831c3be27f44",
+  "delegation_id": "dc3a721110844605",
+  "base": "18ee71a2c5d02414d4617f964604d28c03c04ee6",
+  "test_commit": "08fed24010248119a0c883ed7cd65244a56b386a",
+  "files": {
+    "crates/spur-graph/src/extract/languages.rs": {
+      "sha256": "ea6b00cf91a242515ac04edccf56df752d3b8bd7759d3ab8a7664048c24dbd8f",
+      "git_oid": "d85171e95b45c161d70e4038422c7bdd5ede541d"
+    },
+    "crates/spur-graph/queries/rust/spur-edges.scm": {
+      "sha256": "b56133bfd9323ff9011476c54b5b91606b34a2dab2cb51f5e116264e3af46756",
+      "git_oid": "57be482f2f907afe57fbf4dec44de155babaac98"
+    },
+    "crates/spur-graph/src/extract/tree_sitter.rs": {
+      "sha256": "a05b8aab68ca9090084d98345f0b31b2101e37663d1b0674cb062d1546a7562c",
+      "git_oid": "09476ea2c0d9b6dc6d16e4c9e81165edc4c97b1e"
+    },
+    "crates/spur-graph/tests/rust_macro_qualified_calls.rs": {
+      "sha256": "adbab938be568b3a6a895d1c6ec8db48da7b942afd06d44207fa000f56e1c429",
+      "git_oid": "de68712daa1958f7a44f23bf704643780589c953"
+    }
+  },
+  "solve_pre": {
+    "source": "parent-approved spec/plan",
+    "catalog_inspected": "data_integrity",
+    "applicable_hard_rule": false,
+    "bounded_choice": false,
+    "route": "TDD-only"
+  },
+  "failed_preparation": {
+    "command": "SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --test rust_macro_qualified_calls",
+    "log": "red.log",
+    "exit_code": 200,
+    "classification": "sandbox network unavailable; no compiler/test execution"
+  },
+  "graph_fallback": {
+    "knowledge_context_pack_2": "timeout after 300s",
+    "code_read_symbol": "deadline 15000ms",
+    "fallback": "raw working-tree bytes and installed Rust grammar"
+  }
+}
