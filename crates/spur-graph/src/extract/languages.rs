@@ -1602,7 +1602,7 @@ fn rust_macro_callee(arguments: Node<'_>, source: &str) -> Option<(String, Optio
         let name = callee.child_by_field_name("name")?;
         let scope = callee
             .child_by_field_name("path")
-            .map(|path| child_text(path, source).to_owned());
+            .map(|path| macro_path_text(path, path, source));
         return Some((child_text(name, source).to_owned(), scope));
     }
     if callee.kind() != "identifier" {
@@ -1618,11 +1618,61 @@ fn rust_macro_callee(arguments: Node<'_>, source: &str) -> Option<(String, Optio
             if start == separator {
                 "::".to_owned()
             } else {
-                // Comments before `::` are trivia, not part of the qualifier.
-                source[start.start_byte()..end.end_byte()].trim().to_owned()
+                macro_path_text(start, end, source)
             }
         });
     Some((child_text(callee, source).to_owned(), scope))
+}
+
+fn macro_path_text(start: Node<'_>, end: Node<'_>, source: &str) -> String {
+    fn append<'tree>(
+        node: Node<'tree>,
+        source: &str,
+        text: &mut String,
+        previous: &mut Option<Node<'tree>>,
+    ) {
+        if matches!(node.kind(), "line_comment" | "block_comment") {
+            return;
+        }
+        if node.child_count() > 0 && !node.kind().ends_with("_literal") {
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                append(child, source, text, previous);
+            }
+        } else {
+            if let Some(before) = *previous {
+                // Path separators have one spelling regardless of trivia.
+                // Elsewhere retain token boundaries (e.g. `Type as Trait`),
+                // and leave literal contents to their actual syntax tokens.
+                if before.kind() != "::" && node.kind() != "::" {
+                    let gap = &source[before.end_byte()..node.start_byte()];
+                    if gap.chars().all(char::is_whitespace) {
+                        text.push_str(gap);
+                    } else {
+                        text.push(' ');
+                    }
+                }
+            }
+            text.push_str(child_text(node, source));
+            *previous = Some(node);
+        }
+    }
+
+    let mut tokens = Vec::new();
+    let mut token = Some(end);
+    while let Some(node) = token {
+        tokens.push(node);
+        if node == start {
+            break;
+        }
+        token = previous_macro_token(node);
+    }
+    let mut text = String::new();
+    let mut previous = None;
+    for node in tokens.into_iter().rev() {
+        append(node, source, &mut text, &mut previous);
+    }
+    text
 }
 
 fn previous_macro_token(mut node: Node<'_>) -> Option<Node<'_>> {
