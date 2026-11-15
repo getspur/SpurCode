@@ -9,7 +9,7 @@ use tree_sitter::{Parser, Point, Query, QueryCursor, Range, StreamingIterator as
 use crate::extract::languages::Language;
 use crate::extract::markdown::extract_markdown_contents;
 use crate::extract::tree_sitter::{
-    compile_queries, extract_file_contents_from_tree, relative_path, FactBuilder,
+    compile_queries, extract_file_contents_from_tree, relative_path, CompiledQueries, FactBuilder,
 };
 use crate::{FileId, GraphSymbolArtifact, NodeId, NodeKind, RelationKind};
 
@@ -78,6 +78,7 @@ pub(crate) fn extract_notebook_file(
 
     let mut port_nodes = HashMap::new();
     let mut anonymous_cell_ids = HashMap::new();
+    let mut query_cache = HashMap::new();
     for cell in cells {
         let cell_source = cell_source_text(cell);
         let cell_id = cell_id(cell, &cell_source, &mut anonymous_cell_ids);
@@ -110,6 +111,7 @@ pub(crate) fn extract_notebook_file(
                     language: Language::Markdown,
                     source: &cell_source,
                     port_nodes: &mut port_nodes,
+                    query_cache: &mut query_cache,
                 },
             )?;
             continue;
@@ -131,6 +133,7 @@ pub(crate) fn extract_notebook_file(
                         language,
                         source: &cell_source,
                         port_nodes: &mut port_nodes,
+                        query_cache: &mut query_cache,
                     },
                 )?;
             }
@@ -378,6 +381,7 @@ struct CellExtractInput<'a> {
     language: Language,
     source: &'a str,
     port_nodes: &'a mut HashMap<String, NodeId>,
+    query_cache: &'a mut HashMap<Language, CompiledQueries>,
 }
 
 fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> anyhow::Result<()> {
@@ -389,9 +393,17 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
         language,
         source,
         port_nodes,
+        query_cache,
     } = input;
     let config = language.config();
-    let queries = compile_queries(&config, language)?;
+    // Query definitions depend only on the language. Keep cursors and parsed
+    // trees local to each cell while reusing queries within this notebook.
+    let queries = match query_cache.entry(language) {
+        std::collections::hash_map::Entry::Occupied(entry) => entry.into_mut(),
+        std::collections::hash_map::Entry::Vacant(entry) => {
+            entry.insert(compile_queries(&config, language)?)
+        }
+    };
     let tree = parse_source(language, source)?;
 
     if language == Language::Markdown {
@@ -404,7 +416,7 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
             parent_node,
             source,
             tree.root_node(),
-            &queries,
+            queries,
             inline_parser.as_mut(),
         );
     }
@@ -431,7 +443,7 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
         parent_node,
         source,
         tree.root_node(),
-        &queries,
+        queries,
     )
 }
 
