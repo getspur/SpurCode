@@ -1,0 +1,510 @@
+{
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "source": "[package]\nname = \"retrieval-corpus\"\nversion = \"0.0.0\"\nedition = \"2021\"\n"
+    },
+    {
+      "path": "src/lib.rs",
+      "source": "pub mod alpha;\npub mod beta;\npub mod duplicates;\npub mod crlf;\n\npub fn same_file_leaf() -> u32 { 7 }\n\npub fn same_file_entry() -> u32 {\n    same_file_leaf() + same_file_leaf()\n}\n\npub fn cross_file_entry() -> u32 {\n    alpha::imported_entry() + beta::cross_target()\n}\n\npub struct Widget { pub value: u32 }\n\nimpl Widget {\n    pub fn new(value: u32) -> Self { Self { value } }\n    pub fn run(&self) -> u32 { same_file_leaf() + self.value }\n}\n\nmacro_rules! local_emit { () => { same_file_leaf() }; }\n\npub fn macro_entry() -> u32 { local_emit!() }\n\npub fn external_entry() -> usize {\n    std::hint::black_box(\"outside\").len()\n}\n\npub fn café() -> &'static str { \"Xin chào 🦀\" }\n\npub fn unused_leaf() {}\n"
+    },
+    {
+      "path": "src/alpha.rs",
+      "source": "use crate::same_file_leaf;\n\npub fn imported_entry() -> u32 {\n    same_file_leaf()\n}\n\npub fn repeated() -> u32 { 11 }\n\npub fn cross_import_entry() -> u32 { crate::beta::cross_target() }\n"
+    },
+    {
+      "path": "src/beta.rs",
+      "source": "pub fn cross_target() -> u32 { 13 }\n\npub fn repeated() -> u32 { 17 }\n\npub fn duplicate_entry() -> u32 { repeated() }\n"
+    },
+    {
+      "path": "src/duplicates.rs",
+      "source": "pub mod left {\n    pub fn repeated() -> u32 { 19 }\n    pub fn invoke() -> u32 { repeated() }\n}\n\npub mod right {\n    pub fn repeated() -> u32 { 23 }\n    pub fn invoke() -> u32 { repeated() }\n}\n"
+    },
+    {
+      "path": "src/crlf.rs",
+      "source": "// Windows newlines and Unicode must remain byte-exact.\r\npub fn crlf_leaf() -> &'static str {\r\n    \"naïve café 🦀\"\r\n}\r\n\r\npub fn crlf_entry() -> &'static str { crlf_leaf() }\r\n"
+    }
+  ],
+  "requests": [
+    {
+      "case_id": "search_exact",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file_leaf",
+        "mode": "exact"
+      }
+    },
+    {
+      "case_id": "search_prefix",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file",
+        "mode": "prefix"
+      }
+    },
+    {
+      "case_id": "search_substring",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "peat",
+        "mode": "substring"
+      }
+    },
+    {
+      "case_id": "search_duplicates",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "repeated",
+        "mode": "exact"
+      }
+    },
+    {
+      "case_id": "search_file",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "repeated",
+        "mode": "exact",
+        "file": "src/alpha.rs"
+      }
+    },
+    {
+      "case_id": "search_kind",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "Widget",
+        "mode": "exact",
+        "symbol_kind": "struct"
+      }
+    },
+    {
+      "case_id": "search_kind_function",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file",
+        "mode": "prefix",
+        "symbol_kind": "function"
+      }
+    },
+    {
+      "case_id": "search_glob",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "repeated",
+        "mode": "exact",
+        "file_glob": "src/*a.rs"
+      }
+    },
+    {
+      "case_id": "search_limit",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "repeated",
+        "mode": "exact",
+        "limit": 1
+      }
+    },
+    {
+      "case_id": "search_empty",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "absolutely_missing_symbol",
+        "mode": "exact"
+      }
+    },
+    {
+      "case_id": "search_wrong_file",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file_leaf",
+        "mode": "exact",
+        "file": "src/beta.rs"
+      }
+    },
+    {
+      "case_id": "search_wrong_kind",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file_leaf",
+        "mode": "exact",
+        "symbol_kind": "struct"
+      }
+    },
+    {
+      "case_id": "search_unicode",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "café",
+        "mode": "exact"
+      }
+    },
+    {
+      "case_id": "search_method",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "run",
+        "mode": "exact",
+        "file": "src/lib.rs",
+        "symbol_kind": "method"
+      }
+    },
+    {
+      "case_id": "search_macro",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "local_emit",
+        "mode": "exact"
+      }
+    },
+    {
+      "case_id": "search_invalid_mode",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file_leaf",
+        "mode": "bogus"
+      }
+    },
+    {
+      "case_id": "search_conflicting_filters",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file_leaf",
+        "file": "src/lib.rs",
+        "file_glob": "src/*.rs"
+      }
+    },
+    {
+      "case_id": "search_literal_glob_empty",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "same_file_leaf",
+        "file_glob": "["
+      }
+    },
+    {
+      "case_id": "read_exact",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "same_file_entry"
+      }
+    },
+    {
+      "case_id": "read_context",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "same_file_entry",
+        "context_lines": 2
+      }
+    },
+    {
+      "case_id": "read_source_format",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "same_file_entry",
+        "response_format": "source"
+      }
+    },
+    {
+      "case_id": "read_unicode",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "café"
+      }
+    },
+    {
+      "case_id": "read_crlf",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/crlf.rs",
+        "name": "crlf_leaf"
+      }
+    },
+    {
+      "case_id": "read_crlf_context",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/crlf.rs",
+        "name": "crlf_leaf",
+        "context_lines": 1
+      }
+    },
+    {
+      "case_id": "read_context_boundary",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/crlf.rs",
+        "name": "crlf_leaf",
+        "context_lines": 50
+      }
+    },
+    {
+      "case_id": "read_method",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "impl Widget::run"
+      }
+    },
+    {
+      "case_id": "read_macro",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "local_emit"
+      }
+    },
+    {
+      "case_id": "read_missing",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/lib.rs",
+        "name": "absolutely_missing_symbol"
+      }
+    },
+    {
+      "case_id": "read_missing_file",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/missing.rs",
+        "name": "same_file_leaf"
+      }
+    },
+    {
+      "case_id": "read_ambiguous",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "src/duplicates.rs",
+        "name": "repeated"
+      }
+    },
+    {
+      "case_id": "read_path_rejected",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "../outside.rs",
+        "name": "same_file_leaf"
+      }
+    },
+    {
+      "case_id": "code_callers_samefile_resolved",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::same_file_leaf",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callers_crossfile_resolved",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/beta.rs::cross_target",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callers_import_resolved",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::same_file_leaf",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callers_external_resolved",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::external_entry",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callers_samefile_all",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::same_file_leaf",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_crossfile_all",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/beta.rs::cross_target",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_import_all",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::same_file_leaf",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_external_all",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::external_entry",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_empty",
+      "tool": "code_callers",
+      "args": {
+        "selector": "src/lib.rs::unused_leaf",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_missing",
+      "tool": "code_callers",
+      "args": {
+        "selector": "absolutely_missing_symbol",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_ambiguous",
+      "tool": "code_callers",
+      "args": {
+        "selector": "repeated",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callers_ambiguity_error",
+      "tool": "code_callers",
+      "args": {
+        "selector": "repeated",
+        "on_ambiguous": "error",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_samefile_resolved",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::same_file_entry",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callees_crossfile_resolved",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::cross_file_entry",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callees_import_resolved",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/alpha.rs::imported_entry",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callees_external_resolved",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::external_entry",
+        "include_unresolved": false
+      }
+    },
+    {
+      "case_id": "code_callees_samefile_all",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::same_file_entry",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_crossfile_all",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::cross_file_entry",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_import_all",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/alpha.rs::imported_entry",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_external_all",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::external_entry",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_empty",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::unused_leaf",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_missing",
+      "tool": "code_callees",
+      "args": {
+        "selector": "absolutely_missing_symbol",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_ambiguous",
+      "tool": "code_callees",
+      "args": {
+        "selector": "repeated",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "code_callees_ambiguity_error",
+      "tool": "code_callees",
+      "args": {
+        "selector": "repeated",
+        "on_ambiguous": "error",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "callees_method",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::impl Widget::run",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "callees_macro",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/lib.rs::macro_entry",
+        "include_unresolved": true
+      }
+    },
+    {
+      "case_id": "callees_scoped_duplicate",
+      "tool": "code_callees",
+      "args": {
+        "selector": "src/duplicates.rs::left::invoke",
+        "include_unresolved": true
+      }
+    }
+  ]
+}

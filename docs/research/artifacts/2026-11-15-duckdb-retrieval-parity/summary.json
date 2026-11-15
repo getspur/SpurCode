@@ -1,0 +1,416 @@
+{
+  "cohorts": {
+    "synthetic": {
+      "summary": {
+        "requests": 58,
+        "semantic_matches": 43,
+        "full_api_matches": 1,
+        "raw_identity_cases": 35,
+        "raw_identity_matches": 28,
+        "unsupported": 0,
+        "native_validation_failures": 0,
+        "candidate_source_failures": 0
+      },
+      "by_tool": {
+        "code_callees": {
+          "requests": 15,
+          "semantic_matches": 11,
+          "full_api_matches": 0
+        },
+        "code_callers": {
+          "requests": 12,
+          "semantic_matches": 4,
+          "full_api_matches": 0
+        },
+        "code_read_symbol": {
+          "requests": 13,
+          "semantic_matches": 12,
+          "full_api_matches": 1
+        },
+        "code_symbol_search": {
+          "requests": 18,
+          "semantic_matches": 16,
+          "full_api_matches": 0
+        }
+      },
+      "timing": {
+        "status": "passed",
+        "eligible_cases": [
+          "read_source_format"
+        ],
+        "repetitions": 30,
+        "cases": {
+          "read_source_format": {
+            "candidate": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 3.231729,
+                "p95_ms": 5.639875,
+                "min_ms": 1.912541,
+                "max_ms": 6.559167
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 3.0139995,
+                "p95_ms": 4.034417,
+                "min_ms": 1.839666,
+                "max_ms": 4.11425
+              },
+              "response_bytes": [
+                830
+              ]
+            },
+            "native": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 107.5950625,
+                "p95_ms": 130.592042,
+                "min_ms": 78.306625,
+                "max_ms": 142.16825
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 107.462979,
+                "p95_ms": 130.464583,
+                "min_ms": 78.152875,
+                "max_ms": 142.070417
+              },
+              "response_bytes": [
+                427,
+                428
+              ]
+            }
+          }
+        }
+      }
+    },
+    "real": {
+      "summary": {
+        "requests": 29,
+        "semantic_matches": 18,
+        "full_api_matches": 3,
+        "raw_identity_cases": 17,
+        "raw_identity_matches": 15,
+        "unsupported": 0,
+        "native_validation_failures": 0,
+        "candidate_source_failures": 0
+      },
+      "by_tool": {
+        "code_callees": {
+          "requests": 8,
+          "semantic_matches": 6,
+          "full_api_matches": 0
+        },
+        "code_callers": {
+          "requests": 8,
+          "semantic_matches": 2,
+          "full_api_matches": 0
+        },
+        "code_read_symbol": {
+          "requests": 7,
+          "semantic_matches": 4,
+          "full_api_matches": 3
+        },
+        "code_symbol_search": {
+          "requests": 6,
+          "semantic_matches": 6,
+          "full_api_matches": 0
+        }
+      },
+      "timing": {
+        "status": "passed",
+        "eligible_cases": [
+          "real-read-source_offset-0",
+          "real-read-register-0",
+          "real-read-extract_file_facts-0"
+        ],
+        "repetitions": 30,
+        "cases": {
+          "real-read-source_offset-0": {
+            "candidate": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 2.8986255,
+                "p95_ms": 4.05075,
+                "min_ms": 1.970625,
+                "max_ms": 10.526208
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 2.7686875,
+                "p95_ms": 3.782459,
+                "min_ms": 1.901,
+                "max_ms": 3.917542
+              },
+              "response_bytes": [
+                1118
+              ]
+            },
+            "native": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 88.1383125,
+                "p95_ms": 136.334125,
+                "min_ms": 75.48225,
+                "max_ms": 167.6405
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 88.0358125,
+                "p95_ms": 136.2035,
+                "min_ms": 75.4035,
+                "max_ms": 167.499125
+              },
+              "response_bytes": [
+                687,
+                688
+              ]
+            }
+          },
+          "real-read-register-0": {
+            "candidate": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 3.079229,
+                "p95_ms": 3.879791,
+                "min_ms": 2.155125,
+                "max_ms": 5.264958
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 2.9275205,
+                "p95_ms": 3.694917,
+                "min_ms": 2.077,
+                "max_ms": 3.717875
+              },
+              "response_bytes": [
+                1545
+              ]
+            },
+            "native": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 89.5783335,
+                "p95_ms": 122.987583,
+                "min_ms": 75.028666,
+                "max_ms": 149.799458
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 89.4559585,
+                "p95_ms": 122.859292,
+                "min_ms": 74.946958,
+                "max_ms": 149.6205
+              },
+              "response_bytes": [
+                1110,
+                1111
+              ]
+            }
+          },
+          "real-read-extract_file_facts-0": {
+            "candidate": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 2.934396,
+                "p95_ms": 4.538542,
+                "min_ms": 1.925791,
+                "max_ms": 6.5295
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 2.7962915,
+                "p95_ms": 3.938416,
+                "min_ms": 1.846166,
+                "max_ms": 4.311417
+              },
+              "response_bytes": [
+                2696
+              ]
+            },
+            "native": {
+              "client_wall_ns": {
+                "n": 30,
+                "p50_ms": 90.791167,
+                "p95_ms": 148.796041,
+                "min_ms": 75.580208,
+                "max_ms": 257.711625
+              },
+              "dispatch_ns": {
+                "n": 30,
+                "p50_ms": 90.673208,
+                "p95_ms": 148.654542,
+                "min_ms": 75.491167,
+                "max_ms": 257.574709
+              },
+              "response_bytes": [
+                2228,
+                2229
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "by_tool": {
+    "code_callees": {
+      "requests": 23,
+      "semantic_matches": 17,
+      "full_api_matches": 0
+    },
+    "code_callers": {
+      "requests": 20,
+      "semantic_matches": 6,
+      "full_api_matches": 0
+    },
+    "code_read_symbol": {
+      "requests": 20,
+      "semantic_matches": 16,
+      "full_api_matches": 4
+    },
+    "code_symbol_search": {
+      "requests": 24,
+      "semantic_matches": 22,
+      "full_api_matches": 0
+    }
+  },
+  "mismatch_categories": {
+    "error_shape_or_message": 11,
+    "graph_binding_counts_or_unresolved": 12,
+    "source_context_field": 3
+  },
+  "source_reads": [
+    {
+      "cohort": "synthetic",
+      "case_id": "read_exact",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "58da0c8e843a043b098f40967e62bc1611c7e51c7d66da3cd9fcbc8245dddd9d"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_context",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "0c537a97645790ee6405b1fe7cb6fe1c59bb41dd12ce64a4a03f45aea8302126"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_source_format",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "58da0c8e843a043b098f40967e62bc1611c7e51c7d66da3cd9fcbc8245dddd9d"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_unicode",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "e1f06fc23d1b4c9d9a969c570adeee16707a4e61867020dcec726d42dfaef545"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_crlf",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "9a430f3ef6c54476d84257d59d3ac49cffdbfa8f75ed7233d9e5e0ae98124452"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_crlf_context",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "c339e6f927a600d1547b7e66e0cdd5eb4b822e28cc65bd81490bfde0ec0f631b"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_context_boundary",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "6bb006c85c7ffc2160196422352a1c6d63edc0e67340f3a1e8f420b3103e3850"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_method",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "cf5e8cb609624515d02324bbec3108c84812da809e2f7740810889b398392923"
+    },
+    {
+      "cohort": "synthetic",
+      "case_id": "read_macro",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "0f8ca45af4615e6307131bd05823e70b35770108527bf307abe8d94a9fde9d15"
+    },
+    {
+      "cohort": "real",
+      "case_id": "real-read-source_offset-0",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "d309559f481f21c662b4cd7ffb8714361837a6b6434c78b6034ce2e9e5704895"
+    },
+    {
+      "cohort": "real",
+      "case_id": "real-read-source_offset-2",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "e13ebaa4788bca56282e18a8a71912c05108c04e4f9f6e119f40c0525a343099"
+    },
+    {
+      "cohort": "real",
+      "case_id": "real-read-register-0",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "04a40d616e188f6129937f1c70280caecae61998046949fb667dd77bcaa93bd0"
+    },
+    {
+      "cohort": "real",
+      "case_id": "real-read-register-2",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "4893c598610c792bfda8049a53ba7d11edd4a94947d16b722a0fac0116971a1a"
+    },
+    {
+      "cohort": "real",
+      "case_id": "real-read-extract_file_facts-0",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "43c6433a2443581394089e80042d5a98878ac72bf6c348d9893f2ae5f1ecc009"
+    },
+    {
+      "cohort": "real",
+      "case_id": "real-read-extract_file_facts-2",
+      "exact_source_bytes_equal": true,
+      "range_equal": true,
+      "file_oid_equal": true,
+      "source_sha256": "8b1f5fad6fa4c61fe3ab562626c1ea91ed6fc2e7845ae59c4586649b35c2588c"
+    }
+  ],
+  "scope": "58 synthetic requests plus 29 requests on six complete real source files; this is a bounded compatibility matrix, not measured repository-wide recall.",
+  "totals": {
+    "requests": 87,
+    "semantic_matches": 61,
+    "full_api_matches": 4,
+    "raw_identity_cases": 52,
+    "raw_identity_matches": 43,
+    "unsupported": 0,
+    "native_validation_failures": 0,
+    "candidate_source_failures": 0
+  }
+}

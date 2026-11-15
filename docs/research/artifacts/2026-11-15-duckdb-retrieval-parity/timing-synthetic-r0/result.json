@@ -1,0 +1,1255 @@
+{
+  "status": "passed",
+  "inputs": {
+    "spec_sha256": "6a82c682c4b595c55135527dbc58811c28a725d058eb6f1b1bd68a84fcf2b836",
+    "head_oid": "2aa950a918337fa261d89a8cb96a8706ea13d09b",
+    "sources": [
+      {
+        "path": "Cargo.toml",
+        "bytes": 71,
+        "sha256": "9e78f51d35fb2d330031309f21664f8f89fd7c4e38ac31c654deb7dbdfd32a2a",
+        "git_blob_oid": "427e0fcc9ae109efdabe1b1dfa4f8018e51d993e"
+      },
+      {
+        "path": "src/lib.rs",
+        "bytes": 701,
+        "sha256": "8df7ef612ff657ef1123fd0bf4383a1a5ba5fe03296814e62f2718df54a14b32",
+        "git_blob_oid": "6be23ff2c91562bd4430e68bb6d1e1f08adafe85"
+      },
+      {
+        "path": "src/alpha.rs",
+        "bytes": 185,
+        "sha256": "27e5f26c96140bb41fd89d57bf66102174d08bf361c14526571320eff767eebf",
+        "git_blob_oid": "48d819fc8afa24bd5347292aca4100ffca4aa9c9"
+      },
+      {
+        "path": "src/beta.rs",
+        "bytes": 117,
+        "sha256": "1503a5ea203579cd2d3c643789848d148febd16ddfb128cac6497d28ae258fa2",
+        "git_blob_oid": "29c47fc6038b54bb9bde22f4d09aad8f45f9d6a7"
+      },
+      {
+        "path": "src/duplicates.rs",
+        "bytes": 192,
+        "sha256": "d18b1470473886480439681c64137ec385c55ce7ac142193fc3c25997a2eae3d",
+        "git_blob_oid": "498d44d4adfd9ef309790656cd201bd4fe6e603b"
+      },
+      {
+        "path": "src/crlf.rs",
+        "bytes": 178,
+        "sha256": "6bb006c85c7ffc2160196422352a1c6d63edc0e67340f3a1e8f420b3103e3850",
+        "git_blob_oid": "83d38a4b00d2c54aa9ddf5880a6c7ed308c9b71b"
+      }
+    ]
+  },
+  "eligible_cases": [
+    "read_source_format"
+  ],
+  "excluded_cases": [
+    "search_exact",
+    "search_prefix",
+    "search_substring",
+    "search_duplicates",
+    "search_file",
+    "search_kind",
+    "search_kind_function",
+    "search_glob",
+    "search_limit",
+    "search_empty",
+    "search_wrong_file",
+    "search_wrong_kind",
+    "search_unicode",
+    "search_method",
+    "search_macro",
+    "search_invalid_mode",
+    "search_conflicting_filters",
+    "search_literal_glob_empty",
+    "read_exact",
+    "read_context",
+    "read_unicode",
+    "read_crlf",
+    "read_crlf_context",
+    "read_context_boundary",
+    "read_method",
+    "read_macro",
+    "read_missing",
+    "read_missing_file",
+    "read_ambiguous",
+    "read_path_rejected",
+    "code_callers_samefile_resolved",
+    "code_callers_crossfile_resolved",
+    "code_callers_import_resolved",
+    "code_callers_external_resolved",
+    "code_callers_samefile_all",
+    "code_callers_crossfile_all",
+    "code_callers_import_all",
+    "code_callers_external_all",
+    "code_callers_empty",
+    "code_callers_missing",
+    "code_callers_ambiguous",
+    "code_callers_ambiguity_error",
+    "code_callees_samefile_resolved",
+    "code_callees_crossfile_resolved",
+    "code_callees_import_resolved",
+    "code_callees_external_resolved",
+    "code_callees_samefile_all",
+    "code_callees_crossfile_all",
+    "code_callees_import_all",
+    "code_callees_external_all",
+    "code_callees_empty",
+    "code_callees_missing",
+    "code_callees_ambiguous",
+    "code_callees_ambiguity_error",
+    "callees_method",
+    "callees_macro",
+    "callees_scoped_duplicate"
+  ],
+  "repetitions": 30,
+  "eligibility": "Positive source reads with exact body/error equality; no semantic-only, negative, graph-mismatch or unsupported cases timed.",
+  "timing": "Both persistent local endpoints warmed the full matrix. Client encode/pipe/decode and server dispatch measured separately. Candidate has extra diagnostic envelope/query logging; native performs freshness/metadata work. Not a pure engine comparison.",
+  "percentile_method": "p50 median; p95 nearest rank ceil(0.95*n); raw observations retained.",
+  "host": {
+    "platform": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "logical_cpus": 10,
+    "load_start": [
+      4.994140625,
+      5.2666015625,
+      6.27685546875
+    ],
+    "load_end": [
+      5.53564453125,
+      5.37255859375,
+      6.30224609375
+    ]
+  },
+  "observations": [
+    {
+      "repetition": 0,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 78306625,
+      "dispatch_ns": 78152875,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 0,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3250375,
+      "dispatch_ns": 3044416,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 1,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 2418792,
+      "dispatch_ns": 2311791,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 1,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 82198417,
+      "dispatch_ns": 82097833,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 2,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 82746541,
+      "dispatch_ns": 82656917,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 2,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 2513208,
+      "dispatch_ns": 2385709,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 3,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 1912541,
+      "dispatch_ns": 1839666,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 3,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 79535000,
+      "dispatch_ns": 79444125,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 4,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 142168250,
+      "dispatch_ns": 142070417,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 4,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 5639875,
+      "dispatch_ns": 3670208,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 5,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 6559167,
+      "dispatch_ns": 2737875,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 5,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 107376167,
+      "dispatch_ns": 107235166,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 6,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 103339708,
+      "dispatch_ns": 103235167,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 6,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3241791,
+      "dispatch_ns": 3086583,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 7,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 2836292,
+      "dispatch_ns": 2699667,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 7,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 107859708,
+      "dispatch_ns": 107733125,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 8,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 110600583,
+      "dispatch_ns": 110476375,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 8,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 4318583,
+      "dispatch_ns": 4114250,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 9,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3221667,
+      "dispatch_ns": 3072500,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 9,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 114469250,
+      "dispatch_ns": 114328834,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 10,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 110626167,
+      "dispatch_ns": 110516167,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 10,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3777459,
+      "dispatch_ns": 3577416,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 11,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3090291,
+      "dispatch_ns": 2961375,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 11,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 104871250,
+      "dispatch_ns": 104746583,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 12,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 97281167,
+      "dispatch_ns": 97185458,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 12,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3653625,
+      "dispatch_ns": 3501792,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 13,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 3026334,
+      "dispatch_ns": 2893417,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 13,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.234375,
+        5.3115234375,
+        6.28662109375
+      ],
+      "client_wall_ns": 110032417,
+      "dispatch_ns": 109885583,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 14,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 95358042,
+      "dispatch_ns": 95195416,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 14,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 2820417,
+      "dispatch_ns": 2693792,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 15,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 2269333,
+      "dispatch_ns": 2178667,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 15,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 94140584,
+      "dispatch_ns": 94032416,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 16,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 92860250,
+      "dispatch_ns": 92752333,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 16,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3470708,
+      "dispatch_ns": 3312000,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 17,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3358834,
+      "dispatch_ns": 3190792,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 17,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 91274709,
+      "dispatch_ns": 91169791,
+      "request_bytes": 140,
+      "response_bytes": 427
+    },
+    {
+      "repetition": 18,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 123966292,
+      "dispatch_ns": 123858792,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 18,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 4102541,
+      "dispatch_ns": 3925917,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 19,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3116209,
+      "dispatch_ns": 2983583,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 19,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 107813958,
+      "dispatch_ns": 107690792,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 20,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 111117125,
+      "dispatch_ns": 110964000,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 20,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3532000,
+      "dispatch_ns": 3359875,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 21,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3083292,
+      "dispatch_ns": 2945709,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 21,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 109429375,
+      "dispatch_ns": 109309292,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 22,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 130592042,
+      "dispatch_ns": 130464583,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 22,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3402375,
+      "dispatch_ns": 3225875,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 23,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 2471583,
+      "dispatch_ns": 2366750,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 23,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 117520584,
+      "dispatch_ns": 117388583,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 24,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 109752167,
+      "dispatch_ns": 109631167,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 24,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3256667,
+      "dispatch_ns": 3088542,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 25,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 2505666,
+      "dispatch_ns": 2395209,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 25,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 108932916,
+      "dispatch_ns": 108816375,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 26,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 106279750,
+      "dispatch_ns": 106171542,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 26,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 4228417,
+      "dispatch_ns": 4034417,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 27,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3602250,
+      "dispatch_ns": 3411375,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 27,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 111864750,
+      "dispatch_ns": 111713125,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 28,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 104927750,
+      "dispatch_ns": 104768250,
+      "request_bytes": 140,
+      "response_bytes": 428
+    },
+    {
+      "repetition": 28,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 2888125,
+      "dispatch_ns": 2754458,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 29,
+      "case_id": "read_source_format",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 3017625,
+      "dispatch_ns": 2907708,
+      "request_bytes": 140,
+      "response_bytes": 830
+    },
+    {
+      "repetition": 29,
+      "case_id": "read_source_format",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.53564453125,
+        5.37255859375,
+        6.30224609375
+      ],
+      "client_wall_ns": 98812000,
+      "dispatch_ns": 98691417,
+      "request_bytes": 140,
+      "response_bytes": 427
+    }
+  ],
+  "cases": {
+    "read_source_format": {
+      "candidate": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 3.231729,
+          "p95_ms": 5.639875,
+          "min_ms": 1.912541,
+          "max_ms": 6.559167
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 3.0139995,
+          "p95_ms": 4.034417,
+          "min_ms": 1.839666,
+          "max_ms": 4.11425
+        },
+        "response_bytes": [
+          830
+        ]
+      },
+      "native": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 107.5950625,
+          "p95_ms": 130.592042,
+          "min_ms": 78.306625,
+          "max_ms": 142.16825
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 107.462979,
+          "p95_ms": 130.464583,
+          "min_ms": 78.152875,
+          "max_ms": 142.070417
+        },
+        "response_bytes": [
+          427,
+          428
+        ]
+      }
+    }
+  },
+  "startup_wall_ns": {
+    "candidate": 884279584,
+    "native": 4497611250
+  },
+  "wall_seconds": 9.138783931732178
+}

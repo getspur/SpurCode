@@ -1,0 +1,497 @@
+[spur-cargo] remote (check) → aws-my VM
+[build] Worktree: spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb  (local=/Users/kevintruong/project/SpurCode/.spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb)
+[build] Remote:   ~/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb   target=/mnt/cargo/targets/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb   -j16
+[build] Remote build queue: admitted as ticket 2405 (slot 1/9) on spur-builder (3 slot(s)/builder, 3 builder(s)).
+[build] VM spur-builder missing — spinning a fresh one...
+[build] AWS: oversized startup script stored in private cache; bootstrap verifies SHA-256
+[build] Launching spot r8gd.4xlarge in ap-southeast-5a (ami=ami-039b2b350a5360379 subnet=subnet-05a0d41a66ce2070c sg=sg-0668105acda84bbf1)...
+[build] Launched i-04d162f3d9f07d869 (r8gd.4xlarge); waiting for running + SSM online + startup-script...
+[build] Waiting for SSM agent to come online on i-04d162f3d9f07d869...
+[build] Waiting for SSH-over-SSM on i-04d162f3d9f07d869...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] SSH transport: SSH-over-SSM (instance i-04d162f3d9f07d869)
+[build] Waiting for SSH-over-SSM on i-04d162f3d9f07d869...
+[build] Waiting for startup-script to finish (golden AMI ≈1-2 min; base AMI cold path ≈10 min)...
+startup-script complete
+[build] Refreshing remote disk and process watchdogs...
+[build] Enumerating workspace files (tracked + non-ignored untracked)...
+[build]   2834 files in sync manifest (unchanged content is not transferred)
+[build] Syncing to i-04d162f3d9f07d869:~/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb ...
+[source-baseline] {"status": "cold"}
+[build] Reconstructing 1 tracked dangling symlink(s)...
+[build] Re-stamping 3332 synced path(s) to VM clock...
+[build] Reconciling remote workspace (pruning locally-deleted files)...
+[prune] no prior manifest for this worktree; seeding baseline (no manifest diff)
+[source-baseline] {"status": "published", "files": 2834, "tree_hash": "027d9612b1379021e2b1220f327eae379c41312cd7e931524befdb31d51a3c03"}
+[build] Configuring remote git auth for private getspur/SpurCode deps...
+[build] Running: cargo --config build.rustflags=\[\"-Ctarget-cpu=neoverse-v2\"\,\"-Ctarget-feature=+lse\"\,\"-Clinker=clang\"\,\"-Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld\"\] check --manifest-path crates/spur-graph-duckdb/Cargo.toml --example retrieval_native  -j16  provider-rustflags=-Ctarget-cpu=neoverse-v2 -Ctarget-feature=+lse -Clinker=clang -Clink-arg=-fuse-ld=/mnt/cargo/rust-lld-driver/ld.lld
+[build] ensuring pinned toolchain (serialized)
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded duckdb-loadable-macros v1.20000.2
+  Downloaded duckdb-neo v0.20000.2
+  Downloaded libduckdb-sys v1.20000.2
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling libc v0.2.184
+    Checking cfg-if v1.0.4
+   Compiling find-msvc-tools v0.1.9
+   Compiling shlex v1.3.0
+    Checking memchr v2.8.0
+    Checking smallvec v1.15.1
+    Checking once_cell v1.21.4
+   Compiling parking_lot_core v0.9.12
+    Checking scopeguard v1.2.0
+   Compiling serde_core v1.0.228
+   Compiling crossbeam-utils v0.8.21
+   Compiling thiserror v2.0.18
+   Compiling serde v1.0.228
+    Checking bitflags v2.11.0
+    Checking lock_api v0.4.14
+    Checking itoa v1.0.18
+    Checking equivalent v1.0.2
+    Checking fastrand v2.4.1
+   Compiling version_check v0.9.5
+    Checking stable_deref_trait v1.2.1
+    Checking regex-syntax v0.8.10
+   Compiling crc32fast v1.5.0
+    Checking pin-project-lite v0.2.17
+   Compiling tree-sitter-language v0.1.7
+    Checking aho-corasick v1.1.4
+    Checking tinyvec_macros v0.1.1
+    Checking futures-core v0.3.32
+    Checking tinyvec v1.11.0
+   Compiling typenum v1.19.0
+    Checking gix-trace v0.1.19
+   Compiling generic-array v0.14.7
+    Checking unicode-normalization v0.1.25
+    Checking same-file v1.0.6
+    Checking regex-automata v0.4.14
+    Checking subtle v2.6.1
+    Checking walkdir v2.5.0
+    Checking gix-utils v0.3.2
+    Checking futures-io v0.3.32
+   Compiling autocfg v1.5.0
+    Checking zlib-rs v0.5.5
+    Checking log v0.4.29
+    Checking byteorder v1.5.0
+   Compiling zmij v1.0.21
+    Checking bstr v1.12.1
+    Checking slab v0.4.12
+   Compiling libm v0.2.16
+   Compiling heapless v0.8.0
+    Checking hash32 v0.3.1
+   Compiling num-traits v0.2.19
+    Checking futures-sink v0.3.32
+   Compiling rustix v1.1.4
+    Checking crossbeam-channel v0.5.15
+    Checking linux-raw-sys v0.12.1
+    Checking foldhash v0.2.0
+    Checking allocator-api2 v0.2.21
+    Checking rand_core v0.10.1
+   Compiling getrandom v0.4.2
+    Checking hashbrown v0.16.1
+    Checking faster-hex v0.10.0
+    Checking futures-channel v0.3.32
+    Checking futures v0.1.31
+    Checking futures-task v0.3.32
+    Checking hashbrown v0.17.0
+    Checking tracing-core v0.1.36
+    Checking jiff v0.2.24
+    Checking indexmap v2.14.0
+    Checking winnow v0.7.15
+    Checking percent-encoding v2.3.2
+   Compiling ident_case v1.0.1
+   Compiling strsim v0.11.1
+   Compiling serde_json v1.0.149
+    Checking fnv v1.0.7
+    Checking iana-time-zone v0.1.65
+    Checking atomic-waker v1.1.2
+    Checking litemap v0.8.2
+   Compiling anyhow v1.0.102
+    Checking parking v2.2.1
+    Checking writeable v0.6.3
+    Checking hashbrown v0.14.5
+    Checking tower-service v0.3.3
+   Compiling httparse v1.10.1
+   Compiling icu_properties_data v2.2.0
+   Compiling icu_normalizer_data v2.2.0
+    Checking utf8_iter v1.0.4
+    Checking concurrent-queue v2.5.0
+    Checking try-lock v0.2.5
+    Checking want v0.3.1
+    Checking sync_wrapper v1.0.2
+    Checking zeroize v1.8.2
+    Checking base64 v0.22.1
+   Compiling pkg-config v0.3.32
+    Checking httpdate v1.0.3
+    Checking tower-layer v0.3.3
+    Checking rustls-pki-types v1.14.0
+    Checking form_urlencoded v1.2.2
+   Compiling zerocopy v0.8.48
+    Checking ipnet v2.12.0
+   Compiling ref-cast v1.0.25
+    Checking shell-words v1.1.1
+    Checking untrusted v0.9.0
+    Checking event-listener v5.4.1
+    Checking futures-lite v2.6.1
+   Compiling rustls v0.23.38
+   Compiling heck v0.5.0
+    Checking dyn-clone v1.0.20
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.7
+    Checking unicode-bom v2.0.3
+    Checking event-listener-strategy v0.5.4
+   Compiling async-io v2.6.0
+   Compiling unicode-segmentation v1.13.2
+    Checking iri-string v0.7.12
+    Checking static_assertions v1.1.0
+    Checking digest v0.10.7
+   Compiling unicode-xid v0.2.6
+    Checking kstring v2.0.2
+    Checking option-ext v0.2.0
+   Compiling getrandom v0.3.4
+    Checking ryu v1.0.23
+   Compiling convert_case v0.10.0
+   Compiling cfg_aliases v0.2.1
+    Checking async-channel v2.5.0
+    Checking webpki-roots v1.0.7
+   Compiling ahash v0.8.12
+    Checking winnow v0.5.40
+    Checking powerfmt v0.2.0
+   Compiling nix v0.31.2
+    Checking simd-adler32 v0.3.9
+   Compiling semver v1.0.28
+    Checking lazy_static v1.5.0
+   Compiling jobserver v0.1.34
+   Compiling getrandom v0.2.17
+    Checking cpufeatures v0.2.17
+    Checking errno v0.3.14
+    Checking mio v1.2.0
+    Checking socket2 v0.6.3
+   Compiling cc v1.2.60
+    Checking memmap2 v0.9.10
+    Checking gix-sec v0.12.2
+    Checking parking_lot v0.12.5
+    Checking dashmap v6.1.0
+    Checking sha1 v0.10.6
+    Checking signal-hook-registry v1.4.8
+    Checking dirs-sys v0.4.1
+    Checking async-task v4.7.1
+    Checking sha1-checked v0.10.0
+    Checking adler2 v2.0.1
+    Checking prodash v30.0.1
+   Compiling ring v0.17.14
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling bytes v1.11.1
+    Checking sharded-slab v0.1.7
+   Compiling rustc_version v0.4.1
+    Checking miniz_oxide v0.8.9
+    Checking deranged v0.5.8
+   Compiling syn v2.0.117
+    Checking async-lock v3.4.2
+    Checking piper v0.2.5
+   Compiling serde_yml v0.0.12
+    Checking tempfile v3.27.0
+    Checking polling v3.11.0
+   Compiling http v1.4.0
+    Checking thread_local v1.1.9
+   Compiling rustversion v1.0.22
+    Checking fixedbitset v0.5.7
+   Compiling spur-telemetry v1.24.0 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-telemetry)
+   Compiling prettyplease v0.2.37
+   Compiling schemars v0.8.22
+    Checking uuid v1.23.0
+    Checking arrow-schema v58.1.0
+    Checking arrayvec v0.7.6
+    Checking time-core v0.1.8
+    Checking async-signal v0.2.14
+    Checking num-conv v0.2.1
+   Compiling libyml v0.0.5
+   Compiling ureq-proto v0.6.0
+   Compiling xattr v1.6.1
+    Checking async-process v2.5.0
+    Checking num-integer v0.1.46
+    Checking num-complex v0.4.6
+    Checking time v0.3.47
+    Checking tracing-subscriber v0.3.23
+    Checking flate2 v1.1.9
+    Checking blocking v1.6.2
+   Compiling flatbuffers v25.12.19
+    Checking dirs v5.0.1
+    Checking num-bigint v0.4.6
+   Compiling serde_derive v1.0.228
+   Compiling thiserror-impl v2.0.18
+   Compiling futures-macro v0.3.32
+   Compiling synstructure v0.13.2
+   Compiling tokio-macros v2.7.0
+   Compiling tracing-attributes v0.1.31
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.5
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling serde_derive_internals v0.29.1
+   Compiling darling_core v0.23.0
+   Compiling zerocopy-derive v0.8.48
+    Checking futures-util v0.3.32
+   Compiling ref-cast-impl v1.0.25
+   Compiling schemars_derive v1.2.1
+   Compiling pin-project-internal v1.1.11
+   Compiling darling_macro v0.23.0
+   Compiling darling v0.23.0
+   Compiling strum_macros v0.28.0
+   Compiling derive_more-impl v2.1.1
+   Compiling schemars_derive v0.8.22
+    Checking futures-executor v0.3.32
+   Compiling agent-client-protocol-derive v1.0.1
+   Compiling async-trait v0.1.89
+    Checking futures v0.3.32
+    Checking pin-project v1.1.11
+   Compiling serde_with_macros v3.21.0
+    Checking tracing v0.1.44
+    Checking zerofrom v0.1.7
+    Checking gix-validate v0.10.1
+    Checking gix-date v0.12.1
+    Checking gix-chunk v0.4.12
+    Checking gix-quote v0.6.2
+    Checking yoke v0.8.2
+    Checking gix-packetline v0.20.0
+    Checking futures-concurrency v7.7.1
+    Checking gix-bitmap v0.2.16
+    Checking sha2 v0.10.9
+    Checking gix-path v0.10.22
+    Checking zerovec v0.11.6
+    Checking gix-actor v0.37.1
+    Checking zerotrie v0.2.4
+    Checking filetime v0.2.27
+    Checking tinystr v0.8.3
+    Checking potential_utf v0.1.5
+    Checking chacha20 v0.10.0
+   Compiling zstd-safe v7.2.4
+    Checking gix-features v0.45.2
+    Checking gix-command v0.6.5
+    Checking icu_collections v2.2.0
+    Checking icu_locale_core v2.2.0
+    Checking gix-config-value v0.16.0
+   Compiling inotify-sys v0.1.8
+   Compiling paste v1.0.15
+    Checking derive_more v2.1.1
+   Compiling rmcp v1.5.0
+   Compiling utf8-zero v0.8.1
+    Checking strum v0.28.0
+    Checking foldhash v0.1.5
+    Checking mime v0.3.17
+   Compiling thiserror v1.0.69
+    Checking utf8parse v0.2.2
+    Checking icu_provider v2.2.0
+    Checking gix-hash v0.21.2
+    Checking gix-fs v0.18.2
+    Checking gix-glob v0.23.0
+    Checking gix-url v0.34.0
+    Checking chrono v0.4.44
+    Checking serde_urlencoded v0.7.1
+    Checking toml_datetime v0.6.3
+    Checking serde_spanned v0.6.9
+    Checking rustc-hash v2.1.2
+    Checking anstyle-parse v1.0.0
+    Checking half v2.7.1
+    Checking icu_properties v2.2.0
+    Checking icu_normalizer v2.2.0
+    Checking toml_edit v0.20.2
+    Checking gix-hashtable v0.11.0
+    Checking gix-commitgraph v0.31.0
+    Checking gix-tempfile v20.0.1
+    Checking gix-attributes v0.29.0
+    Checking gix-ignore v0.18.0
+    Checking hashbrown v0.15.5
+   Compiling darling_core v0.20.11
+    Checking rand v0.10.1
+    Checking gix-object v0.54.1
+    Checking idna_adapter v1.2.1
+    Checking tokio v1.51.1
+    Checking gix-lock v20.0.1
+    Checking arrow-buffer v58.1.0
+    Checking idna v1.1.0
+   Compiling tar v0.4.45
+    Checking tracing-appender v0.2.4
+   Compiling rmcp-macros v1.5.0
+   Compiling tree-sitter v0.26.13
+   Compiling thiserror-impl v1.0.69
+    Checking url v2.5.8
+    Checking uluru v3.1.0
+    Checking serde_path_to_error v0.1.20
+    Checking fs4 v0.13.1
+    Checking directories v5.0.1
+    Checking http-body v1.0.1
+    Checking schemars v1.2.1
+    Checking file-rotate v0.8.0
+    Checking clru v0.6.3
+    Checking arrow-data v58.1.0
+    Checking encoding_rs v0.8.35
+    Checking gix-revwalk v0.25.0
+    Checking gix-ref v0.57.0
+    Checking colorchoice v1.0.5
+    Checking similar v2.7.0
+    Checking http-body-util v0.1.3
+    Checking is_terminal_polyfill v1.70.2
+    Checking anstyle-query v1.1.5
+   Compiling pastey v0.2.1
+   Compiling portable-atomic v1.13.1
+    Checking anstyle v1.0.14
+    Checking toml v0.8.2
+    Checking gix-traverse v0.51.1
+    Checking gix-revision v0.39.0
+    Checking matchit v0.8.4
+    Checking anstream v1.0.0
+    Checking axum-core v0.5.6
+    Checking sse-stream v0.2.2
+    Checking gix-filter v0.24.1
+    Checking gix-pack v0.64.1
+   Compiling spur-solver v1.24.0 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-solver)
+    Checking arc-swap v1.9.1
+    Checking arrow-array v58.1.0
+   Compiling darling_macro v0.20.11
+    Checking gix-index v0.45.1
+    Checking gix-refspec v0.35.0
+    Checking serde_with v3.21.0
+    Checking gix-shallow v0.7.0
+    Checking gix-pathspec v0.14.0
+    Checking imara-diff v0.1.8
+    Checking gix-config v0.50.0
+    Checking gix-transport v0.52.1
+   Compiling maybe-async v0.2.10
+    Checking ordered-float v2.10.1
+    Checking serde_bytes v0.11.19
+   Compiling tree-sitter-md v0.5.3
+   Compiling tree-sitter-sequel v0.3.11
+   Compiling tree-sitter-hcl v1.1.0
+   Compiling tree-sitter-typescript v0.23.2
+   Compiling tree-sitter-mermaid v0.0.1 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/tree-sitter-mermaid)
+   Compiling tree-sitter-css v0.25.0
+   Compiling tree-sitter-cpp v0.23.4
+    Checking gix-worktree v0.46.0
+   Compiling blake3 v1.8.5
+   Compiling tree-sitter-json v0.24.8
+   Compiling tree-sitter-toml-ng v0.7.0
+   Compiling tree-sitter-html v0.23.2
+   Compiling tree-sitter-python v0.25.0
+   Compiling tree-sitter-yaml v0.7.2
+   Compiling tree-sitter-bash v0.25.1
+   Compiling tree-sitter-c v0.24.2
+   Compiling tree-sitter-lua v0.5.0
+   Compiling tree-sitter-rust v0.24.2
+   Compiling tree-sitter-go v0.25.0
+    Checking fs2 v0.4.3
+    Checking hmac v0.12.1
+    Checking crossbeam-epoch v0.9.18
+    Checking unicode-width v0.2.0
+    Checking base64ct v1.8.3
+    Checking integer-encoding v3.0.4
+    Checking clap_lex v1.1.0
+    Checking gix-submodule v0.24.0
+    Checking thrift v0.17.0
+    Checking crossbeam-deque v0.8.6
+    Checking gix-diff v0.57.1
+    Checking clap_builder v4.6.0
+    Checking console v0.16.3
+    Checking arrow-select v58.1.0
+    Checking agent-client-protocol-schema v1.1.0
+    Checking gix-protocol v0.55.0
+    Checking tokio-util v0.7.18
+    Checking tower v0.5.3
+    Checking tokio-stream v0.1.18
+    Checking process-wrap v9.1.0
+    Checking tokio-util v0.6.10
+    Checking tower-http v0.6.8
+    Checking serde_bser v0.4.0
+    Checking h2 v0.4.14
+    Checking arrow-ipc v58.1.0
+    Checking gix-odb v0.74.0
+    Checking inotify v0.11.5
+    Checking gix-discover v0.45.0
+   Compiling darling v0.20.11
+   Compiling clap_derive v4.6.0
+    Checking globset v0.4.18
+    Checking regex v1.12.3
+    Checking notify-types v2.1.0
+   Compiling spur-graph v1.24.0 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-graph)
+    Checking arrayref v0.3.9
+    Checking maplit v1.0.2
+    Checking streaming-iterator v0.1.9
+    Checking unit-prefix v0.5.2
+    Checking twox-hash v2.1.2
+    Checking constant_time_eq v0.4.2
+    Checking fixedbitset v0.4.2
+   Compiling seq-macro v0.3.6
+    Checking watchman_client v0.9.0
+    Checking indicatif v0.18.4
+    Checking petgraph v0.6.5
+    Checking gix v0.77.0
+    Checking notify v8.2.0
+    Checking ignore v0.4.25
+   Compiling duckdb-loadable-macros v1.20000.2
+    Checking clap v4.6.0
+    Checking nltk-porter v0.1.0
+    Checking hyper v1.9.0
+    Checking zstd v0.13.3
+    Checking parquet v58.1.0
+    Checking rustls-webpki v0.103.12
+    Checking hyper-util v0.1.20
+    Checking tokio-rustls v0.26.4
+   Compiling ureq v3.3.0
+   Compiling libduckdb-sys v1.20000.2
+    Checking agent-client-protocol v1.0.1
+    Checking hyper-rustls v0.27.9
+    Checking reqwest v0.13.2
+    Checking axum v0.8.9
+    Checking reqwest v0.12.28
+    Checking spur-acp v1.24.0 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-acp)
+    Checking duckdb-neo v0.20000.2
+    Checking spur-mcp v1.24.0 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-mcp)
+warning: method `as_bool` is never used
+   --> /home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> /home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+    Checking spur-graph-duckdb v0.1.0 (/home/admin/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb/crates/spur-graph-duckdb)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 25s
+
+--- sccache stats (spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb) ---
+Compile requests                     807
+Compile requests executed            560
+Cache hits                           449
+Cache hits (Assembler)                12
+Cache hits (C/C++)                   114
+Cache hits (Rust)                    323
+Cache misses                         107
+Cache misses (Rust)                  107
+Cache hits rate                    80.76 %
+Cache hits rate (Assembler)       100.00 %
+Cache hits rate (C/C++)           100.00 %
+Cache hits rate (Rust)             75.12 %
+Cache timeouts                         0
+Cache read errors                      0
+Forced recaches                        0
+Cache write errors                     0
+Cache errors                           0
+Compilations                         107
+Compilation failures                   4
+Non-cacheable compilations             0
+[build] Done. target lives at i-04d162f3d9f07d869:/mnt/cargo/targets/spur/worktrees/c50222d8-b33c-4722-b0f0-17c066c2e6fb — use scripts/cloud-build/fetch.sh to pull artifacts.
+[build] Remote build queue: released ticket 00000000000000002405.

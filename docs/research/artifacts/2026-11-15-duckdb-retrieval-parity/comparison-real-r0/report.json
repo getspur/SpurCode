@@ -1,0 +1,4189 @@
+{
+  "version": 1,
+  "experiment": "independent extension SQL vs real GraphMcpModule",
+  "inputs": {
+    "spec_sha256": "6e6717b2425c97536d1e0951fd12144b2fab80d7c17e0db25512daa3e8473ddc",
+    "head_oid": "368e74dc63b27a74411a1f7ad34de633700c0035",
+    "sources": [
+      {
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "bytes": 16345,
+        "sha256": "c50c50f654262c75a0839ef9fcc75d8dbbabe94237e6fa117aa45218959553e0",
+        "git_blob_oid": "57de9d14f2aa1b8e0d36c533e7d28e2c4310189c"
+      },
+      {
+        "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "bytes": 20114,
+        "sha256": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+        "git_blob_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec"
+      },
+      {
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+        "bytes": 252379,
+        "sha256": "a05b8aab68ca9090084d98345f0b31b2101e37663d1b0674cb062d1546a7562c",
+        "git_blob_oid": "09476ea2c0d9b6dc6d16e4c9e81165edc4c97b1e"
+      },
+      {
+        "path": "crates/spur-graph/src/extract/mod.rs",
+        "bytes": 5174,
+        "sha256": "ab9e226f0130fa52f6dc4783d556e8f39ad95c3763d9c595024c871a55f495c0",
+        "git_blob_oid": "d4897a1a366eef841743ebe0a48a1ad1d67d0f68"
+      },
+      {
+        "path": "crates/spur-graph/src/extract/languages.rs",
+        "bytes": 106774,
+        "sha256": "ea6b00cf91a242515ac04edccf56df752d3b8bd7759d3ab8a7664048c24dbd8f",
+        "git_blob_oid": "d85171e95b45c161d70e4038422c7bdd5ede541d"
+      },
+      {
+        "path": "crates/spur-graph/src/schema.rs",
+        "bytes": 43892,
+        "sha256": "4db25ddab005ab64bb993c8a573c7591d8026f1eddb89beb8a99fff3c6b7dd04",
+        "git_blob_oid": "a3f89d6191d5a3891702017befe9aaaf814a3faa"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "real-search-exact-function",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "source_offset",
+        "mode": "exact",
+        "file": "crates/spur-graph-duckdb/src/lib.rs",
+        "symbol_kind": "function",
+        "limit": 10
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "candidates": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "ordered",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-search-prefix",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "read_",
+        "mode": "prefix",
+        "file": "crates/spur-graph-duckdb/src/lib.rs",
+        "limit": 20
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "candidates": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "ordered",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-search-substring-struct",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "Symbol",
+        "mode": "substring",
+        "file": "crates/spur-graph-duckdb/src/lib.rs",
+        "symbol_kind": "struct",
+        "limit": 20
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "candidates": {
+          "comparable": true,
+          "native_count": 5,
+          "candidate_count": 5,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "ordered",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-search-glob",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "register",
+        "mode": "exact",
+        "file_glob": "crates/spur-graph-duckdb/src/*.rs",
+        "limit": 20
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "candidates": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "ordered",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-search-limited",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "Symbol",
+        "mode": "substring",
+        "file": "crates/spur-graph-duckdb/src/lib.rs",
+        "limit": 1
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "candidates": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "ordered",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-search-empty",
+      "tool": "code_symbol_search",
+      "args": {
+        "query": "__retrieval_parity_no_such_symbol__",
+        "mode": "exact",
+        "limit": 20
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "candidates": {
+          "comparable": true,
+          "native_count": 0,
+          "candidate_count": 0,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "ordered",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-source_offset-0",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "name": "source_offset",
+        "context_lines": 0,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": true,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [],
+      "identity_differences": [],
+      "metadata_differences": [],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-source_offset-2",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "name": "source_offset",
+        "context_lines": 2,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [
+        {
+          "path": "/body/context_lines",
+          "kind": "missing_field",
+          "native": 2
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/context_lines",
+          "kind": "missing_field",
+          "native": 2
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-source_offset-false",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/lib.rs::source_offset",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callers": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-source_offset-true",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/lib.rs::source_offset",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callers": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-source_offset-false",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/lib.rs::source_offset",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callees": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 1,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-source_offset-true",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/lib.rs::source_offset",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callees": {
+          "comparable": true,
+          "native_count": 4,
+          "candidate_count": 4,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-register-0",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "name": "register",
+        "context_lines": 0,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": true,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [],
+      "identity_differences": [],
+      "metadata_differences": [],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-register-2",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "name": "register",
+        "context_lines": 2,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [
+        {
+          "path": "/body/context_lines",
+          "kind": "missing_field",
+          "native": 2
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/context_lines",
+          "kind": "missing_field",
+          "native": 2
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-register-false",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/file_facts.rs::register",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "register"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "register"
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callers": {
+          "comparable": true,
+          "native_count": 0,
+          "candidate_count": 0,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-register-true",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/file_facts.rs::register",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": false,
+      "semantic_differences": [
+        {
+          "path": "/body/callers",
+          "kind": "length",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/callers/0",
+          "kind": "missing_row",
+          "native": {
+            "uri": {
+              "semantic_identity": [
+                "crates/spur-graph-duckdb/src/lib.rs",
+                "function",
+                "entrypoint",
+                [
+                  378,
+                  414
+                ]
+              ]
+            },
+            "entity_name": "entrypoint",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+            "line_range": [
+              378,
+              414
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/callers/1",
+          "kind": "missing_row",
+          "native": {
+            "uri": {
+              "semantic_identity": [
+                "crates/spur-graph-duckdb/src/lib.rs",
+                "function",
+                "entrypoint",
+                [
+                  378,
+                  414
+                ]
+              ]
+            },
+            "entity_name": "entrypoint",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+            "line_range": [
+              378,
+              414
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/callers/2",
+          "kind": "missing_row",
+          "native": {
+            "uri": {
+              "semantic_identity": [
+                "crates/spur-graph-duckdb/src/lib.rs",
+                "function",
+                "entrypoint",
+                [
+                  378,
+                  414
+                ]
+              ]
+            },
+            "entity_name": "entrypoint",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+            "line_range": [
+              378,
+              414
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/callers/3",
+          "kind": "missing_row",
+          "native": {
+            "uri": {
+              "semantic_identity": [
+                "crates/spur-graph-duckdb/src/file_facts.rs",
+                "function",
+                "register",
+                [
+                  595,
+                  607
+                ]
+              ]
+            },
+            "entity_name": "register",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "line_range": [
+              595,
+              607
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "register"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/callers",
+          "kind": "length",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/callers/0",
+          "kind": "missing_row",
+          "native": {
+            "uri": "graph://symbol/3b6507c721fb2912",
+            "entity_name": "register",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "line_range": [
+              595,
+              607
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/callers/1",
+          "kind": "missing_row",
+          "native": {
+            "uri": "graph://symbol/7232a72b274ed13f",
+            "entity_name": "entrypoint",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+            "line_range": [
+              378,
+              414
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/callers/2",
+          "kind": "missing_row",
+          "native": {
+            "uri": "graph://symbol/7232a72b274ed13f",
+            "entity_name": "entrypoint",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+            "line_range": [
+              378,
+              414
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/callers/3",
+          "kind": "missing_row",
+          "native": {
+            "uri": "graph://symbol/7232a72b274ed13f",
+            "entity_name": "entrypoint",
+            "enclosing_scope": null,
+            "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+            "line_range": [
+              378,
+              414
+            ],
+            "symbol_kind": "function",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "register"
+          }
+        },
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 4,
+          "candidate": 0
+        },
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "register"
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [
+        {
+          "path": "//body/callers/0/uri",
+          "kind": "missing_field",
+          "native": "graph://symbol/3b6507c721fb2912"
+        },
+        {
+          "path": "//body/callers/1/uri",
+          "kind": "missing_field",
+          "native": "graph://symbol/7232a72b274ed13f"
+        },
+        {
+          "path": "//body/callers/2/uri",
+          "kind": "missing_field",
+          "native": "graph://symbol/7232a72b274ed13f"
+        },
+        {
+          "path": "//body/callers/3/uri",
+          "kind": "missing_field",
+          "native": "graph://symbol/7232a72b274ed13f"
+        }
+      ],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callers": {
+          "comparable": true,
+          "native_count": 4,
+          "candidate_count": 0,
+          "multiset_equal": false,
+          "observed_order_equal": false,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 2,
+          "candidate_duplicates": 0,
+          "missing": [
+            {
+              "row": {
+                "edge_kind": "calls",
+                "enclosing_scope": null,
+                "entity_name": "entrypoint",
+                "file_path": "crates/spur-graph-duckdb/src/lib.rs",
+                "line_range": [
+                  378,
+                  414
+                ],
+                "resolved": false,
+                "symbol_kind": "function",
+                "target_label": "register",
+                "uri": {
+                  "semantic_identity": [
+                    "crates/spur-graph-duckdb/src/lib.rs",
+                    "function",
+                    "entrypoint",
+                    [
+                      378,
+                      414
+                    ]
+                  ]
+                }
+              },
+              "count": 3
+            },
+            {
+              "row": {
+                "edge_kind": "calls",
+                "enclosing_scope": null,
+                "entity_name": "register",
+                "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+                "line_range": [
+                  595,
+                  607
+                ],
+                "resolved": false,
+                "symbol_kind": "function",
+                "target_label": "register",
+                "uri": {
+                  "semantic_identity": [
+                    "crates/spur-graph-duckdb/src/file_facts.rs",
+                    "function",
+                    "register",
+                    [
+                      595,
+                      607
+                    ]
+                  ]
+                }
+              },
+              "count": 1
+            }
+          ],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-register-false",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/file_facts.rs::register",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callees": {
+          "comparable": true,
+          "native_count": 0,
+          "candidate_count": 0,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-register-true",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph-duckdb/src/file_facts.rs::register",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callees": {
+          "comparable": true,
+          "native_count": 12,
+          "candidate_count": 12,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 3,
+          "candidate_duplicates": 3,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-extract_file_facts-0",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+        "name": "extract_file_facts",
+        "context_lines": 0,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": true,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [],
+      "api_differences": [],
+      "identity_differences": [],
+      "metadata_differences": [],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-extract_file_facts-2",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+        "name": "extract_file_facts",
+        "context_lines": 2,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": true,
+      "semantic_differences": [
+        {
+          "path": "/body/context_lines",
+          "kind": "missing_field",
+          "native": 2
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/context_lines",
+          "kind": "missing_field",
+          "native": 2
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-extract_file_facts-false",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/error/data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error/data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error/data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error/data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error/data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error/data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error/data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/error.data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error.data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error.data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error.data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error.data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error.data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error.data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error.data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-extract_file_facts-true",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/error/data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error/data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error/data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error/data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error/data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error/data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error/data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/error.data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error.data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error.data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error.data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error.data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error.data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error.data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error.data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-extract_file_facts-false",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/error/data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error/data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error/data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error/data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error/data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error/data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error/data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/error.data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error.data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error.data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error.data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error.data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error.data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error.data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error.data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-extract_file_facts-true",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/error/data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error/data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error/data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error/data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error/data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error/data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error/data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/message",
+          "kind": "value",
+          "native": "symbol crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts not found in graph artifact",
+          "candidate": "symbol `crates/spur-graph/src/extract/tree_sitter.rs::extract_file_facts` not found in graph artifact"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/error.data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error.data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error.data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error.data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error.data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error.data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error.data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error.data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-read-missing",
+      "tool": "code_read_symbol",
+      "args": {
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "name": "__retrieval_parity_no_such_symbol__",
+        "context_lines": 0,
+        "response_format": "source"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/error/data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error/data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error/data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error/data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error/data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error/data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error/data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error/data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/error.data/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/error.data/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/error.data/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/error.data/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/error.data/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/error.data/response_file_oids_match",
+          "kind": "missing_field",
+          "native": null
+        },
+        {
+          "path": "/error.data/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/error.data/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {},
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-qualified-extract_file_facts-false",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::impl BytesExtractor::extract_file_facts",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "extract_file_facts"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "extract_file_facts"
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callers": {
+          "comparable": true,
+          "native_count": 0,
+          "candidate_count": 0,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callers-qualified-extract_file_facts-true",
+      "tool": "code_callers",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::impl BytesExtractor::extract_file_facts",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": false,
+      "full_api_equal": false,
+      "raw_identity_present": true,
+      "raw_identity_equal": false,
+      "semantic_differences": [
+        {
+          "path": "/body/callers",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/callers/0",
+          "kind": "missing_row",
+          "native": {
+            "uri": {
+              "semantic_identity": [
+                "crates/spur-graph-duckdb/src/file_facts.rs",
+                "method",
+                "impl ScalarCallbacks for ParseFileFacts::exec",
+                [
+                  537,
+                  588
+                ]
+              ]
+            },
+            "entity_name": "exec",
+            "enclosing_scope": "impl ScalarCallbacks for ParseFileFacts",
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "line_range": [
+              537,
+              588
+            ],
+            "symbol_kind": "method",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "extract_file_facts"
+          }
+        },
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "extract_file_facts"
+        }
+      ],
+      "api_differences": [
+        {
+          "path": "/body/callers",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/callers/0",
+          "kind": "missing_row",
+          "native": {
+            "uri": "graph://symbol/95cc3c8b360be0b5",
+            "entity_name": "exec",
+            "enclosing_scope": "impl ScalarCallbacks for ParseFileFacts",
+            "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+            "line_range": [
+              537,
+              588
+            ],
+            "symbol_kind": "method",
+            "resolved": false,
+            "edge_kind": "calls",
+            "target_label": "extract_file_facts"
+          }
+        },
+        {
+          "path": "/body/counts_by_context/production",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/calls",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/counts_by_kind/unresolved",
+          "kind": "value",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/unresolved_sample",
+          "kind": "length",
+          "native": 1,
+          "candidate": 0
+        },
+        {
+          "path": "/body/unresolved_sample/0",
+          "kind": "missing_row",
+          "native": "extract_file_facts"
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [
+        {
+          "path": "//body/callers/0/uri",
+          "kind": "missing_field",
+          "native": "graph://symbol/95cc3c8b360be0b5"
+        }
+      ],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callers": {
+          "comparable": true,
+          "native_count": 1,
+          "candidate_count": 0,
+          "multiset_equal": false,
+          "observed_order_equal": false,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [
+            {
+              "row": {
+                "edge_kind": "calls",
+                "enclosing_scope": "impl ScalarCallbacks for ParseFileFacts",
+                "entity_name": "exec",
+                "file_path": "crates/spur-graph-duckdb/src/file_facts.rs",
+                "line_range": [
+                  537,
+                  588
+                ],
+                "resolved": false,
+                "symbol_kind": "method",
+                "target_label": "extract_file_facts",
+                "uri": {
+                  "semantic_identity": [
+                    "crates/spur-graph-duckdb/src/file_facts.rs",
+                    "method",
+                    "impl ScalarCallbacks for ParseFileFacts::exec",
+                    [
+                      537,
+                      588
+                    ]
+                  ]
+                }
+              },
+              "count": 1
+            }
+          ],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": false,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-qualified-extract_file_facts-false",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::impl BytesExtractor::extract_file_facts",
+        "include_unresolved": false,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callees": {
+          "comparable": true,
+          "native_count": 0,
+          "candidate_count": 0,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 0,
+          "candidate_duplicates": 0,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    },
+    {
+      "case_id": "real-callees-qualified-extract_file_facts-true",
+      "tool": "code_callees",
+      "args": {
+        "selector": "crates/spur-graph/src/extract/tree_sitter.rs::impl BytesExtractor::extract_file_facts",
+        "include_unresolved": true,
+        "response_format": "full"
+      },
+      "candidate_supported": true,
+      "semantic_equal": true,
+      "full_api_equal": false,
+      "raw_identity_present": false,
+      "raw_identity_equal": null,
+      "semantic_differences": [],
+      "api_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "identity_differences": [],
+      "metadata_differences": [
+        {
+          "path": "/body/graph_built_at",
+          "kind": "missing_field",
+          "native": "2026-11-15T07:56:48.316Z"
+        },
+        {
+          "path": "/body/graph_content_hash",
+          "kind": "missing_field",
+          "native": "b2925314053137ce53ac8aebe3ca208cf57fc9d23034137962ba1d959b5f03da"
+        },
+        {
+          "path": "/body/graph_index_version",
+          "kind": "missing_field",
+          "native": "4"
+        },
+        {
+          "path": "/body/indexed_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        },
+        {
+          "path": "/body/rebuild_status",
+          "kind": "missing_field",
+          "native": "not_needed"
+        },
+        {
+          "path": "/body/response_file_oids_match",
+          "kind": "missing_field",
+          "native": true
+        },
+        {
+          "path": "/body/worktree_dirty",
+          "kind": "missing_field",
+          "native": false
+        },
+        {
+          "path": "/body/worktree_head_oid",
+          "kind": "missing_field",
+          "native": "368e74dc63b27a74411a1f7ad34de633700c0035"
+        }
+      ],
+      "rows": {
+        "callees": {
+          "comparable": true,
+          "native_count": 24,
+          "candidate_count": 24,
+          "multiset_equal": true,
+          "observed_order_equal": true,
+          "order_contract": "multiset; observed order separately retained",
+          "native_duplicates": 5,
+          "candidate_duplicates": 5,
+          "missing": [],
+          "extra": []
+        }
+      },
+      "candidate_coverage": {
+        "api_limits": [
+          "Extension edges are file-local; no repository binding or label-inbound resolution.",
+          "Native graph provenance/freshness service is unavailable to SQL candidate."
+        ],
+        "full_api_supported": false,
+        "repository_binding_supported": false,
+        "resolution": "extension_file_local",
+        "supported": true
+      },
+      "matched_semantic_work": true,
+      "timing_eligibility": "parent review required; no ratio produced",
+      "api_limits": [
+        "Extension edges are file-local; no repository binding or label-inbound resolution.",
+        "Native graph provenance/freshness service is unavailable to SQL candidate.",
+        "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+        "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+      ]
+    }
+  ],
+  "native_validation": {
+    "known_fixture": false,
+    "checks": [
+      {
+        "case_id": "real-read-source_offset-0",
+        "check": "exact_utf8_source_and_context",
+        "passed": true,
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "range": {
+          "start": 105,
+          "end": 111
+        },
+        "expected_sha256": "d309559f481f21c662b4cd7ffb8714361837a6b6434c78b6034ce2e9e5704895",
+        "actual_sha256": "d309559f481f21c662b4cd7ffb8714361837a6b6434c78b6034ce2e9e5704895",
+        "context_bounds_match": true,
+        "context_validation": "source-format omits symbol range; exact returned range checked",
+        "file_oid_matches": true
+      },
+      {
+        "case_id": "real-read-source_offset-2",
+        "check": "exact_utf8_source_and_context",
+        "passed": true,
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "range": {
+          "start": 103,
+          "end": 113
+        },
+        "expected_sha256": "e13ebaa4788bca56282e18a8a71912c05108c04e4f9f6e119f40c0525a343099",
+        "actual_sha256": "e13ebaa4788bca56282e18a8a71912c05108c04e4f9f6e119f40c0525a343099",
+        "context_bounds_match": true,
+        "context_validation": "source-format omits symbol range; exact returned range checked",
+        "file_oid_matches": true
+      },
+      {
+        "case_id": "real-read-register-0",
+        "check": "exact_utf8_source_and_context",
+        "passed": true,
+        "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "range": {
+          "start": 595,
+          "end": 607
+        },
+        "expected_sha256": "04a40d616e188f6129937f1c70280caecae61998046949fb667dd77bcaa93bd0",
+        "actual_sha256": "04a40d616e188f6129937f1c70280caecae61998046949fb667dd77bcaa93bd0",
+        "context_bounds_match": true,
+        "context_validation": "source-format omits symbol range; exact returned range checked",
+        "file_oid_matches": true
+      },
+      {
+        "case_id": "real-read-register-2",
+        "check": "exact_utf8_source_and_context",
+        "passed": true,
+        "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "range": {
+          "start": 593,
+          "end": 607
+        },
+        "expected_sha256": "4893c598610c792bfda8049a53ba7d11edd4a94947d16b722a0fac0116971a1a",
+        "actual_sha256": "4893c598610c792bfda8049a53ba7d11edd4a94947d16b722a0fac0116971a1a",
+        "context_bounds_match": true,
+        "context_validation": "source-format omits symbol range; exact returned range checked",
+        "file_oid_matches": true
+      },
+      {
+        "case_id": "real-read-extract_file_facts-0",
+        "check": "exact_utf8_source_and_context",
+        "passed": true,
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+        "range": {
+          "start": 369,
+          "end": 410
+        },
+        "expected_sha256": "43c6433a2443581394089e80042d5a98878ac72bf6c348d9893f2ae5f1ecc009",
+        "actual_sha256": "43c6433a2443581394089e80042d5a98878ac72bf6c348d9893f2ae5f1ecc009",
+        "context_bounds_match": true,
+        "context_validation": "source-format omits symbol range; exact returned range checked",
+        "file_oid_matches": true
+      },
+      {
+        "case_id": "real-read-extract_file_facts-2",
+        "check": "exact_utf8_source_and_context",
+        "passed": true,
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+        "range": {
+          "start": 367,
+          "end": 412
+        },
+        "expected_sha256": "8b1f5fad6fa4c61fe3ab562626c1ea91ed6fc2e7845ae59c4586649b35c2588c",
+        "actual_sha256": "8b1f5fad6fa4c61fe3ab562626c1ea91ed6fc2e7845ae59c4586649b35c2588c",
+        "context_bounds_match": true,
+        "context_validation": "source-format omits symbol range; exact returned range checked",
+        "file_oid_matches": true
+      }
+    ],
+    "limitation": "Custom corpus has byte checks only; parent must supply positive/negative/ambiguous expectations."
+  },
+  "candidate_source_validation": [
+    {
+      "case_id": "real-read-source_offset-0",
+      "check": "exact_utf8_source_and_context",
+      "passed": true,
+      "path": "crates/spur-graph-duckdb/src/lib.rs",
+      "range": {
+        "end": 111,
+        "start": 105
+      },
+      "expected_sha256": "d309559f481f21c662b4cd7ffb8714361837a6b6434c78b6034ce2e9e5704895",
+      "actual_sha256": "d309559f481f21c662b4cd7ffb8714361837a6b6434c78b6034ce2e9e5704895",
+      "context_bounds_match": true,
+      "context_validation": "source-format omits symbol range; exact returned range checked",
+      "file_oid_matches": true
+    },
+    {
+      "case_id": "real-read-source_offset-2",
+      "check": "exact_utf8_source_and_context",
+      "passed": true,
+      "path": "crates/spur-graph-duckdb/src/lib.rs",
+      "range": {
+        "end": 113,
+        "start": 103
+      },
+      "expected_sha256": "e13ebaa4788bca56282e18a8a71912c05108c04e4f9f6e119f40c0525a343099",
+      "actual_sha256": "e13ebaa4788bca56282e18a8a71912c05108c04e4f9f6e119f40c0525a343099",
+      "context_bounds_match": true,
+      "context_validation": "source-format omits symbol range; exact returned range checked",
+      "file_oid_matches": true
+    },
+    {
+      "case_id": "real-read-register-0",
+      "check": "exact_utf8_source_and_context",
+      "passed": true,
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "range": {
+        "end": 607,
+        "start": 595
+      },
+      "expected_sha256": "04a40d616e188f6129937f1c70280caecae61998046949fb667dd77bcaa93bd0",
+      "actual_sha256": "04a40d616e188f6129937f1c70280caecae61998046949fb667dd77bcaa93bd0",
+      "context_bounds_match": true,
+      "context_validation": "source-format omits symbol range; exact returned range checked",
+      "file_oid_matches": true
+    },
+    {
+      "case_id": "real-read-register-2",
+      "check": "exact_utf8_source_and_context",
+      "passed": true,
+      "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+      "range": {
+        "end": 607,
+        "start": 593
+      },
+      "expected_sha256": "4893c598610c792bfda8049a53ba7d11edd4a94947d16b722a0fac0116971a1a",
+      "actual_sha256": "4893c598610c792bfda8049a53ba7d11edd4a94947d16b722a0fac0116971a1a",
+      "context_bounds_match": true,
+      "context_validation": "source-format omits symbol range; exact returned range checked",
+      "file_oid_matches": true
+    },
+    {
+      "case_id": "real-read-extract_file_facts-0",
+      "check": "exact_utf8_source_and_context",
+      "passed": true,
+      "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+      "range": {
+        "end": 410,
+        "start": 369
+      },
+      "expected_sha256": "43c6433a2443581394089e80042d5a98878ac72bf6c348d9893f2ae5f1ecc009",
+      "actual_sha256": "43c6433a2443581394089e80042d5a98878ac72bf6c348d9893f2ae5f1ecc009",
+      "context_bounds_match": true,
+      "context_validation": "source-format omits symbol range; exact returned range checked",
+      "file_oid_matches": true
+    },
+    {
+      "case_id": "real-read-extract_file_facts-2",
+      "check": "exact_utf8_source_and_context",
+      "passed": true,
+      "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+      "range": {
+        "end": 412,
+        "start": 367
+      },
+      "expected_sha256": "8b1f5fad6fa4c61fe3ab562626c1ea91ed6fc2e7845ae59c4586649b35c2588c",
+      "actual_sha256": "8b1f5fad6fa4c61fe3ab562626c1ea91ed6fc2e7845ae59c4586649b35c2588c",
+      "context_bounds_match": true,
+      "context_validation": "source-format omits symbol range; exact returned range checked",
+      "file_oid_matches": true
+    }
+  ],
+  "limitations": [
+    "Extension edges are file-local; no repository binding or label-inbound resolution.",
+    "Native graph provenance/freshness service is unavailable to SQL candidate.",
+    "Native serve prewarms the matrix; native cold first-query time is not exposed.",
+    "Full API and transport sizes differ; semantic equality alone is not API compatibility."
+  ],
+  "identity_mapping": "Independent retrieval experiment; run with the pinned DuckDB 2.0.0 Python.\n\nCLI (all paths may be absolute; output must not exist)::\n\n    python retrieval_parity.py compare --native /path/to/retrieval_native       --corpus /path/to/prepared-corpus --extension /path/to/spur_graph.duckdb_extension       --out /private/tmp/new-parity-run\n\nPrepare the corpus with ``retrieval_native prepare spec.json NEW_CORPUS`` first.\n``--spec`` optionally verifies an external copy of that exact shared spec.\n``serve-sql`` accepts the same {case_id,tool,args} JSONL as ``retrieval_native\nserve CORPUS``. Both processes warm the whole shared matrix before emitting a\nready receipt on stderr. JsonlEndpoint is importable by the parent notebook for\npaired repetitions. This script performs ONE correctness smoke pass, no ratios.\n\nData flow: shared spec/source bytes -> spur_graph_file_facts -> typed tables ->\nSQL queries -> candidate replies. Candidate never opens .retrieval/native or a\nnative graph artifact. Only the comparison coordinator reads native provenance.\nNo source parser or repository resolver is implemented. Recursive containment\njoins reconstruct qualified names; edge joins ALWAYS include logical_path.\nUnbound edges stay unbound. All five fact collections and every field/ordinal\nare retained in candidate.duckdb, facts.jsonl, and schema.json.\n\nSemantic identity mapping: each reply independently replaces non-null id/uri\nvalues on symbol rows with (file_path, symbol_kind, qualified_name, line_range).\nFor traversal rows qualified_name is enclosing_scope::entity_name; the source\nresponse format exposes only (file,name,range), which is documented separately.\nNull/missing identity fields remain null/missing. No oracle ID lookup is used.\nOnly the enumerated graph freshness/provenance fields move out of the semantic\ncomparison into the separately reported API comparison. ALL other fields,\nincluding unknown ones, remain. Traversal lists compare as multisets; observed\norder is also reported. Search/ambiguity ranking and unresolved_sample retain\norder. Full API comparison includes metadata, IDs, URIs, nullability, and order.\nLine reads include entire lines (including LF/CRLF), exactly as the native API;\nextension byte spans are additionally retained as evidence, never substituted\nfor whole-line source. Validation uses UTF-8 bytes and splits only at LF.\n\nCoverage: file-local edges only; no repository import/name binding or native\nmetadata service. Simple * and ? globs are supported; richer valid glob syntax\nis explicitly unsupported. Invalid '[' matches no files, as native globset does.\nFull/table/compact production formatting beyond full and read-source is not\nimplemented. Unsupported requests return an explicit unsupported error, never\nan empty success. Native anomalies and negative parity are experiment results.\n\nTiming: extraction, typed materialization, connection/load, first dispatch and\nstartup matrix warmup are separate SQL receipts. Native prepare construction is\ncopied intact; native serve exposes only aggregate verification/startup/warmup\nand dispatch timing, not a cold first-query observation. Client wall samples on\nBOTH endpoints include JSON encoding, pipe write/flush/read and JSON decoding.\nelapsed_ns on BOTH excludes JSON transport and includes handler/SQL plus reply\nbody construction (SQL also records query text/parameters); envelope wrapping is\nexcluded. Native additionally performs metadata/freshness work; bytes and\nAPI limits are disclosed. Parent notebook owns repetitions and eligibility.\n",
+  "field_coverage": {
+    "semantic": "All body/error fields except the explicitly listed metadata and independently mapped symbol id/uri values.",
+    "metadata_separate": [
+      "graph_built_at",
+      "graph_content_hash",
+      "graph_index_version",
+      "indexed_head_oid",
+      "rebuild_status",
+      "response_file_oids_match",
+      "worktree_dirty",
+      "worktree_head_oid"
+    ],
+    "source": "Whole-line UTF-8 bytes including original CRLF/LF, file_oid, returned and symbol ranges, context and requested clamping fields.",
+    "edge_api": "Every returned native field, including kind/bind_method/confidence, counts, unresolved labels/sample and duplicates.",
+    "extension_evidence": "All five raw fact collections, all struct fields and ordinals retained; relevant raw edge records accompany traversal replies.",
+    "evidence_not_exposed_by_native": "Raw node/edge numeric IDs, byte spans, confidence_score, evidence_id, receiver/import/scope text, directed/change_kind and macro facts have no complete code_* traversal counterpart. They are preserved, with no equality assertion for those unexposed fields.",
+    "identity_limit": "API symbols expose line ranges, not byte spans; source-format identity also lacks kind. Mapping establishes only this documented semantic identity, never full API compatibility."
+  },
+  "speed_claims": [],
+  "summary": {
+    "requests": 29,
+    "semantic_matches": 18,
+    "full_api_matches": 3,
+    "raw_identity_cases": 17,
+    "raw_identity_matches": 15,
+    "unsupported": 0,
+    "native_validation_failures": 0,
+    "candidate_source_failures": 0
+  },
+  "by_tool": {
+    "code_callees": {
+      "requests": 8,
+      "semantic_matches": 6,
+      "full_api_matches": 0
+    },
+    "code_callers": {
+      "requests": 8,
+      "semantic_matches": 2,
+      "full_api_matches": 0
+    },
+    "code_read_symbol": {
+      "requests": 7,
+      "semantic_matches": 4,
+      "full_api_matches": 3
+    },
+    "code_symbol_search": {
+      "requests": 6,
+      "semantic_matches": 6,
+      "full_api_matches": 0
+    }
+  }
+}

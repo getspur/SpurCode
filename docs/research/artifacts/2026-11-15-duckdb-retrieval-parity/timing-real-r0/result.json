@@ -1,0 +1,3468 @@
+{
+  "status": "passed",
+  "inputs": {
+    "spec_sha256": "6e6717b2425c97536d1e0951fd12144b2fab80d7c17e0db25512daa3e8473ddc",
+    "head_oid": "368e74dc63b27a74411a1f7ad34de633700c0035",
+    "sources": [
+      {
+        "path": "crates/spur-graph-duckdb/src/lib.rs",
+        "bytes": 16345,
+        "sha256": "c50c50f654262c75a0839ef9fcc75d8dbbabe94237e6fa117aa45218959553e0",
+        "git_blob_oid": "57de9d14f2aa1b8e0d36c533e7d28e2c4310189c"
+      },
+      {
+        "path": "crates/spur-graph-duckdb/src/file_facts.rs",
+        "bytes": 20114,
+        "sha256": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+        "git_blob_oid": "9b2a9a128ae5053355933e3bee89224c8b2530ec"
+      },
+      {
+        "path": "crates/spur-graph/src/extract/tree_sitter.rs",
+        "bytes": 252379,
+        "sha256": "a05b8aab68ca9090084d98345f0b31b2101e37663d1b0674cb062d1546a7562c",
+        "git_blob_oid": "09476ea2c0d9b6dc6d16e4c9e81165edc4c97b1e"
+      },
+      {
+        "path": "crates/spur-graph/src/extract/mod.rs",
+        "bytes": 5174,
+        "sha256": "ab9e226f0130fa52f6dc4783d556e8f39ad95c3763d9c595024c871a55f495c0",
+        "git_blob_oid": "d4897a1a366eef841743ebe0a48a1ad1d67d0f68"
+      },
+      {
+        "path": "crates/spur-graph/src/extract/languages.rs",
+        "bytes": 106774,
+        "sha256": "ea6b00cf91a242515ac04edccf56df752d3b8bd7759d3ab8a7664048c24dbd8f",
+        "git_blob_oid": "d85171e95b45c161d70e4038422c7bdd5ede541d"
+      },
+      {
+        "path": "crates/spur-graph/src/schema.rs",
+        "bytes": 43892,
+        "sha256": "4db25ddab005ab64bb993c8a573c7591d8026f1eddb89beb8a99fff3c6b7dd04",
+        "git_blob_oid": "a3f89d6191d5a3891702017befe9aaaf814a3faa"
+      }
+    ]
+  },
+  "eligible_cases": [
+    "real-read-source_offset-0",
+    "real-read-register-0",
+    "real-read-extract_file_facts-0"
+  ],
+  "excluded_cases": [
+    "real-search-exact-function",
+    "real-search-prefix",
+    "real-search-substring-struct",
+    "real-search-glob",
+    "real-search-limited",
+    "real-search-empty",
+    "real-read-source_offset-2",
+    "real-callers-source_offset-false",
+    "real-callers-source_offset-true",
+    "real-callees-source_offset-false",
+    "real-callees-source_offset-true",
+    "real-read-register-2",
+    "real-callers-register-false",
+    "real-callers-register-true",
+    "real-callees-register-false",
+    "real-callees-register-true",
+    "real-read-extract_file_facts-2",
+    "real-callers-extract_file_facts-false",
+    "real-callers-extract_file_facts-true",
+    "real-callees-extract_file_facts-false",
+    "real-callees-extract_file_facts-true",
+    "real-read-missing",
+    "real-callers-qualified-extract_file_facts-false",
+    "real-callers-qualified-extract_file_facts-true",
+    "real-callees-qualified-extract_file_facts-false",
+    "real-callees-qualified-extract_file_facts-true"
+  ],
+  "repetitions": 30,
+  "eligibility": "Positive source reads with exact body/error equality; no semantic-only, negative, graph-mismatch or unsupported cases timed.",
+  "timing": "Both persistent local endpoints warmed the full matrix. Client encode/pipe/decode and server dispatch measured separately. Candidate has extra diagnostic envelope/query logging; native performs freshness/metadata work. Not a pure engine comparison.",
+  "percentile_method": "p50 median; p95 nearest rank ceil(0.95*n); raw observations retained.",
+  "host": {
+    "platform": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "logical_cpus": 10,
+    "load_start": [
+      5.53564453125,
+      5.37255859375,
+      6.30224609375
+    ],
+    "load_end": [
+      6.16552734375,
+      5.517578125,
+      6.3369140625
+    ]
+  },
+  "observations": [
+    {
+      "repetition": 0,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 82833250,
+      "dispatch_ns": 82673750,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 0,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3367583,
+      "dispatch_ns": 3159125,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 0,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3135375,
+      "dispatch_ns": 2979708,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 0,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 98363000,
+      "dispatch_ns": 98237083,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 0,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 84813667,
+      "dispatch_ns": 84699167,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 0,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3166209,
+      "dispatch_ns": 3004917,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 1,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2733458,
+      "dispatch_ns": 2601542,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 1,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 91456625,
+      "dispatch_ns": 91350708,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 1,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 87881917,
+      "dispatch_ns": 87764958,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 1,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3211917,
+      "dispatch_ns": 3059541,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 1,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3032375,
+      "dispatch_ns": 2898000,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 1,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 90834000,
+      "dispatch_ns": 90701875,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 2,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 80199334,
+      "dispatch_ns": 80095625,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 2,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2919709,
+      "dispatch_ns": 2795958,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 2,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2434959,
+      "dispatch_ns": 2348709,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 2,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 78715375,
+      "dispatch_ns": 78628250,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 2,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 79438125,
+      "dispatch_ns": 79331458,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 2,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3403833,
+      "dispatch_ns": 3265750,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 3,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2074458,
+      "dispatch_ns": 1988250,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 3,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 78102792,
+      "dispatch_ns": 78019166,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 3,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 80010208,
+      "dispatch_ns": 79911208,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 3,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3557375,
+      "dispatch_ns": 3409834,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 3,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2460083,
+      "dispatch_ns": 2345125,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 3,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 78821000,
+      "dispatch_ns": 78704667,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 4,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 75779750,
+      "dispatch_ns": 75691333,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 4,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2728792,
+      "dispatch_ns": 2615167,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 4,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2218542,
+      "dispatch_ns": 2133041,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 4,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 82235084,
+      "dispatch_ns": 82149416,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 4,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 88827667,
+      "dispatch_ns": 88713625,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 4,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3469667,
+      "dispatch_ns": 3303334,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 5,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2432750,
+      "dispatch_ns": 2343125,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 5,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 87827375,
+      "dispatch_ns": 87713959,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 5,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 110178250,
+      "dispatch_ns": 108042125,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 5,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 5264958,
+      "dispatch_ns": 3361167,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 5,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 2403417,
+      "dispatch_ns": 2298333,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 5,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 257711625,
+      "dispatch_ns": 257574709,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 6,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 136334125,
+      "dispatch_ns": 136203500,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 6,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3802083,
+      "dispatch_ns": 3621042,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 6,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3477500,
+      "dispatch_ns": 3338625,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 6,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 149799458,
+      "dispatch_ns": 149620500,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 6,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 144777625,
+      "dispatch_ns": 144608792,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 6,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 4203708,
+      "dispatch_ns": 3938416,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 7,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3783500,
+      "dispatch_ns": 3628583,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 7,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 167640500,
+      "dispatch_ns": 167499125,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 7,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 122987583,
+      "dispatch_ns": 122859292,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 7,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3827541,
+      "dispatch_ns": 3652375,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 7,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        5.41259765625,
+        5.349609375,
+        6.28857421875
+      ],
+      "client_wall_ns": 3072083,
+      "dispatch_ns": 2870000,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 7,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 148796041,
+      "dispatch_ns": 148654542,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 8,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 128680542,
+      "dispatch_ns": 128540834,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 8,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3927291,
+      "dispatch_ns": 3762958,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 8,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3879791,
+      "dispatch_ns": 3717875,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 8,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 117741292,
+      "dispatch_ns": 117574292,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 8,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 110490750,
+      "dispatch_ns": 110360250,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 8,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 6529500,
+      "dispatch_ns": 3896750,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 9,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 10526208,
+      "dispatch_ns": 3917542,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 9,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 121897708,
+      "dispatch_ns": 121021250,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 9,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 99831208,
+      "dispatch_ns": 99714458,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 9,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3281833,
+      "dispatch_ns": 3134000,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 9,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2509167,
+      "dispatch_ns": 2408125,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 9,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 97415083,
+      "dispatch_ns": 97311083,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 10,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 88184959,
+      "dispatch_ns": 88096125,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 10,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3013541,
+      "dispatch_ns": 2877792,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 10,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2531250,
+      "dispatch_ns": 2408750,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 10,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 99567208,
+      "dispatch_ns": 99468000,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 10,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 106241833,
+      "dispatch_ns": 106104500,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 10,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3712167,
+      "dispatch_ns": 3549084,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 11,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2787584,
+      "dispatch_ns": 2692334,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 11,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 92035708,
+      "dispatch_ns": 91932000,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 11,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 88850833,
+      "dispatch_ns": 88730709,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 11,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3086500,
+      "dispatch_ns": 2931208,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 11,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2332708,
+      "dispatch_ns": 2238042,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 11,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 90748334,
+      "dispatch_ns": 90644541,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 12,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 88091666,
+      "dispatch_ns": 87975500,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 12,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3183167,
+      "dispatch_ns": 2992458,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 12,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2931959,
+      "dispatch_ns": 2826209,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 12,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 95118625,
+      "dispatch_ns": 95021833,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 12,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 87943666,
+      "dispatch_ns": 87836458,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 12,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3044791,
+      "dispatch_ns": 2902750,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 13,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2217500,
+      "dispatch_ns": 2130125,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 13,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 85704542,
+      "dispatch_ns": 85611250,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 13,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 90305834,
+      "dispatch_ns": 90181208,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 13,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3071958,
+      "dispatch_ns": 2923833,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 13,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2350875,
+      "dispatch_ns": 2249959,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 13,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 96177458,
+      "dispatch_ns": 96032583,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 14,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 89849875,
+      "dispatch_ns": 89751833,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 14,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2945000,
+      "dispatch_ns": 2828709,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 14,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2233167,
+      "dispatch_ns": 2136292,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 14,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 83596917,
+      "dispatch_ns": 83493958,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 14,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 85389542,
+      "dispatch_ns": 85274250,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 14,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3097333,
+      "dispatch_ns": 2952125,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 15,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2174208,
+      "dispatch_ns": 2085708,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 15,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 85108667,
+      "dispatch_ns": 85015583,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 15,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 76831041,
+      "dispatch_ns": 76725208,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 15,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2993500,
+      "dispatch_ns": 2855417,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 15,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 1989542,
+      "dispatch_ns": 1906958,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 15,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 75580208,
+      "dispatch_ns": 75491167,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 16,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 75482250,
+      "dispatch_ns": 75403500,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 16,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2628417,
+      "dispatch_ns": 2519792,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 16,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2155125,
+      "dispatch_ns": 2077000,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 16,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 77597666,
+      "dispatch_ns": 77513542,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 16,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 79273875,
+      "dispatch_ns": 79165000,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 16,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3314375,
+      "dispatch_ns": 3168292,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 17,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2298625,
+      "dispatch_ns": 2212667,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 17,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 86792250,
+      "dispatch_ns": 86696834,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 17,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 75028666,
+      "dispatch_ns": 74946958,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 17,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2507958,
+      "dispatch_ns": 2398000,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 17,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 1925791,
+      "dispatch_ns": 1846166,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 17,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 75726542,
+      "dispatch_ns": 75625334,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 18,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 78901209,
+      "dispatch_ns": 78803041,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 18,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3129458,
+      "dispatch_ns": 2984708,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 18,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2688667,
+      "dispatch_ns": 2589334,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 18,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 85361542,
+      "dispatch_ns": 85261125,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 18,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 80853459,
+      "dispatch_ns": 80763458,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 18,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2871667,
+      "dispatch_ns": 2687292,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 19,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2225959,
+      "dispatch_ns": 2136917,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 19,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 77505416,
+      "dispatch_ns": 77418417,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 19,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 75684625,
+      "dispatch_ns": 75606708,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 19,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2613625,
+      "dispatch_ns": 2502708,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 19,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 1989333,
+      "dispatch_ns": 1903250,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 19,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 76076250,
+      "dispatch_ns": 75969625,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 20,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 81980041,
+      "dispatch_ns": 81856833,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 20,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2877542,
+      "dispatch_ns": 2741417,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 20,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2244375,
+      "dispatch_ns": 2151625,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 20,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 87395459,
+      "dispatch_ns": 87305042,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 20,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 83306667,
+      "dispatch_ns": 83213250,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 20,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2645625,
+      "dispatch_ns": 2525666,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 21,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 1970625,
+      "dispatch_ns": 1901000,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 21,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 78653083,
+      "dispatch_ns": 78561083,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 21,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 76575834,
+      "dispatch_ns": 76479417,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 21,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3031792,
+      "dispatch_ns": 2900709,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 21,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2222708,
+      "dispatch_ns": 2131416,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 21,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 114751583,
+      "dispatch_ns": 114646083,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 22,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 95324375,
+      "dispatch_ns": 95221917,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 22,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3001125,
+      "dispatch_ns": 2874208,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 22,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2276292,
+      "dispatch_ns": 2190625,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 22,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 86714958,
+      "dispatch_ns": 86607708,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 22,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 88279000,
+      "dispatch_ns": 88182375,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 22,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2994167,
+      "dispatch_ns": 2858958,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 23,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2404250,
+      "dispatch_ns": 2307667,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 23,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 88274292,
+      "dispatch_ns": 88175458,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 23,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 105582416,
+      "dispatch_ns": 105476292,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 23,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3270083,
+      "dispatch_ns": 3134917,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 23,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2691000,
+      "dispatch_ns": 2579208,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 23,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 113797417,
+      "dispatch_ns": 113662750,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 24,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 100155667,
+      "dispatch_ns": 100054125,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 24,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3018542,
+      "dispatch_ns": 2887917,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 24,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2360042,
+      "dispatch_ns": 2246333,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 24,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 109355500,
+      "dispatch_ns": 109234834,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 24,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 102746208,
+      "dispatch_ns": 102647208,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 24,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 3114583,
+      "dispatch_ns": 2956750,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 25,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 2250125,
+      "dispatch_ns": 2162334,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 25,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.18017578125,
+        5.509765625,
+        6.33935546875
+      ],
+      "client_wall_ns": 100428375,
+      "dispatch_ns": 100318041,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 25,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 122466917,
+      "dispatch_ns": 122361667,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 25,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3683584,
+      "dispatch_ns": 3508458,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 25,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 2874625,
+      "dispatch_ns": 2733625,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 25,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 106480292,
+      "dispatch_ns": 106350625,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 26,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 105637625,
+      "dispatch_ns": 105527875,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 26,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3554375,
+      "dispatch_ns": 3382292,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 26,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3201166,
+      "dispatch_ns": 3087000,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 26,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 102963667,
+      "dispatch_ns": 102856000,
+      "request_bytes": 185,
+      "response_bytes": 1111
+    },
+    {
+      "repetition": 26,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 137327750,
+      "dispatch_ns": 137213000,
+      "request_bytes": 207,
+      "response_bytes": 2229
+    },
+    {
+      "repetition": 26,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 4538542,
+      "dispatch_ns": 4311417,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 27,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3154666,
+      "dispatch_ns": 3014375,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 27,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 107601916,
+      "dispatch_ns": 107471583,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 27,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 98654375,
+      "dispatch_ns": 98547292,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 27,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3517833,
+      "dispatch_ns": 3364125,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 27,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 2595875,
+      "dispatch_ns": 2466458,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 27,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 97239083,
+      "dispatch_ns": 97115000,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 28,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 110293792,
+      "dispatch_ns": 110192250,
+      "request_bytes": 188,
+      "response_bytes": 688
+    },
+    {
+      "repetition": 28,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 4050750,
+      "dispatch_ns": 3782459,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 28,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3845292,
+      "dispatch_ns": 3694917,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 28,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 95588209,
+      "dispatch_ns": 95444583,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 28,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 91601125,
+      "dispatch_ns": 91466500,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    },
+    {
+      "repetition": 28,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3082958,
+      "dispatch_ns": 2917667,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 29,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 2365750,
+      "dispatch_ns": 2279125,
+      "request_bytes": 188,
+      "response_bytes": 1118
+    },
+    {
+      "repetition": 29,
+      "case_id": "real-read-source_offset-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 85173917,
+      "dispatch_ns": 85054000,
+      "request_bytes": 188,
+      "response_bytes": 687
+    },
+    {
+      "repetition": 29,
+      "case_id": "real-read-register-0",
+      "endpoint": "native",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 84046459,
+      "dispatch_ns": 83945875,
+      "request_bytes": 185,
+      "response_bytes": 1110
+    },
+    {
+      "repetition": 29,
+      "case_id": "real-read-register-0",
+      "endpoint": "candidate",
+      "order": [
+        "native",
+        "candidate"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 3530875,
+      "dispatch_ns": 3383042,
+      "request_bytes": 185,
+      "response_bytes": 1545
+    },
+    {
+      "repetition": 29,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "candidate",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 2451417,
+      "dispatch_ns": 2351708,
+      "request_bytes": 207,
+      "response_bytes": 2696
+    },
+    {
+      "repetition": 29,
+      "case_id": "real-read-extract_file_facts-0",
+      "endpoint": "native",
+      "order": [
+        "candidate",
+        "native"
+      ],
+      "load": [
+        6.16552734375,
+        5.517578125,
+        6.3369140625
+      ],
+      "client_wall_ns": 84695583,
+      "dispatch_ns": 84580792,
+      "request_bytes": 207,
+      "response_bytes": 2228
+    }
+  ],
+  "cases": {
+    "real-read-source_offset-0": {
+      "candidate": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 2.8986255,
+          "p95_ms": 4.05075,
+          "min_ms": 1.970625,
+          "max_ms": 10.526208
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 2.7686875,
+          "p95_ms": 3.782459,
+          "min_ms": 1.901,
+          "max_ms": 3.917542
+        },
+        "response_bytes": [
+          1118
+        ]
+      },
+      "native": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 88.1383125,
+          "p95_ms": 136.334125,
+          "min_ms": 75.48225,
+          "max_ms": 167.6405
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 88.0358125,
+          "p95_ms": 136.2035,
+          "min_ms": 75.4035,
+          "max_ms": 167.499125
+        },
+        "response_bytes": [
+          687,
+          688
+        ]
+      }
+    },
+    "real-read-register-0": {
+      "candidate": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 3.079229,
+          "p95_ms": 3.879791,
+          "min_ms": 2.155125,
+          "max_ms": 5.264958
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 2.9275205,
+          "p95_ms": 3.694917,
+          "min_ms": 2.077,
+          "max_ms": 3.717875
+        },
+        "response_bytes": [
+          1545
+        ]
+      },
+      "native": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 89.5783335,
+          "p95_ms": 122.987583,
+          "min_ms": 75.028666,
+          "max_ms": 149.799458
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 89.4559585,
+          "p95_ms": 122.859292,
+          "min_ms": 74.946958,
+          "max_ms": 149.6205
+        },
+        "response_bytes": [
+          1110,
+          1111
+        ]
+      }
+    },
+    "real-read-extract_file_facts-0": {
+      "candidate": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 2.934396,
+          "p95_ms": 4.538542,
+          "min_ms": 1.925791,
+          "max_ms": 6.5295
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 2.7962915,
+          "p95_ms": 3.938416,
+          "min_ms": 1.846166,
+          "max_ms": 4.311417
+        },
+        "response_bytes": [
+          2696
+        ]
+      },
+      "native": {
+        "client_wall_ns": {
+          "n": 30,
+          "p50_ms": 90.791167,
+          "p95_ms": 148.796041,
+          "min_ms": 75.580208,
+          "max_ms": 257.711625
+        },
+        "dispatch_ns": {
+          "n": 30,
+          "p50_ms": 90.673208,
+          "p95_ms": 148.654542,
+          "min_ms": 75.491167,
+          "max_ms": 257.574709
+        },
+        "response_bytes": [
+          2228,
+          2229
+        ]
+      }
+    }
+  },
+  "startup_wall_ns": {
+    "candidate": 2384641375,
+    "native": 2374053708
+  },
+  "wall_seconds": 14.322658061981201
+}

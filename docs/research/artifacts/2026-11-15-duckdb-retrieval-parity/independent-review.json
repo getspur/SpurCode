@@ -1,0 +1,84 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "cfc33413-11ce-46c9-bec0-742284366e4d",
+  "delegation_id": "39f1302abad24701",
+  "brain_session_id": "62837664bb0ba1c9",
+  "message": "Independent read-only review complete at 7bfed9391736f60de5934941f36901ef4bc0841f. Critical: none. Important: custom-corpus completeness guard is one-directional; parent must assert native indexed path/blob set equals the complete SQL/shared source set before final execution. Current six-file smoke passes exact equality. Minor: real-engine fixture covers calls-only production edges, lacks ID/URI request round-trips, and contains two duplicate caller request pairs. Authentic native dispatch, SQL candidate independence, exact source/comparator behavior and retained real-engine smoke evidence verified. Empty diff; no edits/builds/benchmarks/commits/merge/close.",
+  "evidence": {
+    "artifacts": {
+      "report": "/private/tmp/spur-retrieval-parity-bd-2ppt-final/report.json",
+      "provenance": "/private/tmp/spur-retrieval-parity-bd-2ppt-final/provenance.json",
+      "manifest": "/private/tmp/spur-retrieval-parity-bd-2ppt-final/manifest.json",
+      "real_engine_tests": "/private/tmp/spur-retrieval-parity-bd-2ppt-tests.log"
+    },
+    "builds_run": 0,
+    "canonical_issue_id": "bd-2ss2",
+    "commits_created": 0,
+    "comparison": "Raw bodies/errors preserved; exact null/missing/type-aware structural comparison. Ordered search/ambiguity/sample fields; traversal multisets retain duplicates with separately observed ordering. Independently mapped path/kind/qualified-name/line-range identity, source-format kind limit documented, explicit metadata exclusions only at named locations, separate raw-ID/API compatibility. No semantic mismatches hidden.",
+    "dependency_chain": "get_plan_status verified native_retrieval_oracle (bd-8ouw, e2114ff6b) and sql_retrieval_comparator (bd-2ppt, 7bfed9391) approved before review.",
+    "diff_empty": true,
+    "evidence_inspected": [
+      "Full spec/plan, retrieval_native.rs, retrieval_parity.py, test_retrieval_parity.py and cases.json",
+      "Actual GraphMcpModule default/current-worktree dispatch, request root propagation, search/read/callers/callees/default handlers, search ranking/location ordering, exact source/context semantics and traversal counts/samples",
+      "Native build_facts/discovery; pure BytesExtractor::extract_file_facts and actual extension ParseFileFacts callback",
+      "Approved extension integration artifact-manifest.json and source chain: no extractor/query/file_facts.rs changes from tested f0218c673 to reviewed HEAD",
+      "Retained native/candidate raw JSONL, report, provenance, ready receipts, SQL materialization/query code and complete output manifest",
+      "Native delivery, hash-verified host build/remote check/test/smoke receipts; comparator real-engine test log"
+    ],
+    "files_changed": [],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "examples/retrieval_native.rs:319-329; spur-graph/src/discovery.rs:21-34,84-89; examples/retrieval_parity.py:287-292",
+        "title": "Custom corpus can have different effective resolution inputs without an explicit corpus equality failure",
+        "detail": "Native preparation verifies every indexed file belongs to spec but not that every supplied supported source is indexed; native verify checks tracked files == spec, not indexed files == spec. Native discovery skips target/node_modules and honors ignores, while SQL extracts every shared source.",
+        "reproduction": "Source-traced, not executed under read-only constraints: a complete spec containing src/lib.rs plus target/extra.rs with a unique function passes source/tracked checks; native excludes target/extra.rs, SQL extracts it. Search for the extra function yields a corpus-policy discrepancy; leaving it unqueried can hide the differing context.",
+        "action": "Parent must assert exact logical path/blob equality between native provenance indexed_files and SQL/shared source manifests for the final cohort, or explicitly reject/report any discovery gap. Preserve production index policy.",
+        "current_fixture": "All six native indexed path/content_oid pairs exactly equal complete SQL/shared path/git_blob_oid pairs."
+      },
+      {
+        "severity": "minor",
+        "location": "tests/fixtures/retrieval/cases.json; retained native.jsonl",
+        "title": "58 requests do not establish broad edge/context/selector coverage",
+        "detail": "Retained traversals expose only calls and production paths, not calls_dyn, references_hof, references_other, references_address, tests/benches. No request round-trips raw ID/URI selectors. code_callers_samefile_resolved duplicates import_resolved and samefile_all duplicates import_all. The native crossfile_resolved callee case is empty with two unresolved labels, so it is not a positive cross-file binding case.",
+        "action": "Disclose gaps; mutation tests verify comparator sensitivity, not engine support. Keep resolved import mismatch and native unresolved qualified-call anomaly explicit."
+      }
+    ],
+    "independence": "Native calls actual GraphMcpModule::dispatch under with_worktree_root_for_request. SQL constructs before native starts, reads shared sources/spec and approved extension only, and independently calls spur_graph_file_facts. Local node/span/edge joins include path. No oracle answers, IDs, edges, resolutions, or replacement source parser feed candidate. One-file binding limitation remains explicit; no global resolver added.",
+    "issue_closed": false,
+    "kind": "completion",
+    "limitations": "Orientation analyst hash stale relative to exact graph; targeted code_* calls timed out, so raw current bytes used. Sibling outcome-artifact tool was denied for bound-session delegation mismatch; no bypass attempted; approved plan status and retained verification artifacts independently inspected.",
+    "merged": false,
+    "parent_remaining": "Freeze full bounded b5e1246cc real-source cohort with identical isolated resolution context, assert complete native/SQL file/blob equality, supply custom positive/negative/ambiguous expectations, run Rust notebook, retain all mismatches and provenance; ratios only on reviewed matched semantic work.",
+    "plan_id": "0f4d459d-c99c-4aa7-bdab-92b435567e26",
+    "plan_task_id": "retrieval_fairness_review",
+    "reviewed_head": "7bfed9391736f60de5934941f36901ef4bc0841f",
+    "timed_benchmark_runs": 0,
+    "timing": "Persistent local JSONL endpoints share client encoding/pipe/decoding boundaries and retain request/response sizes. Construction/extraction/materialization/startup/warm timings separated, native cold-first-query unavailable explicitly. API metadata/evidence work differs and is disclosed. No speed claims; mismatch cases ineligible, negative/error/empty matches must be distinguished from positive retrieval before parent timing eligibility review.",
+    "verification": {
+      "executed": "14 ComparatorTests passed using python3 -B; no build, engine smoke rerun, timed repetition or file mutation. All 58 comparisons recomputed from retained replies exactly match report.cases. Native validation recomputed exactly; shared_inputs read-only verification passed.",
+      "retained_tests": "20 tests passed (14 comparator + 6 real native/DuckDB tests) in /private/tmp/spur-retrieval-parity-bd-2ppt-tests.log; native remote example tests report 2 passed; predecessor hash-verified smoke receipt records 288 passed.",
+      "retained_summary": {
+        "requests": 58,
+        "semantic_matches": 43,
+        "full_api_matches": 1,
+        "raw_identity_cases": 35,
+        "raw_identity_matches": 28,
+        "unsupported": 0,
+        "native_validation_failures": 0,
+        "candidate_source_failures": 0
+      },
+      "source_bytes": "9 successful source reads per endpoint; Unicode, CRLF, returned ranges/context and file_oid verified without newline normalization.",
+      "hashes": {
+        "spec_sha256": "6a82c682c4b595c55135527dbc58811c28a725d058eb6f1b1bd68a84fcf2b836",
+        "corpus_head": "2aa950a918337fa261d89a8cb96a8706ea13d09b",
+        "native_graph": "e82b98f3fc121631ddcf333bcac5eaa61b179696f78049d36b388eeba80b6457",
+        "approved_extension": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+        "native_release_binary": "f897e4d526038e3df5203d741e7f0513af8900f8de6908cce4c86e800e8bcfaa",
+        "duckdb_2_native_engine": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+        "reviewed_python": "3d7f35655c60636fe101f1c147a6d834cbb95fc13bfc1ba0952c93e92c884fc7"
+      },
+      "hash_checks": "Live binary/runtime/script/Cargo/spec hashes, six complete source hashes, every graph artifact, native log/smoke delivery hashes and all report manifest entries match receipts."
+    }
+  }
+}
