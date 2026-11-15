@@ -1,0 +1,59 @@
+{
+  "notebook_id": "nb-0532cd73b116e20ad9508402",
+  "path": "/Users/kevintruong/project/spur-notebook/duckdb-temporal-performance.ipynb",
+  "revision": 1561,
+  "id": "fea11100-1115-47c0-9abc-111520260064",
+  "kind": "code",
+  "version": 1555,
+  "cell_etag": "cell:sha256:034dcebf9b4d04238fb3497be264773ca61fd9152fb970942b1b214b388cdb9f",
+  "source": "let inc_art = std::path::Path::new(\"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-incremental-children\");\nlet inc_log = std::fs::File::create(inc_art.join(\"matched-r0-process.log\"))?;\nlet inc_stderr = inc_log.try_clone()?;\nlet inc_status = std::process::Command::new(\"/private/tmp/spur-graph-duckdb-v2-20261114/bin/python\")\n    .arg(inc_art.join(\"benchmark.py\"))\n    .arg(\"--candidate-sql\").arg(inc_art.join(\"approved-candidate.sql\"))\n    .args([\"--name\", \"matched-r0\"])\n    .stdout(std::process::Stdio::from(inc_log))\n    .stderr(std::process::Stdio::from(inc_stderr))\n    .status()?;\nassert!(inc_status.success(), \"Benchmark failed; inspect matched-r0-process.log\");\nlet inc_result: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(inc_art.join(\"matched-r0/result.json\"))?)?;\nassert_eq!(inc_result[\"status\"], \"passed\");\nprintln!(\"Matched old/new workflow benchmark: {}\", inc_result[\"status\"]);\nprintln!(\"Warm observations and medians: {}\", inc_result[\"warm\"]);\nprintln!(\"Typed Parquet checks without extension: {}\", inc_result[\"typed_parquet_without_extension\"]);\nprintln!(\"Exact final old/new differences: {}\", inc_result[\"old_new_exact\"]);",
+  "exec_count": 126,
+  "status": "success",
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "Matched old/new workflow benchmark: \"passed\"\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "Warm observations and medians: {\"new\":{\"median\":1.6295063751749694,\"seconds\":[1.6295063751749694,1.635518082883209,1.5594212498981506]},\"old\":{\"median\":5.683101624948904,\"seconds\":[5.504207165911794,5.799939000047743,5.683101624948904]}}\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "Typed Parquet checks without extension: {\"new\":{\"cache\":[0,0],\"edges\":[0,0],\"macro_invocations\":[0,0],\"macro_scopes\":[0,0],\"nodes\":[0,0],\"occurrences\":[0,0],\"spans\":[0,0]},\"old\":{\"cache\":[0,0],\"edges\":[0,0],\"macro_invocations\":[0,0],\"macro_scopes\":[0,0],\"nodes\":[0,0],\"occurrences\":[0,0],\"spans\":[0,0]}}\n"
+    },
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "Exact final old/new differences: {\"cache\":[0,0],\"edges\":[0,0],\"macro_invocations\":[0,0],\"macro_scopes\":[0,0],\"nodes\":[0,0],\"occurrences\":[0,0],\"spans\":[0,0]}\n"
+    }
+  ],
+  "metadata": {
+    "spur": {
+      "version": 1555,
+      "last_edited_by": "brain",
+      "code_type": "rust"
+    },
+    "spur_output_provenance": {
+      "session_id": "dee57f50-ee43-4ba8-a695-d25e96f383ae",
+      "run_id": "718f8852-4837-41ae-a0db-f77598a8479d",
+      "source_version": 1555,
+      "execution_identity": "8919eba622c67107cb881f7c82ff9163bcb4b5143ee890c48a111539148f3b98",
+      "output_hash": "eb90fb07ac702ba559798e74faec4be5162324a37632db15b0f6ed05ef11d8dd",
+      "status": "succeeded",
+      "dependencies": [],
+      "published_ports": [],
+      "ports_at_start": [],
+      "lineage_complete": true
+    }
+  },
+  "output_indices": [
+    0,
+    1,
+    2,
+    3
+  ]
+}

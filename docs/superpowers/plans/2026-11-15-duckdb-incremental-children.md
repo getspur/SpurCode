@@ -128,3 +128,20 @@ implementation epic only after required work is actually complete.
 
 No worker touches parser code, Cargo, prior benchmark artifacts, notebook files
 or user changes. Signal any needed out-of-scope edit before proceeding.
+
+### Review correction R1: active-schema layout detection
+
+Independent review `bd-18w2` reproduced a hardcoded `main` predicate in the first
+implementation. Non-default-schema replays refresh all keys; an intact `main`
+layout can mask a missing child table elsewhere and leave it empty. The parent
+independently reproduced both failures on the pinned native engine. No original
+candidate is integrated into main or benchmarked before correction.
+
+Follow-up plan `d119066b-25a1-4644-8159-cf65c8487953`, epic `bd-22ye`, starts at
+`8d3f7a285`. `schema_layout_fix` (`bd-94e5`) owns only SQL and pipeline tests:
+commit an intended failing multi-schema regression before the minimal fix, adapt
+test metadata helpers for persistent active-schema versus TEMP relations, and run
+the full real-engine regression suite. `schema_layout_review` (`bd-82z4`) performs
+an independent read-only review afterward. Both use codex/gpt-6.1-sol/xhigh.
+The parent refreezes the corrected candidate, integrates verified bytes, then
+runs the previously prepared notebook comparison.

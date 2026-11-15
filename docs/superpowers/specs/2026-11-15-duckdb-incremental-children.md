@@ -46,6 +46,9 @@ or repair of all five children, with no re-extraction of cached inputs. This als
 upgrades databases written by the old full-rebuild SQL. Dropping the checkpoint
 is the explicit rebuild mechanism; manually editing checkpoint rows is unsupported.
 Schema-incompatible cache changes still require migration/fresh storage.
+Layout detection must use the catalog/schema of the maintained relations. An
+intact layout in another schema cannot suppress repair, and non-default-schema
+replays must retain zero deltas. TEMP diagnostics retain their own temp schema.
 
 Required diagnostic TEMP relations expose the applied refresh and removed key
 sets as `file_facts_child_refresh` and `file_facts_child_removed`. Both have the

@@ -1,0 +1,58 @@
+{
+  "base": {
+    "kind": "commit",
+    "oid": "322f30343"
+  },
+  "client_idempotency_key": "duckdb-incremental-children-322f30343-20261115",
+  "epic_title": "Incrementally maintain typed file-facts child tables",
+  "epic_body": "User approved measured next optimization after bd-189b. Source design bd-1phw closed; committed spec/plan at322f30343. Preserve typed cache/child/snapshot contracts and independently refreshed caller lineage. Test-first independent contract → SQL/docs → independent read-only review; parent benchmarks/integrates after review. Route every worker codex/gpt-6.1-sol/xhigh as explicitly requested. No native source or export-protocol changes.",
+  "tasks": [
+    {
+      "task_id": "incremental_children_contract",
+      "agent": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "xhigh",
+      "planned_write_files": [
+        "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py"
+      ],
+      "context_files": [
+        "docs/superpowers/specs/2026-11-15-duckdb-incremental-children.md",
+        "docs/superpowers/plans/2026-11-15-duckdb-incremental-children.md"
+      ],
+      "task": "CONTEXT: User approved incremental child maintenance after cached notebook trace child rebuild2.655s72.5%,exports0.875s23.9%,native empty extraction0.00123s. Read committed spec/plan at322f30343. GOAL: Commit an independent test-first RED contract against existing full-rebuild SQL. CONSTRAINTS: Own tests/test_file_facts_pipeline.py only; preserve six existing tests. Native runtime /private/tmp/spur-graph-duckdb-v2-20261114/bin/python DuckDB2.0.0. Immutable artifact /Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension SHA256e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028. No Rust build/change needed. Test actual production SQL file, all five collections with native RUST macro fixture, full cache UNNEST oracle both directions/types/list ordinals. Required new behavior: same-connection child tableOID reuse + empty file_facts_child_refresh/file_facts_child_removed on no-op; checkpoint file_facts_child_state covers every cache key including NULL/error/empty; reopen zero deltas/content (do not assume OIDs persist across connections); independently refreshed duplicate/root/merge caller lineage with zero child changes; new path/version/append retains existing children; cache deletion without restaging removes children+state and lineage not_cached; delete/retry of same valid key replaces old children without duplicates; legacy/missing-checkpoint bootstrap no native cached re-extraction; missing-child-table repair; empty stage stable. Use current metadata API discovery before relying on table_oid; RED must reflect missing behavior not malformed queries. Internal TEMP diagnostic keytables have exactly3keycols; state key-only. Solver PRE valid finite snapshot sat/pass and duplicate/orphan/missingcheckpoint unsat/fail in solve-pre-small.json (committed); no transaction/algorithm universal proof, no invented limits. EXPECTED OUTPUT: focused tests, exact command and intended RED logs, test-first commit and clean diff, canonical evidence/completion audit. Do not modify SQL/README, merge or close."
+    },
+    {
+      "task_id": "incremental_children_sql",
+      "agent": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "xhigh",
+      "depends_on": [
+        "incremental_children_contract"
+      ],
+      "planned_write_files": [
+        "crates/spur-graph-duckdb/examples/file_facts.sql",
+        "crates/spur-graph-duckdb/README.md"
+      ],
+      "context_files": [
+        "docs/superpowers/specs/2026-11-15-duckdb-incremental-children.md",
+        "docs/superpowers/plans/2026-11-15-duckdb-incremental-children.md"
+      ],
+      "task": "CONTEXT: Approved independent RED contract is dependency; read spec/plan at322f30343 and test branch. GOAL: Make contract GREEN with incremental maintenance of five children and concise docs. CONSTRAINTS: Own examples/file_facts.sql and README only. Keep native source/Cargo/tests unchanged. Same generic staged_sources/source_lineage, cache3key/blob-path-extractor identity, cache/child/occurrence schemas and seven Parquet filenames/full snapshot behavior. Key-only durable file_facts_child_state; TEMP file_facts_child_refresh/removed expose3keycol sets. For current cacheC,prior checkpointS,newlyextractedM:refresh=(C−S)∪M;removed=S−C; delete child rows for both sets then insert each collection independently from materialized refresh-facts only. NULL/error/empty parents stillcheckpointed. No-op does not recreate child tables or hash all wide facts. Missing checkpoint or any child table triggers one full cache-driven bootstrap/repair without re-extraction; dropping state is explicit rebuild mechanism. Supported cache delete+retry must replace old children without duplicates; cache deletion absent staging clears orphans. Metadata and all five children/cache/caller occurrences updated transactionally before unchanged full exports. Caller lineage always refreshes even on zero child delta; preserves duplicates,root NULLparents,merge parents,not_cached. Single writer; immutable cache payload contract; incompatible schemas require migration/fresh DB. Avoid speculative indexes/policy knobs or source-provider change. Use real pinned DuckDB2 runtime and approved artifact absolute path from spec; no new Rust build required. Run focused contract GREEN plus existing test_file_facts/test_extension/test_temporal on same immutable artifact; exactcommands/artifactsha and data/type preservation. Re-run catalog finite snapshots POST withpersist:false fromcommitted solve-pre-small.json; state limited proof scope, don't treat prior validation-rejected requests as solverresults. No arbitraryquota/timingthreshold introduced. If contract requires substantive correction ask brain, don'tweaken tests. EXPECTED OUTPUT: exact2-file diff, rationale, GREEN logs/commands, source/artifact identities, POST solver evidence, commit and canonicalcompletion audit. Do notmerge/close."
+    },
+    {
+      "task_id": "incremental_children_review",
+      "agent": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "xhigh",
+      "depends_on": [
+        "incremental_children_sql"
+      ],
+      "planned_write_files": [],
+      "context_files": [
+        "docs/superpowers/specs/2026-11-15-duckdb-incremental-children.md",
+        "docs/superpowers/plans/2026-11-15-duckdb-incremental-children.md"
+      ],
+      "task": "CONTEXT: Final independent review of approved SQL incremental child maintenance and independent RED→GREEN contract. Read spec/plan; baseline322f30343. GOAL: Identify correctness, performance-contract or compatibility issues before parent integration. CONSTRAINTS: Read-only review, plannedwrites[]; no source edits/fixes/commits/builds/merge/close. Verify key semanticsrefresh=(C−S)∪M,removed=S−C; bootstrap/missing-table repair; no-op physicaltable reuse andnoall-facts hash; cachedNULL/error/empty keys; delete/retry anddeletewithoutstaging; unchanged nativefields/types/ordinals; callerlineageindependentofchilddeltas includingduplicates/root/mergeparents; cache/state/children transaction; unchanged7exports postcommit. Review tests as independent full-UNNEST oracle, expected REDcause then actualengine GREEN/evidence. Catalogue snapshots onlyfinitewitnesses, notSQL transitionproof. Graph-first retrieval; graphstale/new files maymiss, exact committed diff thenauthoritative. Parent owns warm/partialcache Rustnotebookbenchmark on frozen19604keys; do notclaim speedup fromtests. EXPECTED OUTPUT: concrete important/critical findings withfile:line+repro, minor notesor explicitnone; exactevidence inspected andcanonicalcompletion audit. No code diff expected."
+    }
+  ]
+}

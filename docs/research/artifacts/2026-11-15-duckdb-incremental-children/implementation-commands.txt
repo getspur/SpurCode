@@ -1,0 +1,11 @@
+SPUR_GRAPH_EXTENSION=/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension \
+  /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest discover \
+  -s crates/spur-graph-duckdb/tests -p test_file_facts_pipeline.py -v
+
+SPUR_GRAPH_EXTENSION=/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension \
+SPUR_FILE_FACTS_ORACLE=/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/reference_file_facts \
+PYTHONPATH=crates/spur-graph-duckdb/tests \
+  /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest \
+  test_file_facts_pipeline test_file_facts test_extension test_temporal -v
+
+git diff --check

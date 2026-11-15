@@ -1,0 +1,106 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "44c48f2c-dfb1-4b14-81ed-d0fdb46c8318",
+  "delegation_id": "7f6ff5ea8c7d48f0",
+  "brain_session_id": "62837664bb0ba1c9",
+  "message": "COMPLETION: Independent read-only R1 follow-up review of 8d3f7a285..11991f874 found no critical, important or minor findings. Verified original test-before-fix objects, intended RED 21 assertions/zero errors, recorded GREEN 19 pipeline/50 combined, exact two-file scope and preservation. Independently reproduced base RED and fixed GREEN entirely in memory, including an attached active catalog with another catalog's intact facts layout. Empty reviewer diff; parent timed benchmark remains outstanding; no speedup claimed.",
+  "evidence": {
+    "base_commit": "8d3f7a285abbd19107e8b34ac6c4086e4d6d349d",
+    "constraints": "No source/files edits, builds, commits, merge, close or snapshot publication by reviewer; requested canonical PM audit only.",
+    "critical_findings": [],
+    "dependency_resolution": "Current review dispatched-base SHA and plan dependency handoff identify 11991f874; no local ref literally named dependency. Exact git diff 8d3f7a285..11991f874 equals retained /private/tmp/bd-94e5-r1/fix.diff byte for byte.",
+    "diff_check": "git diff --check 8d3f7a285..HEAD; git diff --exit-code; git diff --cached --exit-code all exit 0.",
+    "files_changed": [],
+    "git_status_porcelain": "",
+    "implementation_scope": {
+      "changed_dependency_files": [
+        "crates/spur-graph-duckdb/examples/file_facts.sql",
+        "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py"
+      ],
+      "production_change": "file_facts.sql:72 changes only schema_name='main' to schema_name=current_schema(); database_name=current_database() and NOT temporary retained.",
+      "preserved": "Original 17 test method source segments exactly equal. Native Rust, Cargo, README, native tests, extraction/cache prefix, remaining child/lineage/transaction SQL and all seven post-COMMIT COPY exports unchanged.",
+      "helpers": "Persistent OID metadata uses active database/schema and NOT temporary; required TEMP key-only metadata uses temp.main. Full-cache reference remains independent EXCEPT ALL both ways, DESCRIBE types and key+ordinal duplicate checks for all five collections."
+    },
+    "important_findings": [],
+    "independent_reproduction": {
+      "runtime": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python -B; DuckDB 2.0.0",
+      "execution": "Six executions of the exact two new test methods with only setUp/run_pipeline overridden to :memory:, temp_directory='', native artifact LOAD, SQL through COMMIT only; no COPY/temp database/output files.",
+      "base": {
+        "tests": 2,
+        "failures": 21,
+        "errors": 0,
+        "skips": 0
+      },
+      "fixed": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "attached_catalog": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "active": "alternate.facts",
+        "intact_other_catalog": "memory.facts",
+        "extra_check": "Other-catalog node rows and OID unchanged; test itself verifies active-catalog main rows/OIDs for staging,lineage,cache,state,occurrences and all five children."
+      },
+      "verified": "All five dropped collections repaired from cache despite intact main; full native fields/types/list ordinals parity; zero new extraction; following replay zero deltas and same active persistent child OIDs; TEMP diagnostics in temp.main for active memory.facts and alternate.facts.",
+      "exit_code": 0
+    },
+    "independently_verified_sha256": {
+      "exact_diff": "fa599b25a5cf5e4c53a5d33f1313beede35b9fcba4002371df6da0f61ca33bde",
+      "final_sql": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6",
+      "extension": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+      "native_oracle": "be17bd345a8b7abb78e77e2efdcb8c6b4a154eb436dc9ff04d5503ea9686ac90",
+      "baseline_log": "a842fe5a751f06287f997bf1b41065b49319acd913baea55046352956bc0a310",
+      "red_log": "9477faa3c6d0fa746b0a2722653bbb61f42f88c311b8ed9f5e810ced5ed8b3a4",
+      "red_pipeline_log": "41d44c66048cd063e0f74147e9e210cd30ccdcb9a9bfc2385396e4726785c4fe",
+      "green_focused_log": "d63e7442de94dbf7f64192934ab08c0f5d95627a7a5c61e5f0f10b2808cbb874",
+      "green_pipeline_log": "16ff6aa53fce2475bf912d7d0a26e830063b3abb26cf5aa0755dbc3005aa6eb8",
+      "green_combined_log": "b2b59442d4b242f1a52766d13cca760d0ea400c9083efa2998ebf19d984f75d9"
+    },
+    "inspected": [
+      "docs/superpowers/specs/2026-11-15-duckdb-incremental-children.md",
+      "docs/superpowers/plans/2026-11-15-duckdb-incremental-children.md",
+      "Exact full 8d3f7a285..11991f874 two-file diff; complete production SQL; full-cache oracle and added schema tests",
+      "Original test commit ab678491287a02795cc986a962aafd0569718237 and fix commit 4cd27e756ddc7ce3ad6b2f26e207a87a594bbd7d",
+      "/private/tmp/bd-94e5-r1/{commands.json,baseline.log,red.log,red-pipeline.log,green-focused.log,green-pipeline.log,green-combined.log,fix.diff,preservation.json,solve-pre-post.json}",
+      "Beads bd-18w2 comments 6558-6573; bd-94e5 comments 6575/6577/6578/6581-6583; bd-82z4 current in_progress dispatch; plan d119066b-25a1-4644-8159-cf65c8487953 approved dependency"
+    ],
+    "issue_id": "bd-82z4",
+    "kind": "completion",
+    "minor_findings": [],
+    "plan_id": "d119066b-25a1-4644-8159-cf65c8487953",
+    "plan_task_id": "schema_layout_review",
+    "planned_writes": [],
+    "remaining_parent_work": "Parent owns integration and matched timed Rust notebook benchmark on frozen 19,604 keys. No performance or speedup claim from test timing.",
+    "retrieval": "knowledge_context_pack_2 and skill_navigate attempted first but did not finish; cancelled pending batch. Scoped code_symbol_search explicitly failed at 15000ms deadline. Exact committed diff, raw source and retained evidence used as authoritative fallback; foundation only.",
+    "review_verdict": "no_critical_or_important_findings",
+    "reviewed_dependency_commit": "11991f874b0ef06db5b7190baf8b689b99de18f6",
+    "solver_scope": "Read unchanged finite PRE/POST snapshot evidence: valid sat/pass; missing checkpoint, orphan and duplicate unsat/fail at expected bindings. No solver rerun or universal SQL/transaction proof.",
+    "test_first": {
+      "test_commit": "ab678491287a02795cc986a962aafd0569718237",
+      "test_commit_parent": "8d3f7a285abbd19107e8b34ac6c4086e4d6d349d",
+      "fix_commit": "4cd27e756ddc7ce3ad6b2f26e207a87a594bbd7d",
+      "verified": "Test commit SQL equals base and tests equal final; fix commit parent is test commit and final SQL/tests equal review snapshot. Orchestrator normalized dependency to one output commit, original test-before-fix objects retained.",
+      "recorded_red": {
+        "tests": 2,
+        "failures": 21,
+        "errors": 0,
+        "cause": "No-op refresh_facts=3 rather than 0; dropped custom-schema children stay empty under intact main and fail full-UNNEST multiset/snapshot checks. No fixture/binder failures.",
+        "original_17_pass": true
+      },
+      "recorded_green": {
+        "focused": 2,
+        "pipeline": 19,
+        "combined": 50,
+        "errors": 0,
+        "skips": 0,
+        "exit_code": 0
+      },
+      "reviewer_suite_rerun": false
+    }
+  }
+}

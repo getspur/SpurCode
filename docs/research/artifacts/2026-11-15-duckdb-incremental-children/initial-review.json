@@ -1,0 +1,116 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "7145ee50-d35b-4f97-9395-b099023fa962",
+  "delegation_id": "834abc83ff1d445d",
+  "brain_session_id": "62837664bb0ba1c9",
+  "message": "Independent read-only review complete at 8d3f7a285 against 322f30343. One important P2 compatibility/correctness finding: file_facts.sql:72 hardcodes main for layout detection. Pinned DuckDB 2.0.0 in-memory reproduction shows non-main no-op refreshing all keys; with an intact main layout, missing facts.file_facts_edges is recreated empty with refresh=0 (actual 0 vs full-UNNEST 3). Baseline repairs it. Request parent correction before integration. No other important/critical findings; no separate minor findings. Recorded RED/GREEN logs, artifact/source hashes, unchanged original tests and prefix/suffix, independent oracle, and finite POST witnesses verified. No source/file edits, builds, suite reruns, commits, merges or issue closes. Parent benchmark remains outstanding; no speedup claimed.",
+  "evidence": {
+    "base_commit": "322f3034323ca302f67cd2c1cae315e4c26b4226",
+    "constraints": "No source edits/fixes/commits/builds/merge/close. Only ephemeral :memory: engine reproduction and read-only inspection; no snapshot publication. Canonical PM audit and risk signal are the requested collaboration record.",
+    "critical_findings": [],
+    "diff_check": "git diff --check 322f30343...HEAD exited 0",
+    "files_changed": [],
+    "git_status_porcelain": "",
+    "important_findings": [
+      {
+        "id": "R1",
+        "priority": "P2",
+        "severity": "important",
+        "file": "crates/spur-graph-duckdb/examples/file_facts.sql",
+        "line": 72,
+        "title": "Scope child-layout detection to the schema of the maintained relations",
+        "cause": "The duckdb_tables() predicate requires schema_name='main', while all unqualified CREATE/DELETE/INSERT statements use the active schema. The previous SQL had no main-only restriction.",
+        "reproduction": [
+          "Use pinned Python/DuckDB 2.0.0 and approved native extension; :memory: connection, SET temp_directory='', threads=2. Execute production SQL through COMMIT only, omitting all COPY statements; no files are written.",
+          "CREATE SCHEMA facts; SET schema='facts'; create staged_sources(blob_oid VARCHAR,logical_path VARCHAR,source VARCHAR,extractor_sha VARCHAR), source_lineage(blob_oid VARCHAR,logical_path VARCHAR,extractor_sha VARCHAR). Stage ('blob','lib.rs','fn helper() {} fn main() { helper(); }','v1'). Run twice.",
+          "Second run: bootstrap=true, refresh=1, extracted=0; expected no-op refresh=0.",
+          "SET schema='main'; create equivalent staging and lineage tables, stage the same row and run once so main has an intact six-table layout.",
+          "SET schema='facts'; DROP TABLE facts.file_facts_edges; rerun the same production prefix.",
+          "Observed bootstrap=false, refresh=0, extracted=0, file_facts_edges count=0, full-cache sum(len(facts.edges))=3. Subsequent no-ops retain the missing edge rows because checkpoint already covers C.",
+          "A separate :memory: run of baseline 322f30343 in facts repairs a dropped edge table and returns actual/reference counts (3,3)."
+        ],
+        "impact": "Violates no-op/refresh contract outside main; another schema's intact layout can suppress mandatory missing-child repair and silently lose the derived child collection.",
+        "suggested_resolution": "Use the schema/catalog of the actual target cache/checkpoint/children consistently for metadata detection and add a multi-schema missing-child/no-op regression; no fixes made in this review.",
+        "signal_id": "a0e0bdad-e910-4dbc-a66b-6846a9699550"
+      }
+    ],
+    "independently_verified_sha256": {
+      "sql": "cf4e49e719aed7df175deb7c170fcd9a74b0e56e96375d952d06b9e78742ce47",
+      "readme": "ca68937ee9503273cdac38aaea019b22546bf25b0b6389974ccd59721f1c96a7",
+      "pipeline_tests": "2c4c805c0434ae299106767f0887a1cba1913f42b89e44b4b1604d41e0b47daf",
+      "extension": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+      "native_oracle": "be17bd345a8b7abb78e77e2efdcb8c6b4a154eb436dc9ff04d5503ea9686ac90",
+      "red_log": "7c361f72cdb302934d6a7b29054ccc0f6e996dc816d942a34f7e9c030bd06ff8",
+      "green_pipeline_log": "951561cbd2b35945fe9f4029069d46fad324062307accb08a5cc9e3137275908",
+      "green_regressions_log": "292b65b22c2f359b25e00c749f334252d550a5f43cfc2645a05ea2d957719ad3",
+      "solve_post": "626e92284a8702033f61cffb5b2046f4fb2371f3bcce51159be7cdcff8ee3e17",
+      "solve_pre_small": "858f932baf2e7540390e31f73b934f8cebd630c37a9151305fdcebd28b5cf70c"
+    },
+    "inspected": [
+      "docs/superpowers/specs/2026-11-15-duckdb-incremental-children.md",
+      "docs/superpowers/plans/2026-11-15-duckdb-incremental-children.md",
+      "Complete committed diff 322f30343...8d3f7a285: README.md, examples/file_facts.sql, tests/test_file_facts_pipeline.py",
+      "Complete current production SQL and pipeline tests",
+      "/private/tmp/spur-incremental-children-contract-audit.json",
+      "/private/tmp/spur-incremental-children-contract-red.log (all 53 failure blocks programmatically classified)",
+      "/private/tmp/bd-170c-commands.txt",
+      "/private/tmp/bd-170c-validation.json",
+      "/private/tmp/bd-170c-pipeline-green.log",
+      "/private/tmp/bd-170c-regressions-green.log",
+      "docs/research/artifacts/2026-11-15-duckdb-incremental-children/solve-pre-small.json",
+      "/private/tmp/bd-170c-solve-post.json",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-incremental-children/review-evidence.json",
+      "get_issue bd-18w2, bd-170c, bd-273r; get_plan_status d52c9b10-9ab9-46bd-aff1-1d7987bd5433"
+    ],
+    "issue_id": "bd-18w2",
+    "kind": "completion",
+    "minor_findings": [],
+    "plan_id": "d52c9b10-9ab9-46bd-aff1-1d7987bd5433",
+    "plan_task_id": "incremental_children_review",
+    "planned_writes": [],
+    "red_green": {
+      "suite_rerun_by_reviewer": false,
+      "independent_in_memory_regression_repro_run": true,
+      "runtime": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python -B; DuckDB 2.0.0",
+      "red": {
+        "tests": 17,
+        "passing_tests": 7,
+        "failing_tests": 10,
+        "failures": 53,
+        "errors": 0,
+        "oid_failures": 4,
+        "missing_checkpoint_failures": 17,
+        "missing_refresh_failures": 16,
+        "missing_removed_failures": 16
+      },
+      "green_recorded": {
+        "focused_tests": 17,
+        "total_tests": 48,
+        "skips": 0,
+        "errors": 0,
+        "exit_code": 0
+      },
+      "test_independence": "Six original test source bodies byte-for-byte unchanged by AST source-segment comparison; 11 additions; test file identical to committed RED SHA256.",
+      "exact_commands_path": "/private/tmp/bd-170c-commands.txt",
+      "pipeline_command": "SPUR_GRAPH_EXTENSION=/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -p test_file_facts_pipeline.py -v",
+      "regressions_command": "SPUR_GRAPH_EXTENSION=/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension SPUR_FILE_FACTS_ORACLE=/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/reference_file_facts PYTHONPATH=crates/spur-graph-duckdb/tests /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest test_file_facts_pipeline test_file_facts test_extension test_temporal -v"
+    },
+    "remaining_parent_work": "Correct R1 before integration; parent owns matched warm/partial frozen 19,604-key Rust-notebook benchmark. No speedup conclusion from test timings.",
+    "retrieval": "knowledge_context_pack_2 attempted first: analyst/exact graph hashes differ and irrelevant results. Filtered code_symbol_search timed out. Used exact committed diff and raw source as authorized authoritative fallback.",
+    "review_verdict": "request_changes",
+    "reviewed_head": "8d3f7a285abbd19107e8b34ac6c4086e4d6d349d",
+    "semantics_review": {
+      "established_layout": "Refresh UNION is distinct (C-S) UNION M; removed=S-C; invalidated refresh UNION removed. All joins/deletes use blob_oid,logical_path,extractor_sha.",
+      "bootstrap": "Correct all-C cache-driven refresh and full child deletion for main layout, including orphan cleanup when state is absent; schema-scope exception R1.",
+      "no_op": "Main layout preserves physical tables via IF NOT EXISTS and materializes only refresh facts; no all-payload hash present.",
+      "statuses": "NULL/error/empty parents checkpointed through key sets regardless of child count; full child oracle covers all statuses.",
+      "retry_delete": "M forces replacement when final C and S both still contain retried key; deletion without restaging produces removed keys and not_cached lineage.",
+      "native_fields_types_ordinals": "Each original node.*,edge.*,span.*,invocation.*,macro_scope.* projection and per-list WITH ORDINALITY retained. Full-cache EXCEPT ALL both ways and DESCRIBE validate fields/types/order, without reproducing delta algorithm.",
+      "lineage": "Unconditional source_lineage LEFT JOIN cache retains duplicate/root/merge occurrence multiplicity independently of child deltas.",
+      "transaction": "BEGIN before cache mutations; checkpoint/all children/occurrences before COMMIT; cache extraction prefix and caller-lineage/COMMIT/seven-export suffix byte-equal to baseline.",
+      "exports": "Exactly seven unchanged COPY statements follow COMMIT. Full snapshot publication cost/non-atomic behavior retained."
+    },
+    "solver_scope": "Four identical PRE/POST requests with persist:false; cached POST responses: valid=sat/pass, missing NULL-parent checkpoint/orphan/duplicate=unsat/fail on expected rule bindings. Finite supplied snapshots for one representative collection only; no SQL transition/transaction proof or runtime bounds.",
+    "test_commit": "ebde1ed2516373009c4f1dc1bf32efde6e880c28"
+  }
+}

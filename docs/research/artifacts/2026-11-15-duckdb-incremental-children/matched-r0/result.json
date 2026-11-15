@@ -1,0 +1,2144 @@
+{
+  "name": "matched-r0",
+  "native_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "runtime": {
+    "duckdb": "2.0.0",
+    "python": "3.14.5",
+    "platform": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "logical_cpus": 10,
+    "threads": 4,
+    "memory_limit": "4GB"
+  },
+  "input_sha256": "e1aefc5fcb74bd1975c8a2e88a2acfa85b130321009988be592f23a5263fbef3",
+  "seed_cache_sha256": "b3d289b746232ff44b1b188586653de8b9d0c4c4416a1b20846cc58bb7001ac6",
+  "harness_sha256": "53ffc3d4a0b5bdde008a8674c6fbd64cf0c5682d77eda7ba435a66f30141b783",
+  "sql_sha256": {
+    "old": "f9042afda72340172f464cfdb397aff6b0a88a18d5939dd107d92a0aad4ce48f",
+    "new": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6"
+  },
+  "note": "Fresh copied caches; bootstrap separate; old/new sequential on shared host. Process RSS includes both contexts and prior validation.",
+  "observations": [
+    {
+      "variant": "old",
+      "condition": "warm",
+      "timing": {
+        "wall_seconds": 5.504207165911794,
+        "user_seconds": 9.374977000000001,
+        "sys_seconds": 0.3696850000000005,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          12.31298828125,
+          10.00244140625,
+          9.11181640625
+        ],
+        "load_end": [
+          12.44775390625,
+          10.068359375,
+          9.14013671875
+        ]
+      },
+      "missing": 0,
+      "extracted": 0
+    },
+    {
+      "variant": "new",
+      "condition": "warm",
+      "timing": {
+        "wall_seconds": 1.6295063751749694,
+        "user_seconds": 2.3943149999999918,
+        "sys_seconds": 0.2703040000000012,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          12.44775390625,
+          10.068359375,
+          9.14013671875
+        ],
+        "load_end": [
+          12.44775390625,
+          10.068359375,
+          9.14013671875
+        ]
+      },
+      "missing": 0,
+      "extracted": 0,
+      "child_refresh": 0,
+      "child_removed": 0
+    },
+    {
+      "variant": "new",
+      "condition": "warm",
+      "timing": {
+        "wall_seconds": 1.635518082883209,
+        "user_seconds": 2.5488299999999953,
+        "sys_seconds": 0.08857300000000023,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          12.44775390625,
+          10.068359375,
+          9.14013671875
+        ],
+        "load_end": [
+          12.25146484375,
+          10.06689453125,
+          9.14501953125
+        ]
+      },
+      "missing": 0,
+      "extracted": 0,
+      "child_refresh": 0,
+      "child_removed": 0
+    },
+    {
+      "variant": "old",
+      "condition": "warm",
+      "timing": {
+        "wall_seconds": 5.799939000047743,
+        "user_seconds": 9.914260999999996,
+        "sys_seconds": 0.24132900000000035,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          12.25146484375,
+          10.06689453125,
+          9.14501953125
+        ],
+        "load_end": [
+          11.91064453125,
+          10.0322265625,
+          9.13818359375
+        ]
+      },
+      "missing": 0,
+      "extracted": 0
+    },
+    {
+      "variant": "old",
+      "condition": "warm",
+      "timing": {
+        "wall_seconds": 5.683101624948904,
+        "user_seconds": 9.653950999999992,
+        "sys_seconds": 0.18308700000000044,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          11.91064453125,
+          10.0322265625,
+          9.13818359375
+        ],
+        "load_end": [
+          11.51708984375,
+          9.9814453125,
+          9.12548828125
+        ]
+      },
+      "missing": 0,
+      "extracted": 0
+    },
+    {
+      "variant": "new",
+      "condition": "warm",
+      "timing": {
+        "wall_seconds": 1.5594212498981506,
+        "user_seconds": 2.521897999999993,
+        "sys_seconds": 0.07564700000000002,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          11.51708984375,
+          9.9814453125,
+          9.12548828125
+        ],
+        "load_end": [
+          11.51708984375,
+          9.9814453125,
+          9.12548828125
+        ]
+      },
+      "missing": 0,
+      "extracted": 0,
+      "child_refresh": 0,
+      "child_removed": 0
+    },
+    {
+      "variant": "new",
+      "condition": "lineage_only",
+      "timing": {
+        "wall_seconds": 1.6859066658653319,
+        "user_seconds": 2.72807499999999,
+        "sys_seconds": 0.09596500000000141,
+        "process_lifetime_peak_rss_bytes": 3886252032,
+        "load_start": [
+          11.51708984375,
+          9.9814453125,
+          9.12548828125
+        ],
+        "load_end": [
+          11.1552734375,
+          9.931640625,
+          9.11279296875
+        ]
+      },
+      "missing": 0,
+      "extracted": 0,
+      "child_refresh": 0,
+      "child_removed": 0,
+      "verification": {
+        "nodes": [
+          0,
+          0
+        ],
+        "edges": [
+          0,
+          0
+        ],
+        "spans": [
+          0,
+          0
+        ],
+        "macro_invocations": [
+          0,
+          0
+        ],
+        "macro_scopes": [
+          0,
+          0
+        ],
+        "occurrences": [
+          0,
+          0
+        ],
+        "checkpoint": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "variant": "old",
+      "condition": "lineage_only",
+      "timing": {
+        "wall_seconds": 6.906834458000958,
+        "user_seconds": 11.10257200000001,
+        "sys_seconds": 0.4958449999999992,
+        "process_lifetime_peak_rss_bytes": 3904061440,
+        "load_start": [
+          13.79248046875,
+          10.54541015625,
+          9.34375
+        ],
+        "load_end": [
+          13.40869140625,
+          10.51953125,
+          9.34130859375
+        ]
+      },
+      "missing": 0,
+      "extracted": 0,
+      "verification": {
+        "nodes": [
+          0,
+          0
+        ],
+        "edges": [
+          0,
+          0
+        ],
+        "spans": [
+          0,
+          0
+        ],
+        "macro_invocations": [
+          0,
+          0
+        ],
+        "macro_scopes": [
+          0,
+          0
+        ],
+        "occurrences": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "variant": "old",
+      "condition": "partial_1",
+      "timing": {
+        "wall_seconds": 8.537105417111889,
+        "user_seconds": 12.721452999999997,
+        "sys_seconds": 0.5257220000000018,
+        "process_lifetime_peak_rss_bytes": 3945168896,
+        "load_start": [
+          13.81103515625,
+          10.76708984375,
+          9.4501953125
+        ],
+        "load_end": [
+          13.90576171875,
+          10.8369140625,
+          9.482421875
+        ]
+      },
+      "missing": 188,
+      "extracted": 188,
+      "verification": {
+        "nodes": [
+          0,
+          0
+        ],
+        "edges": [
+          0,
+          0
+        ],
+        "spans": [
+          0,
+          0
+        ],
+        "macro_invocations": [
+          0,
+          0
+        ],
+        "macro_scopes": [
+          0,
+          0
+        ],
+        "occurrences": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "variant": "new",
+      "condition": "partial_1",
+      "timing": {
+        "wall_seconds": 3.546948165865615,
+        "user_seconds": 4.42109099999999,
+        "sys_seconds": 0.3243700000000018,
+        "process_lifetime_peak_rss_bytes": 3945168896,
+        "load_start": [
+          13.728515625,
+          10.943359375,
+          9.54345703125
+        ],
+        "load_end": [
+          13.109375,
+          10.86083984375,
+          9.5224609375
+        ]
+      },
+      "missing": 188,
+      "extracted": 188,
+      "child_refresh": 188,
+      "child_removed": 0,
+      "verification": {
+        "nodes": [
+          0,
+          0
+        ],
+        "edges": [
+          0,
+          0
+        ],
+        "spans": [
+          0,
+          0
+        ],
+        "macro_invocations": [
+          0,
+          0
+        ],
+        "macro_scopes": [
+          0,
+          0
+        ],
+        "occurrences": [
+          0,
+          0
+        ],
+        "checkpoint": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "variant": "new",
+      "condition": "partial_10",
+      "timing": {
+        "wall_seconds": 11.347686959197745,
+        "user_seconds": 12.135632999999984,
+        "sys_seconds": 0.5406329999999997,
+        "process_lifetime_peak_rss_bytes": 3945168896,
+        "load_start": [
+          12.31494140625,
+          10.80029296875,
+          9.52392578125
+        ],
+        "load_end": [
+          11.484375,
+          10.673828125,
+          9.49365234375
+        ]
+      },
+      "missing": 1963,
+      "extracted": 1963,
+      "child_refresh": 1963,
+      "child_removed": 0,
+      "verification": {
+        "nodes": [
+          0,
+          0
+        ],
+        "edges": [
+          0,
+          0
+        ],
+        "spans": [
+          0,
+          0
+        ],
+        "macro_invocations": [
+          0,
+          0
+        ],
+        "macro_scopes": [
+          0,
+          0
+        ],
+        "occurrences": [
+          0,
+          0
+        ],
+        "checkpoint": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "variant": "old",
+      "condition": "partial_10",
+      "timing": {
+        "wall_seconds": 15.347283416893333,
+        "user_seconds": 18.670217999999977,
+        "sys_seconds": 0.7269410000000001,
+        "process_lifetime_peak_rss_bytes": 3945168896,
+        "load_start": [
+          10.90283203125,
+          10.58984375,
+          9.484375
+        ],
+        "load_end": [
+          10.45068359375,
+          10.49658203125,
+          9.4697265625
+        ]
+      },
+      "missing": 1963,
+      "extracted": 1963,
+      "verification": {
+        "nodes": [
+          0,
+          0
+        ],
+        "edges": [
+          0,
+          0
+        ],
+        "spans": [
+          0,
+          0
+        ],
+        "macro_invocations": [
+          0,
+          0
+        ],
+        "macro_scopes": [
+          0,
+          0
+        ],
+        "occurrences": [
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "bootstrap": {
+    "old": {
+      "wall_seconds": 5.802776625147089,
+      "user_seconds": 9.806412,
+      "sys_seconds": 0.540269,
+      "process_lifetime_peak_rss_bytes": 1699889152,
+      "load_start": [
+        11.6083984375,
+        9.5439453125,
+        8.91552734375
+      ],
+      "load_end": [
+        11.5595703125,
+        9.56787109375,
+        8.927734375
+      ]
+    },
+    "new": {
+      "wall_seconds": 6.754094458883628,
+      "user_seconds": 10.781349999999996,
+      "sys_seconds": 0.31334200000000045,
+      "process_lifetime_peak_rss_bytes": 3886252032,
+      "load_start": [
+        12.25,
+        9.81689453125,
+        9.02685546875
+      ],
+      "load_end": [
+        12.71044921875,
+        9.95263671875,
+        9.0791015625
+      ]
+    }
+  },
+  "workload": {
+    "old": [
+      19604,
+      153493818,
+      19603
+    ],
+    "new": [
+      19604,
+      153493818,
+      19603
+    ]
+  },
+  "warm": {
+    "old": {
+      "seconds": [
+        5.504207165911794,
+        5.799939000047743,
+        5.683101624948904
+      ],
+      "median": 5.683101624948904
+    },
+    "new": {
+      "seconds": [
+        1.6295063751749694,
+        1.635518082883209,
+        1.5594212498981506
+      ],
+      "median": 1.6295063751749694
+    }
+  },
+  "trace": {
+    "new": {
+      "statements": [
+        {
+          "index": 0,
+          "phase": "staging_validation_cache_setup",
+          "sql": "BEGIN TRANSACTION;\n\n-- This physical staging boundary also rejects contradictory source values\n-- (including NULL versus non-NULL) for one key before any extraction occurs.\n",
+          "timing": {
+            "wall_seconds": 0.0004499161150306463,
+            "user_seconds": 0.0002939999999966858,
+            "sys_seconds": 0.00035900000000310683,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 1,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_sources AS\nSELECT DISTINCT blob_oid, logical_path, source, extractor_sha FROM staged_sources;\n\n",
+          "timing": {
+            "wall_seconds": 0.13753312500193715,
+            "user_seconds": 0.39133499999996957,
+            "sys_seconds": 0.04265999999999792,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 2,
+          "phase": "staging_validation_cache_setup",
+          "sql": "SELECT CASE WHEN EXISTS (\n    SELECT 1 FROM file_facts_sources\n    WHERE blob_oid IS NULL OR logical_path IS NULL OR extractor_sha IS NULL\n) THEN error('staged_sources requires non-NULL blob_oid, logical_path and extractor_sha')\nELSE true END;\n\n",
+          "timing": {
+            "wall_seconds": 0.001312041888013482,
+            "user_seconds": 0.0011279999999942447,
+            "sys_seconds": 0.0003700000000037562,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 3,
+          "phase": "staging_validation_cache_setup",
+          "sql": "SELECT CASE WHEN EXISTS (\n    SELECT 1 FROM file_facts_sources\n    GROUP BY blob_oid, logical_path, extractor_sha HAVING count(*) > 1\n) THEN error('staged_sources has conflicting source values for one cache key')\nELSE true END;\n\n-- Bind the full native type without executing extraction on any input row.\n",
+          "timing": {
+            "wall_seconds": 0.004112332826480269,
+            "user_seconds": 0.004565999999954329,
+            "sys_seconds": 0.0005499999999969418,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 4,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_cache AS\nSELECT blob_oid, logical_path, extractor_sha,\n       TRY(spur_graph_file_facts(logical_path, source)) AS facts,\n       NULL::VARCHAR AS status\nFROM file_facts_sources WHERE false;\n\n",
+          "timing": {
+            "wall_seconds": 0.0010879579931497574,
+            "user_seconds": 0.0009969999999839274,
+            "sys_seconds": 0.00018799999999430383,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 5,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE UNIQUE INDEX IF NOT EXISTS file_facts_cache_key\nON file_facts_cache (blob_oid, logical_path, extractor_sha);\n\n-- Materialize the anti-join BEFORE evaluating the native scalar. The path is\n-- part of the full-facts identity even for identical bytes and language.\n",
+          "timing": {
+            "wall_seconds": 0.0004280419088900089,
+            "user_seconds": 0.00034300000004350295,
+            "sys_seconds": 0.0001560000000040418,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 6,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_missing AS\nSELECT s.* FROM file_facts_sources s\nANTI JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);\n\n-- One stored result per missing key. Later status/child projections read this\n-- table or the durable cache; none invokes the scalar again. DuckDB TRY may\n-- internally retry a failed vector row-by-row to isolate errors.\n",
+          "timing": {
+            "wall_seconds": 0.010631832992658019,
+            "user_seconds": 0.010112000000049193,
+            "sys_seconds": 0.0008609999999933393,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 7,
+          "phase": "extraction",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_extracted AS\nSELECT blob_oid, logical_path, extractor_sha,\n       source IS NULL AS input_is_null, source = '' AS source_is_empty,\n       TRY(spur_graph_file_facts(logical_path, source)) AS facts\nFROM file_facts_missing;\n\n",
+          "timing": {
+            "wall_seconds": 0.00237658410333097,
+            "user_seconds": 0.0022050000000035652,
+            "sys_seconds": 0.0003969999999995366,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 8,
+          "phase": "staging_validation_cache_setup",
+          "sql": "INSERT INTO file_facts_cache\nSELECT blob_oid, logical_path, extractor_sha, facts,\n       CASE WHEN input_is_null THEN 'null_input'\n            WHEN facts IS NULL THEN 'extraction_error'\n            WHEN source_is_empty THEN 'empty_source'\n            WHEN len(facts.nodes) + len(facts.edges) + len(facts.spans)\n                 + len(facts.macro_invocations) + len(facts.macro_scopes) = 0\n                 THEN 'empty_facts'\n            ELSE 'ok' END AS status\nFROM file_facts_extracted;\n\n-- Capture layout completeness BEFORE creating missing tables. Legacy caches,\n-- a dropped checkpoint or any missing child require one cache-driven repair.\n",
+          "timing": {
+            "wall_seconds": 0.0038289998192340136,
+            "user_seconds": 0.0034959999999841784,
+            "sys_seconds": 0.000519000000004155,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 9,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_layout AS\nSELECT count(*) <> 6 AS bootstrap\nFROM duckdb_tables()\nWHERE database_name = current_database() AND schema_name = current_schema()\n  AND NOT temporary AND table_name IN (\n      'file_facts_child_state', 'file_facts_nodes', 'file_facts_edges',\n      'file_facts_spans', 'file_facts_macro_invocations', 'file_facts_macro_scopes'\n  );\n\n",
+          "timing": {
+            "wall_seconds": 0.002816125052049756,
+            "user_seconds": 0.002537000000017997,
+            "sys_seconds": 0.0006230000000044811,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 10,
+          "phase": "child_maintenance",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_child_state AS\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_cache WHERE false;\n\n-- C = current cache keys, S = checkpoint, M = newly extracted keys.\n-- Refresh (C - S) UNION M, or all C during bootstrap; remove S - C.\n-- M forces replacement after a supported cache delete/retry even if S has it.\n",
+          "timing": {
+            "wall_seconds": 0.0007806250359863043,
+            "user_seconds": 0.0007139999999594693,
+            "sys_seconds": 0.00011599999999845068,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 11,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_refresh AS\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_cache\nWHERE (SELECT bootstrap FROM file_facts_child_layout)\nUNION\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_cache\nANTI JOIN file_facts_child_state USING (blob_oid, logical_path, extractor_sha)\nUNION\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_extracted;\n\n",
+          "timing": {
+            "wall_seconds": 0.009339042007923126,
+            "user_seconds": 0.009098999999991975,
+            "sys_seconds": 0.0009749999999968395,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 12,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_removed AS\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_child_state\nANTI JOIN file_facts_cache USING (blob_oid, logical_path, extractor_sha);\n\n",
+          "timing": {
+            "wall_seconds": 0.00831891712732613,
+            "user_seconds": 0.007875000000012733,
+            "sys_seconds": 0.0007149999999995771,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 13,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_invalidated AS\nSELECT * FROM file_facts_child_refresh\nUNION\nSELECT * FROM file_facts_child_removed;\n\n-- Select wide payloads once, before the five independent expansions. A replay\n-- materializes no facts; cache-hit detection only compares the three key columns.\n",
+          "timing": {
+            "wall_seconds": 0.0014084998983889818,
+            "user_seconds": 0.0014459999999871798,
+            "sys_seconds": 0.000309000000001447,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 14,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_child_refresh_facts AS\nSELECT c.* FROM file_facts_cache c\nJOIN file_facts_child_refresh r USING (blob_oid, logical_path, extractor_sha);\n\n-- Bind existing child schemas without replacing intact physical tables.\n",
+          "timing": {
+            "wall_seconds": 0.018740042112767696,
+            "user_seconds": 0.017688999999961652,
+            "sys_seconds": 0.0017730000000000246,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 15,
+          "phase": "child_maintenance",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_nodes AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, node.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.nodes) WITH ORDINALITY AS children(node, fact_ordinal) WHERE false;\n\n",
+          "timing": {
+            "wall_seconds": 0.001853249967098236,
+            "user_seconds": 0.0016259999999874708,
+            "sys_seconds": 0.00022799999999989495,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 16,
+          "phase": "child_maintenance",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_edges AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, edge.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.edges) WITH ORDINALITY AS children(edge, fact_ordinal) WHERE false;\n\n",
+          "timing": {
+            "wall_seconds": 0.0022031671833246946,
+            "user_seconds": 0.0017730000000142354,
+            "sys_seconds": 0.00030399999999985994,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 17,
+          "phase": "child_maintenance",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_spans AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, span.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.spans) WITH ORDINALITY AS children(span, fact_ordinal) WHERE false;\n\n",
+          "timing": {
+            "wall_seconds": 0.002086374908685684,
+            "user_seconds": 0.0015510000000062973,
+            "sys_seconds": 0.00033899999999675856,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 18,
+          "phase": "child_maintenance",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_macro_invocations AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, invocation.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_invocations) WITH ORDINALITY AS children(invocation, fact_ordinal) WHERE false;\n\n",
+          "timing": {
+            "wall_seconds": 0.0018126671202480793,
+            "user_seconds": 0.0016430000000013933,
+            "sys_seconds": 0.00019199999999841566,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 19,
+          "phase": "child_maintenance",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_macro_scopes AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, macro_scope.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_scopes) WITH ORDINALITY AS children(macro_scope, fact_ordinal) WHERE false;\n\n-- Bootstrap must also clear rows whose keys are absent from a lost checkpoint.\n-- These constant predicates skip full deletion on established layouts.\n",
+          "timing": {
+            "wall_seconds": 0.0011787090916186571,
+            "user_seconds": 0.0011150000000270666,
+            "sys_seconds": 0.00012199999999751299,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 20,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_nodes WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+          "timing": {
+            "wall_seconds": 0.0012435419484972954,
+            "user_seconds": 0.0013079999999945358,
+            "sys_seconds": 0.00037700000000029377,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 21,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_edges WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+          "timing": {
+            "wall_seconds": 0.0013969999272376299,
+            "user_seconds": 0.0012619999999969878,
+            "sys_seconds": 0.00047400000000408227,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 22,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_spans WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+          "timing": {
+            "wall_seconds": 0.0012951248791068792,
+            "user_seconds": 0.0011609999999677711,
+            "sys_seconds": 0.0005859999999984211,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 23,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_macro_invocations WHERE (SELECT bootstrap FROM file_facts_child_layout);\n",
+          "timing": {
+            "wall_seconds": 0.0011487919837236404,
+            "user_seconds": 0.0010570000000029722,
+            "sys_seconds": 0.00028700000000014825,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 24,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_macro_scopes WHERE (SELECT bootstrap FROM file_facts_child_layout);\n\n",
+          "timing": {
+            "wall_seconds": 0.0011345830280333757,
+            "user_seconds": 0.0010570000000029722,
+            "sys_seconds": 0.000309000000001447,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 25,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_nodes USING file_facts_child_invalidated k\nWHERE file_facts_nodes.blob_oid = k.blob_oid\n  AND file_facts_nodes.logical_path = k.logical_path\n  AND file_facts_nodes.extractor_sha = k.extractor_sha;\n",
+          "timing": {
+            "wall_seconds": 0.0028549169655889273,
+            "user_seconds": 0.002652999999952499,
+            "sys_seconds": 0.0020050000000040313,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 26,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_edges USING file_facts_child_invalidated k\nWHERE file_facts_edges.blob_oid = k.blob_oid\n  AND file_facts_edges.logical_path = k.logical_path\n  AND file_facts_edges.extractor_sha = k.extractor_sha;\n",
+          "timing": {
+            "wall_seconds": 0.0026424590032547712,
+            "user_seconds": 0.0021719999999731954,
+            "sys_seconds": 0.00186300000000017,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 27,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_spans USING file_facts_child_invalidated k\nWHERE file_facts_spans.blob_oid = k.blob_oid\n  AND file_facts_spans.logical_path = k.logical_path\n  AND file_facts_spans.extractor_sha = k.extractor_sha;\n",
+          "timing": {
+            "wall_seconds": 0.0025045410729944706,
+            "user_seconds": 0.0025409999999510546,
+            "sys_seconds": 0.0011729999999943175,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 28,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_macro_invocations USING file_facts_child_invalidated k\nWHERE file_facts_macro_invocations.blob_oid = k.blob_oid\n  AND file_facts_macro_invocations.logical_path = k.logical_path\n  AND file_facts_macro_invocations.extractor_sha = k.extractor_sha;\n",
+          "timing": {
+            "wall_seconds": 0.0015756669454276562,
+            "user_seconds": 0.0013320000000476284,
+            "sys_seconds": 0.00034999999999740794,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 29,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_macro_scopes USING file_facts_child_invalidated k\nWHERE file_facts_macro_scopes.blob_oid = k.blob_oid\n  AND file_facts_macro_scopes.logical_path = k.logical_path\n  AND file_facts_macro_scopes.extractor_sha = k.extractor_sha;\n\n-- UNNEST(NULL) and UNNEST([]) emit zero rows. Keep one list per expansion:\n-- simultaneous list joins multiply rows. Ordinals retain native list positions.\n",
+          "timing": {
+            "wall_seconds": 0.001657749991863966,
+            "user_seconds": 0.0012720000000285836,
+            "sys_seconds": 0.00030799999999686634,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 30,
+          "phase": "child_maintenance",
+          "sql": "INSERT INTO file_facts_nodes\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, node.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.nodes) WITH ORDINALITY AS children(node, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 0.0042927078902721405,
+            "user_seconds": 0.003906000000029053,
+            "sys_seconds": 0.0005189999999970496,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 31,
+          "phase": "child_maintenance",
+          "sql": "INSERT INTO file_facts_edges\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, edge.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.edges) WITH ORDINALITY AS children(edge, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 0.006134374998509884,
+            "user_seconds": 0.005900999999994383,
+            "sys_seconds": 0.0006409999999945626,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 32,
+          "phase": "child_maintenance",
+          "sql": "INSERT INTO file_facts_spans\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, span.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.spans) WITH ORDINALITY AS children(span, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 0.004415082978084683,
+            "user_seconds": 0.0037149999999996908,
+            "sys_seconds": 0.0003790000000023497,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 33,
+          "phase": "child_maintenance",
+          "sql": "INSERT INTO file_facts_macro_invocations\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, invocation.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_invocations) WITH ORDINALITY AS children(invocation, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 0.004316916922107339,
+            "user_seconds": 0.004715999999973519,
+            "sys_seconds": 0.0003969999999995366,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 34,
+          "phase": "child_maintenance",
+          "sql": "INSERT INTO file_facts_macro_scopes\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, macro_scope.*\nFROM file_facts_child_refresh_facts,\nUNNEST(facts.macro_scopes) WITH ORDINALITY AS children(macro_scope, fact_ordinal);\n\n-- Checkpoint all parents, including NULL/error/empty facts with no children.\n",
+          "timing": {
+            "wall_seconds": 0.002960209036245942,
+            "user_seconds": 0.003100999999958276,
+            "sys_seconds": 0.00038099999999730016,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 35,
+          "phase": "child_maintenance",
+          "sql": "DELETE FROM file_facts_child_state USING file_facts_child_removed k\nWHERE file_facts_child_state.blob_oid = k.blob_oid\n  AND file_facts_child_state.logical_path = k.logical_path\n  AND file_facts_child_state.extractor_sha = k.extractor_sha;\n",
+          "timing": {
+            "wall_seconds": 0.0018184580840170383,
+            "user_seconds": 0.0017169999999850916,
+            "sys_seconds": 0.00034600000000040154,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 36,
+          "phase": "child_maintenance",
+          "sql": "INSERT INTO file_facts_child_state\nSELECT blob_oid, logical_path, extractor_sha FROM file_facts_child_refresh\nANTI JOIN file_facts_child_state USING (blob_oid, logical_path, extractor_sha);\n\n-- Preserve caller multiplicity, root parents (NULL), merge parents and repeats.\n-- Lineage keys absent from the cache stay visible with status not_cached.\n",
+          "timing": {
+            "wall_seconds": 0.001542333047837019,
+            "user_seconds": 0.0015590000000429427,
+            "sys_seconds": 0.000263000000003899,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 37,
+          "phase": "lineage",
+          "sql": "CREATE OR REPLACE TABLE file_facts_occurrences AS\nSELECT l.*, coalesce(c.status, 'not_cached') AS extraction_status\nFROM source_lineage l\nLEFT JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);\n\n",
+          "timing": {
+            "wall_seconds": 0.02409112500026822,
+            "user_seconds": 0.04745900000000347,
+            "sys_seconds": 0.00671599999999728,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 38,
+          "phase": "staging_validation_cache_setup",
+          "sql": "COMMIT;\n\n-- Typed snapshots of the durable cache, its children and current caller\n-- occurrences. Reruns replace these files. Export after committing the database;\n-- this file set is not an atomic multi-file publication/checkpoint protocol.\n",
+          "timing": {
+            "wall_seconds": 0.0183766670525074,
+            "user_seconds": 0.01142299999997931,
+            "sys_seconds": 0.006117000000003259,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 39,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_cache TO 'file-facts-cache.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 1.1743770418688655,
+            "user_seconds": 1.008546000000024,
+            "sys_seconds": 0.15386399999999867,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 40,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_nodes TO 'file-facts-nodes.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.11124741588719189,
+            "user_seconds": 0.233113000000003,
+            "sys_seconds": 0.023805000000002963,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ]
+          }
+        },
+        {
+          "index": 41,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_edges TO 'file-facts-edges.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.36034054192714393,
+            "user_seconds": 0.8707229999999981,
+            "sys_seconds": 0.03538899999999501,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.60986328125,
+              10.53564453125,
+              9.50146484375
+            ],
+            "load_end": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ]
+          }
+        },
+        {
+          "index": 42,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_spans TO 'file-facts-spans.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.057245542062446475,
+            "user_seconds": 0.12329199999999219,
+            "sys_seconds": 0.008594999999999686,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ],
+            "load_end": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ]
+          }
+        },
+        {
+          "index": 43,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_macro_invocations TO 'file-facts-macro_invocations.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.0019533750601112843,
+            "user_seconds": 0.0013260000000059335,
+            "sys_seconds": 0.0007239999999981706,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ],
+            "load_end": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ]
+          }
+        },
+        {
+          "index": 44,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_macro_scopes TO 'file-facts-macro_scopes.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.0014076658990234137,
+            "user_seconds": 0.0008100000000013097,
+            "sys_seconds": 0.0006249999999994316,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ],
+            "load_end": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ]
+          }
+        },
+        {
+          "index": 45,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_occurrences TO 'file-facts-occurrences.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.014885999960824847,
+            "user_seconds": 0.013380999999981213,
+            "sys_seconds": 0.0013259999999988281,
+            "process_lifetime_peak_rss_bytes": 3945168896,
+            "load_start": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ],
+            "load_end": [
+              10.16015625,
+              10.443359375,
+              9.474609375
+            ]
+          }
+        }
+      ],
+      "phase_seconds": {
+        "staging_validation_cache_setup": 0.17776091559790075,
+        "extraction": 0.00237658410333097,
+        "child_maintenance": 0.09347187820822,
+        "lineage": 0.02409112500026822,
+        "parquet_export": 1.7214575826656073
+      }
+    },
+    "old": {
+      "statements": [
+        {
+          "index": 0,
+          "phase": "staging_validation_cache_setup",
+          "sql": "BEGIN TRANSACTION;\n\n-- This physical staging boundary also rejects contradictory source values\n-- (including NULL versus non-NULL) for one key before any extraction occurs.\n",
+          "timing": {
+            "wall_seconds": 0.0007738329004496336,
+            "user_seconds": 0.0003970000000208529,
+            "sys_seconds": 0.0005050000000039745,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 1,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_sources AS\nSELECT DISTINCT blob_oid, logical_path, source, extractor_sha FROM staged_sources;\n\n",
+          "timing": {
+            "wall_seconds": 0.1635231669060886,
+            "user_seconds": 0.368821999999966,
+            "sys_seconds": 0.0502389999999977,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 2,
+          "phase": "staging_validation_cache_setup",
+          "sql": "SELECT CASE WHEN EXISTS (\n    SELECT 1 FROM file_facts_sources\n    WHERE blob_oid IS NULL OR logical_path IS NULL OR extractor_sha IS NULL\n) THEN error('staged_sources requires non-NULL blob_oid, logical_path and extractor_sha')\nELSE true END;\n\n",
+          "timing": {
+            "wall_seconds": 0.0016891669947654009,
+            "user_seconds": 0.0013590000000363034,
+            "sys_seconds": 0.00038999999999589363,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 3,
+          "phase": "staging_validation_cache_setup",
+          "sql": "SELECT CASE WHEN EXISTS (\n    SELECT 1 FROM file_facts_sources\n    GROUP BY blob_oid, logical_path, extractor_sha HAVING count(*) > 1\n) THEN error('staged_sources has conflicting source values for one cache key')\nELSE true END;\n\n-- Bind the full native type without executing extraction on any input row.\n",
+          "timing": {
+            "wall_seconds": 0.0048402908723801374,
+            "user_seconds": 0.004763000000025386,
+            "sys_seconds": 0.0003010000000003288,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 4,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE TABLE IF NOT EXISTS file_facts_cache AS\nSELECT blob_oid, logical_path, extractor_sha,\n       TRY(spur_graph_file_facts(logical_path, source)) AS facts,\n       NULL::VARCHAR AS status\nFROM file_facts_sources WHERE false;\n\n",
+          "timing": {
+            "wall_seconds": 0.0011885419953614473,
+            "user_seconds": 0.0009170000000153777,
+            "sys_seconds": 0.00018099999999776628,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 5,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE UNIQUE INDEX IF NOT EXISTS file_facts_cache_key\nON file_facts_cache (blob_oid, logical_path, extractor_sha);\n\n-- Materialize the anti-join BEFORE evaluating the native scalar. The path is\n-- part of the full-facts identity even for identical bytes and language.\n",
+          "timing": {
+            "wall_seconds": 0.0005044578574597836,
+            "user_seconds": 0.0004320000000461732,
+            "sys_seconds": 0.00014199999999675583,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 6,
+          "phase": "staging_validation_cache_setup",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_missing AS\nSELECT s.* FROM file_facts_sources s\nANTI JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);\n\n-- One stored result per missing key. Later status/child projections read this\n-- table or the durable cache; none invokes the scalar again. DuckDB TRY may\n-- internally retry a failed vector row-by-row to isolate errors.\n",
+          "timing": {
+            "wall_seconds": 0.04393308283761144,
+            "user_seconds": 0.014149999999972351,
+            "sys_seconds": 0.0033050000000045543,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 7,
+          "phase": "extraction",
+          "sql": "CREATE OR REPLACE TEMP TABLE file_facts_extracted AS\nSELECT blob_oid, logical_path, extractor_sha,\n       source IS NULL AS input_is_null, source = '' AS source_is_empty,\n       TRY(spur_graph_file_facts(logical_path, source)) AS facts\nFROM file_facts_missing;\n\n",
+          "timing": {
+            "wall_seconds": 0.009379249997437,
+            "user_seconds": 0.0030480000000352447,
+            "sys_seconds": 0.0009770000000060008,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 8,
+          "phase": "staging_validation_cache_setup",
+          "sql": "INSERT INTO file_facts_cache\nSELECT blob_oid, logical_path, extractor_sha, facts,\n       CASE WHEN input_is_null THEN 'null_input'\n            WHEN facts IS NULL THEN 'extraction_error'\n            WHEN source_is_empty THEN 'empty_source'\n            WHEN len(facts.nodes) + len(facts.edges) + len(facts.spans)\n                 + len(facts.macro_invocations) + len(facts.macro_scopes) = 0\n                 THEN 'empty_facts'\n            ELSE 'ok' END AS status\nFROM file_facts_extracted;\n\n-- UNNEST(NULL) and UNNEST([]) emit zero child rows. Completion/status lives\n-- in file_facts_cache, including empty valid sources with native file facts.\n-- Keep one list per expansion: simultaneous list joins multiply child rows.\n-- fact_ordinal preserves each collection's native list position (1-based).\n",
+          "timing": {
+            "wall_seconds": 0.005139000015333295,
+            "user_seconds": 0.003619000000014694,
+            "sys_seconds": 0.0006879999999966913,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 9,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TABLE file_facts_nodes AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, node.*\nFROM file_facts_cache,\nUNNEST(facts.nodes) WITH ORDINALITY AS children(node, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 1.3248964578378946,
+            "user_seconds": 1.657824000000005,
+            "sys_seconds": 0.07510500000000064,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 10,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TABLE file_facts_edges AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, edge.*\nFROM file_facts_cache,\nUNNEST(facts.edges) WITH ORDINALITY AS children(edge, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 2.0775566659867764,
+            "user_seconds": 3.468710999999985,
+            "sys_seconds": 0.19045099999999593,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ]
+          }
+        },
+        {
+          "index": 11,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TABLE file_facts_spans AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, span.*\nFROM file_facts_cache,\nUNNEST(facts.spans) WITH ORDINALITY AS children(span, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 1.0036306669935584,
+            "user_seconds": 1.3561339999999973,
+            "sys_seconds": 0.07134299999999882,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.599609375,
+              10.93505859375,
+              9.6650390625
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 12,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TABLE file_facts_macro_invocations AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, invocation.*\nFROM file_facts_cache,\nUNNEST(facts.macro_invocations) WITH ORDINALITY AS children(invocation, fact_ordinal);\n\n",
+          "timing": {
+            "wall_seconds": 0.9362587919458747,
+            "user_seconds": 1.0389640000000213,
+            "sys_seconds": 0.1050779999999989,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 13,
+          "phase": "child_maintenance",
+          "sql": "CREATE OR REPLACE TABLE file_facts_macro_scopes AS\nSELECT blob_oid, logical_path, extractor_sha, fact_ordinal, macro_scope.*\nFROM file_facts_cache,\nUNNEST(facts.macro_scopes) WITH ORDINALITY AS children(macro_scope, fact_ordinal);\n\n-- Preserve caller multiplicity, root parents (NULL), merge parents and repeats.\n-- Lineage keys absent from the cache stay visible with status not_cached.\n",
+          "timing": {
+            "wall_seconds": 0.7553075000178069,
+            "user_seconds": 0.9423610000000053,
+            "sys_seconds": 0.01860099999999676,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 14,
+          "phase": "lineage",
+          "sql": "CREATE OR REPLACE TABLE file_facts_occurrences AS\nSELECT l.*, coalesce(c.status, 'not_cached') AS extraction_status\nFROM source_lineage l\nLEFT JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);\n\n",
+          "timing": {
+            "wall_seconds": 0.020500584039837122,
+            "user_seconds": 0.041703999999981534,
+            "sys_seconds": 0.0044240000000002055,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 15,
+          "phase": "staging_validation_cache_setup",
+          "sql": "COMMIT;\n\n-- Typed snapshots of the durable cache, its children and current caller\n-- occurrences. Reruns replace these files. Export after committing the database;\n-- this file set is not an atomic multi-file publication/checkpoint protocol.\n",
+          "timing": {
+            "wall_seconds": 0.46903633419424295,
+            "user_seconds": 0.4031529999999748,
+            "sys_seconds": 0.0473829999999964,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 16,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_cache TO 'file-facts-cache.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 1.0896504169795662,
+            "user_seconds": 0.9236010000000192,
+            "sys_seconds": 0.13697300000000467,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 17,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_nodes TO 'file-facts-nodes.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.07690574997104704,
+            "user_seconds": 0.19735500000001593,
+            "sys_seconds": 0.011763999999999442,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 18,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_edges TO 'file-facts-edges.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.3641048329882324,
+            "user_seconds": 0.9009580000000028,
+            "sys_seconds": 0.05012500000000131,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 19,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_spans TO 'file-facts-spans.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.05587562499567866,
+            "user_seconds": 0.12403299999999717,
+            "sys_seconds": 0.004724000000003059,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 20,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_macro_invocations TO 'file-facts-macro_invocations.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.0017060830723494291,
+            "user_seconds": 0.0011280000000510881,
+            "sys_seconds": 0.0005839999999963652,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 21,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_macro_scopes TO 'file-facts-macro_scopes.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.0009839578997343779,
+            "user_seconds": 0.0006030000000123437,
+            "sys_seconds": 0.00042400000000242244,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        },
+        {
+          "index": 22,
+          "phase": "parquet_export",
+          "sql": "COPY file_facts_occurrences TO 'file-facts-occurrences.parquet' (FORMAT PARQUET);\n",
+          "timing": {
+            "wall_seconds": 0.02096416591666639,
+            "user_seconds": 0.013408999999967364,
+            "sys_seconds": 0.0014150000000014984,
+            "process_lifetime_peak_rss_bytes": 4394172416,
+            "load_start": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ],
+            "load_end": [
+              12.55126953125,
+              10.95263671875,
+              9.6787109375
+            ]
+          }
+        }
+      ],
+      "phase_seconds": {
+        "staging_validation_cache_setup": 0.6906278745736927,
+        "extraction": 0.009379249997437,
+        "child_maintenance": 6.097650082781911,
+        "lineage": 0.020500584039837122,
+        "parquet_export": 1.6101908318232745
+      }
+    }
+  },
+  "reopened": {
+    "new": {
+      "variant": "new",
+      "condition": "reopened",
+      "timing": {
+        "wall_seconds": 2.178296167170629,
+        "user_seconds": 3.047796999999946,
+        "sys_seconds": 0.21253800000000211,
+        "process_lifetime_peak_rss_bytes": 4458856448,
+        "load_start": [
+          12.43505859375,
+          11.08251953125,
+          9.76904296875
+        ],
+        "load_end": [
+          12.43505859375,
+          11.08251953125,
+          9.76904296875
+        ]
+      },
+      "missing": 0,
+      "extracted": 0,
+      "child_refresh": 0,
+      "child_removed": 0
+    },
+    "old": {
+      "variant": "old",
+      "condition": "reopened",
+      "timing": {
+        "wall_seconds": 9.105661167064682,
+        "user_seconds": 11.586339000000066,
+        "sys_seconds": 0.6351730000000018,
+        "process_lifetime_peak_rss_bytes": 4458856448,
+        "load_start": [
+          14.08154296875,
+          11.68017578125,
+          10.046875
+        ],
+        "load_end": [
+          17.06640625,
+          12.384765625,
+          10.31494140625
+        ]
+      },
+      "missing": 0,
+      "extracted": 0
+    }
+  },
+  "typed_parquet_without_extension": {
+    "new": {
+      "cache": [
+        0,
+        0
+      ],
+      "occurrences": [
+        0,
+        0
+      ],
+      "nodes": [
+        0,
+        0
+      ],
+      "edges": [
+        0,
+        0
+      ],
+      "spans": [
+        0,
+        0
+      ],
+      "macro_invocations": [
+        0,
+        0
+      ],
+      "macro_scopes": [
+        0,
+        0
+      ]
+    },
+    "old": {
+      "cache": [
+        0,
+        0
+      ],
+      "occurrences": [
+        0,
+        0
+      ],
+      "nodes": [
+        0,
+        0
+      ],
+      "edges": [
+        0,
+        0
+      ],
+      "spans": [
+        0,
+        0
+      ],
+      "macro_invocations": [
+        0,
+        0
+      ],
+      "macro_scopes": [
+        0,
+        0
+      ]
+    }
+  },
+  "old_new_exact": {
+    "cache": [
+      0,
+      0
+    ],
+    "occurrences": [
+      0,
+      0
+    ],
+    "nodes": [
+      0,
+      0
+    ],
+    "edges": [
+      0,
+      0
+    ],
+    "spans": [
+      0,
+      0
+    ],
+    "macro_invocations": [
+      0,
+      0
+    ],
+    "macro_scopes": [
+      0,
+      0
+    ]
+  },
+  "status": "passed"
+}

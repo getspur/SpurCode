@@ -1,0 +1,82 @@
+{
+  "plan_id": "d52c9b10-9ab9-46bd-aff1-1d7987bd5433",
+  "test_contract": {
+    "issue": "bd-273r",
+    "commit": "ebde1ed2516373009c4f1dc1bf32efde6e880c28",
+    "scope": [
+      "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py"
+    ],
+    "existing_test_bodies_verified_unchanged": 6,
+    "new_tests": 11,
+    "tests": 17,
+    "red_assertions": 53,
+    "errors": 0,
+    "red_log": "/private/tmp/spur-incremental-children-contract-red.log",
+    "red_log_sha256": "7c361f72cdb302934d6a7b29054ccc0f6e996dc816d942a34f7e9c030bd06ff8",
+    "audit_ids": [
+      6537,
+      6539
+    ],
+    "brain_decision": "approve"
+  },
+  "implementation": {
+    "issue": "bd-170c",
+    "commit": "8d3f7a285abbd19107e8b34ac6c4086e4d6d349d",
+    "sql_sha256": "cf4e49e719aed7df175deb7c170fcd9a74b0e56e96375d952d06b9e78742ce47",
+    "tests": 48,
+    "skips": 0,
+    "audit_ids": [
+      6547,
+      6549
+    ],
+    "brain_decision": "approve",
+    "post_solver": {
+      "valid": "sat/pass",
+      "corrupt": "3 unsat/fail",
+      "cached": true,
+      "scope": "finite snapshots only"
+    }
+  },
+  "initial_review": {
+    "issue": "bd-18w2",
+    "audit_id": 6560,
+    "important_finding": "R1 main-only layout detection",
+    "parent_reproduced": {
+      "facts_noop_refresh": 1,
+      "missing_edges_actual": 0,
+      "missing_edges_expected": 3
+    },
+    "followup_plan": "d119066b-25a1-4644-8159-cf65c8487953",
+    "main_integration_blocked_until_fixed": false
+  },
+  "schema_correction": {
+    "issue": "bd-94e5",
+    "test_commit": "ab6784912",
+    "fix_commit": "4cd27e756",
+    "normalized_tip": "11991f874b0ef06db5b7190baf8b689b99de18f6",
+    "sql_sha256": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6",
+    "preserved_test_methods": 17,
+    "new_tests": 2,
+    "pipeline_tests": 19,
+    "combined_tests": 50,
+    "audit_ids": [
+      6577,
+      6578,
+      6581
+    ],
+    "brain_decision": "approve_for_independent_review"
+  },
+  "final_review": {
+    "issue": "bd-82z4",
+    "audit_id": 6588,
+    "findings": [],
+    "R1_resolved": true,
+    "attached_catalog_independently_verified": true
+  },
+  "integration": {
+    "head": "4cd27e756ddc7ce3ad6b2f26e207a87a594bbd7d",
+    "tree": "7c254a5f431532de3e4a87c9903d7b9c7943bf95",
+    "method": "Fast-forward original test-first history; tree identical to normalized reviewed11991f874 and plan integration088ebf46a",
+    "orchestrator_merge_notice": "Read-only review overlay reported conflict with files=[]; partial integration tree already exactly equals reviewed tree; no content conflict."
+  }
+}

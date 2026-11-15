@@ -1,0 +1,38 @@
+{
+  "base": "8d3f7a285abbd19107e8b34ac6c4086e4d6d349d",
+  "changed_files": [
+    "crates/spur-graph-duckdb/examples/file_facts.sql",
+    "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py"
+  ],
+  "sql_only_one_predicate_changed": true,
+  "sql_prefix_bytes": 3258,
+  "sql_prefix_sha256": "60007b206ba66c95671a9bdacf1cc484d7dd4b29280b26a186b6a4d98f09ac72",
+  "sql_suffix_bytes": 7421,
+  "sql_suffix_sha256": "b1955a89ba6fd77a1a30b3d850c5fea643b5c6df8a646073669cdb380f8bd27b",
+  "original_17_tests_ast_unchanged": [
+    "test_path_dependent_keys_and_duplicate_lineage",
+    "test_restart_skips_cached_keys_and_version_change_adds_keys",
+    "test_parent_statuses_survive_null_error_and_empty_lists",
+    "test_separate_unnests_and_complete_typed_parquet_roundtrip",
+    "test_empty_staging_is_typed_and_restartable",
+    "test_rejects_ambiguous_sources_and_null_keys",
+    "test_complete_cache_oracle_covers_every_native_collection",
+    "test_noop_reuses_child_tables_and_has_zero_deltas",
+    "test_reopen_preserves_checkpoint_and_child_content",
+    "test_lineage_refreshes_independently_of_child_deltas",
+    "test_append_path_and_extractor_version_retain_existing_children",
+    "test_cache_deletion_without_restaging_removes_children_state_and_updates_lineage",
+    "test_deleted_and_retried_key_replaces_prior_children_without_duplicates",
+    "test_checkpoint_covers_null_error_and_empty_parents",
+    "test_legacy_cache_without_checkpoint_bootstraps_once_without_extraction",
+    "test_missing_child_table_repairs_all_collections_from_cache",
+    "test_empty_stage_has_stable_tables_state_and_zero_deltas_after_reopen"
+  ],
+  "native_tests_byte_unchanged": {
+    "crates/spur-graph-duckdb/tests/test_file_facts.py": "be9e35e40c6a4ef6cd5dad932e9119014d44dc1ef6ea244a1b465b2c62fbb141",
+    "crates/spur-graph-duckdb/tests/test_extension.py": "6e48cd777a7386e02e50ab7da06271fb7079f0e56c0d172a1bbf8b51029074c3",
+    "crates/spur-graph-duckdb/tests/test_temporal.py": "b2271676b4b23f16b3b760d32b6957373ea2c335b8adcb63e51c31549ed00e5d"
+  },
+  "extension_sha256_before_and_after": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "all_other_tracked_files_unchanged": true
+}
