@@ -2,8 +2,8 @@
 
 This native prototype exposes SPUR's symbol extractor and native single-file
 graph facts through DuckDB's V2 C API. DuckDB supplies source vectors; the
-extension reuses parser/query state per worker and language, and writes typed
-primitive, list and struct vectors.
+extension reuses parser/query state per worker and language for ordinary source
+code, and writes typed primitive, list and struct vectors.
 
 The adapter follows `duckdb/extension-template-rs` at
 `a679601f8e133db7546777c6637bc7a6c2d2780e` and pins `duckdb-neo = 0.20000.2`.
@@ -99,6 +99,10 @@ creates fresh local numeric IDs. Join `(blob_oid, logical_path, extractor_sha,
 local_id)`; use the same input key with textual macro/symbol IDs. Native AST
 extraction still parses a whole source blob for each missing key; SQL batching
 does not make parser computation SIMD or replace repository-wide resolution.
+
+Notebook inputs retain the native cell-parser lifecycle: compiled queries are
+cached within each notebook, and parsers are constructed per cell. The worker
+extractor cache does not carry this inner state across notebook input rows.
 
 [examples/file_facts.sql](examples/file_facts.sql) accepts already staged
 `staged_sources(blob_oid VARCHAR, logical_path VARCHAR, source VARCHAR,
