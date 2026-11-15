@@ -1,0 +1,519 @@
+{
+  "inputs": {
+    "frozen_head": "93a59ca9809cf9470239432ee789f4e14392cecb",
+    "plan_sha256": "33a1fc2e674c3108d6522aa207876ac1dce5bea5f1c0633b0f5f744c68a88dc2",
+    "source_key": [
+      "blob_oid",
+      "logical_path"
+    ],
+    "rows": 3698,
+    "source_bytes": 29168895,
+    "languages": {
+      "Cpp": 3565,
+      "C": 107,
+      "Markdown": 11,
+      "Python": 5,
+      "Json": 7,
+      "Yaml": 1,
+      "Sql": 2
+    },
+    "row_group_size": 128,
+    "row_groups": 29,
+    "pilot_rows": 58,
+    "pilot_source_bytes": 3902153,
+    "preparation_seconds": 0.42051862506195903,
+    "scope": "One logical path per distinct old temporal blob/language plan entry; not every historical blob/path occurrence.",
+    "artifacts": {
+      "sources.parquet": "1600b66e39703925c45e436955af2c5776dfe46b0c0835aa9bcf958057fb09e8",
+      "pilot.parquet": "c0722106e35fe41b9704eda10c455d1bd26efb66ed57473bf2abec49f49ed134"
+    }
+  },
+  "native_artifact": {
+    "commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+    "integration_base": "cfccd6129b9ce9ec5e5b448fcba7548245a30424",
+    "branch": "spur/file-facts-integration-20261115",
+    "artifacts": {
+      "spur_graph.duckdb_extension": {
+        "bytes": 16821782,
+        "sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028"
+      },
+      "reference_file_facts": {
+        "bytes": 16561648,
+        "sha256": "be17bd345a8b7abb78e77e2efdcb8c6b4a154eb436dc9ff04d5503ea9686ac90"
+      },
+      "libspur_graph_duckdb.dylib": {
+        "bytes": 16821248,
+        "sha256": "fdec488df09bb873582eb12e12920b872edb8a5057baceecac339088718763ff"
+      }
+    },
+    "real_engine_tests": {
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline",
+        "test_file_facts",
+        "test_extension",
+        "test_temporal",
+        "-v"
+      ],
+      "exit": 0,
+      "wall_seconds": 12.54452074994333
+    }
+  },
+  "fact_counts": {
+    "nodes": 87632,
+    "edges": 226241,
+    "spans": 87632,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "pilot_exact_native_rows": 58,
+  "serial_parquet": {
+    "wall_seconds": [
+      4.728299833834171,
+      4.983695749891922
+    ],
+    "midpoint_seconds": 4.855997791863047,
+    "cpu_seconds": [
+      4.726355000000001,
+      4.977209
+    ],
+    "average_cpu_cores": [
+      0.9995886822108332,
+      0.9986984057178726
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      344506368,
+      343900160
+    ]
+  },
+  "parallel_parquet": {
+    "wall_seconds": [
+      2.1693565419409424,
+      2.2961217500269413
+    ],
+    "midpoint_seconds": 2.232739145983942,
+    "cpu_seconds": [
+      7.624243000000001,
+      8.086704000000001
+    ],
+    "average_cpu_cores": [
+      3.5145181774400824,
+      3.521896868014563
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      455131136,
+      457949184
+    ]
+  },
+  "four_threads_materialized_table": {
+    "wall_seconds": [
+      4.576776208123192,
+      4.624243374913931
+    ],
+    "midpoint_seconds": 4.6005097915185615,
+    "cpu_seconds": [
+      4.571981,
+      4.616164
+    ],
+    "average_cpu_cores": [
+      0.9989522738484173,
+      0.9982528222978574
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      457015296,
+      452296704
+    ]
+  },
+  "generic_workflow_cold": {
+    "wall_seconds": [
+      5.841227917000651,
+      5.335546167101711
+    ],
+    "midpoint_seconds": 5.588387042051181,
+    "cpu_seconds": [
+      6.108025,
+      5.589786
+    ],
+    "average_cpu_cores": [
+      1.0456748284419526,
+      1.0476501982994542
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      829243392,
+      847888384
+    ]
+  },
+  "generic_workflow_replay": {
+    "wall_seconds": [
+      0.7284529169555753,
+      0.6340797080192715
+    ],
+    "midpoint_seconds": 0.6812663124874234,
+    "cpu_seconds": [
+      0.9631679999999996,
+      0.8747510000000003
+    ],
+    "average_cpu_cores": [
+      1.3222103688257154,
+      1.3795599968536039
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      879345664,
+      889602048
+    ]
+  },
+  "experimental_parquet_workflow_cold": {
+    "wall_seconds": [
+      2.7432672921568155,
+      2.6795508328359574
+    ],
+    "midpoint_seconds": 2.7114090624963865,
+    "cpu_seconds": [
+      7.891944,
+      7.760796999999999
+    ],
+    "average_cpu_cores": [
+      2.8768410656021723,
+      2.8963051959668187
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      720994304,
+      831291392
+    ]
+  },
+  "experimental_parquet_workflow_replay": {
+    "wall_seconds": [
+      0.6607630420476198,
+      0.657877832883969
+    ],
+    "midpoint_seconds": 0.6593204374657944,
+    "cpu_seconds": [
+      0.9048970000000003,
+      0.9103539999999994
+    ],
+    "average_cpu_cores": [
+      1.3694727798271535,
+      1.3837736347024177
+    ],
+    "process_lifetime_peak_rss_bytes": [
+      865796096,
+      875216896
+    ]
+  },
+  "parallel_extraction_speedup": 2.174906012015598,
+  "experimental_workflow_speedup": 2.0610637912768386,
+  "all_cache_replays_extracted_zero": true,
+  "all_compared_facts_exact": true,
+  "materialized_input_row_groups": [
+    0
+  ],
+  "parquet_roundtrips_without_extension": [
+    {
+      "run": "workflow-t4",
+      "table": "cache",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4",
+      "table": "occurrences",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4",
+      "table": "nodes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4",
+      "table": "edges",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4",
+      "table": "spans",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4",
+      "table": "macro_invocations",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4",
+      "table": "macro_scopes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "cache",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "occurrences",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "nodes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "edges",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "spans",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "macro_invocations",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-t4-r1",
+      "table": "macro_scopes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "cache",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "occurrences",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "nodes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "edges",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "spans",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "macro_invocations",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r0",
+      "table": "macro_scopes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "cache",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "occurrences",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "nodes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "edges",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "spans",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "macro_invocations",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    },
+    {
+      "run": "workflow-parquet-r1",
+      "table": "macro_scopes",
+      "typed_exact_differences": [
+        0,
+        0
+      ]
+    }
+  ],
+  "profile_scans": {
+    "t1-r0": [
+      {
+        "type": "TABLE_SCAN",
+        "operator_name": null,
+        "intermediate_rows": 3698,
+        "rows_scanned": 3698,
+        "row_groups_scanned": 29,
+        "total_row_groups_to_scan": 29,
+        "timing": 0.015853956,
+        "extra_info": {
+          "Function": "READ_PARQUET",
+          "Projections": [
+            "blob_oid",
+            "logical_path",
+            "source"
+          ],
+          "Estimated Cardinality": "3698",
+          "Total Files Read": "1",
+          "Filename(s)": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/frozen-source/sources.parquet"
+        }
+      }
+    ],
+    "t4-r0": [
+      {
+        "type": "TABLE_SCAN",
+        "operator_name": null,
+        "intermediate_rows": 3698,
+        "rows_scanned": 3698,
+        "row_groups_scanned": 29,
+        "total_row_groups_to_scan": 29,
+        "timing": 0.020477462000000002,
+        "extra_info": {
+          "Function": "READ_PARQUET",
+          "Projections": [
+            "blob_oid",
+            "logical_path",
+            "source"
+          ],
+          "Estimated Cardinality": "3698",
+          "Total Files Read": "1",
+          "Filename(s)": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/frozen-source/sources.parquet"
+        }
+      }
+    ],
+    "t4-table-r0": [
+      {
+        "type": "TABLE_SCAN",
+        "operator_name": null,
+        "intermediate_rows": 3698,
+        "rows_scanned": 3698,
+        "row_groups_scanned": 1,
+        "total_row_groups_to_scan": 1,
+        "timing": 0.000324499,
+        "extra_info": {
+          "Table": "\"temp\".main.materialized_inputs",
+          "Type": "Sequential Scan",
+          "Projections": [
+            "blob_oid",
+            "logical_path",
+            "source"
+          ],
+          "Estimated Cardinality": "3698"
+        }
+      }
+    ]
+  },
+  "experiment_scripts": {
+    "prepare_frozen_sources.py": "e4d3a5999510fc72b6e963c4fc0b3d15a9e9372c9930b457a8c1ebb2017c3f05",
+    "run_frozen_sources.py": "f52dbbf696de5a454c8370bccc28aa843925088a07c7c321d0675e06a387ad25",
+    "analyze_frozen_sources.py": "1a1ca15a827b69e926dd414e22fd82b9ed76232bdc0445bb70205dc691a58cfe"
+  },
+  "limits": [
+    "Bounded frozen source plan, not full temporal history or whole-repository resolution.",
+    "Cold refers to a fresh fact cache; OS source pages are warm. Source preparation/build/oracle/exact comparisons are outside query timings.",
+    "Each timing uses the same typed full-facts native kernel; no native-versus-DuckDB engine superiority claim.",
+    "Two observations per comparison, ordered 1/4/4/1 for direct extraction; generic/candidate/candidate/generic for workflow.",
+    "Four-thread extraction uses more aggregate CPU and higher process lifetime peak RSS than one thread.",
+    "Experimental Parquet SEMI JOIN variant is specific to the known input view; the generic SQL example is unchanged.",
+    "All cached versions and child tables are rebuilt/exported by the generic example; production admission/backpressure and atomic file publication remain separate."
+  ]
+}

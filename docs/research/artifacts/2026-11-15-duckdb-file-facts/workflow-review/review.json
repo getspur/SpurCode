@@ -1,0 +1,53 @@
+{
+  "reviewed_at": "2026-11-15T03:38:09.952767+00:00",
+  "decision": "approve",
+  "findings": [],
+  "task_id": "file_facts_columnar_workflow",
+  "issue": "bd-2hgk",
+  "plan": "6cb6b82c-593e-44d7-a47e-c2724d24f0cc",
+  "delegation_id": "2fff120138b24bc1",
+  "worker_branch": "spur/worker/v2/codex/62837664bb0ba1c9/3403cf2d-d802-461b-8dd4-3718591aa0b1",
+  "base_commit": "6f6359fcce7d1b4ddd02e624187c85f6799b1acc",
+  "test_first_commit": "32e2d386a9efe8dae1781a2194b303cca1196017",
+  "raw_implementation_commit": "76b27bd4fe8b47ec03e8a9b23770e8b4fccff163",
+  "normalized_commit": "3bf9f03dac93a690960a276078acd1d950a673a5",
+  "normalized_tree_equal": true,
+  "changed_files": [
+    "crates/spur-graph-duckdb/README.md",
+    "crates/spur-graph-duckdb/examples/file_facts.sql",
+    "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py"
+  ],
+  "lifecycle_verified": {
+    "status": "in_progress",
+    "signal_labels": [],
+    "completion_comment": 6489,
+    "worker_evidence_comment": 6487
+  },
+  "artifact_hash_entries_verified": 30,
+  "extension_sha256": "517a0540913b1c3c8c397dbab78dbb798a57029ec91eaf4508eb0e0b5bc5698c",
+  "validation": {
+    "pipeline": 6,
+    "native_contract": 12,
+    "regressions": 19,
+    "readme_demo_missing_keys": [
+      1,
+      0
+    ]
+  },
+  "reviewed_behavior": [
+    "physical missing-key anti-join before scalar extraction",
+    "cache key includes blob/path/extractor version",
+    "NULL/error/empty statuses stay in parent cache",
+    "five independent expansions preserve fields and list ordinals",
+    "lineage LEFT JOIN preserves repeated occurrences and NULL parents",
+    "typed Parquet values and schemas round-trip without extension",
+    "upstream adapter/core/contract files unchanged by Git blob"
+  ],
+  "limitations": [
+    "File-local extraction and resolution.",
+    "Internal TRY retries do not promise exactly one parser call per failed key.",
+    "Single cache writer; database commits before non-atomic Parquet file exports.",
+    "Cached NULL/errors require explicit deletion to retry; schema migrations explicit.",
+    "No speed or full-history claim. Integration and Rust-notebook frozen-source evaluation pending."
+  ]
+}

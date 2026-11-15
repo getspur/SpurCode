@@ -1,0 +1,33 @@
+{
+  "commit": "f0218c673ed478f854b64df6223d1817ced3586e",
+  "integration_base": "cfccd6129b9ce9ec5e5b448fcba7548245a30424",
+  "branch": "spur/file-facts-integration-20261115",
+  "artifacts": {
+    "spur_graph.duckdb_extension": {
+      "bytes": 16821782,
+      "sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028"
+    },
+    "reference_file_facts": {
+      "bytes": 16561648,
+      "sha256": "be17bd345a8b7abb78e77e2efdcb8c6b4a154eb436dc9ff04d5503ea9686ac90"
+    },
+    "libspur_graph_duckdb.dylib": {
+      "bytes": 16821248,
+      "sha256": "fdec488df09bb873582eb12e12920b872edb8a5057baceecac339088718763ff"
+    }
+  },
+  "real_engine_tests": {
+    "command": [
+      "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+      "-m",
+      "unittest",
+      "test_file_facts_pipeline",
+      "test_file_facts",
+      "test_extension",
+      "test_temporal",
+      "-v"
+    ],
+    "exit": 0,
+    "wall_seconds": 12.54452074994333
+  }
+}

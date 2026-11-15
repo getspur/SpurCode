@@ -1,0 +1,137 @@
+{
+    "io": {
+        "total_bytes_read": 6100369,
+        "total_bytes_written": 0
+    },
+    "operator": [
+        {
+            "extra_info": {},
+            "intermediate_rows": 0,
+            "intermediate_size_bytes": 0,
+            "timing": 0.000012166,
+            "type": "RESULT_COLLECTOR",
+            "children": [
+                {
+                    "extra_info": {},
+                    "intermediate_rows": 1,
+                    "intermediate_size_bytes": 8,
+                    "timing": 0.038884915,
+                    "type": "BATCH_CREATE_TABLE_AS",
+                    "children": [
+                        {
+                            "extra_info": {
+                                "Projections": [
+                                    "blob_oid",
+                                    "logical_path",
+                                    "facts"
+                                ],
+                                "Estimated Cardinality": "3698"
+                            },
+                            "intermediate_rows": 3698,
+                            "intermediate_size_bytes": 78434085,
+                            "timing": 7.498819663000001,
+                            "type": "PROJECTION",
+                            "children": [
+                                {
+                                    "extra_info": {
+                                        "Function": "READ_PARQUET",
+                                        "Projections": [
+                                            "blob_oid",
+                                            "logical_path",
+                                            "source"
+                                        ],
+                                        "Estimated Cardinality": "3698",
+                                        "Total Files Read": "1",
+                                        "Filename(s)": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/frozen-source/sources.parquet"
+                                    },
+                                    "intermediate_rows": 3698,
+                                    "intermediate_size_bytes": 179312,
+                                    "row_groups_scanned": 29,
+                                    "rows_scanned": 3698,
+                                    "timing": 0.020477462000000002,
+                                    "total_row_groups_to_scan": 29,
+                                    "type": "TABLE_SCAN"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "optimizer": {
+        "aggregate_function_rewriter": 0.000001708,
+        "aggregate_reuse": 7.92e-7,
+        "build_side_probe_side": 5.41e-7,
+        "column_lifetime": 0.000001166,
+        "common_aggregate": 1.25e-7,
+        "common_subexpressions": 0.000001208,
+        "common_subplan": 0.000001416,
+        "cte_filter_pusher": 1.25e-7,
+        "cte_inlining": 8.3e-8,
+        "deliminator": 1.67e-7,
+        "duplicate_groups": 0.000001,
+        "empty_result_pullup": 1.25e-7,
+        "expression_rewriter": 0.000006083,
+        "filter_pullup": 2.08e-7,
+        "filter_pushdown": 0.000001791,
+        "grouping_sets": 1.67e-7,
+        "in_clause": 3.75e-7,
+        "join_elimination": 6.67e-7,
+        "join_filter_pushdown": 1.25e-7,
+        "join_order": 0.000047917,
+        "late_materialization": 2.08e-7,
+        "limit_pushdown": 8.4e-8,
+        "outer_join_simplification": 0.000001083,
+        "partial_aggregate_pushdown": 3.75e-7,
+        "partitioned_execution": 1.25e-7,
+        "projection_placement": 7.08e-7,
+        "projection_pullup": 0.000002458,
+        "redundant_order_keys": 1.25e-7,
+        "regex_range": 8.4e-8,
+        "reorder_filter": 1.25e-7,
+        "row_group_pruner": 1.25e-7,
+        "row_number_rewriter": 1.66e-7,
+        "sampling_pushdown": 1.25e-7,
+        "scalar_fn_pushdown": 7.08e-7,
+        "statistics_propagation": 0.000030542,
+        "top_n": 1.25e-7,
+        "top_n_window_elimination": 5e-7,
+        "total_time": 0.000129042,
+        "type_pushdown": 0.00000125,
+        "unnest_rewriter": 1.66e-7,
+        "unused_columns": 0.00000425,
+        "window_self_join": 8.4e-8
+    },
+    "physical_planner": {
+        "column_binding": 0.000001042,
+        "create_plan": 0.000005417,
+        "resolve_types": 8.3e-8,
+        "total_time": 0.000007791
+    },
+    "planner": {
+        "binding_time": 0.00019725,
+        "total_time": 0.0002145
+    },
+    "query": {
+        "cpu_time": 7.5581942060000005,
+        "sql": "CREATE TABLE facts AS\n                SELECT blob_oid, logical_path,\n                       TRY(spur_graph_file_facts(logical_path, source)) facts FROM inputs",
+        "total_intermediate_rows": 7397,
+        "total_intermediate_size_bytes": 78613405,
+        "total_row_groups_scanned": 29,
+        "total_row_groups_to_scan": 29,
+        "total_rows_scanned": 3698,
+        "total_time": 2.169056792
+    },
+    "storage": {
+        "commit_local_storage_latency": 0.039682958,
+        "write_to_wal_latency": 0.036238583
+    },
+    "system": {
+        "blocked_thread_time": 0.230231,
+        "peak_buffer_memory": 105948252,
+        "peak_streaming_buffer_size": 0,
+        "peak_temp_dir_size": 0,
+        "total_memory_allocated": 0
+    }
+}

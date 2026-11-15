@@ -1,0 +1,93 @@
+{
+  "issue": "bd-1ce9",
+  "task_id": "file_facts_sql_contract",
+  "plan_id": "6cb6b82c-593e-44d7-a47e-c2724d24f0cc",
+  "verdict": "approve",
+  "findings": [],
+  "completion_audit_id": 6462,
+  "worker_evidence_audit_id": 6460,
+  "branch_tip": "89593ab91bcabab4ee34b7cb44ca8b7cf10fd131",
+  "scope": {
+    "files_changed": 2,
+    "acceptance": "Independent oracle and intended RED SQL contract only; SQL implementation not complete"
+  },
+  "verification": {
+    "remote_check_passed": true,
+    "macos_native_build_passed": true,
+    "oracle_checks_passed": 2,
+    "native_fixtures": 21,
+    "existing_sql_regressions_passed": 19,
+    "expected_sql_registration_failure": true,
+    "expected_missing_function_catalog_errors": 43,
+    "unrelated_sql_errors": 0,
+    "exact_branch_patch_verified": true,
+    "production_extractor_and_adapter_unchanged": true
+  },
+  "contract_review": "All five exact native collections and field sets, nullable evidence Some/None coverage, lossless enum-payload normalization, f32 transport quantization, native order, one-file isolation, NULL/empty/error/TRY, constant/selected/multiple chunks, oversized nested lists and typed Parquet checks reviewed.",
+  "artifacts": [
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/verification.json",
+      "sha256": "f40c3e7fdfe92bd7095c040bd346942c351a03cdff22077537b0c94428e44944"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/commands.txt",
+      "sha256": "a6a312c99b837d965653002a68b38c0487bd70347610a41d722cbaeaa8b2c4b9"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/remote-check-network.log",
+      "sha256": "e4c710451dc0039cec3a061dc655777b24e140087b8806afaae0a849881cf7b9"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/native-build.log",
+      "sha256": "fea41b4d596a6c36fde1688f9840fcd985743138995d6d638f560a184ecf73f5"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/package.log",
+      "sha256": "91f51256d76c35153beb717009eda16d67e1fc6044e1a1b01367315a4e249c62"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/native-oracle-tests.log",
+      "sha256": "c4f667b45cfe0b4c50e634f6fa64d6d01b3f0ffc751e070f728148f60d41296d"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/existing-regressions.log",
+      "sha256": "77d47f2bd32e1e14529a4e7107332850e1f1224841abe55ab69ec520c9bd26e5"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/sql-contract-red.log",
+      "sha256": "366657de955429520cd3c931109ed2b9f7f6bde49ab73d6fd111b89915db480d"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/typed-schema.txt",
+      "sha256": "04f6d6020370f3d8b4b8958c11524d1f6377572a5e5c0955c642a3aaec421c9a"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/fixtures.jsonl",
+      "sha256": "c817d19fecfa7a23e4156e590cabacba9e9b2d9d4d420e7ef3d255681f6dd05d"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/native-facts.jsonl",
+      "sha256": "f3f359a199a9dafab62f6896ed413b5dd78df372af9ff987c3145bab02232b42"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/normalized-native-facts.jsonl",
+      "sha256": "3aa662c23761781e6f92de4c1a6295adef3443aff736189cdb047c16adf50584"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/reference_file_facts",
+      "sha256": "529b6d171b26b993344ece852f154380a8ce1822c97f43c96aff1a83bc51d8f1"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/spur_graph.duckdb_extension",
+      "sha256": "fc7ad777581ac4d17c51b0cd3fd6637f94dab8e38211688920b4da1bc75bc842"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/sql-contract-review/bd-1ce9.patch",
+      "sha256": "57758a99f726af599ee00dcc091a2648f697c4cb92a5f08dee4c12a5f742f55a"
+    }
+  ]
+}

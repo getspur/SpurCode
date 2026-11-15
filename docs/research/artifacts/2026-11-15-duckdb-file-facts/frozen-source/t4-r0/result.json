@@ -1,0 +1,50 @@
+{
+  "mode": "extract",
+  "name": "t4-r0",
+  "threads": 4,
+  "duckdb": "2.0.0",
+  "extractor_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "integration_commit": "f0218c673",
+  "memory_limit": "4GB",
+  "input": "sources.parquet",
+  "inputs": [
+    3698,
+    29168895
+  ],
+  "runtime": [
+    "v2.0.0",
+    4
+  ],
+  "extraction": {
+    "wall_seconds": 2.1693565419409424,
+    "user_seconds": 7.5647400000000005,
+    "sys_seconds": 0.059503,
+    "process_peak_rss_bytes": 455131136,
+    "note": "macOS process lifetime peak RSS, not a query-only peak or a memory-limit guarantee"
+  },
+  "errors": 0,
+  "fact_counts": {
+    "nodes": 87632,
+    "edges": 226241,
+    "spans": 87632,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "parquet_export": {
+    "wall_seconds": 0.1251444169320166,
+    "user_seconds": 0.11576800000000009,
+    "sys_seconds": 0.009707999999999994,
+    "process_peak_rss_bytes": 569589760,
+    "note": "macOS process lifetime peak RSS, not a query-only peak or a memory-limit guarantee"
+  },
+  "exact_baseline_differences_both_directions": [
+    0,
+    0
+  ],
+  "artifact_bytes": {
+    "facts.duckdb": 5517312,
+    "extraction-profile.json": 5387,
+    "facts.parquet": 5369172
+  },
+  "status": "passed"
+}

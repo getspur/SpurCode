@@ -1,0 +1,71 @@
+{
+  "mode": "workflow",
+  "name": "workflow-parquet-r1",
+  "threads": 4,
+  "duckdb": "2.0.0",
+  "extractor_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "integration_commit": "f0218c673",
+  "memory_limit": "4GB",
+  "input": "sources.parquet",
+  "inputs": [
+    3698,
+    29168895
+  ],
+  "runtime": [
+    "v2.0.0",
+    4
+  ],
+  "materialized_input": false,
+  "parallel_missing_source_experiment": true,
+  "experimental_sql_sha256": "9468e745b6dd651c33b61c46d78f2e84dd161b9a8b4e007bb8eca955c2f4121d",
+  "workflow_cold": {
+    "wall_seconds": 2.6795508328359574,
+    "user_seconds": 7.6786959999999995,
+    "sys_seconds": 0.082101,
+    "process_peak_rss_bytes": 831291392,
+    "note": "macOS process lifetime peak RSS, not a query-only peak or a memory-limit guarantee"
+  },
+  "cold_missing": 3698,
+  "statuses": [
+    [
+      "empty_source",
+      2
+    ],
+    [
+      "ok",
+      3696
+    ]
+  ],
+  "fact_counts": {
+    "nodes": 87632,
+    "edges": 226241,
+    "spans": 87632,
+    "macro_invocations": 0,
+    "macro_scopes": 0
+  },
+  "workflow_cache_replay": {
+    "wall_seconds": 0.657877832883969,
+    "user_seconds": 0.8952909999999994,
+    "sys_seconds": 0.015063000000000007,
+    "process_peak_rss_bytes": 875216896,
+    "note": "macOS process lifetime peak RSS, not a query-only peak or a memory-limit guarantee"
+  },
+  "replay_missing": 0,
+  "replay_extracted": 0,
+  "exact_baseline_differences_both_directions": [
+    0,
+    0
+  ],
+  "artifact_bytes": {
+    "file-facts-edges.parquet": 2939708,
+    "file-facts-macro_scopes.parquet": 376,
+    "facts.duckdb": 25440256,
+    "file-facts-spans.parquet": 1557606,
+    "file-facts-macro_invocations.parquet": 1023,
+    "file-facts-occurrences.parquet": 186181,
+    "experimental-workflow.sql": 5995,
+    "file-facts-nodes.parquet": 2619997,
+    "file-facts-cache.parquet": 5359887
+  },
+  "status": "passed"
+}

@@ -1,0 +1,136 @@
+{
+    "io": {
+        "total_bytes_read": 0,
+        "total_bytes_written": 0
+    },
+    "operator": [
+        {
+            "extra_info": {},
+            "intermediate_rows": 0,
+            "intermediate_size_bytes": 0,
+            "timing": 0.000004667,
+            "type": "RESULT_COLLECTOR",
+            "children": [
+                {
+                    "extra_info": {},
+                    "intermediate_rows": 1,
+                    "intermediate_size_bytes": 8,
+                    "timing": 0.021437918,
+                    "type": "BATCH_CREATE_TABLE_AS",
+                    "children": [
+                        {
+                            "extra_info": {
+                                "Projections": [
+                                    "blob_oid",
+                                    "logical_path",
+                                    "facts"
+                                ],
+                                "Estimated Cardinality": "3698"
+                            },
+                            "intermediate_rows": 3698,
+                            "intermediate_size_bytes": 77516981,
+                            "timing": 4.460741791,
+                            "type": "PROJECTION",
+                            "children": [
+                                {
+                                    "extra_info": {
+                                        "Table": "\"temp\".main.materialized_inputs",
+                                        "Type": "Sequential Scan",
+                                        "Projections": [
+                                            "blob_oid",
+                                            "logical_path",
+                                            "source"
+                                        ],
+                                        "Estimated Cardinality": "3698"
+                                    },
+                                    "intermediate_rows": 3698,
+                                    "intermediate_size_bytes": 177504,
+                                    "row_groups_scanned": 1,
+                                    "rows_scanned": 3698,
+                                    "timing": 0.000324499,
+                                    "total_row_groups_to_scan": 1,
+                                    "type": "TABLE_SCAN"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "optimizer": {
+        "aggregate_function_rewriter": 0.00000125,
+        "aggregate_reuse": 7.5e-7,
+        "build_side_probe_side": 4.59e-7,
+        "column_lifetime": 0.000001166,
+        "common_aggregate": 8.3e-8,
+        "common_subexpressions": 0.000001625,
+        "common_subplan": 0.000001209,
+        "cte_filter_pusher": 1.67e-7,
+        "cte_inlining": 8.3e-8,
+        "deliminator": 8.3e-8,
+        "duplicate_groups": 9.58e-7,
+        "empty_result_pullup": 8.4e-8,
+        "expression_rewriter": 0.000005542,
+        "filter_pullup": 2.09e-7,
+        "filter_pushdown": 0.00000375,
+        "grouping_sets": 1.67e-7,
+        "in_clause": 2.92e-7,
+        "join_elimination": 5.41e-7,
+        "join_filter_pushdown": 1.25e-7,
+        "join_order": 0.000012625,
+        "late_materialization": 1.67e-7,
+        "limit_pushdown": 8.4e-8,
+        "outer_join_simplification": 0.000001333,
+        "partial_aggregate_pushdown": 4.58e-7,
+        "partitioned_execution": 8.3e-8,
+        "projection_placement": 7.08e-7,
+        "projection_pullup": 0.000002959,
+        "redundant_order_keys": 9.59e-7,
+        "regex_range": 8.3e-8,
+        "reorder_filter": 2.5e-7,
+        "row_group_pruner": 8.4e-8,
+        "row_number_rewriter": 8.4e-8,
+        "sampling_pushdown": 4.2e-8,
+        "scalar_fn_pushdown": 8.3e-8,
+        "statistics_propagation": 0.0000035,
+        "top_n": 2.08e-7,
+        "top_n_window_elimination": 3.75e-7,
+        "total_time": 0.000065083,
+        "type_pushdown": 1.25e-7,
+        "unnest_rewriter": 8.3e-8,
+        "unused_columns": 0.00000575,
+        "window_self_join": 8.3e-8
+    },
+    "physical_planner": {
+        "column_binding": 0.000001,
+        "create_plan": 0.000006125,
+        "resolve_types": 4.2e-8,
+        "total_time": 0.000008167
+    },
+    "planner": {
+        "binding_time": 0.00006125,
+        "total_time": 0.000077709
+    },
+    "query": {
+        "cpu_time": 4.482508875000001,
+        "sql": "CREATE TABLE facts AS\n                SELECT blob_oid, logical_path,\n                       TRY(spur_graph_file_facts(logical_path, source)) facts FROM inputs",
+        "total_intermediate_rows": 7397,
+        "total_intermediate_size_bytes": 77694493,
+        "total_row_groups_scanned": 1,
+        "total_row_groups_to_scan": 1,
+        "total_rows_scanned": 3698,
+        "total_time": 4.576499625
+    },
+    "storage": {
+        "commit_local_storage_latency": 0.029138417,
+        "write_to_wal_latency": 0.033008042
+    },
+    "system": {
+        "blocked_thread_time": 0.030345,
+        "peak_buffer_memory": 125446388,
+        "peak_streaming_buffer_size": 0,
+        "peak_temp_dir_size": 0,
+        "total_memory_allocated": 0
+    }
+}

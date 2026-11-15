@@ -1,0 +1,156 @@
+{
+  "reviewed_at": "2026-11-15T03:22:26.236369+00:00",
+  "decision": "approve",
+  "findings": [],
+  "task_id": "file_facts_v2_adapter",
+  "issue": "bd-2uuv",
+  "plan": "6cb6b82c-593e-44d7-a47e-c2724d24f0cc",
+  "delegation_id": "c590c0c6b4aa423d",
+  "worker_branch": "spur/worker/v2/codex/62837664bb0ba1c9/fcf71bca-4a6c-4f6f-8c2f-50edcfd54ab2",
+  "base_commit": "89593ab91bcabab4ee34b7cb44ca8b7cf10fd131",
+  "implementation_commit": "6f6359fcce7d1b4ddd02e624187c85f6799b1acc",
+  "changed_files": [
+    "crates/spur-graph-duckdb/Cargo.lock",
+    "crates/spur-graph-duckdb/Cargo.toml",
+    "crates/spur-graph-duckdb/src/file_facts.rs",
+    "crates/spur-graph-duckdb/src/lib.rs"
+  ],
+  "unmodified_files_verified_by_git_blob": [
+    "crates/spur-graph-duckdb/tests/test_file_facts.py",
+    "crates/spur-graph-duckdb/tests/test_extension.py",
+    "crates/spur-graph-duckdb/tests/test_temporal.py",
+    "crates/spur-graph-duckdb/examples/reference_file_facts.rs",
+    "crates/spur-graph/src/extract/tree_sitter.rs",
+    "crates/spur-graph/src/macro_invocations.rs"
+  ],
+  "audit_comments": {
+    "task-spec": 6435,
+    "dispatch": 6466,
+    "worker-started": 6467,
+    "worker-evidence": 6470,
+    "completion": 6472
+  },
+  "lifecycle_before_review": {
+    "status": "in_progress",
+    "completion_state": "awaiting_review",
+    "signal_labels": []
+  },
+  "validation": [
+    {
+      "name": "fmt --check",
+      "exit": 0,
+      "log": "fmt.log"
+    },
+    {
+      "name": "remote check --lib --example reference_file_facts --locked",
+      "exit": 0,
+      "log": "remote-check-green.log"
+    },
+    {
+      "name": "macOS native release build",
+      "exit": 0,
+      "log": "native-build-green.log"
+    },
+    {
+      "name": "committed-tree native build",
+      "exit": 0,
+      "log": "native-build-committed.log"
+    },
+    {
+      "name": "unchanged independent oracle SQL contract",
+      "exit": 0,
+      "tests": 12,
+      "log": "sql-contract-green.log"
+    },
+    {
+      "name": "existing test_extension + test_temporal",
+      "exit": 0,
+      "tests": 19,
+      "log": "existing-regressions.log"
+    },
+    {
+      "name": "supplemental optional-definition/scope capacity and NULL chunks",
+      "exit": 0,
+      "tests": 1,
+      "definitions": 2049,
+      "scopes": 2050,
+      "null_and_valid_rows": 4098,
+      "isolation_rows": 2049,
+      "log": "stress-nested.log"
+    },
+    {
+      "name": "committed packaging byte equality to tested artifact",
+      "exit": 0
+    }
+  ],
+  "external_contracts": {
+    "package": "duckdb-neo",
+    "revision": "0.20000.2",
+    "source_access": "indexed external_code_search/external_code_read",
+    "symbols": [
+      "ScalarInitCallbacks",
+      "ListWriter",
+      "impl Vector<'_, List<T>>::set_child_size",
+      "impl Vector<'a, T>::resize_list_child"
+    ],
+    "paired_review": [
+      "with_init owns per-worker parser cache",
+      "one output writer after all list descendants sized",
+      "optional definition ranges reserve by non-NULL count",
+      "all extraction completes before output writes for TRY retries"
+    ]
+  },
+  "projection_review": [
+    "all five native collections and all fields retained",
+    "exact typed SQL schema and native ordering",
+    "enum payloads and nullable fields preserved",
+    "fresh fact builder and local IDs for each input",
+    "no JSON fact payload or new unsafe code"
+  ],
+  "artifacts": {
+    "extension": {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/adapter-review/spur_graph.duckdb_extension",
+      "bytes": 16821798,
+      "sha256": "517a0540913b1c3c8c397dbab78dbb798a57029ec91eaf4508eb0e0b5bc5698c"
+    },
+    "oracle": {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/adapter-review/reference_file_facts",
+      "bytes": 16561664,
+      "sha256": "b452c2670d76d5e1a687369e9ea8d51801d663987d82a8dcb0420d726e90f56f"
+    },
+    "native_library": {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/adapter-review/libspur_graph_duckdb.dylib",
+      "bytes": 16821264,
+      "sha256": "1fb6baa889ffcbe39aead815c44a61850410062c96c4e9f3d7fe47b2654a3b83"
+    },
+    "diff": {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/adapter-review/bd-2uuv.patch",
+      "bytes": 22556,
+      "sha256": "610d515166954e871ca9027670b53353c1821843efc06ca719daa136fd8add71"
+    }
+  },
+  "limitations": [
+    "File-local extraction/resolution; IDs require input key for joins.",
+    "Cache identity includes blob, logical path and extractor version.",
+    "No performance advantage claimed by correctness tests.",
+    "Configured four threads in supplemental stress does not prove parallel worker utilization.",
+    "Changes approved in worker branch; final integration and workflow validation remain pending."
+  ],
+  "approval_readback": {
+    "issue_status": "closed",
+    "plan_approved": 3,
+    "plan_total": 4,
+    "next_task": "file_facts_columnar_workflow",
+    "next_task_status": "dispatched"
+  },
+  "integration_preview": {
+    "overlays": [
+      "b7a42599f13341f604c946c896ddf67373f6dc61",
+      "89593ab91bcabab4ee34b7cb44ca8b7cf10fd131",
+      "6f6359fcce7d1b4ddd02e624187c85f6799b1acc"
+    ],
+    "predicted_base_oid": "ae91b3c21bc146e244ca6fd75e02f2d448aab384",
+    "conflict": null,
+    "potential_clobber_resolution": "Both upstream tips independently verified as ancestors of adapter; prior code and contract blobs preserved. Six overlap signals processed in bd-2uuv."
+  }
+}

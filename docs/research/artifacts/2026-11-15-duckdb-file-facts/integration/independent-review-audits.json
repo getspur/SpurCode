@@ -1,0 +1,232 @@
+[
+  {
+    "comment_id": 6505,
+    "audit": {
+      "kind": "task-spec",
+      "task_id": "file_facts_independent_review",
+      "context_files": [
+        "docs/superpowers/specs/2026-11-15-duckdb-file-facts.md",
+        "docs/superpowers/plans/2026-11-15-duckdb-file-facts.md"
+      ],
+      "planned_write_files": [],
+      "model": "gpt-6.1-sol",
+      "effort": "xhigh",
+      "agent": "codex"
+    }
+  },
+  {
+    "comment_id": 6508,
+    "audit": {
+      "kind": "dispatch",
+      "delegation_id": "df9722d9da34466d",
+      "worker": "codex",
+      "attempt": 1
+    }
+  },
+  {
+    "comment_id": 6509,
+    "audit": {
+      "kind": "worker-started",
+      "delegation_id": "df9722d9da34466d",
+      "worker_branch": "spur/worker/v2/codex/62837664bb0ba1c9/df6d081a-13be-434b-a340-3b9aeddd1108",
+      "worker_session_id": "df6d081a-13be-434b-a340-3b9aeddd1108",
+      "dispatched_base_oid": "f0218c673ed478f854b64df6223d1817ced3586e"
+    }
+  },
+  {
+    "comment_id": 6510,
+    "audit": {
+      "kind": "worker-evidence",
+      "audit_id": "c3b3fb29-06a1-480d-92c4-e1afce838629",
+      "delegation_id": "df9722d9da34466d",
+      "brain_session_id": "62837664bb0ba1c9",
+      "message": "INTENT: Read-only independent review of cfccd6129b9ce9ec5e5b448fcba7548245a30424..f0218c673ed478f854b64df6223d1817ced3586e. No product/test/doc changes, builds, commits, merges, or issue closure. Exact committed bytes authoritative because graph orientation is stale.",
+      "evidence": {
+        "base_sha": "cfccd6129b9ce9ec5e5b448fcba7548245a30424",
+        "graph_content_hash": "50a577266ca7a91f1c141e67015a18b7d137ed44d008563712451563e8a71ad7",
+        "head_sha": "f0218c673ed478f854b64df6223d1817ced3586e",
+        "issue_id": "bd-2on1",
+        "kind": "intent",
+        "planned_writes": []
+      }
+    }
+  },
+  {
+    "comment_id": 6511,
+    "audit": {
+      "kind": "read-aggregate",
+      "delegation_id": "df9722d9da34466d",
+      "entries": [
+        {
+          "tool_name": "knowledge_context_pack_2",
+          "ts": 1794714098
+        },
+        {
+          "tool_name": "list_issues",
+          "ts": 1794714105
+        },
+        {
+          "tool_name": "list_issues",
+          "ts": 1794714115
+        },
+        {
+          "tool_name": "get_issue",
+          "target_issue_id": "bd-2on1",
+          "ts": 1794714136
+        }
+      ]
+    }
+  },
+  {
+    "comment_id": 6513,
+    "audit": {
+      "kind": "worker-evidence",
+      "audit_id": "78cb8499-418d-48f6-95af-98e85992824c",
+      "delegation_id": "df9722d9da34466d",
+      "brain_session_id": "62837664bb0ba1c9",
+      "message": "COMPLETION: Read-only independent review complete for cfccd6129..f0218c673. No critical or important finding; one minor notebook parser-reuse documentation/requirements qualification (README.md:5; native notebook.rs:81,407,595). All five schemas, ownership/capacities/TRY, fresh IDs/path validation/native oracle and physical SQL cache/lineage/status/typed-Parquet reviewed. Current-main extraction preserved exactly apart from additive method/import. No source edits/builds/test reruns/commits/merge/status change. Fresh integrated-head runtime and notebook performance remain parent-owned; historical logs are explicitly not fresh validation.",
+      "evidence": {
+        "actual_repository_writes": [],
+        "base_sha": "cfccd6129b9ce9ec5e5b448fcba7548245a30424",
+        "builds_or_tests_run": [],
+        "exact_evidence_inspected": {
+          "documents": [
+            "docs/superpowers/specs/2026-11-15-duckdb-file-facts.md",
+            "docs/superpowers/plans/2026-11-15-duckdb-file-facts.md"
+          ],
+          "diff": "Complete 11-file committed diff cfccd6129b9ce9ec5e5b448fcba7548245a30424..f0218c673ed478f854b64df6223d1817ced3586e",
+          "native_sources": [
+            "crates/spur-graph/src/schema.rs",
+            "crates/spur-graph/src/macro_invocations.rs",
+            "crates/spur-graph/src/extract/mod.rs",
+            "crates/spur-graph/src/extract/tree_sitter.rs",
+            "crates/spur-graph/src/extract/notebook.rs",
+            "crates/spur-graph/src/extract/rust_macros.rs",
+            "crates/spur-graph/src/extract/openapi.rs"
+          ],
+          "artifact_root": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts",
+          "historical_logs_and_records": [
+            "core-review/review.json",
+            "core-review/bd-2pzh-final-green.log",
+            "sql-contract-review/review.json",
+            "sql-contract-review/native-oracle-tests.log",
+            "adapter-review/review.json",
+            "adapter-review/verification.json",
+            "adapter-review/commands.txt",
+            "adapter-review/sql-contract-green.log",
+            "adapter-review/existing-regressions.log",
+            "adapter-review/stress_nested.py",
+            "adapter-review/stress-nested.log",
+            "workflow-review/review.json",
+            "workflow-review/commands.txt",
+            "workflow-review/pipeline-green.log",
+            "workflow-review/artifact-sha256.json"
+          ],
+          "historical_recorded_results_not_rerun": {
+            "core_passed": 104,
+            "core_failed": 0,
+            "core_existing_ignored": 3,
+            "core_new_tests": 14,
+            "oracle_only": 2,
+            "adapter_native_contract": 12,
+            "existing_regressions": 19,
+            "pipeline": 6,
+            "supplemental_nested": 1,
+            "oversize_optional_definitions": 2049,
+            "oversize_scopes": 2050,
+            "null_valid_rows": 4098,
+            "row_isolation_rows": 2049
+          },
+          "historical_tested_extension_sha256": "517a0540913b1c3c8c397dbab78dbb798a57029ec91eaf4508eb0e0b5bc5698c",
+          "historical_tested_oracle_sha256": "b452c2670d76d5e1a687369e9ea8d51801d663987d82a8dcb0420d726e90f56f",
+          "pinned_external_api": {
+            "package": "duckdb-neo",
+            "revision": "0.20000.2",
+            "catalog_generation": 1486,
+            "symbols": [
+              "ScalarInitCallbacks",
+              "impl ScalarFunctionBuilder<T>::with_init",
+              "impl Vector<'_, List<T>>::set_child_size",
+              "impl Vector<'a, T>::resize_list_child",
+              "impl Vector<'a, T>::set_size",
+              "impl ListWriter<'w, T>",
+              "impl RowWriter for ListWriter<'w, T>",
+              "impl WritableNativeElement for String",
+              "impl ReaderStorage::physical_index_unchecked",
+              "impl VectorReader<'vec, T>::physical_index_unchecked"
+            ]
+          },
+          "graph_retrieval": "knowledge_context_pack_2 attempted first; low-confidence stale hash 50a577266ca7a91f1c141e67015a18b7d137ed44d008563712451563e8a71ad7 vs exact graph 6300a160f9713be350da3d5f56998c4ed693a21d8702d62930eb8b6f370af1f7. Exact git bytes used thereafter."
+        },
+        "findings": {
+          "critical": [],
+          "important": [],
+          "minor": [
+            {
+              "id": "R1",
+              "file": "crates/spur-graph-duckdb/README.md",
+              "line": 5,
+              "title": "Qualify parser/query reuse for notebook input",
+              "reasoning": "The new documentation broadly promises worker/language parser/query reuse. For .ipynb, BytesExtractor::extract_graph_facts immediately delegates to notebook::extract_notebook_file (tree_sitter.rs:418-420), which creates query_cache per notebook call (notebook.rs:81), uses it only for that notebook (notebook.rs:401-407), and parse_source constructs Parser::new for each cell/root parse (notebook.rs:595-603). The cached JupyterNotebook BytesExtractor therefore does not amortize notebook cell parser setup or query compilation across rows/chunks.",
+              "reproduction": "Source reasoning: evaluate two .ipynb rows containing a Python cell; each invocation reaches a fresh notebook query_cache and new per-cell parser, regardless of the worker HashMap entry. No runtime instrumentation or duplicate build performed.",
+              "impact": "No native parity, isolation or memory-safety defect; minor qualification of the spec's general reuse requirement/performance description.",
+              "recommendation": "Document the native notebook exception explicitly, or plan notebook parser/query reuse as separate work."
+            }
+          ]
+        },
+        "fresh_verification": {
+          "working_tree_clean_at_start_and_end": true,
+          "diff_check_exit": 0,
+          "all_11_changed_files_equal_committed_head": true,
+          "all_10_non_core_method_files_equal_approved_workflow_tip": "3bf9f03dac93a690960a276078acd1d950a673a5",
+          "core_main_preservation": "Removing only newly added extract_file_facts method and Component import yields byte-for-byte cfccd6129b9ce9ec5e5b448fcba7548245a30424:crates/spur-graph/src/extract/tree_sitter.rs.",
+          "recorded_artifact_hash_entries_authenticated": {
+            "core_review": 4,
+            "sql_contract_review": 16,
+            "adapter_review": 4,
+            "workflow_review": 30
+          },
+          "protected_macro_invocations": "Not in diff; no repository files edited.",
+          "code_file_facts_sha256": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+          "sql_example_sha256": "f9042afda72340172f464cfdb397aff6b0a88a18d5939dd107d92a0aad4ce48f"
+        },
+        "head_sha": "f0218c673ed478f854b64df6223d1817ced3586e",
+        "issue_id": "bd-2on1",
+        "kind": "completion",
+        "main_merged": false,
+        "parent_remaining": [
+          "Fresh remote checks for integrated HEAD",
+          "Fresh committed-tree host-native packaging and engine/oracle/regression checks",
+          "Frozen bounded DuckDB source Rust-notebook materialization, flattening, Parquet/cache reuse and controlled serial measurements"
+        ],
+        "planned_writes": [],
+        "requirements_assessment": {
+          "schema": "All five GraphFacts collections and current native fields accounted for: exact integer widths/values; f32 FLOAT; nullable target/import/receiver/scope/bind/change data; macro ranges, attributes, ownership, resolution candidate payloads; typed primitive/list/struct only. Exhaustive native enum labels, deterministic inactive-NULL tagged payload normalization, GitPath UTF8/base64 mapping reviewed.",
+          "core": "New method validates UTF8/nonempty relative logical paths lexically, rejects roots/parent components/backslash escapes/drive prefixes, normalizes current-directory components, uses fresh FactBuilder per invocation and native extract_graph_facts + resolve_pending_edges. Builder IDs, indexes, pending edges and macro evidence are per-file. No filesystem/discovery/Git/embedding operation is added to reachable pure extraction path. Existing optimized extraction is reused.",
+          "ownership_and_capacity": "Pinned external duckdb-neo 0.20000.2 confirms worker-local with_init lifetime, string arena ownership, reader constant/dictionary mapping, initialized set_size, checked LIST child sizes and append offsets. Adapter sizes top-level lists, invocation ranges, attribute lists/ranges, optional definition ranges by non-NULL definition count, and scope ranges before one row writer. Data-derived counts reviewed, range multiplication checked. No new unsafe block or escaped borrowed source.",
+          "try_null_errors": "NULL arguments short-circuit; successful empty inputs remain non-NULL; native errors map to SQL InvalidInput. All extraction/conversion precedes output mutation, so parsing/path failures do not leave partially appended output for TRY retry. Error retry may repeat parser work; exactly-once parser execution is not claimed.",
+          "oracle": "Independent example writes fixtures under fresh non-Git temporary roots and invokes pre-existing build_facts_for_paths; it never calls new extract_file_facts. Exact all-five-collection/list-order comparisons, field-set checks, Some/None evidence checks, deterministic serde enum/f32 transport normalization, languages, local macro candidates/attributes, one-file unresolved references, IDs, constants/selected vectors/multiple chunks, oversize child lists and typed Parquet inspected.",
+          "sql": "Physical staged-source DISTINCT and key-conflict/null checks; physical anti-join on (blob_oid,logical_path,extractor_sha) before scalar evaluation; typed result stored once, status projected later; separate five UNNEST tables preserve list ordinal and avoid Cartesian multiplication. Parent status retained for NULL/error/empty children. LEFT JOIN retains root/merge/duplicate/not_cached occurrence lineage. Typed Parquet snapshots readable without extension.",
+          "limits": "Whole-file AST work remains scalar native parsing; no SIMD-AST or speedup conclusion. Adapter holds a chunk of owned facts plus output vectors; input bytes do not bound AST/output memory and Rust allocations lack a new admission/backpressure policy. Native structured-data cutoffs, cell-relative notebook coordinates and physical-Rust-only macro evidence remain native semantics. Single writer; all statuses incl errors cached until explicit deletion; schema migration explicit; children/snapshots rebuild over full cache; Parquet publication non-atomic after database commit."
+        },
+        "review_type": "independent_read_only",
+        "status_mutated": false,
+        "verdict": "No critical or important finding; one minor documentation/requirements qualification. This review does not replace parent-owned fresh integrated-head validation or notebook demonstration, and does not approve/merge main."
+      }
+    }
+  },
+  {
+    "comment_id": 6515,
+    "audit": {
+      "kind": "completion",
+      "delegation_id": "df9722d9da34466d",
+      "completion_state": "awaiting_review",
+      "superseded": false,
+      "worker_branch": "spur/worker/v2/codex/62837664bb0ba1c9/df6d081a-13be-434b-a340-3b9aeddd1108",
+      "result_summary": "Reviewed `cfccd6129..f0218c673`: **no critical or important findings; one minor finding.**\n\n- **Minor \u2014 qualify notebook parser reuse.** [README.md:5](/Users/kevintruong/project/SpurCode/.spur/worktrees/df6d081a-13be-434b-a340-3b9aeddd1108/crates/spur-graph-duckdb/README.md:5) broadly promises worker-local parser/query reuse. Native notebook extraction creates a query cache per notebook and [new parsers per cell](/Users/kevintruong/project/SpurCode/.spur/worktrees/df6d081a-13be-434b-a340-3b9aeddd1108/c\u2026",
+      "artifact_uri": "spur://outcome/62837664bb0ba1c9/df9722d9da34466d/1",
+      "dispatched_base_oid": "f0218c673ed478f854b64df6223d1817ced3586e",
+      "estimated_cost_micros": 0
+    }
+  }
+]

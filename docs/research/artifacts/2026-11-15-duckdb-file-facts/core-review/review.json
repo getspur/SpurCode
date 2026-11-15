@@ -1,0 +1,51 @@
+{
+  "issue": "bd-2pzh",
+  "plan_id": "6cb6b82c-593e-44d7-a47e-c2724d24f0cc",
+  "task_id": "file_facts_core",
+  "verdict": "approve",
+  "findings": [],
+  "beads": {
+    "status": "in_progress",
+    "unresolved_signals": [],
+    "completion_audit_id": 6452,
+    "worker_evidence_audit_id": 6449
+  },
+  "scope": {
+    "files_changed": 2,
+    "implementation": "pure one-file source API; no SQL function/global resolver claim"
+  },
+  "verification": {
+    "remote_passed": 104,
+    "remote_failed": 0,
+    "remote_existing_ignored": 3,
+    "new_tests_passed": 14,
+    "missing_method_red_errors": 16,
+    "regression_red_verified": true,
+    "exact_patch_matches_branch": true,
+    "raw_and_normalized_commit_trees_equal": true,
+    "macro_files_unchanged_in_worker_branch": true
+  },
+  "raw_test_first_commit": "395abacee125b1743f0661a620d30e5764d695f0",
+  "raw_implementation_commit": "85cda727633848b4362a57170957560f04ec7a22",
+  "normalized_branch_tip": "b7a42599f13341f604c946c896ddf67373f6dc61",
+  "normalization_note": "Plan runtime squashed two worker commits; raw test-first and implementation objects/logs independently verified, final tree unchanged.",
+  "review_method": "Parent read entire patch and tests; verified audit, artifact hashes, actual branch scope/patch/tree and remote suite result lines. No duplicate test run.",
+  "artifacts": [
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/core-review/bd-2pzh-final-green.log",
+      "sha256": "46a07263483bcaac079a4cc6398cf7a17668362ad962b673f0c91a9e96faa82e"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/core-review/bd-2pzh-path-red.log",
+      "sha256": "0be4bfdf76ee1a71c6b118ae1ab0a972e2bc51a2818413ab1b398b17b63e5173"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/core-review/bd-2pzh-red-network.log",
+      "sha256": "67234b52557f40ad4bac45668810f4a31a3c4ab2cdf50e6b7674aa9b7dd6aa43"
+    },
+    {
+      "path": "docs/research/artifacts/2026-11-15-duckdb-file-facts/core-review/bd-2pzh.patch",
+      "sha256": "d6dbd57daf5215b313eb50d95cfeae0200e8eacef953516b40d0d63f7fa2e747"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+[
+  {
+    "step": "core-remote",
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-graph",
+      "--no-default-features",
+      "--lib",
+      "--test",
+      "extract_file_facts"
+    ],
+    "env": {
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_NOTEBOOK_REPO": "/Users/kevintruong/project/spur-notebook"
+    },
+    "exit": 101,
+    "wall_seconds": 112.70498637505807
+  },
+  {
+    "step": "baseline-embedding-remote",
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-graph",
+      "--no-default-features",
+      "--lib",
+      "text_embedding_service_requires_local_nomic_model_initialization"
+    ],
+    "cwd": "/private/tmp/spur-file-facts-baseline-20261115",
+    "env": {
+      "SPUR_NOTEBOOK_REPO": "/Users/kevintruong/project/spur-notebook",
+      "SPUR_NO_LOCAL_FALLBACK": "1"
+    },
+    "exit": 101,
+    "expected_exit": 101,
+    "wall_seconds": 156.34402287495323
+  },
+  {
+    "step": "new-api-remote",
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-graph",
+      "--no-default-features",
+      "--test",
+      "extract_file_facts"
+    ],
+    "cwd": "/private/tmp/spur-file-facts-integration-20261115",
+    "env": {
+      "SPUR_NOTEBOOK_REPO": "/Users/kevintruong/project/spur-notebook",
+      "SPUR_NO_LOCAL_FALLBACK": "1"
+    },
+    "exit": 0,
+    "expected_exit": 0,
+    "wall_seconds": 71.77704120893031
+  },
+  {
+    "step": "extension-remote",
+    "command": [
+      "scripts/spur-cargo",
+      "--workdir",
+      "crates/spur-graph-duckdb",
+      "check",
+      "--lib",
+      "--example",
+      "reference_file_facts",
+      "--locked"
+    ],
+    "cwd": "/private/tmp/spur-file-facts-integration-20261115",
+    "env": {
+      "SPUR_NOTEBOOK_REPO": "/Users/kevintruong/project/spur-notebook",
+      "SPUR_NO_LOCAL_FALLBACK": "1"
+    },
+    "exit": 0,
+    "expected_exit": 0,
+    "wall_seconds": 102.16160545893945
+  },
+  {
+    "step": "native-build",
+    "command": [
+      "scripts/spur-cargo",
+      "--workdir",
+      "crates/spur-graph-duckdb",
+      "build",
+      "--release",
+      "--lib",
+      "--example",
+      "reference_file_facts",
+      "--locked"
+    ],
+    "cwd": "/private/tmp/spur-file-facts-integration-20261115",
+    "env": {
+      "SPUR_NOTEBOOK_REPO": "/Users/kevintruong/project/spur-notebook",
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_REMOTE": "0",
+      "CARGO_TARGET_DIR": "/private/tmp/spur-graph-filefacts-native-target"
+    },
+    "exit": 0,
+    "expected_exit": 0,
+    "wall_seconds": 77.81674533314072
+  }
+]
