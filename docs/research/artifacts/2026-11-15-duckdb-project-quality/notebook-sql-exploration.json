@@ -1,0 +1,1105 @@
+[
+  {
+    "name": "schema_first",
+    "sql": "SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_name IN ('inventory','nodes','edges','spans') ORDER BY table_name,ordinal_position",
+    "rows": [
+      {
+        "table_name": "edges",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "edge_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "source_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "target_node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "relation",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "target_label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "import_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "receiver_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "scope_text",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "confidence",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "confidence_score",
+        "data_type": "FLOAT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "edge_kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "bind_method",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "evidence_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "directed",
+        "data_type": "BOOLEAN"
+      },
+      {
+        "table_name": "edges",
+        "column_name": "change_kind",
+        "data_type": "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "git_blob_oid",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "bytes",
+        "data_type": "BIGINT"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "suffix",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "area",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "status",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "inventory",
+        "column_name": "error",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "node_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "stable_key",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "label",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "kind",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "source_span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "nodes",
+        "column_name": "first_seen_run_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "logical_path",
+        "data_type": "VARCHAR"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "span_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "file_id",
+        "data_type": "UBIGINT"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "start_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "end_byte",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "start_line",
+        "data_type": "UINTEGER"
+      },
+      {
+        "table_name": "spans",
+        "column_name": "end_line",
+        "data_type": "UINTEGER"
+      }
+    ],
+    "wall_seconds": 0.07327508390881121
+  },
+  {
+    "name": "full_inventory_coverage",
+    "sql": "SELECT area,status,count(*) AS files,sum(bytes) AS tracked_bytes FROM inventory GROUP BY area,status ORDER BY area,status",
+    "rows": [
+      {
+        "area": "benchmarks",
+        "status": "extracted",
+        "files": 449,
+        "tracked_bytes": 1408472
+      },
+      {
+        "area": "benchmarks",
+        "status": "path_admission_failed",
+        "files": 1608,
+        "tracked_bytes": 896263
+      },
+      {
+        "area": "core",
+        "status": "extracted",
+        "files": 3410,
+        "tracked_bytes": 30719951
+      },
+      {
+        "area": "core",
+        "status": "path_admission_failed",
+        "files": 201,
+        "tracked_bytes": 239349
+      },
+      {
+        "area": "extensions",
+        "status": "extracted",
+        "files": 723,
+        "tracked_bytes": 22110811
+      },
+      {
+        "area": "extensions",
+        "status": "path_admission_failed",
+        "files": 547,
+        "tracked_bytes": 17650642
+      },
+      {
+        "area": "other",
+        "status": "extracted",
+        "files": 328,
+        "tracked_bytes": 2916958
+      },
+      {
+        "area": "other",
+        "status": "path_admission_failed",
+        "files": 1941,
+        "tracked_bytes": 141471848
+      },
+      {
+        "area": "other",
+        "status": "symlink",
+        "files": 2,
+        "tracked_bytes": 28
+      },
+      {
+        "area": "tests",
+        "status": "extracted",
+        "files": 538,
+        "tracked_bytes": 6306693
+      },
+      {
+        "area": "tests",
+        "status": "path_admission_failed",
+        "files": 7595,
+        "tracked_bytes": 41235405
+      },
+      {
+        "area": "third_party",
+        "status": "extracted",
+        "files": 602,
+        "tracked_bytes": 15644955
+      },
+      {
+        "area": "third_party",
+        "status": "path_admission_failed",
+        "files": 60,
+        "tracked_bytes": 255165
+      },
+      {
+        "area": "tools",
+        "status": "extracted",
+        "files": 116,
+        "tracked_bytes": 2187815
+      },
+      {
+        "area": "tools",
+        "status": "path_admission_failed",
+        "files": 73,
+        "tracked_bytes": 332556
+      }
+    ],
+    "wall_seconds": 0.03377629187889397
+  },
+  {
+    "name": "accepted_file_symbol_yield",
+    "sql": "WITH yield AS (SELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols FROM nodes GROUP BY logical_path) SELECT i.suffix,count(*) AS extracted_files,sum(coalesce(y.symbols,0)) AS symbols,count(*) FILTER(WHERE coalesce(y.symbols,0)=0) AS file_only FROM inventory i LEFT JOIN yield y ON i.path=y.logical_path WHERE i.status='extracted' GROUP BY i.suffix ORDER BY extracted_files DESC",
+    "rows": [
+      {
+        "suffix": ".cpp",
+        "extracted_files": 2527,
+        "symbols": 62422,
+        "file_only": 91
+      },
+      {
+        "suffix": ".hpp",
+        "extracted_files": 1903,
+        "symbols": 68027,
+        "file_only": 27
+      },
+      {
+        "suffix": ".sql",
+        "extracted_files": 609,
+        "symbols": 1509,
+        "file_only": 476
+      },
+      {
+        "suffix": ".h",
+        "extracted_files": 457,
+        "symbols": 18780,
+        "file_only": 26
+      },
+      {
+        "suffix": ".py",
+        "extracted_files": 202,
+        "symbols": 3355,
+        "file_only": 6
+      },
+      {
+        "suffix": ".json",
+        "extracted_files": 179,
+        "symbols": 1546,
+        "file_only": 74
+      },
+      {
+        "suffix": ".yaml",
+        "extracted_files": 80,
+        "symbols": 19666,
+        "file_only": 0
+      },
+      {
+        "suffix": ".c",
+        "extracted_files": 68,
+        "symbols": 1575,
+        "file_only": 3
+      },
+      {
+        "suffix": ".md",
+        "extracted_files": 53,
+        "symbols": 317,
+        "file_only": 6
+      },
+      {
+        "suffix": ".yml",
+        "extracted_files": 37,
+        "symbols": 2719,
+        "file_only": 0
+      },
+      {
+        "suffix": ".cc",
+        "extracted_files": 27,
+        "symbols": 1186,
+        "file_only": 0
+      },
+      {
+        "suffix": ".sh",
+        "extracted_files": 20,
+        "symbols": 19,
+        "file_only": 12
+      },
+      {
+        "suffix": ".toml",
+        "extracted_files": 2,
+        "symbols": 25,
+        "file_only": 0
+      },
+      {
+        "suffix": ".css",
+        "extracted_files": 1,
+        "symbols": 74,
+        "file_only": 0
+      },
+      {
+        "suffix": ".html",
+        "extracted_files": 1,
+        "symbols": 27,
+        "file_only": 0
+      }
+    ],
+    "wall_seconds": 0.02856020792387426
+  },
+  {
+    "name": "node_kinds_by_scope",
+    "sql": "SELECT i.area,n.kind,count(*) AS nodes FROM nodes n JOIN inventory i ON i.path=n.logical_path GROUP BY i.area,n.kind ORDER BY i.area,nodes DESC",
+    "rows": [
+      {
+        "area": "benchmarks",
+        "kind": "field",
+        "nodes": 598
+      },
+      {
+        "area": "benchmarks",
+        "kind": "file",
+        "nodes": 449
+      },
+      {
+        "area": "benchmarks",
+        "kind": "struct",
+        "nodes": 171
+      },
+      {
+        "area": "benchmarks",
+        "kind": "method",
+        "nodes": 159
+      },
+      {
+        "area": "benchmarks",
+        "kind": "type_alias",
+        "nodes": 145
+      },
+      {
+        "area": "benchmarks",
+        "kind": "function",
+        "nodes": 74
+      },
+      {
+        "area": "benchmarks",
+        "kind": "enum_variant",
+        "nodes": 40
+      },
+      {
+        "area": "benchmarks",
+        "kind": "section",
+        "nodes": 26
+      },
+      {
+        "area": "benchmarks",
+        "kind": "macro",
+        "nodes": 19
+      },
+      {
+        "area": "benchmarks",
+        "kind": "class",
+        "nodes": 9
+      },
+      {
+        "area": "benchmarks",
+        "kind": "enum",
+        "nodes": 8
+      },
+      {
+        "area": "benchmarks",
+        "kind": "module",
+        "nodes": 8
+      },
+      {
+        "area": "benchmarks",
+        "kind": "constant",
+        "nodes": 6
+      },
+      {
+        "area": "core",
+        "kind": "method",
+        "nodes": 50085
+      },
+      {
+        "area": "core",
+        "kind": "field",
+        "nodes": 15708
+      },
+      {
+        "area": "core",
+        "kind": "function",
+        "nodes": 7816
+      },
+      {
+        "area": "core",
+        "kind": "enum_variant",
+        "nodes": 4763
+      },
+      {
+        "area": "core",
+        "kind": "class",
+        "nodes": 4191
+      },
+      {
+        "area": "core",
+        "kind": "struct",
+        "nodes": 3497
+      },
+      {
+        "area": "core",
+        "kind": "module",
+        "nodes": 3450
+      },
+      {
+        "area": "core",
+        "kind": "file",
+        "nodes": 3410
+      },
+      {
+        "area": "core",
+        "kind": "macro",
+        "nodes": 1646
+      },
+      {
+        "area": "core",
+        "kind": "type_alias",
+        "nodes": 1276
+      },
+      {
+        "area": "core",
+        "kind": "enum",
+        "nodes": 1012
+      },
+      {
+        "area": "core",
+        "kind": "constant",
+        "nodes": 747
+      },
+      {
+        "area": "core",
+        "kind": "section",
+        "nodes": 82
+      },
+      {
+        "area": "extensions",
+        "kind": "method",
+        "nodes": 6515
+      },
+      {
+        "area": "extensions",
+        "kind": "field",
+        "nodes": 2556
+      },
+      {
+        "area": "extensions",
+        "kind": "macro",
+        "nodes": 2033
+      },
+      {
+        "area": "extensions",
+        "kind": "function",
+        "nodes": 1922
+      },
+      {
+        "area": "extensions",
+        "kind": "struct",
+        "nodes": 1265
+      },
+      {
+        "area": "extensions",
+        "kind": "file",
+        "nodes": 723
+      },
+      {
+        "area": "extensions",
+        "kind": "module",
+        "nodes": 474
+      },
+      {
+        "area": "extensions",
+        "kind": "class",
+        "nodes": 407
+      },
+      {
+        "area": "extensions",
+        "kind": "type_alias",
+        "nodes": 308
+      },
+      {
+        "area": "extensions",
+        "kind": "constant",
+        "nodes": 258
+      },
+      {
+        "area": "extensions",
+        "kind": "enum_variant",
+        "nodes": 214
+      },
+      {
+        "area": "extensions",
+        "kind": "section",
+        "nodes": 59
+      },
+      {
+        "area": "extensions",
+        "kind": "enum",
+        "nodes": 58
+      },
+      {
+        "area": "other",
+        "kind": "field",
+        "nodes": 15286
+      },
+      {
+        "area": "other",
+        "kind": "module",
+        "nodes": 7841
+      },
+      {
+        "area": "other",
+        "kind": "constant",
+        "nodes": 1011
+      },
+      {
+        "area": "other",
+        "kind": "function",
+        "nodes": 897
+      },
+      {
+        "area": "other",
+        "kind": "method",
+        "nodes": 468
+      },
+      {
+        "area": "other",
+        "kind": "file",
+        "nodes": 328
+      },
+      {
+        "area": "other",
+        "kind": "section",
+        "nodes": 202
+      },
+      {
+        "area": "other",
+        "kind": "class",
+        "nodes": 125
+      },
+      {
+        "area": "other",
+        "kind": "struct",
+        "nodes": 2
+      },
+      {
+        "area": "tests",
+        "kind": "method",
+        "nodes": 2003
+      },
+      {
+        "area": "tests",
+        "kind": "function",
+        "nodes": 1868
+      },
+      {
+        "area": "tests",
+        "kind": "field",
+        "nodes": 1490
+      },
+      {
+        "area": "tests",
+        "kind": "file",
+        "nodes": 538
+      },
+      {
+        "area": "tests",
+        "kind": "struct",
+        "nodes": 405
+      },
+      {
+        "area": "tests",
+        "kind": "constant",
+        "nodes": 275
+      },
+      {
+        "area": "tests",
+        "kind": "class",
+        "nodes": 242
+      },
+      {
+        "area": "tests",
+        "kind": "enum_variant",
+        "nodes": 142
+      },
+      {
+        "area": "tests",
+        "kind": "module",
+        "nodes": 129
+      },
+      {
+        "area": "tests",
+        "kind": "type_alias",
+        "nodes": 52
+      },
+      {
+        "area": "tests",
+        "kind": "macro",
+        "nodes": 48
+      },
+      {
+        "area": "tests",
+        "kind": "enum",
+        "nodes": 28
+      },
+      {
+        "area": "tests",
+        "kind": "section",
+        "nodes": 17
+      },
+      {
+        "area": "third_party",
+        "kind": "method",
+        "nodes": 7538
+      },
+      {
+        "area": "third_party",
+        "kind": "macro",
+        "nodes": 7399
+      },
+      {
+        "area": "third_party",
+        "kind": "function",
+        "nodes": 6898
+      },
+      {
+        "area": "third_party",
+        "kind": "field",
+        "nodes": 3569
+      },
+      {
+        "area": "third_party",
+        "kind": "enum_variant",
+        "nodes": 1697
+      },
+      {
+        "area": "third_party",
+        "kind": "type_alias",
+        "nodes": 1505
+      },
+      {
+        "area": "third_party",
+        "kind": "struct",
+        "nodes": 781
+      },
+      {
+        "area": "third_party",
+        "kind": "module",
+        "nodes": 671
+      },
+      {
+        "area": "third_party",
+        "kind": "file",
+        "nodes": 602
+      },
+      {
+        "area": "third_party",
+        "kind": "class",
+        "nodes": 501
+      },
+      {
+        "area": "third_party",
+        "kind": "constant",
+        "nodes": 249
+      },
+      {
+        "area": "third_party",
+        "kind": "enum",
+        "nodes": 132
+      },
+      {
+        "area": "third_party",
+        "kind": "section",
+        "nodes": 3
+      },
+      {
+        "area": "tools",
+        "kind": "method",
+        "nodes": 2931
+      },
+      {
+        "area": "tools",
+        "kind": "function",
+        "nodes": 1074
+      },
+      {
+        "area": "tools",
+        "kind": "enum_variant",
+        "nodes": 716
+      },
+      {
+        "area": "tools",
+        "kind": "field",
+        "nodes": 677
+      },
+      {
+        "area": "tools",
+        "kind": "class",
+        "nodes": 244
+      },
+      {
+        "area": "tools",
+        "kind": "struct",
+        "nodes": 151
+      },
+      {
+        "area": "tools",
+        "kind": "file",
+        "nodes": 116
+      },
+      {
+        "area": "tools",
+        "kind": "type_alias",
+        "nodes": 109
+      },
+      {
+        "area": "tools",
+        "kind": "macro",
+        "nodes": 84
+      },
+      {
+        "area": "tools",
+        "kind": "enum",
+        "nodes": 64
+      },
+      {
+        "area": "tools",
+        "kind": "constant",
+        "nodes": 63
+      },
+      {
+        "area": "tools",
+        "kind": "module",
+        "nodes": 43
+      },
+      {
+        "area": "tools",
+        "kind": "section",
+        "nodes": 12
+      }
+    ],
+    "wall_seconds": 0.02085141697898507
+  },
+  {
+    "name": "call_binding_by_scope",
+    "sql": "SELECT i.area,count(*) AS call_sites,count(*) FILTER(WHERE e.target_node_id IS NOT NULL) AS local_target_sites,count(*) FILTER(WHERE e.target_node_id IS NULL) AS unresolved_sites,round(100.0*count(*) FILTER(WHERE e.target_node_id IS NOT NULL)/count(*),2) AS local_target_pct FROM edges e JOIN inventory i ON i.path=e.logical_path WHERE e.relation='calls' GROUP BY i.area ORDER BY call_sites DESC",
+    "rows": [
+      {
+        "area": "core",
+        "call_sites": 145183,
+        "local_target_sites": 10130,
+        "unresolved_sites": 135053,
+        "local_target_pct": 6.98
+      },
+      {
+        "area": "third_party",
+        "call_sites": 31959,
+        "local_target_sites": 7184,
+        "unresolved_sites": 24775,
+        "local_target_pct": 22.48
+      },
+      {
+        "area": "tests",
+        "call_sites": 26902,
+        "local_target_sites": 1882,
+        "unresolved_sites": 25020,
+        "local_target_pct": 7.0
+      },
+      {
+        "area": "extensions",
+        "call_sites": 22910,
+        "local_target_sites": 1868,
+        "unresolved_sites": 21042,
+        "local_target_pct": 8.15
+      },
+      {
+        "area": "tools",
+        "call_sites": 10820,
+        "local_target_sites": 728,
+        "unresolved_sites": 10092,
+        "local_target_pct": 6.73
+      },
+      {
+        "area": "other",
+        "call_sites": 7612,
+        "local_target_sites": 1534,
+        "unresolved_sites": 6078,
+        "local_target_pct": 20.15
+      },
+      {
+        "area": "benchmarks",
+        "call_sites": 1663,
+        "local_target_sites": 50,
+        "unresolved_sites": 1613,
+        "local_target_pct": 3.01
+      }
+    ],
+    "wall_seconds": 0.0559582500718534
+  },
+  {
+    "name": "core_api_symbols_sample_limit_20",
+    "sql": "SELECT n.logical_path,n.node_id,n.stable_key,n.label,n.kind,p.start_line,p.end_line FROM nodes n JOIN spans p ON n.logical_path=p.logical_path AND n.source_span_id=p.span_id WHERE n.logical_path IN ('src/main/connection.cpp','src/main/client_context.cpp','src/parser/parser.cpp') AND (n.label LIKE '%Query%' OR n.label LIKE '%Prepare%') ORDER BY n.logical_path,p.start_line LIMIT 20",
+    "rows": [
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 8,
+        "stable_key": "3436b2f60866423b",
+        "label": "QueryBegin",
+        "kind": "method",
+        "start_line": 90,
+        "end_line": 95
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 9,
+        "stable_key": "3be9bd57652bd8da",
+        "label": "QueryEnd",
+        "kind": "method",
+        "start_line": 96,
+        "end_line": 101
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 14,
+        "stable_key": "4a8da11f237b516b",
+        "label": "OnFinalizePrepare",
+        "kind": "method",
+        "start_line": 126,
+        "end_line": 132
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 15,
+        "stable_key": "ddd8f590282a6334",
+        "label": "OnRebindPreparedStatement",
+        "kind": "method",
+        "start_line": 133,
+        "end_line": 136
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 36,
+        "stable_key": "669f180055c7586c",
+        "label": "ClientContext::CreatePreparedStatementInternal",
+        "kind": "method",
+        "start_line": 320,
+        "end_line": 376
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 37,
+        "stable_key": "ea01d8b025001acd",
+        "label": "ClientContext::CreatePreparedStatement",
+        "kind": "method",
+        "start_line": 378,
+        "end_line": 423
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 38,
+        "stable_key": "1051a9f81cb16deb",
+        "label": "ClientContext::GetQueryProgress",
+        "kind": "method",
+        "start_line": 425,
+        "end_line": 427
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 39,
+        "stable_key": "3bf26cdb27236c30",
+        "label": "ClientContext::GetLiveQueryMetrics",
+        "kind": "method",
+        "start_line": 429,
+        "end_line": 431
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 40,
+        "stable_key": "5459a15b9777bf56",
+        "label": "ClientContext::CheckIfPreparedStatementIsExecutable",
+        "kind": "method",
+        "start_line": 433,
+        "end_line": 454
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 41,
+        "stable_key": "5cc0db09d5ba1032",
+        "label": "ClientContext::ErrorInvalidatesQueryTransaction",
+        "kind": "method",
+        "start_line": 456,
+        "end_line": 463
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 46,
+        "stable_key": "ea1d3c431fe95220",
+        "label": "GetPreparedStatementInfo",
+        "kind": "function",
+        "start_line": 532,
+        "end_line": 548
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 47,
+        "stable_key": "99570008bfe247ed",
+        "label": "ClientContext::PrepareInternal",
+        "kind": "method",
+        "start_line": 550,
+        "end_line": 600
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 48,
+        "stable_key": "7b4be2a07d274554",
+        "label": "ClientContext::RemovePreparedStatement",
+        "kind": "method",
+        "start_line": 602,
+        "end_line": 605
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 49,
+        "stable_key": "f6cf68f7986825f0",
+        "label": "ClientContext::Prepare",
+        "kind": "method",
+        "start_line": 607,
+        "end_line": 621
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 51,
+        "stable_key": "fdf25c7787b4bf8e",
+        "label": "ClientContext::Prepare",
+        "kind": "method",
+        "start_line": 686,
+        "end_line": 709
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 58,
+        "stable_key": "b5a5db3f83362c88",
+        "label": "ClientContext::LogQueryInternal",
+        "kind": "method",
+        "start_line": 900,
+        "end_line": 919
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 59,
+        "stable_key": "2b4e714974cafbd3",
+        "label": "ClientContext::Query",
+        "kind": "method",
+        "start_line": 921,
+        "end_line": 938
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 60,
+        "stable_key": "fa19c460c63cf8c9",
+        "label": "ClientContext::Query",
+        "kind": "method",
+        "start_line": 940,
+        "end_line": 950
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 61,
+        "stable_key": "f988bcde37c40160",
+        "label": "ClientContext::QueryInternal",
+        "kind": "method",
+        "start_line": 952,
+        "end_line": 1053
+      },
+      {
+        "logical_path": "src/main/client_context.cpp",
+        "node_id": 62,
+        "stable_key": "8f41ad48b94f3960",
+        "label": "ClientContext::Query",
+        "kind": "method",
+        "start_line": 1055,
+        "end_line": 1057
+      }
+    ],
+    "wall_seconds": 0.043083917116746306
+  },
+  {
+    "name": "rejected_test_container_coverage",
+    "sql": "SELECT suffix,status,count(*) AS files FROM inventory WHERE suffix IN ('.test','.test_slow','.benchmark','.sql') GROUP BY suffix,status ORDER BY suffix,status",
+    "rows": [
+      {
+        "suffix": ".benchmark",
+        "status": "path_admission_failed",
+        "files": 1279
+      },
+      {
+        "suffix": ".sql",
+        "status": "extracted",
+        "files": 609
+      },
+      {
+        "suffix": ".test",
+        "status": "path_admission_failed",
+        "files": 6515
+      },
+      {
+        "suffix": ".test_slow",
+        "status": "path_admission_failed",
+        "files": 863
+      }
+    ],
+    "wall_seconds": 0.0024016250390559435
+  }
+]

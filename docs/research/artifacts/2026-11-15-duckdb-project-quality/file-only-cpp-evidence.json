@@ -1,0 +1,7 @@
+{
+  "sql": "WITH yield AS (\n SELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols\n FROM nodes GROUP BY logical_path)\nSELECT i.path,i.bytes,i.area,substring(s.source,1,6000) AS source_excerpt,\nlength(s.source) AS source_characters\nFROM inventory i JOIN sources s ON i.path=s.logical_path\nJOIN yield y ON y.logical_path=i.path\nWHERE i.status='extracted' AND i.suffix='.cpp' AND i.area='core' AND y.symbols=0\nORDER BY i.bytes DESC,i.path LIMIT 5",
+  "display_limit": 5,
+  "excerpt_characters_limit": 6000,
+  "rows": [],
+  "note": "File-only is a diagnostic, not automatic failure. Inspect source to distinguish symbol-free translation units from missed definitions."
+}

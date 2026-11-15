@@ -1,0 +1,18 @@
+{
+  "selector": "pkg:duckdb@b678afa97b529d5856731e115e31542a72d2d978::duckdb::Parser::ParseQuery",
+  "stable_symbol_id": "cb3e572b30a6722f",
+  "package_source": "git:github.com/duckdb/duckdb",
+  "package": "duckdb",
+  "revision": "b678afa97b529d5856731e115e31542a72d2d978",
+  "file_path": "src/parser/parser.cpp",
+  "byte_range": [
+    8789,
+    11423
+  ],
+  "line_range": [
+    256,
+    319
+  ],
+  "source": "void Parser::ParseQuery(const string &query_p) {\n\tconst string query = NormalizeSQLString(query_p);\n\tif (options.extensions) {\n\t\tbool has_strict_extension_error = false;\n\t\tErrorData last_strict_extension_error;\n\t\tfor (auto &ext : options.extensions->ParserExtensions()) {\n\t\t\tif (!ext.parser_override) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tif (options.parser_override_setting == AllowParserOverride::DEFAULT_OVERRIDE) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tauto result = ext.parser_override(ext.parser_info.get(), query, options);\n\t\t\tif (result.type == ParserExtensionResultType::PARSE_SUCCESSFUL) {\n\t\t\t\tstatements = std::move(result.statements);\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tif (options.parser_override_setting == AllowParserOverride::STRICT_OVERRIDE) {\n\t\t\t\tif (result.type == ParserExtensionResultType::DISPLAY_EXTENSION_ERROR) {\n\t\t\t\t\thas_strict_extension_error = true;\n\t\t\t\t\tlast_strict_extension_error = std::move(result.error);\n\t\t\t\t} else {\n\t\t\t\t\thas_strict_extension_error = false;\n\t\t\t\t}\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t}\n\t\tif (options.parser_override_setting == AllowParserOverride::STRICT_OVERRIDE && has_strict_extension_error) {\n\t\t\tlast_strict_extension_error.Throw();\n\t\t}\n\t}\n\t// PEG parser: tokenize, then peel one TopLevelStatement at a time. On per-statement PEG\n\t// failure, hand the rest of the query to parse_function extensions; the extension reports\n\t// how many bytes it consumed and we advance the token cursor past them.\n\tParserTokenizerBehavior behavior(query);\n\tauto &tokenizer = GetGrammar().GetTokenizer();\n\ttokenizer.TokenizeInput(behavior);\n\tTokenIterator token_iterator(behavior);\n\t// A statement's text starts where the previous one ended, so comments and whitespace before its\n\t// first token belong to it; the last statement runs to the end of the input.\n\tidx_t stmt_start = 0;\n\twhile (token_iterator.Current()) {\n\t\tauto stmt = ParseTopLevelStatement(token_iterator, query);\n\t\tauto stmt_end = token_iterator.ConsumedEndOffset();\n\t\tif (stmt) {\n\t\t\tstmt->stmt_location = QueryLocation(stmt_start, stmt_end - stmt_start);\n\t\t\tstatements.push_back(std::move(stmt));\n\t\t}\n\t\tstmt_start = stmt_end;\n\t}\n\n\tif (!statements.empty()) {\n\t\tauto &last_location = statements.back()->stmt_location;\n\t\tlast_location = QueryLocation(last_location.offset, query.size() - last_location.offset);\n\t\tfor (auto &statement : statements) {\n\t\t\tstatement->query = query.substr(statement->stmt_location.offset, statement->stmt_location.length);\n\t\t\tstatement->stmt_location = QueryLocation(0, statement->query.size());\n\t\t\tif (statement->type == StatementType::CREATE_STATEMENT) {\n\t\t\t\tauto &create = statement->Cast<CreateStatement>();\n\t\t\t\tcreate.info->sql = statement->query;\n\t\t\t}\n\t\t}\n\t}\n}",
+  "catalog_generation": 1519
+}

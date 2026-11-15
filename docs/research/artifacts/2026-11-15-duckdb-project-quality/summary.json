@@ -1,0 +1,238 @@
+{
+  "status": "experiment_completed",
+  "revision": "b678afa97b529d5856731e115e31542a72d2d978",
+  "ingestion": {
+    "status": "completed",
+    "repo": "/Users/kevintruong/project/duckdb",
+    "revision": "b678afa97b529d5856731e115e31542a72d2d978",
+    "counts": {
+      "inventory": 18193,
+      "sources": 6166,
+      "facts": 6166,
+      "nodes": 187413,
+      "edges": 593690,
+      "spans": 187413,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    "statuses": {
+      "extracted": 6166,
+      "path_admission_failed": 12025,
+      "symlink": 2
+    },
+    "timings_seconds": {
+      "inventory_and_path_admission": 29.52483941614628,
+      "git_blob_read_hash_utf8_and_staging": 12.513710791943595,
+      "extension_sql_extraction": 82.06805729190819,
+      "typed_collection_materialization": 6.085450750077143
+    },
+    "tracked_inventory_sha256": "1a2108b453f68fa5c88b86d4ac38ae523a29606408ed6b5d2fcdc29e67a021d8",
+    "extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "duckdb": "2.0.0",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "runner_sha256": "62105837e92a611dcb1db42a2bbdbdb17b37881a318a567fe15b619ef3bdc3e0",
+    "resources": {
+      "threads": 2,
+      "memory_limit": "1GB",
+      "reason": "Controlled experiment on memory-pressured 24GB host; disk spill enabled; not a production setting"
+    },
+    "host": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "database_bytes": 69480448,
+    "limitations": [
+      "Single pinned snapshot, no temporal-history claim",
+      "Path-admission rejects remain in denominator; exact errors sampled by suffix",
+      "TRY extraction failures retain rows and exact retry errors",
+      "Tree-sitter syntax-error/recovery counters are not exposed by this extension",
+      "File-local extraction does not supply repository-wide binding"
+    ]
+  },
+  "source_and_span_validation": {
+    "source_hash_validation": {
+      "sources": 6166,
+      "mismatching_sources": 0
+    },
+    "span_bounds": {
+      "spans": 187413,
+      "invalid_byte_bounds": 0,
+      "invalid_line_bounds": 0
+    }
+  },
+  "curated_ordinary_cpp_definitions": {
+    "passed": 17,
+    "total": 17,
+    "not_exhaustive_accuracy": true
+  },
+  "structural_nonzero_counters": 0,
+  "structural_counter_count": 21,
+  "call_binding": {
+    "calls": 247049,
+    "unique_local_targets": 23376,
+    "unresolved": 223673,
+    "local_target_percent": 9.46209051645625,
+    "by_area": [
+      {
+        "area": "core",
+        "call_sites": 145183,
+        "local_target_sites": 10130,
+        "unresolved_sites": 135053,
+        "local_target_pct": 6.98
+      },
+      {
+        "area": "third_party",
+        "call_sites": 31959,
+        "local_target_sites": 7184,
+        "unresolved_sites": 24775,
+        "local_target_pct": 22.48
+      },
+      {
+        "area": "tests",
+        "call_sites": 26902,
+        "local_target_sites": 1882,
+        "unresolved_sites": 25020,
+        "local_target_pct": 7.0
+      },
+      {
+        "area": "extensions",
+        "call_sites": 22910,
+        "local_target_sites": 1868,
+        "unresolved_sites": 21042,
+        "local_target_pct": 8.15
+      },
+      {
+        "area": "tools",
+        "call_sites": 10820,
+        "local_target_sites": 728,
+        "unresolved_sites": 10092,
+        "local_target_pct": 6.73
+      },
+      {
+        "area": "other",
+        "call_sites": 7612,
+        "local_target_sites": 1534,
+        "unresolved_sites": 6078,
+        "local_target_pct": 20.15
+      },
+      {
+        "area": "benchmarks",
+        "call_sites": 1663,
+        "local_target_sites": 50,
+        "unresolved_sites": 1613,
+        "local_target_pct": 3.01
+      }
+    ]
+  },
+  "cpp_test_macro_diagnostics": {
+    "admitted_cpp_test_files": 377,
+    "files_with_test_case_marker": 340,
+    "file_only_with_test_case_marker": 82,
+    "candidate_marker_lines_in_file_only_sources": 260
+  },
+  "accepted_file_symbol_yield": [
+    {
+      "suffix": ".cpp",
+      "extracted_files": 2527,
+      "symbols": 62422,
+      "file_only": 91
+    },
+    {
+      "suffix": ".hpp",
+      "extracted_files": 1903,
+      "symbols": 68027,
+      "file_only": 27
+    },
+    {
+      "suffix": ".sql",
+      "extracted_files": 609,
+      "symbols": 1509,
+      "file_only": 476
+    },
+    {
+      "suffix": ".h",
+      "extracted_files": 457,
+      "symbols": 18780,
+      "file_only": 26
+    },
+    {
+      "suffix": ".py",
+      "extracted_files": 202,
+      "symbols": 3355,
+      "file_only": 6
+    },
+    {
+      "suffix": ".json",
+      "extracted_files": 179,
+      "symbols": 1546,
+      "file_only": 74
+    },
+    {
+      "suffix": ".yaml",
+      "extracted_files": 80,
+      "symbols": 19666,
+      "file_only": 0
+    },
+    {
+      "suffix": ".c",
+      "extracted_files": 68,
+      "symbols": 1575,
+      "file_only": 3
+    },
+    {
+      "suffix": ".md",
+      "extracted_files": 53,
+      "symbols": 317,
+      "file_only": 6
+    },
+    {
+      "suffix": ".yml",
+      "extracted_files": 37,
+      "symbols": 2719,
+      "file_only": 0
+    },
+    {
+      "suffix": ".cc",
+      "extracted_files": 27,
+      "symbols": 1186,
+      "file_only": 0
+    },
+    {
+      "suffix": ".sh",
+      "extracted_files": 20,
+      "symbols": 19,
+      "file_only": 12
+    },
+    {
+      "suffix": ".toml",
+      "extracted_files": 2,
+      "symbols": 25,
+      "file_only": 0
+    },
+    {
+      "suffix": ".css",
+      "extracted_files": 1,
+      "symbols": 74,
+      "file_only": 0
+    },
+    {
+      "suffix": ".html",
+      "extracted_files": 1,
+      "symbols": 27,
+      "file_only": 0
+    }
+  ],
+  "tests": {
+    "passed": 82,
+    "failed": 0,
+    "skipped": 0,
+    "wall_seconds": 64.568
+  },
+  "limits": [
+    "Single immutable snapshot; no temporal-history claim",
+    "17 ordinary-definition controls do not measure exhaustive recall",
+    "82 file-only test-marker files are lexical diagnostics; three real-body misses manually verified",
+    "No repository-wide receiver binding",
+    "No parser error/recovery counters",
+    "Structural integrity does not prove semantic completeness"
+  ],
+  "database_sha256": "eb1e68df111281f19a8065193acad93989914a806fbcf1f9d9dfaab444194196",
+  "reader_commit": "cef30b875ea6d5b20d08f8ce40d7e300cb97a348"
+}

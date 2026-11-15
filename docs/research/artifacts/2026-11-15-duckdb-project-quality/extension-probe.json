@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "node_id": 1,
+      "stable_key": "0848b2599809a95e",
+      "label": "x.cpp",
+      "kind": "file",
+      "file_id": 1,
+      "source_span_id": 1,
+      "first_seen_run_id": 1
+    },
+    {
+      "node_id": 2,
+      "stable_key": "b6b9c7f74c7fc78c",
+      "label": "leaf",
+      "kind": "function",
+      "file_id": 1,
+      "source_span_id": 2,
+      "first_seen_run_id": 1
+    },
+    {
+      "node_id": 3,
+      "stable_key": "e052e1b878bf2a69",
+      "label": "entry",
+      "kind": "function",
+      "file_id": 1,
+      "source_span_id": 3,
+      "first_seen_run_id": 1
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": 1,
+      "source_node_id": 1,
+      "target_node_id": 2,
+      "relation": "contains",
+      "target_label": null,
+      "import_path": null,
+      "receiver_text": null,
+      "scope_text": null,
+      "confidence": "syntax_exact",
+      "confidence_score": 1.0,
+      "edge_kind": null,
+      "bind_method": null,
+      "evidence_id": 1,
+      "directed": true,
+      "change_kind": null
+    },
+    {
+      "edge_id": 2,
+      "source_node_id": 1,
+      "target_node_id": 3,
+      "relation": "contains",
+      "target_label": null,
+      "import_path": null,
+      "receiver_text": null,
+      "scope_text": null,
+      "confidence": "syntax_exact",
+      "confidence_score": 1.0,
+      "edge_kind": null,
+      "bind_method": null,
+      "evidence_id": 2,
+      "directed": true,
+      "change_kind": null
+    },
+    {
+      "edge_id": 3,
+      "source_node_id": 3,
+      "target_node_id": 2,
+      "relation": "calls",
+      "target_label": "leaf",
+      "import_path": null,
+      "receiver_text": null,
+      "scope_text": null,
+      "confidence": "syntax_exact",
+      "confidence_score": 1.0,
+      "edge_kind": null,
+      "bind_method": "singleton",
+      "evidence_id": 3,
+      "directed": true,
+      "change_kind": null
+    }
+  ],
+  "spans": [
+    {
+      "span_id": 1,
+      "file_id": 1,
+      "start_byte": 0,
+      "end_byte": 49,
+      "start_line": 1,
+      "end_line": 1
+    },
+    {
+      "span_id": 2,
+      "file_id": 1,
+      "start_byte": 0,
+      "end_byte": 21,
+      "start_line": 1,
+      "end_line": 1
+    },
+    {
+      "span_id": 3,
+      "file_id": 1,
+      "start_byte": 22,
+      "end_byte": 49,
+      "start_line": 1,
+      "end_line": 1
+    }
+  ],
+  "macro_invocations": [],
+  "macro_scopes": []
+}

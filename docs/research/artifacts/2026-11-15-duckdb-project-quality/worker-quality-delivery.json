@@ -1,0 +1,182 @@
+{
+  "command": [
+    "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+    "crates/spur-graph-duckdb/examples/project_quality.py",
+    "--database",
+    "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-project-quality/snapshot.duckdb",
+    "--out",
+    "/private/tmp/project-quality-native2-duckdb-audit-final.json"
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "database_sha256_before": "eb1e68df111281f19a8065193acad93989914a806fbcf1f9d9dfaab444194196",
+  "database_sha256_after": "eb1e68df111281f19a8065193acad93989914a806fbcf1f9d9dfaab444194196",
+  "database_bytes": 69480448,
+  "audit_sha256": "23fdbf2d443f670cef8f859c1b9b8828c61ebb2a85ea51eb319e4544efcf4a7b",
+  "reader_sha256": "94b50b05a9cffb3d0c53d1e11ae2199adc526f7f23e89028bf6c9c5f15b1fce3",
+  "tests_sha256": "93dd84e194966efd63e35efc0e85e4c4d63698dff1fc0ec551965bcc5fdb3250",
+  "parent_reported_revision": "b678afa97b529d5856731e115e31542a72d2d978",
+  "parent_ingest_receipt_sha256": "e56e6a91d07f7dde1b6d5212abfbf94cccbc62bf8a5ce5ccceb80df451e720f4",
+  "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+  "expected_extension_sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+  "commit": "cef30b875ea6d5b20d08f8ce40d7e300cb97a348",
+  "changed_files": [
+    "crates/spur-graph-duckdb/examples/project_quality.py",
+    "crates/spur-graph-duckdb/tests/test_project_quality.py"
+  ],
+  "worktree_clean": true,
+  "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/d2d78ee2-d06f-48c0-965f-a403e1ae6cbf",
+  "test_command": [
+    "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "crates/spur-graph-duckdb/tests",
+    "-p",
+    "test_project_quality.py",
+    "-v"
+  ],
+  "test_environment": {
+    "SPUR_GRAPH_EXTENSION": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "test_log": "/private/tmp/project-quality-native2-test.log",
+  "test_log_sha256": "0adb2b289026cfaefd74df90f157175cb562486cf42eefef285eb71752c4e76d",
+  "test_result": {
+    "tests": 12,
+    "result": "OK"
+  },
+  "audit_file": "/private/tmp/project-quality-native2-duckdb-audit-final.json",
+  "audit_query_count": 43,
+  "inventory": [
+    {
+      "inventory_rows": 18193,
+      "distinct_paths": 18193,
+      "bytes": 283376911,
+      "null_paths": 0,
+      "rows_with_errors": 12025
+    }
+  ],
+  "typed_counts": [
+    {
+      "collection": "edges",
+      "typed_rows": 593690,
+      "paths": 6032,
+      "raw_rows": 593690
+    },
+    {
+      "collection": "macro_invocations",
+      "typed_rows": 0,
+      "paths": 0,
+      "raw_rows": 0
+    },
+    {
+      "collection": "macro_scopes",
+      "typed_rows": 0,
+      "paths": 0,
+      "raw_rows": 0
+    },
+    {
+      "collection": "nodes",
+      "typed_rows": 187413,
+      "paths": 6166,
+      "raw_rows": 187413
+    },
+    {
+      "collection": "spans",
+      "typed_rows": 187413,
+      "paths": 6166,
+      "raw_rows": 187413
+    }
+  ],
+  "structural_counters": [
+    {
+      "invariant": "edges_raw_typed_count_mismatch_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "edges_with_nonnull_missing_target",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "edges_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "edges_without_source_node",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "facts_duplicate_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "facts_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "invalid_byte_spans",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "invalid_line_spans",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "inventory_duplicate_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "macro_invocations_raw_typed_count_mismatch_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "macro_invocations_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "macro_scopes_raw_typed_count_mismatch_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "macro_scopes_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "nodes_raw_typed_count_mismatch_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "nodes_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "nodes_without_span",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "sources_duplicate_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "sources_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "spans_raw_typed_count_mismatch_paths",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "spans_without_inventory",
+      "affected_rows": 0
+    },
+    {
+      "invariant": "spans_without_unique_source_bytes",
+      "affected_rows": 0
+    }
+  ],
+  "limitations": "structural audit only; no extraction, global binding, parser fallback, semantic accuracy or speed verdict",
+  "collaboration_record": "MCP orientation, catalog and issue lookup timed out; no task issue ID supplied, so no Beads comment or state change was made."
+}

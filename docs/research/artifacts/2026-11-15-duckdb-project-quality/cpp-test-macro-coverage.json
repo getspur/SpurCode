@@ -1,0 +1,151 @@
+{
+  "summary": {
+    "admitted_cpp_test_files": 377,
+    "files_with_test_case_marker": 340,
+    "file_only_with_test_case_marker": 82,
+    "candidate_marker_lines_in_file_only_sources": 260
+  },
+  "sample_limit": 20,
+  "samples": [
+    {
+      "path": "test/api/test_relation_api.cpp",
+      "bytes": 46928,
+      "symbols": 0,
+      "marker_lines": 26
+    },
+    {
+      "path": "test/api/capi/v1/test_capi_data_chunk.cpp",
+      "bytes": 36157,
+      "symbols": 0,
+      "marker_lines": 19
+    },
+    {
+      "path": "test/api/capi/v1/test_capi_values.cpp",
+      "bytes": 26023,
+      "symbols": 0,
+      "marker_lines": 13
+    },
+    {
+      "path": "test/common/test_string_util.cpp",
+      "bytes": 23577,
+      "symbols": 0,
+      "marker_lines": 15
+    },
+    {
+      "path": "test/sql/storage/test_buffer_manager.cpp",
+      "bytes": 13778,
+      "symbols": 0,
+      "marker_lines": 6
+    },
+    {
+      "path": "test/api/test_query_result_stream.cpp",
+      "bytes": 13011,
+      "symbols": 0,
+      "marker_lines": 16
+    },
+    {
+      "path": "test/api/test_query_profiler.cpp",
+      "bytes": 11720,
+      "symbols": 0,
+      "marker_lines": 10
+    },
+    {
+      "path": "test/api/test_get_table_names.cpp",
+      "bytes": 10794,
+      "symbols": 0,
+      "marker_lines": 1
+    },
+    {
+      "path": "test/api/test_results.cpp",
+      "bytes": 9520,
+      "symbols": 0,
+      "marker_lines": 9
+    },
+    {
+      "path": "test/api/test_table_info.cpp",
+      "bytes": 9151,
+      "symbols": 0,
+      "marker_lines": 6
+    },
+    {
+      "path": "test/optimizer/runtime_filter_schedule.cpp",
+      "bytes": 8539,
+      "symbols": 0,
+      "marker_lines": 3
+    },
+    {
+      "path": "test/common/test_parse_external_resource_source.cpp",
+      "bytes": 8207,
+      "symbols": 0,
+      "marker_lines": 5
+    },
+    {
+      "path": "test/sql/filter/bloom_filter_lookup.cpp",
+      "bytes": 7339,
+      "symbols": 0,
+      "marker_lines": 2
+    },
+    {
+      "path": "test/api/capi/v1/test_capi_pending.cpp",
+      "bytes": 7129,
+      "symbols": 0,
+      "marker_lines": 7
+    },
+    {
+      "path": "test/api/capi/v1/test_capi_streaming.cpp",
+      "bytes": 6807,
+      "symbols": 0,
+      "marker_lines": 5
+    },
+    {
+      "path": "test/api/test_tpcds_with_streaming.cpp",
+      "bytes": 6315,
+      "symbols": 0,
+      "marker_lines": 4
+    },
+    {
+      "path": "test/sql/udf_function/test_aggregate_udf.cpp",
+      "bytes": 6295,
+      "symbols": 0,
+      "marker_lines": 1
+    },
+    {
+      "path": "test/common/test_parse_expression.cpp",
+      "bytes": 6233,
+      "symbols": 0,
+      "marker_lines": 6
+    },
+    {
+      "path": "test/api/capi/v1/test_capi_table_description.cpp",
+      "bytes": 6185,
+      "symbols": 0,
+      "marker_lines": 3
+    },
+    {
+      "path": "test/api/capi/v1/test_capi_geometry.cpp",
+      "bytes": 5748,
+      "symbols": 0,
+      "marker_lines": 3
+    }
+  ],
+  "queries": [
+    {
+      "sql": "WITH yield AS (\n SELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols\n FROM nodes GROUP BY logical_path), marked AS (\n SELECT i.path,i.bytes,coalesce(y.symbols,0) AS symbols,\n array_length(regexp_extract_all(s.source,?)) AS marker_lines\n FROM inventory i JOIN sources s ON i.path=s.logical_path\n LEFT JOIN yield y ON i.path=y.logical_path\n WHERE i.area='tests' AND i.suffix='.cpp' AND i.status='extracted') SELECT count(*) AS admitted_cpp_test_files,\ncount(*) FILTER(WHERE marker_lines>0) AS files_with_test_case_marker,\ncount(*) FILTER(WHERE marker_lines>0 AND symbols=0) AS file_only_with_test_case_marker,\nsum(marker_lines) FILTER(WHERE symbols=0) AS candidate_marker_lines_in_file_only_sources\nFROM marked",
+      "params": [
+        "(?m)^[ \\t]*TEST_CASE[ \\t]*\\("
+      ]
+    },
+    {
+      "sql": "WITH yield AS (\n SELECT logical_path,count(*) FILTER(WHERE kind<>'file') AS symbols\n FROM nodes GROUP BY logical_path), marked AS (\n SELECT i.path,i.bytes,coalesce(y.symbols,0) AS symbols,\n array_length(regexp_extract_all(s.source,?)) AS marker_lines\n FROM inventory i JOIN sources s ON i.path=s.logical_path\n LEFT JOIN yield y ON i.path=y.logical_path\n WHERE i.area='tests' AND i.suffix='.cpp' AND i.status='extracted') SELECT * FROM marked WHERE marker_lines>0 AND symbols=0 ORDER BY bytes DESC,path LIMIT 20",
+      "params": [
+        "(?m)^[ \\t]*TEST_CASE[ \\t]*\\("
+      ]
+    }
+  ],
+  "manual_counterexamples": [
+    "test/api/test_relation_api.cpp",
+    "test/api/capi/v1/test_capi_data_chunk.cpp",
+    "test/api/capi/v1/test_capi_values.cpp"
+  ],
+  "interpretation": "Marker lines are lexical candidates, not parsed test definitions or a recall estimate. The three manually inspected counterexamples contain real TEST_CASE bodies yet yield only a file node. Preserve these misses separately from the 17 ordinary-definition controls."
+}

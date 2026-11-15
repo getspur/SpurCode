@@ -1,0 +1,77 @@
+{
+  "kind": "worker-evidence",
+  "audit_id": "62c55bcd-1196-4910-9c9c-af63e67ecbae",
+  "delegation_id": "473b3e3f44984589",
+  "brain_session_id": "62837664bb0ba1c9",
+  "message": "Completed read-only independent review of project_quality.py/tests at cef30b875. No critical or important findings. Minor interpretation limit: invalid_line_spans checks null/order/start>=1, not EOF line bounds; parent independent source/span checks remain necessary. Replayed all 43 stored SQL receipts against actual read-only native2 database: schemas (67 columns), count results, display rows/columns all match. Exact frozen inventory 18193 rows matches persisted path/blob/bytes/suffix; status/source/fact accounting checks all zero. Recorded 12 native2 tests are OK and source/test/log hashes match; no rerun needed. Empty diff, no build/ingestion/notebook changes/commits/merge/close. File-local binding, language admission, truncated distributions and zero macro collections are explicit limits, not semantic accuracy.",
+  "evidence": {
+    "actions_not_performed": [
+      "edits",
+      "builds",
+      "full_ingestion",
+      "notebook_writes",
+      "commits",
+      "merge",
+      "close"
+    ],
+    "canonical_issue_id": "bd-2u79",
+    "diff": "empty",
+    "evidence_files": [
+      "/private/tmp/project-quality-native2-duckdb-audit-final.json",
+      "/private/tmp/project-quality-native2-test.log",
+      "/private/tmp/project-quality-delivery.json",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-project-quality/ingest-result.json"
+    ],
+    "findings": {
+      "critical": [],
+      "important": [],
+      "minor": [
+        {
+          "file": "crates/spur-graph-duckdb/examples/project_quality.py",
+          "line": 233,
+          "description": "invalid_line_spans does not bound end_line against source EOF; zero is an ordering/null check, not full line fidelity; parent independent source/span verification covers this separately."
+        }
+      ]
+    },
+    "hashes": {
+      "reader": "94b50b05a9cffb3d0c53d1e11ae2199adc526f7f23e89028bf6c9c5f15b1fce3",
+      "tests": "93dd84e194966efd63e35efc0e85e4c4d63698dff1fc0ec551965bcc5fdb3250",
+      "database_before_and_after": "eb1e68df111281f19a8065193acad93989914a806fbcf1f9d9dfaab444194196",
+      "audit_json": "23fdbf2d443f670cef8f859c1b9b8828c61ebb2a85ea51eb319e4544efcf4a7b",
+      "native_engine": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3"
+    },
+    "kind": "completion",
+    "limits": [
+      "Binding is file-local; non-null unique target does not establish semantic correctness; null target_label evidence is never rebound.",
+      "Path admission is not semantic language coverage; unsupported .test files stay in inventory; 721 extracted file-only rows do not prove useful symbol extraction.",
+      "Macro raw/typed tables are genuinely typed but empty in C++/Python baseline and snapshot; nonempty macro behavior is only mutation-tested.",
+      "Truncated group displays retain group count, not omitted bucket values; final parent interpretation must use complete aggregates.",
+      "Parent owns independent source-byte/hash/curated C++ semantic validation and final notebook execution."
+    ],
+    "reviewed_commit": "cef30b875ea6d5b20d08f8ce40d7e300cb97a348",
+    "task_id": "quality_review",
+    "verification": {
+      "actual_schema_columns": 67,
+      "sql_receipts_replayed": 43,
+      "inventory_rows": 18193,
+      "exact_frozen_inventory_match": true,
+      "statuses": {
+        "extracted": 6166,
+        "path_admission_failed": 12025,
+        "symlink": 2
+      },
+      "call_partition": {
+        "calls": 247049,
+        "unique_local_target": 23376,
+        "null_target": 223673,
+        "dangling": 0,
+        "ambiguous": 0
+      },
+      "structural_invariants": 21,
+      "nonzero_structural_invariants": 0,
+      "stable_key_duplicate_groups": 0,
+      "recorded_focused_tests_passed": 12,
+      "test_rerun": false
+    }
+  }
+}

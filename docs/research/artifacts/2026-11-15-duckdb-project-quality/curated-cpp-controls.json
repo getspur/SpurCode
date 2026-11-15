@@ -1,0 +1,142 @@
+{
+  "revision": "b678afa97b529d5856731e115e31542a72d2d978",
+  "selection": "17 manually inspected constructors, overloaded Query/Prepare methods, transactions, Parser method and class. Frozen before reading full extraction results. Not an exhaustive parser oracle.",
+  "cases": [
+    {
+      "case_id": "src/main/connection.cpp:24",
+      "path": "src/main/connection.cpp",
+      "line": 24,
+      "name_tail": "Connection",
+      "source_signature": "Connection::Connection(DatabaseInstance &database) : Connection(database, ConnectionType::USER) {",
+      "category": "constructor"
+    },
+    {
+      "case_id": "src/main/connection.cpp:27",
+      "path": "src/main/connection.cpp",
+      "line": 27,
+      "name_tail": "Connection",
+      "source_signature": "Connection::Connection(DatabaseInstance &database, ConnectionType connection_type)",
+      "category": "constructor"
+    },
+    {
+      "case_id": "src/main/connection.cpp:35",
+      "path": "src/main/connection.cpp",
+      "line": 35,
+      "name_tail": "Connection",
+      "source_signature": "Connection::Connection(DuckDB &database) : Connection(*database.instance) {",
+      "category": "constructor"
+    },
+    {
+      "case_id": "src/main/connection.cpp:50",
+      "path": "src/main/connection.cpp",
+      "line": 50,
+      "name_tail": "Connection",
+      "source_signature": "Connection::Connection(Connection &&other) noexcept {",
+      "category": "move_constructor"
+    },
+    {
+      "case_id": "src/main/connection.cpp:98",
+      "path": "src/main/connection.cpp",
+      "line": 98,
+      "name_tail": "Query",
+      "source_signature": "unique_ptr<QueryResult> Connection::Query(const string &query) {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:102",
+      "path": "src/main/connection.cpp",
+      "line": 102,
+      "name_tail": "Query",
+      "source_signature": "unique_ptr<QueryResult> Connection::Query(unique_ptr<SQLStatement> statement, shared_ptr<ResultFormat> format) {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:106",
+      "path": "src/main/connection.cpp",
+      "line": 106,
+      "name_tail": "Query",
+      "source_signature": "unique_ptr<QueryResult> Connection::Query(const string &query, shared_ptr<ResultFormat> format) {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:159",
+      "path": "src/main/connection.cpp",
+      "line": 159,
+      "name_tail": "Prepare",
+      "source_signature": "unique_ptr<PreparedStatement> Connection::Prepare(const string &query) {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:163",
+      "path": "src/main/connection.cpp",
+      "line": 163,
+      "name_tail": "Prepare",
+      "source_signature": "unique_ptr<PreparedStatement> Connection::Prepare(unique_ptr<SQLStatement> statement) {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:339",
+      "path": "src/main/connection.cpp",
+      "line": 339,
+      "name_tail": "BeginTransaction",
+      "source_signature": "void Connection::BeginTransaction() {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:344",
+      "path": "src/main/connection.cpp",
+      "line": 344,
+      "name_tail": "Commit",
+      "source_signature": "void Connection::Commit() {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/connection.cpp:349",
+      "path": "src/main/connection.cpp",
+      "line": 349,
+      "name_tail": "Rollback",
+      "source_signature": "void Connection::Rollback() {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/main/database.cpp:412",
+      "path": "src/main/database.cpp",
+      "line": 412,
+      "name_tail": "DuckDB",
+      "source_signature": "DuckDB::DuckDB(const char *path, DBConfig *new_config) : instance(make_shared_ptr<DatabaseInstance>()) {",
+      "category": "constructor"
+    },
+    {
+      "case_id": "src/main/database.cpp:420",
+      "path": "src/main/database.cpp",
+      "line": 420,
+      "name_tail": "DuckDB",
+      "source_signature": "DuckDB::DuckDB(const string &path, DBConfig *config) : DuckDB(path.c_str(), config) {",
+      "category": "constructor"
+    },
+    {
+      "case_id": "src/main/database.cpp:433",
+      "path": "src/main/database.cpp",
+      "line": 433,
+      "name_tail": "DuckDB",
+      "source_signature": "DuckDB::DuckDB(DatabaseInstance &instance_p) : instance(instance_p.shared_from_this()) {",
+      "category": "constructor"
+    },
+    {
+      "case_id": "src/parser/parser.cpp:256",
+      "path": "src/parser/parser.cpp",
+      "line": 256,
+      "name_tail": "ParseQuery",
+      "source_signature": "void Parser::ParseQuery(const string &query_p) {",
+      "category": "method"
+    },
+    {
+      "case_id": "src/include/duckdb/main/connection.hpp:40",
+      "path": "src/include/duckdb/main/connection.hpp",
+      "line": 40,
+      "name_tail": "Connection",
+      "source_signature": "class Connection {",
+      "category": "class"
+    }
+  ]
+}

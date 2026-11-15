@@ -1,0 +1,12 @@
+[
+  [
+    "probe",
+    "logical_path",
+    "VARCHAR"
+  ],
+  [
+    "probe",
+    "value",
+    "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+  ]
+]
