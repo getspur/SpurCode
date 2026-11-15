@@ -81,7 +81,7 @@ class FileFactsPipelineTests(unittest.TestCase):
         names = ", ".join(f"'file_facts_{collection}'" for collection in CHILDREN)
         result = self.rows(f"""
             SELECT table_name, table_oid FROM duckdb_tables()
-            WHERE database_name = current_database() AND schema_name = 'main'
+            WHERE database_name = current_database() AND schema_name = current_schema()
               AND NOT temporary AND table_name IN ({names}) ORDER BY table_name
         """)
         self.assertEqual(len(result), len(CHILDREN))
@@ -112,10 +112,12 @@ class FileFactsPipelineTests(unittest.TestCase):
 
     def assert_key_relation(self, table, expected, temporary):
         # Assert absence as a contract failure before binding a missing relation.
+        # TEMP relations live in temp.main regardless of the active persistent schema.
+        location = ("database_name = 'temp' AND schema_name = 'main'" if temporary else
+                    "database_name = current_database() AND schema_name = current_schema()")
         metadata = self.rows(f"""
             SELECT temporary, column_count FROM duckdb_tables()
-            WHERE table_name = '{table}' AND schema_name = 'main'
-              AND (database_name = current_database() OR temporary)
+            WHERE table_name = '{table}' AND {location}
         """)
         self.assertEqual(metadata, [(temporary, 3)],
                          f"{table} must exist as a key-only {'TEMP' if temporary else 'durable'} table")
@@ -303,6 +305,74 @@ class FileFactsPipelineTests(unittest.TestCase):
             self.assertEqual(self.child_table_oids(), oids)
         self.assert_child_deltas()
         self.assert_child_state()
+
+    def use_facts_schema(self):
+        self.con.execute("""
+            CREATE SCHEMA facts;
+            SET schema = 'facts';
+            CREATE TABLE staged_sources AS SELECT * FROM main.staged_sources WHERE false;
+            CREATE TABLE source_lineage AS SELECT * FROM main.source_lineage WHERE false;
+        """)
+
+    def test_custom_schema_noop_reuses_child_tables_and_has_zero_deltas(self):
+        self.use_facts_schema()
+        self.seed_native_children()
+        before, oids = self.child_snapshot(), self.child_table_oids()
+        self.run_pipeline()
+        self.assert_full_children()
+        self.assertEqual(self.child_snapshot(), before)
+        self.assertEqual(self.child_table_oids(), oids)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_child_refresh_facts"), 0)
+        self.assert_child_deltas()
+        self.assert_child_state()
+
+    def test_custom_schema_missing_child_repairs_with_intact_main_layout(self):
+        self.seed_native_children()
+        main_oids = self.child_table_oids()
+        main_tables = ["staged_sources", "source_lineage", *(
+            f"file_facts_{suffix}" for suffix in ("cache", "child_state", "occurrences", *CHILDREN)
+        )]
+        main_rows = {table: self.rows(f"SELECT * FROM main.{table} ORDER BY ALL")
+                     for table in main_tables}
+        self.use_facts_schema()
+        self.stage([("facts-blob", "facts.rs", RUST, "v1")])
+        self.run_pipeline()
+        self.assert_full_children()
+        before, keys = self.child_snapshot(), self.cache_keys()
+        oids = self.child_table_oids()
+        # Both layouts exist on this connection; OIDs must identify facts, not main.
+        self.assertTrue(set(oids).isdisjoint(main_oids))
+        self.con.execute("DELETE FROM staged_sources")
+        for collection in CHILDREN:
+            with self.subTest(missing_collection=collection):
+                self.con.execute(f"DROP TABLE file_facts_{collection}")
+                with self.assertRaises(AssertionError):
+                    self.child_table_oids()
+                self.run_pipeline()
+                self.assert_full_children()
+                self.assertEqual(self.child_snapshot(), before)
+                self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+                self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
+                self.assert_child_deltas(refresh=keys)
+                self.assert_child_state()
+                self.assertEqual(
+                    {table: self.rows(f"SELECT * FROM main.{table} ORDER BY ALL")
+                     for table in main_tables}, main_rows)
+                self.assertEqual(self.rows("""
+                    SELECT table_name, table_oid FROM duckdb_tables()
+                    WHERE database_name = current_database() AND schema_name = 'main'
+                      AND NOT temporary AND starts_with(table_name, 'file_facts_')
+                      AND table_name NOT IN ('file_facts_cache', 'file_facts_child_state',
+                                             'file_facts_occurrences') ORDER BY table_name
+                """), main_oids)
+                repaired_oids = self.child_table_oids()
+                self.run_pipeline()
+                self.assertEqual(self.child_table_oids(), repaired_oids)
+                self.assert_full_children()
+                self.assert_child_deltas()
+                self.assert_child_state()
 
     def test_reopen_preserves_checkpoint_and_child_content(self):
         self.seed_native_children()
