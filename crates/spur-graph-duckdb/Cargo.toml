@@ -15,6 +15,7 @@ resolver = "2"
 crate-type = ["cdylib"]
 
 [dependencies]
+base64 = "0.22"
 duckdb-neo = { version = "=0.20000.2", features = ["build-extension"] }
 spur-graph = { path = "../spur-graph", default-features = false }
 
