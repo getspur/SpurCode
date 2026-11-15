@@ -117,7 +117,7 @@ The safe full-facts cache key is **`(blob_oid, logical_path, extractor_sha)`**.
 Identical bytes at different paths can produce different file facts; the
 temporal-symbol `(blob_oid, language)` identity below does not apply here. The
 script materializes an anti-join of missing keys, stores the typed extraction
-result once, then expands each of the five lists into a separate table. DuckDB
+result once, then incrementally maintains five separate child tables. DuckDB
 `TRY` can internally retry a failed vector row-by-row; there is no exactly-once
 native parser-call guarantee on error. `fact_ordinal` retains list position.
 For example, resolve edge sources without mixing file-local IDs:
@@ -136,6 +136,22 @@ non-NULL input whose `TRY` result is NULL; no error text is retained).
 commit/parent occurrences and NULL root parents. Absent cache keys get
 `not_cached`. Join occurrences to child tables on all three cache-key columns.
 Empty lists emit no children; never infer completion from child row counts.
+
+The workflow owns a durable key-only `file_facts_child_state` checkpoint. With
+current cache keys C, prior checkpoint S and newly extracted keys M, child refresh
+is `(C - S) UNION M` and removal is `S - C`. It deletes old children for both sets,
+then expands each list independently from materialized refresh facts. NULL,
+error and empty parents are checkpointed too. No-op runs retain physical child
+tables and expand zero facts; they compare keys without hashing wide payloads.
+TEMP tables `file_facts_child_refresh` and `file_facts_child_removed` expose the
+three-column key sets. Caller occurrences refresh on every run, including when
+both sets are empty.
+
+Missing checkpoint or any missing child table triggers one full cache-driven
+bootstrap/repair of all five children, without re-extracting cached inputs. This
+also upgrades the old full-rebuild layout. Drop `file_facts_child_state` to request
+an explicit rebuild. Cache payloads are immutable for their full key; direct edits
+to payloads, children or checkpoint rows are unsupported.
 
 Run this self-contained example after building/packaging above. It stages one
 synthetic blob and two parent occurrences, runs the exact SQL twice, and writes
@@ -174,13 +190,17 @@ print(output)
 PY
 ```
 
-Use one cache writer and no surrounding transaction. The database transaction
-commits before Parquet export; snapshots are replaced on rerun and the file set
-is not published atomically. Child tables cover all cached versions; occurrences
-reflect the current caller relation. All statuses, including failures/NULL, are
+Use one cache writer and no surrounding transaction. Cache, checkpoint, all five
+children and caller occurrences update in one database transaction before Parquet
+export. All seven full snapshots are still replaced on every run; their export
+cost remains and the file set is not published atomically. Children cover all
+cached versions; occurrences reflect the current caller relation. All statuses,
+including failures/NULL, are
 cached: delete the exact cache key explicitly to retry it, then rerun to rebuild
-children/snapshots. A changed extractor hash creates new keys. An incompatible
-output schema requires an explicit cache migration or fresh database.
+that key's children without duplicates. A deleted key absent from staging loses
+its children/checkpoint and appears as `not_cached` in caller occurrences.
+A changed extractor hash creates new keys. An incompatible output schema requires
+an explicit cache migration or fresh database.
 
 Run the focused real-engine workflow checks with the pinned test environment:
 
