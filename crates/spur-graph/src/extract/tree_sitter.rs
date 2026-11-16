@@ -8,11 +8,9 @@ use indicatif::ProgressBar;
 use thiserror::Error;
 use tree_sitter::{Node, Parser, Query, QueryCursor, StreamingIterator as _};
 
-use crate::discovery::discover_files;
 use crate::extract::languages::{
-    all_supported_extensions, emit_definitions, emit_definitions_with_parents, emit_edges,
-    emit_rust_dyn_trait_edges, extracted_symbols, language_registry, Language, LanguageConfig,
-    LanguageDescriptor,
+    emit_definitions, emit_definitions_with_parents, emit_edges, emit_rust_dyn_trait_edges,
+    extracted_symbols, language_registry, Language, LanguageConfig, LanguageDescriptor,
 };
 use crate::extract::markdown::extract_markdown_file;
 use crate::extract::mcp_tools::emit_mcp_tools;
@@ -3889,8 +3887,7 @@ pub(crate) fn compile_queries(
 fn discover_language_groups(
     root: &Path,
 ) -> anyhow::Result<(Vec<LanguageFileGroup>, BTreeMap<&'static str, usize>)> {
-    let allowed_extensions = all_supported_extensions();
-    let files = discover_files(root, &allowed_extensions)?;
+    let files = crate::store::build::discover_extractable_files(root)?;
     let mut groups: GroupAccumulator = BTreeMap::new();
     let descriptors: &[LanguageDescriptor] = language_registry();
     for path in files {

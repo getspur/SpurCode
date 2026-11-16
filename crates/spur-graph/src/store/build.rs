@@ -30,7 +30,7 @@ use crate::{
 };
 
 pub const SCHEMA_VERSION: &str = "spur-graph-schema-v13";
-pub const EXTRACTOR_VERSION: &str = "2026-11-03-rust-foreign-declarations-v1";
+pub const EXTRACTOR_VERSION: &str = "2026-11-17-git-source-domain-v1";
 /// Bump when resolver semantics change without query, extractor, or schema changes.
 pub const RESOLVER_VERSION: &str = "2026-11-02-rust-receiver-rebind-v2";
 
@@ -1030,6 +1030,17 @@ fn buckets_from_facts(
     Ok(buckets)
 }
 
+/// Full extraction and composition share one source domain. In Git worktrees,
+/// tracked files remain sources even when ignore rules match them; gitlinks
+/// remain manifest entries without becoming physical extraction inputs.
+pub(crate) fn discover_extractable_files(root: &Path) -> anyhow::Result<Vec<PathBuf>> {
+    Ok(discover_current_entries(root)?
+        .into_values()
+        .filter(|entry| entry.extractable)
+        .map(|entry| root.join(entry.path))
+        .collect())
+}
+
 fn discover_current_entries(root: &Path) -> anyhow::Result<BTreeMap<String, CurrentFileEntry>> {
     let allowed_extensions = all_supported_extensions();
     if let Some(ctx) = git::detect(root) {
@@ -1199,6 +1210,9 @@ fn discover_git_entries(
         if !is_supported_path(&tracked.path, allowed_extensions) {
             continue;
         }
+        if !tracked.is_gitlink && !is_physical_source_file(root, &tracked.path)? {
+            continue;
+        }
 
         let content_oid = if tracked.is_gitlink {
             tracked.content_oid
@@ -1222,6 +1236,9 @@ fn discover_git_entries(
 
     for dirty in dirty_paths.values() {
         if entries.contains_key(&dirty.path) {
+            continue;
+        }
+        if !is_physical_source_file(root, &dirty.path)? {
             continue;
         }
         let Some(content_oid) = read_worktree_content_oid(root, &dirty.path)? else {
@@ -1259,6 +1276,43 @@ fn discover_fs_entries(
         );
     }
     Ok(entries)
+}
+
+// Match the filesystem walker's no-symlink policy, including parent directories.
+// Git status can otherwise report a regular index path whose current target is
+// a symlink, or an untracked link whose bytes would be read outside the root.
+fn is_physical_source_file(root: &Path, path: &str) -> anyhow::Result<bool> {
+    let mut components = Path::new(path).components().peekable();
+    let mut candidate = root.to_path_buf();
+    while let Some(component) = components.next() {
+        if !matches!(component, std::path::Component::Normal(_)) {
+            return Ok(false);
+        }
+        candidate.push(component);
+        let metadata = match fs::symlink_metadata(&candidate) {
+            Ok(metadata) => metadata,
+            Err(error)
+                if matches!(error.kind(), ErrorKind::NotFound | ErrorKind::NotADirectory) =>
+            {
+                return Ok(false);
+            }
+            Err(error) => {
+                return Err(error).with_context(|| {
+                    format!("failed to inspect graph source `{}`", candidate.display())
+                });
+            }
+        };
+        if metadata.file_type().is_symlink() {
+            return Ok(false);
+        }
+        if components.peek().is_none() {
+            return Ok(metadata.is_file());
+        }
+        if !metadata.is_dir() {
+            return Ok(false);
+        }
+    }
+    Ok(false)
 }
 
 fn read_worktree_content_oid(root: &Path, path: &str) -> anyhow::Result<Option<String>> {
@@ -3473,9 +3527,18 @@ mod tests {
         symlink(root.join("lib.rs"), root.join("committed-link.rs")).unwrap();
         git(
             &root,
-            &["add", "lib.rs", "tracked.rs", "src/data.rs", "committed-link.rs"],
+            &[
+                "add",
+                "lib.rs",
+                "tracked.rs",
+                "src/data.rs",
+                "committed-link.rs",
+            ],
         );
-        git(&root, &["commit", "-m", "physical sources and tracked link"]);
+        git(
+            &root,
+            &["commit", "-m", "physical sources and tracked link"],
+        );
 
         fs::remove_file(root.join("tracked.rs")).unwrap();
         symlink(outside.path().join("outside.rs"), root.join("tracked.rs")).unwrap();
