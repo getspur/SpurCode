@@ -15,7 +15,7 @@
 
 **Tech Stack:** Rust 2021; duckdb-neo 0.20000.2; DuckDB 2.0.0; spur-graph native extraction; Python unittest; typed SQL/Parquet; GitHub Actions.
 
-**Routing:** claude-code matches module/test coordination. Plan engine handles dependencies and isolated worktrees. Root reviews actual diffs, Beads audits and exact verification evidence before approvals.
+**Routing:** Initial claude-code launches failed authentication before work. The atomic recovery rerouted all pre-scoped tasks to codex; its soft multi-file avoidance is overridden because interfaces/scopes are fixed and root retains architecture/review. Plan engine still owns dependencies and isolation.
 
 **TDD:** Catalog-first SOLVE PRE; actual behavior test RED before production code; minimal GREEN; relevant regression suite; SOLVE POST when PRE solved. Preserve exact commands, raw exits, source/artifact identities and separate test/fix commits where required. No guessed limits, skips, stale binaries or mock substitutes for real native acceptance.
 
@@ -47,10 +47,10 @@ R3 depends on R1/R2; R5 and R6 depend on R1/R2/R3/R4. Root notebook readback is 
 
 ### R1: Expose versioned typed extension metadata and deterministic extractor identity
 
-**Task ID:** `R1`  
-**Beads issue:** `bd-2bfl`  
-**Depends on:** none  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R1`
+**Beads issue:** `bd-2bfl`
+**Depends on:** none
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/src/lib.rs`
@@ -92,10 +92,10 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 
 ### R2: Add typed per-input diagnostic extraction without breaking the facts API
 
-**Task ID:** `R2`  
-**Beads issue:** `bd-32u0`  
-**Depends on:** none  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R2`
+**Beads issue:** `bd-32u0`
+**Depends on:** none
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/src/file_facts.rs`
@@ -133,10 +133,10 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 
 ### R3: Preserve cache diagnostics and publish coherent typed snapshots
 
-**Task ID:** `R3`  
-**Beads issue:** `bd-43c1`  
-**Depends on:** `R1`, `R2`  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R3`
+**Beads issue:** `bd-43c1`
+**Depends on:** `R1`, `R2`
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/examples/file_facts.sql`
@@ -175,10 +175,10 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 
 ### R4: Make native extension packaging reproducible and independently verifiable
 
-**Task ID:** `R4`  
-**Beads issue:** `bd-kcyb`  
-**Depends on:** `R1`  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R4`
+**Beads issue:** `bd-kcyb`
+**Depends on:** `R1`
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/scripts/package_extension.py`
@@ -217,15 +217,18 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 
 ### R5: Add explicit native release-check automation and CI for the standalone crate
 
-**Task ID:** `R5`  
-**Beads issue:** `bd-6h5s`  
-**Depends on:** `R1`, `R2`, `R3`, `R4`  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R5`
+**Beads issue:** `bd-6h5s`
+**Depends on:** `R1`, `R2`, `R3`, `R4`
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/scripts/check_release.py`
 - `crates/spur-graph-duckdb/tests/test_release_driver.py`
 - `.github/workflows/spur-graph-duckdb.yml`
+- `crates/spur-graph-duckdb/tests/test_project_quality.py`
+- `crates/spur-graph-duckdb/tests/test_retrieval_parity.py`
+- `crates/spur-graph-duckdb/examples/retrieval_parity.py`
 
 **Acceptance Criteria:**
 Create deterministic checked release entry point covering exact-version environment preflight, wrapper-based native build/example setup, package verification and complete existing/new unittest suite with all required native-oracle env values, clear raw exits and output receipts. Do not silently skip tests or adopt stale /tmp artifacts. Add dedicated workflow with relevant crate/core/query/wrapper path triggers; use project wrapper and declare actual configured targets. If hosted CI requires local native packaging, document that native-target reason. Check current official CI docs before assuming runner platform/architecture. Local checks need no external publication credentials and must not claim a configured CI platform was actually tested here. Driver tests must fail under missing/wrong runtime and propagate child failures. No unrelated release workflows or broad toolchain upgrades.
@@ -258,10 +261,10 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 
 ### R6: Implement headless app-consumer acceptance with snapshot and process recovery
 
-**Task ID:** `R6`  
-**Beads issue:** `bd-1u5s`  
-**Depends on:** `R1`, `R2`, `R3`, `R4`  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R6`
+**Beads issue:** `bd-1u5s`
+**Depends on:** `R1`, `R2`, `R3`, `R4`
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/examples/app_consumer.py`
@@ -299,10 +302,10 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 
 ### R7: Verify the exact release candidate and finish the supported SQL contract documentation
 
-**Task ID:** `R7`  
-**Beads issue:** `bd-3cc0`  
-**Depends on:** `R5`, `R6`  
-**Suggested Worker:** `claude-code`
+**Task ID:** `R7`
+**Beads issue:** `bd-3cc0`
+**Depends on:** `R5`, `R6`
+**Suggested Worker:** `codex` (authenticated recovery route)
 
 **Files:**
 - `crates/spur-graph-duckdb/README.md`
@@ -339,3 +342,11 @@ R7 is integrated verification/documentation work and does not manufacture a fail
 ## Completion gate
 
 Root verifies task Beads audits, diffs, artifacts and downstream overlay predictions; approves via review_task; integrates the fully approved plan; verifies the integrated release candidate; and closes the epic only then. Preserve unrelated dirty files. No public release/tag/upload/push in this authorization.
+
+## Root preflight addenda
+
+The engine canonical epic is `bd-2a0m`, plan `ec61197f-12d0-40d6-b0bc-ae67d63bd643`. Source task records were closed as superseded; canonical IDs are R1 `bd-4q5c`, R2 `bd-7ofn`, R3 `bd-3b3i`, R4 `bd-1u5k`, R5 `bd-1gyo`, R6 `bd-3ucn`, R7 `bd-3jt4`.
+
+R5 may update the two historical hash-pinned test files and their retrieval helper to accept explicitly verified current manifests while preserving historical defaults and tamper rejection. This is not permission to self-approve arbitrary binaries.
+
+The engine brain-snapshot base captures unrelated pre-existing user edits. Final working-repository integration must apply only reviewed task commits after that snapshot, excluding the snapshot commit itself, so those user edits remain uncommitted and untouched.
