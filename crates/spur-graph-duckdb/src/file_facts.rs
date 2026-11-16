@@ -2,11 +2,12 @@
 //! must retain the caller's input key. Resolution never sees another file.
 
 use std::collections::{hash_map::Entry, HashMap};
-use std::path::Path;
+use std::path::{Component, Path};
 
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use duckdb_neo::connection::Context;
 use duckdb_neo::data_chunk::{ChildrenMut, VectorCollection};
+use duckdb_neo::enums::FunctionProperty;
 use duckdb_neo::error::Error;
 use duckdb_neo::extension::Extension;
 use duckdb_neo::scalar::{ScalarCallbacks, ScalarFunctionBuilder, ScalarInitCallbacks};
@@ -15,7 +16,7 @@ use duckdb_neo::types::List;
 use duckdb_neo::vector::{RowWriter, Unknown, Vector};
 use duckdb_neo::{AsDuckDB, DuckDBType, Result};
 use spur_graph::extract::languages::Language;
-use spur_graph::extract::tree_sitter::BytesExtractor;
+use spur_graph::extract::tree_sitter::{BytesExtractor, ExtractError};
 use spur_graph::{
     ChangeKind, Confidence, GitPath, GraphEdge, GraphEdgeKind, GraphFacts, GraphNode,
     MacroAttributeEvidence, MacroDefinitionLocation, MacroExecutionPhase, MacroInvocationEvidence,
@@ -31,6 +32,56 @@ struct FileFacts {
     spans: List<Span>,
     macro_invocations: List<Invocation>,
     macro_scopes: List<ScopeEvidence>,
+}
+
+#[derive(AsDuckDB)]
+#[duckdb(writer)]
+struct FileFactsResult {
+    status: String,
+    error_code: Option<String>,
+    error_message: Option<String>,
+    facts: Option<FileFacts>,
+}
+
+impl FileFactsResult {
+    fn success(facts: GraphFacts, empty_source: bool) -> Self {
+        let status = if empty_source {
+            "empty_source"
+        } else if facts.nodes.is_empty()
+            && facts.edges.is_empty()
+            && facts.spans.is_empty()
+            && facts.macro_invocations.is_empty()
+            && facts.macro_scopes.is_empty()
+        {
+            "empty_facts"
+        } else {
+            "ok"
+        };
+        Self {
+            status: status.into(),
+            error_code: None,
+            error_message: None,
+            facts: Some(facts.into()),
+        }
+    }
+
+    fn null_input() -> Self {
+        Self {
+            status: "null_input".into(),
+            error_code: None,
+            error_message: None,
+            facts: None,
+        }
+    }
+
+    fn failure(code: &str, message: String) -> Self {
+        Self {
+            status: "extraction_error".into(),
+            error_code: Some(code.into()),
+            error_message: Some(message),
+            facts: None,
+        }
+    }
 }
 
 #[derive(AsDuckDB)]
@@ -450,7 +501,16 @@ fn reserve_ranges(fields: &mut ChildrenMut<'_>, indices: [usize; 2], rows: usize
 /// counts follow their parent; only list elements have independent counts.
 /// Indices below follow the typed structs above and each access checks its type.
 fn reserve_output(output: &mut Vector<'_, FileFacts>, rows: &[Option<FileFacts>]) -> Result<()> {
-    let facts = || rows.iter().flatten();
+    output.set_size(rows.len())?;
+    let mut fields = output.children_mut().ok_or_else(missing_children)?;
+    reserve_fact_children(&mut fields, rows.iter().flatten())
+}
+
+fn reserve_fact_children<'a>(
+    fields: &mut ChildrenMut<'_>,
+    rows: impl Iterator<Item = &'a FileFacts> + Clone,
+) -> Result<()> {
+    let facts = || rows.clone();
     let node_count = facts().map(|row| row.nodes.0.len()).sum();
     let edge_count = facts().map(|row| row.edges.0.len()).sum();
     let span_count = facts().map(|row| row.spans.0.len()).sum();
@@ -462,8 +522,6 @@ fn reserve_output(output: &mut Vector<'_, FileFacts>, rows: &[Option<FileFacts>]
         .filter(|row| row.resolution.definition.is_some())
         .count();
 
-    output.set_size(rows.len())?;
-    let mut fields = output.children_mut().ok_or_else(missing_children)?;
     fields
         .get_vector_at_mut::<List<Node>>(0)?
         .set_child_size(node_count)?;
@@ -516,6 +574,134 @@ fn reserve_output(output: &mut Vector<'_, FileFacts>, rows: &[Option<FileFacts>]
         )?;
     }
     Ok(())
+}
+
+/// The core currently erases path and notebook errors into Extraction(String).
+/// Match only its known input diagnostics, never arbitrary kernel errors. Keep
+/// the original Display text, including its truthful (sometimes terse) context.
+fn diagnostic_error(error: ExtractError) -> Result<FileFactsResult> {
+    let code = match &error {
+        ExtractError::InvalidUtf8(_) => "malformed_input",
+        ExtractError::Extraction(message) => match message.as_str() {
+            "logical path must be UTF-8"
+            | "logical path must be relative with no parent components"
+            | "logical path must name a file"
+            | "logical path must not have a drive prefix" => "invalid_path",
+            "parse .ipynb JSON" | "read .ipynb as UTF-8" => "malformed_input",
+            _ => {
+                return Err(Error::internal(format!(
+                    "spur_graph_file_facts_result: {error}"
+                )))
+            }
+        },
+        ExtractError::NoTree | ExtractError::Setup(_) => {
+            return Err(Error::internal(format!(
+                "spur_graph_file_facts_result: {error}"
+            )));
+        }
+    };
+    Ok(FileFactsResult::failure(code, error.to_string()))
+}
+
+// Language selection normally precedes native path validation. When no language
+// can be selected (e.g. an empty path), distinguish invalid path from unsupported
+// language using the same lexical rules. Recognized paths are validated by core.
+fn invalid_unrecognized_path(path: &str) -> bool {
+    let normalized = path.replace('\\', "/");
+    let mut parts = Path::new(&normalized)
+        .components()
+        .filter(|part| *part != Component::CurDir);
+    let Some(Component::Normal(first)) = parts.next() else {
+        return true;
+    };
+    let first = first.as_encoded_bytes();
+    (first.first().is_some_and(u8::is_ascii_alphabetic) && first.get(1) == Some(&b':'))
+        || parts.any(|part| !matches!(part, Component::Normal(_)))
+}
+
+struct ParseFileFactsResult;
+
+impl ScalarInitCallbacks for ParseFileFactsResult {
+    fn init(
+        &self,
+        context: &Context,
+        bind_data: Option<&Self::BindData>,
+    ) -> Result<Self::InitData> {
+        ParseFileFacts.init(context, bind_data)
+    }
+}
+
+impl ScalarCallbacks for ParseFileFactsResult {
+    type BindData = ();
+    type InitData = HashMap<Language, BytesExtractor>;
+
+    fn exec(
+        &self,
+        _context: &Context,
+        _bind_data: Option<&Self::BindData>,
+        init_data: Option<&mut Self::InitData>,
+        vectors: &mut VectorCollection,
+        output: Vector<'_, Unknown>,
+    ) -> Result<()> {
+        let parsers = init_data
+            .ok_or_else(|| Error::internal("spur_graph_file_facts_result: missing worker state"))?;
+        let paths = vectors.get_vector_at::<String>(0)?;
+        let sources = vectors.get_vector_at::<String>(1)?;
+        let paths = paths.reader()?;
+        let sources = sources.reader()?;
+        let mut rows = Vec::with_capacity(vectors.row_count()?);
+        for index in 0..vectors.row_count()? {
+            let (Some(path), Some(source)) = (paths.get(index)?, sources.get(index)?) else {
+                rows.push(FileFactsResult::null_input());
+                continue;
+            };
+            let Some(language) = Language::from_path(Path::new(path)) else {
+                let (code, message) = if invalid_unrecognized_path(path) {
+                    ("invalid_path", format!("logical path must name a relative file without parent components or drive prefix: {path}"))
+                } else {
+                    (
+                        "unsupported_language",
+                        format!("unsupported language for path: {path}"),
+                    )
+                };
+                rows.push(FileFactsResult::failure(code, message));
+                continue;
+            };
+            if let Entry::Vacant(entry) = parsers.entry(language) {
+                // Parser/query setup is an infrastructure failure, not a bad row.
+                entry.insert(BytesExtractor::for_language(language).map_err(|error| {
+                    Error::internal(format!("spur_graph_file_facts_result: {error}"))
+                })?);
+            }
+            let parser = parsers.get_mut(&language).ok_or_else(|| {
+                Error::internal("spur_graph_file_facts_result: parser state missing")
+            })?;
+            rows.push(
+                match parser.extract_file_facts(Path::new(path), source.as_bytes()) {
+                    Ok(facts) => FileFactsResult::success(facts, source.is_empty()),
+                    Err(error) => diagnostic_error(error)?,
+                },
+            );
+        }
+
+        // Reserve every nested list under the optional facts child before the
+        // first writer. All vector/allocator errors propagate through Result.
+        let mut output = output.cast::<FileFactsResult>()?;
+        output.set_size(rows.len())?;
+        {
+            let mut fields = output.children_mut().ok_or_else(missing_children)?;
+            let mut facts = fields.get_vector_at_mut::<FileFacts>(3)?;
+            reserve_fact_children(
+                &mut facts.children_mut().ok_or_else(missing_children)?,
+                rows.iter().filter_map(|row| row.facts.as_ref()),
+            )?;
+        }
+        let mut writer = output.row_writer()?;
+        for (index, row) in rows.iter().enumerate() {
+            writer.set(index, row)?;
+        }
+        Ok(())
+    }
 }
 
 struct ParseFileFacts;
@@ -603,5 +789,77 @@ pub(crate) fn register(extension: &Extension) -> Result<()> {
                 .description("Extract native one-file graph facts; join local IDs with the input key and retain path/blob/version lineage")
                 .add_category("spur_graph")),
         ParseFileFacts,
-    ).with_init().register(extension)
+    ).with_init().register(extension)?;
+
+    ScalarFunctionBuilder::new(
+        "spur_graph_file_facts_result",
+        SignatureBuilder::new()
+            .param(FunctionParameter::new::<String>("logical_path"))
+            .param(FunctionParameter::new::<String>("source"))
+            .return_type(FileFactsResult::logical_type(extension)?)
+            .documentation(FunctionDocumentationBuilder::new()
+                .description("Extract native one-file facts with status ok, empty_source, empty_facts, null_input or extraction_error. NULL inputs retain a diagnostic parent without error fields; recoverable input errors retain native diagnostic text and NULL facts. Facts and list order match spur_graph_file_facts; parser setup and infrastructure errors still fail the query.")
+                .add_example("Per-input diagnostics", "SELECT spur_graph_file_facts_result('input.rs', 'fn helper() {}');")
+                .add_category("spur_graph")),
+        ParseFileFactsResult,
+    ).set_property(FunctionProperty::HasSpecialNullHandling(true))
+        .with_init().register(extension)
+}
+
+#[cfg(test)]
+mod diagnostic_tests {
+    use super::*;
+    use spur_graph::extract::tree_sitter::ExtractError;
+
+    #[test]
+    fn empty_facts_retains_native_payload_and_empty_source_takes_precedence() {
+        for (empty_source, status) in [(false, "empty_facts"), (true, "empty_source")] {
+            let result = FileFactsResult::success(GraphFacts::empty(), empty_source);
+            assert_eq!(result.status, status);
+            assert!(result.error_code.is_none());
+            assert!(result.error_message.is_none());
+            let facts = result.facts.expect("empty native facts remain present");
+            assert!(facts.nodes.0.is_empty());
+            assert!(facts.edges.0.is_empty());
+            assert!(facts.spans.0.is_empty());
+            assert!(facts.macro_invocations.0.is_empty());
+            assert!(facts.macro_scopes.0.is_empty());
+        }
+    }
+
+    #[test]
+    fn native_row_errors_keep_diagnostics_and_internal_errors_propagate() {
+        let bytes = vec![0xff];
+        let utf8 = std::str::from_utf8(&bytes).unwrap_err();
+        for (error, code) in [
+            (ExtractError::InvalidUtf8(utf8), "malformed_input"),
+            (
+                ExtractError::Extraction("parse .ipynb JSON".into()),
+                "malformed_input",
+            ),
+            (
+                ExtractError::Extraction("logical path must name a file".into()),
+                "invalid_path",
+            ),
+        ] {
+            let message = error.to_string();
+            let result = diagnostic_error(error).expect("recoverable native error");
+            assert_eq!(result.status, "extraction_error");
+            assert_eq!(result.error_code.as_deref(), Some(code));
+            assert_eq!(result.error_message.as_deref(), Some(message.as_str()));
+            assert!(result.facts.is_none());
+        }
+        for error in [
+            ExtractError::NoTree,
+            ExtractError::Setup("query compiler failed".into()),
+            ExtractError::Extraction("set rust parser language".into()),
+            ExtractError::Extraction("unexpected kernel failure".into()),
+        ] {
+            let message = error.to_string();
+            let error = diagnostic_error(error)
+                .err()
+                .expect("internal failure must propagate");
+            assert!(error.to_string().contains(&message));
+        }
+    }
 }

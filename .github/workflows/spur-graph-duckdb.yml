@@ -1,0 +1,83 @@
+name: spur_graph native release check
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'crates/spur-graph-duckdb/**'
+      - 'crates/spur-graph/**'
+      - 'crates/spur-core/**'
+      - 'crates/spur-acp/**'
+      - 'crates/spur-mcp/**'
+      - 'crates/spur-solver/**'
+      - 'crates/spur-telemetry/**'
+      - 'crates/tree-sitter-mermaid/**'
+      - 'scripts/spur-cargo'
+      - 'scripts/sccache-worktree.sh'
+      - 'scripts/cloud-build/**'
+      - '.cargo/**'
+      - 'Cargo.toml'
+      - 'rust-toolchain.toml'
+      - '.github/workflows/spur-graph-duckdb.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'crates/spur-graph-duckdb/**'
+      - 'crates/spur-graph/**'
+      - 'crates/spur-core/**'
+      - 'crates/spur-acp/**'
+      - 'crates/spur-mcp/**'
+      - 'crates/spur-solver/**'
+      - 'crates/spur-telemetry/**'
+      - 'crates/tree-sitter-mermaid/**'
+      - 'scripts/spur-cargo'
+      - 'scripts/sccache-worktree.sh'
+      - 'scripts/cloud-build/**'
+      - '.cargo/**'
+      - 'Cargo.toml'
+      - 'rust-toolchain.toml'
+      - '.github/workflows/spur-graph-duckdb.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-release:
+    # Checked 2026-11-17: macos-15 is the standard arm64 runner.
+    # https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+    # Configured coverage only: aarch64-apple-darwin / DuckDB osx_arm64.
+    # Local native packaging is necessary to LOAD the library and run oracles
+    # on this target; the project's remote Linux VM produces another target.
+    # Host unit tests are explicit, never a fallback after remote failure.
+    runs-on: macos-15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SPUR_SCCACHE_S3: '0'
+      SPUR_NO_LOCAL_FALLBACK: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact native test runtime
+        run: python -m pip install -r crates/spur-graph-duckdb/requirements-test.txt
+      - name: Use the repository Rust pin
+        run: rustup show active-toolchain
+      - name: Check fresh native release through project wrapper
+        run: >-
+          python crates/spur-graph-duckdb/scripts/check_release.py
+          --out "$RUNNER_TEMP/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}"
+          --host-native --rust-tests-mode host --expect-platform osx_arm64
+      - name: Retain raw check receipts and native package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spur-graph-duckdb-osx-arm64-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.json
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.stdout
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.stderr
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/source-probe/*.json
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/source-probe-final/*.json
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.duckdb_extension*
+          if-no-files-found: error

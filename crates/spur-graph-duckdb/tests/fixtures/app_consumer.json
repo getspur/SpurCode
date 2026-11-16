@@ -1,0 +1,246 @@
+{
+  "format_version": 1,
+  "source_identity_scheme": "sha256:utf8-v1",
+  "snapshots": [
+    {
+      "snapshot_id": "base",
+      "repository": "frozen-fixture",
+      "commit_oid": "caller-base",
+      "parent_oid": null,
+      "sources": [
+        {
+          "logical_path": "src/local.rs",
+          "source": "use outside::Remote;\nfn helper() -> u32 { 1 }\nfn entry() { helper(); remote_call(); Remote::new(); unknown!(); }\n",
+          "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05"
+        },
+        {
+          "logical_path": "src/copy.rs",
+          "source": "use outside::Remote;\nfn helper() -> u32 { 1 }\nfn entry() { helper(); remote_call(); Remote::new(); unknown!(); }\n",
+          "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05"
+        },
+        {
+          "logical_path": "src/ambiguous.rs",
+          "source": "fn before_a() { shared(); }\nfn before_b() { shared(); }\n",
+          "blob_oid": "sha256:75480b06b28543f7064ada5fad9700a9fc47d25bef4611c857de7ab865dbe8e1"
+        },
+        {
+          "logical_path": "bad.unknown",
+          "source": "text",
+          "blob_oid": "sha256:982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1"
+        },
+        {
+          "logical_path": "../escape.rs",
+          "source": "fn escape() {}",
+          "blob_oid": "sha256:a50248616830f81775dbc7c479dce9c063eaaa2d2e72292501a913aced42e88d"
+        },
+        {
+          "logical_path": "bad.ipynb",
+          "source": "not JSON",
+          "blob_oid": "sha256:62b8125a6f6d924ec53345b5fcd58ca3ed3f5e7d51e2e146e5f1346508acce69"
+        },
+        {
+          "logical_path": "empty.rs",
+          "source": "",
+          "blob_oid": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "logical_path": "null.rs",
+          "source": null,
+          "blob_oid": "null-source"
+        }
+      ]
+    },
+    {
+      "snapshot_id": "head",
+      "repository": "frozen-fixture",
+      "commit_oid": "caller-head",
+      "parent_oid": "caller-base",
+      "sources": [
+        {
+          "logical_path": "src/local.rs",
+          "source": "use outside::Remote;\nfn helper() -> u32 { 2 }\nfn entry() { helper(); remote_call(); Remote::new(); unknown!(); }\n",
+          "blob_oid": "sha256:0cf9b507b854e682a57135773251bc6b75603d8338cde40103fd39b2d053b63b"
+        },
+        {
+          "logical_path": "src/copy.rs",
+          "source": "use outside::Remote;\nfn helper() -> u32 { 1 }\nfn entry() { helper(); remote_call(); Remote::new(); unknown!(); }\n",
+          "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05"
+        },
+        {
+          "logical_path": "src/ambiguous.rs",
+          "source": "fn after() { shared(); }\n",
+          "blob_oid": "sha256:c8b8702aa5317ae96d89f298a363818caa2f82a0a20ecdd7512f1c132b5aeab7"
+        },
+        {
+          "logical_path": "bad.unknown",
+          "source": "text",
+          "blob_oid": "sha256:982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1"
+        },
+        {
+          "logical_path": "../escape.rs",
+          "source": "fn escape() {}",
+          "blob_oid": "sha256:a50248616830f81775dbc7c479dce9c063eaaa2d2e72292501a913aced42e88d"
+        },
+        {
+          "logical_path": "bad.ipynb",
+          "source": "not JSON",
+          "blob_oid": "sha256:62b8125a6f6d924ec53345b5fcd58ca3ed3f5e7d51e2e146e5f1346508acce69"
+        },
+        {
+          "logical_path": "empty.rs",
+          "source": "",
+          "blob_oid": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "logical_path": "null.rs",
+          "source": null,
+          "blob_oid": "null-source"
+        }
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-0",
+      "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05",
+      "logical_path": "src/local.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-1",
+      "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05",
+      "logical_path": "src/copy.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-2",
+      "blob_oid": "sha256:75480b06b28543f7064ada5fad9700a9fc47d25bef4611c857de7ab865dbe8e1",
+      "logical_path": "src/ambiguous.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-3",
+      "blob_oid": "sha256:982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1",
+      "logical_path": "bad.unknown"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-4",
+      "blob_oid": "sha256:a50248616830f81775dbc7c479dce9c063eaaa2d2e72292501a913aced42e88d",
+      "logical_path": "../escape.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-5",
+      "blob_oid": "sha256:62b8125a6f6d924ec53345b5fcd58ca3ed3f5e7d51e2e146e5f1346508acce69",
+      "logical_path": "bad.ipynb"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-6",
+      "blob_oid": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logical_path": "empty.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-7",
+      "blob_oid": "null-source",
+      "logical_path": "null.rs"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-0",
+      "blob_oid": "sha256:0cf9b507b854e682a57135773251bc6b75603d8338cde40103fd39b2d053b63b",
+      "logical_path": "src/local.rs"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-1",
+      "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05",
+      "logical_path": "src/copy.rs"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-2",
+      "blob_oid": "sha256:c8b8702aa5317ae96d89f298a363818caa2f82a0a20ecdd7512f1c132b5aeab7",
+      "logical_path": "src/ambiguous.rs"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-3",
+      "blob_oid": "sha256:982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1",
+      "logical_path": "bad.unknown"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-4",
+      "blob_oid": "sha256:a50248616830f81775dbc7c479dce9c063eaaa2d2e72292501a913aced42e88d",
+      "logical_path": "../escape.rs"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-5",
+      "blob_oid": "sha256:62b8125a6f6d924ec53345b5fcd58ca3ed3f5e7d51e2e146e5f1346508acce69",
+      "logical_path": "bad.ipynb"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-6",
+      "blob_oid": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logical_path": "empty.rs"
+    },
+    {
+      "snapshot_id": "head",
+      "occurrence_id": "head-7",
+      "blob_oid": "null-source",
+      "logical_path": "null.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-repeat",
+      "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05",
+      "logical_path": "src/local.rs"
+    },
+    {
+      "snapshot_id": "base",
+      "occurrence_id": "base-repeat",
+      "blob_oid": "sha256:77bbd7a70fc0dcd3a1b9a82f78d86cbadcd2c6e6e2dacc66db9fc89ff8829f05",
+      "logical_path": "src/local.rs"
+    }
+  ],
+  "pairs": [
+    {
+      "pair_id": "local-edit",
+      "base_snapshot_id": "base",
+      "head_snapshot_id": "head",
+      "logical_path": "src/local.rs",
+      "old_path": "src/local.rs",
+      "kind": "M"
+    },
+    {
+      "pair_id": "copy-noop",
+      "base_snapshot_id": "base",
+      "head_snapshot_id": "head",
+      "logical_path": "src/copy.rs",
+      "old_path": "src/copy.rs",
+      "kind": "M"
+    },
+    {
+      "pair_id": "ambiguous-rename",
+      "base_snapshot_id": "base",
+      "head_snapshot_id": "head",
+      "logical_path": "src/ambiguous.rs",
+      "old_path": "src/ambiguous.rs",
+      "kind": "M"
+    },
+    {
+      "pair_id": "unavailable",
+      "base_snapshot_id": "base",
+      "head_snapshot_id": "head",
+      "logical_path": "bad.unknown",
+      "old_path": "bad.unknown",
+      "kind": "M"
+    }
+  ]
+}

@@ -7,7 +7,12 @@
 -- loaded extractor artifact/version. Keep repository/commit/parent occurrences
 -- in source_lineage. Only stage versions implemented by the loaded artifact.
 -- Run on a connection without an active transaction, with one cache writer.
--- Parquet destinations are relative to the caller's chosen output directory.
+-- Legacy COPY destinations are relative to the caller's output directory.
+-- Supported coherent app consumption: close the writer, then run
+--   python publish_snapshot.py --database facts.duckdb --output snapshots \
+--       --version UNIQUE_VERSION --schema main --source-label commit=CALLER_LABEL
+-- Read current.json once and use only its versioned paths. Labels are supplied,
+-- not independently certified. See publish_snapshot.py for failure semantics.
 
 BEGIN TRANSACTION;
 
@@ -31,9 +36,15 @@ ELSE true END;
 -- Bind the full native type without executing extraction on any input row.
 CREATE TABLE IF NOT EXISTS file_facts_cache AS
 SELECT blob_oid, logical_path, extractor_sha,
-       TRY(spur_graph_file_facts(logical_path, source)) AS facts,
+       (spur_graph_file_facts_result(logical_path, source)).facts AS facts,
        NULL::VARCHAR AS status
 FROM file_facts_sources WHERE false;
+
+-- Explicit additive migration from the prior five-column cache. Existing rows
+-- retain facts/status and receive NULL diagnostic columns: old details are
+-- unknown, never inferred or reconstructed by reparsing immutable cache hits.
+ALTER TABLE file_facts_cache ADD COLUMN IF NOT EXISTS error_code VARCHAR;
+ALTER TABLE file_facts_cache ADD COLUMN IF NOT EXISTS error_message VARCHAR;
 
 CREATE UNIQUE INDEX IF NOT EXISTS file_facts_cache_key
 ON file_facts_cache (blob_oid, logical_path, extractor_sha);
@@ -44,24 +55,17 @@ CREATE OR REPLACE TEMP TABLE file_facts_missing AS
 SELECT s.* FROM file_facts_sources s
 ANTI JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);
 
--- One stored result per missing key. Later status/child projections read this
--- table or the durable cache; none invokes the scalar again. DuckDB TRY may
--- internally retry a failed vector row-by-row to isolate errors.
+-- One diagnostic result per missing key; internal/setup failures remain SQL
+-- errors and abort this transaction. All later projections read stored results.
 CREATE OR REPLACE TEMP TABLE file_facts_extracted AS
 SELECT blob_oid, logical_path, extractor_sha,
-       source IS NULL AS input_is_null, source = '' AS source_is_empty,
-       TRY(spur_graph_file_facts(logical_path, source)) AS facts
+       spur_graph_file_facts_result(logical_path, source) AS result
 FROM file_facts_missing;
 
 INSERT INTO file_facts_cache
-SELECT blob_oid, logical_path, extractor_sha, facts,
-       CASE WHEN input_is_null THEN 'null_input'
-            WHEN facts IS NULL THEN 'extraction_error'
-            WHEN source_is_empty THEN 'empty_source'
-            WHEN len(facts.nodes) + len(facts.edges) + len(facts.spans)
-                 + len(facts.macro_invocations) + len(facts.macro_scopes) = 0
-                 THEN 'empty_facts'
-            ELSE 'ok' END AS status
+    (blob_oid, logical_path, extractor_sha, facts, status, error_code, error_message)
+SELECT blob_oid, logical_path, extractor_sha, result.facts, result.status,
+       result.error_code, result.error_message
 FROM file_facts_extracted;
 
 -- Capture layout completeness BEFORE creating missing tables. Legacy caches,
@@ -205,9 +209,10 @@ LEFT JOIN file_facts_cache c USING (blob_oid, logical_path, extractor_sha);
 
 COMMIT;
 
--- Typed snapshots of the durable cache, its children and current caller
--- occurrences. Reruns replace these files. Export after committing the database;
--- this file set is not an atomic multi-file publication/checkpoint protocol.
+-- LEGACY NON-ATOMIC direct exports, retained for existing SQL callers. Reruns
+-- replace these files after the database commit; failure can leave a mixed set.
+-- These files are NOT the supported coherent app consumption path. Use
+-- publish_snapshot.py and its atomically advanced current.json instead.
 COPY file_facts_cache TO 'file-facts-cache.parquet' (FORMAT PARQUET);
 COPY file_facts_nodes TO 'file-facts-nodes.parquet' (FORMAT PARQUET);
 COPY file_facts_edges TO 'file-facts-edges.parquet' (FORMAT PARQUET);

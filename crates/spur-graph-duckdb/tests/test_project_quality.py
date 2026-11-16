@@ -63,7 +63,15 @@ class ProjectQualityTests(unittest.TestCase):
         if not extension:
             raise AssertionError("set SPUR_GRAPH_EXTENSION to the approved real extension")
         extension = Path(extension).resolve(strict=True)
-        if digest(extension) != EXPECTED_EXTENSION_SHA256:
+        expected_sha = EXPECTED_EXTENSION_SHA256
+        if any(os.environ.get(key) for key in (
+                "SPUR_RELEASE_MANIFEST", "SPUR_RELEASE_MANIFEST_SHA256", "SPUR_RELEASE_SOURCE_IDENTITY")):
+            scripts = str(MODULE_PATH.parents[1] / "scripts")
+            if scripts not in sys.path:
+                sys.path.insert(0, scripts)
+            from check_release import approved_extension_sha, release_trust
+            expected_sha = approved_extension_sha(extension, **release_trust())
+        if digest(extension) != expected_sha:
             raise AssertionError("unapproved extension SHA256")
         cls.workspace = tempfile.TemporaryDirectory(prefix="project-quality-engine-")
         cls.addClassCleanup(cls.workspace.cleanup)

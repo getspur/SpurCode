@@ -9,6 +9,7 @@
 //! chunks. The function performs no filesystem, Git, embedding or history work.
 
 mod file_facts;
+mod metadata;
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -376,6 +377,7 @@ impl ScalarCallbacks for ParseSymbols {
 
 #[duckdb_entrypoint_c_api_v2(extension_name = "spur_graph", api_version = "2.0.0")]
 pub fn entrypoint(extension: &Extension) -> Result<()> {
+    metadata::register(extension)?;
     file_facts::register(extension)?;
     ScalarFunctionBuilder::new(
         "spur_graph_symbols",

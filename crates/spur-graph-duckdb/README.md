@@ -1,328 +1,158 @@
 # SPUR graph DuckDB extension
 
-This native prototype exposes SPUR's symbol extractor and native single-file
-graph facts through DuckDB's V2 C API. DuckDB supplies source vectors; the
-extension reuses parser/query state per worker and language for ordinary source
-code, and writes typed primitive, list and struct vectors.
+`spur_graph` exposes SPUR's native source extraction and symbol-change matcher
+as five typed SQL functions. The release candidate targets **native DuckDB
+exactly 2.0.0**, `C_STRUCT_UNSTABLE`, with single-file resolution. It preserves
+unresolved references and evidence; it does not provide compiler semantics or
+repository-wide resolution.
 
-The adapter follows `duckdb/extension-template-rs` at
-`a679601f8e133db7546777c6637bc7a6c2d2780e` and pins `duckdb-neo = 0.20000.2`.
-It is a standalone Cargo workspace so the application's DuckDB 1.4.4 client
-and lockfile remain independent.
+The standalone Cargo workspace pins `duckdb-neo = 0.20000.2`, independently of
+the application's DuckDB client. See the [v1 release contract](docs/release-contract.md)
+for the complete schema, identity, diagnostics, cache/publication rules and
+dated acceptance evidence.
 
-## Build, package and test
+## Build and check a fresh candidate
 
-Run these commands from the SpurCode repository root. This example is for a
-host-native macOS build; Linux uses `libspur_graph_duckdb.so`. Package on the
-same platform as the native library: the packager reads the runtime's platform.
-
-```sh
-python3 -m venv /tmp/spur-graph-duckdb-test
-/tmp/spur-graph-duckdb-test/bin/python -m pip install -r crates/spur-graph-duckdb/requirements-test.txt
-
-SPUR_REMOTE=0 CARGO_TARGET_DIR=/tmp/spur-graph-duckdb-target scripts/spur-cargo --workdir crates/spur-graph-duckdb build --release --lib --examples --locked
-
-/tmp/spur-graph-duckdb-test/bin/python crates/spur-graph-duckdb/scripts/package_extension.py \
-  --library /tmp/spur-graph-duckdb-target/release/libspur_graph_duckdb.dylib \
-  --out /tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension
-
-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
-  SPUR_HISTORY_CATALOG=/tmp/spur-graph-duckdb-target/release/examples/history_catalog \
-  SPUR_TEMPORAL_EXAMPLES_DIR=/tmp/spur-graph-duckdb-target/release/examples \
-  SPUR_FILE_FACTS_ORACLE=/tmp/spur-graph-duckdb-target/release/examples/reference_file_facts \
-  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -v
-```
-
-Local compilation here produces the native artifact for the local test host.
-The footer is `C_STRUCT_UNSTABLE` and targets **exactly DuckDB 2.0.0**. It does
-not promise compatibility with 1.x or later 2.x versions. Loading a local
-unsigned artifact requires `allow_unsigned_extensions` in the test connection
-or `duckdb -unsigned` in the CLI.
-
-## SQL
-
-```sql
-LOAD '/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension';
-
-SELECT unnest(
-  spur_graph_symbols('input.rs', 'pub fn alpha() -> i32 { 1 }'),
-  recursive := true
-);
-
-CREATE TABLE parsed_blobs AS
-SELECT blob_oid, path, spur_graph_symbols(path, source) AS symbols
-FROM missing_blobs;
-
-CREATE TABLE symbol_facts AS
-SELECT blob_oid, path, unnest(symbols, recursive := true)
-FROM parsed_blobs;
-```
-
-Retain the `parsed_blobs` parent rows when recording completion: a valid parse
-can return an empty symbol list. NULL input returns NULL; unsupported paths
-produce a SQL error. Source must be valid UTF-8 VARCHAR. The language registry,
-symbol kinds, byte/line ranges, anchors and tokens come directly from
-`spur-graph`; repository/path identity remains in the caller's columns.
-
-The SQL tests exercise real loading, extraction, NULL/empty behavior, nested
-vectors across chunk boundaries and Parquet persistence. `reference_symbols`
-provides an independent direct-Rust oracle for a Git batch frame;
-`catalog_git_sources` inventories a frozen Git tree using the SPUR language
-registry.
-
-## Typed single-file facts
-
-```sql
-spur_graph_file_facts(logical_path VARCHAR, source VARCHAR) -> STRUCT(
-    nodes STRUCT(...)[], edges STRUCT(...)[], spans STRUCT(...)[],
-    macro_invocations STRUCT(...)[], macro_scopes STRUCT(...)[]
-)
-```
-
-Each list preserves all native fields, including nullable edge targets,
-binding/import/receiver/scope evidence, confidence and nested macro attributes
-and resolution candidates. IDs/ranges retain integer precision; confidence
-scores use `FLOAT`. Enum labels follow native serialization; payload variants
-use explicit typed structs with inactive payloads NULL. Inspect the complete
-type with `DESCRIBE SELECT spur_graph_file_facts('input.rs', '')` or the
-[independent native parity contract](tests/test_file_facts.py).
-
-The path must be a nonempty relative logical path that does not escape its
-root; the file need not exist. Source is UTF-8 `VARCHAR`. NULL in either argument
-returns NULL. Invalid/unsupported paths raise SQL errors; `TRY(...)` converts
-them to NULL. Empty valid source returns non-NULL native facts and may include
-a file node/span. The API performs no file discovery, reads or Git operations.
-
-Extraction and pending-reference resolution cover **one file**. Cross-file
-references can remain unresolved, with native evidence retained. Each call
-creates fresh local numeric IDs. Join `(blob_oid, logical_path, extractor_sha,
-local_id)`; use the same input key with textual macro/symbol IDs. Native AST
-extraction still parses a whole source blob for each missing key; SQL batching
-does not make parser computation SIMD or replace repository-wide resolution.
-
-Notebook inputs retain the native cell-parser lifecycle: compiled queries are
-cached within each notebook, and parsers are constructed per cell. The worker
-extractor cache does not carry this inner state across notebook input rows.
-
-[examples/file_facts.sql](examples/file_facts.sql) accepts already staged
-`staged_sources(blob_oid VARCHAR, logical_path VARCHAR, source VARCHAR,
-extractor_sha VARCHAR)` and a separate `source_lineage` relation containing
-those three key columns plus arbitrary caller lineage columns (reserve
-`extraction_status`). Cache keys must be non-NULL. Duplicate source rows are
-deduplicated; conflicting source values for one key are rejected. The caller
-must supply the actual blob identity and loaded extractor version; an artifact
-SHA-256 is one suitable `extractor_sha`. Stage only keys for that loaded version.
-
-The safe full-facts cache key is **`(blob_oid, logical_path, extractor_sha)`**.
-Identical bytes at different paths can produce different file facts; the
-temporal-symbol `(blob_oid, language)` identity below does not apply here. The
-script materializes an anti-join of missing keys, stores the typed extraction
-result once, then incrementally maintains five separate child tables. DuckDB
-`TRY` can internally retry a failed vector row-by-row; there is no exactly-once
-native parser-call guarantee on error. `fact_ordinal` retains list position.
-For example, resolve edge sources without mixing file-local IDs:
-
-```sql
-SELECT e.logical_path, e.edge_id, n.label
-FROM file_facts_edges e JOIN file_facts_nodes n
-  USING (blob_oid, logical_path, extractor_sha)
-WHERE e.source_node_id = n.node_id;
-```
-
-`file_facts_cache` retains every parent and its status: `ok`, `empty_source`,
-`empty_facts` (all five lists empty), `null_input` or `extraction_error` (a
-non-NULL input whose `TRY` result is NULL; no error text is retained).
-`file_facts_occurrences` preserves every caller row, including duplicate
-commit/parent occurrences and NULL root parents. Absent cache keys get
-`not_cached`. Join occurrences to child tables on all three cache-key columns.
-Empty lists emit no children; never infer completion from child row counts.
-
-The workflow owns a durable key-only `file_facts_child_state` checkpoint. With
-current cache keys C, prior checkpoint S and newly extracted keys M, child refresh
-is `(C - S) UNION M` and removal is `S - C`. It deletes old children for both sets,
-then expands each list independently from materialized refresh facts. NULL,
-error and empty parents are checkpointed too. No-op runs retain physical child
-tables and expand zero facts; they compare keys without hashing wide payloads.
-TEMP tables `file_facts_child_refresh` and `file_facts_child_removed` expose the
-three-column key sets. Caller occurrences refresh on every run, including when
-both sets are empty.
-
-Missing checkpoint or any missing child table triggers one full cache-driven
-bootstrap/repair of all five children, without re-extracting cached inputs. This
-also upgrades the old full-rebuild layout. Drop `file_facts_child_state` to request
-an explicit rebuild. Cache payloads are immutable for their full key; direct edits
-to payloads, children or checkpoint rows are unsupported.
-
-Run this self-contained example after building/packaging above. It stages one
-synthetic blob and two parent occurrences, runs the exact SQL twice, and writes
-the database plus seven typed Parquet snapshots in `/tmp/spur-file-facts-demo`:
+Run from the repository root with Python >=3.11, the pinned Rust toolchain and
+the project's remote-build access. Choose a fresh output on a local POSIX
+filesystem; the driver refuses an existing directory.
 
 ```sh
-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
-SPUR_FILE_FACTS_SQL="$PWD/crates/spur-graph-duckdb/examples/file_facts.sql" \
-/tmp/spur-graph-duckdb-test/bin/python - <<'PY'
-import hashlib, os
+python3 -m venv .spur/venvs/graph-duckdb-2
+export GRAPH_PYTHON="$PWD/.spur/venvs/graph-duckdb-2/bin/python"
+"$GRAPH_PYTHON" -m pip install -r crates/spur-graph-duckdb/requirements-test.txt
+export RELEASE_RUN="$PWD/.spur/releases/$("$GRAPH_PYTHON" -c 'import uuid; print(uuid.uuid4().hex)')"
+mkdir -p "$(dirname "$RELEASE_RUN")"
+PYTHONDONTWRITEBYTECODE=1 SPUR_SCCACHE_S3=0 SPUR_NO_LOCAL_FALLBACK=1 \
+  "$GRAPH_PYTHON" crates/spur-graph-duckdb/scripts/check_release.py \
+  --out "$RELEASE_RUN" --host-native --expect-platform osx_arm64
+export SPUR_GRAPH_EXTENSION="$RELEASE_RUN/spur_graph.duckdb_extension"
+"$GRAPH_PYTHON" crates/spur-graph-duckdb/scripts/verify_package.py "$SPUR_GRAPH_EXTENSION"
+```
+
+This invocation is for macOS ARM64. `--host-native` explicitly permits a
+separate local target through `scripts/spur-cargo`: macOS cannot load the
+remote Linux library. Rust unit tests remain remote, with local fallback
+disabled. A failed remote phase stops acceptance. The driver builds the library
+and all native oracles into its own target, packages and probes the exact
+artifact, runs every Python suite, and checks source/artifact identities again
+after testing. `receipt.json` and raw phase logs are authoritative. A successful
+run permits no skipped tests or expected failures.
+
+The supported distribution route is a locally built, verified **unsigned**
+binary plus its adjacent `.json` sidecar. Copy both dereferenced files from the
+same immutable package generation. Reverify after copying; SHA-256 checks
+integrity against local metadata and does not authenticate a publisher. No
+public release, community install, WASM build or signed package is supplied.
+
+## All five functions
+
+After verifying the package, open a fresh native connection. This example
+uses the environment's verified package, without a machine-specific path:
+
+```sh
+"$GRAPH_PYTHON" - <<'PYTHON'
+import os
 from pathlib import Path
 import duckdb
 
-extension = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve()
-workflow = Path(os.environ['SPUR_FILE_FACTS_SQL']).read_text()
-extractor_sha = hashlib.sha256(extension.read_bytes()).hexdigest()
-output = Path('/tmp/spur-file-facts-demo')
-output.mkdir(exist_ok=True)
-os.chdir(output)
-with duckdb.connect('facts.duckdb', config={'allow_unsigned_extensions': True}) as con:
-    con.execute("LOAD '" + str(extension).replace("'", "''") + "'")
-    con.execute('''CREATE TEMP TABLE staged_sources AS
-        SELECT 'demo-blob'::VARCHAR blob_oid, 'src/demo.rs'::VARCHAR logical_path,
-               'fn helper() {} fn entry() { helper(); remote_call(); }'::VARCHAR source,
-               ?::VARCHAR extractor_sha''', [extractor_sha])
-    con.execute('''CREATE TEMP TABLE source_lineage AS
-        SELECT 'demo-repo' repository, 'merge' commit_oid, p.parent_oid,
-               blob_oid, logical_path, extractor_sha
-        FROM staged_sources CROSS JOIN (VALUES ('p1'), ('p2')) p(parent_oid)''')
-    con.execute(workflow)
-    print('first run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])
-    con.execute(workflow)
-    print('second run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])
-    print(con.execute('SELECT blob_oid, logical_path, status FROM file_facts_cache').fetchall())
-print(output)
-PY
+package = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve(strict=True)
+with duckdb.connect(config={'allow_unsigned_extensions': True}) as con:
+    con.execute("LOAD '" + str(package).replace("'", "''") + "'")
+    print(con.execute('SELECT spur_graph_info()').fetchone()[0])
+    print(con.execute("SELECT spur_graph_symbols('src/a.rs', 'fn a() {}')").fetchone()[0])
+    print(con.execute("SELECT spur_graph_file_facts('src/a.rs', 'fn a() {}')").fetchone()[0])
+    print(con.execute("SELECT spur_graph_file_facts_result('bad.unknown', 'text')").fetchone()[0])
+    print(con.execute("SELECT spur_graph_symbol_changes('src/a.rs','src/a.rs','M', "
+        "spur_graph_symbols('src/a.rs','fn a() { let x = 1; }'), "
+        "spur_graph_symbols('src/a.rs','fn a() { let x = 2; }'))").fetchone()[0])
+PYTHON
 ```
 
-Use one cache writer and no surrounding transaction. Cache, checkpoint, all five
-children and caller occurrences update in one database transaction before Parquet
-export. All seven full snapshots are still replaced on every run; their export
-cost remains and the file set is not published atomically. Children cover all
-cached versions; occurrences reflect the current caller relation. All statuses,
-including failures/NULL, are
-cached: delete the exact cache key explicitly to retry it, then rerun to rebuild
-that key's children without duplicates. A deleted key absent from staging loses
-its children/checkpoint and appears as `not_cached` in caller occurrences.
-A changed extractor hash creates new keys. An incompatible output schema requires
-an explicit cache migration or fresh database.
+Keep parent rows before unnesting: empty lists are completed extractions, NULL
+is distinct, and empty source can contain a file node/span. The diagnostic API
+returns a non-NULL parent for NULL or recoverable bad input, with native facts
+unchanged on success. Internal/setup/no-tree failures remain SQL errors.
 
-Run the focused real-engine workflow checks with the pinned test environment:
+## Headless Explore/Review quickstart
+
+Use the fresh successful release receipt's independently probed source ID:
 
 ```sh
-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
-  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover \
-  -s crates/spur-graph-duckdb/tests -p test_file_facts_pipeline.py -v
+export SPUR_RELEASE_SOURCE_IDENTITY="$("$GRAPH_PYTHON" -c \
+  'import json,os; print(json.load(open(os.path.join(os.environ["RELEASE_RUN"],"receipt.json")))["release_trust"]["source_identity"])')"
+"$GRAPH_PYTHON" crates/spur-graph-duckdb/examples/app_consumer.py \
+  --fixture crates/spur-graph-duckdb/tests/fixtures/app_consumer.json \
+  --output "$RELEASE_RUN/headless-demo" --package "$SPUR_GRAPH_EXTENSION" \
+  --extractor-id "$SPUR_RELEASE_SOURCE_IDENTITY"
 ```
 
-## Repository ingestion example
+The fixture freezes base/head sources and lineage, including invalid/NULL/empty
+inputs, same bytes at different paths, unresolved calls/macros and an ambiguous
+rename. The parent runs native work in a private child process, checks its exit
+and identities, then publishes `headless-demo/current.json`. That manifest
+names immutable typed Parquet files for `sources`, `explore`, `review` and seven
+cache tables, with schemas, counts, checksums and coverage. Use
+`examples/app_consumer.py:read_result(output, 'base'|'head')` to reopen and
+validate a requested snapshot; do not relabel another snapshot's results.
 
-`examples/ingest_plan.py` demonstrates persistent source ingestion around the
-native kernel. Generate the catalog with the Rust helper against a frozen Git
-commit, then pass a batch plan covering every distinct supported
-`(blob_oid, language)` in that catalog:
+This is the app-facing data seam, not an app UI or general SQL service. A
+frontend should read one manifest and use its named tables and completeness
+fields. The managed notebook SQL runtime is separate; native 2.0 extension
+loading is not supported in its 1.5.5 runtime. Root owns notebook readback.
 
-```sh
-/tmp/spur-graph-duckdb-target/release/examples/catalog_git_sources /path/to/repo COMMIT_SHA /tmp/catalog.jsonl
+## Cache and coherent publication
 
-/tmp/spur-graph-duckdb-test/bin/python crates/spur-graph-duckdb/examples/ingest_plan.py \
-  --repo /path/to/repo --catalog /tmp/catalog.jsonl --plan /tmp/plan.json \
-  --extension /tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
-  --output /tmp/ingested-repository
-```
+Stage `staged_sources(blob_oid, logical_path, source, extractor_sha)` plus
+`source_lineage` with the three identity columns and caller lineage. The full
+facts key is **`(blob_oid, logical_path, extractor_sha)`**. Use an actual source
+byte identity and a verified extractor identity consistently. File-local IDs
+must always be joined with that full key. Repository, commit and parent
+occurrences remain caller columns.
 
-The plan is a JSON object with `head`, `row_limit` (the runtime's
-`duckdb.__standard_vector_size__`), an explicitly chosen `byte_budget`, and
-`batches`. Each batch has a unique `batch_id` and `tasks`: catalog rows with
-`path`, `blob_oid`, `language`, and `byte_length`. Use the SPUR-generated language
-classification; the example validates plan/catalog agreement. At least one
-supported task is required. Byte budgets constrain input batches, and do not
-bound AST or output memory.
+The [cache recipe](docs/release-contract.md#cache-migration-retry-and-coherent-publication)
+uses the transactional prefix of [file_facts.sql](examples/file_facts.sql),
+closes the writer, and calls [publish_snapshot.py](examples/publish_snapshot.py).
+It persists diagnostics, migrates old error columns additively, checkpoints all
+statuses, and replays missing keys only. Retry failures by explicitly deleting
+their exact cache key and restaging it. Historical missing diagnostics remain
+NULL. Incompatible typed schemas need a separate migration or fresh database.
 
-Task metadata and source blobs enter SQL in bulk. One Git batch reader supplies
-missing blobs; native parsing still runs a whole-source parser per distinct
-blob. Cache keys include blob, language and the packaged extractor hash.
-Transactions checkpoint each batch, including successful empty results. Failed
-parse rows retain source and status, produce a nonzero exit, and require explicit
-cache invalidation to retry with the same extractor. Changed frozen-HEAD catalogs
-are rejected. Restarting a valid plan skips cached keys.
+The supported publisher exports all seven tables from one read-only transaction
+to a fresh immutable version, then atomically replaces `current.json`. Readers
+load that manifest once and verify its paths/checksums. Trailing legacy SQL
+`COPY` exports are non-atomic and are not the app publication route.
 
-The output contains `duckdb-spur-graph.duckdb`, `head-symbols.parquet`,
-`head-parse-cache.parquet`, progress and result JSON. Query `head_symbols` for
-path-associated facts, `ingestion_errors` for failures, and `batches` for timings.
-`symbol_facts` and the cache export cover all cached blobs for the selected
-extractor; `head_symbols` is restricted to the selected HEAD. See
-[measured DuckDB ingestion](examples/duckdb-ingestion-results.md).
+## Repository and temporal examples
 
-## Temporal history experiments
+These helpers remain experiments with their own input contracts. Pass explicit
+caller-owned repository, catalog, plan and output paths; do not use historical
+artifact paths as writable outputs.
 
-See the [full-history evaluation](examples/full-temporal-evaluation.md) for
-equivalent-workload measurements, coverage and remaining integration limits.
-The [producer concurrency follow-up](examples/temporal-concurrency-evaluation.md)
-measures one versus four source producers with exact source and graph parity.
-The [scheduling experiment](examples/temporal-scheduling-evaluation.md) then
-tests assignment by prior batch processing time with four producers in both arms.
+- `catalog_git_sources REPO COMMIT OUTPUT.jsonl` uses the native language
+  registry. `examples/ingest_plan.py --help` documents frozen-commit ingestion,
+  batch checkpointing and `(blob_oid, language, extractor_sha)` symbol caching.
+  That symbol-only key does not replace the full-facts path-sensitive key.
+- `history_catalog REPO COMMIT OUTPUT` inventories reachable history with root
+  and merge-parent comparisons. Git CLI rename limits and author-versus-committer
+  time differences remain relevant.
+- `temporal_reference REPO OUTPUT JOBS cli|gix` runs the original walker;
+  CLI/gix classification must be compared before timing equivalent workloads.
+- [Full-history evaluation](examples/full-temporal-evaluation.md),
+  [producer concurrency](examples/temporal-concurrency-evaluation.md),
+  [scheduling](examples/temporal-scheduling-evaluation.md), and
+  [bounded finalization](examples/bounded-temporal-finalization.md) retain the
+  historical measurements and restart recipes. The original global temporal
+  fold exhausted spill capacity; the bounded helper is the demonstrated
+  full-history finalization route.
+- [Native retrieval parity](tests/test_retrieval_parity.py) and
+  [ingestion measurements](examples/duckdb-ingestion-results.md) describe their
+  respective workloads; neither implies compiler resolution or a new release
+  performance guarantee.
 
-`history_catalog REPO COMMIT OUTPUT` inventories every commit reachable from a
-frozen commit, including every merge parent and the root comparison. It writes
-commit, comparison and file-change JSONL plus a completion summary. The output
-directory must be absent or empty. It uses Git CLI rename detection; large
-changes can encounter Git's default rename limit. Its `author_time` is author
-time, whereas the reference walk's timestamp is committer time.
-
-`temporal_reference REPO OUTPUT JOBS cli|gix` runs the original reachable-history
-walker into native temporal shards. Supply a fresh isolated repository with a
-frozen `HEAD`; the example does not install a SPUR pointer in that repository.
-CLI and gix can produce different rename classifications and commit summaries.
-Compare their outputs before treating their timings as equivalent workloads.
-
-The alternative pipeline separates source extraction from temporal matching:
-
-1. Prepare metadata tables `commits`, `comparisons`, `changes`, `parse_tasks`,
-   `symbol_pairs` and `change_pairs`. Classify source paths with SPUR's language
-   registry. A parse key is `(blob_oid, language)`; both sides of a rename use
-   the current path's language, matching the original walker.
-2. Run `examples/parse_history_shards.py` with a frozen source repository,
-   a complete batch plan, the native extension and a fresh output directory.
-   It reads Git blobs in batches and publishes immutable Parquet batches with
-   checksummed receipts. Completed empty parses, binary skips and failures
-   retain separate parent rows. Restart verifies receipts and skips completed
-   keys. See `--help` for the complete invocation and plan contract.
-3. Run `examples/derive_temporal_pairs.py --metadata META.duckdb
-   --parse-inputs INPUTS.json --extension EXTENSION --output OUTPUT
-   --byte-budget BYTES`. It invokes the shared native matcher once per distinct
-   file/version pair and joins those results back to actual commits and
-   parents. The resulting database exposes `symbol_snapshots`, `temporal_edges`,
-   `pair_occurrences` and `diagnostics`.
-
-The original pair runner's final global fold exhausted spill capacity on the
-full DuckDB history. Its input byte budget does not bound that fold. The
-full-history experiment completed the same matched-pair cache through a
-separate bounded finalizer: narrow numeric emissions, then whole-commit
-partitions, without repeating extraction or matching. See the evaluation for
-the configuration, completion and independent validation receipts; the command
-above alone is not a demonstrated full-history recipe.
-The [bounded finalization guide](examples/bounded-temporal-finalization.md)
-documents the promoted helper, exact input contract, planning and restart
-commands. Its regression fixtures run with:
-
-```sh
-python -m unittest discover -s crates/spur-graph-duckdb/tests \
-  -p test_bounded_temporal_finalize.py -v
-```
-
-`INPUTS.json` contains a `sources` array. Each source specifies `cache_glob` and
-`expected_extractor_sha`; older caches also need a separate `flags_glob`.
-Producers must have disjoint parse keys. Source encoding errors remain explicit
-and omit symbol changes for the affected comparisons; file-level touches remain.
-`current-status.json` is authoritative for the latest verification attempt.
-An earlier `result.json` alone does not establish that a restart succeeded.
-
-The typed SQL seam is
-`spur_graph_symbol_changes(path, old_path, kind, old_symbols, new_symbols)`.
-It accepts `A`, `M`, `D`, `R` and returns typed changes plus diagnostics.
-The caller normalizes Git type changes to `M` and copies to `R`. The matcher
-shares the original Rust implementation, including rename and per-parent merge
-semantics. Actual commit and parent keys belong to the caller's projection.
-
-These experiments batch SQL staging and reuse content-addressed facts. Native
-AST extraction still parses a whole source blob for each distinct parse key.
-Input byte budgets do not bound AST, nested-vector or output memory; Parquet
-row-group layout also affects cache-read memory and throughput. Production
-admission/backpressure policy, temporal call-edge integration, community
-distribution and WASM support remain separate integration work.
+SQL batches source staging and cache reuse. Each missing input still requires
+whole-source AST parsing; input byte budgets do not bound AST, nested-vector,
+output or global-fold memory. Ordinary parser/query state is reused per worker
+and language; notebook cells keep their own native parser lifecycle. Admission,
+backpressure, production supervision, temporal call-edge integration and wider
+platform distribution remain separate work.

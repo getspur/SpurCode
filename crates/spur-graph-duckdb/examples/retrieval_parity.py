@@ -68,6 +68,16 @@ import threading
 import time
 
 
+# Approval remains historical unless the caller provides the verified current
+# manifest digest and an independently established source identity.
+def approved_extension_sha(extension, **trust):
+    scripts = str(Path(__file__).resolve().parents[1] / "scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    from check_release import approved_extension_sha as approve
+    return approve(extension, **trust)
+
+
 APPROVED_EXTENSION_SHA256 = "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028"
 FIXTURE_SHA256 = "6a82c682c4b595c55135527dbc58811c28a725d058eb6f1b1bd68a84fcf2b836"
 METADATA = frozenset({
@@ -258,7 +268,8 @@ LOCATION_ORDER = "file_path,start_line,end_line,id"
 
 
 class Candidate:
-    def __init__(self, corpus, extension, output=None, expected_sha=APPROVED_EXTENSION_SHA256, spec_path=None):
+    def __init__(self, corpus, extension, output=None, expected_sha=APPROVED_EXTENSION_SHA256, spec_path=None,
+                 *, release_manifest=None, release_manifest_sha256=None, release_source_identity=None):
         import duckdb
         import _duckdb
 
@@ -269,7 +280,10 @@ class Candidate:
         extension = Path(extension).resolve(strict=True)
         self.extension = extension
         actual_sha = sha256(extension.read_bytes())
-        if expected_sha != APPROVED_EXTENSION_SHA256 or actual_sha != expected_sha:
+        approved_sha = approved_extension_sha(extension, manifest=release_manifest,
+                                              manifest_sha256=release_manifest_sha256,
+                                              source_identity=release_source_identity)
+        if expected_sha != approved_sha or actual_sha != expected_sha:
             raise ValueError(f"unapproved extension hash: {actual_sha}")
         self.output = Path(output) if output else None
         if self.output:
@@ -799,7 +813,10 @@ class JsonlEndpoint:
 
 
 def serve_sql(args):
-    candidate = Candidate(args.corpus, args.extension, args.output, args.extension_sha256, args.spec)
+    candidate = Candidate(args.corpus, args.extension, args.output, args.extension_sha256, args.spec,
+                          release_manifest=args.release_manifest,
+                          release_manifest_sha256=args.release_manifest_sha256,
+                          release_source_identity=args.release_source_identity)
     try:
         started = time.perf_counter_ns()
         first = None
@@ -838,6 +855,11 @@ def compare(args):
     sql_command = [sys.executable, str(Path(__file__).resolve()), "serve-sql", "--corpus", str(Path(args.corpus).resolve()),
                    "--extension", str(Path(args.extension).resolve()), "--extension-sha256", args.extension_sha256,
                    "--output", str(output / "sql")]
+    for flag, value in (("--release-manifest", args.release_manifest),
+                        ("--release-manifest-sha256", args.release_manifest_sha256),
+                        ("--release-source-identity", args.release_source_identity)):
+        if value is not None:
+            sql_command.extend([flag, value])
     candidate = JsonlEndpoint(sql_command, output / "sql.stderr.jsonl")
     native = None
     native_replies, candidate_replies, comparisons, samples = [], [], [], []
@@ -918,6 +940,9 @@ def main():
         p.add_argument("--spec", help="optional byte-identical copy of the shared spec")
         p.add_argument("--extension", required=True)
         p.add_argument("--extension-sha256", default=APPROVED_EXTENSION_SHA256)
+        p.add_argument("--release-manifest", help="explicit verified current-release sidecar")
+        p.add_argument("--release-manifest-sha256", help="caller-trusted verified sidecar digest")
+        p.add_argument("--release-source-identity", help="independently verified current source identity")
         if command == "compare":
             p.add_argument("--native", required=True)
             p.add_argument("--out", required=True)
