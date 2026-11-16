@@ -120,7 +120,7 @@ class PublishSnapshotTests(unittest.TestCase):
         self.publish('previous')
         before = self.published_bytes()
         with duckdb.connect(str(self.database)) as c:
-            c.execute('DROP TABLE facts.file_facts_occurrences')
+            c.execute('DROP TABLE facts.facts.file_facts_occurrences')
         with self.assertRaises(duckdb.Error):
             self.publish('broken')
         self.assertEqual(self.published_bytes(), before)
@@ -148,7 +148,7 @@ class PublishSnapshotTests(unittest.TestCase):
 
     def test_first_failure_has_no_current_manifest(self):
         with duckdb.connect(str(self.database)) as c:
-            c.execute('DROP TABLE facts.file_facts_occurrences')
+            c.execute('DROP TABLE facts.facts.file_facts_occurrences')
         with self.assertRaises(duckdb.Error):
             self.publish('broken')
         self.assertFalse((self.output / 'current.json').exists())
@@ -177,7 +177,7 @@ class PublishSnapshotTests(unittest.TestCase):
             ident = '"' + quoted_schema.replace('"', '""') + '"'
             c.execute('CREATE SCHEMA ' + ident)
             for table in TABLES:
-                c.execute(f'CREATE TABLE {ident}.{table} AS SELECT * FROM facts.{table}')
+                c.execute(f'CREATE TABLE {ident}.{table} AS SELECT * FROM facts.facts.{table}')
         result = subprocess.run([sys.executable, str(PUBLISHER), '--database', str(self.database),
             '--output', str(self.output), '--version', 'cli', '--schema', quoted_schema,
             '--source-label', 'commit=unverified=label'], capture_output=True, text=True)

@@ -276,7 +276,7 @@ class FileFactsPipelineTests(unittest.TestCase):
     def test_prior_cache_additive_migration_keeps_unknown_details_null(self):
         self.use_facts_schema()
         self.seed_native_children()
-        children, oids = self.child_snapshot(), self.child_table_oids()
+        children = self.child_snapshot()
         # Reconstruct the actual prior five-column layout, including an old error.
         self.con.execute("DROP INDEX file_facts_cache_key")
         self.con.execute("CREATE OR REPLACE TABLE file_facts_cache AS SELECT "
@@ -287,6 +287,7 @@ class FileFactsPipelineTests(unittest.TestCase):
         self.stage([("old", "bad.unknown", RUST, "v1")])
         self.reopen()
         self.con.execute("SET schema='facts'")
+        oids = self.child_table_oids()
         self.run_pipeline()
         columns = [c[0] for c in self.rows("DESCRIBE file_facts_cache")]
         self.assertIn("error_code", columns, "prior cache requires explicit additive migration")
@@ -552,7 +553,7 @@ class FileFactsPipelineTests(unittest.TestCase):
         # Seed a typed, all-empty cached payload too; native empty-source facts may
         # still contain a file node. This is a new cache key, not a payload update.
         self.con.execute("""
-            INSERT INTO file_facts_cache
+            INSERT INTO file_facts_cache (blob_oid, logical_path, extractor_sha, facts, status)
             SELECT 'empty-facts', 'empty-facts.rs', 'v1',
                    struct_update(facts, nodes := [], edges := [], spans := [],
                                  macro_invocations := [], macro_scopes := []), 'empty_facts'
