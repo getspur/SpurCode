@@ -78,5 +78,6 @@ jobs:
             ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.stdout
             ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.stderr
             ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/source-probe/*.json
+            ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/source-probe-final/*.json
             ${{ runner.temp }}/spur-graph-duckdb-${{ github.run_id }}-${{ github.run_attempt }}/*.duckdb_extension*
           if-no-files-found: error

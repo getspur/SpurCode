@@ -260,8 +260,13 @@ def check_release(args, output, receipt):
         "SPUR_RELEASE_MANIFEST_SHA256", "SPUR_RELEASE_SOURCE_IDENTITY"}}
     phase("unittests", [sys.executable, str(Path(__file__).resolve()), "--unittest-child",
                         str(CRATE / "tests"), "--summary", str(output / "unittest-summary.json")])
-    # Source must still match after the entire suite (which exercises isolated copies).
-    if verify_source(source_receipt) != source_id:
+    # Re-enumerate current inputs and inherited settings using this build's probe.
+    final_probe = output / "source-probe-final"
+    final_probe.mkdir()
+    phase("source-probe-final", [artifacts["build_script"]],
+          dict(CARGO_MANIFEST_DIR=str(CRATE), OUT_DIR=str(final_probe)))
+    final_source_receipt = json.loads((final_probe / "spur_graph_source_identity.json").read_text())
+    if verify_source(final_source_receipt) != source_id:
         raise ValueError("source changed during release checks")
     approved_extension_sha(extension, **trust)
     if any(checksum(item["path"]) != item["sha256"] for item in receipt["native_artifacts"].values()):
