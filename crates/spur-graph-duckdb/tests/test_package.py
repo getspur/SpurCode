@@ -107,7 +107,10 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         sidecar = Path(str(self.out) + '.json')
         self.assertTrue(sidecar.is_file(), 'artifact metadata must be probed without source-tree inputs')
-        self.assertEqual(json.loads(sidecar.read_text())['extension_version'], '0.1.0')
+        with duckdb.connect(config={'allow_unsigned_extensions': True}) as con:
+            con.execute("LOAD '" + str(self.out.resolve()).replace("'", "''") + "'")
+            version = con.execute('SELECT spur_graph_info().extension_version').fetchone()[0]
+        self.assertEqual(json.loads(sidecar.read_text())['extension_version'], version)
 
     def test_bad_library_is_not_published(self):
         bad = self.root / 'bad.dylib'
@@ -209,6 +212,52 @@ class PackageTests(unittest.TestCase):
         self.rewrite_manifest(copy, lambda m: m['binary'].update(sha256=hashlib.sha256(data).hexdigest()))
         with self.assertRaisesRegex(ValueError, 'signature|unsigned'):
             self.verifier().verify_package(copy)
+
+    def test_matching_manifest_cannot_override_incompatible_native_footer(self):
+        copy = self.copied_package()
+        module = self.verifier()
+        original = copy.read_bytes()
+        sidecar = Path(str(copy) + '.json')
+        original_manifest = sidecar.read_bytes()
+        # These are the upstream wire-format slots, not guessed application limits.
+        fields = [(3, 'C_STRUCT', 'abi', 'ABI'),
+                  (4, '9.9.9', 'extension_version', 'version'),
+                  (5, 'v1.0.0', None, 'runtime'),
+                  (6, 'unavailable_platform', 'platform', 'platform')]
+        prefix_size = len(b'\x00\x93\x04\x10duckdb_signature\x80\x04')
+        footer_size = prefix_size + 8 * 32 + 256
+        for index, value, key, message in fields:
+            with self.subTest(field=index):
+                data = bytearray(original)
+                offset = len(data) - footer_size + prefix_size + index * 32
+                data[offset:offset + 32] = value.encode().ljust(32, b'\0')
+                copy.write_bytes(data)
+                sidecar.write_bytes(original_manifest)
+                def edit(manifest):
+                    manifest['binary']['sha256'] = hashlib.sha256(data).hexdigest()
+                    if key:
+                        manifest[key] = value
+                self.rewrite_manifest(copy, edit)
+                with self.assertRaisesRegex(ValueError, message):
+                    module.verify_package(copy)
+
+    def test_duplicate_manifest_keys_are_rejected(self):
+        copy = self.copied_package()
+        sidecar = Path(str(copy) + '.json')
+        sidecar.write_text('{"format_version":999,' + sidecar.read_text()[1:])
+        with self.assertRaisesRegex(ValueError, 'duplicate|manifest'):
+            self.verifier().verify_package(copy)
+
+    def test_unavailable_posix_publication_mechanics_fail_clearly(self):
+        code = ("import runpy, sys; sys.modules['fcntl'] = None; "
+                "sys.path.insert(0, " + repr(str(PACKAGER.parent)) + "); "
+                "runpy.run_path(" + repr(str(PACKAGER)) + ", run_name='__main__')")
+        result = subprocess.run([sys.executable, '-c', code, '--library', str(self.library),
+                                 '--out', str(self.out)], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('requires POSIX', result.stderr)
+        self.assertNotIn('Traceback', result.stderr)
+        self.assertFalse(self.out.exists())
 
     def test_incompatible_runtime_and_platform_rejected_explicitly(self):
         self.completed_package()
