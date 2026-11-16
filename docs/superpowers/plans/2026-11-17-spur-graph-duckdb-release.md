@@ -350,3 +350,22 @@ The engine canonical epic is `bd-2a0m`, plan `ec61197f-12d0-40d6-b0bc-ae67d63bd6
 R5 may update the two historical hash-pinned test files and their retrieval helper to accept explicitly verified current manifests while preserving historical defaults and tamper rejection. This is not permission to self-approve arbitrary binaries.
 
 The engine brain-snapshot base captures unrelated pre-existing user edits. Final working-repository integration must apply only reviewed task commits after that snapshot, excluding the snapshot commit itself, so those user edits remain uncommitted and untouched.
+
+### Reviewed-source continuation
+
+The original controller plan is superseded, not a completed release. R1 passed independent review and root provenance verification. R2's canonical candidate (`df291105f`, `01acc87f6`) had genuine RED/GREEN evidence, but review found one important defect: `ExtractError::NoTree` was converted into a recoverable row. It must remain a SQL error. The correction requires an assertion RED before the minimal production fix.
+
+Authentication and queued-dispatch failures exhausted the original retry budget. `request_changes` consequently rejected R2 and cascaded pending tasks; `RetryTask` refused the exhausted budget, and the attempted split did not become a schedulable plan member. Those operations and outcomes remain in Beads. Undispatched old tasks were stopped before continuing.
+
+The continuation plan is `f02f5ee1-f011-4b13-bb0b-e8d6451ee34a`, engine epic `bd-3qno`. Its explicit base is `f2ea872c19fc00aeab6d891458d3bb1408ca5dcb`: the clean recorded source plus only the independently approved R1 test and implementation commits. It excludes the earlier dirty-file snapshot. The continuation preserves all release gates and runs R2 through R7 serially to match observed worker capacity.
+
+| Task | Canonical continuation issue |
+| --- | --- |
+| R2 | `bd-ujgg` |
+| R3 | `bd-94uh` |
+| R4 | `bd-13rf` |
+| R5 | `bd-36op` |
+| R6 | `bd-27tt` |
+| R7 | `bd-r7f4` |
+
+R2 adopts the existing scoped implementation and original TDD receipts, corrects the review finding test-first, and verifies the combined metadata/diagnostic candidate. Final integration can use the clean continuation branch while preserving unrelated working files. The authorization still excludes public publishing.
