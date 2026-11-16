@@ -27,6 +27,16 @@ class DriverFixture:
 
 
 class DriverTests(DriverFixture, unittest.TestCase):
+    def test_remote_target_path_does_not_embed_host_filesystem(self):
+        self.assertTrue(callable(getattr(self.driver, "rust_test_arguments", None)),
+                        "remote Rust target paths must be portable")
+        remote = self.driver.rust_test_arguments(self.root, "remote")
+        target = Path(remote[remote.index("--target-dir") + 1])
+        self.assertFalse(target.is_absolute(), target)
+        self.assertIn(self.root.name, str(target))
+        local = self.driver.rust_test_arguments(self.root, "host")
+        self.assertTrue(Path(local[local.index("--target-dir") + 1]).is_relative_to(self.root))
+
     def test_child_failure_preserves_raw_exit_and_stops_later_phases(self):
         marker = self.root / "must-not-run"
         phases = [("failed-child", [sys.executable, "-c", "print('child receipt'); raise SystemExit(23)"]),
