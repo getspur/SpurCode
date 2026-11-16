@@ -3349,6 +3349,112 @@ mod tests {
         }
     }
 
+    fn nested_macro_repo() -> tempfile::TempDir {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        init_repo(root);
+        fs::write(root.join("lib.rs"), "fn outer() { println!(\"outer\"); }\n").unwrap();
+        git(root, &["add", "lib.rs"]);
+        git(root, &["commit", "-m", "outer source"]);
+
+        let nested = root.join("nested");
+        fs::create_dir(&nested).unwrap();
+        init_repo(&nested);
+        fs::write(
+            nested.join("lib.rs"),
+            "fn inner() { panic!(\"nested\"); }\n",
+        )
+        .unwrap();
+        git(&nested, &["add", "lib.rs"]);
+        git(&nested, &["commit", "-m", "nested source"]);
+        dir
+    }
+
+    #[test]
+    fn full_build_ignores_macro_evidence_from_nested_repository() {
+        let dir = nested_macro_repo();
+        let root = dir.path().canonicalize().unwrap();
+        let facts = build_facts(&root, None).unwrap().0;
+        assert!(facts
+            .macro_invocations
+            .iter()
+            .any(|row| row.file_path == "nested/lib.rs"));
+        assert!(facts
+            .macro_scopes
+            .iter()
+            .any(|scope| scope.file_path == "nested/lib.rs"));
+
+        let artifact = artifact_from_facts(&facts, &root).unwrap();
+        let set = artifact.macro_invocations.as_ref().unwrap();
+        assert_eq!(
+            set.rows,
+            facts
+                .macro_invocations
+                .iter()
+                .filter(|row| row.file_path == "lib.rs")
+                .cloned()
+                .collect::<Vec<_>>()
+        );
+        assert!(!set.rows.is_empty());
+        assert!(!set.scopes.is_empty());
+        assert!(set.scopes.iter().all(|scope| scope.file_path == "lib.rs"));
+        assert!(artifact.files.iter().all(|file| file.file_path == "lib.rs"));
+    }
+
+    #[test]
+    fn full_build_ignores_macro_scopes_without_invocations_from_nested_repository() {
+        let dir = nested_macro_repo();
+        let root = dir.path().canonicalize().unwrap();
+        let mut facts = build_facts(&root, None).unwrap().0;
+        facts
+            .macro_invocations
+            .retain(|row| row.file_path == "lib.rs");
+        assert!(facts
+            .macro_scopes
+            .iter()
+            .any(|scope| scope.file_path == "nested/lib.rs"));
+
+        let artifact = artifact_from_facts(&facts, &root).unwrap();
+        let set = artifact.macro_invocations.as_ref().unwrap();
+        assert_eq!(set.rows, facts.macro_invocations);
+        assert!(!set.scopes.is_empty());
+        assert!(set.scopes.iter().all(|scope| scope.file_path == "lib.rs"));
+    }
+
+    #[test]
+    fn full_build_rejects_macro_source_oid_mismatches_in_manifest_domain() {
+        let dir = nested_macro_repo();
+        let root = dir.path().canonicalize().unwrap();
+        let facts = build_facts(&root, None).unwrap().0;
+        let stale_oid = git_blob_oid(b"stale source");
+
+        let mut stale_row = facts.clone();
+        stale_row
+            .macro_invocations
+            .iter_mut()
+            .find(|row| row.file_path == "lib.rs")
+            .unwrap()
+            .source_oid = stale_oid.clone();
+        let error = artifact_from_facts(&stale_row, &root).unwrap_err();
+        assert!(error.to_string().contains("macro source OID mismatch"));
+
+        let mut stale_scope = facts;
+        // Isolate retained scope validation from the nested invocation failure.
+        stale_scope
+            .macro_invocations
+            .retain(|row| row.file_path == "lib.rs");
+        stale_scope
+            .macro_scopes
+            .iter_mut()
+            .find(|scope| scope.file_path == "lib.rs")
+            .unwrap()
+            .source_oid = stale_oid;
+        let error = artifact_from_facts(&stale_scope, &root).unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("macro scope source OID mismatch"));
+    }
+
     #[test]
     fn macro_evidence_survives_worktree_delta_with_all_owner_scopes() {
         let dir = tempfile::tempdir().unwrap();
