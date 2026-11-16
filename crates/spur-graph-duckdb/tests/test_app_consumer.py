@@ -11,7 +11,11 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import signal
+import subprocess
+import sys
 import tempfile
+import time
 import unittest
 
 import duckdb
@@ -105,7 +109,23 @@ class AppConsumerTests(unittest.TestCase):
         second = self.run_consumer()
         self.assertNotEqual(first['run_id'], second['run_id'])
         for table in tables:
-            self.assertEqual(self.rows(second, table, 'ORDER BY ALL'), expected[table], table)
+            actual = self.rows(second, table, 'ORDER BY ALL')
+            if table == 'review':
+                # The native pair matcher preserves evidence but does not
+                # promise list order across processes. Compare multiplicity;
+                # exported results themselves must remain untouched.
+                for a, b in zip(actual, expected[table]):
+                    a, b = copy.deepcopy(a), copy.deepcopy(b)
+                    ar, br = a.pop('result'), b.pop('result')
+                    self.assertEqual(a, b)
+                    if ar is None or br is None:
+                        self.assertEqual(ar, br)
+                    else:
+                        self.assertCountEqual(ar['changes'], br['changes'])
+                        self.assertCountEqual(ar['diagnostics'], br['diagnostics'])
+                self.assertEqual(len(actual), len(expected[table]))
+            else:
+                self.assertEqual(actual, expected[table], table)
             self.assertEqual(self.rows(first, table, 'ORDER BY ALL'), expected[table], table)
 
     def test_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths(self):
@@ -141,8 +161,9 @@ class AppConsumerTests(unittest.TestCase):
         facts = by_path['src/local.rs']['facts']
         self.assertTrue(any(e['target_label'] == 'helper' and e['target_node_id'] is not None
                             for e in facts['edges']))
-        for label in ('remote_call', 'Remote::new'):
+        for label, scope in (('remote_call', None), ('new', 'Remote')):
             self.assertTrue(any(e['target_label'] == label and e['target_node_id'] is None
+                                and e['scope_text'] == scope
                                 for e in facts['edges']), label)
         self.assertTrue(any(i['resolution']['kind'] == 'unresolved'
                             for i in facts['macro_invocations']))
@@ -240,6 +261,61 @@ class AppConsumerTests(unittest.TestCase):
         pointer.write_text(json.dumps(changed))
         with self.assertRaisesRegex(ValueError, 'manifest|identity'):
             self.app.read_result(self.output, 'another-snapshot')
+
+    def test_reader_checks_the_coherent_snapshot_manifest(self):
+        m = self.run_consumer()
+        path = self.output / m['snapshot_manifest']['path']
+        path.write_bytes(path.read_bytes() + b' ')
+        with self.assertRaisesRegex(ValueError, 'checksum'):
+            self.app.read_result(self.output, 'base')
+
+    def test_interrupting_parent_reaps_native_child_before_cleanup(self):
+        script = '''import importlib.util, sys
+from pathlib import Path
+s=importlib.util.spec_from_file_location('app',sys.argv[1])
+m=importlib.util.module_from_spec(s); s.loader.exec_module(m)
+m.run_consumer(sys.argv[2],sys.argv[3],sys.argv[4],expected_extractor_id=sys.argv[5],
+               fault='wait_after_candidate')
+'''
+        parent = subprocess.Popen([sys.executable, '-c', script, str(CONSUMER), str(FIXTURE),
+            str(self.output), str(self.package), self.artifact['extractor_id']],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        child_pid = None
+        try:
+            deadline = time.monotonic() + 60  # explicit test budget
+            reached_candidate = False
+            while time.monotonic() < deadline and parent.poll() is None:
+                candidates = list(self.output.glob('runs/.staging-*/candidate.json'))
+                if candidates:
+                    child_pid = json.loads(candidates[0].read_text()).get('native_pid')
+                    reached_candidate = True
+                    break
+                time.sleep(0.01)
+            self.assertTrue(reached_candidate, 'native child must reach the blocking fault seam')
+            parent.send_signal(signal.SIGINT)
+            stdout, stderr = parent.communicate(timeout=60)
+            self.assertNotEqual(parent.returncode, 0, stdout + stderr)
+            self.assertIsNotNone(child_pid, 'candidate must record the native child identity')
+            with self.assertRaises(ProcessLookupError):
+                os.kill(child_pid, 0)
+            self.assertFalse(list(self.output.glob('runs/.staging-*')))
+            self.assertFalse((self.output / 'current.json').exists())
+        finally:
+            if parent.poll() is None:
+                # Let the harness reap its private child even if a test
+                # assertion fails, before using the final parent-only fallback.
+                parent.send_signal(signal.SIGINT)
+            try:
+                parent.communicate(timeout=60)
+            except subprocess.TimeoutExpired:
+                parent.kill()
+                parent.communicate()
+            if child_pid is not None:
+                try:
+                    os.kill(child_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        self.assertEqual(self.run_consumer()['status'], 'complete')
 
 
 if __name__ == '__main__':
