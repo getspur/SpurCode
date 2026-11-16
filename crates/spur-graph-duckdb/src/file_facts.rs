@@ -605,3 +605,53 @@ pub(crate) fn register(extension: &Extension) -> Result<()> {
         ParseFileFacts,
     ).with_init().register(extension)
 }
+
+#[cfg(test)]
+mod diagnostic_tests {
+    use super::*;
+    use spur_graph::extract::tree_sitter::ExtractError;
+
+    #[test]
+    fn empty_facts_retains_native_payload_and_empty_source_takes_precedence() {
+        for (empty_source, status) in [(false, "empty_facts"), (true, "empty_source")] {
+            let result = FileFactsResult::success(GraphFacts::default(), empty_source);
+            assert_eq!(result.status, status);
+            assert!(result.error_code.is_none());
+            assert!(result.error_message.is_none());
+            let facts = result.facts.expect("empty native facts remain present");
+            assert!(facts.nodes.0.is_empty());
+            assert!(facts.edges.0.is_empty());
+            assert!(facts.spans.0.is_empty());
+            assert!(facts.macro_invocations.0.is_empty());
+            assert!(facts.macro_scopes.0.is_empty());
+        }
+    }
+
+    #[test]
+    fn native_row_errors_keep_diagnostics_and_internal_errors_propagate() {
+        let bytes = [0xff];
+        let utf8 = std::str::from_utf8(&bytes).unwrap_err();
+        for (error, code) in [
+            (ExtractError::InvalidUtf8(utf8), "malformed_input"),
+            (ExtractError::NoTree, "extraction_failed"),
+            (ExtractError::Extraction("parse .ipynb JSON".into()), "malformed_input"),
+            (ExtractError::Extraction("logical path must name a file".into()), "invalid_path"),
+        ] {
+            let message = error.to_string();
+            let result = diagnostic_error(error).expect("recoverable native error");
+            assert_eq!(result.status, "extraction_error");
+            assert_eq!(result.error_code.as_deref(), Some(code));
+            assert_eq!(result.error_message.as_deref(), Some(message.as_str()));
+            assert!(result.facts.is_none());
+        }
+        for error in [
+            ExtractError::Setup("query compiler failed".into()),
+            ExtractError::Extraction("set rust parser language".into()),
+            ExtractError::Extraction("unexpected kernel failure".into()),
+        ] {
+            let message = error.to_string();
+            let error = diagnostic_error(error).err().expect("internal failure must propagate");
+            assert!(error.to_string().contains(&message));
+        }
+    }
+}
