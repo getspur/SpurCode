@@ -358,19 +358,28 @@ fn artifact_from_facts_in_domain(
         }
         result?
     };
-    // Nodes and edges are already restricted by buckets_from_facts. Restrict
-    // the exact macro carriers too, before composing a selected artifact.
-    let selected_facts = paths.map(|_| {
-        let mut selected = facts.clone();
-        selected
+    // The filesystem walker can enter nested repositories that the parent Git
+    // manifest excludes. Match the file domain already used for nodes and edges,
+    // including on full builds, without cloning facts when no projection is needed.
+    let needs_macro_projection = facts
+        .macro_invocations
+        .iter()
+        .any(|row| !current_entries.contains_key(&row.file_path))
+        || facts
+            .macro_scopes
+            .iter()
+            .any(|scope| !current_entries.contains_key(&scope.file_path));
+    let domain_facts = needs_macro_projection.then(|| {
+        let mut projected = facts.clone();
+        projected
             .macro_invocations
             .retain(|row| current_entries.contains_key(&row.file_path));
-        selected
+        projected
             .macro_scopes
             .retain(|scope| current_entries.contains_key(&scope.file_path));
-        selected
+        projected
     });
-    let facts = selected_facts.as_ref().unwrap_or(facts);
+    let facts = domain_facts.as_ref().unwrap_or(facts);
     let buckets = buckets_from_facts(facts, &worktree_root, &current_entries)?;
     let compose_started = Instant::now();
     let compose_span = tracing::info_span!(
