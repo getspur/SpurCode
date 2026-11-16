@@ -50,6 +50,15 @@ class ComparatorTests(unittest.TestCase):
     def compare(self, candidate, native=None, request=None):
         return parity.compare_replies(request or self.req, native or self.native, candidate)
 
+    def test_current_release_guard_requires_explicit_manifest_trust(self):
+        self.assertTrue(callable(getattr(parity, "approved_extension_sha", None)),
+                        "retrieval helper must expose verified release-manifest approval")
+        with tempfile.TemporaryDirectory(prefix="parity-unapproved-") as directory:
+            binary = Path(directory) / "spur_graph.duckdb_extension"
+            binary.write_bytes(b"arbitrary runtime bytes")
+            with self.assertRaisesRegex(ValueError, "unapproved"):
+                parity.approved_extension_sha(binary)
+
     def test_identical_baseline_and_raw_preservation(self):
         before = copy.deepcopy(self.native)
         result = self.compare(copy.deepcopy(self.native))
@@ -216,6 +225,20 @@ class ComparatorTests(unittest.TestCase):
             self.compare(candidate)
 
 
+def current_release():
+    if not any(os.environ.get(key) for key in (
+            "SPUR_RELEASE_MANIFEST", "SPUR_RELEASE_MANIFEST_SHA256", "SPUR_RELEASE_SOURCE_IDENTITY")):
+        return {}
+    scripts = str(MODULE_PATH.parents[1] / "scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    from check_release import approved_extension_sha, release_trust
+    trust = release_trust()
+    return dict(expected_sha=approved_extension_sha(os.environ["SPUR_GRAPH_EXTENSION"], **trust),
+                release_manifest=trust["manifest"], release_manifest_sha256=trust["manifest_sha256"],
+                release_source_identity=trust["source_identity"])
+
+
 class EngineSmokeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -231,7 +254,8 @@ class EngineSmokeTests(unittest.TestCase):
             cls.temp.cleanup()
             raise AssertionError(result.stderr.decode())
         cls.prepare = json.loads(result.stdout)
-        cls.candidate = parity.Candidate(cls.corpus, cls.extension, cls.root / "independent-sql")
+        cls.release = current_release()
+        cls.candidate = parity.Candidate(cls.corpus, cls.extension, cls.root / "independent-sql", **cls.release)
         cls.spec = cls.candidate.spec
         cls.requests = {r["case_id"]: r for r in cls.spec["requests"]}
         cls.sql = {k: cls.candidate.dispatch(v) for k, v in cls.requests.items()}
@@ -244,7 +268,7 @@ class EngineSmokeTests(unittest.TestCase):
     def test_extension_facts_typed_materialization_and_file_local_id_joins(self):
         db = self.candidate.db
         self.assertEqual(self.candidate.provenance["duckdb"], "2.0.0")
-        self.assertEqual(self.candidate.provenance["extension_sha256"], parity.APPROVED_EXTENSION_SHA256)
+        self.assertEqual(self.candidate.provenance["extension_sha256"], self.release.get("expected_sha", parity.APPROVED_EXTENSION_SHA256))
         self.assertEqual(db.execute("SELECT count(*) FROM sources").fetchone()[0], len(self.spec["files"]))
         for collection in ("nodes", "edges", "spans", "macro_invocations", "macro_scopes"):
             source = db.execute(f"SELECT sum(len(value.{collection})) FROM facts").fetchone()[0]
@@ -313,7 +337,7 @@ class EngineSmokeTests(unittest.TestCase):
             self.assertNotIn(".spur/graph", str(path))
             return original(path)
         with patch.object(Path, "read_bytes", guarded):
-            independent = parity.Candidate(self.corpus, self.extension)
+            independent = parity.Candidate(self.corpus, self.extension, **self.release)
             self.assertEqual(independent.dispatch(self.requests["search_exact"])["body"]["total_matches"], 1)
             independent.finish()
         self.assertTrue(touched)
@@ -330,9 +354,15 @@ class EngineSmokeTests(unittest.TestCase):
 
     def test_true_native_and_sql_persistent_cli_and_raw_mismatch_report(self):
         output = self.root / "comparison"
+        release_args = []
+        if self.release:
+            release_args = ["--extension-sha256", self.release["expected_sha"],
+                            "--release-manifest", self.release["release_manifest"],
+                            "--release-manifest-sha256", self.release["release_manifest_sha256"],
+                            "--release-source-identity", self.release["release_source_identity"]]
         process = subprocess.run([sys.executable, str(MODULE_PATH), "compare", "--native", self.native,
                                   "--corpus", str(self.corpus), "--spec", str(SPEC_PATH),
-                                  "--extension", self.extension, "--out", str(output)], capture_output=True)
+                                  "--extension", self.extension, "--out", str(output), *release_args], capture_output=True)
         self.assertEqual(process.returncode, 0, process.stderr.decode())
         report = json.loads((output / "report.json").read_bytes())
         self.assertEqual(report["summary"]["requests"], 58)
@@ -361,7 +391,7 @@ class EngineSmokeTests(unittest.TestCase):
         self.assertTrue(all(s["client_wall_ns"] > 0 and s["request_bytes"] > 0 and s["response_bytes"] > 0 for s in samples))
         # Output evidence cannot be silently overwritten.
         repeated = subprocess.run([sys.executable, str(MODULE_PATH), "compare", "--native", self.native,
-                                   "--corpus", str(self.corpus), "--extension", self.extension, "--out", str(output)], capture_output=True)
+                                   "--corpus", str(self.corpus), "--extension", self.extension, "--out", str(output), *release_args], capture_output=True)
         self.assertNotEqual(repeated.returncode, 0)
         manifest = json.loads((output / "manifest.json").read_bytes())
         for entry in manifest:
