@@ -238,6 +238,70 @@ class FileFactsPipelineTests(unittest.TestCase):
         self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_extracted"), 0)
         self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_cache"), 5)
 
+    def test_diagnostics_persist_exact_native_details_and_replay_only_missing(self):
+        cases = [("bad.unknown", RUST), ("../bad.rs", RUST),
+                 ("bad.ipynb", "not JSON"), ("good.rs", RUST),
+                 ("empty.rs", ""), ("null.rs", None)]
+        expected = {path: self.con.execute(
+            "SELECT spur_graph_file_facts_result(?::VARCHAR, ?::VARCHAR)",
+            [path, source]).fetchone()[0] for path, source in cases}
+        self.stage([(path, path, source, "v1") for path, source in cases])
+        self.run_pipeline()
+        columns = [c[0] for c in self.rows("DESCRIBE file_facts_cache")]
+        self.assertIn("error_code", columns, "cache must persist native error diagnostics")
+        self.assertIn("error_message", columns)
+        for path, result in expected.items():
+            with self.subTest(path=path):
+                self.assertEqual(self.rows("SELECT status, error_code, error_message, facts "
+                    "FROM file_facts_cache WHERE logical_path = '" + path + "'"),
+                    [(result["status"], result["error_code"], result["error_message"], result["facts"])])
+        self.assertEqual(self.scalar("SELECT error_code FROM file_facts_cache "
+                                     "WHERE logical_path='bad.unknown'"), "unsupported_language")
+        original = self.rows("SELECT * FROM file_facts_cache ORDER BY ALL")
+        # Conflicting bytes on a single staged cache HIT must not silently reparse it.
+        self.con.execute("UPDATE staged_sources SET source = 'now different'")
+        self.reopen()
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+        self.assertEqual(self.rows("SELECT * FROM file_facts_cache ORDER BY ALL"), original)
+        # Retry only through explicit full-key deletion; error parents checkpoint too.
+        self.con.execute("DELETE FROM file_facts_cache WHERE logical_path='bad.unknown'")
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 1)
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+        self.assert_child_state()
+        self.assert_full_children()
+
+    def test_prior_cache_additive_migration_keeps_unknown_details_null(self):
+        self.use_facts_schema()
+        self.seed_native_children()
+        children, oids = self.child_snapshot(), self.child_table_oids()
+        # Reconstruct the actual prior five-column layout, including an old error.
+        self.con.execute("DROP INDEX file_facts_cache_key")
+        self.con.execute("CREATE OR REPLACE TABLE file_facts_cache AS SELECT "
+                         "blob_oid, logical_path, extractor_sha, facts, status FROM file_facts_cache")
+        self.con.execute("INSERT INTO file_facts_cache SELECT 'old', 'bad.unknown', 'v1', "
+                         "NULL, 'extraction_error'")
+        old = self.rows("SELECT * FROM file_facts_cache ORDER BY ALL")
+        self.stage([("old", "bad.unknown", RUST, "v1")])
+        self.reopen()
+        self.con.execute("SET schema='facts'")
+        self.run_pipeline()
+        columns = [c[0] for c in self.rows("DESCRIBE file_facts_cache")]
+        self.assertIn("error_code", columns, "prior cache requires explicit additive migration")
+        self.assertEqual(self.rows("SELECT blob_oid, logical_path, extractor_sha, facts, status "
+                                  "FROM file_facts_cache ORDER BY ALL"), old)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_cache "
+                                     "WHERE error_code IS NOT NULL OR error_message IS NOT NULL"), 0)
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_missing"), 0)
+        self.assertEqual(self.child_snapshot(), children)
+        self.assertEqual(self.child_table_oids(), oids)
+        self.assert_child_state()
+        self.assert_full_children()
+        self.run_pipeline()
+        self.assertEqual(self.scalar("SELECT count(*) FROM file_facts_child_refresh"), 0)
+
     def test_separate_unnests_and_complete_typed_parquet_roundtrip(self):
         self.stage([("blob", "src/lib.rs", RUST, "v1"), ("null", "null.py", None, "v1")])
         self.con.execute("""
