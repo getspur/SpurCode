@@ -3380,10 +3380,90 @@ mod tests {
     }
 
     #[test]
+    fn full_build_extracts_tracked_ignored_rust_sources() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        init_repo(&root);
+        fs::write(root.join(".gitignore"), "/ignored/\n").unwrap();
+        fs::write(root.join("lib.rs"), "pub fn root() {}\n").unwrap();
+        fs::create_dir(root.join("ignored")).unwrap();
+        let source = "pub enum E { Tuple(u8) }\npub struct Pair(pub u8);\n";
+        fs::write(root.join("ignored/tuple.rs"), source).unwrap();
+        git(&root, &["add", ".gitignore", "lib.rs"]);
+        git(&root, &["add", "-f", "ignored/tuple.rs"]);
+        git(&root, &["commit", "-m", "tracked ignored source"]);
+        fs::write(root.join("ignored/untracked.rs"), "struct Hidden(u8);\n").unwrap();
+
+        let (facts, counts) = build_facts(&root, None).unwrap();
+        let artifact = artifact_from_facts(&facts, &root).unwrap();
+        assert_eq!(counts.get("rust"), Some(&2));
+        let manifests = artifact
+            .file_manifests
+            .iter()
+            .map(|file| file.path.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(manifests, ["ignored/tuple.rs", "lib.rs"]);
+        let extracted = facts
+            .nodes
+            .iter()
+            .filter(|node| node.kind == NodeKind::File)
+            .map(|node| node.label.as_str())
+            .collect::<BTreeSet<_>>();
+        assert_eq!(extracted, manifests.into_iter().collect());
+        let declarations = &artifact
+            .rust_evidence
+            .as_ref()
+            .unwrap()
+            .files
+            .iter()
+            .find(|file| file.file_path == "ignored/tuple.rs")
+            .unwrap()
+            .declarations;
+        assert_eq!(declarations.rows.len(), 2);
+        assert!(declarations
+            .rows
+            .iter()
+            .all(|row| row.source_oid == git_blob_oid(source.as_bytes())));
+        for name in ["Pair", "E::Tuple"] {
+            assert!(artifact.symbols.iter().any(|symbol| {
+                symbol.file_path == "ignored/tuple.rs" && symbol.qualified_name == name
+            }));
+        }
+    }
+
+    #[test]
+    fn full_build_excludes_untracked_nested_repository_sources() {
+        let dir = nested_macro_repo();
+        let root = dir.path().canonicalize().unwrap();
+        let (facts, counts) = build_facts(&root, None).unwrap();
+        assert_eq!(counts.get("rust"), Some(&1));
+        let files = facts
+            .nodes
+            .iter()
+            .filter(|node| node.kind == NodeKind::File)
+            .map(|node| node.label.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(files, ["lib.rs"]);
+        assert!(facts
+            .macro_invocations
+            .iter()
+            .all(|row| row.file_path == "lib.rs"));
+        assert!(facts
+            .macro_scopes
+            .iter()
+            .all(|scope| scope.file_path == "lib.rs"));
+        artifact_from_facts(&facts, &root).unwrap();
+    }
+
+    #[test]
     fn full_build_ignores_macro_evidence_from_nested_repository() {
         let dir = nested_macro_repo();
         let root = dir.path().canonicalize().unwrap();
-        let facts = build_facts(&root, None).unwrap().0;
+        let facts = build_facts_for_paths(
+            &root,
+            &[PathBuf::from("lib.rs"), PathBuf::from("nested/lib.rs")],
+        )
+        .unwrap();
         assert!(facts
             .macro_invocations
             .iter()
@@ -3414,7 +3494,11 @@ mod tests {
     fn full_build_ignores_macro_scopes_without_invocations_from_nested_repository() {
         let dir = nested_macro_repo();
         let root = dir.path().canonicalize().unwrap();
-        let mut facts = build_facts(&root, None).unwrap().0;
+        let mut facts = build_facts_for_paths(
+            &root,
+            &[PathBuf::from("lib.rs"), PathBuf::from("nested/lib.rs")],
+        )
+        .unwrap();
         facts
             .macro_invocations
             .retain(|row| row.file_path == "lib.rs");
@@ -3434,7 +3518,11 @@ mod tests {
     fn full_build_rejects_macro_source_oid_mismatches_in_manifest_domain() {
         let dir = nested_macro_repo();
         let root = dir.path().canonicalize().unwrap();
-        let facts = build_facts(&root, None).unwrap().0;
+        let facts = build_facts_for_paths(
+            &root,
+            &[PathBuf::from("lib.rs"), PathBuf::from("nested/lib.rs")],
+        )
+        .unwrap();
         let stale_oid = git_blob_oid(b"stale source");
 
         let mut stale_row = facts.clone();
