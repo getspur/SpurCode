@@ -3455,6 +3455,53 @@ mod tests {
         artifact_from_facts(&facts, &root).unwrap();
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn full_build_excludes_symlink_sources_from_facts_and_manifest() {
+        use std::os::unix::fs::symlink;
+
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().canonicalize().unwrap();
+        let outside = tempfile::tempdir().unwrap();
+        fs::write(outside.path().join("outside.rs"), "struct Outside(u8);\n").unwrap();
+        fs::write(outside.path().join("data.rs"), "struct Escaped(u8);\n").unwrap();
+        init_repo(&root);
+        fs::write(root.join("lib.rs"), "pub fn root() {}\n").unwrap();
+        fs::write(root.join("tracked.rs"), "struct Tracked(u8);\n").unwrap();
+        fs::create_dir(root.join("src")).unwrap();
+        fs::write(root.join("src/data.rs"), "struct Data(u8);\n").unwrap();
+        symlink(root.join("lib.rs"), root.join("committed-link.rs")).unwrap();
+        git(
+            &root,
+            &["add", "lib.rs", "tracked.rs", "src/data.rs", "committed-link.rs"],
+        );
+        git(&root, &["commit", "-m", "physical sources and tracked link"]);
+
+        fs::remove_file(root.join("tracked.rs")).unwrap();
+        symlink(outside.path().join("outside.rs"), root.join("tracked.rs")).unwrap();
+        symlink(outside.path().join("outside.rs"), root.join("escape.rs")).unwrap();
+        symlink(root.join("lib.rs"), root.join("alias.rs")).unwrap();
+        fs::remove_dir_all(root.join("src")).unwrap();
+        symlink(outside.path(), root.join("src")).unwrap();
+
+        let (facts, counts) = build_facts(&root, None).unwrap();
+        assert_eq!(counts.get("rust"), Some(&1));
+        let graph = artifact_from_facts(&facts, &root).unwrap();
+        assert_eq!(
+            graph
+                .file_manifests
+                .iter()
+                .map(|file| file.path.as_str())
+                .collect::<Vec<_>>(),
+            ["lib.rs"]
+        );
+        assert!(facts
+            .nodes
+            .iter()
+            .filter(|node| node.kind == NodeKind::File)
+            .all(|node| node.label == "lib.rs"));
+    }
+
     #[test]
     fn full_build_ignores_macro_evidence_from_nested_repository() {
         let dir = nested_macro_repo();
