@@ -1,0 +1,214 @@
+{
+  "observed_at_utc": "2026-11-16T05:56:04.877426+00:00",
+  "runtime": {
+    "python": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+    "duckdb": "v2.0.0",
+    "scope": "separate native Python process; not managed notebook SQL"
+  },
+  "artifact": {
+    "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-15-duckdb-file-facts/integration/spur_graph.duckdb_extension",
+    "sha256": "e7d191bcda2e0e8ea52d249189007e1a7e424f1b2b8fb987dfebde037a575028",
+    "build_commit_from_prior_protocol": "f0218c673ed478f854b64df6223d1817ced3586e"
+  },
+  "source_head_at_observation": "5aab2625bd19f2fd0da7e37cbf352ad39c8425aa",
+  "source_files": {
+    "crates/spur-graph-duckdb/README.md": "ca68937ee9503273cdac38aaea019b22546bf25b0b6389974ccd59721f1c96a7",
+    "crates/spur-graph-duckdb/src/lib.rs": "c50c50f654262c75a0839ef9fcc75d8dbbabe94237e6fa117aa45218959553e0",
+    "crates/spur-graph-duckdb/src/file_facts.rs": "3c582dc548d1dc68bc77dcca09ad9765d220776f37401ad8cac99dc5d6be4328",
+    "crates/spur-graph-duckdb/examples/file_facts.sql": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6"
+  },
+  "function_guidance": [
+    {
+      "name": "spur_graph_file_facts",
+      "parameters": [
+        "logical_path",
+        "source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "description": "Extract native one-file graph facts; join local IDs with the input key and retain path/blob/version lineage",
+      "examples": []
+    },
+    {
+      "name": "spur_graph_symbol_changes",
+      "parameters": [
+        "path",
+        "old_path",
+        "kind",
+        "old_symbols",
+        "new_symbols"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]",
+        "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]"
+      ],
+      "description": "Match ordered extracted symbol facts for one file-change pair; project commit and parent lineage separately",
+      "examples": []
+    },
+    {
+      "name": "spur_graph_symbols",
+      "parameters": [
+        "logical_path",
+        "source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "description": "Extract SPUR symbol facts from source text using the language of its logical path",
+      "examples": [
+        "SELECT unnest(spur_graph_symbols('input.rs', 'pub fn alpha() {}'), recursive := true)"
+      ]
+    }
+  ],
+  "first_result": {
+    "symbol_names": [
+      "helper",
+      "entry"
+    ]
+  },
+  "single_file": {
+    "list_counts": {
+      "nodes": 3,
+      "edges": 4,
+      "spans": 3,
+      "macro_invocations": 0,
+      "macro_scopes": 0
+    },
+    "edge_relations": {
+      "contains": 2,
+      "calls": 2
+    },
+    "call_evidence": [
+      {
+        "source_node_id": 3,
+        "target_node_id": 2,
+        "relation": "calls",
+        "target_label": "helper",
+        "confidence": "syntax_exact",
+        "bind_method": "singleton"
+      },
+      {
+        "source_node_id": 3,
+        "target_node_id": null,
+        "relation": "calls",
+        "target_label": "remote_call",
+        "confidence": "syntax_exact",
+        "bind_method": null
+      }
+    ]
+  },
+  "local_id_collision": [
+    1,
+    2,
+    3
+  ],
+  "error_recovery": [
+    {
+      "path": "../outside.rs",
+      "error": "Invalid Input Error: spur_graph_file_facts: extraction failed: logical path must be relative with no parent components",
+      "connection_alive": true
+    },
+    {
+      "path": "assets/input.xyz",
+      "error": "Invalid Input Error: spur_graph_file_facts: unsupported language for path: assets/input.xyz",
+      "connection_alive": true
+    }
+  ],
+  "null_empty_try": {
+    "null_source_is_null": true,
+    "empty_source_is_nonnull": true,
+    "unsupported_try_is_null": true
+  },
+  "temporal_pair": {
+    "changes": [
+      {
+        "kind": "deleted",
+        "name": "old_name"
+      },
+      {
+        "kind": "added",
+        "name": "new_name"
+      }
+    ],
+    "diagnostics": [
+      "ambiguous_rename: file=src/demo.rs stable_symbol_id=c649e630f6a7f59f candidate=new_name other_stable_symbol_id=f841480fc017b63f other_candidate=old_name",
+      "ambiguous_rename: file=src/demo.rs stable_symbol_id=f841480fc017b63f candidate=old_name other_stable_symbol_id=c649e630f6a7f59f other_candidate=new_name"
+    ],
+    "scope": "one supplied file/version pair; no Git discovery"
+  },
+  "cache_workflow": {
+    "first_missing_keys": 5,
+    "replay_missing_keys": 0,
+    "replay_child_refresh_keys": 0,
+    "cache_parents": 5,
+    "lineage_occurrences": 10,
+    "statuses": [
+      [
+        "empty_source",
+        1
+      ],
+      [
+        "extraction_error",
+        1
+      ],
+      [
+        "null_input",
+        1
+      ],
+      [
+        "ok",
+        2
+      ]
+    ],
+    "error_text_retained_in_cache": false,
+    "workflow_sha256": "09204b3f7397cc706c2a0b53bfec17029d72332e55acb559500e0072969a1fc6"
+  },
+  "fresh_connection": {
+    "registered_graph_functions": 0,
+    "cached_parent_rows_readable_without_load": 5
+  },
+  "portable_parquet": [
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-cache.parquet",
+      "bytes": 13479,
+      "sha256": "3456793c5caa437d26cdc9c8a9d6d36b779f0c7c55758400b0ae858d20cb0aa4"
+    },
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-edges.parquet",
+      "bytes": 4140,
+      "sha256": "b90aee110bf0605e9895d0d1e59683ecb67cdd2aebc668fd6451761c94a2c12c"
+    },
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-macro_invocations.parquet",
+      "bytes": 1023,
+      "sha256": "c07d0dd4036eadac4be2d3ce5e155d32d10fcf507eefd29694e26f7b11202e94"
+    },
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-macro_scopes.parquet",
+      "bytes": 376,
+      "sha256": "7436fbd7e18888e78b9fed6c836995027e1819493bc0e1045f3ef9d4bfa15770"
+    },
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-nodes.parquet",
+      "bytes": 2446,
+      "sha256": "ac7bcdf6db00d357d81115e64a4033b0a80a5f1942ece051c7ce1c4c115bc1c3"
+    },
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-occurrences.parquet",
+      "bytes": 1969,
+      "sha256": "820815895e4697b68f6079885048d50f006c45294e007f8aacd559e511af3dc6"
+    },
+    {
+      "path": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-16-extension-agent-experience/file-facts-spans.parquet",
+      "bytes": 2052,
+      "sha256": "d8f72df73aa1a1ba18d929c1b73d85546b4ec582b5f25763070ecb18e3722825"
+    }
+  ],
+  "checks_passed": true
+}

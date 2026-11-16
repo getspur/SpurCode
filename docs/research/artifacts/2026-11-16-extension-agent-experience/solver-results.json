@@ -1,0 +1,574 @@
+{
+  "catalog_family": "workflow",
+  "model_scope": "Caller-authored finite seven-transition abstraction; no claim of product-wide impossibility, measured latency or automatic code verification.",
+  "persistence": {
+    "requested": true,
+    "error": "solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513",
+    "retry_persist": false,
+    "solve_id": null
+  },
+  "current_managed_path": {
+    "request": {
+      "family": "workflow",
+      "mode": "synthesize",
+      "persist": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "workflow.initial_state_allowed",
+          "subjects": [
+            "journey"
+          ]
+        },
+        {
+          "rule_id": "workflow.transition_allowed",
+          "subjects": [
+            "journey"
+          ]
+        },
+        {
+          "rule_id": "workflow.bounded_reachability",
+          "subjects": [
+            "journey"
+          ],
+          "parameters": {
+            "bound": 7
+          }
+        }
+      ],
+      "facts": {
+        "horizon": 7,
+        "state_domain": [
+          "Task",
+          "PackageKnown",
+          "CompatibleRuntime",
+          "Loaded",
+          "SchemaKnown",
+          "InputsStaged",
+          "ResultChecked",
+          "Saved",
+          "Stalled"
+        ],
+        "event_domain": [
+          "source_lookup",
+          "select_compatible_runtime",
+          "load_exact_artifact",
+          "inspect_schema",
+          "stage_sources",
+          "execute_and_check",
+          "persist",
+          "abi_mismatch",
+          "wait"
+        ],
+        "initial_states": [
+          "Task"
+        ],
+        "safe_states": [
+          "Task",
+          "PackageKnown",
+          "CompatibleRuntime",
+          "Loaded",
+          "SchemaKnown",
+          "InputsStaged",
+          "ResultChecked",
+          "Saved",
+          "Stalled"
+        ],
+        "target_states": [
+          "Saved"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Task",
+            "event": "source_lookup",
+            "to": "PackageKnown"
+          },
+          {
+            "step": 1,
+            "from": "PackageKnown",
+            "event": "abi_mismatch",
+            "to": "Stalled"
+          },
+          {
+            "step": 2,
+            "from": "Stalled",
+            "event": "wait",
+            "to": "Stalled"
+          },
+          {
+            "step": 3,
+            "from": "Stalled",
+            "event": "wait",
+            "to": "Stalled"
+          },
+          {
+            "step": 4,
+            "from": "Stalled",
+            "event": "wait",
+            "to": "Stalled"
+          },
+          {
+            "step": 5,
+            "from": "Stalled",
+            "event": "wait",
+            "to": "Stalled"
+          },
+          {
+            "step": 6,
+            "from": "Stalled",
+            "event": "wait",
+            "to": "Stalled"
+          }
+        ],
+        "traces": {
+          "journey": {
+            "states": [
+              "Task",
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "events": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        }
+      },
+      "unknowns": [
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 1
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 2
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 3
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 4
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 5
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 6
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 7
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 0
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 1
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 2
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 3
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 4
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 5
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 6
+        }
+      ]
+    },
+    "result": [
+      {
+        "family": "workflow",
+        "mode": "synthesize",
+        "outcome": "infeasible",
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 7,
+          "reachability": [
+            {
+              "rule_id": "workflow.bounded_reachability",
+              "binding_index": 2,
+              "effective_bound": 7
+            }
+          ]
+        },
+        "total_duration_ms": 0,
+        "status": "unsat",
+        "duration_ms": 0,
+        "reason": null,
+        "unsat_core": [
+          "workflow_rule_1_workflow_transition_allowed",
+          "workflow_rule_2_workflow_bounded_reachability"
+        ],
+        "cached": true,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    ]
+  },
+  "proposed_contract": {
+    "request": {
+      "family": "workflow",
+      "mode": "synthesize",
+      "persist": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "workflow.initial_state_allowed",
+          "subjects": [
+            "journey"
+          ]
+        },
+        {
+          "rule_id": "workflow.transition_allowed",
+          "subjects": [
+            "journey"
+          ]
+        },
+        {
+          "rule_id": "workflow.bounded_reachability",
+          "subjects": [
+            "journey"
+          ],
+          "parameters": {
+            "bound": 7
+          }
+        }
+      ],
+      "facts": {
+        "horizon": 7,
+        "state_domain": [
+          "Task",
+          "PackageKnown",
+          "CompatibleRuntime",
+          "Loaded",
+          "SchemaKnown",
+          "InputsStaged",
+          "ResultChecked",
+          "Saved",
+          "Stalled"
+        ],
+        "event_domain": [
+          "source_lookup",
+          "select_compatible_runtime",
+          "load_exact_artifact",
+          "inspect_schema",
+          "stage_sources",
+          "execute_and_check",
+          "persist",
+          "abi_mismatch",
+          "wait"
+        ],
+        "initial_states": [
+          "Task"
+        ],
+        "safe_states": [
+          "Task",
+          "PackageKnown",
+          "CompatibleRuntime",
+          "Loaded",
+          "SchemaKnown",
+          "InputsStaged",
+          "ResultChecked",
+          "Saved",
+          "Stalled"
+        ],
+        "target_states": [
+          "Saved"
+        ],
+        "enabled_transitions": [
+          {
+            "step": 0,
+            "from": "Task",
+            "event": "source_lookup",
+            "to": "PackageKnown"
+          },
+          {
+            "step": 1,
+            "from": "PackageKnown",
+            "event": "select_compatible_runtime",
+            "to": "CompatibleRuntime"
+          },
+          {
+            "step": 2,
+            "from": "CompatibleRuntime",
+            "event": "load_exact_artifact",
+            "to": "Loaded"
+          },
+          {
+            "step": 3,
+            "from": "Loaded",
+            "event": "inspect_schema",
+            "to": "SchemaKnown"
+          },
+          {
+            "step": 4,
+            "from": "SchemaKnown",
+            "event": "stage_sources",
+            "to": "InputsStaged"
+          },
+          {
+            "step": 5,
+            "from": "InputsStaged",
+            "event": "execute_and_check",
+            "to": "ResultChecked"
+          },
+          {
+            "step": 6,
+            "from": "ResultChecked",
+            "event": "persist",
+            "to": "Saved"
+          }
+        ],
+        "traces": {
+          "journey": {
+            "states": [
+              "Task",
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "events": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        }
+      },
+      "unknowns": [
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 1
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 2
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 3
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 4
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 5
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 6
+        },
+        {
+          "kind": "trace_state",
+          "trace": "journey",
+          "index": 7
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 0
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 1
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 2
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 3
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 4
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 5
+        },
+        {
+          "kind": "trace_event",
+          "trace": "journey",
+          "index": 6
+        }
+      ]
+    },
+    "result": [
+      {
+        "family": "workflow",
+        "mode": "synthesize",
+        "outcome": "solution",
+        "assignments": [
+          {
+            "node": "journey",
+            "field": "traces.journey.states[1]",
+            "value": "PackageKnown"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.states[2]",
+            "value": "CompatibleRuntime"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.states[3]",
+            "value": "Loaded"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.states[4]",
+            "value": "SchemaKnown"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.states[5]",
+            "value": "InputsStaged"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.states[6]",
+            "value": "ResultChecked"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.states[7]",
+            "value": "Saved"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[0]",
+            "value": "source_lookup"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[1]",
+            "value": "select_compatible_runtime"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[2]",
+            "value": "load_exact_artifact"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[3]",
+            "value": "inspect_schema"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[4]",
+            "value": "stage_sources"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[5]",
+            "value": "execute_and_check"
+          },
+          {
+            "node": "journey",
+            "field": "traces.journey.events[6]",
+            "value": "persist"
+          }
+        ],
+        "evaluation_scope": {
+          "kind": "bounded_trace",
+          "horizon": 7,
+          "reachability": [
+            {
+              "rule_id": "workflow.bounded_reachability",
+              "binding_index": 2,
+              "effective_bound": 7
+            }
+          ]
+        },
+        "total_duration_ms": 0,
+        "status": "sat",
+        "model": {
+          "workflow_u_0": "PackageKnown",
+          "workflow_u_1": "CompatibleRuntime",
+          "workflow_u_10": "inspect_schema",
+          "workflow_u_11": "stage_sources",
+          "workflow_u_12": "execute_and_check",
+          "workflow_u_13": "persist",
+          "workflow_u_2": "Loaded",
+          "workflow_u_3": "SchemaKnown",
+          "workflow_u_4": "InputsStaged",
+          "workflow_u_5": "ResultChecked",
+          "workflow_u_6": "Saved",
+          "workflow_u_7": "source_lookup",
+          "workflow_u_8": "select_compatible_runtime",
+          "workflow_u_9": "load_exact_artifact"
+        },
+        "duration_ms": 0,
+        "reason": null,
+        "cached": true,
+        "solver_version": "Z3 version 4.16.0 - 64 bit"
+      }
+    ]
+  }
+}
