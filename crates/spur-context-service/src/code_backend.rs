@@ -30,6 +30,7 @@ use crate::artifact_cache::{
     ArtifactCacheError, ArtifactIdentity, MaterializedArtifact, MaterializedArtifactBundle,
 };
 use crate::medallion::SilverManifest;
+use crate::package_search::PackageNameFilter;
 use crate::serving_registry::{ServingPackage, ServingRegistry};
 use source_sidecar::{read_verified_source, SourceSidecarReadError, SOURCE_SIDECAR_FILENAME};
 
@@ -476,13 +477,10 @@ impl CodeBackend {
     }
 
     async fn catalog_packages(&self, request: &CatalogRequest) -> Result<Value, CodeBackendError> {
+        let filter = PackageNameFilter::new(request.name_filter.as_deref());
         let mut revisions_by_package = BTreeMap::<String, (Vec<String>, Option<String>)>::new();
         for package in self.registry.packages.iter().filter(|candidate| {
-            candidate.source == request.source
-                && request
-                    .name_filter
-                    .as_deref()
-                    .is_none_or(|filter| candidate.package.contains(filter))
+            candidate.source == request.source && filter.matches(&candidate.package)
         }) {
             let opened = self.open(package.clone()).await?;
             let entry = revisions_by_package

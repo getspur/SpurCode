@@ -343,44 +343,9 @@ pub fn list_packages(
     let refs_available = refs_table_available(db, &tables)?;
     let cursor_parts = decode_cursor(cursor, 2)?;
 
-    let mut count_params = SqlParams::default();
-    let count_source = count_params.push(source.to_owned());
-    let mut count_filters = vec![format!("pc.source = {count_source}")];
-    if let Some(name_filter) = name_filter {
-        let name_filter = count_params.push(name_filter.to_owned());
-        count_filters.push(format!("contains(pc.package, {name_filter})"));
-    }
-    let count_sql = format!(
-        r"
-        SELECT COUNT(*)
-        FROM (
-            SELECT pc.source, pc.package
-            FROM {package_catalog} pc
-            WHERE {count_where}
-            GROUP BY pc.source, pc.package
-        ) packages
-        ",
-        package_catalog = tables.package_catalog,
-        count_where = count_filters.join(" AND ")
-    );
-    let total_matches =
-        query_count(db, &count_sql, count_params).context("failed to count catalog packages")?;
-
+    let filter = crate::package_search::PackageNameFilter::new(name_filter);
     let mut params = SqlParams::default();
     let source_param = params.push(source.to_owned());
-    let mut filters = vec![format!("pc.source = {source_param}")];
-    if let Some(name_filter) = name_filter {
-        let name_filter = params.push(name_filter.to_owned());
-        filters.push(format!("contains(pc.package, {name_filter})"));
-    }
-    if let Some(parts) = cursor_parts {
-        let cursor_source = params.push(parts[0].clone());
-        let cursor_package = params.push(parts[1].clone());
-        filters.push(format!(
-            "(pc.source > {cursor_source} OR (pc.source = {cursor_source} AND pc.package > {cursor_package}))"
-        ));
-    }
-    let limit_param = params.push((clamp_catalog_limit(limit) + 1) as i64);
     let latest_refs = if refs_available {
         format!(
             r",
@@ -442,10 +407,9 @@ pub fn list_packages(
         FROM packages p
         {latest_join}
         ORDER BY p.source, p.package
-        LIMIT {limit_param}
         ",
         package_catalog = tables.package_catalog,
-        where_clause = filters.join(" AND "),
+        where_clause = format!("pc.source = {source_param}"),
     );
     let mut rows = collect_rows(db, &sql, params, |row| {
         Ok(PackageCatalogRow {
@@ -457,6 +421,15 @@ pub fn list_packages(
         })
     })
     .context("failed to list catalog packages")?;
+    // Share the exact matching policy with the Parquet backend. Count before
+    // the cursor so total_matches describes the complete filtered catalog.
+    rows.retain(|row| filter.matches(&row.package));
+    let total_matches = rows.len();
+    if let Some(parts) = cursor_parts {
+        rows.retain(|row| {
+            (row.source.as_str(), row.package.as_str()) > (parts[0].as_str(), parts[1].as_str())
+        });
+    }
     let (truncated, next_cursor) = trim_catalog_page(&mut rows, limit, |row| {
         encode_cursor([row.source.as_str(), row.package.as_str()])
     });

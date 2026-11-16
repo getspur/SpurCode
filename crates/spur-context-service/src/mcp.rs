@@ -1997,7 +1997,7 @@ fn external_catalog_def() -> ToolDefinition {
                 },
                 "name_filter": {
                     "type": "string",
-                    "description": "Optional substring filter for package names or file symbols."
+                    "description": "Package discovery: case-insensitive name substrings or keywords (all terms), with one edit or adjacent transposition allowed for terms of at least 3 characters. Empty/whitespace lists packages; punctuation-only matches none. File symbols: case-sensitive substring filter."
                 },
                 "limit": {
                     "type": "integer",

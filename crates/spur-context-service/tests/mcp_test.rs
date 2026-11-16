@@ -344,10 +344,10 @@ async fn catalog_package_search_parquet_matches_names_keywords_and_typos() -> Re
         call_parquet_backend(&fixture, "external_catalog", &json!({"package":"duckdb"})).await?;
     assert_eq!(revisions["level"], "revisions");
     assert_eq!(revisions["total_matches"], 1);
-    let missing =
-        call_parquet_backend(&fixture, "external_catalog", &json!({"package":"dukdb"})).await?;
-    assert_eq!(missing["level"], "revisions");
-    assert_eq!(missing["total_matches"], 0);
+    let missing = call_parquet_backend(&fixture, "external_catalog", &json!({"package":"dukdb"}))
+        .await
+        .expect_err("package coordinates must remain exact rather than fuzzy");
+    assert!(matches!(missing, McpHandlerError::NotFound(_)));
     Ok(())
 }
 

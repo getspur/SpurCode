@@ -27,6 +27,8 @@ pub mod mcp;
 #[cfg(all(feature = "code-control", not(feature = "service")))]
 pub(crate) use crate::lambda::code_control as mcp;
 pub mod medallion;
+#[cfg(any(feature = "service", feature = "code-backend"))]
+mod package_search;
 #[cfg(feature = "service")]
 pub mod query;
 pub mod serving_registry;
