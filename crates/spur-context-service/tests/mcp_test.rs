@@ -248,6 +248,110 @@ async fn external_code_search_resolves_latest_and_returns_candidates() -> Result
 }
 
 #[tokio::test]
+async fn catalog_package_search_parquet_matches_names_keywords_and_typos() -> Result<()> {
+    let mut fixture = ParquetBackendFixture::new("catalog-package-search")?;
+    for (source, package) in [
+        ("registry:crates-io", "duckdb"),
+        ("registry:crates-io", "duckdb-loadable-macros"),
+        ("registry:crates-io", "libduckdb-sys"),
+        ("registry:crates-io", "axum"),
+        ("registry:crates-io", "café"),
+        ("git:github.com/example/duck", "duck-private"),
+    ] {
+        let mut entry = fixture.registry.packages[0].clone();
+        entry.source = source.to_owned();
+        entry.package = package.to_owned();
+        fixture.registry.packages.push(entry);
+    }
+    fixture.expand_cache_capacity(fixture.registry.packages.len() as u64)?;
+    for (filter, expected) in [
+        (
+            "DUCK",
+            vec!["duckdb", "duckdb-loadable-macros", "libduckdb-sys"],
+        ),
+        ("sys duck", vec!["libduckdb-sys"]),
+        ("DUCK_sys", vec!["libduckdb-sys"]),
+        ("dukdb", vec!["duckdb", "duckdb-loadable-macros"]),
+        ("duckbd", vec!["duckdb", "duckdb-loadable-macros"]),
+        ("axm", vec!["axum"]),
+        ("dk", vec![]),
+        ("dukxx", vec![]),
+        ("duckzz", vec![]),
+        ("unrelated", vec![]),
+        ("CAFÉ", vec!["café"]),
+        ("cafe", vec!["café"]),
+        ("---", vec![]),
+        ("' OR 1=1 --", vec![]),
+    ] {
+        let result =
+            call_parquet_backend(&fixture, "external_catalog", &json!({"name_filter":filter}))
+                .await?;
+        let actual = result["rows"]
+            .as_array()
+            .context("catalog rows")?
+            .iter()
+            .map(|row| row["package"].as_str().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "filter {filter:?}");
+        assert_eq!(result["total_matches"], expected.len(), "filter {filter:?}");
+    }
+    let all = call_parquet_backend(&fixture, "external_catalog", &json!({})).await?;
+    for filter in ["", "   "] {
+        let result =
+            call_parquet_backend(&fixture, "external_catalog", &json!({"name_filter":filter}))
+                .await?;
+        assert_eq!(result["rows"], all["rows"], "filter {filter:?}");
+    }
+    let mut cursor = Value::Null;
+    let mut packages = Vec::new();
+    loop {
+        let page = call_parquet_backend(
+            &fixture,
+            "external_catalog",
+            &json!({"name_filter":"DUCK", "limit":1, "cursor":cursor}),
+        )
+        .await?;
+        assert_eq!(page["total_matches"], 3);
+        assert_eq!(
+            page["catalog_generation"],
+            ParquetBackendFixture::GENERATION
+        );
+        packages.extend(
+            page["rows"]
+                .as_array()
+                .context("catalog rows")?
+                .iter()
+                .map(|row| row["package"].as_str().unwrap().to_owned()),
+        );
+        cursor = page["next_cursor"].clone();
+        if cursor.is_null() {
+            break;
+        }
+    }
+    assert_eq!(
+        packages,
+        ["duckdb", "duckdb-loadable-macros", "libduckdb-sys"]
+    );
+    let other = call_parquet_backend(
+        &fixture,
+        "external_catalog",
+        &json!({"source":"git:github.com/example/duck", "name_filter":"DUCK"}),
+    )
+    .await?;
+    assert_eq!(other["total_matches"], 1);
+    assert_eq!(other["rows"][0]["package"], "duck-private");
+    let revisions =
+        call_parquet_backend(&fixture, "external_catalog", &json!({"package":"duckdb"})).await?;
+    assert_eq!(revisions["level"], "revisions");
+    assert_eq!(revisions["total_matches"], 1);
+    let missing =
+        call_parquet_backend(&fixture, "external_catalog", &json!({"package":"dukdb"})).await?;
+    assert_eq!(missing["level"], "revisions");
+    assert_eq!(missing["total_matches"], 0);
+    Ok(())
+}
+
+#[tokio::test]
 async fn parquet_backend_matches_catalog_and_search_contracts() -> Result<()> {
     let fixture = ParquetBackendFixture::new("parquet-backend-contracts")?;
 

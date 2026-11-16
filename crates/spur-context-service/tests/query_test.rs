@@ -234,6 +234,95 @@ fn catalog_queries_list_packages_revisions_tree_and_symbols() -> Result<()> {
 }
 
 #[test]
+fn catalog_package_search_matches_names_keywords_and_typos() -> Result<()> {
+    let fixture = QueryFixture::new()?;
+    seed_catalog_search_packages(&fixture.conn)?;
+    for (filter, expected) in [
+        (
+            "DUCK",
+            vec!["duckdb", "duckdb-loadable-macros", "libduckdb-sys"],
+        ),
+        ("sys duck", vec!["libduckdb-sys"]),
+        ("DUCK_sys", vec!["libduckdb-sys"]),
+        ("dukdb", vec!["duckdb", "duckdb-loadable-macros"]),
+        ("duckbd", vec!["duckdb", "duckdb-loadable-macros"]),
+        ("axm", vec!["axum"]),
+        ("dk", vec![]),
+        ("dukxx", vec![]),
+        ("duckzz", vec![]),
+        ("unrelated", vec![]),
+        ("CAFÉ", vec!["café"]),
+        ("cafe", vec!["café"]),
+        ("---", vec![]),
+        ("' OR 1=1 --", vec![]),
+    ] {
+        let result = list_packages(&fixture.conn, SOURCE, Some(filter), 50, None)?;
+        let actual = result
+            .rows
+            .iter()
+            .map(|row| row.package.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "filter {filter:?}");
+        assert_eq!(result.total_matches, expected.len(), "filter {filter:?}");
+    }
+    let all = list_packages(&fixture.conn, SOURCE, None, 50, None)?;
+    for filter in ["", "   "] {
+        let result = list_packages(&fixture.conn, SOURCE, Some(filter), 50, None)?;
+        assert_eq!(result.rows, all.rows, "filter {filter:?}");
+    }
+    Ok(())
+}
+
+#[test]
+fn catalog_package_search_preserves_source_order_and_cursor_totals() -> Result<()> {
+    let fixture = QueryFixture::new()?;
+    seed_catalog_search_packages(&fixture.conn)?;
+    let mut cursor = None;
+    let mut packages = Vec::new();
+    loop {
+        let page = list_packages(&fixture.conn, SOURCE, Some("DUCK"), 1, cursor.as_deref())?;
+        assert_eq!(page.total_matches, 3);
+        assert_eq!(page.catalog_generation, Some(9));
+        packages.extend(page.rows.into_iter().map(|row| row.package));
+        cursor = page.next_cursor;
+        if cursor.is_none() {
+            break;
+        }
+    }
+    assert_eq!(
+        packages,
+        ["duckdb", "duckdb-loadable-macros", "libduckdb-sys"]
+    );
+    let other = list_packages(
+        &fixture.conn,
+        "git:github.com/example/duck",
+        Some("DUCK"),
+        50,
+        None,
+    )?;
+    assert_eq!(other.total_matches, 1);
+    assert_eq!(other.rows[0].package, "duck-private");
+    Ok(())
+}
+
+fn seed_catalog_search_packages(conn: &Connection) -> Result<()> {
+    for (source, package) in [
+        (SOURCE, "duckdb"),
+        (SOURCE, "duckdb-loadable-macros"),
+        (SOURCE, "libduckdb-sys"),
+        (SOURCE, "axum"),
+        (SOURCE, "café"),
+        ("git:github.com/example/duck", "duck-private"),
+    ] {
+        conn.execute(
+            "INSERT INTO package_catalog (source, package, revision, indexed_at, generation) VALUES ($1, $2, '1.0.0', TIMESTAMP '2026-06-23 00:00:00', 9)",
+            params![source, package],
+        )?;
+    }
+    Ok(())
+}
+
+#[test]
 fn catalog_queries_tolerate_missing_refs_table() -> Result<()> {
     let fixture = QueryFixture::new()?;
     fixture
