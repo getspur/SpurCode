@@ -67,6 +67,7 @@ class AppConsumerTests(unittest.TestCase):
         self.assertEqual(m['artifact']['binary']['sha256'],
                          hashlib.sha256(self.package.read_bytes()).hexdigest())
         self.assertEqual(m['fixture_sha256'], hashlib.sha256(FIXTURE.read_bytes()).hexdigest())
+        self.assertEqual(m['source_identity_scheme'], 'sha256:utf8-v1')
         self.assertEqual(m['facts_schema_version'], self.artifact['facts_schema_version'])
         self.assertEqual(m['extractor_id'], self.artifact['extractor_id'])
         self.assertEqual(m['runtime']['duckdb'], '2.0.0')
@@ -201,6 +202,32 @@ class AppConsumerTests(unittest.TestCase):
                 expected_extractor_id='wrong-extractor', timeout=60)
         self.assert_reaped(error.exception)
         self.assertFalse((self.output / 'current.json').exists())
+
+    def test_unsupported_fixture_scheme_preserves_completed_pointer_and_files(self):
+        previous = self.run_consumer()
+        before = {p.relative_to(self.output): p.read_bytes()
+                  for p in self.output.rglob('*') if p.is_file()}
+        changed = copy.deepcopy(self.fixture)
+        changed['source_identity_scheme'] = 'git:sha1-v1'
+        bad = Path(self.tmp.name) / 'unsupported-scheme.json'
+        bad.write_text(json.dumps(changed))
+        with self.assertRaisesRegex(self.app.ChildFailure, 'unsupported source identity scheme') as error:
+            self.app.run_consumer(bad, self.output, self.package,
+                expected_extractor_id=self.artifact['extractor_id'], timeout=60)
+        self.assert_reaped(error.exception)
+        self.assertEqual({p.relative_to(self.output): p.read_bytes()
+                          for p in self.output.rglob('*') if p.is_file()}, before)
+        self.assertEqual(self.app.read_result(self.output, 'base')['manifest'], previous)
+
+    def test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme(self):
+        changed = self.run_consumer()
+        changed['source_identity_scheme'] = 'git:sha1-v1'
+        # Keep both manifests coherent so this checks the declared scheme,
+        # rather than merely detecting a pointer/immutable-manifest mismatch.
+        (self.output / 'current.json').write_text(json.dumps(changed))
+        (self.output / 'runs' / changed['run_id'] / 'manifest.json').write_text(json.dumps(changed))
+        with self.assertRaisesRegex(ValueError, 'unsupported source identity scheme'):
+            self.app.read_result(self.output, 'base')
 
     def test_missing_full_lineage_key_and_conflicting_snapshot_are_rejected(self):
         for mutate in ('extractor', 'path', 'duplicate_snapshot', 'pair_snapshot'):
