@@ -5,10 +5,13 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 
 CRATE = Path(__file__).resolve().parents[1]
@@ -97,6 +100,91 @@ class DriverTests(DriverFixture, unittest.TestCase):
         tests = self.root / "tests"
         tests.mkdir()
         self.assertNotEqual(self.driver.run_unittests(tests, self.root / "summary.json"), 0)
+
+
+class SourceStabilityTests(DriverFixture, unittest.TestCase):
+    """Exercise the real compiled probe; substitute only unrelated release phases."""
+
+    def setUp(self):
+        super().setUp()
+        self.crate = self.root / "crates/spur-graph-duckdb"
+        (self.crate / "src").mkdir(parents=True)
+        (self.crate / "queries").mkdir()
+        (self.crate / "src/lib.rs").write_text("// initial native source\n")
+        (self.crate / "Cargo.toml").write_text(
+            '[package]\nname = "spur-graph-duckdb"\nversion.workspace = true\n'
+            '[dependencies]\nserde.workspace = true\n')
+        (self.crate / "Cargo.lock").write_text(
+            '[[package]]\nname = "spur-graph-duckdb"\nversion = "0.1.0"\n')
+        self.workspace = self.root / "Cargo.toml"
+        self.workspace.write_text('[workspace.package]\nversion = "0.1.0"\n'
+                                  '[workspace.dependencies]\nserde = "1.0.0"\n')
+        shutil.copyfile(self.driver.ROOT / "rust-toolchain.toml", self.root / "rust-toolchain.toml")
+        self.output = self.root / "release"
+        examples = self.output / "native-target/examples"
+        examples.mkdir(parents=True)
+        self.artifacts = {}
+        for name in ("library", *self.driver.EXAMPLES):
+            path = examples / name
+            path.write_bytes(b"controlled unrelated artifact\n")
+            path.chmod(0o755)
+            self.artifacts[name] = str(path)
+        probe = self.output / "native-target/build-script"
+        shutil.copy2(os.environ["SPUR_GRAPH_BUILD_SCRIPT"], probe)
+        self.artifacts["build_script"] = str(probe)
+        self.probes = []
+
+    def release(self, mutation=lambda: None):
+        run_phases = self.driver.run_phases
+        pin = self.driver.tomllib.loads((self.root / "rust-toolchain.toml").read_text())["toolchain"]["channel"]
+
+        def phases(items, output, env, receipt):
+            for name, command in items:
+                if name.startswith("source-probe"):
+                    self.probes.append((name, command, env["OUT_DIR"]))
+                    return run_phases([(name, command)], output, env, receipt)
+                if name == "unittests":
+                    mutation()
+                    (output / "unittest-summary.json").write_text('{"tests_run": 1, "skipped": 0}')
+                if name == "package":
+                    (output / "spur_graph.duckdb_extension").write_bytes(b"controlled package")
+                    (output / "spur_graph.duckdb_extension.json").write_text('{}')
+                stdout = {"source-head": "controlled source head", "source-status": "",
+                          "rustc-version": f"release: {pin}\nhost: fixture-target\n",
+                          "verify-package": '{"artifact": {}}'}.get(name, "")
+                (output / (name + ".stdout")).write_text(stdout)
+            return 0
+
+        args = SimpleNamespace(expect_platform=None, host_native=True, rust_tests_mode="remote")
+        with patch.multiple(self.driver, ROOT=self.root, CRATE=self.crate), \
+                patch.object(self.driver, "runtime_preflight", return_value={}), \
+                patch.object(self.driver, "build_artifacts", return_value=self.artifacts), \
+                patch.object(self.driver, "approved_extension_sha", return_value="controlled approval"), \
+                patch.object(self.driver, "run_phases", side_effect=phases):
+            self.driver.check_release(args, self.output, {"commands": []})
+
+    def test_final_guard_reruns_compiled_probe_in_fresh_directory(self):
+        self.release()
+        self.assertEqual([name for name, _, _ in self.probes], ["source-probe", "source-probe-final"])
+        initial, final = [Path(directory) for _, _, directory in self.probes]
+        self.assertNotEqual(initial, final)
+        self.assertEqual(self.probes[0][1], self.probes[1][1])
+        self.assertEqual(json.loads((initial / "spur_graph_source_identity.json").read_text()),
+                         json.loads((final / "spur_graph_source_identity.json").read_text()))
+
+    def test_final_guard_rejects_changed_inherited_workspace_projection(self):
+        def mutate():
+            self.workspace.write_text(self.workspace.read_text().replace('serde = "1.0.0"', 'serde = "2.0.0"'))
+        with self.assertRaisesRegex(ValueError, "source changed"):
+            self.release(mutate)
+
+    def test_final_guard_rejects_new_native_source_input(self):
+        with self.assertRaisesRegex(ValueError, "source changed"):
+            self.release(lambda: (self.crate / "src/new.rs").write_text("// added during suite\n"))
+
+    def test_final_guard_rejects_new_query_input(self):
+        with self.assertRaisesRegex(ValueError, "source changed"):
+            self.release(lambda: (self.crate / "queries/new.scm").write_text("; added during suite\n"))
 
 
 class ReleaseManifestTests(DriverFixture, unittest.TestCase):
