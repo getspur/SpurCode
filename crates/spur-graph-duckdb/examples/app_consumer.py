@@ -41,6 +41,7 @@ import uuid
 
 
 CRATE = Path(__file__).resolve().parents[1]
+SOURCE_IDENTITY_SCHEME = 'sha256:utf8-v1'
 KEY = 'blob_oid, logical_path, extractor_sha'
 SUCCESS = ('ok', 'empty_source', 'empty_facts')
 FAULTS = (None, 'exit_after_candidate', 'interrupt_after_candidate', 'wait_after_candidate')
@@ -102,6 +103,8 @@ def read_result(output, snapshot_id):
         raise ValueError('current manifest disagrees with immutable run identity')
     if manifest['status'] != 'complete' or manifest['contract_version'] != 1:
         raise ValueError('unsupported or incomplete result manifest')
+    if manifest.get('source_identity_scheme') != SOURCE_IDENTITY_SCHEME:
+        raise ValueError('unsupported source identity scheme')
     if snapshot_id not in manifest['snapshots']:
         raise ValueError('requested snapshot is absent: ' + str(snapshot_id))
     if manifest['artifact']['extractor_id'] != manifest['extractor_id']:
@@ -183,6 +186,8 @@ def validate_fixture(fixture, extractor_id):
     """Check frozen bytes and complete lineage keys before native extraction."""
     if fixture['format_version'] != 1:
         raise ValueError('unsupported fixture format')
+    if fixture.get('source_identity_scheme') != SOURCE_IDENTITY_SCHEME:
+        raise ValueError('unsupported source identity scheme')
     snapshots, sources, keys = {}, [], set()
     for snapshot in fixture['snapshots']:
         sid = snapshot['snapshot_id']
@@ -346,7 +351,7 @@ def native_candidate(request, staging):
         artifact_manifest_sha256=checksum(Path(str(package) + '.json')),
         runtime=dict(duckdb=duckdb.__version__, native_version=native_version, platform=platform),
         source_labels=dict(provenance='caller_supplied', independently_verified=False),
-        source_identity_scheme=fixture['source_identity_scheme'], snapshots=coverage,
+        source_identity_scheme=SOURCE_IDENTITY_SCHEME, snapshots=coverage,
         resolution=dict(scope=artifact['resolution_scope'], compiler_complete=False, repository_complete=False),
         review_coverage=review_coverage, replay=replay, tables=tables,
         snapshot_manifest=dict(path=(prefix / 'snapshot/versions/facts/manifest.json').as_posix(),
