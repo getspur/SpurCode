@@ -834,7 +834,6 @@ mod diagnostic_tests {
         let utf8 = std::str::from_utf8(&bytes).unwrap_err();
         for (error, code) in [
             (ExtractError::InvalidUtf8(utf8), "malformed_input"),
-            (ExtractError::NoTree, "extraction_failed"),
             (
                 ExtractError::Extraction("parse .ipynb JSON".into()),
                 "malformed_input",
@@ -852,6 +851,7 @@ mod diagnostic_tests {
             assert!(result.facts.is_none());
         }
         for error in [
+            ExtractError::NoTree,
             ExtractError::Setup("query compiler failed".into()),
             ExtractError::Extraction("set rust parser language".into()),
             ExtractError::Extraction("unexpected kernel failure".into()),
