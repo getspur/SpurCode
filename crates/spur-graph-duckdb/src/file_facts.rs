@@ -582,7 +582,6 @@ fn reserve_fact_children<'a>(
 fn diagnostic_error(error: ExtractError) -> Result<FileFactsResult> {
     let code = match &error {
         ExtractError::InvalidUtf8(_) => "malformed_input",
-        ExtractError::NoTree => "extraction_failed",
         ExtractError::Extraction(message) => match message.as_str() {
             "logical path must be UTF-8"
             | "logical path must be relative with no parent components"
@@ -595,7 +594,7 @@ fn diagnostic_error(error: ExtractError) -> Result<FileFactsResult> {
                 )))
             }
         },
-        ExtractError::Setup(_) => {
+        ExtractError::NoTree | ExtractError::Setup(_) => {
             return Err(Error::internal(format!(
                 "spur_graph_file_facts_result: {error}"
             )));
