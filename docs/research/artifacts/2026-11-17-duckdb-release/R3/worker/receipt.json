@@ -1,0 +1,1529 @@
+{
+  "task": "R3",
+  "issue": "bd-94uh",
+  "plan": "f02f5ee1-f011-4b13-bb0b-e8d6451ee34a",
+  "delegation": "b18139081dce47aa",
+  "requested_source_base": "adaa1f86e2c95201a331046a8c0ea785b8781399",
+  "dispatched_base": "3daa907ef96ba5bce8a706a39983ea75c886eb4a",
+  "source_head": "205d7837d17b5c1ea587159a080ff4776f3d37f3",
+  "status": "",
+  "commits": [
+    "205d7837d17b5c1ea587159a080ff4776f3d37f3 feat(spur-graph-duckdb): R3 persist diagnostics and publish coherent snapshots",
+    "95ad5e1d4a923ed5d5a6fc6893076692b601391c test(spur-graph-duckdb): R3 specify cache diagnostics and atomic snapshots"
+  ],
+  "changed_paths": [
+    "crates/spur-graph-duckdb/examples/file_facts.sql",
+    "crates/spur-graph-duckdb/examples/publish_snapshot.py",
+    "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py",
+    "crates/spur-graph-duckdb/tests/test_publish_snapshot.py"
+  ],
+  "changed_sha256": {
+    "crates/spur-graph-duckdb/examples/file_facts.sql": "f90d74a6de7aa28e17731f9dd70149315340871e9bdd8eba4742fe1b86e33871",
+    "crates/spur-graph-duckdb/examples/publish_snapshot.py": "827cb2241670ab0f5e81063df7212b7118a18595fdeedbe7417d1ca58ec6a31c",
+    "crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py": "d144b1a2393706b0d3e2cc5700e3245d5f23d0142bc5cd3111dd4c8843780496",
+    "crates/spur-graph-duckdb/tests/test_publish_snapshot.py": "c8be3927146e375148d56565d51ca00d30d34b9403d705787a157ac2cfaa29e9"
+  },
+  "unified_diff": "/private/tmp/spur-r3-7cb6b619-evidence/R3-unified.diff",
+  "commands": [
+    {
+      "phase": "red",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline.FileFactsPipelineTests.test_diagnostics_persist_exact_native_details_and_replay_only_missing",
+        "test_file_facts_pipeline.FileFactsPipelineTests.test_prior_cache_additive_migration_keeps_unknown_details_null",
+        "test_publish_snapshot.PublishSnapshotTests",
+        "-v"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 1,
+      "at": "2026-11-16T21:02:09.202598+00:00"
+    },
+    {
+      "phase": "red-final",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline.FileFactsPipelineTests.test_diagnostics_persist_exact_native_details_and_replay_only_missing",
+        "test_file_facts_pipeline.FileFactsPipelineTests.test_prior_cache_additive_migration_keeps_unknown_details_null",
+        "test_publish_snapshot.PublishSnapshotTests",
+        "-v"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 1,
+      "at": "2026-11-16T21:02:28.663520+00:00"
+    },
+    {
+      "phase": "green-focused",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline",
+        "test_publish_snapshot",
+        "-v"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 1,
+      "at": "2026-11-16T21:03:50.877733+00:00"
+    },
+    {
+      "phase": "green-focused-2",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline",
+        "test_publish_snapshot",
+        "-v"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 1,
+      "at": "2026-11-16T21:04:13.946471+00:00"
+    },
+    {
+      "phase": "green-focused-3",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline",
+        "test_publish_snapshot",
+        "-v"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:04:27.260261+00:00"
+    },
+    {
+      "phase": "green-regression",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_file_facts_pipeline",
+        "test_publish_snapshot",
+        "test_diagnostics",
+        "test_file_facts",
+        "test_extension",
+        "test_contract",
+        "-v"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:05:32.753781+00:00"
+    },
+    {
+      "phase": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:06:01.998176+00:00"
+    },
+    {
+      "phase": "predecessor-final",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "/private/tmp/spur-r3-7cb6b619-evidence/verify_predecessor.py"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:06:02.231847+00:00"
+    },
+    {
+      "phase": "committed-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "3daa907ef96ba5bce8a706a39983ea75c886eb4a",
+        "HEAD"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:06:29.305795+00:00"
+    },
+    {
+      "phase": "scope-check",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "3daa907ef96ba5bce8a706a39983ea75c886eb4a",
+        "HEAD",
+        "--",
+        ".",
+        ":(exclude)crates/spur-graph-duckdb/examples/file_facts.sql",
+        ":(exclude)crates/spur-graph-duckdb/examples/publish_snapshot.py",
+        ":(exclude)crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py",
+        ":(exclude)crates/spur-graph-duckdb/tests/test_publish_snapshot.py"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:06:29.339153+00:00"
+    },
+    {
+      "phase": "final-status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "env": {
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH": "crates/spur-graph-duckdb/tests"
+      },
+      "exit": 0,
+      "at": "2026-11-16T21:06:29.397704+00:00"
+    }
+  ],
+  "results": {
+    "red": {
+      "exit": 1,
+      "assertion_failures": 10,
+      "errors": 0,
+      "log": "red-final.log",
+      "reason": "two missing diagnostic/migration columns; eight explicit missing publisher assertions"
+    },
+    "focused": {
+      "exit": 0,
+      "passed": 29,
+      "log": "green-focused-3.log"
+    },
+    "regression": {
+      "exit": 0,
+      "passed": 64,
+      "log": "green-regression.log"
+    },
+    "intermediate_failures": [
+      "green-focused.log: errors=9/failures=1 (catalog/schema ambiguity, five-column synthetic fixture, OID across reopen)",
+      "green-focused-2.log: errors=1 (five-column synthetic fixture)"
+    ],
+    "diff_check_exit": 0,
+    "scope_check_exit": 0,
+    "clean_status": true
+  },
+  "native_reuse": {
+    "receipt_sha256": "192e69a722f8cdfcc2846e4230e378900f4b7eae18a674e94ae236d733d4a913",
+    "source_head": "95ad5e1d4a923ed5d5a6fc6893076692b601391c",
+    "native_source_head": "11d0de8cf39c5c04edeb94c2fecdb19d1d693cc6",
+    "checks": {
+      "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+      "/private/tmp/spur-graph-duckdb-v2-20261114/lib/python3.14/site-packages/_duckdb.abi3.so": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build": "a852eb472d04c2cf6a864e3aa5fc70300cdc985bbc8109469ef58a4bf45341ba",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib": "c1f58167e140bf0e695d49bce358a990bebe3c51239dbeae6c772ecf71c00e1c",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts": "7a9abd01f4931c5fe1b334fb210a932eeefc7f9d109381fd4ed726f6a28b38b3",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension": "6cfd5205ac15f12cf64ff02cf3cbd592b5b14c4afdb3d7ccb34e25de774bfc27",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph_source_identity.json": "179cdadc9b9fb61c8160c145ae500aba75251f6aa0897e2a36b9783a7c65fb8f",
+      "crates/spur-graph-duckdb/src/file_facts.rs": "f0be4796ca463580e54f8a584e346dc69fee8aa6ff14395cbda2e9e062b6070d",
+      "crates/spur-graph-duckdb/tests/test_diagnostics.py": "94dd8b4624adf37760de24699d6f643c87b461a51c3d78f2df3887796e8633f2",
+      "crates/spur-graph-duckdb/src/lib.rs": "685c58f32e2e5c804095421eafc9c0c83867ab47df002268d2e0cb3981809e68",
+      "crates/spur-graph-duckdb/src/metadata.rs": "53b1e5b4bfb861099931a20423e6550b1c47c9aa26f7f70f55c07d8766f4c535",
+      "crates/spur-graph-duckdb/Cargo.toml": "1376cac6fdc74accccade6c1326bd916c6ad874b39695b17bf882b313f65f52c",
+      "crates/spur-graph-duckdb/Cargo.lock": "4004295351edbeecedd8a319125341f1b4932557e0f5d006aeaf731fd9ba5732",
+      "crates/spur-graph-duckdb/build.rs": "1fa99241d7900090ea4d839c0a23c518fc49c0fac0683442adaa17c91870d00e"
+    },
+    "metadata": {
+      "extension_version": "0.1.0",
+      "facts_schema_version": 1,
+      "duckdb_api_version": "2.0.0",
+      "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+      "supported_languages": [
+        "C",
+        "Cpp",
+        "Css",
+        "Go",
+        "Hcl",
+        "Html",
+        "Javascript",
+        "Json",
+        "JupyterNotebook",
+        "Lua",
+        "Markdown",
+        "Mermaid",
+        "Python",
+        "Rust",
+        "Shell",
+        "Sql",
+        "Terraform",
+        "Toml",
+        "Tsx",
+        "TypeScript",
+        "Yaml"
+      ],
+      "resolution_scope": "single_file"
+    },
+    "live_bad_result": {
+      "status": "extraction_error",
+      "error_code": "unsupported_language",
+      "error_message": "unsupported language for path: bad.unknown",
+      "facts": null
+    },
+    "live_good_status": "ok",
+    "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "executable": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+    "platform": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "duckdb": "2.0.0"
+  },
+  "native_receipt": "/private/tmp/spur-r2-e5afa03c-evidence/receipt.json",
+  "native_build_performed": false,
+  "solve": {
+    "rules": [
+      "data_integrity.unique",
+      "data_integrity.cardinality"
+    ],
+    "mode": "verify",
+    "scope": "Finite full-key witness and seven distinct required exports; missing occurrence export rejects. No unbounded transaction, filesystem or performance proof.",
+    "receipts": {
+      "pre-persist": "/private/tmp/spur-r3-7cb6b619-evidence/solve-pre-persist.json",
+      "pre": "/private/tmp/spur-r3-7cb6b619-evidence/solve-pre.json",
+      "pre-negative": "/private/tmp/spur-r3-7cb6b619-evidence/solve-pre-negative.json",
+      "post": "/private/tmp/spur-r3-7cb6b619-evidence/solve-post.json",
+      "post-negative": "/private/tmp/spur-r3-7cb6b619-evidence/solve-post-negative.json"
+    },
+    "persistence_failure": "solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513",
+    "raw": {
+      "pre-persist": {
+        "phase": "pre-persist",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "persist": false,
+          "facts": {
+            "relations": {
+              "cache": {
+                "fields": {
+                  "blob_oid": {
+                    "kind": "enum",
+                    "values": [
+                      "blob"
+                    ]
+                  },
+                  "logical_path": {
+                    "kind": "enum",
+                    "values": [
+                      "one.rs",
+                      "two.rs"
+                    ]
+                  },
+                  "extractor_sha": {
+                    "kind": "enum",
+                    "values": [
+                      "v1",
+                      "v2"
+                    ]
+                  }
+                },
+                "rows": {
+                  "a": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "b": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "two.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "c": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v2"
+                      }
+                    }
+                  }
+                }
+              },
+              "exports": {
+                "fields": {
+                  "table": {
+                    "kind": "enum",
+                    "values": [
+                      "file_facts_cache",
+                      "file_facts_nodes",
+                      "file_facts_edges",
+                      "file_facts_spans",
+                      "file_facts_macro_invocations",
+                      "file_facts_macro_scopes",
+                      "file_facts_occurrences"
+                    ]
+                  }
+                },
+                "rows": {
+                  "file_facts_cache": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_cache"
+                      }
+                    }
+                  },
+                  "file_facts_nodes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_nodes"
+                      }
+                    }
+                  },
+                  "file_facts_edges": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_edges"
+                      }
+                    }
+                  },
+                  "file_facts_spans": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_spans"
+                      }
+                    }
+                  },
+                  "file_facts_macro_invocations": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_invocations"
+                      }
+                    }
+                  },
+                  "file_facts_macro_scopes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_scopes"
+                      }
+                    }
+                  },
+                  "file_facts_occurrences": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_occurrences"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {
+              "cache_key": {
+                "relation": "cache",
+                "fields": [
+                  "blob_oid",
+                  "logical_path",
+                  "extractor_sha"
+                ]
+              },
+              "export_table": {
+                "relation": "exports",
+                "fields": [
+                  "table"
+                ]
+              }
+            },
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "complete_exports": {
+                "relation": "exports",
+                "minimum": 7,
+                "maximum": 7
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "cache_key"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "export_table"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "complete_exports"
+              ]
+            }
+          ]
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+            }
+          ],
+          "isError": true
+        }
+      },
+      "pre": {
+        "phase": "pre",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "persist": false,
+          "facts": {
+            "relations": {
+              "cache": {
+                "fields": {
+                  "blob_oid": {
+                    "kind": "enum",
+                    "values": [
+                      "blob"
+                    ]
+                  },
+                  "logical_path": {
+                    "kind": "enum",
+                    "values": [
+                      "one.rs",
+                      "two.rs"
+                    ]
+                  },
+                  "extractor_sha": {
+                    "kind": "enum",
+                    "values": [
+                      "v1",
+                      "v2"
+                    ]
+                  }
+                },
+                "rows": {
+                  "a": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "b": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "two.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "c": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v2"
+                      }
+                    }
+                  }
+                }
+              },
+              "exports": {
+                "fields": {
+                  "table": {
+                    "kind": "enum",
+                    "values": [
+                      "file_facts_cache",
+                      "file_facts_nodes",
+                      "file_facts_edges",
+                      "file_facts_spans",
+                      "file_facts_macro_invocations",
+                      "file_facts_macro_scopes",
+                      "file_facts_occurrences"
+                    ]
+                  }
+                },
+                "rows": {
+                  "file_facts_cache": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_cache"
+                      }
+                    }
+                  },
+                  "file_facts_nodes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_nodes"
+                      }
+                    }
+                  },
+                  "file_facts_edges": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_edges"
+                      }
+                    }
+                  },
+                  "file_facts_spans": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_spans"
+                      }
+                    }
+                  },
+                  "file_facts_macro_invocations": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_invocations"
+                      }
+                    }
+                  },
+                  "file_facts_macro_scopes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_scopes"
+                      }
+                    }
+                  },
+                  "file_facts_occurrences": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_occurrences"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {
+              "cache_key": {
+                "relation": "cache",
+                "fields": [
+                  "blob_oid",
+                  "logical_path",
+                  "extractor_sha"
+                ]
+              },
+              "export_table": {
+                "relation": "exports",
+                "fields": [
+                  "table"
+                ]
+              }
+            },
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "complete_exports": {
+                "relation": "exports",
+                "minimum": 7,
+                "maximum": 7
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "cache_key"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "export_table"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "complete_exports"
+              ]
+            }
+          ]
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 2,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"blob\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"v1\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"one.rs\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"blob\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"v1\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"two.rs\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"blob\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"v2\",\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": \"one.rs\",\n    \"di_r1_row0_active\": 1,\n    \"di_r1_row0_f0_present\": 1,\n    \"di_r1_row0_f0_value\": \"file_facts_cache\",\n    \"di_r1_row1_active\": 1,\n    \"di_r1_row1_f0_present\": 1,\n    \"di_r1_row1_f0_value\": \"file_facts_edges\",\n    \"di_r1_row2_active\": 1,\n    \"di_r1_row2_f0_present\": 1,\n    \"di_r1_row2_f0_value\": \"file_facts_macro_invocations\",\n    \"di_r1_row3_active\": 1,\n    \"di_r1_row3_f0_present\": 1,\n    \"di_r1_row3_f0_value\": \"file_facts_macro_scopes\",\n    \"di_r1_row4_active\": 1,\n    \"di_r1_row4_f0_present\": 1,\n    \"di_r1_row4_f0_value\": \"file_facts_nodes\",\n    \"di_r1_row5_active\": 1,\n    \"di_r1_row5_f0_present\": 1,\n    \"di_r1_row5_f0_value\": \"file_facts_occurrences\",\n    \"di_r1_row6_active\": 1,\n    \"di_r1_row6_f0_present\": 1,\n    \"di_r1_row6_f0_value\": \"file_facts_spans\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      },
+      "pre-negative": {
+        "phase": "pre-negative",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "persist": false,
+          "facts": {
+            "relations": {
+              "cache": {
+                "fields": {
+                  "blob_oid": {
+                    "kind": "enum",
+                    "values": [
+                      "blob"
+                    ]
+                  },
+                  "logical_path": {
+                    "kind": "enum",
+                    "values": [
+                      "one.rs",
+                      "two.rs"
+                    ]
+                  },
+                  "extractor_sha": {
+                    "kind": "enum",
+                    "values": [
+                      "v1",
+                      "v2"
+                    ]
+                  }
+                },
+                "rows": {
+                  "a": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "b": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "two.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "c": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v2"
+                      }
+                    }
+                  }
+                }
+              },
+              "exports": {
+                "fields": {
+                  "table": {
+                    "kind": "enum",
+                    "values": [
+                      "file_facts_cache",
+                      "file_facts_nodes",
+                      "file_facts_edges",
+                      "file_facts_spans",
+                      "file_facts_macro_invocations",
+                      "file_facts_macro_scopes",
+                      "file_facts_occurrences"
+                    ]
+                  }
+                },
+                "rows": {
+                  "file_facts_cache": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_cache"
+                      }
+                    }
+                  },
+                  "file_facts_nodes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_nodes"
+                      }
+                    }
+                  },
+                  "file_facts_edges": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_edges"
+                      }
+                    }
+                  },
+                  "file_facts_spans": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_spans"
+                      }
+                    }
+                  },
+                  "file_facts_macro_invocations": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_invocations"
+                      }
+                    }
+                  },
+                  "file_facts_macro_scopes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_scopes"
+                      }
+                    }
+                  },
+                  "file_facts_occurrences": {
+                    "active": false,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_occurrences"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {
+              "cache_key": {
+                "relation": "cache",
+                "fields": [
+                  "blob_oid",
+                  "logical_path",
+                  "extractor_sha"
+                ]
+              },
+              "export_table": {
+                "relation": "exports",
+                "fields": [
+                  "table"
+                ]
+              }
+            },
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "complete_exports": {
+                "relation": "exports",
+                "minimum": 7,
+                "maximum": 7
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "cache_key"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "export_table"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "complete_exports"
+              ]
+            }
+          ]
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 2,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.cardinality.violation\"\n    }\n  ],\n  \"total_duration_ms\": 22,\n  \"status\": \"unsat\",\n  \"duration_ms\": 6,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_cache_key\",\n    \"data_integrity_rule_2_data_integrity_cardinality__subject_complete_exports\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      },
+      "post": {
+        "phase": "post",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "persist": false,
+          "facts": {
+            "relations": {
+              "cache": {
+                "fields": {
+                  "blob_oid": {
+                    "kind": "enum",
+                    "values": [
+                      "blob"
+                    ]
+                  },
+                  "logical_path": {
+                    "kind": "enum",
+                    "values": [
+                      "one.rs",
+                      "two.rs"
+                    ]
+                  },
+                  "extractor_sha": {
+                    "kind": "enum",
+                    "values": [
+                      "v1",
+                      "v2"
+                    ]
+                  }
+                },
+                "rows": {
+                  "a": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "b": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "two.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "c": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v2"
+                      }
+                    }
+                  }
+                }
+              },
+              "exports": {
+                "fields": {
+                  "table": {
+                    "kind": "enum",
+                    "values": [
+                      "file_facts_cache",
+                      "file_facts_nodes",
+                      "file_facts_edges",
+                      "file_facts_spans",
+                      "file_facts_macro_invocations",
+                      "file_facts_macro_scopes",
+                      "file_facts_occurrences"
+                    ]
+                  }
+                },
+                "rows": {
+                  "file_facts_cache": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_cache"
+                      }
+                    }
+                  },
+                  "file_facts_nodes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_nodes"
+                      }
+                    }
+                  },
+                  "file_facts_edges": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_edges"
+                      }
+                    }
+                  },
+                  "file_facts_spans": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_spans"
+                      }
+                    }
+                  },
+                  "file_facts_macro_invocations": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_invocations"
+                      }
+                    }
+                  },
+                  "file_facts_macro_scopes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_scopes"
+                      }
+                    }
+                  },
+                  "file_facts_occurrences": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_occurrences"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {
+              "cache_key": {
+                "relation": "cache",
+                "fields": [
+                  "blob_oid",
+                  "logical_path",
+                  "extractor_sha"
+                ]
+              },
+              "export_table": {
+                "relation": "exports",
+                "fields": [
+                  "table"
+                ]
+              }
+            },
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "complete_exports": {
+                "relation": "exports",
+                "minimum": 7,
+                "maximum": 7
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "cache_key"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "export_table"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "complete_exports"
+              ]
+            }
+          ]
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 2,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 1,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"blob\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"v1\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"one.rs\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"blob\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"v1\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"two.rs\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"blob\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"v2\",\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": \"one.rs\",\n    \"di_r1_row0_active\": 1,\n    \"di_r1_row0_f0_present\": 1,\n    \"di_r1_row0_f0_value\": \"file_facts_cache\",\n    \"di_r1_row1_active\": 1,\n    \"di_r1_row1_f0_present\": 1,\n    \"di_r1_row1_f0_value\": \"file_facts_edges\",\n    \"di_r1_row2_active\": 1,\n    \"di_r1_row2_f0_present\": 1,\n    \"di_r1_row2_f0_value\": \"file_facts_macro_invocations\",\n    \"di_r1_row3_active\": 1,\n    \"di_r1_row3_f0_present\": 1,\n    \"di_r1_row3_f0_value\": \"file_facts_macro_scopes\",\n    \"di_r1_row4_active\": 1,\n    \"di_r1_row4_f0_present\": 1,\n    \"di_r1_row4_f0_value\": \"file_facts_nodes\",\n    \"di_r1_row5_active\": 1,\n    \"di_r1_row5_f0_present\": 1,\n    \"di_r1_row5_f0_value\": \"file_facts_occurrences\",\n    \"di_r1_row6_active\": 1,\n    \"di_r1_row6_f0_present\": 1,\n    \"di_r1_row6_f0_value\": \"file_facts_spans\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      },
+      "post-negative": {
+        "phase": "post-negative",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "persist": false,
+          "facts": {
+            "relations": {
+              "cache": {
+                "fields": {
+                  "blob_oid": {
+                    "kind": "enum",
+                    "values": [
+                      "blob"
+                    ]
+                  },
+                  "logical_path": {
+                    "kind": "enum",
+                    "values": [
+                      "one.rs",
+                      "two.rs"
+                    ]
+                  },
+                  "extractor_sha": {
+                    "kind": "enum",
+                    "values": [
+                      "v1",
+                      "v2"
+                    ]
+                  }
+                },
+                "rows": {
+                  "a": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "b": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "two.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v1"
+                      }
+                    }
+                  },
+                  "c": {
+                    "active": true,
+                    "cells": {
+                      "blob_oid": {
+                        "present": true,
+                        "value": "blob"
+                      },
+                      "logical_path": {
+                        "present": true,
+                        "value": "one.rs"
+                      },
+                      "extractor_sha": {
+                        "present": true,
+                        "value": "v2"
+                      }
+                    }
+                  }
+                }
+              },
+              "exports": {
+                "fields": {
+                  "table": {
+                    "kind": "enum",
+                    "values": [
+                      "file_facts_cache",
+                      "file_facts_nodes",
+                      "file_facts_edges",
+                      "file_facts_spans",
+                      "file_facts_macro_invocations",
+                      "file_facts_macro_scopes",
+                      "file_facts_occurrences"
+                    ]
+                  }
+                },
+                "rows": {
+                  "file_facts_cache": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_cache"
+                      }
+                    }
+                  },
+                  "file_facts_nodes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_nodes"
+                      }
+                    }
+                  },
+                  "file_facts_edges": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_edges"
+                      }
+                    }
+                  },
+                  "file_facts_spans": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_spans"
+                      }
+                    }
+                  },
+                  "file_facts_macro_invocations": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_invocations"
+                      }
+                    }
+                  },
+                  "file_facts_macro_scopes": {
+                    "active": true,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_macro_scopes"
+                      }
+                    }
+                  },
+                  "file_facts_occurrences": {
+                    "active": false,
+                    "cells": {
+                      "table": {
+                        "present": true,
+                        "value": "file_facts_occurrences"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {
+              "cache_key": {
+                "relation": "cache",
+                "fields": [
+                  "blob_oid",
+                  "logical_path",
+                  "extractor_sha"
+                ]
+              },
+              "export_table": {
+                "relation": "exports",
+                "fields": [
+                  "table"
+                ]
+              }
+            },
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "complete_exports": {
+                "relation": "exports",
+                "minimum": 7,
+                "maximum": 7
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "cache_key"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.unique",
+              "subjects": [
+                "export_table"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "complete_exports"
+              ]
+            }
+          ]
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 2,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.cardinality.violation\"\n    }\n  ],\n  \"total_duration_ms\": 1,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_cache_key\",\n    \"data_integrity_rule_2_data_integrity_cardinality__subject_complete_exports\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "consumer_contract": {
+    "entrypoint": "examples/publish_snapshot.py publish_snapshot(database, output, *, version, schema=main, source_labels=None)",
+    "pointer": "OUTPUT/current.json",
+    "version_manifest": "OUTPUT/versions/VERSION/manifest.json",
+    "tables": "manifest.tables maps seven names to relative path/schema/row_count/sha256/bytes",
+    "provenance": "source_labels.provenance=caller_supplied, independently_verified=false",
+    "reader": "Read current.json once and use only referenced versioned paths; old versions remain readable"
+  },
+  "limitations": [
+    "Native runtime acceptance is DuckDB2.0.0/Python3.14.5/osx_arm64; same validated approved R2 package, not a newly built candidate.",
+    "Publisher requires local POSIX atomic rename and advisory flock; tested macOS only. No cross-platform or power-loss durability claim.",
+    "Source writer must be closed before read-only publish. No extension is loaded by publisher/reader.",
+    "Caller source labels are supplied claims, not independently certified.",
+    "Pointer failure retains complete orphan version; never silently reused. Crashed staging dirs require explicit cleanup; no garbage collection.",
+    "Legacy SQL COPY exports remain non-atomic; supported coherent app path is current.json publisher.",
+    "Solver quota rejection retained with exact nonpersisted requests/results in evidence and durable audits; existing receipts preserved.",
+    "No Rust/build inputs changed, no Rust build needed. Final fresh integrated build belongs to R7.",
+    "No issue closure, main merge, push, public publication or tags; root independent review/integration pending."
+  ],
+  "audit_comments": [
+    "7077",
+    "7078"
+  ],
+  "evidence_sha256": {
+    "/private/tmp/spur-r3-7cb6b619-evidence/run.py": "db1e7b041abbad880caac10e3e1956b88bbc62d110ca9b773b3d922af4d1a3c6",
+    "/private/tmp/spur-r3-7cb6b619-evidence/R3-unified.diff": "92cac0f10585699fc9411329ce1a856e8c5b82f2246158466886cfe35e4264f2",
+    "/private/tmp/spur-r3-7cb6b619-evidence/green-focused-3.log": "6338aaf5172f9e98c2ded396753ae813484b0bedab688e6a0e368ca4ee1cdded",
+    "/private/tmp/spur-r3-7cb6b619-evidence/red.log": "eb519f0d8763844ee7be4651ac76b78cfac4724bb73922352ba67eadd72dfdf7",
+    "/private/tmp/spur-r3-7cb6b619-evidence/green-focused-2.log": "149d18139b34c95c404701c8b1a0ea2eb4bc7378ff0227b5b1e6ad930db93266",
+    "/private/tmp/spur-r3-7cb6b619-evidence/solve-pre.json": "257870569faa692fb516d1c840178778a877a9e6cc8312ce2307b04042a01943",
+    "/private/tmp/spur-r3-7cb6b619-evidence/solve-post.json": "78aaef789a02955190075e4ee22b2b19311fb8c081f0b86da633f2d08f10c48e",
+    "/private/tmp/spur-r3-7cb6b619-evidence/diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r3-7cb6b619-evidence/commands.jsonl": "ee506d107dca01a0fac9de04b62a79cbe2e79e5fa3ae8a230cca04d60c3301ca",
+    "/private/tmp/spur-r3-7cb6b619-evidence/predecessor-validation.json": "9af30a42629565f18949cf0a7da57786e46def3776b64afe7670ccfbe34b85cf",
+    "/private/tmp/spur-r3-7cb6b619-evidence/finalize_receipt.py": "cc6a0662a81451b7406e9d37e3a4c9436944ef5cd75418d937c6fabb22d195ec",
+    "/private/tmp/spur-r3-7cb6b619-evidence/solve-post-negative.json": "1922e8df90d15af275f859486f644e23c279442341c65a3569849b816c5cb311",
+    "/private/tmp/spur-r3-7cb6b619-evidence/scope-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r3-7cb6b619-evidence/red-final.log": "5a2e87a1b7cb15a25cb2eb9658a48044cdc1c30954a3bd61c39d1f3933a20e41",
+    "/private/tmp/spur-r3-7cb6b619-evidence/final-status.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r3-7cb6b619-evidence/solve-pre-persist.json": "6e022fc06a8e2ea24dcc76a191eba6c567abf640c99bb7e7a1b99bde93e0ea0e",
+    "/private/tmp/spur-r3-7cb6b619-evidence/green-focused.log": "937ffe0e364a04dfc05946ce8baae84cdc1149497717e535826b5234e9245559",
+    "/private/tmp/spur-r3-7cb6b619-evidence/committed-diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r3-7cb6b619-evidence/predecessor-final.log": "8d2b2bc1acb098f2c91dc7f9d3c0b31fd08ff7db9f3bb2a3469bc253cf9a9cf8",
+    "/private/tmp/spur-r3-7cb6b619-evidence/green-regression.log": "1f14d0251212752479144f3878996e16ae81e884f7b2e802aa00d8ebc23a851d",
+    "/private/tmp/spur-r3-7cb6b619-evidence/verify_predecessor.py": "e35bd891ab43d7b75b003bf38a3d58aae8ee56cc911d58fcd5e4eaa90fa7813a",
+    "/private/tmp/spur-r3-7cb6b619-evidence/solve-pre-negative.json": "b1b0a47140a4ce3972e590c55586ea2566e708fb7adafbcbb1830639d1393137"
+  }
+}

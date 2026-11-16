@@ -1,0 +1,17 @@
+test_remote_target_path_does_not_embed_host_filesystem (test_release_driver.DriverTests.test_remote_target_path_does_not_embed_host_filesystem) ... FAIL
+
+======================================================================
+FAIL: test_remote_target_path_does_not_embed_host_filesystem (test_release_driver.DriverTests.test_remote_target_path_does_not_embed_host_filesystem)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 31, in test_remote_target_path_does_not_embed_host_filesystem
+    self.assertTrue(callable(getattr(self.driver, "rust_test_arguments", None)),
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    "remote Rust target paths must be portable")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : remote Rust target paths must be portable
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+FAILED (failures=1)

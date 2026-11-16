@@ -1,0 +1,540 @@
+[
+  {
+    "phase": "post",
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "subjects": [
+            "acceptance"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "checks": {
+            "fields": {
+              "gate": {
+                "kind": "enum",
+                "values": [
+                  "checksum",
+                  "files",
+                  "identity",
+                  "runtime",
+                  "abi",
+                  "platform",
+                  "trust"
+                ]
+              },
+              "state": {
+                "kind": "enum",
+                "values": [
+                  "match",
+                  "mismatch"
+                ]
+              },
+              "decision": {
+                "kind": "enum",
+                "values": [
+                  "accept",
+                  "reject"
+                ]
+              }
+            },
+            "rows": {
+              "checksum": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "checksum"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "files": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "files"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "identity": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "identity"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "runtime": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "runtime"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "abi": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "abi"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "platform": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "platform"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "trust": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "trust"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "match"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {},
+        "foreign_keys": {},
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {
+          "acceptance": {
+            "relation": "checks",
+            "fields": [
+              "gate",
+              "state",
+              "decision"
+            ],
+            "allowed": [
+              [
+                "checksum",
+                "match",
+                "accept"
+              ],
+              [
+                "checksum",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "files",
+                "match",
+                "accept"
+              ],
+              [
+                "files",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "identity",
+                "match",
+                "accept"
+              ],
+              [
+                "identity",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "runtime",
+                "match",
+                "accept"
+              ],
+              [
+                "runtime",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "abi",
+                "match",
+                "accept"
+              ],
+              [
+                "abi",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "platform",
+                "match",
+                "accept"
+              ],
+              [
+                "platform",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "trust",
+                "match",
+                "accept"
+              ],
+              [
+                "trust",
+                "mismatch",
+                "reject"
+              ]
+            ]
+          }
+        },
+        "temporal_constraints": {}
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"accept\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"abi\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"match\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"accept\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"checksum\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"match\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"accept\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"files\",\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": \"match\",\n    \"di_r0_row3_active\": 1,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": \"accept\",\n    \"di_r0_row3_f1_present\": 1,\n    \"di_r0_row3_f1_value\": \"identity\",\n    \"di_r0_row3_f2_present\": 1,\n    \"di_r0_row3_f2_value\": \"match\",\n    \"di_r0_row4_active\": 1,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": \"accept\",\n    \"di_r0_row4_f1_present\": 1,\n    \"di_r0_row4_f1_value\": \"platform\",\n    \"di_r0_row4_f2_present\": 1,\n    \"di_r0_row4_f2_value\": \"match\",\n    \"di_r0_row5_active\": 1,\n    \"di_r0_row5_f0_present\": 1,\n    \"di_r0_row5_f0_value\": \"accept\",\n    \"di_r0_row5_f1_present\": 1,\n    \"di_r0_row5_f1_value\": \"runtime\",\n    \"di_r0_row5_f2_present\": 1,\n    \"di_r0_row5_f2_value\": \"match\",\n    \"di_r0_row6_active\": 1,\n    \"di_r0_row6_f0_present\": 1,\n    \"di_r0_row6_f0_value\": \"accept\",\n    \"di_r0_row6_f1_present\": 1,\n    \"di_r0_row6_f1_value\": \"trust\",\n    \"di_r0_row6_f2_present\": 1,\n    \"di_r0_row6_f2_value\": \"match\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+        }
+      ]
+    }
+  },
+  {
+    "phase": "post-negative",
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "timeout_ms": 10000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "subjects": [
+            "acceptance"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "checks": {
+            "fields": {
+              "gate": {
+                "kind": "enum",
+                "values": [
+                  "checksum",
+                  "files",
+                  "identity",
+                  "runtime",
+                  "abi",
+                  "platform",
+                  "trust"
+                ]
+              },
+              "state": {
+                "kind": "enum",
+                "values": [
+                  "match",
+                  "mismatch"
+                ]
+              },
+              "decision": {
+                "kind": "enum",
+                "values": [
+                  "accept",
+                  "reject"
+                ]
+              }
+            },
+            "rows": {
+              "checksum": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "checksum"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "files": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "files"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "identity": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "identity"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "runtime": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "runtime"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "abi": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "abi"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "platform": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "platform"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              },
+              "trust": {
+                "active": true,
+                "cells": {
+                  "gate": {
+                    "present": true,
+                    "value": "trust"
+                  },
+                  "state": {
+                    "present": true,
+                    "value": "mismatch"
+                  },
+                  "decision": {
+                    "present": true,
+                    "value": "accept"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {},
+        "foreign_keys": {},
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {
+          "acceptance": {
+            "relation": "checks",
+            "fields": [
+              "gate",
+              "state",
+              "decision"
+            ],
+            "allowed": [
+              [
+                "checksum",
+                "match",
+                "accept"
+              ],
+              [
+                "checksum",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "files",
+                "match",
+                "accept"
+              ],
+              [
+                "files",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "identity",
+                "match",
+                "accept"
+              ],
+              [
+                "identity",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "runtime",
+                "match",
+                "accept"
+              ],
+              [
+                "runtime",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "abi",
+                "match",
+                "accept"
+              ],
+              [
+                "abi",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "platform",
+                "match",
+                "accept"
+              ],
+              [
+                "platform",
+                "mismatch",
+                "reject"
+              ],
+              [
+                "trust",
+                "match",
+                "accept"
+              ],
+              [
+                "trust",
+                "mismatch",
+                "reject"
+              ]
+            ]
+          }
+        },
+        "temporal_constraints": {}
+      }
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_acceptance\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+        }
+      ]
+    }
+  }
+]

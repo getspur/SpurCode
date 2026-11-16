@@ -1,0 +1,377 @@
+{
+  "task": "R4",
+  "issue": "bd-13rf",
+  "plan": "f02f5ee1-f011-4b13-bb0b-e8d6451ee34a",
+  "requested_source_base": "adaa1f86e2c95201a331046a8c0ea785b8781399",
+  "dispatched_source_base": "b41b050c41301df256e08ee8d6681f4ad359d682",
+  "implementation_head": "7f8e0117d93e189df74ad6293fd53d9d7b3f122c",
+  "commits": [
+    "cd039f0b624cad3ae8d127e99240f76a0f9d4d56 test(spur-graph-duckdb): R4 require probed integrity-bound native packages",
+    "842c3e81bab17a0a4b7c7580c94101bc7c8a5e48 test(spur-graph-duckdb): R4 reject ambiguous receipts and unavailable publication",
+    "7f8e0117d93e189df74ad6293fd53d9d7b3f122c feat(spur-graph-duckdb): R4 publish probed packages with bound integrity receipts"
+  ],
+  "working_tree_status": "",
+  "unified_diff": "/private/tmp/spur-r4-90b963ee-evidence/R4-unified.diff",
+  "commands": [
+    {
+      "phase": "red",
+      "argv": [
+        "env",
+        "SPUR_GRAPH_LIBRARY=/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+        "PYTHONPATH=crates/spur-graph-duckdb/tests",
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_package.PackageTests.test_real_package_has_bound_identity_and_no_persisted_readiness_claim",
+        "test_package.PackageTests.test_bad_library_is_not_published",
+        "-v"
+      ],
+      "exit": 1,
+      "at": "2026-11-16T21:14:53.554453+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/red.log"
+    },
+    {
+      "phase": "red-full",
+      "argv": [
+        "env",
+        "SPUR_GRAPH_LIBRARY=/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+        "PYTHONPATH=crates/spur-graph-duckdb/tests",
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_package",
+        "-v"
+      ],
+      "exit": 1,
+      "at": "2026-11-16T21:15:03.509491+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/red-full.log"
+    },
+    {
+      "phase": "green",
+      "argv": [
+        "env",
+        "SPUR_GRAPH_LIBRARY=/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+        "PYTHONPATH=crates/spur-graph-duckdb/tests",
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_package",
+        "-v"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:18:43.324033+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/green.log"
+    },
+    {
+      "phase": "red-hardening",
+      "argv": [
+        "env",
+        "SPUR_GRAPH_LIBRARY=/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+        "PYTHONPATH=crates/spur-graph-duckdb/tests",
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_package.PackageTests.test_duplicate_manifest_keys_are_rejected",
+        "test_package.PackageTests.test_unavailable_posix_publication_mechanics_fail_clearly",
+        "test_package.PackageTests.test_matching_manifest_cannot_override_incompatible_native_footer",
+        "-v"
+      ],
+      "exit": 1,
+      "at": "2026-11-16T21:20:14.673728+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/red-hardening.log"
+    },
+    {
+      "phase": "green-hardening",
+      "argv": [
+        "env",
+        "SPUR_GRAPH_LIBRARY=/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+        "PYTHONPATH=crates/spur-graph-duckdb/tests",
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_package",
+        "-v"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:20:47.131366+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/green-hardening.log"
+    },
+    {
+      "phase": "package-candidate",
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "crates/spur-graph-duckdb/scripts/package_extension.py",
+        "--library",
+        "/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+        "--out",
+        "/private/tmp/spur-r4-90b963ee-evidence/candidate/spur_graph.duckdb_extension"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:21:15.639094+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/package-candidate.log"
+    },
+    {
+      "phase": "verify-candidate",
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "crates/spur-graph-duckdb/scripts/verify_package.py",
+        "/private/tmp/spur-r4-90b963ee-evidence/candidate/spur_graph.duckdb_extension"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:21:15.786829+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/verify-candidate.log"
+    },
+    {
+      "phase": "native-regression",
+      "argv": [
+        "env",
+        "SPUR_GRAPH_EXTENSION=/private/tmp/spur-r4-90b963ee-evidence/candidate/spur_graph.duckdb_extension",
+        "SPUR_FILE_FACTS_ORACLE=/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT=/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build",
+        "PYTHONPATH=crates/spur-graph-duckdb/tests",
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_extension",
+        "test_file_facts",
+        "test_diagnostics",
+        "test_file_facts_pipeline",
+        "test_contract",
+        "test_publish_snapshot",
+        "-v"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:21:56.592111+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/native-regression.log"
+    },
+    {
+      "phase": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:22:50.563700+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/diff-check.log"
+    },
+    {
+      "phase": "scope-check",
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "b41b050c41301df256e08ee8d6681f4ad359d682",
+        "--",
+        ".",
+        ":(exclude)crates/spur-graph-duckdb/scripts/package_extension.py",
+        ":(exclude)crates/spur-graph-duckdb/scripts/verify_package.py",
+        ":(exclude)crates/spur-graph-duckdb/tests/test_package.py"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:22:50.673920+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/scope-check.log"
+    },
+    {
+      "phase": "committed-diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "b41b050c41301df256e08ee8d6681f4ad359d682",
+        "HEAD"
+      ],
+      "exit": 0,
+      "at": "2026-11-16T21:23:53.874835+00:00",
+      "log": "/private/tmp/spur-r4-90b963ee-evidence/committed-diff-check.log"
+    }
+  ],
+  "results": {
+    "red": {
+      "exit": 1,
+      "failures": 2,
+      "errors": 0,
+      "reasons": [
+        "missing versioned sidecar",
+        "invalid native library falsely packaged successfully"
+      ]
+    },
+    "red_full": {
+      "exit": 1,
+      "failures": 12,
+      "errors": 0
+    },
+    "red_hardening": {
+      "exit": 1,
+      "failures": 2,
+      "passed": 1,
+      "errors": 0,
+      "reasons": [
+        "duplicate manifest field accepted",
+        "unavailable POSIX mechanics lacks clear diagnostic"
+      ]
+    },
+    "green": {
+      "exit": 0,
+      "passed": 12
+    },
+    "green_hardening": {
+      "exit": 0,
+      "passed": 15
+    },
+    "native_regression": {
+      "exit": 0,
+      "passed": 64
+    },
+    "package_candidate": {
+      "exit": 0
+    },
+    "verify_candidate": {
+      "exit": 0
+    },
+    "diff_check": {
+      "exit": 0
+    },
+    "scope_check": {
+      "exit": 0
+    },
+    "committed_diff_check": {
+      "exit": 0
+    }
+  },
+  "native_reuse": {
+    "native_source_head": "11d0de8cf39c5c04edeb94c2fecdb19d1d693cc6",
+    "approved_predecessor_receipt": "/private/tmp/spur-r2-e5afa03c-evidence/receipt.json",
+    "predecessor_receipt_sha256": "192e69a722f8cdfcc2846e4230e378900f4b7eae18a674e94ae236d733d4a913",
+    "validation": "/private/tmp/spur-r4-90b963ee-evidence/predecessor-validation.json",
+    "raw_library": "/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib",
+    "raw_library_sha256": "c1f58167e140bf0e695d49bce358a990bebe3c51239dbeae6c772ecf71c00e1c",
+    "native_source_inputs_match_predecessor": true,
+    "build_performed_in_R4": false,
+    "reason": "Python-only scope; R2 receipt/checksums/native source inputs and live metadata/diagnostic functions validated. R4 new tooling freshly repackaged and probed the approved native library. R7 owns final fresh integrated build."
+  },
+  "artifact": {
+    "public_binary": "/private/tmp/spur-r4-90b963ee-evidence/candidate/spur_graph.duckdb_extension",
+    "resolved_binary": "/private/tmp/spur-r4-90b963ee-evidence/candidate/.spur_graph.duckdb_extension.packages/release-419c922510054514886773e5c30cbb12/spur_graph.duckdb_extension",
+    "public_sidecar": "/private/tmp/spur-r4-90b963ee-evidence/candidate/spur_graph.duckdb_extension.json",
+    "resolved_sidecar": "/private/tmp/spur-r4-90b963ee-evidence/candidate/.spur_graph.duckdb_extension.packages/release-419c922510054514886773e5c30cbb12/spur_graph.duckdb_extension.json",
+    "manifest": {
+      "abi": "C_STRUCT_UNSTABLE",
+      "binary": {
+        "name": "spur_graph.duckdb_extension",
+        "sha256": "6cfd5205ac15f12cf64ff02cf3cbd592b5b14c4afdb3d7ccb34e25de774bfc27",
+        "size_bytes": 16904630
+      },
+      "duckdb_api_version": "2.0.0",
+      "extension_version": "0.1.0",
+      "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+      "facts_schema_version": 1,
+      "format_version": 1,
+      "platform": "osx_arm64",
+      "resolution_scope": "single_file",
+      "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+      "supported_languages": [
+        "C",
+        "Cpp",
+        "Css",
+        "Go",
+        "Hcl",
+        "Html",
+        "Javascript",
+        "Json",
+        "JupyterNotebook",
+        "Lua",
+        "Markdown",
+        "Mermaid",
+        "Python",
+        "Rust",
+        "Shell",
+        "Sql",
+        "Terraform",
+        "Toml",
+        "Tsx",
+        "TypeScript",
+        "Yaml"
+      ],
+      "trust": {
+        "mode": "unsigned_local",
+        "signature": "absent"
+      }
+    },
+    "sidecar_sha256": "c67529fe3321b106bc85e99472492b35e81ee8681d34d181a744208c29daf17f"
+  },
+  "runtime": {
+    "python_executable": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+    "resolved_python": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "python_sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+    "native_duckdb_module": "/private/tmp/spur-graph-duckdb-v2-20261114/lib/python3.14/site-packages/_duckdb.abi3.so",
+    "native_duckdb_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "duckdb_python_version": "2.0.0",
+    "duckdb_sql_version": "v2.0.0",
+    "duckdb_platform": "osx_arm64",
+    "machine": "arm64",
+    "host": "macOS-26.7.1-arm64-arm-64bit-Mach-O"
+  },
+  "solve": {
+    "rule": "data_integrity.mutually_consistent",
+    "mode": "verify",
+    "pre": {
+      "positive": "sat/pass",
+      "negative": "unsat/fail",
+      "exact_requests_results": "/private/tmp/spur-r4-90b963ee-evidence/solve-pre.json"
+    },
+    "post": {
+      "positive": "sat/pass",
+      "negative": "unsat/fail",
+      "exact_requests_results": "/private/tmp/spur-r4-90b963ee-evidence/solve-post.json"
+    },
+    "persistence_failure": "solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513",
+    "preservation": "Exact nonpersisted requests/results saved locally and in Beads audit comments 7093 and 7095. No existing receipts deleted.",
+    "scope": "Finite declared acceptance checks, not an unbounded loader/filesystem/authenticity proof."
+  },
+  "publication_contract": {
+    "CLI": "--library RAW_LIBRARY --out spur_graph.duckdb_extension",
+    "verifier_CLI": "verify_package.py PACKAGE",
+    "verifier_API": "verify_package(path) returns artifact manifest only after fresh native load",
+    "format": "version 1 sidecar at <out>.json",
+    "mechanism": "Stable relative binary/sidecar aliases, single atomic current directory symlink, immutable complete retained generations.",
+    "unmanaged_existing_output": "Refuse without modification; caller selects a fresh --out.",
+    "trust": "Explicit unsigned_local, signature absent; checksum is integrity against local receipt, not publisher authentication."
+  },
+  "limitations": [
+    "Real native acceptance was osx_arm64, DuckDB 2.0.0, Python 3.14.5 only. Unavailable runtime/platform/POSIX mechanics were simulated only for negative mechanics; positive paths really load the package.",
+    "Publication requires local POSIX flock/symlink/atomic rename. No Windows packaging support is claimed.",
+    "Publication provides atomic visibility, not sudden-power-loss durability; interrupted attempts can leave unreferenced generations. Old generations are retained and not garbage-collected.",
+    "Concurrent pointer changes can produce a fail-closed generation mismatch; retry or pin the resolved generation.",
+    "Unsigned/local verification assumes no adversarial concurrent filesystem writer and does not authenticate a publisher.",
+    "No Rust rebuild, issue close, main merge, public publish, tag, push, installation, or upgrade in R4."
+  ],
+  "beads_audit_comment_ids": [
+    "7092",
+    "7093",
+    "7095"
+  ],
+  "at": "2026-11-16T21:23:53.807550+00:00",
+  "evidence_sha256": {
+    "/private/tmp/spur-r4-90b963ee-evidence/R4-unified.diff": "8f999b639da9648eb2dab4b6ec921e7f764b78ef1cfc438446f788841aaea973",
+    "/private/tmp/spur-r4-90b963ee-evidence/predecessor-validation.json": "beb7850a5864ea01b42ea9e01538b12f44f2a14fc39e15919d1ce2ad51de62dc",
+    "/private/tmp/spur-r4-90b963ee-evidence/solve-pre.json": "1374916b79627804d905da1c6ccf7c5bccab85f05ecfea0bc5c357506b1f555b",
+    "/private/tmp/spur-r4-90b963ee-evidence/solve-post.json": "5b694e4c30692b5e66999227c23ed3b3fb22753e8c8d928d29d9fb4d9a665a2a",
+    "/private/tmp/spur-r4-90b963ee-evidence/commands.jsonl": "ea4098b7afbd73881fe59fde9581627a111ac73add04210ef6e85c7d6193cd16",
+    "/private/tmp/spur-r4-90b963ee-evidence/diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r4-90b963ee-evidence/green-hardening.log": "5ea919a798729637cef8c05ec1a48cb2f6c18a08c0ea724da79bb42099ea54b2",
+    "/private/tmp/spur-r4-90b963ee-evidence/green.log": "e3993d4fdb5ec60663e4d515a085c1b749b05f4a6283cbbcdaa2dc4af30fda91",
+    "/private/tmp/spur-r4-90b963ee-evidence/native-regression.log": "874c723d841693f0cc49b556b642d0225534c2eca74bf9e1d37158ec0fdf2928",
+    "/private/tmp/spur-r4-90b963ee-evidence/package-candidate.log": "38f998f0ade7960fc26eca454e2f41a74f40cec016454679396bdc97966981c4",
+    "/private/tmp/spur-r4-90b963ee-evidence/red-full.log": "679783343d222987bea4ec95063325c41d29b2a425f2e5b8ebb204179a164652",
+    "/private/tmp/spur-r4-90b963ee-evidence/red-hardening.log": "d6a8d60c7f58883966014b800510292270939eb336d69f956e90fbfb84843447",
+    "/private/tmp/spur-r4-90b963ee-evidence/red.log": "3b03748792ead85888b42d14ee5b60bfaef49d0b489911a6e3caa912c61fab7c",
+    "/private/tmp/spur-r4-90b963ee-evidence/scope-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r4-90b963ee-evidence/verify-candidate.log": "cd89bd37222bbaa1f6a1703cef242721a2d4fb8ae4a56a885ba4c45b1284b146",
+    "crates/spur-graph-duckdb/scripts/package_extension.py": "e3029d324df00f7792179481fea975fe65aef321621c0c2f5a95d754d334f0dd",
+    "crates/spur-graph-duckdb/scripts/verify_package.py": "e6bda168edd11d68ba05aede47d07167e9214da9f8d642e0777e80fac534ce78",
+    "crates/spur-graph-duckdb/tests/test_package.py": "dac149742b90669c03c0c0a30b67bbca1d7157ec5a51d581cafc18ef6c739d3f",
+    "/private/tmp/spur-r4-90b963ee-evidence/committed-diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

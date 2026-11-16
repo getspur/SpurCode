@@ -1,0 +1,71 @@
+{
+  "scope": "Pre-change tests on the previously corrected binary, not a new release-candidate pass.",
+  "extension_sha256": "be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892",
+  "oracle_sha256": "396a4f05f6730ca16037c845b953fcd524768625559480a8f3f93bb3cc1df8cd",
+  "runs": [
+    {
+      "pattern": "test_extension.py",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "crates/spur-graph-duckdb/tests",
+        "-p",
+        "test_extension.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 2.6501311659812927
+    },
+    {
+      "pattern": "test_file_facts.py",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "crates/spur-graph-duckdb/tests",
+        "-p",
+        "test_file_facts.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 27.918448416981846
+    },
+    {
+      "pattern": "test_temporal.py",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "crates/spur-graph-duckdb/tests",
+        "-p",
+        "test_temporal.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.6099338748026639
+    },
+    {
+      "pattern": "test_file_facts_pipeline.py",
+      "command": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "crates/spur-graph-duckdb/tests",
+        "-p",
+        "test_file_facts_pipeline.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 6.325093084014952
+    }
+  ]
+}

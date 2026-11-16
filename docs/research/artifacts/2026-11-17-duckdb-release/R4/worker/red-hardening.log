@@ -1,0 +1,26 @@
+test_duplicate_manifest_keys_are_rejected (test_package.PackageTests.test_duplicate_manifest_keys_are_rejected) ... FAIL
+test_unavailable_posix_publication_mechanics_fail_clearly (test_package.PackageTests.test_unavailable_posix_publication_mechanics_fail_clearly) ... FAIL
+test_matching_manifest_cannot_override_incompatible_native_footer (test_package.PackageTests.test_matching_manifest_cannot_override_incompatible_native_footer) ... ok
+
+======================================================================
+FAIL: test_duplicate_manifest_keys_are_rejected (test_package.PackageTests.test_duplicate_manifest_keys_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/tests/test_package.py", line 248, in test_duplicate_manifest_keys_are_rejected
+    with self.assertRaisesRegex(ValueError, 'duplicate|manifest'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unavailable_posix_publication_mechanics_fail_clearly (test_package.PackageTests.test_unavailable_posix_publication_mechanics_fail_clearly)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/tests/test_package.py", line 258, in test_unavailable_posix_publication_mechanics_fail_clearly
+    self.assertIn('requires POSIX', result.stderr)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'requires POSIX' not found in 'Traceback (most recent call last):\n  File "<string>", line 1, in <module>\n    import runpy, sys; sys.modules[\'fcntl\'] = None; sys.path.insert(0, \'/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/scripts\'); runpy.run_path(\'/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/scripts/package_extension.py\', run_name=\'__main__\')\n                                                                                                                                                                                                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "<frozen runpy>", line 294, in run_path\n  File "<frozen runpy>", line 98, in _run_module_code\n  File "<frozen runpy>", line 88, in _run_code\n  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/scripts/package_extension.py", line 18, in <module>\n    import fcntl\nModuleNotFoundError: import of fcntl halted; None in sys.modules\n'
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.815s
+
+FAILED (failures=2)

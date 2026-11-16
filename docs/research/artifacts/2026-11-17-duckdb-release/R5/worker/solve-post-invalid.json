@@ -1,0 +1,118 @@
+{
+  "request": {
+    "family": "data_integrity",
+    "mode": "verify",
+    "persist": false,
+    "include_smt": true,
+    "rules": [
+      {
+        "rule_id": "data_integrity.mutually_consistent",
+        "subjects": [
+          "source_identity"
+        ]
+      }
+    ],
+    "facts": {
+      "relations": {
+        "release": {
+          "fields": {
+            "initial": {
+              "kind": "enum",
+              "values": [
+                "original",
+                "changed"
+              ]
+            },
+            "package": {
+              "kind": "enum",
+              "values": [
+                "original",
+                "changed"
+              ]
+            },
+            "final": {
+              "kind": "enum",
+              "values": [
+                "original",
+                "changed"
+              ]
+            }
+          },
+          "rows": {
+            "inherited_change": {
+              "active": true,
+              "cells": {
+                "initial": {
+                  "present": true,
+                  "value": "original"
+                },
+                "package": {
+                  "present": true,
+                  "value": "original"
+                },
+                "final": {
+                  "present": true,
+                  "value": "changed"
+                }
+              }
+            },
+            "new_native_input": {
+              "active": true,
+              "cells": {
+                "initial": {
+                  "present": true,
+                  "value": "original"
+                },
+                "package": {
+                  "present": true,
+                  "value": "original"
+                },
+                "final": {
+                  "present": true,
+                  "value": "changed"
+                }
+              }
+            }
+          }
+        }
+      },
+      "unique_constraints": {},
+      "foreign_keys": {},
+      "cardinality_constraints": {},
+      "value_ranges": {},
+      "conditional_requirements": {},
+      "aggregate_balances": {},
+      "consistency_relations": {
+        "source_identity": {
+          "relation": "release",
+          "fields": [
+            "initial",
+            "package",
+            "final"
+          ],
+          "allowed": [
+            [
+              "original",
+              "original",
+              "original"
+            ],
+            [
+              "changed",
+              "changed",
+              "changed"
+            ]
+          ]
+        }
+      },
+      "temporal_constraints": {}
+    }
+  },
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_source_identity\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+      }
+    ]
+  }
+}

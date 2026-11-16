@@ -1,0 +1,27 @@
+test_real_package_has_bound_identity_and_no_persisted_readiness_claim (test_package.PackageTests.test_real_package_has_bound_identity_and_no_persisted_readiness_claim) ... FAIL
+test_bad_library_is_not_published (test_package.PackageTests.test_bad_library_is_not_published) ... FAIL
+
+======================================================================
+FAIL: test_real_package_has_bound_identity_and_no_persisted_readiness_claim (test_package.PackageTests.test_real_package_has_bound_identity_and_no_persisted_readiness_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/tests/test_package.py", line 74, in test_real_package_has_bound_identity_and_no_persisted_readiness_claim
+    manifest = self.completed_package()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/tests/test_package.py", line 49, in completed_package
+    self.assertTrue(sidecar.is_file(), 'a loaded package needs its versioned sidecar')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : a loaded package needs its versioned sidecar
+
+======================================================================
+FAIL: test_bad_library_is_not_published (test_package.PackageTests.test_bad_library_is_not_published)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/90b963ee-2f35-4577-bea9-886b09729c0e/crates/spur-graph-duckdb/tests/test_package.py", line 116, in test_bad_library_is_not_published
+    self.assertNotEqual(result.returncode, 0, 'packaging must really load its staged library')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0 : packaging must really load its staged library
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.150s
+
+FAILED (failures=2)

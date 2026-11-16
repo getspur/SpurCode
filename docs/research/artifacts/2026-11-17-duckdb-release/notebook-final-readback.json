@@ -1,0 +1,41 @@
+{
+  "notebook_id": "nb-92b17b6c8e7bfed68ed5625d",
+  "path": "/Users/kevintruong/project/spur-notebook/docs/research/2026-11-17-spur-graph-release-acceptance.ipynb",
+  "revision": 46,
+  "id": "4db4cdf8-7f1d-4c8b-8543-4fab09650f7f",
+  "kind": "code",
+  "version": 43,
+  "cell_etag": "cell:sha256:e80f28a7f19bf4f6fc0413ff180695d04330f17dec449aa9a6cbf9135a65d79c",
+  "source": "import hashlib, json, pathlib, subprocess\nrelease_root = pathlib.Path('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-duckdb-release')\nfinal_receipt = json.loads((release_root / 'root-final.json').read_text())\ncurrent_binary = release_root / 'native-osx-arm64/spur_graph.duckdb_extension'\ncurrent_sidecar = pathlib.Path(str(current_binary) + '.json')\nassert hashlib.sha256(current_binary.read_bytes()).hexdigest() == final_receipt['package']['binary']['sha256']\nassert hashlib.sha256(current_sidecar.read_bytes()).hexdigest() == final_receipt['manifest_sha256']\nassert final_receipt['native_source_inputs'] == 321\nassert final_receipt['release_tests']['tests_run'] == 206\nassert final_receipt['release_tests']['release_pass'] and final_receipt['release_tests']['skipped'] == 0\nnative_check = subprocess.run([\n    '/private/tmp/spur-graph-duckdb-v2-20261114/bin/python',\n    '/Users/kevintruong/project/SpurCode/crates/spur-graph-duckdb/scripts/verify_package.py',\n    str(current_binary),\n], capture_output=True, text=True)\nassert native_check.returncode == 0, native_check.stderr\nnative_result = json.loads(native_check.stdout)\nassert native_result['live_readiness']['status'] == 'verified_now'\nprint(json.dumps({'current_package_sha256': final_receipt['package']['binary']['sha256'], 'native_source_inputs': 321, 'release_tests': final_receipt['release_tests'], 'fresh_native_package_verification': native_result}, indent=2))",
+  "exec_count": 8,
+  "status": "success",
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": "{\n  \"current_package_sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n  \"native_source_inputs\": 321,\n  \"release_tests\": {\n    \"errors\": 0,\n    \"expected_failures\": 0,\n    \"failures\": 0,\n    \"release_pass\": true,\n    \"skipped\": 0,\n    \"skipped_tests\": [],\n    \"tests_run\": 206,\n    \"unexpected_successes\": 0\n  },\n  \"fresh_native_package_verification\": {\n    \"artifact\": {\n      \"abi\": \"C_STRUCT_UNSTABLE\",\n      \"binary\": {\n        \"name\": \"spur_graph.duckdb_extension\",\n        \"sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n        \"size_bytes\": 16904630\n      },\n      \"duckdb_api_version\": \"2.0.0\",\n      \"extension_version\": \"0.1.0\",\n      \"extractor_id\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n      \"facts_schema_version\": 1,\n      \"format_version\": 1,\n      \"platform\": \"osx_arm64\",\n      \"resolution_scope\": \"single_file\",\n      \"source_identity\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n      \"supported_languages\": [\n        \"C\",\n        \"Cpp\",\n        \"Css\",\n        \"Go\",\n        \"Hcl\",\n        \"Html\",\n        \"Javascript\",\n        \"Json\",\n        \"JupyterNotebook\",\n        \"Lua\",\n        \"Markdown\",\n        \"Mermaid\",\n        \"Python\",\n        \"Rust\",\n        \"Shell\",\n        \"Sql\",\n        \"Terraform\",\n        \"Toml\",\n        \"Tsx\",\n        \"TypeScript\",\n        \"Yaml\"\n      ],\n      \"trust\": {\n        \"mode\": \"unsigned_local\",\n        \"signature\": \"absent\"\n      }\n    },\n    \"live_readiness\": {\n      \"binary_sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n      \"duckdb_version\": \"2.0.0\",\n      \"platform\": \"osx_arm64\",\n      \"status\": \"verified_now\"\n    }\n  }\n}\n"
+    }
+  ],
+  "metadata": {
+    "spur": {
+      "version": 43,
+      "last_edited_by": "brain",
+      "code_type": "python"
+    },
+    "spur_output_provenance": {
+      "session_id": "ab3ce246-89cc-4554-a9e2-766f37276293",
+      "run_id": "b24861cc-4dfc-4efb-8cc9-d6feaeaa076b",
+      "source_version": 43,
+      "execution_identity": "f31abd8f21bbe0110f3e1856e7fc0bf4fa2930c223888c5c83af8ff75e077e2a",
+      "output_hash": "58836e2deb895a574ddb7a33d7eaabb3bcf57511e86258c3c0c3dbce19121e12",
+      "status": "succeeded",
+      "dependencies": [],
+      "published_ports": [],
+      "ports_at_start": [],
+      "lineage_complete": true
+    }
+  },
+  "output_indices": [
+    0
+  ]
+}

@@ -1,0 +1,51 @@
+test_final_guard_rejects_changed_inherited_workspace_projection (test_release_driver.SourceStabilityTests.test_final_guard_rejects_changed_inherited_workspace_projection) ... FAIL
+test_final_guard_rejects_new_native_source_input (test_release_driver.SourceStabilityTests.test_final_guard_rejects_new_native_source_input) ... FAIL
+test_final_guard_rejects_new_query_input (test_release_driver.SourceStabilityTests.test_final_guard_rejects_new_query_input) ... FAIL
+test_final_guard_reruns_compiled_probe_in_fresh_directory (test_release_driver.SourceStabilityTests.test_final_guard_reruns_compiled_probe_in_fresh_directory) ... FAIL
+
+======================================================================
+FAIL: test_final_guard_rejects_changed_inherited_workspace_projection (test_release_driver.SourceStabilityTests.test_final_guard_rejects_changed_inherited_workspace_projection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/9a79a2c4-4e63-4a8d-8292-4c36738dd7d7/crates/spur-graph-duckdb/tests/test_release_driver.py", line 178, in test_final_guard_rejects_changed_inherited_workspace_projection
+    with self.assertRaisesRegex(ValueError, "source changed"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_final_guard_rejects_new_native_source_input (test_release_driver.SourceStabilityTests.test_final_guard_rejects_new_native_source_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/9a79a2c4-4e63-4a8d-8292-4c36738dd7d7/crates/spur-graph-duckdb/tests/test_release_driver.py", line 182, in test_final_guard_rejects_new_native_source_input
+    with self.assertRaisesRegex(ValueError, "source changed"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_final_guard_rejects_new_query_input (test_release_driver.SourceStabilityTests.test_final_guard_rejects_new_query_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/9a79a2c4-4e63-4a8d-8292-4c36738dd7d7/crates/spur-graph-duckdb/tests/test_release_driver.py", line 186, in test_final_guard_rejects_new_query_input
+    with self.assertRaisesRegex(ValueError, "source changed"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_final_guard_reruns_compiled_probe_in_fresh_directory (test_release_driver.SourceStabilityTests.test_final_guard_reruns_compiled_probe_in_fresh_directory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/9a79a2c4-4e63-4a8d-8292-4c36738dd7d7/crates/spur-graph-duckdb/tests/test_release_driver.py", line 168, in test_final_guard_reruns_compiled_probe_in_fresh_directory
+    self.assertEqual([name for name, _, _ in self.probes], ["source-probe", "source-probe-final"])
+AssertionError: Lists differ: ['source-probe'] != ['source-probe', 'source-probe-final']
+
+Second list contains 1 additional elements.
+First extra element 1:
+'source-probe-final'
+
+- ['source-probe']
++ ['source-probe', 'source-probe-final']
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.748s
+
+FAILED (failures=4)

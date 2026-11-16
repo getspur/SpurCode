@@ -1,0 +1,963 @@
+{
+  "prePersisted": {
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": true,
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "same_bytes_other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_extractor": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "evidence": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "evidence_key": {
+            "child_relation": "evidence",
+            "child_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "evidence_key"
+          ]
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "preValid": {
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "same_bytes_other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_extractor": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "evidence": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "evidence_key": {
+            "child_relation": "evidence",
+            "child_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "evidence_key"
+          ]
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.foreign_key\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": 0,\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": 0,\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": 0,\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": 0,\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": 1,\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": 0,\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": 0,\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": 0,\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": 1,\n    \"di_r1_row0_active\": 1,\n    \"di_r1_row0_f0_present\": 1,\n    \"di_r1_row0_f0_value\": 0,\n    \"di_r1_row0_f1_present\": 1,\n    \"di_r1_row0_f1_value\": 0,\n    \"di_r1_row0_f2_present\": 1,\n    \"di_r1_row0_f2_value\": 0,\n    \"di_r1_row1_active\": 1,\n    \"di_r1_row1_f0_present\": 1,\n    \"di_r1_row1_f0_value\": 0,\n    \"di_r1_row1_f1_present\": 1,\n    \"di_r1_row1_f1_value\": 0,\n    \"di_r1_row1_f2_present\": 1,\n    \"di_r1_row1_f2_value\": 1\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+        }
+      ]
+    }
+  },
+  "preInvalid": {
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "same_bytes_other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_extractor": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "evidence": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "evidence_key": {
+            "child_relation": "evidence",
+            "child_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "evidence_key"
+          ]
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.foreign_key\",\n      \"binding_index\": 1,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.foreign_key.violation\"\n    }\n  ],\n  \"total_duration_ms\": 14,\n  \"status\": \"unsat\",\n  \"duration_ms\": 5,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_cache_key\",\n    \"data_integrity_rule_1_data_integrity_foreign_key__subject_evidence_key\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+        }
+      ]
+    }
+  },
+  "postValid": {
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "same_bytes_other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_extractor": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "evidence": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "evidence_key": {
+            "child_relation": "evidence",
+            "child_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "evidence_key"
+          ]
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.foreign_key\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": 0,\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": 0,\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": 0,\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": 0,\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": 1,\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": 0,\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": 0,\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": 0,\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": 1,\n    \"di_r1_row0_active\": 1,\n    \"di_r1_row0_f0_present\": 1,\n    \"di_r1_row0_f0_value\": 0,\n    \"di_r1_row0_f1_present\": 1,\n    \"di_r1_row0_f1_value\": 0,\n    \"di_r1_row0_f2_present\": 1,\n    \"di_r1_row0_f2_value\": 0,\n    \"di_r1_row1_active\": 1,\n    \"di_r1_row1_f0_present\": 1,\n    \"di_r1_row1_f0_value\": 0,\n    \"di_r1_row1_f1_present\": 1,\n    \"di_r1_row1_f1_value\": 0,\n    \"di_r1_row1_f2_present\": 1,\n    \"di_r1_row1_f2_value\": 1\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+        }
+      ]
+    }
+  },
+  "postInvalid": {
+    "request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "relations": {
+          "cache": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "same_bytes_other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_extractor": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "evidence": {
+            "fields": {
+              "blob": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "path": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "extractor": {
+                "kind": "integer",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "rows": {
+              "one": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 0
+                  }
+                }
+              },
+              "other_path": {
+                "active": true,
+                "cells": {
+                  "blob": {
+                    "present": true,
+                    "value": 0
+                  },
+                  "path": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "extractor": {
+                    "present": true,
+                    "value": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {
+          "cache_key": {
+            "relation": "cache",
+            "fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "foreign_keys": {
+          "evidence_key": {
+            "child_relation": "evidence",
+            "child_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ],
+            "parent_relation": "cache",
+            "parent_fields": [
+              "blob",
+              "path",
+              "extractor"
+            ]
+          }
+        },
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {},
+        "temporal_constraints": {}
+      },
+      "rules": [
+        {
+          "rule_id": "data_integrity.unique",
+          "subjects": [
+            "cache_key"
+          ]
+        },
+        {
+          "rule_id": "data_integrity.foreign_key",
+          "subjects": [
+            "evidence_key"
+          ]
+        }
+      ]
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.foreign_key\",\n      \"binding_index\": 1,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.foreign_key.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_cache_key\",\n    \"data_integrity_rule_1_data_integrity_foreign_key__subject_evidence_key\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "request": {
+    "family": "data_integrity",
+    "mode": "verify",
+    "rules": [
+      {
+        "rule_id": "data_integrity.mutually_consistent",
+        "subjects": [
+          "native_error_classification"
+        ]
+      }
+    ],
+    "facts": {
+      "relations": {
+        "errors": {
+          "fields": {
+            "kind": {
+              "kind": "enum",
+              "values": [
+                "invalid_utf8",
+                "invalid_path",
+                "malformed_notebook",
+                "no_tree",
+                "setup",
+                "unknown_extraction",
+                "parser_language"
+              ]
+            },
+            "code": {
+              "kind": "enum",
+              "values": [
+                "none",
+                "malformed_input",
+                "invalid_path",
+                "extraction_failed"
+              ]
+            },
+            "propagates": {
+              "kind": "boolean"
+            }
+          },
+          "rows": {
+            "invalid_utf8": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "invalid_utf8"
+                },
+                "code": {
+                  "present": true,
+                  "value": "malformed_input"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": false
+                }
+              }
+            },
+            "invalid_path": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "invalid_path"
+                },
+                "code": {
+                  "present": true,
+                  "value": "invalid_path"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": false
+                }
+              }
+            },
+            "malformed_notebook": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "malformed_notebook"
+                },
+                "code": {
+                  "present": true,
+                  "value": "malformed_input"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": false
+                }
+              }
+            },
+            "no_tree": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "no_tree"
+                },
+                "code": {
+                  "present": true,
+                  "value": "none"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": true
+                }
+              }
+            },
+            "setup": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "setup"
+                },
+                "code": {
+                  "present": true,
+                  "value": "none"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": true
+                }
+              }
+            },
+            "unknown_extraction": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "unknown_extraction"
+                },
+                "code": {
+                  "present": true,
+                  "value": "none"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": true
+                }
+              }
+            },
+            "parser_language": {
+              "active": true,
+              "cells": {
+                "kind": {
+                  "present": true,
+                  "value": "parser_language"
+                },
+                "code": {
+                  "present": true,
+                  "value": "none"
+                },
+                "propagates": {
+                  "present": true,
+                  "value": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "unique_constraints": {},
+      "foreign_keys": {},
+      "cardinality_constraints": {},
+      "value_ranges": {},
+      "conditional_requirements": {},
+      "aggregate_balances": {},
+      "consistency_relations": {
+        "native_error_classification": {
+          "relation": "errors",
+          "fields": [
+            "kind",
+            "code",
+            "propagates"
+          ],
+          "allowed": [
+            [
+              "invalid_utf8",
+              "malformed_input",
+              false
+            ],
+            [
+              "invalid_path",
+              "invalid_path",
+              false
+            ],
+            [
+              "malformed_notebook",
+              "malformed_input",
+              false
+            ],
+            [
+              "no_tree",
+              "none",
+              true
+            ],
+            [
+              "setup",
+              "none",
+              true
+            ],
+            [
+              "unknown_extraction",
+              "none",
+              true
+            ],
+            [
+              "parser_language",
+              "none",
+              true
+            ]
+          ]
+        }
+      },
+      "temporal_constraints": {}
+    },
+    "persist": false
+  },
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 20,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"invalid_path\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"invalid_path\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": 0,\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"malformed_input\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"invalid_utf8\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": 0,\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"malformed_input\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"malformed_notebook\",\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": 0,\n    \"di_r0_row3_active\": 1,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": \"none\",\n    \"di_r0_row3_f1_present\": 1,\n    \"di_r0_row3_f1_value\": \"no_tree\",\n    \"di_r0_row3_f2_present\": 1,\n    \"di_r0_row3_f2_value\": 1,\n    \"di_r0_row4_active\": 1,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": \"none\",\n    \"di_r0_row4_f1_present\": 1,\n    \"di_r0_row4_f1_value\": \"parser_language\",\n    \"di_r0_row4_f2_present\": 1,\n    \"di_r0_row4_f2_value\": 1,\n    \"di_r0_row5_active\": 1,\n    \"di_r0_row5_f0_present\": 1,\n    \"di_r0_row5_f0_value\": \"none\",\n    \"di_r0_row5_f1_present\": 1,\n    \"di_r0_row5_f1_value\": \"setup\",\n    \"di_r0_row5_f2_present\": 1,\n    \"di_r0_row5_f2_value\": 1,\n    \"di_r0_row6_active\": 1,\n    \"di_r0_row6_f0_present\": 1,\n    \"di_r0_row6_f0_value\": \"none\",\n    \"di_r0_row6_f1_present\": 1,\n    \"di_r0_row6_f1_value\": \"unknown_extraction\",\n    \"di_r0_row6_f2_present\": 1,\n    \"di_r0_row6_f2_value\": 1\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+      }
+    ]
+  }
+}

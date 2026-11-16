@@ -1,0 +1,626 @@
+{
+  "request": {
+    "audit_id": "98bad256-a523-47c1-ae8b-802fd36a7c56",
+    "task_id": "bd-r7f4",
+    "message": "R7 completed and committed as 09be38b1f6155b0f090d3e19915add39182d380a; only README.md and docs/release-contract.md changed; worktree clean. Fresh integrated source 66663c00a candidate passed remote Rust 2/2 plus complete Python 206/206 (zero failures/errors/skips/expected failures); current macro positive/negative controls, direct-Rust and frozen read-only sample/control parity, exact package-bound headless snapshots and all documented examples passed. Frozen cache unchanged. R7 RED not applicable for docs/verification; genuine predecessor RED/GREEN linked. PRE/POST sat/pass and stale substitution unsat/fail, full exact solver receipts audited in comment 7190 after ArtifactCount quota rejection. Root review/integration and notebook acceptance remain root-owned; no issue closed, main merged or public publish/tag/push.",
+    "evidence": {
+      "task": "R7",
+      "issue": "bd-r7f4",
+      "status": "passed",
+      "source_head": "66663c00a4b4b7c898b1d1f5b66aecf99fc348f5",
+      "commit_head": "09be38b1f6155b0f090d3e19915add39182d380a",
+      "worktree_status": "",
+      "committed_paths": [
+        "crates/spur-graph-duckdb/README.md",
+        "crates/spur-graph-duckdb/docs/release-contract.md"
+      ],
+      "owned_documents": [
+        {
+          "path": "crates/spur-graph-duckdb/README.md",
+          "sha256": "bdc7a282ce0c843087fc5011b36eaf3f67f50b274f684c5f92a344b31b35410e",
+          "bytes": 8803
+        },
+        {
+          "path": "crates/spur-graph-duckdb/docs/release-contract.md",
+          "sha256": "52e95c781a7f87703d3c58e001544a9cff10a26e1a94f37444f462fa3836aeee",
+          "bytes": 30305
+        }
+      ],
+      "unified_diff": {
+        "path": "/private/tmp/spur-r7-65bb3605-evidence/R7-unified.diff",
+        "sha256": "8acdd071ea88b1a3333f9cb5bb7b5c0875306cc7eeef9e0d0c0a5d7fbd033840"
+      },
+      "release_receipt": {
+        "path": "/private/tmp/spur-r7-65bb3605-release-1/receipt.json",
+        "sha256": "acc1554b908df9a1b14325159016db0bead631fa5836406377adc441e0458e46"
+      },
+      "release_invocation": {
+        "argv": [
+          "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+          "crates/spur-graph-duckdb/scripts/check_release.py",
+          "--out",
+          "/private/tmp/spur-r7-65bb3605-release-1",
+          "--host-native",
+          "--expect-platform",
+          "osx_arm64"
+        ],
+        "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/65bb3605-1952-4b96-ae3d-5f3004579662",
+        "source_head": "66663c00a4b4b7c898b1d1f5b66aecf99fc348f5",
+        "overrides": {
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "SPUR_NO_LOCAL_FALLBACK": "1",
+          "SPUR_SCCACHE_S3": "0"
+        },
+        "raw_exit": 0
+      },
+      "release_phase_exits": {
+        "source-head": 0,
+        "source-status": 0,
+        "rustc-version": 0,
+        "cargo-version": 0,
+        "rust-tests": 0,
+        "native-build": 0,
+        "source-probe": 0,
+        "package": 0,
+        "verify-package": 0,
+        "unittests": 0,
+        "source-probe-final": 0
+      },
+      "package": {
+        "abi": "C_STRUCT_UNSTABLE",
+        "binary": {
+          "name": "spur_graph.duckdb_extension",
+          "sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+          "size_bytes": 16904630
+        },
+        "duckdb_api_version": "2.0.0",
+        "extension_version": "0.1.0",
+        "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "facts_schema_version": 1,
+        "format_version": 1,
+        "platform": "osx_arm64",
+        "resolution_scope": "single_file",
+        "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "supported_languages": [
+          "C",
+          "Cpp",
+          "Css",
+          "Go",
+          "Hcl",
+          "Html",
+          "Javascript",
+          "Json",
+          "JupyterNotebook",
+          "Lua",
+          "Markdown",
+          "Mermaid",
+          "Python",
+          "Rust",
+          "Shell",
+          "Sql",
+          "Terraform",
+          "Toml",
+          "Tsx",
+          "TypeScript",
+          "Yaml"
+        ],
+        "trust": {
+          "mode": "unsigned_local",
+          "signature": "absent"
+        }
+      },
+      "release_trust": {
+        "manifest": "/private/tmp/spur-r7-65bb3605-release-1/.spur_graph.duckdb_extension.packages/release-c5fa626a548248e7a5e46fc0950e0e74/spur_graph.duckdb_extension.json",
+        "manifest_sha256": "db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8",
+        "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+      },
+      "runtime": {
+        "duckdb": "2.0.0",
+        "duckdb_platform": "osx_arm64",
+        "host": "macOS-26.7.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "native_engine": "/private/tmp/spur-r5-9a79a2c4-venv/lib/python3.12/site-packages/_duckdb.abi3.so",
+        "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+        "native_version": "v2.0.0",
+        "python": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+        "python_executable": "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+        "python_sha256": "08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada"
+      },
+      "rustc": {
+        "LLVM version": "21.1.8",
+        "binary": "rustc",
+        "commit-date": "2026-03-25",
+        "commit-hash": "e408947bfd200af42db322daf0fadfe7e26d3bd1",
+        "host": "aarch64-apple-darwin",
+        "release": "1.94.1"
+      },
+      "native_artifacts": {
+        "build_script": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+          "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404"
+        },
+        "catalog_git_sources": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/catalog_git_sources",
+          "sha256": "b8575b1ac6e86e1f08a47aa0349cb5e388620d6684bef22c15d07e7ce6e83683"
+        },
+        "history_catalog": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+          "sha256": "fcb40e65e2d3ecb531b63e40f86eed156811c605409ac3ed1e8fa85c0019c2e0"
+        },
+        "library": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+          "sha256": "7e4ef5a37961b9373723882d1cd35195dce7b4f62698c72c4198baa34069fdb2"
+        },
+        "reference_file_facts": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+          "sha256": "b5e6fe8ec754942be5be4e2e1c34b372da1973ae9eba04b17aecae068c695273"
+        },
+        "reference_symbols": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/reference_symbols",
+          "sha256": "60d3c2f8c03c1b37db97f949927244c6f1a2192664ed9c0aad56e648c438891c"
+        },
+        "retrieval_native": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+          "sha256": "eca9a4cbadd4cb46bb19b2c5653993437b0feb4a38237bae40f6c5f3ea10a676"
+        },
+        "temporal_reference": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_reference",
+          "sha256": "7727a6aa753a44352d0f65581011ea4ab40521f8d333dd567614525ec11e98ee"
+        },
+        "temporal_symbol_oracle": {
+          "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_symbol_oracle",
+          "sha256": "36e6c5569cb63aaf2944a44b0eb19903c49e2c3c71f86a7f08b214b25c6dbbf0"
+        }
+      },
+      "unittests": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "release_pass": true,
+        "skipped": 0,
+        "skipped_tests": [],
+        "tests_run": 206,
+        "unexpected_successes": 0
+      },
+      "remote_rust_tests": {
+        "passed": 2,
+        "failed": 0,
+        "exit": 0
+      },
+      "current_acceptance": {
+        "path": "/private/tmp/spur-r7-65bb3605-evidence/current-acceptance.json",
+        "sha256": "8a123896032239163aff0c01c9453f8a1d142947ecfca76303d342cbbfa90001",
+        "command": {
+          "argv": [
+            "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+            "/private/tmp/spur-r7-65bb3605-evidence/current-acceptance.py"
+          ],
+          "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/65bb3605-1952-4b96-ae3d-5f3004579662",
+          "raw_exit": 0
+        }
+      },
+      "documented_commands": {
+        "binary_sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+        "commands": [
+          {
+            "name": "readme-build",
+            "argv": [
+              "/bin/sh",
+              "-n",
+              "/private/tmp/spur-r7-65bb3605-evidence/readme-build.sh"
+            ],
+            "raw_exit": 0,
+            "executed": false,
+            "script_sha256": "3e475933d6f4b448c2d7ce686f29db4af39a1a34d8716811caaeccb398ad13a9"
+          },
+          {
+            "name": "readme-five-functions",
+            "argv": [
+              "/bin/sh",
+              "/private/tmp/spur-r7-65bb3605-evidence/readme-five-functions.sh"
+            ],
+            "raw_exit": 0,
+            "executed": true,
+            "script_sha256": "672d56f78bb714d3bc9ad1470abacdaf3fab03492089eea5fdbe5bf1058fe193"
+          },
+          {
+            "name": "readme-headless",
+            "argv": [
+              "/bin/sh",
+              "/private/tmp/spur-r7-65bb3605-evidence/readme-headless.sh"
+            ],
+            "raw_exit": 0,
+            "executed": true,
+            "script_sha256": "c13be1c1050b8e96ede9055acb2b9eae39ca6b3c27f667ae45683659fb8a6edc"
+          },
+          {
+            "name": "contract-cache-demo",
+            "argv": [
+              "/bin/sh",
+              "/private/tmp/spur-r7-65bb3605-evidence/contract-cache-demo.sh"
+            ],
+            "raw_exit": 0,
+            "executed": true,
+            "script_sha256": "86a33f1721c4ef67632f800f06305ad38f486a0287cdadea10d399222e884970"
+          }
+        ]
+      },
+      "predecessor_receipts": [
+        {
+          "path": "/private/tmp/spur-bd-4q5c-green/verification.json",
+          "sha256": "5b82a038cbf892936106ff0fd8c6da833b381e45764e8edbf5746022c6005ed8"
+        },
+        {
+          "path": "/private/tmp/spur-r2-e5afa03c-evidence/receipt.json",
+          "sha256": "192e69a722f8cdfcc2846e4230e378900f4b7eae18a674e94ae236d733d4a913"
+        },
+        {
+          "path": "/private/tmp/spur-r3-7cb6b619-evidence/receipt.json",
+          "sha256": "8d34d84333b1638033ec0a454cb7ac6d6b9ae11a2301f067ac9967f6e2e8c0b5"
+        },
+        {
+          "path": "/private/tmp/spur-r4-90b963ee-evidence/receipt.json",
+          "sha256": "767f65e03f165fd32b06cabcf08674a57a4f235de40fbc0c760727a796963c75"
+        },
+        {
+          "path": "/private/tmp/spur-r5-9a79a2c4-evidence/verification.json",
+          "sha256": "4eee7533cfee614f71b90af666e1b79b4dddb91a51fddde30ffaa57d2f54aff2"
+        },
+        {
+          "path": "/private/tmp/spur-r6-4f646974-rework-evidence/verification.json",
+          "sha256": "6cd0cf965bbeb0fd26492c8c496a7595edd9e6dfe15649d849d5ecce73174a70"
+        }
+      ],
+      "final_source_probe": {
+        "argv": [
+          "/private/tmp/spur-r7-65bb3605-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+        ],
+        "raw_exit": 0,
+        "sha256": "179cdadc9b9fb61c8160c145ae500aba75251f6aa0897e2a36b9783a7c65fb8f",
+        "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "input_count": 321
+      },
+      "diff_check": {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "raw_exit": 0
+      },
+      "limitations": [
+        "R7 documentation/verification only: RED not applicable; predecessor authentic TDD retained.",
+        "Observed native acceptance osx_arm64 only; remote Linux Rust tests do not assert Linux packaging.",
+        "Hosted macos-15 CI configured but not executed.",
+        "Immutable corrected corpus read-only: real sample/control parity, not full reinjest.",
+        "Root owns final integration and notebook acceptance; worker notebook access denied; no bypass.",
+        "Unsigned local package; no public publish/tag/push.",
+        "Solver persistence quota 512/513 rejected; exact nonpersisted requests/results retained and audited."
+      ],
+      "solver_audit": {
+        "comment_id": "7190",
+        "path": "/private/tmp/spur-r7-65bb3605-evidence/solver-audit.json"
+      },
+      "verification_path": "/private/tmp/spur-r7-65bb3605-evidence/verification.json"
+    }
+  },
+  "result": {
+    "content": [],
+    "structuredContent": {
+      "recorded": true,
+      "idempotent": false,
+      "comment_id": "7191",
+      "audit_id": "98bad256-a523-47c1-ae8b-802fd36a7c56",
+      "task_id": "bd-r7f4",
+      "delegation_id": "4e7b84964ee24fdf",
+      "audit": {
+        "kind": "worker-evidence",
+        "audit_id": "98bad256-a523-47c1-ae8b-802fd36a7c56",
+        "delegation_id": "4e7b84964ee24fdf",
+        "brain_session_id": "dc95897af65a8511",
+        "message": "R7 completed and committed as 09be38b1f6155b0f090d3e19915add39182d380a; only README.md and docs/release-contract.md changed; worktree clean. Fresh integrated source 66663c00a candidate passed remote Rust 2/2 plus complete Python 206/206 (zero failures/errors/skips/expected failures); current macro positive/negative controls, direct-Rust and frozen read-only sample/control parity, exact package-bound headless snapshots and all documented examples passed. Frozen cache unchanged. R7 RED not applicable for docs/verification; genuine predecessor RED/GREEN linked. PRE/POST sat/pass and stale substitution unsat/fail, full exact solver receipts audited in comment 7190 after ArtifactCount quota rejection. Root review/integration and notebook acceptance remain root-owned; no issue closed, main merged or public publish/tag/push.",
+        "evidence": {
+          "commit_head": "09be38b1f6155b0f090d3e19915add39182d380a",
+          "committed_paths": [
+            "crates/spur-graph-duckdb/README.md",
+            "crates/spur-graph-duckdb/docs/release-contract.md"
+          ],
+          "current_acceptance": {
+            "path": "/private/tmp/spur-r7-65bb3605-evidence/current-acceptance.json",
+            "sha256": "8a123896032239163aff0c01c9453f8a1d142947ecfca76303d342cbbfa90001",
+            "command": {
+              "argv": [
+                "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+                "/private/tmp/spur-r7-65bb3605-evidence/current-acceptance.py"
+              ],
+              "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/65bb3605-1952-4b96-ae3d-5f3004579662",
+              "raw_exit": 0
+            }
+          },
+          "diff_check": {
+            "argv": [
+              "git",
+              "diff",
+              "--check"
+            ],
+            "raw_exit": 0
+          },
+          "documented_commands": {
+            "binary_sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+            "commands": [
+              {
+                "name": "readme-build",
+                "argv": [
+                  "/bin/sh",
+                  "-n",
+                  "/private/tmp/spur-r7-65bb3605-evidence/readme-build.sh"
+                ],
+                "raw_exit": 0,
+                "executed": false,
+                "script_sha256": "3e475933d6f4b448c2d7ce686f29db4af39a1a34d8716811caaeccb398ad13a9"
+              },
+              {
+                "name": "readme-five-functions",
+                "argv": [
+                  "/bin/sh",
+                  "/private/tmp/spur-r7-65bb3605-evidence/readme-five-functions.sh"
+                ],
+                "raw_exit": 0,
+                "executed": true,
+                "script_sha256": "672d56f78bb714d3bc9ad1470abacdaf3fab03492089eea5fdbe5bf1058fe193"
+              },
+              {
+                "name": "readme-headless",
+                "argv": [
+                  "/bin/sh",
+                  "/private/tmp/spur-r7-65bb3605-evidence/readme-headless.sh"
+                ],
+                "raw_exit": 0,
+                "executed": true,
+                "script_sha256": "c13be1c1050b8e96ede9055acb2b9eae39ca6b3c27f667ae45683659fb8a6edc"
+              },
+              {
+                "name": "contract-cache-demo",
+                "argv": [
+                  "/bin/sh",
+                  "/private/tmp/spur-r7-65bb3605-evidence/contract-cache-demo.sh"
+                ],
+                "raw_exit": 0,
+                "executed": true,
+                "script_sha256": "86a33f1721c4ef67632f800f06305ad38f486a0287cdadea10d399222e884970"
+              }
+            ]
+          },
+          "final_source_probe": {
+            "argv": [
+              "/private/tmp/spur-r7-65bb3605-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+            ],
+            "raw_exit": 0,
+            "sha256": "179cdadc9b9fb61c8160c145ae500aba75251f6aa0897e2a36b9783a7c65fb8f",
+            "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+            "input_count": 321
+          },
+          "issue": "bd-r7f4",
+          "limitations": [
+            "R7 documentation/verification only: RED not applicable; predecessor authentic TDD retained.",
+            "Observed native acceptance osx_arm64 only; remote Linux Rust tests do not assert Linux packaging.",
+            "Hosted macos-15 CI configured but not executed.",
+            "Immutable corrected corpus read-only: real sample/control parity, not full reinjest.",
+            "Root owns final integration and notebook acceptance; worker notebook access denied; no bypass.",
+            "Unsigned local package; no public publish/tag/push.",
+            "Solver persistence quota 512/513 rejected; exact nonpersisted requests/results retained and audited."
+          ],
+          "native_artifacts": {
+            "build_script": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+              "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404"
+            },
+            "catalog_git_sources": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/catalog_git_sources",
+              "sha256": "b8575b1ac6e86e1f08a47aa0349cb5e388620d6684bef22c15d07e7ce6e83683"
+            },
+            "history_catalog": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+              "sha256": "fcb40e65e2d3ecb531b63e40f86eed156811c605409ac3ed1e8fa85c0019c2e0"
+            },
+            "library": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+              "sha256": "7e4ef5a37961b9373723882d1cd35195dce7b4f62698c72c4198baa34069fdb2"
+            },
+            "reference_file_facts": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+              "sha256": "b5e6fe8ec754942be5be4e2e1c34b372da1973ae9eba04b17aecae068c695273"
+            },
+            "reference_symbols": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/reference_symbols",
+              "sha256": "60d3c2f8c03c1b37db97f949927244c6f1a2192664ed9c0aad56e648c438891c"
+            },
+            "retrieval_native": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+              "sha256": "eca9a4cbadd4cb46bb19b2c5653993437b0feb4a38237bae40f6c5f3ea10a676"
+            },
+            "temporal_reference": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_reference",
+              "sha256": "7727a6aa753a44352d0f65581011ea4ab40521f8d333dd567614525ec11e98ee"
+            },
+            "temporal_symbol_oracle": {
+              "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_symbol_oracle",
+              "sha256": "36e6c5569cb63aaf2944a44b0eb19903c49e2c3c71f86a7f08b214b25c6dbbf0"
+            }
+          },
+          "owned_documents": [
+            {
+              "path": "crates/spur-graph-duckdb/README.md",
+              "sha256": "bdc7a282ce0c843087fc5011b36eaf3f67f50b274f684c5f92a344b31b35410e",
+              "bytes": 8803
+            },
+            {
+              "path": "crates/spur-graph-duckdb/docs/release-contract.md",
+              "sha256": "52e95c781a7f87703d3c58e001544a9cff10a26e1a94f37444f462fa3836aeee",
+              "bytes": 30305
+            }
+          ],
+          "package": {
+            "abi": "C_STRUCT_UNSTABLE",
+            "binary": {
+              "name": "spur_graph.duckdb_extension",
+              "sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+              "size_bytes": 16904630
+            },
+            "duckdb_api_version": "2.0.0",
+            "extension_version": "0.1.0",
+            "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+            "facts_schema_version": 1,
+            "format_version": 1,
+            "platform": "osx_arm64",
+            "resolution_scope": "single_file",
+            "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+            "supported_languages": [
+              "C",
+              "Cpp",
+              "Css",
+              "Go",
+              "Hcl",
+              "Html",
+              "Javascript",
+              "Json",
+              "JupyterNotebook",
+              "Lua",
+              "Markdown",
+              "Mermaid",
+              "Python",
+              "Rust",
+              "Shell",
+              "Sql",
+              "Terraform",
+              "Toml",
+              "Tsx",
+              "TypeScript",
+              "Yaml"
+            ],
+            "trust": {
+              "mode": "unsigned_local",
+              "signature": "absent"
+            }
+          },
+          "predecessor_receipts": [
+            {
+              "path": "/private/tmp/spur-bd-4q5c-green/verification.json",
+              "sha256": "5b82a038cbf892936106ff0fd8c6da833b381e45764e8edbf5746022c6005ed8"
+            },
+            {
+              "path": "/private/tmp/spur-r2-e5afa03c-evidence/receipt.json",
+              "sha256": "192e69a722f8cdfcc2846e4230e378900f4b7eae18a674e94ae236d733d4a913"
+            },
+            {
+              "path": "/private/tmp/spur-r3-7cb6b619-evidence/receipt.json",
+              "sha256": "8d34d84333b1638033ec0a454cb7ac6d6b9ae11a2301f067ac9967f6e2e8c0b5"
+            },
+            {
+              "path": "/private/tmp/spur-r4-90b963ee-evidence/receipt.json",
+              "sha256": "767f65e03f165fd32b06cabcf08674a57a4f235de40fbc0c760727a796963c75"
+            },
+            {
+              "path": "/private/tmp/spur-r5-9a79a2c4-evidence/verification.json",
+              "sha256": "4eee7533cfee614f71b90af666e1b79b4dddb91a51fddde30ffaa57d2f54aff2"
+            },
+            {
+              "path": "/private/tmp/spur-r6-4f646974-rework-evidence/verification.json",
+              "sha256": "6cd0cf965bbeb0fd26492c8c496a7595edd9e6dfe15649d849d5ecce73174a70"
+            }
+          ],
+          "release_invocation": {
+            "argv": [
+              "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+              "crates/spur-graph-duckdb/scripts/check_release.py",
+              "--out",
+              "/private/tmp/spur-r7-65bb3605-release-1",
+              "--host-native",
+              "--expect-platform",
+              "osx_arm64"
+            ],
+            "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/65bb3605-1952-4b96-ae3d-5f3004579662",
+            "source_head": "66663c00a4b4b7c898b1d1f5b66aecf99fc348f5",
+            "overrides": {
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "SPUR_NO_LOCAL_FALLBACK": "1",
+              "SPUR_SCCACHE_S3": "0"
+            },
+            "raw_exit": 0
+          },
+          "release_phase_exits": {
+            "source-head": 0,
+            "source-status": 0,
+            "rustc-version": 0,
+            "cargo-version": 0,
+            "rust-tests": 0,
+            "native-build": 0,
+            "source-probe": 0,
+            "package": 0,
+            "verify-package": 0,
+            "unittests": 0,
+            "source-probe-final": 0
+          },
+          "release_receipt": {
+            "path": "/private/tmp/spur-r7-65bb3605-release-1/receipt.json",
+            "sha256": "acc1554b908df9a1b14325159016db0bead631fa5836406377adc441e0458e46"
+          },
+          "release_trust": {
+            "manifest": "/private/tmp/spur-r7-65bb3605-release-1/.spur_graph.duckdb_extension.packages/release-c5fa626a548248e7a5e46fc0950e0e74/spur_graph.duckdb_extension.json",
+            "manifest_sha256": "db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8",
+            "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+          },
+          "remote_rust_tests": {
+            "passed": 2,
+            "failed": 0,
+            "exit": 0
+          },
+          "runtime": {
+            "duckdb": "2.0.0",
+            "duckdb_platform": "osx_arm64",
+            "host": "macOS-26.7.1-arm64-arm-64bit",
+            "machine": "arm64",
+            "native_engine": "/private/tmp/spur-r5-9a79a2c4-venv/lib/python3.12/site-packages/_duckdb.abi3.so",
+            "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+            "native_version": "v2.0.0",
+            "python": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+            "python_executable": "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+            "python_sha256": "08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada"
+          },
+          "rustc": {
+            "LLVM version": "21.1.8",
+            "binary": "rustc",
+            "commit-date": "2026-03-25",
+            "commit-hash": "e408947bfd200af42db322daf0fadfe7e26d3bd1",
+            "host": "aarch64-apple-darwin",
+            "release": "1.94.1"
+          },
+          "solver_audit": {
+            "comment_id": "7190",
+            "path": "/private/tmp/spur-r7-65bb3605-evidence/solver-audit.json"
+          },
+          "source_head": "66663c00a4b4b7c898b1d1f5b66aecf99fc348f5",
+          "status": "passed",
+          "task": "R7",
+          "unified_diff": {
+            "path": "/private/tmp/spur-r7-65bb3605-evidence/R7-unified.diff",
+            "sha256": "8acdd071ea88b1a3333f9cb5bb7b5c0875306cc7eeef9e0d0c0a5d7fbd033840"
+          },
+          "unittests": {
+            "errors": 0,
+            "expected_failures": 0,
+            "failures": 0,
+            "release_pass": true,
+            "skipped": 0,
+            "skipped_tests": [],
+            "tests_run": 206,
+            "unexpected_successes": 0
+          },
+          "verification_path": "/private/tmp/spur-r7-65bb3605-evidence/verification.json",
+          "worktree_status": ""
+        }
+      }
+    },
+    "isError": false
+  }
+}

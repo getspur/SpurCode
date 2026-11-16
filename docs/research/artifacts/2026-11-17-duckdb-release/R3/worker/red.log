@@ -1,0 +1,95 @@
+test_diagnostics_persist_exact_native_details_and_replay_only_missing (test_file_facts_pipeline.FileFactsPipelineTests.test_diagnostics_persist_exact_native_details_and_replay_only_missing) ... FAIL
+test_prior_cache_additive_migration_keeps_unknown_details_null (test_file_facts_pipeline.FileFactsPipelineTests.test_prior_cache_additive_migration_keeps_unknown_details_null) ... FAIL
+test_all_seven_tables_have_schema_count_checksum_and_supplied_provenance (test_publish_snapshot.PublishSnapshotTests.test_all_seven_tables_have_schema_count_checksum_and_supplied_provenance) ... FAIL
+test_cli_can_publish_quoted_schema_without_extension (test_publish_snapshot.PublishSnapshotTests.test_cli_can_publish_quoted_schema_without_extension) ... FAIL
+test_duplicate_version_and_path_traversal_are_rejected_without_mutation (test_publish_snapshot.PublishSnapshotTests.test_duplicate_version_and_path_traversal_are_rejected_without_mutation) ... FAIL
+test_every_export_and_metadata_read_uses_one_read_only_transaction (test_publish_snapshot.PublishSnapshotTests.test_every_export_and_metadata_read_uses_one_read_only_transaction) ... FAIL
+test_first_failure_has_no_current_manifest (test_publish_snapshot.PublishSnapshotTests.test_first_failure_has_no_current_manifest) ... FAIL
+test_late_export_failure_preserves_previous_manifest_and_checksummed_files (test_publish_snapshot.PublishSnapshotTests.test_late_export_failure_preserves_previous_manifest_and_checksummed_files) ... FAIL
+test_pointer_failure_preserves_previous_and_never_reuses_finalized_version (test_publish_snapshot.PublishSnapshotTests.test_pointer_failure_preserves_previous_and_never_reuses_finalized_version) ... FAIL
+
+======================================================================
+FAIL: test_diagnostics_persist_exact_native_details_and_replay_only_missing (test_file_facts_pipeline.FileFactsPipelineTests.test_diagnostics_persist_exact_native_details_and_replay_only_missing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py", line 251, in test_diagnostics_persist_exact_native_details_and_replay_only_missing
+    self.assertIn("error_code", columns, "cache must persist native error diagnostics")
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'error_code' not found in ['blob_oid', 'logical_path', 'extractor_sha', 'facts', 'status'] : cache must persist native error diagnostics
+
+======================================================================
+FAIL: test_prior_cache_additive_migration_keeps_unknown_details_null (test_file_facts_pipeline.FileFactsPipelineTests.test_prior_cache_additive_migration_keeps_unknown_details_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_file_facts_pipeline.py", line 293, in test_prior_cache_additive_migration_keeps_unknown_details_null
+    self.assertIn("error_code", columns, "prior cache requires explicit additive migration")
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'error_code' not found in ['blob_oid', 'logical_path', 'extractor_sha', 'facts', 'status'] : prior cache requires explicit additive migration
+
+======================================================================
+FAIL: test_all_seven_tables_have_schema_count_checksum_and_supplied_provenance (test_publish_snapshot.PublishSnapshotTests.test_all_seven_tables_have_schema_count_checksum_and_supplied_provenance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+======================================================================
+FAIL: test_cli_can_publish_quoted_schema_without_extension (test_publish_snapshot.PublishSnapshotTests.test_cli_can_publish_quoted_schema_without_extension)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+======================================================================
+FAIL: test_duplicate_version_and_path_traversal_are_rejected_without_mutation (test_publish_snapshot.PublishSnapshotTests.test_duplicate_version_and_path_traversal_are_rejected_without_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+======================================================================
+FAIL: test_every_export_and_metadata_read_uses_one_read_only_transaction (test_publish_snapshot.PublishSnapshotTests.test_every_export_and_metadata_read_uses_one_read_only_transaction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+======================================================================
+FAIL: test_first_failure_has_no_current_manifest (test_publish_snapshot.PublishSnapshotTests.test_first_failure_has_no_current_manifest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+======================================================================
+FAIL: test_late_export_failure_preserves_previous_manifest_and_checksummed_files (test_publish_snapshot.PublishSnapshotTests.test_late_export_failure_preserves_previous_manifest_and_checksummed_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+======================================================================
+FAIL: test_pointer_failure_preserves_previous_and_never_reuses_finalized_version (test_publish_snapshot.PublishSnapshotTests.test_pointer_failure_preserves_previous_and_never_reuses_finalized_version)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/7cb6b619-9ce9-4bca-a8dd-5eb2d26d4b47/crates/spur-graph-duckdb/tests/test_publish_snapshot.py", line 36, in setUp
+    self.assertIsNotNone(self.publisher, 'supported coherent snapshot publisher must exist')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : supported coherent snapshot publisher must exist
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.210s
+
+FAILED (failures=9)

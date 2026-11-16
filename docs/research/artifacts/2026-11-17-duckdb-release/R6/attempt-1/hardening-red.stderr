@@ -1,0 +1,35 @@
+test_diagnostics_and_coverage_do_not_claim_full_resolution (test_app_consumer.AppConsumerTests.test_diagnostics_and_coverage_do_not_claim_full_resolution) ... ok
+test_early_exit_and_interruption_cannot_publish_even_with_candidate_written (test_app_consumer.AppConsumerTests.test_early_exit_and_interruption_cannot_publish_even_with_candidate_written) ... ok
+test_explicit_timeout_reaps_child_and_next_healthy_run_succeeds (test_app_consumer.AppConsumerTests.test_explicit_timeout_reaps_child_and_next_healthy_run_succeeds) ... ok
+test_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths (test_app_consumer.AppConsumerTests.test_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths) ... ok
+test_interrupting_parent_reaps_native_child_before_cleanup (test_app_consumer.AppConsumerTests.test_interrupting_parent_reaps_native_child_before_cleanup) ... ERROR
+test_manifest_binds_snapshot_schema_source_runtime_and_artifact (test_app_consumer.AppConsumerTests.test_manifest_binds_snapshot_schema_source_runtime_and_artifact) ... ok
+test_mislabeled_source_and_wrong_extractor_fail_before_publication (test_app_consumer.AppConsumerTests.test_mislabeled_source_and_wrong_extractor_fail_before_publication) ... ok
+test_missing_full_lineage_key_and_conflicting_snapshot_are_rejected (test_app_consumer.AppConsumerTests.test_missing_full_lineage_key_and_conflicting_snapshot_are_rejected) ... ok
+test_reader_checks_the_coherent_snapshot_manifest (test_app_consumer.AppConsumerTests.test_reader_checks_the_coherent_snapshot_manifest) ... FAIL
+test_reader_rejects_corrupt_exports_and_snapshot_relabeling (test_app_consumer.AppConsumerTests.test_reader_rejects_corrupt_exports_and_snapshot_relabeling) ... ok
+test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs (test_app_consumer.AppConsumerTests.test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs) ... ok
+test_typed_exports_reopen_and_replay_without_added_duplicates (test_app_consumer.AppConsumerTests.test_typed_exports_reopen_and_replay_without_added_duplicates) ... ok
+
+======================================================================
+ERROR: test_interrupting_parent_reaps_native_child_before_cleanup (test_app_consumer.AppConsumerTests.test_interrupting_parent_reaps_native_child_before_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/e5775e7a-3021-4691-8033-6d8ddf376516/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 289, in test_interrupting_parent_reaps_native_child_before_cleanup
+    child_pid = json.loads(candidates[0].read_text())['native_pid']
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+KeyError: 'native_pid'
+
+======================================================================
+FAIL: test_reader_checks_the_coherent_snapshot_manifest (test_app_consumer.AppConsumerTests.test_reader_checks_the_coherent_snapshot_manifest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/e5775e7a-3021-4691-8033-6d8ddf376516/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 269, in test_reader_checks_the_coherent_snapshot_manifest
+    with self.assertRaisesRegex(ValueError, 'checksum'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 12 tests in 5.474s
+
+FAILED (failures=1, errors=1)

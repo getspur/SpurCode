@@ -1,0 +1,47 @@
+{
+  "source_head": "e0be2783e69d8119677fc6736c2474662bdf0271",
+  "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+  "binary_sha256": "2968d20ef8d4f07df100e50f6aaccb0b2bece7df048c1a92884fc12c90e2ae89",
+  "healthy_processes": [
+    {
+      "pid": 84009,
+      "returncode": 0
+    },
+    {
+      "pid": 84015,
+      "returncode": 0
+    }
+  ],
+  "faults": [
+    {
+      "case": "unsupported_scheme",
+      "pid": 84010,
+      "returncode": 1,
+      "reaped": true,
+      "completed_pointer_and_files_unchanged": true
+    },
+    {
+      "case": "exit_after_candidate",
+      "pid": 84011,
+      "returncode": 23,
+      "reaped": true,
+      "completed_pointer_and_files_unchanged": true
+    },
+    {
+      "case": "interrupt_after_candidate",
+      "pid": 84012,
+      "returncode": -15,
+      "reaped": true,
+      "completed_pointer_and_files_unchanged": true
+    },
+    {
+      "case": "caller_timeout",
+      "pid": 84013,
+      "returncode": -9,
+      "reaped": true,
+      "completed_pointer_and_files_unchanged": true
+    }
+  ],
+  "stored_scheme_reader_rejected": true,
+  "retained_output": "/private/tmp/spur-r6-4f646974-rework-evidence/healthy-recovery"
+}

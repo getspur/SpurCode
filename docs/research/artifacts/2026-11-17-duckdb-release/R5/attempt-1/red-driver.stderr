@@ -1,0 +1,125 @@
+test_child_failure_preserves_raw_exit_and_stops_later_phases (test_release_driver.DriverTests.test_child_failure_preserves_raw_exit_and_stops_later_phases) ... FAIL
+test_empty_unittest_discovery_is_a_release_failure (test_release_driver.DriverTests.test_empty_unittest_discovery_is_a_release_failure) ... FAIL
+test_existing_output_is_refused_without_overwriting (test_release_driver.DriverTests.test_existing_output_is_refused_without_overwriting) ... FAIL
+test_missing_native_oracle_fails_preflight (test_release_driver.DriverTests.test_missing_native_oracle_fails_preflight) ... FAIL
+test_missing_runtime_fails_cli_preflight (test_release_driver.DriverTests.test_missing_runtime_fails_cli_preflight) ... FAIL
+test_unittest_failure_is_a_release_failure (test_release_driver.DriverTests.test_unittest_failure_is_a_release_failure) ... FAIL
+test_unittest_skip_is_a_release_failure (test_release_driver.DriverTests.test_unittest_skip_is_a_release_failure) ... FAIL
+test_wrong_runtime_fails_cli_preflight (test_release_driver.DriverTests.test_wrong_runtime_fails_cli_preflight) ... FAIL
+test_current_binary_cannot_self_approve_without_manifest (test_release_driver.ReleaseManifestTests.test_current_binary_cannot_self_approve_without_manifest) ... FAIL
+test_current_manifest_checksum_and_source_mismatches_are_rejected (test_release_driver.ReleaseManifestTests.test_current_manifest_checksum_and_source_mismatches_are_rejected) ... FAIL
+test_explicit_current_manifest_is_verified (test_release_driver.ReleaseManifestTests.test_explicit_current_manifest_is_verified) ... FAIL
+test_tampered_binary_is_rejected_with_original_manifest (test_release_driver.ReleaseManifestTests.test_tampered_binary_is_rejected_with_original_manifest) ... FAIL
+
+======================================================================
+FAIL: test_child_failure_preserves_raw_exit_and_stops_later_phases (test_release_driver.DriverTests.test_child_failure_preserves_raw_exit_and_stops_later_phases)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_empty_unittest_discovery_is_a_release_failure (test_release_driver.DriverTests.test_empty_unittest_discovery_is_a_release_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_existing_output_is_refused_without_overwriting (test_release_driver.DriverTests.test_existing_output_is_refused_without_overwriting)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_missing_native_oracle_fails_preflight (test_release_driver.DriverTests.test_missing_native_oracle_fails_preflight)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_missing_runtime_fails_cli_preflight (test_release_driver.DriverTests.test_missing_runtime_fails_cli_preflight)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_unittest_failure_is_a_release_failure (test_release_driver.DriverTests.test_unittest_failure_is_a_release_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_unittest_skip_is_a_release_failure (test_release_driver.DriverTests.test_unittest_skip_is_a_release_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_wrong_runtime_fails_cli_preflight (test_release_driver.DriverTests.test_wrong_runtime_fails_cli_preflight)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_current_binary_cannot_self_approve_without_manifest (test_release_driver.ReleaseManifestTests.test_current_binary_cannot_self_approve_without_manifest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_current_manifest_checksum_and_source_mismatches_are_rejected (test_release_driver.ReleaseManifestTests.test_current_manifest_checksum_and_source_mismatches_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_explicit_current_manifest_is_verified (test_release_driver.ReleaseManifestTests.test_explicit_current_manifest_is_verified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+======================================================================
+FAIL: test_tampered_binary_is_rejected_with_original_manifest (test_release_driver.ReleaseManifestTests.test_tampered_binary_is_rejected_with_original_manifest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/dd530794-e2a6-4b44-99f2-07e89745999a/crates/spur-graph-duckdb/tests/test_release_driver.py", line 20, in setUp
+    self.assertTrue(DRIVER.is_file(), "checked release entry point must exist")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : checked release entry point must exist
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.002s
+
+FAILED (failures=12)

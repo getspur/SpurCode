@@ -1,0 +1,263 @@
+{
+  "task": "R2",
+  "issue": "bd-ujgg",
+  "plan": "f02f5ee1-f011-4b13-bb0b-e8d6451ee34a",
+  "requested_source_base": "adaa1f86e2c95201a331046a8c0ea785b8781399",
+  "assigned_approved_r1_base": "f2ea872c19fc00aeab6d891458d3bb1408ca5dcb",
+  "predecessor_receipt": "/private/tmp/spur-r2-f45cf875-evidence/receipt.json",
+  "canonical_original_commits": [
+    "df291105f8d39c4cde9d9044d9e670ea3307ff43",
+    "01acc87f663e4bb13ab2c78e03d9376c1b1e6916"
+  ],
+  "commits": [
+    "4d981dc113036118476be436fa1eaeb2cf8478c5 test(spur-graph-duckdb): R2 cover typed per-row extraction diagnostics",
+    "a65adb74ab12ef5664f5bc397a1daa9e3ba1b567 feat(spur-graph-duckdb): R2 return typed per-input extraction diagnostics",
+    "5f061fa661d82f575c548173b4105b4e29f08da1 test(spur-graph-duckdb): R2 require NoTree to propagate native diagnostics",
+    "11d0de8cf39c5c04edeb94c2fecdb19d1d693cc6 fix(spur-graph-duckdb): R2 propagate NoTree as an internal failure"
+  ],
+  "test_commit": "5f061fa66",
+  "fix_commit": "11d0de8cf39c5c04edeb94c2fecdb19d1d693cc6",
+  "working_tree_status": "",
+  "unified_diff": "/private/tmp/spur-r2-e5afa03c-evidence/R2-unified.diff",
+  "focused_correction_diff": "/private/tmp/spur-r2-e5afa03c-evidence/R2-NoTree-correction.diff",
+  "commands": [
+    {
+      "phase": "red_remote_unit",
+      "command": "env SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_REMOTE_NAMESPACE=r2-e5afa03c scripts/spur-cargo --workdir crates/spur-graph-duckdb test --lib --locked",
+      "exit": 101,
+      "log": "red-remote-unit.log",
+      "at": "2026-11-16T20:47:26.465589+00:00"
+    },
+    {
+      "phase": "scoped_fmt",
+      "command": "scripts/spur-cargo --workdir crates/spur-graph-duckdb fmt -- --check",
+      "exit": 0,
+      "log": "fmt.log",
+      "at": "2026-11-16T20:48:10.203015+00:00"
+    },
+    {
+      "phase": "green_remote_unit",
+      "command": "env SPUR_REMOTE=1 SPUR_NO_LOCAL_FALLBACK=1 SPUR_REMOTE_NAMESPACE=r2-e5afa03c scripts/spur-cargo --workdir crates/spur-graph-duckdb test --lib --locked",
+      "exit": 0,
+      "log": "green-remote-unit.log",
+      "at": "2026-11-16T20:49:11.921692+00:00"
+    },
+    {
+      "phase": "host_native_build",
+      "command": "env SPUR_REMOTE=0 CARGO_TARGET_DIR=/private/tmp/spur-r2-f45cf875-native scripts/spur-cargo --workdir crates/spur-graph-duckdb build --release --lib --example reference_file_facts --locked --message-format=json-render-diagnostics",
+      "exit": 0,
+      "log": "native-build.log",
+      "started_at": "2026-11-16T20:49:51.153621+00:00",
+      "at": "2026-11-16T20:52:02.436889+00:00",
+      "justification": "Distinct host-native osx_arm64 acceptance/package build after successful remote GREEN. Reusing explicitly permitted prior incremental target; old package remains untouched."
+    },
+    {
+      "phase": "package",
+      "command": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python crates/spur-graph-duckdb/scripts/package_extension.py --library /private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib --out /private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension",
+      "exit": 0,
+      "log": "package.log",
+      "at": "2026-11-16T20:52:25.568873+00:00"
+    },
+    {
+      "phase": "sql_diagnostics",
+      "command": "env SPUR_GRAPH_EXTENSION=/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension SPUR_FILE_FACTS_ORACLE=/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts SPUR_GRAPH_BUILD_SCRIPT=/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build PYTHONPATH=crates/spur-graph-duckdb/tests /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest test_diagnostics -v",
+      "exit": 0,
+      "log": "sql_diagnostics.log",
+      "at": "2026-11-16T20:52:53.197335+00:00"
+    },
+    {
+      "phase": "sql_regressions_and_r1_contract",
+      "command": "env SPUR_GRAPH_EXTENSION=/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension SPUR_FILE_FACTS_ORACLE=/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts SPUR_GRAPH_BUILD_SCRIPT=/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build PYTHONPATH=crates/spur-graph-duckdb/tests /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest test_file_facts test_file_facts_pipeline test_extension test_contract -v",
+      "exit": 0,
+      "log": "sql_regressions_and_r1_contract.log",
+      "at": "2026-11-16T20:53:14.840174+00:00"
+    },
+    {
+      "phase": "diff_check",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "diff_check.log",
+      "at": "2026-11-16T20:53:19.797348+00:00"
+    },
+    {
+      "phase": "scope_check",
+      "command": "git diff --exit-code f2ea872c19fc00aeab6d891458d3bb1408ca5dcb HEAD -- . ':(exclude)crates/spur-graph-duckdb/src/file_facts.rs' ':(exclude)crates/spur-graph-duckdb/tests/test_diagnostics.py'",
+      "exit": 0,
+      "log": "scope_check.log",
+      "at": "2026-11-16T20:53:19.811648+00:00"
+    },
+    {
+      "phase": "toolchain",
+      "command": "scripts/spur-cargo --workdir crates/spur-graph-duckdb --version --verbose",
+      "exit": 0,
+      "log": "toolchain.log",
+      "at": "2026-11-16T20:53:19.863508+00:00"
+    },
+    {
+      "phase": "committed_diff_check",
+      "command": "git diff --check f2ea872c19fc00aeab6d891458d3bb1408ca5dcb HEAD",
+      "exit": 0,
+      "log": "committed-diff-check.log",
+      "at": "2026-11-16T20:54:04.564209+00:00"
+    }
+  ],
+  "results": {
+    "remote_red": {
+      "exit": 101,
+      "tests_passed": 1,
+      "tests_failed": 1,
+      "test": "file_facts::diagnostic_tests::native_row_errors_keep_diagnostics_and_internal_errors_propagate",
+      "failure": "internal failure must propagate",
+      "source_tree_hash": "d421ee5dde4bf71aa4d0b05392d641521bc49f1e9eeed397d10adc20a0dd4192"
+    },
+    "remote_green": {
+      "exit": 0,
+      "tests_passed": 2,
+      "source_tree_hash": "7ecff156031be35580c5a5770137bef410f7179353a697d0e8daf60a40bde681"
+    },
+    "diagnostic_sql": {
+      "exit": 0,
+      "tests_passed": 8
+    },
+    "sql_regressions": {
+      "exit": 0,
+      "tests_passed": 39
+    },
+    "r1_metadata_provenance_contract": {
+      "exit": 0,
+      "tests_passed": 7
+    }
+  },
+  "identities": {
+    "source_head": "11d0de8cf39c5c04edeb94c2fecdb19d1d693cc6",
+    "working_tree_status": "",
+    "metadata": {
+      "extension_version": "0.1.0",
+      "facts_schema_version": 1,
+      "duckdb_api_version": "2.0.0",
+      "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+      "supported_languages": [
+        "C",
+        "Cpp",
+        "Css",
+        "Go",
+        "Hcl",
+        "Html",
+        "Javascript",
+        "Json",
+        "JupyterNotebook",
+        "Lua",
+        "Markdown",
+        "Mermaid",
+        "Python",
+        "Rust",
+        "Shell",
+        "Sql",
+        "Terraform",
+        "Toml",
+        "Tsx",
+        "TypeScript",
+        "Yaml"
+      ],
+      "resolution_scope": "single_file"
+    },
+    "runtime": {
+      "python_executable": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+      "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+      "machine": "arm64",
+      "os": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+      "duckdb_version": "2.0.0",
+      "duckdb_native_module": "/private/tmp/spur-graph-duckdb-v2-20261114/lib/python3.14/site-packages/_duckdb.abi3.so",
+      "duckdb_sql_version": "v2.0.0",
+      "package_platform": "osx_arm64",
+      "extension_abi": "C_STRUCT_UNSTABLE"
+    },
+    "sha256": {
+      "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+      "/private/tmp/spur-graph-duckdb-v2-20261114/lib/python3.14/site-packages/_duckdb.abi3.so": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/build-script-build": "a852eb472d04c2cf6a864e3aa5fc70300cdc985bbc8109469ef58a4bf45341ba",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/libspur_graph_duckdb.dylib": "c1f58167e140bf0e695d49bce358a990bebe3c51239dbeae6c772ecf71c00e1c",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/reference_file_facts": "7a9abd01f4931c5fe1b334fb210a932eeefc7f9d109381fd4ed726f6a28b38b3",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph.duckdb_extension": "6cfd5205ac15f12cf64ff02cf3cbd592b5b14c4afdb3d7ccb34e25de774bfc27",
+      "/private/tmp/spur-r2-e5afa03c-evidence/candidate/spur_graph_source_identity.json": "179cdadc9b9fb61c8160c145ae500aba75251f6aa0897e2a36b9783a7c65fb8f",
+      "crates/spur-graph-duckdb/src/file_facts.rs": "f0be4796ca463580e54f8a584e346dc69fee8aa6ff14395cbda2e9e062b6070d",
+      "crates/spur-graph-duckdb/tests/test_diagnostics.py": "94dd8b4624adf37760de24699d6f643c87b461a51c3d78f2df3887796e8633f2",
+      "crates/spur-graph-duckdb/src/lib.rs": "685c58f32e2e5c804095421eafc9c0c83867ab47df002268d2e0cb3981809e68",
+      "crates/spur-graph-duckdb/src/metadata.rs": "53b1e5b4bfb861099931a20423e6550b1c47c9aa26f7f70f55c07d8766f4c535",
+      "crates/spur-graph-duckdb/Cargo.toml": "1376cac6fdc74accccade6c1326bd916c6ad874b39695b17bf882b313f65f52c",
+      "crates/spur-graph-duckdb/Cargo.lock": "4004295351edbeecedd8a319125341f1b4932557e0f5d006aeaf731fd9ba5732",
+      "crates/spur-graph-duckdb/build.rs": "1fa99241d7900090ea4d839c0a23c518fc49c0fac0683442adaa17c91870d00e"
+    },
+    "at": "2026-11-16T20:53:02.212235+00:00"
+  },
+  "solve": {
+    "rule": "data_integrity.mutually_consistent",
+    "mode": "verify",
+    "receipts": {
+      "pre": {
+        "status": "sat",
+        "outcome": "pass",
+        "path": "/private/tmp/spur-r2-e5afa03c-evidence/solve-pre.json"
+      },
+      "pre-negative": {
+        "status": "unsat",
+        "outcome": "fail",
+        "path": "/private/tmp/spur-r2-e5afa03c-evidence/solve-pre-negative.json"
+      },
+      "post": {
+        "status": "sat",
+        "outcome": "pass",
+        "path": "/private/tmp/spur-r2-e5afa03c-evidence/solve-post.json"
+      },
+      "post-negative": {
+        "status": "unsat",
+        "outcome": "fail",
+        "path": "/private/tmp/spur-r2-e5afa03c-evidence/solve-post-negative.json"
+      }
+    },
+    "persistence_attempt": "/private/tmp/spur-r2-e5afa03c-evidence/solve-pre-persist-attempt.json",
+    "persistence_failure": "solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513",
+    "scope": "Declared finite mapping of three known recoverable input categories and four internal native error categories; no unbounded extraction safety or performance proof."
+  },
+  "limitations": [
+    "Native SQL acceptance only on osx_arm64, macOS 26.7.1, DuckDB 2.0.0, Python 3.14.5; Rust unit suite ran remotely on AWS Linux.",
+    "NoTree and InvalidUtf8 use direct native-variant unit witnesses; no native crash or no-tree condition was induced from SQL.",
+    "empty_facts uses a direct GraphFacts::empty() unit witness; real SQL fixtures retain native file facts.",
+    "Core erases path/notebook errors into Extraction(String); only known exact input diagnostics are recovered. NoTree, Setup and unknown/internal Extraction messages propagate as query errors.",
+    "Two existing spur-graph dead_code warnings remain.",
+    "Solver artifact quota prevented tool persistence; complete exact requests/results are preserved in evidence and durable beads audits; no prior receipts were deleted.",
+    "No issue closed, main merge, public publish, tag, or push. Root owns independent review and integration."
+  ],
+  "beads_audit_comment_ids": [
+    "7059",
+    "7060",
+    "7062",
+    "7063"
+  ],
+  "evidence_sha256": {
+    "/private/tmp/spur-r2-e5afa03c-evidence/candidate-identities.json": "60ddc68e74922b52ac6aa22d99b7578727d2161b3f752455936c8fc658a82e08",
+    "/private/tmp/spur-r2-e5afa03c-evidence/native-build-artifacts.json": "1d1d0b461243fac3ed9affcdc04ddeb8d660b7f698ab637883a407adf087d1c5",
+    "/private/tmp/spur-r2-e5afa03c-evidence/red-source-and-prior-target.json": "bbf5931014762041baf4694ac81f1f76545c5ba7f8a6b6d18372cbce7bdc1795",
+    "/private/tmp/spur-r2-e5afa03c-evidence/runtime-before-load.json": "ad1bd6ae0e684c66dcc82a88d80ce8a4816c4ec71f607fee2913455a13e7641f",
+    "/private/tmp/spur-r2-e5afa03c-evidence/solve-post-negative.json": "2a8c7970d50dd9c1270175d3c20db64c88ba53ad83dfd3a770aff6300d000bed",
+    "/private/tmp/spur-r2-e5afa03c-evidence/solve-post.json": "f72596beb17233a3e8a74cd316e61c9526316f6f043113b25ed167c0e2f8bc65",
+    "/private/tmp/spur-r2-e5afa03c-evidence/solve-pre-negative.json": "4504b0824d19c8885d29059057b9fc9819facfab2bc6ea2d6493830ef16da2df",
+    "/private/tmp/spur-r2-e5afa03c-evidence/solve-pre-persist-attempt.json": "88d2c0a1e260ac6764d3a7245ebeb63428d3a6e17a3e2dab744e8d35e22a5018",
+    "/private/tmp/spur-r2-e5afa03c-evidence/solve-pre.json": "fb2309116d45fe33f1e3ca8d1316986fa1bdb87f189259c9768e2b41599fc999",
+    "/private/tmp/spur-r2-e5afa03c-evidence/commands.jsonl": "862a60ce3bdad3048c7ef7f29fe44d7874c1a94dc96f0ec1c32c98c2ddac06ec",
+    "/private/tmp/spur-r2-e5afa03c-evidence/R2-NoTree-correction.diff": "783cc5e3966975677ea7b5c9e93c0ae793940be33a8452ebb71a3e1685e0661d",
+    "/private/tmp/spur-r2-e5afa03c-evidence/R2-unified.diff": "5e59f6932c4e2a24996f5e95e7bd12873949175efdd9872fbde4cc3fa6885c67",
+    "/private/tmp/spur-r2-e5afa03c-evidence/committed-diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r2-e5afa03c-evidence/diff_check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r2-e5afa03c-evidence/fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r2-e5afa03c-evidence/green-remote-unit.log": "3f7394a4fb04629dad115d6e3f54df2a000f8115389fa745da934b7538f3b6f2",
+    "/private/tmp/spur-r2-e5afa03c-evidence/native-build.log": "40317453e6063ad5c7aae36a39cbfa7a52714beef1128dad8df0c2b0ee5377c9",
+    "/private/tmp/spur-r2-e5afa03c-evidence/package.log": "df152f43ecab34edb7df2c153ca068d50c2ad1aba33bb77a80b758c11813bd5d",
+    "/private/tmp/spur-r2-e5afa03c-evidence/red-remote-unit.log": "6c527080b1e87367d387f93852fe51a9778b766f44b0c3de4b87886fe9ef42d4",
+    "/private/tmp/spur-r2-e5afa03c-evidence/scope_check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/spur-r2-e5afa03c-evidence/sql_diagnostics.log": "f4f390203880ee421e6fb30b98c9dfbe5e5aab73e48a94057b9a3f6f82dea96e",
+    "/private/tmp/spur-r2-e5afa03c-evidence/sql_regressions_and_r1_contract.log": "78f05ccc049d314a54bfe89a9b610d3c1424d35db43042d1c2e31af90f068635",
+    "/private/tmp/spur-r2-e5afa03c-evidence/toolchain.log": "6d1fa00cae38e74eccc4904448e2a48489adc69f030c871abc0460ccc701f784"
+  },
+  "at": "2026-11-16T20:54:04.626841+00:00"
+}

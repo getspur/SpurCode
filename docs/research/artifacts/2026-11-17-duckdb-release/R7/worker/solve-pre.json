@@ -1,0 +1,137 @@
+{
+  "request": {
+    "family": "data_integrity",
+    "mode": "verify",
+    "persist": true,
+    "timeout_ms": 10000,
+    "rules": [
+      {
+        "rule_id": "data_integrity.mutually_consistent",
+        "subjects": [
+          "current_acceptance"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "relations": {
+        "phases": {
+          "fields": {
+            "artifact": {
+              "kind": "enum",
+              "values": [
+                "fresh_candidate",
+                "historical_reference"
+              ]
+            },
+            "runtime": {
+              "kind": "enum",
+              "values": [
+                "native_2_0_0",
+                "managed_1_5_5"
+              ]
+            }
+          },
+          "rows": {
+            "complete_release": {
+              "active": true,
+              "cells": {
+                "artifact": {
+                  "present": true,
+                  "value": "fresh_candidate"
+                },
+                "runtime": {
+                  "present": true,
+                  "value": "native_2_0_0"
+                }
+              }
+            },
+            "macro_controls": {
+              "active": true,
+              "cells": {
+                "artifact": {
+                  "present": true,
+                  "value": "fresh_candidate"
+                },
+                "runtime": {
+                  "present": true,
+                  "value": "native_2_0_0"
+                }
+              }
+            },
+            "native_parity": {
+              "active": true,
+              "cells": {
+                "artifact": {
+                  "present": true,
+                  "value": "fresh_candidate"
+                },
+                "runtime": {
+                  "present": true,
+                  "value": "native_2_0_0"
+                }
+              }
+            },
+            "headless_explore_review": {
+              "active": true,
+              "cells": {
+                "artifact": {
+                  "present": true,
+                  "value": "fresh_candidate"
+                },
+                "runtime": {
+                  "present": true,
+                  "value": "native_2_0_0"
+                }
+              }
+            },
+            "frozen_cache_readonly": {
+              "active": true,
+              "cells": {
+                "artifact": {
+                  "present": true,
+                  "value": "fresh_candidate"
+                },
+                "runtime": {
+                  "present": true,
+                  "value": "native_2_0_0"
+                }
+              }
+            }
+          }
+        }
+      },
+      "unique_constraints": {},
+      "foreign_keys": {},
+      "cardinality_constraints": {},
+      "value_ranges": {},
+      "conditional_requirements": {},
+      "aggregate_balances": {},
+      "consistency_relations": {
+        "current_acceptance": {
+          "relation": "phases",
+          "fields": [
+            "artifact",
+            "runtime"
+          ],
+          "allowed": [
+            [
+              "fresh_candidate",
+              "native_2_0_0"
+            ]
+          ]
+        }
+      },
+      "temporal_constraints": {}
+    }
+  },
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+      }
+    ],
+    "isError": true
+  }
+}

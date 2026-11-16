@@ -1,0 +1,958 @@
+diff --git a/crates/spur-graph-duckdb/README.md b/crates/spur-graph-duckdb/README.md
+index 9043ac2ac..ecc6138e8 100644
+--- a/crates/spur-graph-duckdb/README.md
++++ b/crates/spur-graph-duckdb/README.md
+@@ -1,328 +1,158 @@
+ # SPUR graph DuckDB extension
+ 
+-This native prototype exposes SPUR's symbol extractor and native single-file
+-graph facts through DuckDB's V2 C API. DuckDB supplies source vectors; the
+-extension reuses parser/query state per worker and language for ordinary source
+-code, and writes typed primitive, list and struct vectors.
++`spur_graph` exposes SPUR's native source extraction and symbol-change matcher
++as five typed SQL functions. The release candidate targets **native DuckDB
++exactly 2.0.0**, `C_STRUCT_UNSTABLE`, with single-file resolution. It preserves
++unresolved references and evidence; it does not provide compiler semantics or
++repository-wide resolution.
+ 
+-The adapter follows `duckdb/extension-template-rs` at
+-`a679601f8e133db7546777c6637bc7a6c2d2780e` and pins `duckdb-neo = 0.20000.2`.
+-It is a standalone Cargo workspace so the application's DuckDB 1.4.4 client
+-and lockfile remain independent.
++The standalone Cargo workspace pins `duckdb-neo = 0.20000.2`, independently of
++the application's DuckDB client. See the [v1 release contract](docs/release-contract.md)
++for the complete schema, identity, diagnostics, cache/publication rules and
++dated acceptance evidence.
+ 
+-## Build, package and test
++## Build and check a fresh candidate
+ 
+-Run these commands from the SpurCode repository root. This example is for a
+-host-native macOS build; Linux uses `libspur_graph_duckdb.so`. Package on the
+-same platform as the native library: the packager reads the runtime's platform.
++Run from the repository root with Python >=3.11, the pinned Rust toolchain and
++the project's remote-build access. Choose a fresh output on a local POSIX
++filesystem; the driver refuses an existing directory.
+ 
+ ```sh
+-python3 -m venv /tmp/spur-graph-duckdb-test
+-/tmp/spur-graph-duckdb-test/bin/python -m pip install -r crates/spur-graph-duckdb/requirements-test.txt
+-
+-SPUR_REMOTE=0 CARGO_TARGET_DIR=/tmp/spur-graph-duckdb-target scripts/spur-cargo --workdir crates/spur-graph-duckdb build --release --lib --examples --locked
+-
+-/tmp/spur-graph-duckdb-test/bin/python crates/spur-graph-duckdb/scripts/package_extension.py \
+-  --library /tmp/spur-graph-duckdb-target/release/libspur_graph_duckdb.dylib \
+-  --out /tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension
+-
+-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
+-  SPUR_HISTORY_CATALOG=/tmp/spur-graph-duckdb-target/release/examples/history_catalog \
+-  SPUR_TEMPORAL_EXAMPLES_DIR=/tmp/spur-graph-duckdb-target/release/examples \
+-  SPUR_FILE_FACTS_ORACLE=/tmp/spur-graph-duckdb-target/release/examples/reference_file_facts \
+-  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -v
+-```
+-
+-Local compilation here produces the native artifact for the local test host.
+-The footer is `C_STRUCT_UNSTABLE` and targets **exactly DuckDB 2.0.0**. It does
+-not promise compatibility with 1.x or later 2.x versions. Loading a local
+-unsigned artifact requires `allow_unsigned_extensions` in the test connection
+-or `duckdb -unsigned` in the CLI.
+-
+-## SQL
+-
+-```sql
+-LOAD '/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension';
+-
+-SELECT unnest(
+-  spur_graph_symbols('input.rs', 'pub fn alpha() -> i32 { 1 }'),
+-  recursive := true
+-);
+-
+-CREATE TABLE parsed_blobs AS
+-SELECT blob_oid, path, spur_graph_symbols(path, source) AS symbols
+-FROM missing_blobs;
+-
+-CREATE TABLE symbol_facts AS
+-SELECT blob_oid, path, unnest(symbols, recursive := true)
+-FROM parsed_blobs;
+-```
+-
+-Retain the `parsed_blobs` parent rows when recording completion: a valid parse
+-can return an empty symbol list. NULL input returns NULL; unsupported paths
+-produce a SQL error. Source must be valid UTF-8 VARCHAR. The language registry,
+-symbol kinds, byte/line ranges, anchors and tokens come directly from
+-`spur-graph`; repository/path identity remains in the caller's columns.
+-
+-The SQL tests exercise real loading, extraction, NULL/empty behavior, nested
+-vectors across chunk boundaries and Parquet persistence. `reference_symbols`
+-provides an independent direct-Rust oracle for a Git batch frame;
+-`catalog_git_sources` inventories a frozen Git tree using the SPUR language
+-registry.
+-
+-## Typed single-file facts
+-
+-```sql
+-spur_graph_file_facts(logical_path VARCHAR, source VARCHAR) -> STRUCT(
+-    nodes STRUCT(...)[], edges STRUCT(...)[], spans STRUCT(...)[],
+-    macro_invocations STRUCT(...)[], macro_scopes STRUCT(...)[]
+-)
++python3 -m venv .spur/venvs/graph-duckdb-2
++export GRAPH_PYTHON="$PWD/.spur/venvs/graph-duckdb-2/bin/python"
++"$GRAPH_PYTHON" -m pip install -r crates/spur-graph-duckdb/requirements-test.txt
++export RELEASE_RUN="$PWD/.spur/releases/$("$GRAPH_PYTHON" -c 'import uuid; print(uuid.uuid4().hex)')"
++mkdir -p "$(dirname "$RELEASE_RUN")"
++PYTHONDONTWRITEBYTECODE=1 SPUR_SCCACHE_S3=0 SPUR_NO_LOCAL_FALLBACK=1 \
++  "$GRAPH_PYTHON" crates/spur-graph-duckdb/scripts/check_release.py \
++  --out "$RELEASE_RUN" --host-native --expect-platform osx_arm64
++export SPUR_GRAPH_EXTENSION="$RELEASE_RUN/spur_graph.duckdb_extension"
++"$GRAPH_PYTHON" crates/spur-graph-duckdb/scripts/verify_package.py "$SPUR_GRAPH_EXTENSION"
+ ```
+ 
+-Each list preserves all native fields, including nullable edge targets,
+-binding/import/receiver/scope evidence, confidence and nested macro attributes
+-and resolution candidates. IDs/ranges retain integer precision; confidence
+-scores use `FLOAT`. Enum labels follow native serialization; payload variants
+-use explicit typed structs with inactive payloads NULL. Inspect the complete
+-type with `DESCRIBE SELECT spur_graph_file_facts('input.rs', '')` or the
+-[independent native parity contract](tests/test_file_facts.py).
+-
+-The path must be a nonempty relative logical path that does not escape its
+-root; the file need not exist. Source is UTF-8 `VARCHAR`. NULL in either argument
+-returns NULL. Invalid/unsupported paths raise SQL errors; `TRY(...)` converts
+-them to NULL. Empty valid source returns non-NULL native facts and may include
+-a file node/span. The API performs no file discovery, reads or Git operations.
+-
+-Extraction and pending-reference resolution cover **one file**. Cross-file
+-references can remain unresolved, with native evidence retained. Each call
+-creates fresh local numeric IDs. Join `(blob_oid, logical_path, extractor_sha,
+-local_id)`; use the same input key with textual macro/symbol IDs. Native AST
+-extraction still parses a whole source blob for each missing key; SQL batching
+-does not make parser computation SIMD or replace repository-wide resolution.
+-
+-Notebook inputs retain the native cell-parser lifecycle: compiled queries are
+-cached within each notebook, and parsers are constructed per cell. The worker
+-extractor cache does not carry this inner state across notebook input rows.
+-
+-[examples/file_facts.sql](examples/file_facts.sql) accepts already staged
+-`staged_sources(blob_oid VARCHAR, logical_path VARCHAR, source VARCHAR,
+-extractor_sha VARCHAR)` and a separate `source_lineage` relation containing
+-those three key columns plus arbitrary caller lineage columns (reserve
+-`extraction_status`). Cache keys must be non-NULL. Duplicate source rows are
+-deduplicated; conflicting source values for one key are rejected. The caller
+-must supply the actual blob identity and loaded extractor version; an artifact
+-SHA-256 is one suitable `extractor_sha`. Stage only keys for that loaded version.
+-
+-The safe full-facts cache key is **`(blob_oid, logical_path, extractor_sha)`**.
+-Identical bytes at different paths can produce different file facts; the
+-temporal-symbol `(blob_oid, language)` identity below does not apply here. The
+-script materializes an anti-join of missing keys, stores the typed extraction
+-result once, then incrementally maintains five separate child tables. DuckDB
+-`TRY` can internally retry a failed vector row-by-row; there is no exactly-once
+-native parser-call guarantee on error. `fact_ordinal` retains list position.
+-For example, resolve edge sources without mixing file-local IDs:
+-
+-```sql
+-SELECT e.logical_path, e.edge_id, n.label
+-FROM file_facts_edges e JOIN file_facts_nodes n
+-  USING (blob_oid, logical_path, extractor_sha)
+-WHERE e.source_node_id = n.node_id;
+-```
++This invocation is for macOS ARM64. `--host-native` explicitly permits a
++separate local target through `scripts/spur-cargo`: macOS cannot load the
++remote Linux library. Rust unit tests remain remote, with local fallback
++disabled. A failed remote phase stops acceptance. The driver builds the library
++and all native oracles into its own target, packages and probes the exact
++artifact, runs every Python suite, and checks source/artifact identities again
++after testing. `receipt.json` and raw phase logs are authoritative. A successful
++run permits no skipped tests or expected failures.
+ 
+-`file_facts_cache` retains every parent and its status: `ok`, `empty_source`,
+-`empty_facts` (all five lists empty), `null_input` or `extraction_error` (a
+-non-NULL input whose `TRY` result is NULL; no error text is retained).
+-`file_facts_occurrences` preserves every caller row, including duplicate
+-commit/parent occurrences and NULL root parents. Absent cache keys get
+-`not_cached`. Join occurrences to child tables on all three cache-key columns.
+-Empty lists emit no children; never infer completion from child row counts.
++The supported distribution route is a locally built, verified **unsigned**
++binary plus its adjacent `.json` sidecar. Copy both dereferenced files from the
++same immutable package generation. Reverify after copying; SHA-256 checks
++integrity against local metadata and does not authenticate a publisher. No
++public release, community install, WASM build or signed package is supplied.
+ 
+-The workflow owns a durable key-only `file_facts_child_state` checkpoint. With
+-current cache keys C, prior checkpoint S and newly extracted keys M, child refresh
+-is `(C - S) UNION M` and removal is `S - C`. It deletes old children for both sets,
+-then expands each list independently from materialized refresh facts. NULL,
+-error and empty parents are checkpointed too. No-op runs retain physical child
+-tables and expand zero facts; they compare keys without hashing wide payloads.
+-TEMP tables `file_facts_child_refresh` and `file_facts_child_removed` expose the
+-three-column key sets. Caller occurrences refresh on every run, including when
+-both sets are empty.
++## All five functions
+ 
+-Missing checkpoint or any missing child table triggers one full cache-driven
+-bootstrap/repair of all five children, without re-extracting cached inputs. This
+-also upgrades the old full-rebuild layout. Drop `file_facts_child_state` to request
+-an explicit rebuild. Cache payloads are immutable for their full key; direct edits
+-to payloads, children or checkpoint rows are unsupported.
+-
+-Run this self-contained example after building/packaging above. It stages one
+-synthetic blob and two parent occurrences, runs the exact SQL twice, and writes
+-the database plus seven typed Parquet snapshots in `/tmp/spur-file-facts-demo`:
++After verifying the package, open a fresh native connection. This example
++uses the environment's verified package, without a machine-specific path:
+ 
+ ```sh
+-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
+-SPUR_FILE_FACTS_SQL="$PWD/crates/spur-graph-duckdb/examples/file_facts.sql" \
+-/tmp/spur-graph-duckdb-test/bin/python - <<'PY'
+-import hashlib, os
++"$GRAPH_PYTHON" - <<'PYTHON'
++import os
+ from pathlib import Path
+ import duckdb
+ 
+-extension = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve()
+-workflow = Path(os.environ['SPUR_FILE_FACTS_SQL']).read_text()
+-extractor_sha = hashlib.sha256(extension.read_bytes()).hexdigest()
+-output = Path('/tmp/spur-file-facts-demo')
+-output.mkdir(exist_ok=True)
+-os.chdir(output)
+-with duckdb.connect('facts.duckdb', config={'allow_unsigned_extensions': True}) as con:
+-    con.execute("LOAD '" + str(extension).replace("'", "''") + "'")
+-    con.execute('''CREATE TEMP TABLE staged_sources AS
+-        SELECT 'demo-blob'::VARCHAR blob_oid, 'src/demo.rs'::VARCHAR logical_path,
+-               'fn helper() {} fn entry() { helper(); remote_call(); }'::VARCHAR source,
+-               ?::VARCHAR extractor_sha''', [extractor_sha])
+-    con.execute('''CREATE TEMP TABLE source_lineage AS
+-        SELECT 'demo-repo' repository, 'merge' commit_oid, p.parent_oid,
+-               blob_oid, logical_path, extractor_sha
+-        FROM staged_sources CROSS JOIN (VALUES ('p1'), ('p2')) p(parent_oid)''')
+-    con.execute(workflow)
+-    print('first run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])
+-    con.execute(workflow)
+-    print('second run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])
+-    print(con.execute('SELECT blob_oid, logical_path, status FROM file_facts_cache').fetchall())
+-print(output)
+-PY
++package = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve(strict=True)
++with duckdb.connect(config={'allow_unsigned_extensions': True}) as con:
++    con.execute("LOAD '" + str(package).replace("'", "''") + "'")
++    print(con.execute('SELECT spur_graph_info()').fetchone()[0])
++    print(con.execute("SELECT spur_graph_symbols('src/a.rs', 'fn a() {}')").fetchone()[0])
++    print(con.execute("SELECT spur_graph_file_facts('src/a.rs', 'fn a() {}')").fetchone()[0])
++    print(con.execute("SELECT spur_graph_file_facts_result('bad.unknown', 'text')").fetchone()[0])
++    print(con.execute("SELECT spur_graph_symbol_changes('src/a.rs','src/a.rs','M', "
++        "spur_graph_symbols('src/a.rs','fn a() { let x = 1; }'), "
++        "spur_graph_symbols('src/a.rs','fn a() { let x = 2; }'))").fetchone()[0])
++PYTHON
+ ```
+ 
+-Use one cache writer and no surrounding transaction. Cache, checkpoint, all five
+-children and caller occurrences update in one database transaction before Parquet
+-export. All seven full snapshots are still replaced on every run; their export
+-cost remains and the file set is not published atomically. Children cover all
+-cached versions; occurrences reflect the current caller relation. All statuses,
+-including failures/NULL, are
+-cached: delete the exact cache key explicitly to retry it, then rerun to rebuild
+-that key's children without duplicates. A deleted key absent from staging loses
+-its children/checkpoint and appears as `not_cached` in caller occurrences.
+-A changed extractor hash creates new keys. An incompatible output schema requires
+-an explicit cache migration or fresh database.
+-
+-Run the focused real-engine workflow checks with the pinned test environment:
+-
+-```sh
+-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
+-  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover \
+-  -s crates/spur-graph-duckdb/tests -p test_file_facts_pipeline.py -v
+-```
++Keep parent rows before unnesting: empty lists are completed extractions, NULL
++is distinct, and empty source can contain a file node/span. The diagnostic API
++returns a non-NULL parent for NULL or recoverable bad input, with native facts
++unchanged on success. Internal/setup/no-tree failures remain SQL errors.
+ 
+-## Repository ingestion example
++## Headless Explore/Review quickstart
+ 
+-`examples/ingest_plan.py` demonstrates persistent source ingestion around the
+-native kernel. Generate the catalog with the Rust helper against a frozen Git
+-commit, then pass a batch plan covering every distinct supported
+-`(blob_oid, language)` in that catalog:
++Use the fresh successful release receipt's independently probed source ID:
+ 
+ ```sh
+-/tmp/spur-graph-duckdb-target/release/examples/catalog_git_sources /path/to/repo COMMIT_SHA /tmp/catalog.jsonl
+-
+-/tmp/spur-graph-duckdb-test/bin/python crates/spur-graph-duckdb/examples/ingest_plan.py \
+-  --repo /path/to/repo --catalog /tmp/catalog.jsonl --plan /tmp/plan.json \
+-  --extension /tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \
+-  --output /tmp/ingested-repository
++export SPUR_RELEASE_SOURCE_IDENTITY="$("$GRAPH_PYTHON" -c \
++  'import json,os; print(json.load(open(os.path.join(os.environ["RELEASE_RUN"],"receipt.json")))["release_trust"]["source_identity"])')"
++"$GRAPH_PYTHON" crates/spur-graph-duckdb/examples/app_consumer.py \
++  --fixture crates/spur-graph-duckdb/tests/fixtures/app_consumer.json \
++  --output "$RELEASE_RUN/headless-demo" --package "$SPUR_GRAPH_EXTENSION" \
++  --extractor-id "$SPUR_RELEASE_SOURCE_IDENTITY"
+ ```
+ 
+-The plan is a JSON object with `head`, `row_limit` (the runtime's
+-`duckdb.__standard_vector_size__`), an explicitly chosen `byte_budget`, and
+-`batches`. Each batch has a unique `batch_id` and `tasks`: catalog rows with
+-`path`, `blob_oid`, `language`, and `byte_length`. Use the SPUR-generated language
+-classification; the example validates plan/catalog agreement. At least one
+-supported task is required. Byte budgets constrain input batches, and do not
+-bound AST or output memory.
+-
+-Task metadata and source blobs enter SQL in bulk. One Git batch reader supplies
+-missing blobs; native parsing still runs a whole-source parser per distinct
+-blob. Cache keys include blob, language and the packaged extractor hash.
+-Transactions checkpoint each batch, including successful empty results. Failed
+-parse rows retain source and status, produce a nonzero exit, and require explicit
+-cache invalidation to retry with the same extractor. Changed frozen-HEAD catalogs
+-are rejected. Restarting a valid plan skips cached keys.
+-
+-The output contains `duckdb-spur-graph.duckdb`, `head-symbols.parquet`,
+-`head-parse-cache.parquet`, progress and result JSON. Query `head_symbols` for
+-path-associated facts, `ingestion_errors` for failures, and `batches` for timings.
+-`symbol_facts` and the cache export cover all cached blobs for the selected
+-extractor; `head_symbols` is restricted to the selected HEAD. See
+-[measured DuckDB ingestion](examples/duckdb-ingestion-results.md).
+-
+-## Temporal history experiments
+-
+-See the [full-history evaluation](examples/full-temporal-evaluation.md) for
+-equivalent-workload measurements, coverage and remaining integration limits.
+-The [producer concurrency follow-up](examples/temporal-concurrency-evaluation.md)
+-measures one versus four source producers with exact source and graph parity.
+-The [scheduling experiment](examples/temporal-scheduling-evaluation.md) then
+-tests assignment by prior batch processing time with four producers in both arms.
+-
+-`history_catalog REPO COMMIT OUTPUT` inventories every commit reachable from a
+-frozen commit, including every merge parent and the root comparison. It writes
+-commit, comparison and file-change JSONL plus a completion summary. The output
+-directory must be absent or empty. It uses Git CLI rename detection; large
+-changes can encounter Git's default rename limit. Its `author_time` is author
+-time, whereas the reference walk's timestamp is committer time.
+-
+-`temporal_reference REPO OUTPUT JOBS cli|gix` runs the original reachable-history
+-walker into native temporal shards. Supply a fresh isolated repository with a
+-frozen `HEAD`; the example does not install a SPUR pointer in that repository.
+-CLI and gix can produce different rename classifications and commit summaries.
+-Compare their outputs before treating their timings as equivalent workloads.
+-
+-The alternative pipeline separates source extraction from temporal matching:
+-
+-1. Prepare metadata tables `commits`, `comparisons`, `changes`, `parse_tasks`,
+-   `symbol_pairs` and `change_pairs`. Classify source paths with SPUR's language
+-   registry. A parse key is `(blob_oid, language)`; both sides of a rename use
+-   the current path's language, matching the original walker.
+-2. Run `examples/parse_history_shards.py` with a frozen source repository,
+-   a complete batch plan, the native extension and a fresh output directory.
+-   It reads Git blobs in batches and publishes immutable Parquet batches with
+-   checksummed receipts. Completed empty parses, binary skips and failures
+-   retain separate parent rows. Restart verifies receipts and skips completed
+-   keys. See `--help` for the complete invocation and plan contract.
+-3. Run `examples/derive_temporal_pairs.py --metadata META.duckdb
+-   --parse-inputs INPUTS.json --extension EXTENSION --output OUTPUT
+-   --byte-budget BYTES`. It invokes the shared native matcher once per distinct
+-   file/version pair and joins those results back to actual commits and
+-   parents. The resulting database exposes `symbol_snapshots`, `temporal_edges`,
+-   `pair_occurrences` and `diagnostics`.
+-
+-The original pair runner's final global fold exhausted spill capacity on the
+-full DuckDB history. Its input byte budget does not bound that fold. The
+-full-history experiment completed the same matched-pair cache through a
+-separate bounded finalizer: narrow numeric emissions, then whole-commit
+-partitions, without repeating extraction or matching. See the evaluation for
+-the configuration, completion and independent validation receipts; the command
+-above alone is not a demonstrated full-history recipe.
+-The [bounded finalization guide](examples/bounded-temporal-finalization.md)
+-documents the promoted helper, exact input contract, planning and restart
+-commands. Its regression fixtures run with:
+-
+-```sh
+-python -m unittest discover -s crates/spur-graph-duckdb/tests \
+-  -p test_bounded_temporal_finalize.py -v
+-```
+-
+-`INPUTS.json` contains a `sources` array. Each source specifies `cache_glob` and
+-`expected_extractor_sha`; older caches also need a separate `flags_glob`.
+-Producers must have disjoint parse keys. Source encoding errors remain explicit
+-and omit symbol changes for the affected comparisons; file-level touches remain.
+-`current-status.json` is authoritative for the latest verification attempt.
+-An earlier `result.json` alone does not establish that a restart succeeded.
+-
+-The typed SQL seam is
+-`spur_graph_symbol_changes(path, old_path, kind, old_symbols, new_symbols)`.
+-It accepts `A`, `M`, `D`, `R` and returns typed changes plus diagnostics.
+-The caller normalizes Git type changes to `M` and copies to `R`. The matcher
+-shares the original Rust implementation, including rename and per-parent merge
+-semantics. Actual commit and parent keys belong to the caller's projection.
+-
+-These experiments batch SQL staging and reuse content-addressed facts. Native
+-AST extraction still parses a whole source blob for each distinct parse key.
+-Input byte budgets do not bound AST, nested-vector or output memory; Parquet
+-row-group layout also affects cache-read memory and throughput. Production
+-admission/backpressure policy, temporal call-edge integration, community
+-distribution and WASM support remain separate integration work.
++The fixture freezes base/head sources and lineage, including invalid/NULL/empty
++inputs, same bytes at different paths, unresolved calls/macros and an ambiguous
++rename. The parent runs native work in a private child process, checks its exit
++and identities, then publishes `headless-demo/current.json`. That manifest
++names immutable typed Parquet files for `sources`, `explore`, `review` and seven
++cache tables, with schemas, counts, checksums and coverage. Use
++`examples/app_consumer.py:read_result(output, 'base'|'head')` to reopen and
++validate a requested snapshot; do not relabel another snapshot's results.
++
++This is the app-facing data seam, not an app UI or general SQL service. A
++frontend should read one manifest and use its named tables and completeness
++fields. The managed notebook SQL runtime is separate; native 2.0 extension
++loading is not supported in its 1.5.5 runtime. Root owns notebook readback.
++
++## Cache and coherent publication
++
++Stage `staged_sources(blob_oid, logical_path, source, extractor_sha)` plus
++`source_lineage` with the three identity columns and caller lineage. The full
++facts key is **`(blob_oid, logical_path, extractor_sha)`**. Use an actual source
++byte identity and a verified extractor identity consistently. File-local IDs
++must always be joined with that full key. Repository, commit and parent
++occurrences remain caller columns.
++
++The [cache recipe](docs/release-contract.md#cache-migration-retry-and-coherent-publication)
++uses the transactional prefix of [file_facts.sql](examples/file_facts.sql),
++closes the writer, and calls [publish_snapshot.py](examples/publish_snapshot.py).
++It persists diagnostics, migrates old error columns additively, checkpoints all
++statuses, and replays missing keys only. Retry failures by explicitly deleting
++their exact cache key and restaging it. Historical missing diagnostics remain
++NULL. Incompatible typed schemas need a separate migration or fresh database.
++
++The supported publisher exports all seven tables from one read-only transaction
++to a fresh immutable version, then atomically replaces `current.json`. Readers
++load that manifest once and verify its paths/checksums. Trailing legacy SQL
++`COPY` exports are non-atomic and are not the app publication route.
++
++## Repository and temporal examples
++
++These helpers remain experiments with their own input contracts. Pass explicit
++caller-owned repository, catalog, plan and output paths; do not use historical
++artifact paths as writable outputs.
++
++- `catalog_git_sources REPO COMMIT OUTPUT.jsonl` uses the native language
++  registry. `examples/ingest_plan.py --help` documents frozen-commit ingestion,
++  batch checkpointing and `(blob_oid, language, extractor_sha)` symbol caching.
++  That symbol-only key does not replace the full-facts path-sensitive key.
++- `history_catalog REPO COMMIT OUTPUT` inventories reachable history with root
++  and merge-parent comparisons. Git CLI rename limits and author-versus-committer
++  time differences remain relevant.
++- `temporal_reference REPO OUTPUT JOBS cli|gix` runs the original walker;
++  CLI/gix classification must be compared before timing equivalent workloads.
++- [Full-history evaluation](examples/full-temporal-evaluation.md),
++  [producer concurrency](examples/temporal-concurrency-evaluation.md),
++  [scheduling](examples/temporal-scheduling-evaluation.md), and
++  [bounded finalization](examples/bounded-temporal-finalization.md) retain the
++  historical measurements and restart recipes. The original global temporal
++  fold exhausted spill capacity; the bounded helper is the demonstrated
++  full-history finalization route.
++- [Native retrieval parity](tests/test_retrieval_parity.py) and
++  [ingestion measurements](examples/duckdb-ingestion-results.md) describe their
++  respective workloads; neither implies compiler resolution or a new release
++  performance guarantee.
++
++SQL batches source staging and cache reuse. Each missing input still requires
++whole-source AST parsing; input byte budgets do not bound AST, nested-vector,
++output or global-fold memory. Ordinary parser/query state is reused per worker
++and language; notebook cells keep their own native parser lifecycle. Admission,
++backpressure, production supervision, temporal call-edge integration and wider
++platform distribution remain separate work.
+diff --git a/crates/spur-graph-duckdb/docs/release-contract.md b/crates/spur-graph-duckdb/docs/release-contract.md
+new file mode 100644
+index 000000000..cbbe13fbb
+--- /dev/null
++++ b/crates/spur-graph-duckdb/docs/release-contract.md
+@@ -0,0 +1,486 @@
++# Native release contract v1
++
++This contract covers `spur_graph` 0.1.0, `facts_schema_version = 1`, native
++DuckDB **exactly 2.0.0**, and `C_STRUCT_UNSTABLE`. The adapter preserves the
++shared native extraction/matching behavior. It adds typed vectors, metadata,
++row diagnostics and local packaging; it does not certify compiler semantics.
++The [approved implementation plan](../../../docs/superpowers/plans/2026-11-17-spur-graph-duckdb-release.md)
++implements the release gates from bd-q0lu and the app design bd-1ul3. Root
++retains final review and integration authority.
++
++## Identity and compatibility
++
++| Identity | Authority and meaning |
++|---|---|
++| Git source HEAD/status | Release receipt; identifies the checkout and its recorded tracked/untracked changes, not the binary |
++| `extractor_id` | Loaded `spur_graph_info()` plus an independent fresh compiled source probe; `source-sha256-v1:<64 lowercase hex>` |
++| `facts_schema_version` | Loaded metadata, currently `1`; typed layout compatibility, not a promise of identical extraction across extractor versions |
++| Package SHA-256 | Sidecar `binary.sha256` verified against exact packaged bytes; distinct from source ID and raw library SHA |
++| Runtime | Python package/native engine versions, platform, executable/engine hashes and compiler version in release receipt |
++| Source bytes | Caller scheme and digest plus logical path; repository/commit/parent labels are separate claims |
++| Snapshot/run | Immutable version/run manifest and checksummed tables; requested snapshot identity must match |
++
++`build.rs` hashes a domain-separated, sorted, length-framed inventory of exact
++adapter/local locked dependency source, query, binding and build inputs,
++manifests, standalone lockfile, toolchain/config and relevant inherited workspace
++settings. It excludes absolute worktree paths, Git HEAD, docs/tests/outputs and
++unrelated workspace members. Registry/Git dependencies are bound through the
++lockfile. The compiled probe re-enumerates inputs before and after acceptance,
++including additions/removals and inherited settings. Source ID is not a binary
++fingerprint; ambient compiler flags and produced machine code are outside it.
++Keep the build/runtime receipt and package checksum too.
++
++All scalar source text is UTF-8 `VARCHAR`. Full-facts paths are nonempty relative
++logical filenames with no absolute root, parent traversal or drive prefix; no
++file needs to exist. The functions do not discover files, access Git, fetch
++sources or perform repository-wide resolution. Language selection comes from
++SPUR's native registry; discover `supported_languages` instead of duplicating
++an extension-to-language table.
++
++For full facts, retain `(blob_oid, logical_path, extractor_sha)` on every parent,
++child and join. Same bytes at different paths can produce different facts.
++`extractor_sha` is the caller's verified version key: the packaged SHA is useful
++for exact-binary caching; the source ID can identify source-version caching when
++schema/runtime/artifact provenance is retained separately. Never mix meanings
++silently. Preserve source identity schemes explicitly: a Git blob OID is not a
++plain content SHA. The headless fixture supports exactly `sha256:utf8-v1`, with
++`sha256:<digest of UTF-8 bytes>` and `null-source` for NULL. Unsupported scheme
++labels are rejected both on input and stored-result readback.
++
++Native numeric node/edge/span IDs are local to one extraction. Always qualify
++numeric and textual fact IDs by the full input key. `stable_symbol_id`,
++`stable_key`, `source_oid`, anchors and macro candidate labels retain native
++meaning; none substitutes for a complete repository/snapshot identity.
++
++## Five public functions and examples
++
++Load a verified local package in a **fresh** connection configured with
++`allow_unsigned_extensions = true` (CLI: `duckdb -unsigned`). Use the environment
++based load example in the [README](../README.md#all-five-functions). Do not
++hot-load a different binary over an already loaded extension.
++
++```sql
++-- 1. Runtime metadata: no arguments.
++SELECT spur_graph_info();
++
++-- 2. Symbols: LIST<Symbol>.
++SELECT spur_graph_symbols('src/a.rs', 'fn a() {}');
++
++-- 3. Full single-file facts: Facts STRUCT with five typed lists.
++SELECT spur_graph_file_facts('src/a.rs', 'fn a() {}');
++
++-- 4. Diagnostic parent: Result STRUCT, including recoverable bad input.
++SELECT spur_graph_file_facts_result('bad.unknown', 'text');
++
++-- 5. Shared native pair matcher: changes plus ambiguity diagnostics.
++SELECT spur_graph_symbol_changes('src/a.rs', 'src/a.rs', 'M',
++    spur_graph_symbols('src/a.rs', 'fn a() { let x = 1; }'),
++    spur_graph_symbols('src/a.rs', 'fn a() { let x = 2; }'));
++```
++
++`spur_graph_symbols(path VARCHAR, source VARCHAR)` returns `Symbol[]`.
++`spur_graph_file_facts(path VARCHAR, source VARCHAR)` returns `Facts`.
++`spur_graph_file_facts_result(path VARCHAR, source VARCHAR)` returns
++`STRUCT(status VARCHAR, error_code VARCHAR, error_message VARCHAR, facts Facts)`.
++`spur_graph_symbol_changes(path VARCHAR, old_path VARCHAR, kind VARCHAR,
++old_symbols Symbol[], new_symbols Symbol[])` returns
++`STRUCT(changes Delta[], diagnostics VARCHAR[])`. The aliases below describe
++nested types, not installed SQL types.
++
++```text
++Info = STRUCT(
++  extension_version VARCHAR, facts_schema_version UINTEGER,
++  duckdb_api_version VARCHAR, extractor_id VARCHAR,
++  supported_languages VARCHAR[], resolution_scope VARCHAR)
++
++Symbol = STRUCT(
++  entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR,
++  byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT,
++  anchor_hash VARCHAR, tokens VARCHAR[])
++Delta = STRUCT(
++  symbol Symbol, stable_symbol_id VARCHAR, file_path VARCHAR,
++  change_kind VARCHAR, previous_stable_symbol_id VARCHAR)
++
++Facts = STRUCT(nodes Node[], edges Edge[], spans Span[],
++               macro_invocations Invocation[], macro_scopes MacroScope[])
++Node = STRUCT(
++  node_id UBIGINT, stable_key VARCHAR, label VARCHAR, kind VARCHAR,
++  file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)
++Edge = STRUCT(
++  edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT,
++  relation VARCHAR, target_label VARCHAR, import_path VARCHAR,
++  receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR,
++  confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR,
++  evidence_id UBIGINT, directed BOOLEAN, change_kind ChangeKind)
++Span = STRUCT(
++  span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER,
++  start_line UINTEGER, end_line UINTEGER)
++Scope = STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)
++Location = STRUCT(file_path VARCHAR, source_oid VARCHAR,
++                  byte_range UBIGINT[], line_range UBIGINT[])
++Attribute = STRUCT(raw_text VARCHAR, owner Scope,
++                   byte_range UBIGINT[], line_range UBIGINT[])
++Invocation = STRUCT(
++  site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR,
++  caller_stable_symbol_id VARCHAR, enclosing Scope,
++  raw_macro_path VARCHAR, normalized_macro_path VARCHAR,
++  byte_range UBIGINT[], line_range UBIGINT[], attributes Attribute[],
++  test_context VARCHAR, debug_assertions_candidate BOOLEAN,
++  execution_phase VARCHAR, resolution Resolution, sink_family_candidate VARCHAR)
++Resolution = STRUCT(kind VARCHAR, definition Location)
++MacroScope = STRUCT(scope Scope, file_path VARCHAR, source_oid VARCHAR,
++                    byte_range UBIGINT[], line_range UBIGINT[])
++ChangeKind = STRUCT(kind VARCHAR, renamed_from RenamePrev)
++RenamePrev = STRUCT(kind VARCHAR, file GitPath, symbol SnapshotKey)
++GitPath = STRUCT(path VARCHAR, encoding VARCHAR, bytes VARCHAR)
++SnapshotKey = STRUCT(stable_symbol_id VARCHAR, commit VARCHAR)
++```
++
++Inspect the actual native SQL type with `DESCRIBE SELECT
++spur_graph_file_facts('src/a.rs', '')`; use `duckdb_functions()` for signatures
++and examples. [test_file_facts.py](../tests/test_file_facts.py) checks the exact
++schema and every native field against an independently executed direct-Rust
++oracle. Lists preserve native order and multiplicity; IDs/ranges retain integer
++precision. Byte coordinates address UTF-8 bytes, not character positions.
++`confidence_score` is native IEEE binary32 (`FLOAT`), not a calibrated precision
++estimate. Native enums retain serialization labels; inactive payloads are NULL.
++`GitPath` preserves native UTF-8 or encoded byte payloads. Parquet retains these
++typed structs/lists; JSON is only metadata/oracle transport.
++
++## NULL, errors, diagnostics and conservative evidence
++
++| Function/input | Result |
++|---|---|
++| `symbols` or `file_facts`, either argument NULL | SQL NULL |
++| `symbols`, valid empty parse | Non-NULL empty list; keep completion parent |
++| `file_facts`, valid empty source | Native non-NULL facts, potentially file node/span |
++| Throwing extraction API, unsupported/invalid input | SQL error; `TRY(...)` produces NULL and loses diagnostics |
++| `file_facts_result`, either argument NULL | Non-NULL `null_input` parent, NULL facts/code/message; NULL takes precedence over path/language checks |
++| Diagnostic success | Native facts unchanged, NULL code/message |
++| Known recoverable diagnostic failure | `extraction_error`, NULL facts, stable code and truthful native message |
++| Setup, no-tree, unknown extraction/internal/vector faults | SQL error; never silently reclassified as bad rows |
++| `symbol_changes`, any top-level argument NULL | SQL NULL |
++| `symbol_changes`, NULL required nested field/list element/token | SQL error |
++
++Diagnostic success statuses are `ok`, `empty_source`, and `empty_facts`.
++`empty_source` takes precedence over all-five-lists-empty classification after
++successful native extraction. An empty malformed notebook is an input error,
++not a successful empty source. Tree-sitter partial syntax trees can be native
++successes; there is no invented general syntax-validation diagnostic.
++
++Current recoverable codes are `invalid_path`, `unsupported_language` and
++`malformed_input`. The earlier design named `extraction_failed`, but this
++candidate does not map `NoTree`, setup or arbitrary erased native errors to
++that code. Those remain SQL errors. Existing migrated errors have unknown
++(NULL) code/message until an explicit retry; never infer historical text.
++
++The pair matcher accepts `A`, `M`, `D`, `R`; callers normalize Git `T` to `M`
++and `C` to `R` before calling. For non-renames, `old_path` equals `path`, except
++it may be empty for `A`. Supply typed empty symbol lists for an absent side.
++Delta kinds are `added`, `modified`, `deleted`, `renamed_from_symbol`.
++`previous_stable_symbol_id` is populated only for a native symbol predecessor.
++Keep `diagnostics`, including `ambiguous_rename:` evidence, and actual
++commit/parent/pair keys. Cross-process list ordering of matcher results is not
++promised; do not rewrite stored evidence to manufacture identity.
++
++A resolved local helper, a macro-body singleton heuristic and a qualified
++external constructor have different evidence. Preserve `scope_text`,
++`receiver_text`, `import_path`, `bind_method`, `confidence`, macro resolution
++kind and NULL targets. Local-target percentages are not precision. Explicit
++path/local macro candidates are not proof of compiler binding or expansion.
++
++## Package and trust route
++
++Use `scripts/check_release.py` for release acceptance; see the README for the
++complete invocation. Manual packaging accepts `--library RAW_NATIVE_LIBRARY
++--out PACKAGE.duckdb_extension`; verification takes that package path. Both use
++the pinned native runtime. The packager probes the staged library, writes the
++DuckDB footer and sidecar, verifies a fresh final load, and atomically advances
++a shared package-generation pointer for the binary and sidecar aliases.
++Unmanaged outputs are refused; complete generations remain immutable.
++
++The v1 sidecar contains `format_version`, all six `Info` fields, `abi`,
++`platform`, `source_identity` (equal to `extractor_id`), `binary` (name, SHA-256,
++byte size), and `trust = {mode: unsigned_local, signature: absent}`. Verification
++checks the exact schema, checksum/size, footer ABI/runtime/platform, and freshly
++loaded metadata. A saved sidecar is artifact data, not a saved readiness pass.
++
++For portable copies, resolve one immutable generation and copy its binary and
++adjacent sidecar together, then verify. A concurrent pointer swap can cause a
++safe verification failure; retry using one resolved generation. A checksum
++cannot authenticate an untrusted publisher. Current-release trust for guarded
++retrieval checks requires the verified sidecar path/checksum **and** an
++independent fresh build source ID; hashing an arbitrary binary is insufficient.
++Historical hash allowances remain historical controls, not approval for a new
++candidate. No public tag, upload, push or extension-community registration is
++part of this contract.
++
++## Cache migration, retry and coherent publication
++
++The following recipe uses the README environment and a successful release run.
++It creates a caller-owned demo database, runs the transactional cache prefix
++twice, closes the writer and publishes a fresh immutable seven-table version.
++It does not touch a historical corpus or use legacy direct exports.
++
++```sh
++export FACTS_DEMO="$RELEASE_RUN/cache-demo"
++mkdir "$FACTS_DEMO"
++"$GRAPH_PYTHON" - <<'PYTHON'
++import hashlib, json, os
++from pathlib import Path
++import duckdb
++
++root = Path.cwd()
++crate = root / 'crates/spur-graph-duckdb'
++package = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve(strict=True)
++manifest = json.loads(Path(str(package) + '.json').read_bytes())
++assert hashlib.sha256(package.read_bytes()).hexdigest() == manifest['binary']['sha256']
++source = 'fn helper() {} fn entry() { helper(); remote_call(); }'
++blob = 'sha256:' + hashlib.sha256(source.encode()).hexdigest()
++extractor = manifest['binary']['sha256']
++workflow = (crate / 'examples/file_facts.sql').read_text().split('-- LEGACY NON-ATOMIC', 1)[0]
++database = Path(os.environ['FACTS_DEMO']) / 'facts.duckdb'
++with duckdb.connect(str(database), config={'allow_unsigned_extensions': True}) as con:
++    con.execute("LOAD '" + str(package).replace("'", "''") + "'")
++    con.execute('CREATE TEMP TABLE staged_sources AS SELECT ?::VARCHAR blob_oid, '
++                '?::VARCHAR logical_path, ?::VARCHAR source, ?::VARCHAR extractor_sha',
++                [blob, 'src/demo.rs', source, extractor])
++    con.execute('CREATE TEMP TABLE source_lineage AS SELECT * EXCLUDE(source), '
++                "'demo'::VARCHAR snapshot_id FROM staged_sources")
++    con.execute(workflow)
++    con.execute(workflow)
++    assert con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0] == 0
++    print(con.execute('SELECT logical_path,status,error_code FROM file_facts_cache').fetchall())
++PYTHON
++"$GRAPH_PYTHON" crates/spur-graph-duckdb/examples/publish_snapshot.py \
++  --database "$FACTS_DEMO/facts.duckdb" --output "$FACTS_DEMO/snapshots" \
++  --version demo-v1 --source-label source_scheme=sha256:utf8-v1
++```
++
++Use one cache writer, with no surrounding transaction. Stage non-NULL full
++keys; source alone may be NULL. Contradictory bytes (including NULL versus
++non-NULL) for the same key are rejected before extraction. Keep arbitrary
++caller lineage separately; reserve `extraction_status`. The pipeline stores
++one diagnostic result per missing key, including failures/NULL/empty parents,
++and maintains five child tables plus all caller occurrences in the same
++transaction. No-op replay expands zero facts, but still compares cache keys
++and refreshes caller occurrences. `fact_ordinal` preserves list position.
++
++The additive migration adds `error_code` and `error_message` without changing
++old facts/status or re-extracting cache hits. Missing child/checkpoint layout
++bootstraps all five children from cached facts. Dropping `file_facts_child_state`
++explicitly requests a rebuild. Direct edits to payloads/children/checkpoints
++are unsupported. An incompatible output type requires an explicit migration
++or a fresh database; the additive diagnostic migration cannot fix it.
++
++To retry, delete the **exact** key from `file_facts_cache`, restage its source
++for the loaded extractor, and rerun. For example, execute parameterized
++`DELETE FROM file_facts_cache WHERE blob_oid=? AND logical_path=? AND
++extractor_sha=?`, then the workflow. A removed key absent from staging loses
++its children/checkpoint; unmatched caller occurrences report `not_cached`.
++A new extractor version creates new keys. `TRY` may cause row-by-row retries;
++there is no exactly-once parser-call promise on errors.
++
++The publisher uses one read-only connection/transaction for all seven tables:
++cache, nodes, edges, spans, macro invocations, macro scopes and occurrences.
++It records each schema, count, SHA-256 and byte size. Source labels explicitly
++say `caller_supplied` and `independently_verified = false`. Finalization
++precedes atomic `current.json` replacement. Failures preserve the prior pointer
++and all referenced version files; a pointer failure may leave an unreferenced
++complete version. Read the manifest once, validate files, and use only its
++versioned paths. No extension is required to query the stored typed Parquet.
++Never combine trailing legacy `COPY` files into a current app dataset.
++
++Publication requires local POSIX advisory locks and same-filesystem atomic
++rename (packaging also requires symlinks). Keep persistent lock inodes; deleting
++them breaks publisher serialization. There is no garbage collection; retain
++old versions while readers may use them. Interrupted staging cleanup is an
++explicit operator action. Atomic visibility does not guarantee survival of
++sudden power loss after the pointer swap.
++
++## App boundary and operating limits
++
++The [headless quickstart](../README.md#headless-explorereview-quickstart) creates
++immutable Explore/Review results. `read_result` binds a requested base/head
++snapshot to one completed run and validates the immutable manifest, source
++scheme and checksummed files. Run manifests retain artifact/source/schema and
++runtime identities, fixture hash, process PID/raw exit, snapshot lineage,
++coverage/status counts, unresolved counts, replay result and typed tables.
++Unsuccessful extraction is visible as incomplete coverage; unavailable review
++inputs retain their pair row with NULL result. Caller labels are not certified
++Git identities.
++
++Native work runs in a child process. The parent reaps it on success, error,
++interruption or an explicit caller timeout; a candidate file alone cannot
++publish completion. Faults preserve the last complete result; a later healthy
++run can publish. Timeout is optional caller policy, not a production memory
++or time cap. This harness is not a production supervisor, repository crawler,
++network fetcher, unrestricted SQL service or UI implementation.
++
++Whole-blob parsing remains native AST work per missing key, not SIMD parsing.
++Ordinary parser/query state is reused per worker/language; notebook cell parser
++state stays within its notebook input. Input batch byte budgets do not bound
++AST/output/nested-vector/global-fold memory. No new performance, concurrency,
++resource-limit or compiler-completeness guarantee is made here.
++
++Managed notebook SQL remains DuckDB 1.5.5 and cannot load this native2 ABI.
++Root's separate native Rust-cell transport/readback does not upgrade that SQL
++runtime. Browser/WASM, Windows, wider native runtime versions, public/signed
++distribution, production admission/backpressure and app UI remain outside the
++observed support claim.
++
++## Observed release acceptance: 2026-11-17, R7
++
++This is a fresh integrated candidate, not a relabeled historical binary.
++The release driver ran on clean source
++`66663c00a4b4b7c898b1d1f5b66aecf99fc348f5`, with approved predecessor changes
++on original base `adaa1f86e2c95201a331046a8c0ea785b8781399`.
++R7 changes only this document and the README; those documentation bytes are
++outside the extractor source-input inventory. Root still owns final gate
++review/integration; this evidence does not close an issue or authorize public
++release.
++
++| Bound identity | Observed value |
++|---|---|
++| Extractor source ID | `source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35` |
++| Packaged binary SHA-256 | `28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122` |
++| Raw native library SHA-256 | `7e4ef5a37961b9373723882d1cd35195dce7b4f62698c72c4198baa34069fdb2` |
++| Sidecar SHA-256 | `db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8` |
++| Build source probe SHA-256 | `8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404` |
++| Runtime | Python 3.12.10; DuckDB package `2.0.0`, native `v2.0.0`; `osx_arm64` |
++| Native engine SHA-256 | `1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3` |
++| Python executable SHA-256 | `08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada` |
++| Compiler/host | Rust/Cargo 1.94.1; `aarch64-apple-darwin`; macOS 26.7.1 ARM64 |
++| Contract | Extension 0.1.0; facts schema 1; single_file; unsigned_local |
++
++The raw library and packaged binary differ because packaging appends the
++DuckDB extension footer. The source ID is shared with R5's approved candidate,
++but this freshly built package has a different binary SHA. Neither R5's
++`2968d20ef8d4f07df100e50f6aaccb0b2bece7df048c1a92884fc12c90e2ae89`
++nor the frozen corpus's corrected binary is claimed as this run's artifact.
++
++Raw evidence is retained in the task-owned directories
++`/private/tmp/spur-r7-65bb3605-release-1` and
++`/private/tmp/spur-r7-65bb3605-evidence`. These are receipt locations for this
++observation, not dependencies of the quickstarts. The former contains
++`receipt.json`, raw phase stdout/stderr, both source-probe inventories,
++`unittest-summary.json`, all native build artifacts, package and sidecar. The
++latter contains the exact top-level invocation, `current-acceptance.py` and its
++command/output/JSON receipt, executable copies of documented commands, solver
++requests/results and final verification. Preserve them together when reviewing
++or moving the candidate.
++
++The exact release invocation was the pinned native Python running
++`crates/spur-graph-duckdb/scripts/check_release.py --out
++/private/tmp/spur-r7-65bb3605-release-1 --host-native --expect-platform osx_arm64`,
++with `PYTHONDONTWRITEBYTECODE=1`, `SPUR_SCCACHE_S3=0` and
++`SPUR_NO_LOCAL_FALLBACK=1`. Rust tests used the default remote mode, forced
++remote by the driver; native packaging used a separate explicit host target.
++Every driver child phase exited `0`: source-head, source-status, rustc-version,
++cargo-version, rust-tests, native-build, source-probe, package, verify-package,
++unittests and source-probe-final. The top-level driver exited `0`.
++
++| Acceptance coverage | Current evidence and limits |
++|---|---|
++| API/schema/identity | Exact typed contract, registry discovery and independent source-inventory checks passed; both source probes agree |
++| Diagnostics and errors | Remote Rust 2/2; SQL mixed/NULL/error/nested-vector tests passed; NoTree/setup/unknown faults stay SQL errors |
++| Native correctness | Direct-Rust field/order parity and persistent native-versus-SQL retrieval checks passed in the full suite |
++| Macro binding controls | Current binary leaves `Vec::new` unresolved, resolves valid local helper/LocalFactory controls and distinguishes both constructors in a mixed macro; frozen control and direct-Rust facts agree |
++| Cache and publication | Diagnostic migration, full-key replay, child repair, seven-table snapshot consistency and failed-publication preservation passed; documented cache recipe executed, exit 0 |
++| Packaging and release driver | Fresh package load/integrity/ABI tests and driver negative controls passed; source and native artifact identities rechecked after suite |
++| Headless Explore/Review | Base/head fixture saved and reopened; exact package SHA, source/snapshot keys, typed exports, replay, ambiguity, unavailable inputs, interruption/timeout cleanup and healthy recovery verified |
++| Frozen corrected corpus/readback | Published manifest, schema/counts/provenance and current sample/control parity verified read-only; cache checksum unchanged; root separately supplied native notebook readback |
++
++The complete suite ran **206 tests, 0 failures, 0 errors, 0 skips, 0 expected
++failures** (exit 0). It includes the current R6 source-scheme corrections.
++Release-driver tests deliberately run failing/skip child fixtures; their raw
++logs contain those named negative outcomes while the outer tests assert that
++they prevent a release pass. There is no unresolved failed phase in this R7
++release receipt.
++
++Additional acceptance (exit 0) used this same package SHA for all current
++extraction calls, direct-Rust parity and the persistent headless run. The
++headless fixture retains eight source rows per snapshot: three `ok`, one
++`empty_source`, one `null_input`, three `extraction_error`; unresolved edges
++remain visible (base 8, head 7). All four review pairs remain, with one
++unavailable pair and one pair with diagnostics. Both snapshots honestly report
++incomplete extraction coverage. Replay found zero missing keys and identical
++stored tables. These are fixture observations, not repository-wide metrics.
++All five contract SQL examples, README function example, headless CLI and
++cache/publisher recipe executed successfully. The build quickstart was checked
++with `sh -n`; the actual build/check was the recorded equivalent invocation
++above, using the already pinned Python environment.
++
++### Frozen reference boundary
++
++The authority is the main repository's
++`docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/published.json`.
++It binds cache SHA-256
++`ad6f7d3874b4829e9754df2ac7ab7ed0bafc7004d241561a2ad8e52fdd81172b`,
++corrected historical extension SHA-256
++`be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892`,
++and frozen commit `61ba3d200439a541dce4c1617ca9277be7d438af`.
++R7 inspected that exact manifest, README and `inspect_published.py`. The inspector
++pins its old corrected extension and was not used as a current release pass.
++
++The fresh candidate attached the published database `READ_ONLY`. Counts remain
++4,404 inventory paths, 4,098 admitted sources/current facts and 8,196 versioned
++cache keys. All five collections match for the inspector's real-source sample,
++`crates/spur-acp/src/capability_evidence.rs`, and `control.rs`; current results
++also match the new direct-Rust oracle. The real `Vec::new` negative control was
++recomputed under the current binary. Both the cache SHA and inspected reference
++file hashes were checked before/after. No refresh/ingestion script ran and no
++historical file was written. This is current sample/control compatibility,
++not a claim of freshly re-extracting all 4,098 sources.
++
++Root's `notebook-readback-20261117-release.json` records successful native
++2.0 readback of that historical corrected cache/binary. The frozen README's
++older transport-blocked note is historical; the later receipt is separate
++readback evidence. The task's notebook read tool denied this worker access to
++the root acceptance notebook; no raw notebook access or mutation bypass was
++used. Root owns its acceptance review. Managed notebook SQL remains 1.5.5.
++
++### TDD lineage and solver scope
++
++R7 adds no behavior, so its RED phase is **not applicable**; no failing test was
++manufactured. Approved predecessor receipts retain authentic assertions before
++implementation, separate test/implementation commits and raw failures:
++
++| Predecessor | Authentic RED | GREEN evidence and original commits |
++|---|---|---|
++| R1 metadata/provenance | 4 missing-function assertions; exit 1 | 7 contract + 50 regressions; exit 0; `db50e0cad` test, `709b5c268` implementation |
++| R2 NoTree correction | `internal failure must propagate`; remote 1 failed/1 passed, exit 101 | Same remote 2/2, SQL diagnostics 8/8 + regressions 39/39 + R1 7/7, exit 0; `5f061fa66` test, `11d0de8cf` fix |
++| R3 cache/snapshots | 10 intended assertions; exit 1 | 29 focused + 64 regressions, exit 0; `95ad5e1d4` test, `205d7837d` implementation |
++| R4 packaging | 12 intended assertions plus 2 hardening failures; exit 1 | 15 focused + 64 native regressions, exit 0; `cd039f0b6`, `842c3e81b` tests, `7f8e0117d` implementation |
++| R5 final source guard | 4 intended source-stability assertions; exit 1 | 13 focused, then 192 complete release tests, exit 0; `c116e7160` test, `e1134db58` fix |
++| R6 source-scheme correction | 2 assertions (`ValueError` not raised); exit 1 | 14 focused + 84 regressions, exit 0; `027e420bc` test, `e0be2783e` fix |
++
++These original worker commits/receipts describe predecessor TDD, not this
++run's source HEAD. Integrated source commits may have different IDs. Earlier
++intermediate failures remain in predecessor receipts; only final approved
++results are represented as GREEN. R7's fresh 206-test run supplies integrated
++regression evidence rather than substituting old binaries or test counts.
++
++Catalog rule `data_integrity.mutually_consistent` checked the finite identity
++policy: current acceptance phases must use the fresh candidate and native
++2.0.0, never a historical reference or managed 1.5.5 runtime. PRE passed
++(`sat/pass`); a stale-reference negative control failed (`unsat/fail`). POST
++passed (`sat/pass`) for the observed binary/source/runtime/platform tuples; a
++stale headless-artifact substitution failed (`unsat/fail`). This solver
++checks supplied finite facts, not extraction semantics, OS execution or
++compiler correctness. Native commands and checksums provide that execution
++evidence. Persistence was rejected at `ArtifactCount` limit 512, attempted 513;
++exact persisted-attempt errors and nonpersisted requests/results are retained
++without deleting earlier receipts.
++
++### Remaining release boundaries
++
++Observed native acceptance is local macOS 26.7.1 ARM64 (`osx_arm64`) only.
++Remote Linux ran Rust unit tests, which is not a Linux load/package acceptance
++claim. The dedicated workflow configures `macos-15` / `aarch64-apple-darwin` /
++`osx_arm64`; it was not executed as hosted CI in this task. Other platforms,
++WASM and DuckDB versions outside exactly 2.0.0 have no readiness claim here.
++Root final review/integration and any hosted-run acceptance remain separate
++gates; public publishing/signing is not authorized. The single-file scope,
++resource/supervision limits and managed-runtime split above remain explicit
++limitations, not silently satisfied compiler or production-service gates.

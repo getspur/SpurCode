@@ -1,0 +1,1015 @@
+{
+  "content": [],
+  "structuredContent": {
+    "recorded": true,
+    "idempotent": true,
+    "comment_id": "7190",
+    "audit_id": "ca26e56e-cb13-41e6-b840-e09597a5ca40",
+    "task_id": "bd-r7f4",
+    "delegation_id": "4e7b84964ee24fdf",
+    "audit": {
+      "kind": "worker-evidence",
+      "audit_id": "ca26e56e-cb13-41e6-b840-e09597a5ca40",
+      "delegation_id": "4e7b84964ee24fdf",
+      "brain_session_id": "dc95897af65a8511",
+      "message": "R7 solver evidence: PRE identity-policy verification and stale-reference negative; POST observed fresh artifact/source/native runtime/platform tuple verification and stale headless artifact negative. All exact requests/results below. No compiler/semantic proof claimed. ArtifactCount persistence rejected at 512/513; existing receipts preserved.",
+      "evidence": {
+        "evidence_directory": "/private/tmp/spur-r7-65bb3605-evidence",
+        "native_release_directory": "/private/tmp/spur-r7-65bb3605-release-1",
+        "observed": {
+          "binary": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+          "source": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+          "runtime": "2.0.0",
+          "platform": "osx_arm64",
+          "headless_binary": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+          "current_binary": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+          "status": "passed",
+          "acceptance_status": "passed"
+        },
+        "solves": {
+          "solve-pre": {
+            "request": {
+              "family": "data_integrity",
+              "mode": "verify",
+              "persist": true,
+              "timeout_ms": 10000,
+              "rules": [
+                {
+                  "rule_id": "data_integrity.mutually_consistent",
+                  "subjects": [
+                    "current_acceptance"
+                  ],
+                  "parameters": {}
+                }
+              ],
+              "facts": {
+                "relations": {
+                  "phases": {
+                    "fields": {
+                      "artifact": {
+                        "kind": "enum",
+                        "values": [
+                          "fresh_candidate",
+                          "historical_reference"
+                        ]
+                      },
+                      "runtime": {
+                        "kind": "enum",
+                        "values": [
+                          "native_2_0_0",
+                          "managed_1_5_5"
+                        ]
+                      }
+                    },
+                    "rows": {
+                      "complete_release": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "macro_controls": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "native_parity": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "headless_explore_review": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "frozen_cache_readonly": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unique_constraints": {},
+                "foreign_keys": {},
+                "cardinality_constraints": {},
+                "value_ranges": {},
+                "conditional_requirements": {},
+                "aggregate_balances": {},
+                "consistency_relations": {
+                  "current_acceptance": {
+                    "relation": "phases",
+                    "fields": [
+                      "artifact",
+                      "runtime"
+                    ],
+                    "allowed": [
+                      [
+                        "fresh_candidate",
+                        "native_2_0_0"
+                      ]
+                    ]
+                  }
+                },
+                "temporal_constraints": {}
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+                }
+              ],
+              "isError": true
+            }
+          },
+          "solve-pre-nonpersisted": {
+            "request": {
+              "family": "data_integrity",
+              "mode": "verify",
+              "persist": false,
+              "timeout_ms": 10000,
+              "rules": [
+                {
+                  "rule_id": "data_integrity.mutually_consistent",
+                  "subjects": [
+                    "current_acceptance"
+                  ],
+                  "parameters": {}
+                }
+              ],
+              "facts": {
+                "relations": {
+                  "phases": {
+                    "fields": {
+                      "artifact": {
+                        "kind": "enum",
+                        "values": [
+                          "fresh_candidate",
+                          "historical_reference"
+                        ]
+                      },
+                      "runtime": {
+                        "kind": "enum",
+                        "values": [
+                          "native_2_0_0",
+                          "managed_1_5_5"
+                        ]
+                      }
+                    },
+                    "rows": {
+                      "complete_release": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "macro_controls": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "native_parity": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "headless_explore_review": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "frozen_cache_readonly": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unique_constraints": {},
+                "foreign_keys": {},
+                "cardinality_constraints": {},
+                "value_ranges": {},
+                "conditional_requirements": {},
+                "aggregate_balances": {},
+                "consistency_relations": {
+                  "current_acceptance": {
+                    "relation": "phases",
+                    "fields": [
+                      "artifact",
+                      "runtime"
+                    ],
+                    "allowed": [
+                      [
+                        "fresh_candidate",
+                        "native_2_0_0"
+                      ]
+                    ]
+                  }
+                },
+                "temporal_constraints": {}
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"fresh_candidate\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"native_2_0_0\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"fresh_candidate\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"native_2_0_0\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"fresh_candidate\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"native_2_0_0\",\n    \"di_r0_row3_active\": 1,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": \"fresh_candidate\",\n    \"di_r0_row3_f1_present\": 1,\n    \"di_r0_row3_f1_value\": \"native_2_0_0\",\n    \"di_r0_row4_active\": 1,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": \"fresh_candidate\",\n    \"di_r0_row4_f1_present\": 1,\n    \"di_r0_row4_f1_value\": \"native_2_0_0\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+                }
+              ]
+            }
+          },
+          "solve-pre-negative": {
+            "request": {
+              "family": "data_integrity",
+              "mode": "verify",
+              "persist": false,
+              "timeout_ms": 10000,
+              "rules": [
+                {
+                  "rule_id": "data_integrity.mutually_consistent",
+                  "subjects": [
+                    "current_acceptance"
+                  ],
+                  "parameters": {}
+                }
+              ],
+              "facts": {
+                "relations": {
+                  "phases": {
+                    "fields": {
+                      "artifact": {
+                        "kind": "enum",
+                        "values": [
+                          "fresh_candidate",
+                          "historical_reference"
+                        ]
+                      },
+                      "runtime": {
+                        "kind": "enum",
+                        "values": [
+                          "native_2_0_0",
+                          "managed_1_5_5"
+                        ]
+                      }
+                    },
+                    "rows": {
+                      "complete_release": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "macro_controls": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "native_parity": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "historical_reference"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "headless_explore_review": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      },
+                      "frozen_cache_readonly": {
+                        "active": true,
+                        "cells": {
+                          "artifact": {
+                            "present": true,
+                            "value": "fresh_candidate"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "native_2_0_0"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unique_constraints": {},
+                "foreign_keys": {},
+                "cardinality_constraints": {},
+                "value_ranges": {},
+                "conditional_requirements": {},
+                "aggregate_balances": {},
+                "consistency_relations": {
+                  "current_acceptance": {
+                    "relation": "phases",
+                    "fields": [
+                      "artifact",
+                      "runtime"
+                    ],
+                    "allowed": [
+                      [
+                        "fresh_candidate",
+                        "native_2_0_0"
+                      ]
+                    ]
+                  }
+                },
+                "temporal_constraints": {}
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 20,\n  \"status\": \"unsat\",\n  \"duration_ms\": 11,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_current_acceptance\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+                }
+              ]
+            }
+          },
+          "solve-post": {
+            "request": {
+              "family": "data_integrity",
+              "mode": "verify",
+              "persist": true,
+              "timeout_ms": 10000,
+              "rules": [
+                {
+                  "rule_id": "data_integrity.mutually_consistent",
+                  "subjects": [
+                    "observed_identity"
+                  ]
+                }
+              ],
+              "facts": {
+                "relations": {
+                  "phases": {
+                    "fields": {
+                      "binary": {
+                        "kind": "enum",
+                        "values": [
+                          "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                          "historical_reference"
+                        ]
+                      },
+                      "source": {
+                        "kind": "enum",
+                        "values": [
+                          "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                        ]
+                      },
+                      "runtime": {
+                        "kind": "enum",
+                        "values": [
+                          "2.0.0"
+                        ]
+                      },
+                      "platform": {
+                        "kind": "enum",
+                        "values": [
+                          "osx_arm64"
+                        ]
+                      }
+                    },
+                    "rows": {
+                      "release": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "current_macro_controls": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "direct_rust_parity": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "headless_snapshot": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "documented_examples": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unique_constraints": {},
+                "foreign_keys": {},
+                "cardinality_constraints": {},
+                "value_ranges": {},
+                "conditional_requirements": {},
+                "aggregate_balances": {},
+                "consistency_relations": {
+                  "observed_identity": {
+                    "relation": "phases",
+                    "fields": [
+                      "binary",
+                      "source",
+                      "runtime",
+                      "platform"
+                    ],
+                    "allowed": [
+                      [
+                        "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                        "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+                        "2.0.0",
+                        "osx_arm64"
+                      ]
+                    ]
+                  }
+                },
+                "temporal_constraints": {}
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+                }
+              ],
+              "isError": true
+            }
+          },
+          "solve-post-nonpersisted": {
+            "request": {
+              "family": "data_integrity",
+              "mode": "verify",
+              "persist": false,
+              "timeout_ms": 10000,
+              "rules": [
+                {
+                  "rule_id": "data_integrity.mutually_consistent",
+                  "subjects": [
+                    "observed_identity"
+                  ]
+                }
+              ],
+              "facts": {
+                "relations": {
+                  "phases": {
+                    "fields": {
+                      "binary": {
+                        "kind": "enum",
+                        "values": [
+                          "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                          "historical_reference"
+                        ]
+                      },
+                      "source": {
+                        "kind": "enum",
+                        "values": [
+                          "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                        ]
+                      },
+                      "runtime": {
+                        "kind": "enum",
+                        "values": [
+                          "2.0.0"
+                        ]
+                      },
+                      "platform": {
+                        "kind": "enum",
+                        "values": [
+                          "osx_arm64"
+                        ]
+                      }
+                    },
+                    "rows": {
+                      "release": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "current_macro_controls": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "direct_rust_parity": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "headless_snapshot": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "documented_examples": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unique_constraints": {},
+                "foreign_keys": {},
+                "cardinality_constraints": {},
+                "value_ranges": {},
+                "conditional_requirements": {},
+                "aggregate_balances": {},
+                "consistency_relations": {
+                  "observed_identity": {
+                    "relation": "phases",
+                    "fields": [
+                      "binary",
+                      "source",
+                      "runtime",
+                      "platform"
+                    ],
+                    "allowed": [
+                      [
+                        "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                        "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+                        "2.0.0",
+                        "osx_arm64"
+                      ]
+                    ]
+                  }
+                },
+                "temporal_constraints": {}
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"osx_arm64\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"2.0.0\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"osx_arm64\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"2.0.0\",\n    \"di_r0_row1_f3_present\": 1,\n    \"di_r0_row1_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"osx_arm64\",\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": \"2.0.0\",\n    \"di_r0_row2_f3_present\": 1,\n    \"di_r0_row2_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row3_active\": 1,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row3_f1_present\": 1,\n    \"di_r0_row3_f1_value\": \"osx_arm64\",\n    \"di_r0_row3_f2_present\": 1,\n    \"di_r0_row3_f2_value\": \"2.0.0\",\n    \"di_r0_row3_f3_present\": 1,\n    \"di_r0_row3_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row4_active\": 1,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row4_f1_present\": 1,\n    \"di_r0_row4_f1_value\": \"osx_arm64\",\n    \"di_r0_row4_f2_present\": 1,\n    \"di_r0_row4_f2_value\": \"2.0.0\",\n    \"di_r0_row4_f3_present\": 1,\n    \"di_r0_row4_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+                }
+              ]
+            }
+          },
+          "solve-post-negative": {
+            "request": {
+              "family": "data_integrity",
+              "mode": "verify",
+              "persist": false,
+              "timeout_ms": 10000,
+              "rules": [
+                {
+                  "rule_id": "data_integrity.mutually_consistent",
+                  "subjects": [
+                    "observed_identity"
+                  ]
+                }
+              ],
+              "facts": {
+                "relations": {
+                  "phases": {
+                    "fields": {
+                      "binary": {
+                        "kind": "enum",
+                        "values": [
+                          "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                          "historical_reference"
+                        ]
+                      },
+                      "source": {
+                        "kind": "enum",
+                        "values": [
+                          "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                        ]
+                      },
+                      "runtime": {
+                        "kind": "enum",
+                        "values": [
+                          "2.0.0"
+                        ]
+                      },
+                      "platform": {
+                        "kind": "enum",
+                        "values": [
+                          "osx_arm64"
+                        ]
+                      }
+                    },
+                    "rows": {
+                      "release": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "current_macro_controls": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "direct_rust_parity": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "headless_snapshot": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "historical_reference"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      },
+                      "documented_examples": {
+                        "active": true,
+                        "cells": {
+                          "binary": {
+                            "present": true,
+                            "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                          },
+                          "source": {
+                            "present": true,
+                            "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                          },
+                          "runtime": {
+                            "present": true,
+                            "value": "2.0.0"
+                          },
+                          "platform": {
+                            "present": true,
+                            "value": "osx_arm64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "unique_constraints": {},
+                "foreign_keys": {},
+                "cardinality_constraints": {},
+                "value_ranges": {},
+                "conditional_requirements": {},
+                "aggregate_balances": {},
+                "consistency_relations": {
+                  "observed_identity": {
+                    "relation": "phases",
+                    "fields": [
+                      "binary",
+                      "source",
+                      "runtime",
+                      "platform"
+                    ],
+                    "allowed": [
+                      [
+                        "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                        "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+                        "2.0.0",
+                        "osx_arm64"
+                      ]
+                    ]
+                  }
+                },
+                "temporal_constraints": {}
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 9,\n  \"status\": \"unsat\",\n  \"duration_ms\": 5,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_observed_identity\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "isError": false
+}

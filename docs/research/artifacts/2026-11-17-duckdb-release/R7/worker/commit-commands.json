@@ -1,0 +1,36 @@
+[
+  {
+    "argv": [
+      "git",
+      "add",
+      "--",
+      "crates/spur-graph-duckdb/README.md",
+      "crates/spur-graph-duckdb/docs/release-contract.md"
+    ],
+    "raw_exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "raw_exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "commit",
+      "-m",
+      "docs(spur-graph-duckdb): R7 bind native release evidence and contract"
+    ],
+    "raw_exit": 0,
+    "stdout": "[spur/worker/v2/codex/dc95897af65a8511/65bb3605-1952-4b96-ae3d-5f3004579662 09be38b1f] docs(spur-graph-duckdb): R7 bind native release evidence and contract\n 2 files changed, 619 insertions(+), 303 deletions(-)\n create mode 100644 crates/spur-graph-duckdb/docs/release-contract.md\n",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,44 @@
+test_child_failure_preserves_raw_exit_and_stops_later_phases (test_release_driver.DriverTests.test_child_failure_preserves_raw_exit_and_stops_later_phases) ... ok
+test_empty_unittest_discovery_is_a_release_failure (test_release_driver.DriverTests.test_empty_unittest_discovery_is_a_release_failure) ... 
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+NO TESTS RAN
+ok
+test_existing_output_is_refused_without_overwriting (test_release_driver.DriverTests.test_existing_output_is_refused_without_overwriting) ... ok
+test_missing_native_oracle_fails_preflight (test_release_driver.DriverTests.test_missing_native_oracle_fails_preflight) ... ok
+test_missing_runtime_fails_cli_preflight (test_release_driver.DriverTests.test_missing_runtime_fails_cli_preflight) ... ok
+test_remote_target_path_does_not_embed_host_filesystem (test_release_driver.DriverTests.test_remote_target_path_does_not_embed_host_filesystem) ... ok
+test_unittest_failure_is_a_release_failure (test_release_driver.DriverTests.test_unittest_failure_is_a_release_failure) ... test_child (test_failed.T.test_child) ... FAIL
+
+======================================================================
+FAIL: test_child (test_failed.T.test_child)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/release-driver-test-21sk1xh1/tests/test_failed.py", line 3, in test_child
+    def test_child(self): self.fail('controlled failure')
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: controlled failure
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)
+ok
+test_unittest_skip_is_a_release_failure (test_release_driver.DriverTests.test_unittest_skip_is_a_release_failure) ... test_oracle (test_skipped.T.test_oracle) ... skipped 'missing oracle'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK (skipped=1)
+ok
+test_wrong_runtime_fails_cli_preflight (test_release_driver.DriverTests.test_wrong_runtime_fails_cli_preflight) ... ok
+test_final_guard_rejects_changed_inherited_workspace_projection (test_release_driver.SourceStabilityTests.test_final_guard_rejects_changed_inherited_workspace_projection) ... ok
+test_final_guard_rejects_new_native_source_input (test_release_driver.SourceStabilityTests.test_final_guard_rejects_new_native_source_input) ... ok
+test_final_guard_rejects_new_query_input (test_release_driver.SourceStabilityTests.test_final_guard_rejects_new_query_input) ... ok
+test_final_guard_reruns_compiled_probe_in_fresh_directory (test_release_driver.SourceStabilityTests.test_final_guard_reruns_compiled_probe_in_fresh_directory) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.826s
+
+OK

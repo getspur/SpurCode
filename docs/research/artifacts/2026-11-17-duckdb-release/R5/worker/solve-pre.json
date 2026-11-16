@@ -1,0 +1,102 @@
+{
+  "request": {
+    "family": "data_integrity",
+    "mode": "verify",
+    "persist": true,
+    "include_smt": true,
+    "rules": [
+      {
+        "rule_id": "data_integrity.mutually_consistent",
+        "subjects": [
+          "source_identity"
+        ]
+      }
+    ],
+    "facts": {
+      "relations": {
+        "release": {
+          "fields": {
+            "initial": {
+              "kind": "enum",
+              "values": [
+                "original",
+                "changed"
+              ]
+            },
+            "package": {
+              "kind": "enum",
+              "values": [
+                "original",
+                "changed"
+              ]
+            },
+            "final": {
+              "kind": "enum",
+              "values": [
+                "original",
+                "changed"
+              ]
+            }
+          },
+          "rows": {
+            "stable": {
+              "active": true,
+              "cells": {
+                "initial": {
+                  "present": true,
+                  "value": "original"
+                },
+                "package": {
+                  "present": true,
+                  "value": "original"
+                },
+                "final": {
+                  "present": true,
+                  "value": "original"
+                }
+              }
+            }
+          }
+        }
+      },
+      "unique_constraints": {},
+      "foreign_keys": {},
+      "cardinality_constraints": {},
+      "value_ranges": {},
+      "conditional_requirements": {},
+      "aggregate_balances": {},
+      "consistency_relations": {
+        "source_identity": {
+          "relation": "release",
+          "fields": [
+            "initial",
+            "package",
+            "final"
+          ],
+          "allowed": [
+            [
+              "original",
+              "original",
+              "original"
+            ],
+            [
+              "changed",
+              "changed",
+              "changed"
+            ]
+          ]
+        }
+      },
+      "temporal_constraints": {}
+    }
+  },
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+      }
+    ],
+    "isError": true
+  }
+}

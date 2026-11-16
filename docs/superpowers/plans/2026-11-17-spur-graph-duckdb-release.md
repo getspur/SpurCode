@@ -369,3 +369,15 @@ The continuation plan is `f02f5ee1-f011-4b13-bb0b-e8d6451ee34a`, engine epic `bd
 | R7 | `bd-r7f4` |
 
 R2 adopts the existing scoped implementation and original TDD receipts, corrects the review finding test-first, and verifies the combined metadata/diagnostic candidate. Final integration can use the clean continuation branch while preserving unrelated working files. The authorization still excludes public publishing.
+
+### Implemented and independently reviewed
+
+R1 through R7 passed the root Beads/audit/diff/artifact gate and independent review. The continuation plan has six approved tasks, with R1 already present in its clean base. The Plan Engine integration succeeded. Local integration preserves the original test and implementation commits rather than the worker snapshot/squash history; its native source tree matches the approved candidate exactly. The root continuation record is the only difference from the canonical integrated tree.
+
+The fresh current package passed **206 Python tests with zero skips/errors/failures**, remote Rust **2/2**, current macro controls/native parity, headless Explore/Review acceptance, and read-only preserved-corpus sample checks. A fresh compiled probe on the final integration checkout regenerated the full set of **321 native inputs**, identical to the release before/after probes. Their framed source hash and all 320 physical Git-object hashes were verified. The relocated package passed a fresh native LOAD and sidecar check.
+
+Current binary SHA-256 is `28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122`; sidecar SHA-256 is `db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8`; source identity is `source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35`. Release build HEAD `66663c00a4b4b7c898b1d1f5b66aecf99fc348f5` precedes the docs-only reviewed commit `09be38b1f6155b0f090d3e19915add39182d380a`.
+
+The saved acceptance notebook in `getspur/spur-notebook` executes three SQL cells on managed DuckDB **1.5.5** against immutable typed Parquet produced by native **2.0.0**. These prove row-diagnostic, full-key graph and conservative review consumption. The retained demo honestly remains bound to the approved R6 predecessor package; the final full suite independently exercises the consumer against the current R7 package.
+
+Evidence and exact limits: [release acceptance index](../../research/artifacts/2026-11-17-duckdb-release/README.md). The native package is unsigned/local, extension version 0.1.0, facts schema 1, `C_STRUCT_UNSTABLE`, accepted on macOS ARM64 with exactly DuckDB 2.0.0. Hosted CI is configured, not observed. The production notebook app UI/native host integration and public distribution remain separate work. Existing user edits are preserved; no push, public tag, upload or deployment is authorized or performed.

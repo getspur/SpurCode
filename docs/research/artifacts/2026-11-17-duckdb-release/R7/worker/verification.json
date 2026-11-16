@@ -1,0 +1,1380 @@
+{
+  "task": "R7",
+  "issue": "bd-r7f4",
+  "status": "passed",
+  "source_head": "66663c00a4b4b7c898b1d1f5b66aecf99fc348f5",
+  "source_status_at_release_start": "",
+  "owned_documents": [
+    {
+      "path": "crates/spur-graph-duckdb/README.md",
+      "sha256": "bdc7a282ce0c843087fc5011b36eaf3f67f50b274f684c5f92a344b31b35410e",
+      "bytes": 8803
+    },
+    {
+      "path": "crates/spur-graph-duckdb/docs/release-contract.md",
+      "sha256": "52e95c781a7f87703d3c58e001544a9cff10a26e1a94f37444f462fa3836aeee",
+      "bytes": 30305
+    }
+  ],
+  "release_receipt": {
+    "path": "/private/tmp/spur-r7-65bb3605-release-1/receipt.json",
+    "sha256": "acc1554b908df9a1b14325159016db0bead631fa5836406377adc441e0458e46"
+  },
+  "release_invocation": {
+    "argv": [
+      "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+      "crates/spur-graph-duckdb/scripts/check_release.py",
+      "--out",
+      "/private/tmp/spur-r7-65bb3605-release-1",
+      "--host-native",
+      "--expect-platform",
+      "osx_arm64"
+    ],
+    "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/65bb3605-1952-4b96-ae3d-5f3004579662",
+    "source_head": "66663c00a4b4b7c898b1d1f5b66aecf99fc348f5",
+    "overrides": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "SPUR_SCCACHE_S3": "0"
+    },
+    "raw_exit": 0
+  },
+  "release_phase_exits": {
+    "source-head": 0,
+    "source-status": 0,
+    "rustc-version": 0,
+    "cargo-version": 0,
+    "rust-tests": 0,
+    "native-build": 0,
+    "source-probe": 0,
+    "package": 0,
+    "verify-package": 0,
+    "unittests": 0,
+    "source-probe-final": 0
+  },
+  "package": {
+    "abi": "C_STRUCT_UNSTABLE",
+    "binary": {
+      "name": "spur_graph.duckdb_extension",
+      "sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+      "size_bytes": 16904630
+    },
+    "duckdb_api_version": "2.0.0",
+    "extension_version": "0.1.0",
+    "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "facts_schema_version": 1,
+    "format_version": 1,
+    "platform": "osx_arm64",
+    "resolution_scope": "single_file",
+    "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "trust": {
+      "mode": "unsigned_local",
+      "signature": "absent"
+    }
+  },
+  "release_trust": {
+    "manifest": "/private/tmp/spur-r7-65bb3605-release-1/.spur_graph.duckdb_extension.packages/release-c5fa626a548248e7a5e46fc0950e0e74/spur_graph.duckdb_extension.json",
+    "manifest_sha256": "db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8",
+    "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+  },
+  "runtime": {
+    "duckdb": "2.0.0",
+    "duckdb_platform": "osx_arm64",
+    "host": "macOS-26.7.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "native_engine": "/private/tmp/spur-r5-9a79a2c4-venv/lib/python3.12/site-packages/_duckdb.abi3.so",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "native_version": "v2.0.0",
+    "python": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+    "python_executable": "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+    "python_sha256": "08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada"
+  },
+  "rustc": {
+    "LLVM version": "21.1.8",
+    "binary": "rustc",
+    "commit-date": "2026-03-25",
+    "commit-hash": "e408947bfd200af42db322daf0fadfe7e26d3bd1",
+    "host": "aarch64-apple-darwin",
+    "release": "1.94.1"
+  },
+  "native_artifacts": {
+    "build_script": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+      "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404"
+    },
+    "catalog_git_sources": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/catalog_git_sources",
+      "sha256": "b8575b1ac6e86e1f08a47aa0349cb5e388620d6684bef22c15d07e7ce6e83683"
+    },
+    "history_catalog": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+      "sha256": "fcb40e65e2d3ecb531b63e40f86eed156811c605409ac3ed1e8fa85c0019c2e0"
+    },
+    "library": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+      "sha256": "7e4ef5a37961b9373723882d1cd35195dce7b4f62698c72c4198baa34069fdb2"
+    },
+    "reference_file_facts": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+      "sha256": "b5e6fe8ec754942be5be4e2e1c34b372da1973ae9eba04b17aecae068c695273"
+    },
+    "reference_symbols": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/reference_symbols",
+      "sha256": "60d3c2f8c03c1b37db97f949927244c6f1a2192664ed9c0aad56e648c438891c"
+    },
+    "retrieval_native": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+      "sha256": "eca9a4cbadd4cb46bb19b2c5653993437b0feb4a38237bae40f6c5f3ea10a676"
+    },
+    "temporal_reference": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_reference",
+      "sha256": "7727a6aa753a44352d0f65581011ea4ab40521f8d333dd567614525ec11e98ee"
+    },
+    "temporal_symbol_oracle": {
+      "path": "/private/tmp/spur-r7-65bb3605-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_symbol_oracle",
+      "sha256": "36e6c5569cb63aaf2944a44b0eb19903c49e2c3c71f86a7f08b214b25c6dbbf0"
+    }
+  },
+  "unittests": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "release_pass": true,
+    "skipped": 0,
+    "skipped_tests": [],
+    "tests_run": 206,
+    "unexpected_successes": 0
+  },
+  "remote_rust_tests": {
+    "passed": 2,
+    "failed": 0,
+    "exit": 0
+  },
+  "current_acceptance": {
+    "path": "/private/tmp/spur-r7-65bb3605-evidence/current-acceptance.json",
+    "sha256": "8a123896032239163aff0c01c9453f8a1d142947ecfca76303d342cbbfa90001",
+    "command": {
+      "argv": [
+        "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+        "/private/tmp/spur-r7-65bb3605-evidence/current-acceptance.py"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/65bb3605-1952-4b96-ae3d-5f3004579662",
+      "raw_exit": 0
+    }
+  },
+  "documented_commands": {
+    "binary_sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+    "commands": [
+      {
+        "name": "readme-build",
+        "argv": [
+          "/bin/sh",
+          "-n",
+          "/private/tmp/spur-r7-65bb3605-evidence/readme-build.sh"
+        ],
+        "raw_exit": 0,
+        "executed": false,
+        "script_sha256": "3e475933d6f4b448c2d7ce686f29db4af39a1a34d8716811caaeccb398ad13a9"
+      },
+      {
+        "name": "readme-five-functions",
+        "argv": [
+          "/bin/sh",
+          "/private/tmp/spur-r7-65bb3605-evidence/readme-five-functions.sh"
+        ],
+        "raw_exit": 0,
+        "executed": true,
+        "script_sha256": "672d56f78bb714d3bc9ad1470abacdaf3fab03492089eea5fdbe5bf1058fe193"
+      },
+      {
+        "name": "readme-headless",
+        "argv": [
+          "/bin/sh",
+          "/private/tmp/spur-r7-65bb3605-evidence/readme-headless.sh"
+        ],
+        "raw_exit": 0,
+        "executed": true,
+        "script_sha256": "c13be1c1050b8e96ede9055acb2b9eae39ca6b3c27f667ae45683659fb8a6edc"
+      },
+      {
+        "name": "contract-cache-demo",
+        "argv": [
+          "/bin/sh",
+          "/private/tmp/spur-r7-65bb3605-evidence/contract-cache-demo.sh"
+        ],
+        "raw_exit": 0,
+        "executed": true,
+        "script_sha256": "86a33f1721c4ef67632f800f06305ad38f486a0287cdadea10d399222e884970"
+      }
+    ]
+  },
+  "solves": {
+    "solve-pre": {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "persist": true,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "current_acceptance"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "phases": {
+              "fields": {
+                "artifact": {
+                  "kind": "enum",
+                  "values": [
+                    "fresh_candidate",
+                    "historical_reference"
+                  ]
+                },
+                "runtime": {
+                  "kind": "enum",
+                  "values": [
+                    "native_2_0_0",
+                    "managed_1_5_5"
+                  ]
+                }
+              },
+              "rows": {
+                "complete_release": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "macro_controls": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "native_parity": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "headless_explore_review": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "frozen_cache_readonly": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "current_acceptance": {
+              "relation": "phases",
+              "fields": [
+                "artifact",
+                "runtime"
+              ],
+              "allowed": [
+                [
+                  "fresh_candidate",
+                  "native_2_0_0"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+          }
+        ],
+        "isError": true
+      }
+    },
+    "solve-pre-nonpersisted": {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "persist": false,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "current_acceptance"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "phases": {
+              "fields": {
+                "artifact": {
+                  "kind": "enum",
+                  "values": [
+                    "fresh_candidate",
+                    "historical_reference"
+                  ]
+                },
+                "runtime": {
+                  "kind": "enum",
+                  "values": [
+                    "native_2_0_0",
+                    "managed_1_5_5"
+                  ]
+                }
+              },
+              "rows": {
+                "complete_release": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "macro_controls": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "native_parity": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "headless_explore_review": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "frozen_cache_readonly": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "current_acceptance": {
+              "relation": "phases",
+              "fields": [
+                "artifact",
+                "runtime"
+              ],
+              "allowed": [
+                [
+                  "fresh_candidate",
+                  "native_2_0_0"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"fresh_candidate\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"native_2_0_0\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"fresh_candidate\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"native_2_0_0\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"fresh_candidate\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"native_2_0_0\",\n    \"di_r0_row3_active\": 1,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": \"fresh_candidate\",\n    \"di_r0_row3_f1_present\": 1,\n    \"di_r0_row3_f1_value\": \"native_2_0_0\",\n    \"di_r0_row4_active\": 1,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": \"fresh_candidate\",\n    \"di_r0_row4_f1_present\": 1,\n    \"di_r0_row4_f1_value\": \"native_2_0_0\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    },
+    "solve-pre-negative": {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "persist": false,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "current_acceptance"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "phases": {
+              "fields": {
+                "artifact": {
+                  "kind": "enum",
+                  "values": [
+                    "fresh_candidate",
+                    "historical_reference"
+                  ]
+                },
+                "runtime": {
+                  "kind": "enum",
+                  "values": [
+                    "native_2_0_0",
+                    "managed_1_5_5"
+                  ]
+                }
+              },
+              "rows": {
+                "complete_release": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "macro_controls": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "native_parity": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "historical_reference"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "headless_explore_review": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                },
+                "frozen_cache_readonly": {
+                  "active": true,
+                  "cells": {
+                    "artifact": {
+                      "present": true,
+                      "value": "fresh_candidate"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "native_2_0_0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "current_acceptance": {
+              "relation": "phases",
+              "fields": [
+                "artifact",
+                "runtime"
+              ],
+              "allowed": [
+                [
+                  "fresh_candidate",
+                  "native_2_0_0"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 20,\n  \"status\": \"unsat\",\n  \"duration_ms\": 11,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_current_acceptance\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    },
+    "solve-post": {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "persist": true,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "observed_identity"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "phases": {
+              "fields": {
+                "binary": {
+                  "kind": "enum",
+                  "values": [
+                    "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                    "historical_reference"
+                  ]
+                },
+                "source": {
+                  "kind": "enum",
+                  "values": [
+                    "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                  ]
+                },
+                "runtime": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0"
+                  ]
+                },
+                "platform": {
+                  "kind": "enum",
+                  "values": [
+                    "osx_arm64"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "current_macro_controls": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "direct_rust_parity": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "headless_snapshot": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "documented_examples": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "observed_identity": {
+              "relation": "phases",
+              "fields": [
+                "binary",
+                "source",
+                "runtime",
+                "platform"
+              ],
+              "allowed": [
+                [
+                  "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                  "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+                  "2.0.0",
+                  "osx_arm64"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+          }
+        ],
+        "isError": true
+      }
+    },
+    "solve-post-nonpersisted": {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "persist": false,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "observed_identity"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "phases": {
+              "fields": {
+                "binary": {
+                  "kind": "enum",
+                  "values": [
+                    "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                    "historical_reference"
+                  ]
+                },
+                "source": {
+                  "kind": "enum",
+                  "values": [
+                    "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                  ]
+                },
+                "runtime": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0"
+                  ]
+                },
+                "platform": {
+                  "kind": "enum",
+                  "values": [
+                    "osx_arm64"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "current_macro_controls": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "direct_rust_parity": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "headless_snapshot": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "documented_examples": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "observed_identity": {
+              "relation": "phases",
+              "fields": [
+                "binary",
+                "source",
+                "runtime",
+                "platform"
+              ],
+              "allowed": [
+                [
+                  "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                  "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+                  "2.0.0",
+                  "osx_arm64"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"osx_arm64\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"2.0.0\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"osx_arm64\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"2.0.0\",\n    \"di_r0_row1_f3_present\": 1,\n    \"di_r0_row1_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row2_f1_present\": 1,\n    \"di_r0_row2_f1_value\": \"osx_arm64\",\n    \"di_r0_row2_f2_present\": 1,\n    \"di_r0_row2_f2_value\": \"2.0.0\",\n    \"di_r0_row2_f3_present\": 1,\n    \"di_r0_row2_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row3_active\": 1,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row3_f1_present\": 1,\n    \"di_r0_row3_f1_value\": \"osx_arm64\",\n    \"di_r0_row3_f2_present\": 1,\n    \"di_r0_row3_f2_value\": \"2.0.0\",\n    \"di_r0_row3_f3_present\": 1,\n    \"di_r0_row3_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\",\n    \"di_r0_row4_active\": 1,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"di_r0_row4_f1_present\": 1,\n    \"di_r0_row4_f1_value\": \"osx_arm64\",\n    \"di_r0_row4_f2_present\": 1,\n    \"di_r0_row4_f2_value\": \"2.0.0\",\n    \"di_r0_row4_f3_present\": 1,\n    \"di_r0_row4_f3_value\": \"source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    },
+    "solve-post-negative": {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "persist": false,
+        "timeout_ms": 10000,
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "observed_identity"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "phases": {
+              "fields": {
+                "binary": {
+                  "kind": "enum",
+                  "values": [
+                    "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                    "historical_reference"
+                  ]
+                },
+                "source": {
+                  "kind": "enum",
+                  "values": [
+                    "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                  ]
+                },
+                "runtime": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0"
+                  ]
+                },
+                "platform": {
+                  "kind": "enum",
+                  "values": [
+                    "osx_arm64"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "current_macro_controls": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "direct_rust_parity": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "headless_snapshot": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "historical_reference"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                },
+                "documented_examples": {
+                  "active": true,
+                  "cells": {
+                    "binary": {
+                      "present": true,
+                      "value": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122"
+                    },
+                    "source": {
+                      "present": true,
+                      "value": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35"
+                    },
+                    "runtime": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "platform": {
+                      "present": true,
+                      "value": "osx_arm64"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "observed_identity": {
+              "relation": "phases",
+              "fields": [
+                "binary",
+                "source",
+                "runtime",
+                "platform"
+              ],
+              "allowed": [
+                [
+                  "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+                  "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+                  "2.0.0",
+                  "osx_arm64"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        }
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 9,\n  \"status\": \"unsat\",\n  \"duration_ms\": 5,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_observed_identity\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  },
+  "solver_audit": {
+    "comment_id": "7190",
+    "path": "/private/tmp/spur-r7-65bb3605-evidence/solver-audit.json"
+  },
+  "predecessor_receipts": [
+    {
+      "path": "/private/tmp/spur-bd-4q5c-green/verification.json",
+      "sha256": "5b82a038cbf892936106ff0fd8c6da833b381e45764e8edbf5746022c6005ed8"
+    },
+    {
+      "path": "/private/tmp/spur-r2-e5afa03c-evidence/receipt.json",
+      "sha256": "192e69a722f8cdfcc2846e4230e378900f4b7eae18a674e94ae236d733d4a913"
+    },
+    {
+      "path": "/private/tmp/spur-r3-7cb6b619-evidence/receipt.json",
+      "sha256": "8d34d84333b1638033ec0a454cb7ac6d6b9ae11a2301f067ac9967f6e2e8c0b5"
+    },
+    {
+      "path": "/private/tmp/spur-r4-90b963ee-evidence/receipt.json",
+      "sha256": "767f65e03f165fd32b06cabcf08674a57a4f235de40fbc0c760727a796963c75"
+    },
+    {
+      "path": "/private/tmp/spur-r5-9a79a2c4-evidence/verification.json",
+      "sha256": "4eee7533cfee614f71b90af666e1b79b4dddb91a51fddde30ffaa57d2f54aff2"
+    },
+    {
+      "path": "/private/tmp/spur-r6-4f646974-rework-evidence/verification.json",
+      "sha256": "6cd0cf965bbeb0fd26492c8c496a7595edd9e6dfe15649d849d5ecce73174a70"
+    }
+  ],
+  "final_source_probe": {
+    "argv": [
+      "/private/tmp/spur-r7-65bb3605-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+    ],
+    "raw_exit": 0,
+    "sha256": "179cdadc9b9fb61c8160c145ae500aba75251f6aa0897e2a36b9783a7c65fb8f",
+    "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "input_count": 321
+  },
+  "diff_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "raw_exit": 0
+  },
+  "limitations": [
+    "R7 documentation/verification only: RED not applicable; predecessor authentic TDD retained.",
+    "Observed native acceptance osx_arm64 only; remote Linux Rust tests do not assert Linux packaging.",
+    "Hosted macos-15 CI configured but not executed.",
+    "Immutable corrected corpus read-only: real sample/control parity, not full reinjest.",
+    "Root owns final integration and notebook acceptance; worker notebook access denied; no bypass.",
+    "Unsigned local package; no public publish/tag/push.",
+    "Solver persistence quota 512/513 rejected; exact nonpersisted requests/results retained and audited."
+  ],
+  "commit_head": "09be38b1f6155b0f090d3e19915add39182d380a",
+  "committed_paths": [
+    "crates/spur-graph-duckdb/README.md",
+    "crates/spur-graph-duckdb/docs/release-contract.md"
+  ],
+  "worktree_status": "",
+  "unified_diff": {
+    "path": "/private/tmp/spur-r7-65bb3605-evidence/R7-unified.diff",
+    "sha256": "8acdd071ea88b1a3333f9cb5bb7b5c0875306cc7eeef9e0d0c0a5d7fbd033840"
+  },
+  "post_commit_commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "raw_exit": 0,
+      "stdout": "09be38b1f6155b0f090d3e19915add39182d380a\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "raw_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "HEAD^",
+        "HEAD"
+      ],
+      "raw_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD^",
+        "HEAD"
+      ],
+      "raw_exit": 0,
+      "stdout": "crates/spur-graph-duckdb/README.md\ncrates/spur-graph-duckdb/docs/release-contract.md\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "HEAD^",
+        "HEAD",
+        "--",
+        "crates/spur-graph-duckdb/README.md",
+        "crates/spur-graph-duckdb/docs/release-contract.md"
+      ],
+      "raw_exit": 0,
+      "stdout": "diff --git a/crates/spur-graph-duckdb/README.md b/crates/spur-graph-duckdb/README.md\nindex 9043ac2ac..ecc6138e8 100644\n--- a/crates/spur-graph-duckdb/README.md\n+++ b/crates/spur-graph-duckdb/README.md\n@@ -1,328 +1,158 @@\n # SPUR graph DuckDB extension\n \n-This native prototype exposes SPUR's symbol extractor and native single-file\n-graph facts through DuckDB's V2 C API. DuckDB supplies source vectors; the\n-extension reuses parser/query state per worker and language for ordinary source\n-code, and writes typed primitive, list and struct vectors.\n+`spur_graph` exposes SPUR's native source extraction and symbol-change matcher\n+as five typed SQL functions. The release candidate targets **native DuckDB\n+exactly 2.0.0**, `C_STRUCT_UNSTABLE`, with single-file resolution. It preserves\n+unresolved references and evidence; it does not provide compiler semantics or\n+repository-wide resolution.\n \n-The adapter follows `duckdb/extension-template-rs` at\n-`a679601f8e133db7546777c6637bc7a6c2d2780e` and pins `duckdb-neo = 0.20000.2`.\n-It is a standalone Cargo workspace so the application's DuckDB 1.4.4 client\n-and lockfile remain independent.\n+The standalone Cargo workspace pins `duckdb-neo = 0.20000.2`, independently of\n+the application's DuckDB client. See the [v1 release contract](docs/release-contract.md)\n+for the complete schema, identity, diagnostics, cache/publication rules and\n+dated acceptance evidence.\n \n-## Build, package and test\n+## Build and check a fresh candidate\n \n-Run these commands from the SpurCode repository root. This example is for a\n-host-native macOS build; Linux uses `libspur_graph_duckdb.so`. Package on the\n-same platform as the native library: the packager reads the runtime's platform.\n+Run from the repository root with Python >=3.11, the pinned Rust toolchain and\n+the project's remote-build access. Choose a fresh output on a local POSIX\n+filesystem; the driver refuses an existing directory.\n \n ```sh\n-python3 -m venv /tmp/spur-graph-duckdb-test\n-/tmp/spur-graph-duckdb-test/bin/python -m pip install -r crates/spur-graph-duckdb/requirements-test.txt\n-\n-SPUR_REMOTE=0 CARGO_TARGET_DIR=/tmp/spur-graph-duckdb-target scripts/spur-cargo --workdir crates/spur-graph-duckdb build --release --lib --examples --locked\n-\n-/tmp/spur-graph-duckdb-test/bin/python crates/spur-graph-duckdb/scripts/package_extension.py \\\n-  --library /tmp/spur-graph-duckdb-target/release/libspur_graph_duckdb.dylib \\\n-  --out /tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension\n-\n-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \\\n-  SPUR_HISTORY_CATALOG=/tmp/spur-graph-duckdb-target/release/examples/history_catalog \\\n-  SPUR_TEMPORAL_EXAMPLES_DIR=/tmp/spur-graph-duckdb-target/release/examples \\\n-  SPUR_FILE_FACTS_ORACLE=/tmp/spur-graph-duckdb-target/release/examples/reference_file_facts \\\n-  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -v\n-```\n-\n-Local compilation here produces the native artifact for the local test host.\n-The footer is `C_STRUCT_UNSTABLE` and targets **exactly DuckDB 2.0.0**. It does\n-not promise compatibility with 1.x or later 2.x versions. Loading a local\n-unsigned artifact requires `allow_unsigned_extensions` in the test connection\n-or `duckdb -unsigned` in the CLI.\n-\n-## SQL\n-\n-```sql\n-LOAD '/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension';\n-\n-SELECT unnest(\n-  spur_graph_symbols('input.rs', 'pub fn alpha() -> i32 { 1 }'),\n-  recursive := true\n-);\n-\n-CREATE TABLE parsed_blobs AS\n-SELECT blob_oid, path, spur_graph_symbols(path, source) AS symbols\n-FROM missing_blobs;\n-\n-CREATE TABLE symbol_facts AS\n-SELECT blob_oid, path, unnest(symbols, recursive := true)\n-FROM parsed_blobs;\n-```\n-\n-Retain the `parsed_blobs` parent rows when recording completion: a valid parse\n-can return an empty symbol list. NULL input returns NULL; unsupported paths\n-produce a SQL error. Source must be valid UTF-8 VARCHAR. The language registry,\n-symbol kinds, byte/line ranges, anchors and tokens come directly from\n-`spur-graph`; repository/path identity remains in the caller's columns.\n-\n-The SQL tests exercise real loading, extraction, NULL/empty behavior, nested\n-vectors across chunk boundaries and Parquet persistence. `reference_symbols`\n-provides an independent direct-Rust oracle for a Git batch frame;\n-`catalog_git_sources` inventories a frozen Git tree using the SPUR language\n-registry.\n-\n-## Typed single-file facts\n-\n-```sql\n-spur_graph_file_facts(logical_path VARCHAR, source VARCHAR) -> STRUCT(\n-    nodes STRUCT(...)[], edges STRUCT(...)[], spans STRUCT(...)[],\n-    macro_invocations STRUCT(...)[], macro_scopes STRUCT(...)[]\n-)\n+python3 -m venv .spur/venvs/graph-duckdb-2\n+export GRAPH_PYTHON=\"$PWD/.spur/venvs/graph-duckdb-2/bin/python\"\n+\"$GRAPH_PYTHON\" -m pip install -r crates/spur-graph-duckdb/requirements-test.txt\n+export RELEASE_RUN=\"$PWD/.spur/releases/$(\"$GRAPH_PYTHON\" -c 'import uuid; print(uuid.uuid4().hex)')\"\n+mkdir -p \"$(dirname \"$RELEASE_RUN\")\"\n+PYTHONDONTWRITEBYTECODE=1 SPUR_SCCACHE_S3=0 SPUR_NO_LOCAL_FALLBACK=1 \\\n+  \"$GRAPH_PYTHON\" crates/spur-graph-duckdb/scripts/check_release.py \\\n+  --out \"$RELEASE_RUN\" --host-native --expect-platform osx_arm64\n+export SPUR_GRAPH_EXTENSION=\"$RELEASE_RUN/spur_graph.duckdb_extension\"\n+\"$GRAPH_PYTHON\" crates/spur-graph-duckdb/scripts/verify_package.py \"$SPUR_GRAPH_EXTENSION\"\n ```\n \n-Each list preserves all native fields, including nullable edge targets,\n-binding/import/receiver/scope evidence, confidence and nested macro attributes\n-and resolution candidates. IDs/ranges retain integer precision; confidence\n-scores use `FLOAT`. Enum labels follow native serialization; payload variants\n-use explicit typed structs with inactive payloads NULL. Inspect the complete\n-type with `DESCRIBE SELECT spur_graph_file_facts('input.rs', '')` or the\n-[independent native parity contract](tests/test_file_facts.py).\n-\n-The path must be a nonempty relative logical path that does not escape its\n-root; the file need not exist. Source is UTF-8 `VARCHAR`. NULL in either argument\n-returns NULL. Invalid/unsupported paths raise SQL errors; `TRY(...)` converts\n-them to NULL. Empty valid source returns non-NULL native facts and may include\n-a file node/span. The API performs no file discovery, reads or Git operations.\n-\n-Extraction and pending-reference resolution cover **one file**. Cross-file\n-references can remain unresolved, with native evidence retained. Each call\n-creates fresh local numeric IDs. Join `(blob_oid, logical_path, extractor_sha,\n-local_id)`; use the same input key with textual macro/symbol IDs. Native AST\n-extraction still parses a whole source blob for each missing key; SQL batching\n-does not make parser computation SIMD or replace repository-wide resolution.\n-\n-Notebook inputs retain the native cell-parser lifecycle: compiled queries are\n-cached within each notebook, and parsers are constructed per cell. The worker\n-extractor cache does not carry this inner state across notebook input rows.\n-\n-[examples/file_facts.sql](examples/file_facts.sql) accepts already staged\n-`staged_sources(blob_oid VARCHAR, logical_path VARCHAR, source VARCHAR,\n-extractor_sha VARCHAR)` and a separate `source_lineage` relation containing\n-those three key columns plus arbitrary caller lineage columns (reserve\n-`extraction_status`). Cache keys must be non-NULL. Duplicate source rows are\n-deduplicated; conflicting source values for one key are rejected. The caller\n-must supply the actual blob identity and loaded extractor version; an artifact\n-SHA-256 is one suitable `extractor_sha`. Stage only keys for that loaded version.\n-\n-The safe full-facts cache key is **`(blob_oid, logical_path, extractor_sha)`**.\n-Identical bytes at different paths can produce different file facts; the\n-temporal-symbol `(blob_oid, language)` identity below does not apply here. The\n-script materializes an anti-join of missing keys, stores the typed extraction\n-result once, then incrementally maintains five separate child tables. DuckDB\n-`TRY` can internally retry a failed vector row-by-row; there is no exactly-once\n-native parser-call guarantee on error. `fact_ordinal` retains list position.\n-For example, resolve edge sources without mixing file-local IDs:\n-\n-```sql\n-SELECT e.logical_path, e.edge_id, n.label\n-FROM file_facts_edges e JOIN file_facts_nodes n\n-  USING (blob_oid, logical_path, extractor_sha)\n-WHERE e.source_node_id = n.node_id;\n-```\n+This invocation is for macOS ARM64. `--host-native` explicitly permits a\n+separate local target through `scripts/spur-cargo`: macOS cannot load the\n+remote Linux library. Rust unit tests remain remote, with local fallback\n+disabled. A failed remote phase stops acceptance. The driver builds the library\n+and all native oracles into its own target, packages and probes the exact\n+artifact, runs every Python suite, and checks source/artifact identities again\n+after testing. `receipt.json` and raw phase logs are authoritative. A successful\n+run permits no skipped tests or expected failures.\n \n-`file_facts_cache` retains every parent and its status: `ok`, `empty_source`,\n-`empty_facts` (all five lists empty), `null_input` or `extraction_error` (a\n-non-NULL input whose `TRY` result is NULL; no error text is retained).\n-`file_facts_occurrences` preserves every caller row, including duplicate\n-commit/parent occurrences and NULL root parents. Absent cache keys get\n-`not_cached`. Join occurrences to child tables on all three cache-key columns.\n-Empty lists emit no children; never infer completion from child row counts.\n+The supported distribution route is a locally built, verified **unsigned**\n+binary plus its adjacent `.json` sidecar. Copy both dereferenced files from the\n+same immutable package generation. Reverify after copying; SHA-256 checks\n+integrity against local metadata and does not authenticate a publisher. No\n+public release, community install, WASM build or signed package is supplied.\n \n-The workflow owns a durable key-only `file_facts_child_state` checkpoint. With\n-current cache keys C, prior checkpoint S and newly extracted keys M, child refresh\n-is `(C - S) UNION M` and removal is `S - C`. It deletes old children for both sets,\n-then expands each list independently from materialized refresh facts. NULL,\n-error and empty parents are checkpointed too. No-op runs retain physical child\n-tables and expand zero facts; they compare keys without hashing wide payloads.\n-TEMP tables `file_facts_child_refresh` and `file_facts_child_removed` expose the\n-three-column key sets. Caller occurrences refresh on every run, including when\n-both sets are empty.\n+## All five functions\n \n-Missing checkpoint or any missing child table triggers one full cache-driven\n-bootstrap/repair of all five children, without re-extracting cached inputs. This\n-also upgrades the old full-rebuild layout. Drop `file_facts_child_state` to request\n-an explicit rebuild. Cache payloads are immutable for their full key; direct edits\n-to payloads, children or checkpoint rows are unsupported.\n-\n-Run this self-contained example after building/packaging above. It stages one\n-synthetic blob and two parent occurrences, runs the exact SQL twice, and writes\n-the database plus seven typed Parquet snapshots in `/tmp/spur-file-facts-demo`:\n+After verifying the package, open a fresh native connection. This example\n+uses the environment's verified package, without a machine-specific path:\n \n ```sh\n-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \\\n-SPUR_FILE_FACTS_SQL=\"$PWD/crates/spur-graph-duckdb/examples/file_facts.sql\" \\\n-/tmp/spur-graph-duckdb-test/bin/python - <<'PY'\n-import hashlib, os\n+\"$GRAPH_PYTHON\" - <<'PYTHON'\n+import os\n from pathlib import Path\n import duckdb\n \n-extension = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve()\n-workflow = Path(os.environ['SPUR_FILE_FACTS_SQL']).read_text()\n-extractor_sha = hashlib.sha256(extension.read_bytes()).hexdigest()\n-output = Path('/tmp/spur-file-facts-demo')\n-output.mkdir(exist_ok=True)\n-os.chdir(output)\n-with duckdb.connect('facts.duckdb', config={'allow_unsigned_extensions': True}) as con:\n-    con.execute(\"LOAD '\" + str(extension).replace(\"'\", \"''\") + \"'\")\n-    con.execute('''CREATE TEMP TABLE staged_sources AS\n-        SELECT 'demo-blob'::VARCHAR blob_oid, 'src/demo.rs'::VARCHAR logical_path,\n-               'fn helper() {} fn entry() { helper(); remote_call(); }'::VARCHAR source,\n-               ?::VARCHAR extractor_sha''', [extractor_sha])\n-    con.execute('''CREATE TEMP TABLE source_lineage AS\n-        SELECT 'demo-repo' repository, 'merge' commit_oid, p.parent_oid,\n-               blob_oid, logical_path, extractor_sha\n-        FROM staged_sources CROSS JOIN (VALUES ('p1'), ('p2')) p(parent_oid)''')\n-    con.execute(workflow)\n-    print('first run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])\n-    con.execute(workflow)\n-    print('second run missing:', con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0])\n-    print(con.execute('SELECT blob_oid, logical_path, status FROM file_facts_cache').fetchall())\n-print(output)\n-PY\n+package = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve(strict=True)\n+with duckdb.connect(config={'allow_unsigned_extensions': True}) as con:\n+    con.execute(\"LOAD '\" + str(package).replace(\"'\", \"''\") + \"'\")\n+    print(con.execute('SELECT spur_graph_info()').fetchone()[0])\n+    print(con.execute(\"SELECT spur_graph_symbols('src/a.rs', 'fn a() {}')\").fetchone()[0])\n+    print(con.execute(\"SELECT spur_graph_file_facts('src/a.rs', 'fn a() {}')\").fetchone()[0])\n+    print(con.execute(\"SELECT spur_graph_file_facts_result('bad.unknown', 'text')\").fetchone()[0])\n+    print(con.execute(\"SELECT spur_graph_symbol_changes('src/a.rs','src/a.rs','M', \"\n+        \"spur_graph_symbols('src/a.rs','fn a() { let x = 1; }'), \"\n+        \"spur_graph_symbols('src/a.rs','fn a() { let x = 2; }'))\").fetchone()[0])\n+PYTHON\n ```\n \n-Use one cache writer and no surrounding transaction. Cache, checkpoint, all five\n-children and caller occurrences update in one database transaction before Parquet\n-export. All seven full snapshots are still replaced on every run; their export\n-cost remains and the file set is not published atomically. Children cover all\n-cached versions; occurrences reflect the current caller relation. All statuses,\n-including failures/NULL, are\n-cached: delete the exact cache key explicitly to retry it, then rerun to rebuild\n-that key's children without duplicates. A deleted key absent from staging loses\n-its children/checkpoint and appears as `not_cached` in caller occurrences.\n-A changed extractor hash creates new keys. An incompatible output schema requires\n-an explicit cache migration or fresh database.\n-\n-Run the focused real-engine workflow checks with the pinned test environment:\n-\n-```sh\n-SPUR_GRAPH_EXTENSION=/tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \\\n-  /tmp/spur-graph-duckdb-test/bin/python -m unittest discover \\\n-  -s crates/spur-graph-duckdb/tests -p test_file_facts_pipeline.py -v\n-```\n+Keep parent rows before unnesting: empty lists are completed extractions, NULL\n+is distinct, and empty source can contain a file node/span. The diagnostic API\n+returns a non-NULL parent for NULL or recoverable bad input, with native facts\n+unchanged on success. Internal/setup/no-tree failures remain SQL errors.\n \n-## Repository ingestion example\n+## Headless Explore/Review quickstart\n \n-`examples/ingest_plan.py` demonstrates persistent source ingestion around the\n-native kernel. Generate the catalog with the Rust helper against a frozen Git\n-commit, then pass a batch plan covering every distinct supported\n-`(blob_oid, language)` in that catalog:\n+Use the fresh successful release receipt's independently probed source ID:\n \n ```sh\n-/tmp/spur-graph-duckdb-target/release/examples/catalog_git_sources /path/to/repo COMMIT_SHA /tmp/catalog.jsonl\n-\n-/tmp/spur-graph-duckdb-test/bin/python crates/spur-graph-duckdb/examples/ingest_plan.py \\\n-  --repo /path/to/repo --catalog /tmp/catalog.jsonl --plan /tmp/plan.json \\\n-  --extension /tmp/spur-graph-duckdb-target/spur_graph.duckdb_extension \\\n-  --output /tmp/ingested-repository\n+export SPUR_RELEASE_SOURCE_IDENTITY=\"$(\"$GRAPH_PYTHON\" -c \\\n+  'import json,os; print(json.load(open(os.path.join(os.environ[\"RELEASE_RUN\"],\"receipt.json\")))[\"release_trust\"][\"source_identity\"])')\"\n+\"$GRAPH_PYTHON\" crates/spur-graph-duckdb/examples/app_consumer.py \\\n+  --fixture crates/spur-graph-duckdb/tests/fixtures/app_consumer.json \\\n+  --output \"$RELEASE_RUN/headless-demo\" --package \"$SPUR_GRAPH_EXTENSION\" \\\n+  --extractor-id \"$SPUR_RELEASE_SOURCE_IDENTITY\"\n ```\n \n-The plan is a JSON object with `head`, `row_limit` (the runtime's\n-`duckdb.__standard_vector_size__`), an explicitly chosen `byte_budget`, and\n-`batches`. Each batch has a unique `batch_id` and `tasks`: catalog rows with\n-`path`, `blob_oid`, `language`, and `byte_length`. Use the SPUR-generated language\n-classification; the example validates plan/catalog agreement. At least one\n-supported task is required. Byte budgets constrain input batches, and do not\n-bound AST or output memory.\n-\n-Task metadata and source blobs enter SQL in bulk. One Git batch reader supplies\n-missing blobs; native parsing still runs a whole-source parser per distinct\n-blob. Cache keys include blob, language and the packaged extractor hash.\n-Transactions checkpoint each batch, including successful empty results. Failed\n-parse rows retain source and status, produce a nonzero exit, and require explicit\n-cache invalidation to retry with the same extractor. Changed frozen-HEAD catalogs\n-are rejected. Restarting a valid plan skips cached keys.\n-\n-The output contains `duckdb-spur-graph.duckdb`, `head-symbols.parquet`,\n-`head-parse-cache.parquet`, progress and result JSON. Query `head_symbols` for\n-path-associated facts, `ingestion_errors` for failures, and `batches` for timings.\n-`symbol_facts` and the cache export cover all cached blobs for the selected\n-extractor; `head_symbols` is restricted to the selected HEAD. See\n-[measured DuckDB ingestion](examples/duckdb-ingestion-results.md).\n-\n-## Temporal history experiments\n-\n-See the [full-history evaluation](examples/full-temporal-evaluation.md) for\n-equivalent-workload measurements, coverage and remaining integration limits.\n-The [producer concurrency follow-up](examples/temporal-concurrency-evaluation.md)\n-measures one versus four source producers with exact source and graph parity.\n-The [scheduling experiment](examples/temporal-scheduling-evaluation.md) then\n-tests assignment by prior batch processing time with four producers in both arms.\n-\n-`history_catalog REPO COMMIT OUTPUT` inventories every commit reachable from a\n-frozen commit, including every merge parent and the root comparison. It writes\n-commit, comparison and file-change JSONL plus a completion summary. The output\n-directory must be absent or empty. It uses Git CLI rename detection; large\n-changes can encounter Git's default rename limit. Its `author_time` is author\n-time, whereas the reference walk's timestamp is committer time.\n-\n-`temporal_reference REPO OUTPUT JOBS cli|gix` runs the original reachable-history\n-walker into native temporal shards. Supply a fresh isolated repository with a\n-frozen `HEAD`; the example does not install a SPUR pointer in that repository.\n-CLI and gix can produce different rename classifications and commit summaries.\n-Compare their outputs before treating their timings as equivalent workloads.\n-\n-The alternative pipeline separates source extraction from temporal matching:\n-\n-1. Prepare metadata tables `commits`, `comparisons`, `changes`, `parse_tasks`,\n-   `symbol_pairs` and `change_pairs`. Classify source paths with SPUR's language\n-   registry. A parse key is `(blob_oid, language)`; both sides of a rename use\n-   the current path's language, matching the original walker.\n-2. Run `examples/parse_history_shards.py` with a frozen source repository,\n-   a complete batch plan, the native extension and a fresh output directory.\n-   It reads Git blobs in batches and publishes immutable Parquet batches with\n-   checksummed receipts. Completed empty parses, binary skips and failures\n-   retain separate parent rows. Restart verifies receipts and skips completed\n-   keys. See `--help` for the complete invocation and plan contract.\n-3. Run `examples/derive_temporal_pairs.py --metadata META.duckdb\n-   --parse-inputs INPUTS.json --extension EXTENSION --output OUTPUT\n-   --byte-budget BYTES`. It invokes the shared native matcher once per distinct\n-   file/version pair and joins those results back to actual commits and\n-   parents. The resulting database exposes `symbol_snapshots`, `temporal_edges`,\n-   `pair_occurrences` and `diagnostics`.\n-\n-The original pair runner's final global fold exhausted spill capacity on the\n-full DuckDB history. Its input byte budget does not bound that fold. The\n-full-history experiment completed the same matched-pair cache through a\n-separate bounded finalizer: narrow numeric emissions, then whole-commit\n-partitions, without repeating extraction or matching. See the evaluation for\n-the configuration, completion and independent validation receipts; the command\n-above alone is not a demonstrated full-history recipe.\n-The [bounded finalization guide](examples/bounded-temporal-finalization.md)\n-documents the promoted helper, exact input contract, planning and restart\n-commands. Its regression fixtures run with:\n-\n-```sh\n-python -m unittest discover -s crates/spur-graph-duckdb/tests \\\n-  -p test_bounded_temporal_finalize.py -v\n-```\n-\n-`INPUTS.json` contains a `sources` array. Each source specifies `cache_glob` and\n-`expected_extractor_sha`; older caches also need a separate `flags_glob`.\n-Producers must have disjoint parse keys. Source encoding errors remain explicit\n-and omit symbol changes for the affected comparisons; file-level touches remain.\n-`current-status.json` is authoritative for the latest verification attempt.\n-An earlier `result.json` alone does not establish that a restart succeeded.\n-\n-The typed SQL seam is\n-`spur_graph_symbol_changes(path, old_path, kind, old_symbols, new_symbols)`.\n-It accepts `A`, `M`, `D`, `R` and returns typed changes plus diagnostics.\n-The caller normalizes Git type changes to `M` and copies to `R`. The matcher\n-shares the original Rust implementation, including rename and per-parent merge\n-semantics. Actual commit and parent keys belong to the caller's projection.\n-\n-These experiments batch SQL staging and reuse content-addressed facts. Native\n-AST extraction still parses a whole source blob for each distinct parse key.\n-Input byte budgets do not bound AST, nested-vector or output memory; Parquet\n-row-group layout also affects cache-read memory and throughput. Production\n-admission/backpressure policy, temporal call-edge integration, community\n-distribution and WASM support remain separate integration work.\n+The fixture freezes base/head sources and lineage, including invalid/NULL/empty\n+inputs, same bytes at different paths, unresolved calls/macros and an ambiguous\n+rename. The parent runs native work in a private child process, checks its exit\n+and identities, then publishes `headless-demo/current.json`. That manifest\n+names immutable typed Parquet files for `sources`, `explore`, `review` and seven\n+cache tables, with schemas, counts, checksums and coverage. Use\n+`examples/app_consumer.py:read_result(output, 'base'|'head')` to reopen and\n+validate a requested snapshot; do not relabel another snapshot's results.\n+\n+This is the app-facing data seam, not an app UI or general SQL service. A\n+frontend should read one manifest and use its named tables and completeness\n+fields. The managed notebook SQL runtime is separate; native 2.0 extension\n+loading is not supported in its 1.5.5 runtime. Root owns notebook readback.\n+\n+## Cache and coherent publication\n+\n+Stage `staged_sources(blob_oid, logical_path, source, extractor_sha)` plus\n+`source_lineage` with the three identity columns and caller lineage. The full\n+facts key is **`(blob_oid, logical_path, extractor_sha)`**. Use an actual source\n+byte identity and a verified extractor identity consistently. File-local IDs\n+must always be joined with that full key. Repository, commit and parent\n+occurrences remain caller columns.\n+\n+The [cache recipe](docs/release-contract.md#cache-migration-retry-and-coherent-publication)\n+uses the transactional prefix of [file_facts.sql](examples/file_facts.sql),\n+closes the writer, and calls [publish_snapshot.py](examples/publish_snapshot.py).\n+It persists diagnostics, migrates old error columns additively, checkpoints all\n+statuses, and replays missing keys only. Retry failures by explicitly deleting\n+their exact cache key and restaging it. Historical missing diagnostics remain\n+NULL. Incompatible typed schemas need a separate migration or fresh database.\n+\n+The supported publisher exports all seven tables from one read-only transaction\n+to a fresh immutable version, then atomically replaces `current.json`. Readers\n+load that manifest once and verify its paths/checksums. Trailing legacy SQL\n+`COPY` exports are non-atomic and are not the app publication route.\n+\n+## Repository and temporal examples\n+\n+These helpers remain experiments with their own input contracts. Pass explicit\n+caller-owned repository, catalog, plan and output paths; do not use historical\n+artifact paths as writable outputs.\n+\n+- `catalog_git_sources REPO COMMIT OUTPUT.jsonl` uses the native language\n+  registry. `examples/ingest_plan.py --help` documents frozen-commit ingestion,\n+  batch checkpointing and `(blob_oid, language, extractor_sha)` symbol caching.\n+  That symbol-only key does not replace the full-facts path-sensitive key.\n+- `history_catalog REPO COMMIT OUTPUT` inventories reachable history with root\n+  and merge-parent comparisons. Git CLI rename limits and author-versus-committer\n+  time differences remain relevant.\n+- `temporal_reference REPO OUTPUT JOBS cli|gix` runs the original walker;\n+  CLI/gix classification must be compared before timing equivalent workloads.\n+- [Full-history evaluation](examples/full-temporal-evaluation.md),\n+  [producer concurrency](examples/temporal-concurrency-evaluation.md),\n+  [scheduling](examples/temporal-scheduling-evaluation.md), and\n+  [bounded finalization](examples/bounded-temporal-finalization.md) retain the\n+  historical measurements and restart recipes. The original global temporal\n+  fold exhausted spill capacity; the bounded helper is the demonstrated\n+  full-history finalization route.\n+- [Native retrieval parity](tests/test_retrieval_parity.py) and\n+  [ingestion measurements](examples/duckdb-ingestion-results.md) describe their\n+  respective workloads; neither implies compiler resolution or a new release\n+  performance guarantee.\n+\n+SQL batches source staging and cache reuse. Each missing input still requires\n+whole-source AST parsing; input byte budgets do not bound AST, nested-vector,\n+output or global-fold memory. Ordinary parser/query state is reused per worker\n+and language; notebook cells keep their own native parser lifecycle. Admission,\n+backpressure, production supervision, temporal call-edge integration and wider\n+platform distribution remain separate work.\ndiff --git a/crates/spur-graph-duckdb/docs/release-contract.md b/crates/spur-graph-duckdb/docs/release-contract.md\nnew file mode 100644\nindex 000000000..cbbe13fbb\n--- /dev/null\n+++ b/crates/spur-graph-duckdb/docs/release-contract.md\n@@ -0,0 +1,486 @@\n+# Native release contract v1\n+\n+This contract covers `spur_graph` 0.1.0, `facts_schema_version = 1`, native\n+DuckDB **exactly 2.0.0**, and `C_STRUCT_UNSTABLE`. The adapter preserves the\n+shared native extraction/matching behavior. It adds typed vectors, metadata,\n+row diagnostics and local packaging; it does not certify compiler semantics.\n+The [approved implementation plan](../../../docs/superpowers/plans/2026-11-17-spur-graph-duckdb-release.md)\n+implements the release gates from bd-q0lu and the app design bd-1ul3. Root\n+retains final review and integration authority.\n+\n+## Identity and compatibility\n+\n+| Identity | Authority and meaning |\n+|---|---|\n+| Git source HEAD/status | Release receipt; identifies the checkout and its recorded tracked/untracked changes, not the binary |\n+| `extractor_id` | Loaded `spur_graph_info()` plus an independent fresh compiled source probe; `source-sha256-v1:<64 lowercase hex>` |\n+| `facts_schema_version` | Loaded metadata, currently `1`; typed layout compatibility, not a promise of identical extraction across extractor versions |\n+| Package SHA-256 | Sidecar `binary.sha256` verified against exact packaged bytes; distinct from source ID and raw library SHA |\n+| Runtime | Python package/native engine versions, platform, executable/engine hashes and compiler version in release receipt |\n+| Source bytes | Caller scheme and digest plus logical path; repository/commit/parent labels are separate claims |\n+| Snapshot/run | Immutable version/run manifest and checksummed tables; requested snapshot identity must match |\n+\n+`build.rs` hashes a domain-separated, sorted, length-framed inventory of exact\n+adapter/local locked dependency source, query, binding and build inputs,\n+manifests, standalone lockfile, toolchain/config and relevant inherited workspace\n+settings. It excludes absolute worktree paths, Git HEAD, docs/tests/outputs and\n+unrelated workspace members. Registry/Git dependencies are bound through the\n+lockfile. The compiled probe re-enumerates inputs before and after acceptance,\n+including additions/removals and inherited settings. Source ID is not a binary\n+fingerprint; ambient compiler flags and produced machine code are outside it.\n+Keep the build/runtime receipt and package checksum too.\n+\n+All scalar source text is UTF-8 `VARCHAR`. Full-facts paths are nonempty relative\n+logical filenames with no absolute root, parent traversal or drive prefix; no\n+file needs to exist. The functions do not discover files, access Git, fetch\n+sources or perform repository-wide resolution. Language selection comes from\n+SPUR's native registry; discover `supported_languages` instead of duplicating\n+an extension-to-language table.\n+\n+For full facts, retain `(blob_oid, logical_path, extractor_sha)` on every parent,\n+child and join. Same bytes at different paths can produce different facts.\n+`extractor_sha` is the caller's verified version key: the packaged SHA is useful\n+for exact-binary caching; the source ID can identify source-version caching when\n+schema/runtime/artifact provenance is retained separately. Never mix meanings\n+silently. Preserve source identity schemes explicitly: a Git blob OID is not a\n+plain content SHA. The headless fixture supports exactly `sha256:utf8-v1`, with\n+`sha256:<digest of UTF-8 bytes>` and `null-source` for NULL. Unsupported scheme\n+labels are rejected both on input and stored-result readback.\n+\n+Native numeric node/edge/span IDs are local to one extraction. Always qualify\n+numeric and textual fact IDs by the full input key. `stable_symbol_id`,\n+`stable_key`, `source_oid`, anchors and macro candidate labels retain native\n+meaning; none substitutes for a complete repository/snapshot identity.\n+\n+## Five public functions and examples\n+\n+Load a verified local package in a **fresh** connection configured with\n+`allow_unsigned_extensions = true` (CLI: `duckdb -unsigned`). Use the environment\n+based load example in the [README](../README.md#all-five-functions). Do not\n+hot-load a different binary over an already loaded extension.\n+\n+```sql\n+-- 1. Runtime metadata: no arguments.\n+SELECT spur_graph_info();\n+\n+-- 2. Symbols: LIST<Symbol>.\n+SELECT spur_graph_symbols('src/a.rs', 'fn a() {}');\n+\n+-- 3. Full single-file facts: Facts STRUCT with five typed lists.\n+SELECT spur_graph_file_facts('src/a.rs', 'fn a() {}');\n+\n+-- 4. Diagnostic parent: Result STRUCT, including recoverable bad input.\n+SELECT spur_graph_file_facts_result('bad.unknown', 'text');\n+\n+-- 5. Shared native pair matcher: changes plus ambiguity diagnostics.\n+SELECT spur_graph_symbol_changes('src/a.rs', 'src/a.rs', 'M',\n+    spur_graph_symbols('src/a.rs', 'fn a() { let x = 1; }'),\n+    spur_graph_symbols('src/a.rs', 'fn a() { let x = 2; }'));\n+```\n+\n+`spur_graph_symbols(path VARCHAR, source VARCHAR)` returns `Symbol[]`.\n+`spur_graph_file_facts(path VARCHAR, source VARCHAR)` returns `Facts`.\n+`spur_graph_file_facts_result(path VARCHAR, source VARCHAR)` returns\n+`STRUCT(status VARCHAR, error_code VARCHAR, error_message VARCHAR, facts Facts)`.\n+`spur_graph_symbol_changes(path VARCHAR, old_path VARCHAR, kind VARCHAR,\n+old_symbols Symbol[], new_symbols Symbol[])` returns\n+`STRUCT(changes Delta[], diagnostics VARCHAR[])`. The aliases below describe\n+nested types, not installed SQL types.\n+\n+```text\n+Info = STRUCT(\n+  extension_version VARCHAR, facts_schema_version UINTEGER,\n+  duckdb_api_version VARCHAR, extractor_id VARCHAR,\n+  supported_languages VARCHAR[], resolution_scope VARCHAR)\n+\n+Symbol = STRUCT(\n+  entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR,\n+  byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT,\n+  anchor_hash VARCHAR, tokens VARCHAR[])\n+Delta = STRUCT(\n+  symbol Symbol, stable_symbol_id VARCHAR, file_path VARCHAR,\n+  change_kind VARCHAR, previous_stable_symbol_id VARCHAR)\n+\n+Facts = STRUCT(nodes Node[], edges Edge[], spans Span[],\n+               macro_invocations Invocation[], macro_scopes MacroScope[])\n+Node = STRUCT(\n+  node_id UBIGINT, stable_key VARCHAR, label VARCHAR, kind VARCHAR,\n+  file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)\n+Edge = STRUCT(\n+  edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT,\n+  relation VARCHAR, target_label VARCHAR, import_path VARCHAR,\n+  receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR,\n+  confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR,\n+  evidence_id UBIGINT, directed BOOLEAN, change_kind ChangeKind)\n+Span = STRUCT(\n+  span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER,\n+  start_line UINTEGER, end_line UINTEGER)\n+Scope = STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)\n+Location = STRUCT(file_path VARCHAR, source_oid VARCHAR,\n+                  byte_range UBIGINT[], line_range UBIGINT[])\n+Attribute = STRUCT(raw_text VARCHAR, owner Scope,\n+                   byte_range UBIGINT[], line_range UBIGINT[])\n+Invocation = STRUCT(\n+  site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR,\n+  caller_stable_symbol_id VARCHAR, enclosing Scope,\n+  raw_macro_path VARCHAR, normalized_macro_path VARCHAR,\n+  byte_range UBIGINT[], line_range UBIGINT[], attributes Attribute[],\n+  test_context VARCHAR, debug_assertions_candidate BOOLEAN,\n+  execution_phase VARCHAR, resolution Resolution, sink_family_candidate VARCHAR)\n+Resolution = STRUCT(kind VARCHAR, definition Location)\n+MacroScope = STRUCT(scope Scope, file_path VARCHAR, source_oid VARCHAR,\n+                    byte_range UBIGINT[], line_range UBIGINT[])\n+ChangeKind = STRUCT(kind VARCHAR, renamed_from RenamePrev)\n+RenamePrev = STRUCT(kind VARCHAR, file GitPath, symbol SnapshotKey)\n+GitPath = STRUCT(path VARCHAR, encoding VARCHAR, bytes VARCHAR)\n+SnapshotKey = STRUCT(stable_symbol_id VARCHAR, commit VARCHAR)\n+```\n+\n+Inspect the actual native SQL type with `DESCRIBE SELECT\n+spur_graph_file_facts('src/a.rs', '')`; use `duckdb_functions()` for signatures\n+and examples. [test_file_facts.py](../tests/test_file_facts.py) checks the exact\n+schema and every native field against an independently executed direct-Rust\n+oracle. Lists preserve native order and multiplicity; IDs/ranges retain integer\n+precision. Byte coordinates address UTF-8 bytes, not character positions.\n+`confidence_score` is native IEEE binary32 (`FLOAT`), not a calibrated precision\n+estimate. Native enums retain serialization labels; inactive payloads are NULL.\n+`GitPath` preserves native UTF-8 or encoded byte payloads. Parquet retains these\n+typed structs/lists; JSON is only metadata/oracle transport.\n+\n+## NULL, errors, diagnostics and conservative evidence\n+\n+| Function/input | Result |\n+|---|---|\n+| `symbols` or `file_facts`, either argument NULL | SQL NULL |\n+| `symbols`, valid empty parse | Non-NULL empty list; keep completion parent |\n+| `file_facts`, valid empty source | Native non-NULL facts, potentially file node/span |\n+| Throwing extraction API, unsupported/invalid input | SQL error; `TRY(...)` produces NULL and loses diagnostics |\n+| `file_facts_result`, either argument NULL | Non-NULL `null_input` parent, NULL facts/code/message; NULL takes precedence over path/language checks |\n+| Diagnostic success | Native facts unchanged, NULL code/message |\n+| Known recoverable diagnostic failure | `extraction_error`, NULL facts, stable code and truthful native message |\n+| Setup, no-tree, unknown extraction/internal/vector faults | SQL error; never silently reclassified as bad rows |\n+| `symbol_changes`, any top-level argument NULL | SQL NULL |\n+| `symbol_changes`, NULL required nested field/list element/token | SQL error |\n+\n+Diagnostic success statuses are `ok`, `empty_source`, and `empty_facts`.\n+`empty_source` takes precedence over all-five-lists-empty classification after\n+successful native extraction. An empty malformed notebook is an input error,\n+not a successful empty source. Tree-sitter partial syntax trees can be native\n+successes; there is no invented general syntax-validation diagnostic.\n+\n+Current recoverable codes are `invalid_path`, `unsupported_language` and\n+`malformed_input`. The earlier design named `extraction_failed`, but this\n+candidate does not map `NoTree`, setup or arbitrary erased native errors to\n+that code. Those remain SQL errors. Existing migrated errors have unknown\n+(NULL) code/message until an explicit retry; never infer historical text.\n+\n+The pair matcher accepts `A`, `M`, `D`, `R`; callers normalize Git `T` to `M`\n+and `C` to `R` before calling. For non-renames, `old_path` equals `path`, except\n+it may be empty for `A`. Supply typed empty symbol lists for an absent side.\n+Delta kinds are `added`, `modified`, `deleted`, `renamed_from_symbol`.\n+`previous_stable_symbol_id` is populated only for a native symbol predecessor.\n+Keep `diagnostics`, including `ambiguous_rename:` evidence, and actual\n+commit/parent/pair keys. Cross-process list ordering of matcher results is not\n+promised; do not rewrite stored evidence to manufacture identity.\n+\n+A resolved local helper, a macro-body singleton heuristic and a qualified\n+external constructor have different evidence. Preserve `scope_text`,\n+`receiver_text`, `import_path`, `bind_method`, `confidence`, macro resolution\n+kind and NULL targets. Local-target percentages are not precision. Explicit\n+path/local macro candidates are not proof of compiler binding or expansion.\n+\n+## Package and trust route\n+\n+Use `scripts/check_release.py` for release acceptance; see the README for the\n+complete invocation. Manual packaging accepts `--library RAW_NATIVE_LIBRARY\n+--out PACKAGE.duckdb_extension`; verification takes that package path. Both use\n+the pinned native runtime. The packager probes the staged library, writes the\n+DuckDB footer and sidecar, verifies a fresh final load, and atomically advances\n+a shared package-generation pointer for the binary and sidecar aliases.\n+Unmanaged outputs are refused; complete generations remain immutable.\n+\n+The v1 sidecar contains `format_version`, all six `Info` fields, `abi`,\n+`platform`, `source_identity` (equal to `extractor_id`), `binary` (name, SHA-256,\n+byte size), and `trust = {mode: unsigned_local, signature: absent}`. Verification\n+checks the exact schema, checksum/size, footer ABI/runtime/platform, and freshly\n+loaded metadata. A saved sidecar is artifact data, not a saved readiness pass.\n+\n+For portable copies, resolve one immutable generation and copy its binary and\n+adjacent sidecar together, then verify. A concurrent pointer swap can cause a\n+safe verification failure; retry using one resolved generation. A checksum\n+cannot authenticate an untrusted publisher. Current-release trust for guarded\n+retrieval checks requires the verified sidecar path/checksum **and** an\n+independent fresh build source ID; hashing an arbitrary binary is insufficient.\n+Historical hash allowances remain historical controls, not approval for a new\n+candidate. No public tag, upload, push or extension-community registration is\n+part of this contract.\n+\n+## Cache migration, retry and coherent publication\n+\n+The following recipe uses the README environment and a successful release run.\n+It creates a caller-owned demo database, runs the transactional cache prefix\n+twice, closes the writer and publishes a fresh immutable seven-table version.\n+It does not touch a historical corpus or use legacy direct exports.\n+\n+```sh\n+export FACTS_DEMO=\"$RELEASE_RUN/cache-demo\"\n+mkdir \"$FACTS_DEMO\"\n+\"$GRAPH_PYTHON\" - <<'PYTHON'\n+import hashlib, json, os\n+from pathlib import Path\n+import duckdb\n+\n+root = Path.cwd()\n+crate = root / 'crates/spur-graph-duckdb'\n+package = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve(strict=True)\n+manifest = json.loads(Path(str(package) + '.json').read_bytes())\n+assert hashlib.sha256(package.read_bytes()).hexdigest() == manifest['binary']['sha256']\n+source = 'fn helper() {} fn entry() { helper(); remote_call(); }'\n+blob = 'sha256:' + hashlib.sha256(source.encode()).hexdigest()\n+extractor = manifest['binary']['sha256']\n+workflow = (crate / 'examples/file_facts.sql').read_text().split('-- LEGACY NON-ATOMIC', 1)[0]\n+database = Path(os.environ['FACTS_DEMO']) / 'facts.duckdb'\n+with duckdb.connect(str(database), config={'allow_unsigned_extensions': True}) as con:\n+    con.execute(\"LOAD '\" + str(package).replace(\"'\", \"''\") + \"'\")\n+    con.execute('CREATE TEMP TABLE staged_sources AS SELECT ?::VARCHAR blob_oid, '\n+                '?::VARCHAR logical_path, ?::VARCHAR source, ?::VARCHAR extractor_sha',\n+                [blob, 'src/demo.rs', source, extractor])\n+    con.execute('CREATE TEMP TABLE source_lineage AS SELECT * EXCLUDE(source), '\n+                \"'demo'::VARCHAR snapshot_id FROM staged_sources\")\n+    con.execute(workflow)\n+    con.execute(workflow)\n+    assert con.execute('SELECT count(*) FROM file_facts_missing').fetchone()[0] == 0\n+    print(con.execute('SELECT logical_path,status,error_code FROM file_facts_cache').fetchall())\n+PYTHON\n+\"$GRAPH_PYTHON\" crates/spur-graph-duckdb/examples/publish_snapshot.py \\\n+  --database \"$FACTS_DEMO/facts.duckdb\" --output \"$FACTS_DEMO/snapshots\" \\\n+  --version demo-v1 --source-label source_scheme=sha256:utf8-v1\n+```\n+\n+Use one cache writer, with no surrounding transaction. Stage non-NULL full\n+keys; source alone may be NULL. Contradictory bytes (including NULL versus\n+non-NULL) for the same key are rejected before extraction. Keep arbitrary\n+caller lineage separately; reserve `extraction_status`. The pipeline stores\n+one diagnostic result per missing key, including failures/NULL/empty parents,\n+and maintains five child tables plus all caller occurrences in the same\n+transaction. No-op replay expands zero facts, but still compares cache keys\n+and refreshes caller occurrences. `fact_ordinal` preserves list position.\n+\n+The additive migration adds `error_code` and `error_message` without changing\n+old facts/status or re-extracting cache hits. Missing child/checkpoint layout\n+bootstraps all five children from cached facts. Dropping `file_facts_child_state`\n+explicitly requests a rebuild. Direct edits to payloads/children/checkpoints\n+are unsupported. An incompatible output type requires an explicit migration\n+or a fresh database; the additive diagnostic migration cannot fix it.\n+\n+To retry, delete the **exact** key from `file_facts_cache`, restage its source\n+for the loaded extractor, and rerun. For example, execute parameterized\n+`DELETE FROM file_facts_cache WHERE blob_oid=? AND logical_path=? AND\n+extractor_sha=?`, then the workflow. A removed key absent from staging loses\n+its children/checkpoint; unmatched caller occurrences report `not_cached`.\n+A new extractor version creates new keys. `TRY` may cause row-by-row retries;\n+there is no exactly-once parser-call promise on errors.\n+\n+The publisher uses one read-only connection/transaction for all seven tables:\n+cache, nodes, edges, spans, macro invocations, macro scopes and occurrences.\n+It records each schema, count, SHA-256 and byte size. Source labels explicitly\n+say `caller_supplied` and `independently_verified = false`. Finalization\n+precedes atomic `current.json` replacement. Failures preserve the prior pointer\n+and all referenced version files; a pointer failure may leave an unreferenced\n+complete version. Read the manifest once, validate files, and use only its\n+versioned paths. No extension is required to query the stored typed Parquet.\n+Never combine trailing legacy `COPY` files into a current app dataset.\n+\n+Publication requires local POSIX advisory locks and same-filesystem atomic\n+rename (packaging also requires symlinks). Keep persistent lock inodes; deleting\n+them breaks publisher serialization. There is no garbage collection; retain\n+old versions while readers may use them. Interrupted staging cleanup is an\n+explicit operator action. Atomic visibility does not guarantee survival of\n+sudden power loss after the pointer swap.\n+\n+## App boundary and operating limits\n+\n+The [headless quickstart](../README.md#headless-explorereview-quickstart) creates\n+immutable Explore/Review results. `read_result` binds a requested base/head\n+snapshot to one completed run and validates the immutable manifest, source\n+scheme and checksummed files. Run manifests retain artifact/source/schema and\n+runtime identities, fixture hash, process PID/raw exit, snapshot lineage,\n+coverage/status counts, unresolved counts, replay result and typed tables.\n+Unsuccessful extraction is visible as incomplete coverage; unavailable review\n+inputs retain their pair row with NULL result. Caller labels are not certified\n+Git identities.\n+\n+Native work runs in a child process. The parent reaps it on success, error,\n+interruption or an explicit caller timeout; a candidate file alone cannot\n+publish completion. Faults preserve the last complete result; a later healthy\n+run can publish. Timeout is optional caller policy, not a production memory\n+or time cap. This harness is not a production supervisor, repository crawler,\n+network fetcher, unrestricted SQL service or UI implementation.\n+\n+Whole-blob parsing remains native AST work per missing key, not SIMD parsing.\n+Ordinary parser/query state is reused per worker/language; notebook cell parser\n+state stays within its notebook input. Input batch byte budgets do not bound\n+AST/output/nested-vector/global-fold memory. No new performance, concurrency,\n+resource-limit or compiler-completeness guarantee is made here.\n+\n+Managed notebook SQL remains DuckDB 1.5.5 and cannot load this native2 ABI.\n+Root's separate native Rust-cell transport/readback does not upgrade that SQL\n+runtime. Browser/WASM, Windows, wider native runtime versions, public/signed\n+distribution, production admission/backpressure and app UI remain outside the\n+observed support claim.\n+\n+## Observed release acceptance: 2026-11-17, R7\n+\n+This is a fresh integrated candidate, not a relabeled historical binary.\n+The release driver ran on clean source\n+`66663c00a4b4b7c898b1d1f5b66aecf99fc348f5`, with approved predecessor changes\n+on original base `adaa1f86e2c95201a331046a8c0ea785b8781399`.\n+R7 changes only this document and the README; those documentation bytes are\n+outside the extractor source-input inventory. Root still owns final gate\n+review/integration; this evidence does not close an issue or authorize public\n+release.\n+\n+| Bound identity | Observed value |\n+|---|---|\n+| Extractor source ID | `source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35` |\n+| Packaged binary SHA-256 | `28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122` |\n+| Raw native library SHA-256 | `7e4ef5a37961b9373723882d1cd35195dce7b4f62698c72c4198baa34069fdb2` |\n+| Sidecar SHA-256 | `db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8` |\n+| Build source probe SHA-256 | `8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404` |\n+| Runtime | Python 3.12.10; DuckDB package `2.0.0`, native `v2.0.0`; `osx_arm64` |\n+| Native engine SHA-256 | `1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3` |\n+| Python executable SHA-256 | `08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada` |\n+| Compiler/host | Rust/Cargo 1.94.1; `aarch64-apple-darwin`; macOS 26.7.1 ARM64 |\n+| Contract | Extension 0.1.0; facts schema 1; single_file; unsigned_local |\n+\n+The raw library and packaged binary differ because packaging appends the\n+DuckDB extension footer. The source ID is shared with R5's approved candidate,\n+but this freshly built package has a different binary SHA. Neither R5's\n+`2968d20ef8d4f07df100e50f6aaccb0b2bece7df048c1a92884fc12c90e2ae89`\n+nor the frozen corpus's corrected binary is claimed as this run's artifact.\n+\n+Raw evidence is retained in the task-owned directories\n+`/private/tmp/spur-r7-65bb3605-release-1` and\n+`/private/tmp/spur-r7-65bb3605-evidence`. These are receipt locations for this\n+observation, not dependencies of the quickstarts. The former contains\n+`receipt.json`, raw phase stdout/stderr, both source-probe inventories,\n+`unittest-summary.json`, all native build artifacts, package and sidecar. The\n+latter contains the exact top-level invocation, `current-acceptance.py` and its\n+command/output/JSON receipt, executable copies of documented commands, solver\n+requests/results and final verification. Preserve them together when reviewing\n+or moving the candidate.\n+\n+The exact release invocation was the pinned native Python running\n+`crates/spur-graph-duckdb/scripts/check_release.py --out\n+/private/tmp/spur-r7-65bb3605-release-1 --host-native --expect-platform osx_arm64`,\n+with `PYTHONDONTWRITEBYTECODE=1`, `SPUR_SCCACHE_S3=0` and\n+`SPUR_NO_LOCAL_FALLBACK=1`. Rust tests used the default remote mode, forced\n+remote by the driver; native packaging used a separate explicit host target.\n+Every driver child phase exited `0`: source-head, source-status, rustc-version,\n+cargo-version, rust-tests, native-build, source-probe, package, verify-package,\n+unittests and source-probe-final. The top-level driver exited `0`.\n+\n+| Acceptance coverage | Current evidence and limits |\n+|---|---|\n+| API/schema/identity | Exact typed contract, registry discovery and independent source-inventory checks passed; both source probes agree |\n+| Diagnostics and errors | Remote Rust 2/2; SQL mixed/NULL/error/nested-vector tests passed; NoTree/setup/unknown faults stay SQL errors |\n+| Native correctness | Direct-Rust field/order parity and persistent native-versus-SQL retrieval checks passed in the full suite |\n+| Macro binding controls | Current binary leaves `Vec::new` unresolved, resolves valid local helper/LocalFactory controls and distinguishes both constructors in a mixed macro; frozen control and direct-Rust facts agree |\n+| Cache and publication | Diagnostic migration, full-key replay, child repair, seven-table snapshot consistency and failed-publication preservation passed; documented cache recipe executed, exit 0 |\n+| Packaging and release driver | Fresh package load/integrity/ABI tests and driver negative controls passed; source and native artifact identities rechecked after suite |\n+| Headless Explore/Review | Base/head fixture saved and reopened; exact package SHA, source/snapshot keys, typed exports, replay, ambiguity, unavailable inputs, interruption/timeout cleanup and healthy recovery verified |\n+| Frozen corrected corpus/readback | Published manifest, schema/counts/provenance and current sample/control parity verified read-only; cache checksum unchanged; root separately supplied native notebook readback |\n+\n+The complete suite ran **206 tests, 0 failures, 0 errors, 0 skips, 0 expected\n+failures** (exit 0). It includes the current R6 source-scheme corrections.\n+Release-driver tests deliberately run failing/skip child fixtures; their raw\n+logs contain those named negative outcomes while the outer tests assert that\n+they prevent a release pass. There is no unresolved failed phase in this R7\n+release receipt.\n+\n+Additional acceptance (exit 0) used this same package SHA for all current\n+extraction calls, direct-Rust parity and the persistent headless run. The\n+headless fixture retains eight source rows per snapshot: three `ok`, one\n+`empty_source`, one `null_input`, three `extraction_error`; unresolved edges\n+remain visible (base 8, head 7). All four review pairs remain, with one\n+unavailable pair and one pair with diagnostics. Both snapshots honestly report\n+incomplete extraction coverage. Replay found zero missing keys and identical\n+stored tables. These are fixture observations, not repository-wide metrics.\n+All five contract SQL examples, README function example, headless CLI and\n+cache/publisher recipe executed successfully. The build quickstart was checked\n+with `sh -n`; the actual build/check was the recorded equivalent invocation\n+above, using the already pinned Python environment.\n+\n+### Frozen reference boundary\n+\n+The authority is the main repository's\n+`docs/research/artifacts/2026-11-15-spurcode-cache-refresh-bd-1i5s/published.json`.\n+It binds cache SHA-256\n+`ad6f7d3874b4829e9754df2ac7ab7ed0bafc7004d241561a2ad8e52fdd81172b`,\n+corrected historical extension SHA-256\n+`be0548ce3a1217cf0b50110ad02419223c895daa8d2a932d7a81747da4c38892`,\n+and frozen commit `61ba3d200439a541dce4c1617ca9277be7d438af`.\n+R7 inspected that exact manifest, README and `inspect_published.py`. The inspector\n+pins its old corrected extension and was not used as a current release pass.\n+\n+The fresh candidate attached the published database `READ_ONLY`. Counts remain\n+4,404 inventory paths, 4,098 admitted sources/current facts and 8,196 versioned\n+cache keys. All five collections match for the inspector's real-source sample,\n+`crates/spur-acp/src/capability_evidence.rs`, and `control.rs`; current results\n+also match the new direct-Rust oracle. The real `Vec::new` negative control was\n+recomputed under the current binary. Both the cache SHA and inspected reference\n+file hashes were checked before/after. No refresh/ingestion script ran and no\n+historical file was written. This is current sample/control compatibility,\n+not a claim of freshly re-extracting all 4,098 sources.\n+\n+Root's `notebook-readback-20261117-release.json` records successful native\n+2.0 readback of that historical corrected cache/binary. The frozen README's\n+older transport-blocked note is historical; the later receipt is separate\n+readback evidence. The task's notebook read tool denied this worker access to\n+the root acceptance notebook; no raw notebook access or mutation bypass was\n+used. Root owns its acceptance review. Managed notebook SQL remains 1.5.5.\n+\n+### TDD lineage and solver scope\n+\n+R7 adds no behavior, so its RED phase is **not applicable**; no failing test was\n+manufactured. Approved predecessor receipts retain authentic assertions before\n+implementation, separate test/implementation commits and raw failures:\n+\n+| Predecessor | Authentic RED | GREEN evidence and original commits |\n+|---|---|---|\n+| R1 metadata/provenance | 4 missing-function assertions; exit 1 | 7 contract + 50 regressions; exit 0; `db50e0cad` test, `709b5c268` implementation |\n+| R2 NoTree correction | `internal failure must propagate`; remote 1 failed/1 passed, exit 101 | Same remote 2/2, SQL diagnostics 8/8 + regressions 39/39 + R1 7/7, exit 0; `5f061fa66` test, `11d0de8cf` fix |\n+| R3 cache/snapshots | 10 intended assertions; exit 1 | 29 focused + 64 regressions, exit 0; `95ad5e1d4` test, `205d7837d` implementation |\n+| R4 packaging | 12 intended assertions plus 2 hardening failures; exit 1 | 15 focused + 64 native regressions, exit 0; `cd039f0b6`, `842c3e81b` tests, `7f8e0117d` implementation |\n+| R5 final source guard | 4 intended source-stability assertions; exit 1 | 13 focused, then 192 complete release tests, exit 0; `c116e7160` test, `e1134db58` fix |\n+| R6 source-scheme correction | 2 assertions (`ValueError` not raised); exit 1 | 14 focused + 84 regressions, exit 0; `027e420bc` test, `e0be2783e` fix |\n+\n+These original worker commits/receipts describe predecessor TDD, not this\n+run's source HEAD. Integrated source commits may have different IDs. Earlier\n+intermediate failures remain in predecessor receipts; only final approved\n+results are represented as GREEN. R7's fresh 206-test run supplies integrated\n+regression evidence rather than substituting old binaries or test counts.\n+\n+Catalog rule `data_integrity.mutually_consistent` checked the finite identity\n+policy: current acceptance phases must use the fresh candidate and native\n+2.0.0, never a historical reference or managed 1.5.5 runtime. PRE passed\n+(`sat/pass`); a stale-reference negative control failed (`unsat/fail`). POST\n+passed (`sat/pass`) for the observed binary/source/runtime/platform tuples; a\n+stale headless-artifact substitution failed (`unsat/fail`). This solver\n+checks supplied finite facts, not extraction semantics, OS execution or\n+compiler correctness. Native commands and checksums provide that execution\n+evidence. Persistence was rejected at `ArtifactCount` limit 512, attempted 513;\n+exact persisted-attempt errors and nonpersisted requests/results are retained\n+without deleting earlier receipts.\n+\n+### Remaining release boundaries\n+\n+Observed native acceptance is local macOS 26.7.1 ARM64 (`osx_arm64`) only.\n+Remote Linux ran Rust unit tests, which is not a Linux load/package acceptance\n+claim. The dedicated workflow configures `macos-15` / `aarch64-apple-darwin` /\n+`osx_arm64`; it was not executed as hosted CI in this task. Other platforms,\n+WASM and DuckDB versions outside exactly 2.0.0 have no readiness claim here.\n+Root final review/integration and any hosted-run acceptance remain separate\n+gates; public publishing/signing is not authorized. The single-file scope,\n+resource/supervision limits and managed-runtime split above remain explicit\n+limitations, not silently satisfied compiler or production-service gates.\n",
+      "stderr": ""
+    }
+  ],
+  "commit_commands": [
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "crates/spur-graph-duckdb/README.md",
+        "crates/spur-graph-duckdb/docs/release-contract.md"
+      ],
+      "raw_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "raw_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "docs(spur-graph-duckdb): R7 bind native release evidence and contract"
+      ],
+      "raw_exit": 0,
+      "stdout": "[spur/worker/v2/codex/dc95897af65a8511/65bb3605-1952-4b96-ae3d-5f3004579662 09be38b1f] docs(spur-graph-duckdb): R7 bind native release evidence and contract\n 2 files changed, 619 insertions(+), 303 deletions(-)\n create mode 100644 crates/spur-graph-duckdb/docs/release-contract.md\n",
+      "stderr": ""
+    }
+  ]
+}

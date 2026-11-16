@@ -1,0 +1,607 @@
+{
+  "issue": "bd-4q5c",
+  "source_planning_issue": "bd-2bfl",
+  "approved_source_base": "adaa1f86e2c95201a331046a8c0ea785b8781399",
+  "dispatched_base": "c28a0317d8440696d8ef52db3070c6a661445c9e",
+  "head": "709b5c268d2c83b5c28008e54659f0e1fbb79141",
+  "commits": [
+    "709b5c268d2c83b5c28008e54659f0e1fbb79141 feat(spur-graph-duckdb): bd-4q5c expose metadata with source provenance",
+    "db50e0cad8e24fc23f8476e82af158254416c1d4 test(spur-graph-duckdb): bd-4q5c specify typed metadata and source identity"
+  ],
+  "scope": [
+    "crates/spur-graph-duckdb/Cargo.lock",
+    "crates/spur-graph-duckdb/Cargo.toml",
+    "crates/spur-graph-duckdb/build.rs",
+    "crates/spur-graph-duckdb/src/lib.rs",
+    "crates/spur-graph-duckdb/src/metadata.rs",
+    "crates/spur-graph-duckdb/tests/test_contract.py"
+  ],
+  "worktree_clean": true,
+  "metadata": {
+    "extension_version": "0.1.0",
+    "facts_schema_version": 1,
+    "duckdb_api_version": "2.0.0",
+    "extractor_id": "source-sha256-v1:ff834b1137b5cfbf564755c0a55cecb0d36182e9b50c702be6490b856d46e4f2",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "resolution_scope": "single_file"
+  },
+  "runtime": {
+    "duckdb": "2.0.0",
+    "duckdb_platform": "osx_arm64",
+    "python": "3.14.5",
+    "host": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "compiler": "rustc 1.94.1 (e408947bf 2026-03-25)\nbinary: rustc\ncommit-hash: e408947bfd200af42db322daf0fadfe7e26d3bd1\ncommit-date: 2026-03-25\nhost: aarch64-apple-darwin\nrelease: 1.94.1\nLLVM version: 21.1.8\n"
+  },
+  "artifact": {
+    "path": "/private/tmp/spur-bd-4q5c-green/spur_graph.duckdb_extension",
+    "sha256": "2f1ad9f6c6b281bd15f9e878ff1485f374d01b634a453517f2268141a5272535",
+    "size": 16871526,
+    "trust": "unsigned/local",
+    "raw_library_sha256": "a08e825884ea324a35843dd28e495bbfb22b0fd49e315830d26bf9401b98db1a",
+    "oracle_sha256": "90b4ad1b0ba987e16ab54a17f58b9c4c0edb56dea5e07e394a825db28c99b381"
+  },
+  "baseline_artifact_sha256": "c3ba1ab9ab124618a208bacbca3279205c06f52ccff7514373ed52e7724e279e",
+  "source_receipt": "/private/tmp/spur-bd-4q5c-green/source-identity.json",
+  "source_input_count": 321,
+  "steps": [
+    {
+      "phase": "baseline_native_build",
+      "command": "SPUR_REMOTE=0 CARGO_TARGET_DIR=/private/tmp/spur-bd-4q5c-native-target scripts/spur-cargo --workdir crates/spur-graph-duckdb build --release --lib --examples --locked",
+      "exit": 0,
+      "log": "/private/tmp/spur-bd-4q5c-baseline-build.log"
+    },
+    {
+      "phase": "baseline_package",
+      "command": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python crates/spur-graph-duckdb/scripts/package_extension.py --library /private/tmp/spur-bd-4q5c-native-target/release/libspur_graph_duckdb.dylib --out /private/tmp/spur-bd-4q5c-baseline/spur_graph.duckdb_extension",
+      "exit": 0
+    },
+    {
+      "phase": "RED",
+      "command": "SPUR_GRAPH_EXTENSION=/private/tmp/spur-bd-4q5c-baseline/spur_graph.duckdb_extension /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -p test_contract.py -k MetadataTests -v",
+      "exit": 1,
+      "tests": 4,
+      "failures": 4,
+      "errors": 0,
+      "log": "/private/tmp/spur-bd-4q5c-red.log"
+    },
+    {
+      "phase": "test_commit_sandbox",
+      "command": "git add crates/spur-graph-duckdb/tests/test_contract.py && git commit -m 'test(spur-graph-duckdb): bd-4q5c specify typed metadata and source identity'",
+      "exit": 128,
+      "reason": "shared Git index outside writable worktree; approved escalation succeeded with exit0"
+    },
+    {
+      "phase": "metadata_offline_all_targets",
+      "command": "CARGO_TARGET_DIR=/private/tmp/spur-bd-4q5c-native-target scripts/spur-cargo --workdir crates/spur-graph-duckdb metadata --format-version 1 --offline",
+      "exit": 101,
+      "reason": "uncached android_system_properties target dependency; cache write denied"
+    },
+    {
+      "phase": "metadata_no_deps",
+      "command": "CARGO_TARGET_DIR=/private/tmp/spur-bd-4q5c-native-target scripts/spur-cargo --workdir crates/spur-graph-duckdb metadata --no-deps --format-version 1 --offline --locked",
+      "exit": 0
+    },
+    {
+      "phase": "remote_check_sandbox",
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 CARGO_TARGET_DIR=/tmp/spur-bd-4q5c-remote-target scripts/spur-cargo --workdir crates/spur-graph-duckdb check --lib --locked",
+      "exit": 200,
+      "log": "/private/tmp/spur-bd-4q5c-remote-check.log",
+      "reason": "sandbox cloud endpoints unreachable; no local fallback"
+    },
+    {
+      "phase": "remote_check_network_retry",
+      "command": "SPUR_NO_LOCAL_FALLBACK=1 CARGO_TARGET_DIR=/tmp/spur-bd-4q5c-remote-target scripts/spur-cargo --workdir crates/spur-graph-duckdb check --lib --locked",
+      "exit": 0,
+      "log": "/private/tmp/spur-bd-4q5c-remote-check-network.log",
+      "remote_target": "i-053c907fa48c0ba69:/mnt/cargo/targets/spur/worktrees/ac46650b-9488-45f2-a2cd-52caa64b020f"
+    },
+    {
+      "phase": "green_native_build",
+      "command": "SPUR_REMOTE=0 CARGO_TARGET_DIR=/private/tmp/spur-bd-4q5c-native-target scripts/spur-cargo --workdir crates/spur-graph-duckdb build --release --lib --examples --locked",
+      "exit": 0,
+      "log": "/private/tmp/spur-bd-4q5c-green-build.log"
+    },
+    {
+      "phase": "green_package",
+      "command": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python crates/spur-graph-duckdb/scripts/package_extension.py --library /private/tmp/spur-bd-4q5c-native-target/release/libspur_graph_duckdb.dylib --out /private/tmp/spur-bd-4q5c-green/spur_graph.duckdb_extension",
+      "exit": 0
+    },
+    {
+      "phase": "source_probes",
+      "command": "SPUR_GRAPH_BUILD_SCRIPT=/private/tmp/spur-bd-4q5c-native-target/release/build/spur-graph-duckdb-5d3d64a3a48a0142/build-script-build PYTHONPATH=crates/spur-graph-duckdb/tests /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest test_contract.SourceIdentityTests.test_relocation_no_git_dirty_git_and_unrelated_edits test_contract.SourceIdentityTests.test_adapter_native_query_grammar_and_locked_inputs_affect_identity -v",
+      "exit": 0,
+      "tests": 2,
+      "log": "/private/tmp/spur-bd-4q5c-source-probes.log"
+    },
+    {
+      "phase": "GREEN",
+      "command": "SPUR_GRAPH_EXTENSION=/private/tmp/spur-bd-4q5c-green/spur_graph.duckdb_extension SPUR_GRAPH_BUILD_SCRIPT=/private/tmp/spur-bd-4q5c-native-target/release/build/spur-graph-duckdb-5d3d64a3a48a0142/build-script-build /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest discover -s crates/spur-graph-duckdb/tests -p test_contract.py -v",
+      "exit": 0,
+      "tests": 7,
+      "log": "/private/tmp/spur-bd-4q5c-green-contract.log"
+    },
+    {
+      "phase": "regression",
+      "command": "SPUR_GRAPH_EXTENSION=/private/tmp/spur-bd-4q5c-green/spur_graph.duckdb_extension SPUR_FILE_FACTS_ORACLE=/private/tmp/spur-bd-4q5c-native-target/release/examples/reference_file_facts PYTHONPATH=crates/spur-graph-duckdb/tests /private/tmp/spur-graph-duckdb-v2-20261114/bin/python -m unittest test_extension test_file_facts test_file_facts_pipeline test_temporal -v",
+      "exit": 0,
+      "tests": 50,
+      "log": "/private/tmp/spur-bd-4q5c-regression.log"
+    },
+    {
+      "phase": "format",
+      "command": "scripts/spur-cargo --workdir crates/spur-graph-duckdb fmt --check",
+      "exit": 0
+    },
+    {
+      "phase": "whitespace",
+      "command": "git diff --check c28a0317d8440696d8ef52db3070c6a661445c9e..HEAD",
+      "exit": 0
+    }
+  ],
+  "solves": {
+    "pre": {
+      "persist_request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "release_contract"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "metadata": {
+              "fields": {
+                "abi": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0",
+                    "1.4.4"
+                  ]
+                },
+                "scope": {
+                  "kind": "enum",
+                  "values": [
+                    "single_file",
+                    "repository"
+                  ]
+                },
+                "schema": {
+                  "kind": "enum",
+                  "values": [
+                    "1"
+                  ]
+                },
+                "identity": {
+                  "kind": "enum",
+                  "values": [
+                    "source_sha256_v1",
+                    "binary_sha"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "abi": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "single_file"
+                    },
+                    "schema": {
+                      "present": true,
+                      "value": "1"
+                    },
+                    "identity": {
+                      "present": true,
+                      "value": "source_sha256_v1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "release_contract": {
+              "relation": "metadata",
+              "fields": [
+                "abi",
+                "scope",
+                "schema",
+                "identity"
+              ],
+              "allowed": [
+                [
+                  "2.0.0",
+                  "single_file",
+                  "1",
+                  "source_sha256_v1"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "persist": true,
+        "include_smt": true
+      },
+      "persist_result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+          }
+        ],
+        "isError": true
+      },
+      "nonpersist_request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "release_contract"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "metadata": {
+              "fields": {
+                "abi": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0",
+                    "1.4.4"
+                  ]
+                },
+                "scope": {
+                  "kind": "enum",
+                  "values": [
+                    "single_file",
+                    "repository"
+                  ]
+                },
+                "schema": {
+                  "kind": "enum",
+                  "values": [
+                    "1"
+                  ]
+                },
+                "identity": {
+                  "kind": "enum",
+                  "values": [
+                    "source_sha256_v1",
+                    "binary_sha"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "abi": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "single_file"
+                    },
+                    "schema": {
+                      "present": true,
+                      "value": "1"
+                    },
+                    "identity": {
+                      "present": true,
+                      "value": "source_sha256_v1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "release_contract": {
+              "relation": "metadata",
+              "fields": [
+                "abi",
+                "scope",
+                "schema",
+                "identity"
+              ],
+              "allowed": [
+                [
+                  "2.0.0",
+                  "single_file",
+                  "1",
+                  "source_sha256_v1"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "persist": false,
+        "include_smt": true
+      },
+      "nonpersist_result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"2.0.0\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"source_sha256_v1\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"1\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"single_file\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    },
+    "post": {
+      "persist_request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "release_contract"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "metadata": {
+              "fields": {
+                "abi": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0",
+                    "1.4.4"
+                  ]
+                },
+                "scope": {
+                  "kind": "enum",
+                  "values": [
+                    "single_file",
+                    "repository"
+                  ]
+                },
+                "schema": {
+                  "kind": "enum",
+                  "values": [
+                    "1"
+                  ]
+                },
+                "identity": {
+                  "kind": "enum",
+                  "values": [
+                    "source_sha256_v1",
+                    "binary_sha"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "abi": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "single_file"
+                    },
+                    "schema": {
+                      "present": true,
+                      "value": "1"
+                    },
+                    "identity": {
+                      "present": true,
+                      "value": "source_sha256_v1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "release_contract": {
+              "relation": "metadata",
+              "fields": [
+                "abi",
+                "scope",
+                "schema",
+                "identity"
+              ],
+              "allowed": [
+                [
+                  "2.0.0",
+                  "single_file",
+                  "1",
+                  "source_sha256_v1"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "persist": true,
+        "include_smt": true
+      },
+      "persist_result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+          }
+        ],
+        "isError": true
+      },
+      "nonpersist_request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.mutually_consistent",
+            "subjects": [
+              "release_contract"
+            ]
+          }
+        ],
+        "facts": {
+          "relations": {
+            "metadata": {
+              "fields": {
+                "abi": {
+                  "kind": "enum",
+                  "values": [
+                    "2.0.0",
+                    "1.4.4"
+                  ]
+                },
+                "scope": {
+                  "kind": "enum",
+                  "values": [
+                    "single_file",
+                    "repository"
+                  ]
+                },
+                "schema": {
+                  "kind": "enum",
+                  "values": [
+                    "1"
+                  ]
+                },
+                "identity": {
+                  "kind": "enum",
+                  "values": [
+                    "source_sha256_v1",
+                    "binary_sha"
+                  ]
+                }
+              },
+              "rows": {
+                "release": {
+                  "active": true,
+                  "cells": {
+                    "abi": {
+                      "present": true,
+                      "value": "2.0.0"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "single_file"
+                    },
+                    "schema": {
+                      "present": true,
+                      "value": "1"
+                    },
+                    "identity": {
+                      "present": true,
+                      "value": "source_sha256_v1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {
+            "release_contract": {
+              "relation": "metadata",
+              "fields": [
+                "abi",
+                "scope",
+                "schema",
+                "identity"
+              ],
+              "allowed": [
+                [
+                  "2.0.0",
+                  "single_file",
+                  "1",
+                  "source_sha256_v1"
+                ]
+              ]
+            }
+          },
+          "temporal_constraints": {}
+        },
+        "persist": false,
+        "include_smt": true
+      },
+      "nonpersist_result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"2.0.0\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"source_sha256_v1\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"1\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"single_file\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  },
+  "audit_ids": [
+    "ac46650b-9488-45f2-a2cd-52caa64b0201",
+    "ac46650b-9488-45f2-a2cd-52caa64b0202",
+    "ac46650b-9488-45f2-a2cd-52caa64b0203"
+  ],
+  "limitations": [
+    "Source ID conservatively covers entire locked-local source trees and excludes ambient compiler flags and binary bytes.",
+    "No binary SHA self-identity claim; this locally loaded artifact SHA is independently computed after packaging.",
+    "SOLVE PRE/POST finite contract both sat/pass; persistence quota rejected at 512, exact nonpersisted requests/results preserved.",
+    "Remote cargo check tested Linux compilation; native runtime acceptance observed only osx_arm64.",
+    "Two pre-existing spur-graph dead_code warnings remain."
+  ]
+}

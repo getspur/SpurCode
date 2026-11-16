@@ -1,0 +1,900 @@
+{
+  "task": "R6",
+  "issue": "bd-27tt",
+  "source_base": "adaa1f86e2c95201a331046a8c0ea785b8781399",
+  "dispatched_base": "25c0f3e64c99739250af8214caea44b0e9c3cd9c",
+  "original_head": "0fd2a596be3fd6530ff444c18dea497248bfe5c4",
+  "final_head": "e0be2783e69d8119677fc6736c2474662bdf0271",
+  "commits": [
+    "e0be2783e69d8119677fc6736c2474662bdf0271 fix(spur-graph-duckdb): R6 validate canonical source identity scheme",
+    "027e420bc52a1ef3b0ecce4f3f8f049fcf85627a test(spur-graph-duckdb): R6 reject unsupported source schemes",
+    "0fd2a596be3fd6530ff444c18dea497248bfe5c4 feat(spur-graph-duckdb): R6 consume snapshots with isolated native recovery",
+    "fac1f02b5665ced62d760999022f0ae565452f9a test(spur-graph-duckdb): R6 cover snapshot metadata and parent interruption",
+    "489b43ff1ddaf5a2e9a4f4fc11c12ef544f9265f test(spur-graph-duckdb): R6 specify headless snapshot and recovery contract"
+  ],
+  "source_files": {
+    "crates/spur-graph-duckdb/examples/app_consumer.py": "375efc66485b079b332e1301abbb67e25ec529ac5708e032e3b9573832785382",
+    "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json": "0adc3b607962453d3cde71431ccb7eb63bd19a66ee2f24919e7309c903a312f1",
+    "crates/spur-graph-duckdb/tests/test_app_consumer.py": "8a06c030d98ee5b68ed68decda91cb6007ff73a28aaad701a51f89dd654d9763"
+  },
+  "changed_paths": [
+    "crates/spur-graph-duckdb/examples/app_consumer.py",
+    "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json",
+    "crates/spur-graph-duckdb/tests/test_app_consumer.py"
+  ],
+  "worktree_status": "",
+  "diff_files": {
+    "R6-unified": {
+      "path": "/private/tmp/spur-r6-4f646974-rework-evidence/R6-unified.diff",
+      "sha256": "38d4cfee53a34e9b1901913852bc0d9e3b78933640b7d552f829fb0049a9568a"
+    },
+    "R6-rework": {
+      "path": "/private/tmp/spur-r6-4f646974-rework-evidence/R6-rework.diff",
+      "sha256": "98b691c9c350b44d2cde93b21f03133a515fd7e98ffa55cd98ddaf778e104842"
+    }
+  },
+  "tests": {
+    "red": {
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_app_consumer.AppConsumerTests.test_unsupported_fixture_scheme_preserves_completed_pointer_and_files",
+        "test_app_consumer.AppConsumerTests.test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme",
+        "-v"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+      "environment": {
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r5-9a79a2c4-release-1/spur_graph.duckdb_extension",
+        "SPUR_GRAPH_LIBRARY": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "SPUR_HISTORY_CATALOG": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+        "SPUR_RELEASE_MANIFEST": "/private/tmp/spur-r5-9a79a2c4-release-1/.spur_graph.duckdb_extension.packages/release-737abd84e2a24cdeb0ab72f4e3210f73/spur_graph.duckdb_extension.json",
+        "SPUR_RELEASE_MANIFEST_SHA256": "3d07a20a4242a1e99bd05dccc6b9a8c454c97f0813f76ad55fbedf832bbcce1e",
+        "SPUR_RELEASE_SOURCE_IDENTITY": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "SPUR_RETRIEVAL_NATIVE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+        "SPUR_TEMPORAL_EXAMPLES_DIR": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples",
+        "PYTHONPATH": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb/tests",
+        "SPUR_LICENSE_DEV_PLAN": "enterprise"
+      },
+      "source_head": "0fd2a596be3fd6530ff444c18dea497248bfe5c4",
+      "source_files": {
+        "crates/spur-graph-duckdb/examples/app_consumer.py": "ea346764e4b840374bbf9d8d0c4208f1128810b6975b0a327f8e045e1e4281ad",
+        "crates/spur-graph-duckdb/tests/test_app_consumer.py": "8a06c030d98ee5b68ed68decda91cb6007ff73a28aaad701a51f89dd654d9763",
+        "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json": "532db66c81055613fef1492263cb0014834b6ea651e6ca6d1e9d47527bddffaa"
+      },
+      "returncode": 1,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/red.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/red.stderr"
+    },
+    "green": {
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_app_consumer",
+        "-v"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+      "environment": {
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r5-9a79a2c4-release-1/spur_graph.duckdb_extension",
+        "SPUR_GRAPH_LIBRARY": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "SPUR_HISTORY_CATALOG": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+        "SPUR_RELEASE_MANIFEST": "/private/tmp/spur-r5-9a79a2c4-release-1/.spur_graph.duckdb_extension.packages/release-737abd84e2a24cdeb0ab72f4e3210f73/spur_graph.duckdb_extension.json",
+        "SPUR_RELEASE_MANIFEST_SHA256": "3d07a20a4242a1e99bd05dccc6b9a8c454c97f0813f76ad55fbedf832bbcce1e",
+        "SPUR_RELEASE_SOURCE_IDENTITY": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "SPUR_RETRIEVAL_NATIVE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+        "SPUR_TEMPORAL_EXAMPLES_DIR": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples",
+        "PYTHONPATH": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb/tests",
+        "SPUR_LICENSE_DEV_PLAN": "enterprise"
+      },
+      "source_head": "027e420bc52a1ef3b0ecce4f3f8f049fcf85627a",
+      "source_files": {
+        "crates/spur-graph-duckdb/examples/app_consumer.py": "375efc66485b079b332e1301abbb67e25ec529ac5708e032e3b9573832785382",
+        "crates/spur-graph-duckdb/tests/test_app_consumer.py": "8a06c030d98ee5b68ed68decda91cb6007ff73a28aaad701a51f89dd654d9763",
+        "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json": "532db66c81055613fef1492263cb0014834b6ea651e6ca6d1e9d47527bddffaa"
+      },
+      "returncode": 1,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/green.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/green.stderr"
+    },
+    "green-final": {
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_app_consumer",
+        "-v"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+      "environment": {
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r5-9a79a2c4-release-1/spur_graph.duckdb_extension",
+        "SPUR_GRAPH_LIBRARY": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "SPUR_HISTORY_CATALOG": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+        "SPUR_RELEASE_MANIFEST": "/private/tmp/spur-r5-9a79a2c4-release-1/.spur_graph.duckdb_extension.packages/release-737abd84e2a24cdeb0ab72f4e3210f73/spur_graph.duckdb_extension.json",
+        "SPUR_RELEASE_MANIFEST_SHA256": "3d07a20a4242a1e99bd05dccc6b9a8c454c97f0813f76ad55fbedf832bbcce1e",
+        "SPUR_RELEASE_SOURCE_IDENTITY": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "SPUR_RETRIEVAL_NATIVE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+        "SPUR_TEMPORAL_EXAMPLES_DIR": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples",
+        "PYTHONPATH": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb/tests",
+        "SPUR_LICENSE_DEV_PLAN": "enterprise"
+      },
+      "source_head": "027e420bc52a1ef3b0ecce4f3f8f049fcf85627a",
+      "source_files": {
+        "crates/spur-graph-duckdb/examples/app_consumer.py": "375efc66485b079b332e1301abbb67e25ec529ac5708e032e3b9573832785382",
+        "crates/spur-graph-duckdb/tests/test_app_consumer.py": "8a06c030d98ee5b68ed68decda91cb6007ff73a28aaad701a51f89dd654d9763",
+        "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json": "0adc3b607962453d3cde71431ccb7eb63bd19a66ee2f24919e7309c903a312f1"
+      },
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/green-final.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/green-final.stderr"
+    },
+    "regression": {
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "-m",
+        "unittest",
+        "test_contract",
+        "test_diagnostics",
+        "test_file_facts_pipeline",
+        "test_publish_snapshot",
+        "test_temporal",
+        "test_package",
+        "test_app_consumer",
+        "-v"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+      "environment": {
+        "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+        "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+        "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-r5-9a79a2c4-release-1/spur_graph.duckdb_extension",
+        "SPUR_GRAPH_LIBRARY": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "SPUR_HISTORY_CATALOG": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+        "SPUR_RELEASE_MANIFEST": "/private/tmp/spur-r5-9a79a2c4-release-1/.spur_graph.duckdb_extension.packages/release-737abd84e2a24cdeb0ab72f4e3210f73/spur_graph.duckdb_extension.json",
+        "SPUR_RELEASE_MANIFEST_SHA256": "3d07a20a4242a1e99bd05dccc6b9a8c454c97f0813f76ad55fbedf832bbcce1e",
+        "SPUR_RELEASE_SOURCE_IDENTITY": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+        "SPUR_RETRIEVAL_NATIVE": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+        "SPUR_TEMPORAL_EXAMPLES_DIR": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples",
+        "PYTHONPATH": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb/tests",
+        "SPUR_LICENSE_DEV_PLAN": "enterprise"
+      },
+      "source_head": "027e420bc52a1ef3b0ecce4f3f8f049fcf85627a",
+      "source_files": {
+        "crates/spur-graph-duckdb/examples/app_consumer.py": "375efc66485b079b332e1301abbb67e25ec529ac5708e032e3b9573832785382",
+        "crates/spur-graph-duckdb/tests/test_app_consumer.py": "8a06c030d98ee5b68ed68decda91cb6007ff73a28aaad701a51f89dd654d9763",
+        "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json": "0adc3b607962453d3cde71431ccb7eb63bd19a66ee2f24919e7309c903a312f1"
+      },
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/regression.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/regression.stderr"
+    },
+    "acceptance": {
+      "argv": [
+        "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+        "/private/tmp/spur-r6-4f646974-rework-evidence/acceptance.py"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/acceptance.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/acceptance.stderr"
+    }
+  },
+  "original_attempt_evidence": {
+    "path": "/private/tmp/spur-r6-e5775e7a-evidence/verification.json",
+    "sha256": "fc52d24856d09e80df91bc1a1df70d16b150bd1104ef3515d5c86cd456ca8f7b",
+    "focused_tests": 12,
+    "combined_regression_tests": 82,
+    "retained_files": {
+      "/private/tmp/spur-r6-e5775e7a-evidence/green.stderr": "c9964714c8be3d8dde4a9e1a494537d6463b124a6e369256f3b95df0902a0720",
+      "/private/tmp/spur-r6-e5775e7a-evidence/regression.json": "a169e05270a69fa95259966a4489b73232c978703c83c2a6b3cb12d4e530828b",
+      "/private/tmp/spur-r6-e5775e7a-evidence/hardening-red.json": "2ec77bec1389489de149eb3ac89f89ea8feb8df828b281c295544b0dc85ee8f4",
+      "/private/tmp/spur-r6-e5775e7a-evidence/red.json": "928ce8a3767e8f45bf7d0f57c7c9be4f2081f64da8009a0493f300e74f47159a",
+      "/private/tmp/spur-r6-e5775e7a-evidence/hardening-red.stderr": "184c903313ebd314a74d7b1bc1949f42f1f7c54fc0415be6f3f0945ec9ed4b00",
+      "/private/tmp/spur-r6-e5775e7a-evidence/green-attempt-1.stderr": "183d5e6f7d0ff445964fe1ff951f36d10e11ca65032499a6c3aff4035cb78d87",
+      "/private/tmp/spur-r6-e5775e7a-evidence/acceptance.json": "16094b101d3c1a0376a4e96a090a9d691ae16563d586255fca74e02b23db6a15",
+      "/private/tmp/spur-r6-e5775e7a-evidence/green-attempt-1.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/hardening-red.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/solves.json": "38df201e32e65e179780b4523b3f1df032cc8ef5e4d4c41256f7fdd65d0ee6ce",
+      "/private/tmp/spur-r6-e5775e7a-evidence/green-attempt-1.json": "2ec77bec1389489de149eb3ac89f89ea8feb8df828b281c295544b0dc85ee8f4",
+      "/private/tmp/spur-r6-e5775e7a-evidence/green.json": "aa2679afb9b8dd52a8295ccd319811ffe1de30ce1f7b6cbbfdb9806e9c4f1438",
+      "/private/tmp/spur-r6-e5775e7a-evidence/green.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/cleanup.json": "6d37e5abab92cbbded76572ce5d0c253a3aa8b72acc56fa4fc179d3480d12796",
+      "/private/tmp/spur-r6-e5775e7a-evidence/hardening-red-2.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/source-probe.stdout": "591188baede44aef9c49d298770d07130887ac18e354e8d0d2359183e0826217",
+      "/private/tmp/spur-r6-e5775e7a-evidence/identity.json": "cff86b0789b6071dc67e66e13d6178b52f4dd49bb18cc1dc911099f38cbcb7ff",
+      "/private/tmp/spur-r6-e5775e7a-evidence/hardening-red-2.json": "2ec77bec1389489de149eb3ac89f89ea8feb8df828b281c295544b0dc85ee8f4",
+      "/private/tmp/spur-r6-e5775e7a-evidence/cli.stdout": "53e2c7a22bbb857493116c60c116906f91d065b484de167103d9c6aad03c2d23",
+      "/private/tmp/spur-r6-e5775e7a-evidence/red.stderr": "7b4ffb719188dc7a9966b76a881861d51d99d54a7e8f2bcac0123ad8b3769046",
+      "/private/tmp/spur-r6-e5775e7a-evidence/regression.stderr": "dfb053ed25b08af5a9a14a2172f37caa37e57156bdc2719b332c5ed265ca4c60",
+      "/private/tmp/spur-r6-e5775e7a-evidence/verification.json": "fc52d24856d09e80df91bc1a1df70d16b150bd1104ef3515d5c86cd456ca8f7b",
+      "/private/tmp/spur-r6-e5775e7a-evidence/regression.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/red.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/cli.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/R6-unified.diff": "79cb9a5bc9346e242152da78062a93d5b9a0e32bbeb2471a3217e0fcbddaa836",
+      "/private/tmp/spur-r6-e5775e7a-evidence/source-probe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/private/tmp/spur-r6-e5775e7a-evidence/hardening-red-2.stderr": "18fe68b5113c2a66b467f1fdaefdf34043bafdd2a8cec5f1a1ee8e5bb1eea4b9"
+    }
+  },
+  "identity_preflight": {
+    "argv": [
+      "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+    ],
+    "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+    "environment": {
+      "CARGO_MANIFEST_DIR": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb",
+      "OUT_DIR": "/private/tmp/spur-r6-4f646974-rework-evidence/source-probe"
+    },
+    "returncode": 0,
+    "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "fresh_input_count": 321,
+    "predecessor_receipt": "/private/tmp/spur-r5-9a79a2c4-release-1/receipt.json",
+    "predecessor_receipt_sha256": "7fdde7c16e5c60df66f543d916ec5df1fd8c313b086a07fa345c9bec9c25a926",
+    "native_artifacts": {
+      "build_script": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+        "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404"
+      },
+      "catalog_git_sources": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/catalog_git_sources",
+        "sha256": "b4ff3809d9b67605c396e31f22796f30b214047405054df320600a868714925a"
+      },
+      "history_catalog": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+        "sha256": "f4957c6f90a6809729d130194da004d07edf2199699e3b0ddcf8afbaa6efa3d8"
+      },
+      "library": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "sha256": "ae991631a805fba6e4a9fc6b18cbba9edb737d3fc245ebd2b913f6bd2bb83e0f"
+      },
+      "reference_file_facts": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+        "sha256": "5750f8857e41c23207708480af5d6ed51a99a7f445ba8eed9bff8fe90a3c8d0c"
+      },
+      "reference_symbols": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/reference_symbols",
+        "sha256": "e61d287a5fc21c9b68f1fd9c1ce58d9ac57a83e588fa94f03f658e913a1f6199"
+      },
+      "retrieval_native": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+        "sha256": "00b702f8c1b03e3618f73a654b58fe00aba3850c84767a7eaede31f697da3d0b"
+      },
+      "temporal_reference": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_reference",
+        "sha256": "ee7feb89261f0dd7ef484532c52dee7358095bb7579708cb5de5331ee730a8a6"
+      },
+      "temporal_symbol_oracle": {
+        "path": "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/aarch64-apple-darwin/release/examples/temporal_symbol_oracle",
+        "sha256": "eb0fdc4d90f9a96a83deaf39e5a5c121cf4565f36d55fa8f5fb568e7bb03ca3d"
+      }
+    }
+  },
+  "identity_final": {
+    "argv": [
+      "/private/tmp/spur-r5-9a79a2c4-release-1/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+    ],
+    "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a",
+    "environment": {
+      "CARGO_MANIFEST_DIR": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb",
+      "OUT_DIR": "/private/tmp/spur-r6-4f646974-rework-evidence/source-probe-final"
+    },
+    "returncode": 0,
+    "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "fresh_input_count": 321
+  },
+  "artifact_path": "/private/tmp/spur-r5-9a79a2c4-release-1/.spur_graph.duckdb_extension.packages/release-737abd84e2a24cdeb0ab72f4e3210f73/spur_graph.duckdb_extension",
+  "artifact": {
+    "abi": "C_STRUCT_UNSTABLE",
+    "binary": {
+      "name": "spur_graph.duckdb_extension",
+      "sha256": "2968d20ef8d4f07df100e50f6aaccb0b2bece7df048c1a92884fc12c90e2ae89",
+      "size_bytes": 16904630
+    },
+    "duckdb_api_version": "2.0.0",
+    "extension_version": "0.1.0",
+    "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "facts_schema_version": 1,
+    "format_version": 1,
+    "platform": "osx_arm64",
+    "resolution_scope": "single_file",
+    "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "trust": {
+      "mode": "unsigned_local",
+      "signature": "absent"
+    }
+  },
+  "artifact_manifest_sha256": "3d07a20a4242a1e99bd05dccc6b9a8c454c97f0813f76ad55fbedf832bbcce1e",
+  "runtime": {
+    "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "python_executable": "/private/tmp/spur-graph-duckdb-v2-20261114/bin/python",
+    "python_sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+    "host": "macOS-26.7.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "duckdb": "2.0.0",
+    "native_version": "v2.0.0",
+    "native_platform": "osx_arm64",
+    "native_engine": "/private/tmp/spur-graph-duckdb-v2-20261114/lib/python3.14/site-packages/_duckdb.abi3.so",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3"
+  },
+  "acceptance": {
+    "path": "/private/tmp/spur-r6-4f646974-rework-evidence/acceptance.json",
+    "sha256": "ace77167a5050d4c84c1c2d189b6eb3caaa83e79caaabce5a42b6baf255e42a9",
+    "returncode": 0
+  },
+  "solver": {
+    "pre": {
+      "pre_supported": {
+        "request": {
+          "family": "configuration",
+          "mode": "verify",
+          "persist": true,
+          "rules": [
+            {
+              "rule_id": "configuration.attribute_allowed_pair",
+              "subjects": [
+                "metadata",
+                "consumer"
+              ]
+            }
+          ],
+          "facts": {
+            "components": {
+              "metadata": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              },
+              "consumer": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              }
+            },
+            "selection_groups": {},
+            "allowed_attribute_pairs": [
+              {
+                "left": {
+                  "component": "metadata",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1",
+                    "git:sha1-v1"
+                  ]
+                },
+                "right": {
+                  "component": "consumer",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1"
+                  ]
+                },
+                "allowed": [
+                  [
+                    "sha256:utf8-v1",
+                    "sha256:utf8-v1"
+                  ]
+                ]
+              }
+            ],
+            "version_orderings": {}
+          }
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+            }
+          ],
+          "isError": true
+        }
+      },
+      "pre_unsupported": {
+        "request": {
+          "family": "configuration",
+          "mode": "verify",
+          "persist": true,
+          "rules": [
+            {
+              "rule_id": "configuration.attribute_allowed_pair",
+              "subjects": [
+                "metadata",
+                "consumer"
+              ]
+            }
+          ],
+          "facts": {
+            "components": {
+              "metadata": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "git:sha1-v1"
+                }
+              },
+              "consumer": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              }
+            },
+            "selection_groups": {},
+            "allowed_attribute_pairs": [
+              {
+                "left": {
+                  "component": "metadata",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1",
+                    "git:sha1-v1"
+                  ]
+                },
+                "right": {
+                  "component": "consumer",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1"
+                  ]
+                },
+                "allowed": [
+                  [
+                    "sha256:utf8-v1",
+                    "sha256:utf8-v1"
+                  ]
+                ]
+              }
+            ],
+            "version_orderings": {}
+          }
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+            }
+          ],
+          "isError": true
+        }
+      },
+      "pre_nonpersisted_supported": {
+        "request": {
+          "family": "configuration",
+          "mode": "verify",
+          "persist": false,
+          "rules": [
+            {
+              "rule_id": "configuration.attribute_allowed_pair",
+              "subjects": [
+                "metadata",
+                "consumer"
+              ]
+            }
+          ],
+          "facts": {
+            "components": {
+              "metadata": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              },
+              "consumer": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              }
+            },
+            "selection_groups": {},
+            "allowed_attribute_pairs": [
+              {
+                "left": {
+                  "component": "metadata",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1",
+                    "git:sha1-v1"
+                  ]
+                },
+                "right": {
+                  "component": "consumer",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1"
+                  ]
+                },
+                "allowed": [
+                  [
+                    "sha256:utf8-v1",
+                    "sha256:utf8-v1"
+                  ]
+                ]
+              }
+            ],
+            "version_orderings": {}
+          }
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"configuration\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"configuration.attribute_allowed_pair\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {},\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      },
+      "pre_nonpersisted_unsupported": {
+        "request": {
+          "family": "configuration",
+          "mode": "verify",
+          "persist": false,
+          "rules": [
+            {
+              "rule_id": "configuration.attribute_allowed_pair",
+              "subjects": [
+                "metadata",
+                "consumer"
+              ]
+            }
+          ],
+          "facts": {
+            "components": {
+              "metadata": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "git:sha1-v1"
+                }
+              },
+              "consumer": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              }
+            },
+            "selection_groups": {},
+            "allowed_attribute_pairs": [
+              {
+                "left": {
+                  "component": "metadata",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1",
+                    "git:sha1-v1"
+                  ]
+                },
+                "right": {
+                  "component": "consumer",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1"
+                  ]
+                },
+                "allowed": [
+                  [
+                    "sha256:utf8-v1",
+                    "sha256:utf8-v1"
+                  ]
+                ]
+              }
+            ],
+            "version_orderings": {}
+          }
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"configuration\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"configuration.attribute_allowed_pair\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"configuration.attribute_allowed_pair.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"configuration_rule_0_configuration_attribute_allowed_pair\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    },
+    "post": {
+      "implementation": {
+        "consumer_scheme": "sha256:utf8-v1",
+        "fixture_scheme": "sha256:utf8-v1",
+        "unsupported_fixture_error": "unsupported source identity scheme",
+        "unsupported_stored_result_error": "unsupported source identity scheme"
+      },
+      "persistence": "unavailable: PRE persist:true returned ArtifactCount limit 512 attempted 513; no existing receipts deleted",
+      "supported": {
+        "request": {
+          "family": "configuration",
+          "mode": "verify",
+          "persist": false,
+          "rules": [
+            {
+              "rule_id": "configuration.attribute_allowed_pair",
+              "subjects": [
+                "metadata",
+                "consumer"
+              ]
+            }
+          ],
+          "facts": {
+            "components": {
+              "metadata": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              },
+              "consumer": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              }
+            },
+            "selection_groups": {},
+            "allowed_attribute_pairs": [
+              {
+                "left": {
+                  "component": "metadata",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1",
+                    "git:sha1-v1"
+                  ]
+                },
+                "right": {
+                  "component": "consumer",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1"
+                  ]
+                },
+                "allowed": [
+                  [
+                    "sha256:utf8-v1",
+                    "sha256:utf8-v1"
+                  ]
+                ]
+              }
+            ],
+            "version_orderings": {}
+          }
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"configuration\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"configuration.attribute_allowed_pair\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {},\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      },
+      "unsupported": {
+        "request": {
+          "family": "configuration",
+          "mode": "verify",
+          "persist": false,
+          "rules": [
+            {
+              "rule_id": "configuration.attribute_allowed_pair",
+              "subjects": [
+                "metadata",
+                "consumer"
+              ]
+            }
+          ],
+          "facts": {
+            "components": {
+              "metadata": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "git:sha1-v1"
+                }
+              },
+              "consumer": {
+                "selected": true,
+                "attributes": {
+                  "scheme": "sha256:utf8-v1"
+                }
+              }
+            },
+            "selection_groups": {},
+            "allowed_attribute_pairs": [
+              {
+                "left": {
+                  "component": "metadata",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1",
+                    "git:sha1-v1"
+                  ]
+                },
+                "right": {
+                  "component": "consumer",
+                  "attribute": "scheme",
+                  "values": [
+                    "sha256:utf8-v1"
+                  ]
+                },
+                "allowed": [
+                  [
+                    "sha256:utf8-v1",
+                    "sha256:utf8-v1"
+                  ]
+                ]
+              }
+            ],
+            "version_orderings": {}
+          }
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"configuration\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"configuration.attribute_allowed_pair\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"configuration.attribute_allowed_pair.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"configuration_rule_0_configuration_attribute_allowed_pair\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "25c0f3e64c99739250af8214caea44b0e9c3cd9c",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/changed-paths.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/changed-paths.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "25c0f3e64c99739250af8214caea44b0e9c3cd9c",
+        "HEAD",
+        "--",
+        "crates/spur-graph-duckdb/examples/app_consumer.py",
+        "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json",
+        "crates/spur-graph-duckdb/tests/test_app_consumer.py"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/R6-unified-command.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/R6-unified-command.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "0fd2a596be3fd6530ff444c18dea497248bfe5c4",
+        "HEAD",
+        "--",
+        "crates/spur-graph-duckdb/examples/app_consumer.py",
+        "crates/spur-graph-duckdb/tests/fixtures/app_consumer.json",
+        "crates/spur-graph-duckdb/tests/test_app_consumer.py"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/R6-rework-command.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/R6-rework-command.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "25c0f3e64c99739250af8214caea44b0e9c3cd9c",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/diff-check.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/diff-check.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/status.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/status.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/head.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/head.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "log",
+        "--format=%H %s",
+        "25c0f3e64c99739250af8214caea44b0e9c3cd9c..HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/commits.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/commits.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "489b43ff1ddaf5a2e9a4f4fc11c12ef544f9265f",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/retained-489b43ff1.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/retained-489b43ff1.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "fac1f02b5665ced62d760999022f0ae565452f9a",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/retained-fac1f02b5.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/retained-fac1f02b5.stderr"
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "0fd2a596be3fd6530ff444c18dea497248bfe5c4",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "/private/tmp/spur-r6-4f646974-rework-evidence/retained-0fd2a596b.stdout",
+      "stderr": "/private/tmp/spur-r6-4f646974-rework-evidence/retained-0fd2a596b.stderr"
+    }
+  ],
+  "limitations": [
+    "Unsigned local macOS arm64 artifact; caller repository/commit/parent/snapshot claims remain unverified; single-file/pair-local native resolution only.",
+    "Only canonical sha256:utf8-v1 is accepted; old prose-suffixed fixture/result scheme metadata is unsupported. Frozen fixture source bytes, IDs, pairs and lineage are unchanged.",
+    "No Rust inputs changed; approved R5 artifact reused after source, checksums, manifest and live checks. R7 owns the fresh integrated release driver.",
+    "Solver persistence rejected with ArtifactCount limit 512 attempted 513. Exact persistence failures and nonpersisted PRE/POST requests/results retained; earlier receipts untouched.",
+    "Initial GREEN run failed because the original fixture scheme carried a prose suffix; the raw failure is retained separately from final GREEN."
+  ]
+}

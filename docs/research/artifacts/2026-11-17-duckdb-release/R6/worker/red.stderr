@@ -1,0 +1,25 @@
+test_unsupported_fixture_scheme_preserves_completed_pointer_and_files (test_app_consumer.AppConsumerTests.test_unsupported_fixture_scheme_preserves_completed_pointer_and_files) ... FAIL
+test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme (test_app_consumer.AppConsumerTests.test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme) ... FAIL
+
+======================================================================
+FAIL: test_unsupported_fixture_scheme_preserves_completed_pointer_and_files (test_app_consumer.AppConsumerTests.test_unsupported_fixture_scheme_preserves_completed_pointer_and_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 214, in test_unsupported_fixture_scheme_preserves_completed_pointer_and_files
+    with self.assertRaisesRegex(self.app.ChildFailure, 'unsupported source identity scheme') as error:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ChildFailure not raised
+
+======================================================================
+FAIL: test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme (test_app_consumer.AppConsumerTests.test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/4f646974-04d4-401c-9370-93d38d07fb9a/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 229, in test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme
+    with self.assertRaisesRegex(ValueError, 'unsupported source identity scheme'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.077s
+
+FAILED (failures=2)

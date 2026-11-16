@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/private/tmp/spur-r5-9a79a2c4-venv/bin/python",
+    "-m",
+    "unittest",
+    "-v",
+    "test_release_driver.SourceStabilityTests"
+  ],
+  "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/9a79a2c4-4e63-4a8d-8292-4c36738dd7d7/crates/spur-graph-duckdb/tests",
+  "returncode": 1,
+  "probe": {
+    "path": "/private/tmp/spur-r5-9a79a2c4-red-native/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+    "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404",
+    "build_exit": 0,
+    "build_argv": [
+      "scripts/spur-cargo",
+      "--workdir",
+      "crates/spur-graph-duckdb",
+      "build",
+      "--locked",
+      "--release",
+      "--lib",
+      "--target",
+      "aarch64-apple-darwin",
+      "--target-dir",
+      "/private/tmp/spur-r5-9a79a2c4-red-native",
+      "--message-format=json"
+    ],
+    "env": {
+      "SPUR_REMOTE": "0",
+      "SPUR_SCCACHE_S3": "0",
+      "SPUR_NO_LOCAL_FALLBACK": "1"
+    },
+    "reason": "Host-native compiled source probe must execute locally in isolated temporary fixture roots; distinct target from remote Rust units."
+  },
+  "source_head": "205d8dd634333722a66427f99a93b2799ab1dd8b"
+}
