@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task": "U2",
+  "attempt": 2,
+  "issue": "bd-1khk",
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "delegation_id": "196f69f891784054",
+  "branch": "spur/worker/v2/codex/dc95897af65a8511/4daadd54-374b-4d4b-9654-6d3598bb4f96",
+  "reviewed_head": "eaf45df7562d03d6bc54164d9b2d9f56e197a938",
+  "original_test_commits": [
+    "bce9f671a",
+    "6fa59d9f2"
+  ],
+  "original_fix": "cbeb5978b",
+  "prior_review": "bd-1n0t; Important/P2 root witness preserved in838b36605",
+  "beads": {
+    "status": "in_progress",
+    "label": "spur:ready-for-review",
+    "completion_audit": "196f69f891784054 at2026-11-17 07:37:30",
+    "unresolved_signals": "none"
+  },
+  "receipt_verification": {
+    "chunk_id": "230ac0",
+    "wall_time_seconds": 1.3711517500000001,
+    "exit_code": 0,
+    "original_token_count": 157,
+    "output": "PASS: all evidence/log hashes, original and final RED predicates, equal final RED/GREEN commands/environment, exact current/fixed source hashes, unchanged prior receipts/public schema/core matcher, original TDD ancestry, rework patch, finite solver outcomes, frozen coverage counts and real50/10 output verified. Normalized plan output is checked by byte identity; original TDD ancestry is checked on cbeb5978b.\nbce9f671a test(spur-graph): U2 regress unchanged ambiguous cell inventories\n6fa59d9f2 test(spur-graph): U2 require only genuine anonymous additions\ncbeb5978b fix(spur-graph): U2 avoid unchanged ambiguous cell churn\n"
+  },
+  "root_test": {
+    "execution": "authorized host infrastructure-recovery fallback",
+    "cwd": "/private/tmp/spur-notebook-u1-root-review",
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-graph",
+      "--no-default-features",
+      "--lib",
+      "extract::notebook_symbols"
+    ],
+    "environment_overrides": {
+      "SPUR_REMOTE": "0",
+      "SPUR_NO_LOCAL_FALLBACK": "1",
+      "CARGO_TARGET_DIR": "/private/tmp/spur-notebook-u1-bd-bi1d-target",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "SPUR_SCCACHE_S3": "0",
+      "TMPDIR": "/private/tmp/spur-notebook-u1-bd-bi1d-tmp",
+      "RUSTC_WRAPPER": ""
+    },
+    "exit_code": 0,
+    "passed": 22,
+    "failed": 0,
+    "ignored": 0,
+    "output": "   Compiling spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)\n   Compiling spur-graph v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-graph)\nwarning: function `file_oid_match_after_first_stat` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:839:19\n    |\n839 |     pub(super) fn file_oid_match_after_first_stat(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `as_bool` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:908:12\n    |\n907 |     impl FileOidMatch {\n    |     ----------------- method in this implementation\n908 |         fn as_bool(&self) -> Option<bool> {\n    |            ^^^^^^^\n\nwarning: `spur-graph` (lib test) generated 2 warnings\n    Finished `test` profile [unoptimized] target(s) in 21.27s\n     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)\n\nrunning 22 tests\ntest extract::notebook_symbols::tests::anonymous_edit_is_conservative_and_unknown_language_stays_visible ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_repeated_anonymous_output_only ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_duplicate_explicit_noop ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_duplicate_explicit_output_only ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_repeated_anonymous_noop ... ok\ntest extract::notebook_symbols::tests::duplicate_helpers_in_distinct_cells_do_not_collide ... ok\ntest extract::notebook_symbols::tests::dep_version_length_change_keeps_identical_original_function ... ok\ntest extract::notebook_symbols::tests::comment_prefix_movement_retains_current_refs_without_symbol_edits ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_duplicate_explicit_preserves_independent_edit ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_repeated_anonymous_preserves_independent_edit ... ok\ntest extract::notebook_symbols::tests::add_delete_and_notebook_rename_keep_exact_paths_and_absent_sides ... ok\ntest extract::notebook_symbols::tests::original_utf8_crlf_refs_survive_preparation_and_changes ... ok\ntest extract::notebook_symbols::tests::symbol_rename_keeps_exact_before_snapshot_amid_other_declarations ... ok\ntest extract::notebook_symbols::tests::same_cell_duplicate_match_keys_are_partial_without_symbol_loss ... ok\ntest extract::notebook_symbols::tests::inserting_or_removing_dep_header_keeps_identical_original_function ... ok\ntest extract::notebook_symbols::tests::unsupported_commands_and_nested_notebook_language_are_partial ... ok\ntest extract::notebook_symbols::tests::canonical_ids_separate_delimiter_and_percent_witnesses ... ok\ntest extract::notebook_symbols::tests::type_language_profile_and_root_metadata_events_are_separate ... ok\ntest extract::notebook_symbols::tests::inventory_events_survive_import_only_empty_and_output_cells ... ok\ntest extract::notebook_symbols::tests::malformed_missing_sides_and_unsupported_changes_are_explicit ... ok\ntest extract::notebook_symbols::tests::ambiguous_group_actual_edits_keep_conservative_cell_events ... ok\ntest extract::notebook_symbols::tests::frozen_app_symbols_and_all_28_independent_function_anchors ... ok\n\ntest result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 619 filtered out; finished in 2.52s\n\n",
+    "cache_setup": "Preemptive scoped wrapper clean -p spur-solver removed21 files/36.2MiB to avoid cached removed-worker paths; no source changes."
+  },
+  "review": {
+    "decision": "approve",
+    "scope": "Rework changes only11 production lines in notebook_symbols.rs,223 test lines,task-owned evidence. All public types/signatures, ordinary matcher, normalization, SQL and prior receipts remain unchanged.",
+    "resolution": "After recording Partial status/diagnostic, exact ordered NormalizedCell inventory equality skips false structural D/A. It does not pair ambiguous symbols or skip independent groups; different source/config/ordinal/type/language/count facts retain conservative events.",
+    "regressions": "Repeated anonymous and duplicate explicit no-op/output-only, independent real stable-cell source/metadata/dependency edits and root metadata, conservative actual ambiguous edits/additions/removals/reorder.",
+    "worker_broader": "Immutable logs/hashes verified: final RED7fail101; GREEN7pass; extraction143pass; matcher48pass. Frozen46/24symbols17/11functions28anchors and50symbolchanges/10cellevents retained.",
+    "limitations": "Core U2 gate only. SQL vectors, consumer publication and new native candidate remain U3-U5; no remote compiled success or execution equivalence claimed."
+  }
+}
