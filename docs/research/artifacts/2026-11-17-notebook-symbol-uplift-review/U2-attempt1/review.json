@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "task": "U2",
+  "issue": "bd-1khk",
+  "review_issue": "bd-1n0t",
+  "delegation_id": "b086929974a64511",
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "branch": "spur/worker/v2/codex/dc95897af65a8511/29905efe-e3ee-4a71-9e03-fd765d6b07fa",
+  "base": "26ce5a162ba844f5b13433c069265fb56f7f55ba",
+  "head": "6393ac6a7b2e389642f9ebb015797078dba8b763",
+  "test_commit": "6eb1c4cf6",
+  "implementation_commit": "033b9edad",
+  "receipt_verification": {
+    "chunk_id": "7f9376",
+    "wall_time_seconds": 0.563664709,
+    "exit_code": 0,
+    "original_token_count": 103,
+    "output": "PASS: eight log hashes/exits, identical RED/GREEN environments and test predicates, current/committed source/fixture hashes, original U1 bytes, source patch, public schema, mutation RED/GREEN, finite solver outcomes and five offset-only slice hashes.\n6eb1c4cf6 test(spur-graph): U2 cover notebook symbols and original source changes\n033b9edad feat(spur-graph): U2 expose cell-aware notebook symbols and changes\n"
+  },
+  "root_environment": {
+    "SPUR_REMOTE": "0",
+    "SPUR_NO_LOCAL_FALLBACK": "1",
+    "CARGO_TARGET_DIR": "/private/tmp/spur-notebook-u1-bd-bi1d-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "SPUR_SCCACHE_S3": "0",
+    "TMPDIR": "/private/tmp/spur-notebook-u1-bd-bi1d-tmp",
+    "RUSTC_WRAPPER": ""
+  },
+  "root_cwd": "/private/tmp/spur-notebook-u1-root-review",
+  "command_prefix": [
+    "scripts/spur-cargo",
+    "test",
+    "-p",
+    "spur-graph",
+    "--no-default-features",
+    "--lib"
+  ],
+  "root_focused": {
+    "filter": "extract::notebook_symbols",
+    "exit_code": 0,
+    "passed": 15,
+    "failed": 0,
+    "output": "   Compiling spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)\n   Compiling spur-graph v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-graph)\nwarning: function `file_oid_match_after_first_stat` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:839:19\n    |\n839 |     pub(super) fn file_oid_match_after_first_stat(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `as_bool` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:908:12\n    |\n907 |     impl FileOidMatch {\n    |     ----------------- method in this implementation\n908 |         fn as_bool(&self) -> Option<bool> {\n    |            ^^^^^^^\n\nwarning: `spur-graph` (lib test) generated 2 warnings\n    Finished `test` profile [unoptimized] target(s) in 24.56s\n     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)\n\nrunning 15 tests\ntest extract::notebook_symbols::tests::anonymous_edit_is_conservative_and_unknown_language_stays_visible ... ok\ntest extract::notebook_symbols::tests::comment_prefix_movement_retains_current_refs_without_symbol_edits ... ok\ntest extract::notebook_symbols::tests::dep_version_length_change_keeps_identical_original_function ... ok\ntest extract::notebook_symbols::tests::duplicate_helpers_in_distinct_cells_do_not_collide ... ok\ntest extract::notebook_symbols::tests::original_utf8_crlf_refs_survive_preparation_and_changes ... ok\ntest extract::notebook_symbols::tests::symbol_rename_keeps_exact_before_snapshot_amid_other_declarations ... ok\ntest extract::notebook_symbols::tests::same_cell_duplicate_match_keys_are_partial_without_symbol_loss ... ok\ntest extract::notebook_symbols::tests::add_delete_and_notebook_rename_keep_exact_paths_and_absent_sides ... ok\ntest extract::notebook_symbols::tests::inserting_or_removing_dep_header_keeps_identical_original_function ... ok\ntest extract::notebook_symbols::tests::unsupported_commands_and_nested_notebook_language_are_partial ... ok\ntest extract::notebook_symbols::tests::type_language_profile_and_root_metadata_events_are_separate ... ok\ntest extract::notebook_symbols::tests::canonical_ids_separate_delimiter_and_percent_witnesses ... ok\ntest extract::notebook_symbols::tests::inventory_events_survive_import_only_empty_and_output_cells ... ok\ntest extract::notebook_symbols::tests::malformed_missing_sides_and_unsupported_changes_are_explicit ... ok\ntest extract::notebook_symbols::tests::frozen_app_symbols_and_all_28_independent_function_anchors ... ok\n\ntest result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 619 filtered out; finished in 3.49s\n\n"
+  },
+  "root_matcher": {
+    "filter": "git_walk::tests::",
+    "exit_code": 0,
+    "passed": 48,
+    "failed": 0,
+    "output": "warning: function `file_oid_match_after_first_stat` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:839:19\n    |\n839 |     pub(super) fn file_oid_match_after_first_stat(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `as_bool` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:908:12\n    |\n907 |     impl FileOidMatch {\n    |     ----------------- method in this implementation\n908 |         fn as_bool(&self) -> Option<bool> {\n    |            ^^^^^^^\n\nwarning: `spur-graph` (lib test) generated 2 warnings\n    Finished `test` profile [unoptimized] target(s) in 0.69s\n     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)\n\nrunning 48 tests\ntest git_walk::tests::cache_telemetry_counts_failures_without_retaining_payload ... ok\ntest git_walk::tests::cache_telemetry_is_disabled_by_default_and_retains_no_ghost_keys ... ok\ntest git_walk::tests::cache_telemetry_tracks_payload_bytes_and_eviction ... ok\ntest git_walk::tests::cache_telemetry_distinguishes_cold_hit_and_post_eviction_reparse ... ok\ntest git_walk::tests::cache_telemetry_records_same_key_lock_wait_and_initialization_time ... ok\ntest git_walk::tests::fail_closed_on_missing_target_ref ... ok\ntest git_walk::tests::fail_closed_on_shallow_clone ... ok\ntest git_walk::tests::cat_file_batch_reads_multiple_blobs_and_reports_missing ... ok\ntest git_walk::tests::file_diff_initial_commit_marks_all_added ... ok\ntest git_walk::tests::ordinal_reducer_buffers_out_of_order_results_until_gap_closes ... ok\ntest git_walk::tests::ordinal_reducer_matches_normalized_serial_application ... ok\ntest git_walk::tests::parse_cache_budget_accepts_zero_and_u64_values_and_rejects_invalid_input ... ok\ntest git_walk::tests::binary_blob_downgrades_to_file_level_and_logs ... ok\ntest git_walk::tests::parse_raw_diff_handles_copy_status_like_rename ... ok\ntest git_walk::tests::retained_tier_evicts_oversized_entries_but_keeps_unreduced_entries ... ok\ntest git_walk::tests::retained_tier_failed_initialization_releases_every_accounted_byte ... ok\ntest git_walk::tests::retained_tier_initializer_can_reenter_cache_state_without_deadlock ... ok\ntest git_walk::tests::retained_tier_reuses_an_eligible_entry_without_reinitializing ... ok\ntest git_walk::tests::retained_tier_same_key_initialization_remains_single_flight ... ok\ntest git_walk::tests::retained_tier_ties_are_independent_of_hashmap_and_insertion_order ... ok\ntest git_walk::tests::retained_tier_tracks_exact_bytes_with_telemetry_off_and_on ... ok\ntest git_walk::tests::retained_tier_zero_budget_evicts_successful_empty_entries ... ok\ntest git_walk::tests::shared_parse_cache_does_not_retain_parse_failures ... ok\ntest git_walk::tests::shared_parse_cache_evicts_only_fully_reduced_ordinals ... ok\ntest git_walk::tests::shared_parse_cache_keeps_unreduced_concurrent_access ... ok\ntest git_walk::tests::shared_parse_cache_separates_languages_for_same_blob_oid ... ok\ntest git_walk::tests::gitlink_emits_file_change_no_recurse ... ok\ntest git_walk::tests::sliding_window_bounds_every_occupancy_class_when_ordinal_zero_stalls ... ok\ntest git_walk::tests::file_diff_rename_detected ... ok\ntest git_walk::tests::gix_open_ignores_replace_refs ... ok\ntest git_walk::tests::force_push_invalidates_and_rewalks_diverged_range ... ok\ntest git_walk::tests::snapshot_refs_returns_head_tip_when_detached ... ok\ntest git_walk::tests::snapshot_refs_returns_main_tip ... ok\ntest git_walk::tests::tier2_jaccard_matches_preserves_matches_and_ambiguity_diagnostics ... ok\ntest git_walk::tests::missing_blob_fails_closed_with_named_oid ... ok\ntest git_walk::tests::non_utf8_path_does_not_panic ... ok\ntest git_walk::tests::merge_collision_emits_added_and_keeps_deleted ... ok\ntest git_walk::tests::worker_pool_forces_out_of_order_completion_but_reduces_deterministically ... ok\ntest git_walk::tests::worker_pool_joins_workers_before_reducer_panic_escapes ... ok\ntest git_walk::tests::parse_cache_dedups_repeated_blob_oids ... ok\ntest git_walk::tests::worker_failure_cancels_queued_work_and_joins_every_worker ... ok\ntest git_walk::tests::symbol_diff_classifies_added_modified_deleted ... ok\ntest git_walk::tests::symbol_diff_marks_byte_start_shift_as_modified ... ok\ntest git_walk::tests::tier1_file_rename_inheritance_matches_same_name_kind ... ok\ntest git_walk::tests::tier3_ambiguous_falls_back_to_added_deleted ... ok\ntest git_walk::tests::tier2_jaccard_matches_renamed_body_similar ... ok\ntest git_walk::tests::full_walk_parse_cache_peak_is_bounded_by_admitted_active_work ... ok\ntest git_walk::tests::temporal_jobs_1_2_4_8_match_reference_for_every_walk_strategy ... ok\n\ntest result: ok. 48 passed; 0 failed; 0 ignored; 0 measured; 586 filtered out; finished in 4.51s\n\n"
+  },
+  "root_reproducer": {
+    "filter": "extract::notebook_symbols::tests::root_review_repeated_anonymous_same_document_is_noop",
+    "exit_code": 101,
+    "output": "   Compiling spur-graph v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-graph)\nwarning: function `file_oid_match_after_first_stat` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:839:19\n    |\n839 |     pub(super) fn file_oid_match_after_first_stat(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `as_bool` is never used\n   --> crates/spur-graph/src/mcp/mod.rs:908:12\n    |\n907 |     impl FileOidMatch {\n    |     ----------------- method in this implementation\n908 |         fn as_bool(&self) -> Option<bool> {\n    |            ^^^^^^^\n\nwarning: `spur-graph` (lib test) generated 2 warnings\n    Finished `test` profile [unoptimized] target(s) in 19.56s\n     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)\n\nrunning 1 test\ntest extract::notebook_symbols::tests::root_review_repeated_anonymous_same_document_is_noop ... FAILED\n\nfailures:\n\n---- extract::notebook_symbols::tests::root_review_repeated_anonymous_same_document_is_noop stdout ----\n\nthread 'extract::notebook_symbols::tests::root_review_repeated_anonymous_same_document_is_noop' (244839166) panicked at crates/spur-graph/src/extract/notebook_symbols_tests.rs:488:5:\nassertion `left == right` failed: byte-identical before/after must retain ambiguity without inventing cell additions/deletions\n  left: 4\n right: 0\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    extract::notebook_symbols::tests::root_review_repeated_anonymous_same_document_is_noop\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 634 filtered out; finished in 0.11s\n\nerror: test failed, to rerun pass `-p spur-graph --lib`\n",
+    "test_patch": "reproducer.patch",
+    "identity": {
+      "chunk_id": "06020e",
+      "wall_time_seconds": 0.00000825,
+      "exit_code": 0,
+      "original_token_count": 70,
+      "output": "{\"scratch_test_sha256\": \"37089641790500a2b39034680cf9d5fbc8686208a5c67697cf97a002a8692c80\", \"restored_test_sha256\": \"668db1a6f8e39204477b3ce753ef11753a2f22d8c55d5d56813047fa90ee6f2e\", \"retained_native_sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\"}\n"
+    },
+    "scratch_restored": true
+  },
+  "setup_failures": [
+    {
+      "kind": "cached build script embedded removed worker checkout path",
+      "result": {
+        "chunk_id": "529f82",
+        "wall_time_seconds": 0.000011375,
+        "exit_code": 101,
+        "original_token_count": 261,
+        "output": "   Compiling spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)\n   Compiling spur-graph v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-graph)\nerror: failed to run custom build command for `spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)`\n\nCaused by:\n  process didn't exit successfully: `/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/build/spur-solver-ec8dab3fa17a59a1/build-script-build` (exit status: 101)\n  --- stderr\n\n  thread 'main' (244805631) panicked at crates/spur-solver/build.rs:13:9:\n  failed to build declarative solver rule manifest bundle: /Users/kevintruong/project/SpurCode/.spur/worktrees/29905efe-e3ee-4a71-9e03-fd765d6b07fa/crates/spur-solver/src/rules/families/accessibility/rules (family `accessibility` rules): failed to discover approved rule sources: No such file or directory (os error 2)\n  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nwarning: build failed, waiting for other jobs to finish...\n"
+      }
+    },
+    {
+      "kind": "ENOSPC during compilation; no tests executed",
+      "result": {
+        "chunk_id": "384a7c",
+        "wall_time_seconds": 0.000004084,
+        "exit_code": 101,
+        "original_token_count": 78,
+        "output": "   Compiling spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)\nerror: failed to write to `/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/rmetai2Vegh/full.rmeta`: No space left on device (os error 28)\n\nerror: could not compile `spur-solver` (lib) due to 1 previous error\n"
+      }
+    }
+  ],
+  "space_recovery": {
+    "result": {
+      "chunk_id": "bbc7d8",
+      "wall_time_seconds": 0.383827125,
+      "exit_code": 0,
+      "original_token_count": 78,
+      "output": "/private/tmp/spur-r5-dd530794-release-3/native-target/aarch64-apple-darwin/release/deps\n/private/tmp/spur-r5-dd530794-release-4/native-target/aarch64-apple-darwin/release/deps\n/private/tmp/spur-r5-dd530794-release-3/native-target/release/deps\n/private/tmp/spur-r5-dd530794-release-4/native-target/release/deps\n"
+    },
+    "scope": "Only deps subdirectories in obsolete task-owned R5 release-3/4 native build caches; sources, receipts and final libraries preserved. Recovered about2.4GiB. Retained native package SHA256 independently verified unchanged."
+  },
+  "review": {
+    "beads_status": "in_progress, ready-for-review",
+    "completion_audit": "b086929974a64511, 2026-11-17 06:58:36",
+    "unresolved_signals": "none",
+    "source_scope": "4 extraction/matcher files; task-owned evidence remainder",
+    "verdict": "request_changes",
+    "severity": "Important/P2",
+    "location": "crates/spur-graph/src/extract/notebook_symbols.rs:408-426",
+    "finding": "Ambiguous groups unconditionally emit Deleted/Added for byte-identical repeated anonymous cells; actual4 cell changes, expected0. Duplicate explicit IDs take same branch. Preserve Partial status, diagnostics and inventory while avoiding demonstrably false structural changes.",
+    "independent_review": "bd-1n0t, no other important/critical findings"
+  },
+  "limitations": "Focused core tests and matcher regressions independently passed; worker136 extraction results verified by immutable hashes. No new native SQL/consumer/release claim. Host execution is authorized infrastructure recovery; failures before tests are not RED assertions."
+}

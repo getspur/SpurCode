@@ -1,0 +1,24 @@
+diff --git a/crates/spur-graph/src/extract/notebook_symbols_tests.rs b/crates/spur-graph/src/extract/notebook_symbols_tests.rs
+index d259b3838..f6a27b1e4 100644
+--- a/crates/spur-graph/src/extract/notebook_symbols_tests.rs
++++ b/crates/spur-graph/src/extract/notebook_symbols_tests.rs
+@@ -476,0 +477,19 @@ fn unsupported_commands_and_nested_notebook_language_are_partial() {
++
++#[test]
++fn root_review_repeated_anonymous_same_document_is_noop() {
++    let mut cell = code("ignored", "python", "def f():\n    return 1\n");
++    cell.as_object_mut().unwrap().remove("id");
++    let bytes = notebook(vec![cell.clone(), cell]);
++    let result = compare(&bytes, &bytes);
++    assert_eq!(result.status, NotebookStatus::Partial);
++    assert_eq!(count(result.before.as_ref().unwrap()), 2);
++    assert_eq!(count(result.after.as_ref().unwrap()), 2);
++    assert!(!result.diagnostics.is_empty());
++    assert_eq!(
++        result.cell_changes.len(),
++        0,
++        "byte-identical before/after must retain ambiguity without inventing cell additions/deletions"
++    );
++    assert!(result.symbol_changes.is_empty());
++    assert!(result.document_changes.is_empty());
++}
