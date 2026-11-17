@@ -1,0 +1,512 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/docs/research/2026-11-17-spur-graph-real-repo-probe.ipynb",
+  "metadata": {
+    "spur": {
+      "duckdb_runtime": "2.0.0"
+    }
+  },
+  "total_cells": 28,
+  "code_cells": 25,
+  "cells": [
+    {
+      "id": "4120f24d-165b-40d4-a31b-c6f357f00115",
+      "language": "sql",
+      "version": 4,
+      "execution_count": 3,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "983d9851-2c20-43f4-ab13-a52c396342e0",
+        "source_version": 4,
+        "execution_identity": "6c1141c665b6444bb2c65675a71c4e90ea5674d89b7e2b6923bb43c4572e2ee8",
+        "output_hash": "4d117697dc1f289186f1078508a358bf17eb3e056b51cffb5ed524a4ea4801bb",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "3f632cf0-d63f-4a23-b02f-b381e2a36b8f",
+      "language": "python",
+      "version": 15,
+      "execution_count": 4,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "9019a955-3b49-4a4d-91fd-08cf047c4bb9",
+        "source_version": 15,
+        "execution_identity": "ff8d0bc51abd971edadaa6d6cc792451597a57a4e236848d060545cbaaf2a3aa",
+        "output_hash": "7ff67231a690a21502608268e61049c63db5eec18ddb38204be6d23dedbe66cd",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "376644b2-c4a5-49e3-a249-0cac3da767c2",
+      "language": "python",
+      "version": 19,
+      "execution_count": 5,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "ed161a8d-507c-41d0-b0bc-447cf4673c40",
+        "source_version": 19,
+        "execution_identity": "b9a790c73dc045a9a4afd02d78d66f1afa8e653146dca4f0f1a9a2fd12aa3578",
+        "output_hash": "29e02f9e52faf033d7b70a23d05526b699a053929541a0f7962826517e2d2d12",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "6d7b2c97-3f38-4e61-895d-eaeb9ec3e6d3",
+      "language": "sql",
+      "version": 23,
+      "execution_count": 6,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "3a5f980c-8203-47eb-8181-5b3ddb2be75c",
+        "source_version": 23,
+        "execution_identity": "bc520bda19577000c678f291fd6a35022d44faecf076e0dc2ef88846ce440d19",
+        "output_hash": "167e1467220953b5c2f421350e94dcd792b84358f1058164244a098e18facd52",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "8abdcda8-15f6-4e9b-a2bf-18d4079f40ed",
+      "language": "sql",
+      "version": 27,
+      "execution_count": 7,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "e136aadb-2459-437b-ac8b-44a1d60cab54",
+        "source_version": 27,
+        "execution_identity": "20c4a764ca4bea09d34f8acec7676652f2f5b553763e58d9a4c63c340789bcf7",
+        "output_hash": "53f99b712efeda5567d3e155e42a03e3793c5edde0517ef80c5800766e9705cd",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "9c993415-c3a7-464c-a578-ddd7a13f6a12",
+      "language": "sql",
+      "version": 31,
+      "execution_count": 8,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "055570a3-602f-4b41-848b-467d65ae081e",
+        "source_version": 31,
+        "execution_identity": "be7f20c72ebc2170c2abcafa6cfb75e4446c02c591880f11516da009ada9a5b7",
+        "output_hash": "ddb84279a2882285b0a9897cb7e2cda5124278ae70852c1f6a76e38e8fe84857",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "bf0925a6-9f5b-4f0d-89f8-4719da577223",
+      "language": "sql",
+      "version": 35,
+      "execution_count": 9,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "7598ab55-20c3-42f3-994b-05a402dedf27",
+        "source_version": 35,
+        "execution_identity": "a56d48bd8b1a326df6d750a2aaace6d9f65aa08db82f7c72a2ba571c649ad41c",
+        "output_hash": "3bea2e3abac0bb5aafc0fea74ee0f1c45032139453a5c8c403b037db4964b6ae",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "aa707f07-441b-461e-b06c-b412803a5e85",
+      "language": "sql",
+      "version": 39,
+      "execution_count": 10,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "799463d7-8f37-4126-aa47-d3ba8e08b09d",
+        "source_version": 39,
+        "execution_identity": "3709b4f69ca509c38fa44304dd60afa7e3b1cfd88055afe37969ac5ebfa0d4b5",
+        "output_hash": "1a759a5823323dee06afe8a589642036b3367771362393e2531bab2bc7860d6c",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "2be50ef0-e111-4e7d-b17a-a1d1bc888f1e",
+      "language": "sql",
+      "version": 43,
+      "execution_count": 11,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "5fda8c93-033b-43e6-a018-8eb3123888f7",
+        "source_version": 43,
+        "execution_identity": "2f4b99b962cb453187739e9f582914c2c7062664c543e54da434006ae3f72762",
+        "output_hash": "f32e5bb3778b457ab28649d21f1e4f86de3508d127d32ad2051a2afc6c6d4e87",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "593b8615-3d1c-4d70-a4f4-e43eca35f678",
+      "language": "sql",
+      "version": 47,
+      "execution_count": 12,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "6e6a6d78-ca89-44b9-9ca8-041ac1f5baaa",
+        "source_version": 47,
+        "execution_identity": "8197d4b2597b277fdf93b221a5a2e8fae11f06debd63316916c6c4352abf3269",
+        "output_hash": "24e9d17bb4807ca76aa94a54eb38374899e5b5425edd1226477f8fcb673a77a4",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "bf0c09f7-5e93-46f9-970f-ff742cf4aad0",
+      "language": "sql",
+      "version": 51,
+      "execution_count": 13,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "d62922ef-0341-4f95-9d48-58468f2bb3a3",
+        "source_version": 51,
+        "execution_identity": "5a0a09ccd617275d76cce83646639a4edf1aacffd46bdad33c711969ea889114",
+        "output_hash": "d7062a55ddedc2b64cfd06d9bcfed816aeb2c3f506130fa975ee51371fe7abc5",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "076f9b22-f438-4a8e-9ad4-48d43b39b260",
+      "language": "sql",
+      "version": 55,
+      "execution_count": 14,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "eeae2a96-bd86-4c1d-9a6a-15c736d35294",
+        "source_version": 55,
+        "execution_identity": "8fce0924eb508aa311e8f538f85938c17d16990ba022d8efa017a2b82f373ac1",
+        "output_hash": "5288f4da7e4f4c11693f11577c3338781d8c9e434a0e429983a652794d479f30",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "e25f8dcb-97e0-4363-8db5-f257841037ec",
+      "language": "sql",
+      "version": 59,
+      "execution_count": 15,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "48e95c40-ae45-487b-a00b-91772cd90eff",
+        "source_version": 59,
+        "execution_identity": "5624f1c0734b6da47f5197b6b208a3089847d753bea86dc7c049d2c24b716db1",
+        "output_hash": "012e628eb063185453c1ca67c78b1d2cf607a544a97a02a339f1693f9ca5d061",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "f8a172ae-9730-48b5-9009-10f1f76cffc1",
+      "language": "sql",
+      "version": 63,
+      "execution_count": 16,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "dfe09142-2e78-45e8-94f0-a15d4901dc95",
+        "source_version": 63,
+        "execution_identity": "38fe660b160b4b64e3b74abd6c2a16f23a689283a914cbc4d9d336690e142803",
+        "output_hash": "80ac80e604011abfd3003acbd9159d4bbed5efbecd498c666f417429d16031a4",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "e20a7f99-9788-4dca-aa8d-6736f9503c7d",
+      "language": "sql",
+      "version": 67,
+      "execution_count": 17,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "7f85087d-c961-445c-83cf-82f5f772e60f",
+        "source_version": 67,
+        "execution_identity": "28625358abdc828c7347434917de1d6b599d974ce0ddb4de94d0e8783eecdb9e",
+        "output_hash": "0b99a8303079783008e679620593d1dd21c762aeaa25c57acee31908571f1c39",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "7d46e53e-bdba-47ad-9be6-9e152cfd55e4",
+      "language": "sql",
+      "version": 71,
+      "execution_count": 18,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "63c9a0ce-c06d-4fd2-96d1-89e22a06e3c7",
+        "source_version": 71,
+        "execution_identity": "4a66cc17c8a84dfae910263d17cccca39e224597b636e71984ebdedd254d340d",
+        "output_hash": "15d2a586d90b79553a4ee796239b0a8c5529af69998d8bee93755d35d60f7fb2",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "5b14f24b-4abb-41d1-b326-659768350cac",
+      "language": "python",
+      "version": 75,
+      "execution_count": 19,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "8591a82c-9afd-46db-b53a-26109165a907",
+        "source_version": 75,
+        "execution_identity": "b58a1ce3582496e8e4d7c168764fb0d1d9a6c46243d0f24e7d23ad18d26760f3",
+        "output_hash": "75fcb67e92b5f8a86e5a3925258c03548c0a1be60acbe4257bce8caa73617826",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "62fabf25-4eac-4b53-a2a8-b83f963501de",
+      "language": "python",
+      "version": 79,
+      "execution_count": 20,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "cbfc11b1-a7f2-4b4a-a5cd-bfac7ba5f297",
+        "source_version": 79,
+        "execution_identity": "60a8db1111270ecf2fcad83666f74d3d3aaea54db8889fc7d14b765efba20db8",
+        "output_hash": "7bc441e4ef7159579740103325d36c6fea16203e8d0565957e8af52d50e8f591",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "4581562c-7151-4c50-a7a8-fe69728fd44f",
+      "language": "sql",
+      "version": 83,
+      "execution_count": 21,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "f1f00678-e2d5-443d-a278-f6be12ae6e77",
+        "source_version": 83,
+        "execution_identity": "996d42f0df675c51b0880249b1afc7880e57097de3c970c9dabadfcc337897d2",
+        "output_hash": "33352243c76851a0b01aade6ba4ddd0353bd2ea34835b1677f40f7721b3d4273",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "cf84b5a3-52fa-45ca-bdfd-3a128e326c98",
+      "language": "sql",
+      "version": 87,
+      "execution_count": 22,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "f9f085a7-b810-4d38-9e10-beb4c762d0b9",
+        "source_version": 87,
+        "execution_identity": "72b712f7ba4a8b0da29298afb6b659d7c8b7afcfa6fdc695bd1bf070a89ec648",
+        "output_hash": "7b119f2afbb6e24d2a9644ee20d138535c94b09059605aae067e34392b1e212c",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "2ba553a3-5f6c-49f0-a11b-d6fb9905220b",
+      "language": "sql",
+      "version": 91,
+      "execution_count": 23,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "8633f6ef-80a3-4c25-9fa7-dd42424865cf",
+        "source_version": 91,
+        "execution_identity": "183d81c61c14bf9315b95c89b6b0ae79389184f0e110422bf076ac25ac688742",
+        "output_hash": "c22d2d5fd90f994f0c72ada3e14e72cf61442879a8dbc96405cd80273f06772b",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "b551a16f-5cd3-4498-89b3-f21c399dd27f",
+      "language": "sql",
+      "version": 95,
+      "execution_count": 24,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "e5b63042-2a85-4d0a-9583-f9c7ce56e4aa",
+        "source_version": 95,
+        "execution_identity": "a8d10bb7163dda7e6547b3dd3d7b3454621de2a57e39d40ed2b80ca1cf4cbf64",
+        "output_hash": "7b98edb7193ab53f9e89f4a4f2b1caad0029f40d87f97b2195038a9e89348f62",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "68f4db92-38ce-4a66-8f14-3e05675d30ee",
+      "language": "sql",
+      "version": 99,
+      "execution_count": 25,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "7c705b8f-8201-4f8f-ac83-ffbe2f83a1bf",
+        "source_version": 99,
+        "execution_identity": "fc2f3d32a9990415f53e5988d5fffd1d88923cffba67aabfa2f8cc119a386788",
+        "output_hash": "c94ea2eda2382b005a636206d0b07211b51d5030a6de808f87ccaf9df2995b7b",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "19b196a4-ceb4-479d-bb72-e0d41e800230",
+      "language": "sql",
+      "version": 103,
+      "execution_count": 26,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "daa953cf-774e-455d-b9b2-4e29cd63deb3",
+        "source_version": 103,
+        "execution_identity": "7907a4c5613a7a1d0f436a867cd80ef3673a867d7d5a76a6bb399036b5b18a87",
+        "output_hash": "3e9f7f8335e52dadd867bdf458bd634a264e8988b73572c5ce2db456e51ba039",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    },
+    {
+      "id": "c4e0a43a-23fd-4dda-84da-ea2c51101168",
+      "language": "sql",
+      "version": 109,
+      "execution_count": 27,
+      "provenance": {
+        "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+        "run_id": "0ed48f6d-06c2-41a5-b442-e5a3bc43babb",
+        "source_version": 109,
+        "execution_identity": "261d3531ecd5fd03a32a026d536f33c3bfa1ce305312ee3f9f27faed99870ae1",
+        "output_hash": "0e84aa0c1e8e99c07fac36f797699a2dc4dc013d7a7f4d4f88d4461af168ee37",
+        "status": "succeeded",
+        "dependencies": [],
+        "published_ports": [],
+        "ports_at_start": [],
+        "lineage_complete": true
+      },
+      "output_count": 1,
+      "error": false
+    }
+  ]
+}

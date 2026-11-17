@@ -1,0 +1,431 @@
+{
+  "schema_version": 1,
+  "probe_issue": "bd-361m",
+  "status": "complete_with_identified_gaps",
+  "followup_bug": "bd-3ct2",
+  "repository": "spur-notebook",
+  "scope": "app_gallery/code-graph-workbench/",
+  "base_commit": "cd24d5c4779d11a5b2dd1bbe55c93da12856ae41",
+  "head_commit": "07db59f08dbced2c8bedd17290c78f57b428a2bc",
+  "source_occurrences": 51,
+  "unique_cache_keys": 32,
+  "snapshot_sources": {
+    "base": 25,
+    "head": 26
+  },
+  "whole_commit_changed_files": 12,
+  "component_review_pairs": 7,
+  "admitted_source_bytes": 623112,
+  "native_package": {
+    "abi": "C_STRUCT_UNSTABLE",
+    "binary": {
+      "name": "spur_graph.duckdb_extension",
+      "sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+      "size_bytes": 16904630
+    },
+    "duckdb_api_version": "2.0.0",
+    "extension_version": "0.1.0",
+    "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "facts_schema_version": 1,
+    "format_version": 1,
+    "platform": "osx_arm64",
+    "resolution_scope": "single_file",
+    "source_identity": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "trust": {
+      "mode": "unsigned_local",
+      "signature": "absent"
+    }
+  },
+  "runtime": {
+    "duckdb": "2.0.0",
+    "native_version": "v2.0.0",
+    "platform": "osx_arm64"
+  },
+  "publication_manifest_sha256": "b83daaa76b23bf494474d83be61deffa64bbd3b803ea0e0012bed293b2b29443",
+  "cache_replay": {
+    "missing_keys": 0,
+    "tables_unchanged": true
+  },
+  "input_coverage": {
+    "git:07db59f08dbced2c8bedd17290c78f57b428a2bc": {
+      "commit_oid": "07db59f08dbced2c8bedd17290c78f57b428a2bc",
+      "coverage": {
+        "extraction_complete": false,
+        "source_rows": 26,
+        "status_counts": {
+          "extraction_error": 1,
+          "ok": 25
+        },
+        "unresolved_edges": 654
+      },
+      "parent_oid": "cd24d5c4779d11a5b2dd1bbe55c93da12856ae41",
+      "repository": "spur-notebook"
+    },
+    "git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41": {
+      "commit_oid": "cd24d5c4779d11a5b2dd1bbe55c93da12856ae41",
+      "coverage": {
+        "extraction_complete": false,
+        "source_rows": 25,
+        "status_counts": {
+          "extraction_error": 1,
+          "ok": 24
+        },
+        "unresolved_edges": 687
+      },
+      "parent_oid": "8c7f6297822f82a79b9a3d60c049153d55b691b5",
+      "repository": "spur-notebook"
+    }
+  },
+  "review_coverage": {
+    "pair_rows": 7,
+    "pairs_with_diagnostics": 0,
+    "unavailable_pairs": 0
+  },
+  "source_checks": {
+    "symbols": 373,
+    "symbol_range_out_of_bounds": 0,
+    "symbol_utf8_boundary_failures": 0,
+    "python_ast_definitions": 265,
+    "python_ast_unmatched": 0,
+    "delta_rows": 31,
+    "delta_span_classifications": {
+      "unchanged_span_moved": 22,
+      "source_span_changed": 4,
+      "added": 5
+    }
+  },
+  "notebook_gap": {
+    "base_graph_functions": 17,
+    "head_graph_functions": 11,
+    "base_raw_symbols": 0,
+    "head_raw_symbols": 0,
+    "raw_pair_changes": 0,
+    "raw_pair_diagnostics": 0,
+    "standalone_cell_symbols": {
+      "base": 46,
+      "head": 24
+    },
+    "standalone_cell_pair_deltas": 55,
+    "standalone_cell_pair_count": 9,
+    "function_cell_anchor_witnesses": 28
+  },
+  "lifecycle": {
+    "status": "passed",
+    "runtime": "2.0.0",
+    "publication_manifest_sha256": "b83daaa76b23bf494474d83be61deffa64bbd3b803ea0e0012bed293b2b29443",
+    "note_reopen": {
+      "status": "verified",
+      "note_sha256": "bff7bda41bf56f25daa9f56533edfad051c506d24a135ab4fc6c8a08399bf332",
+      "snapshot_id": "git:07db59f08dbced2c8bedd17290c78f57b428a2bc",
+      "git_blob_verified": true,
+      "source_excerpt_verified": true,
+      "matching_delta_rows": 1,
+      "context_checks": [
+        {
+          "requested_snapshot": "git:07db59f08dbced2c8bedd17290c78f57b428a2bc",
+          "state": "current",
+          "eligible_as_current": true
+        },
+        {
+          "requested_snapshot": "git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41",
+          "state": "historical",
+          "eligible_as_current": false
+        },
+        {
+          "requested_snapshot": "git:fd06cab1f6df2654c43573aa972c3f2b51d3f37f",
+          "state": "historical",
+          "eligible_as_current": false
+        }
+      ]
+    },
+    "fault_after_candidate": {
+      "returncode": 23,
+      "pid": 51754,
+      "stdout": "candidate written\n",
+      "stderr": ""
+    },
+    "prior_pointer_unchanged": true,
+    "published_files_unchanged": true,
+    "validated_published_files": 11,
+    "native_child_reaped": true,
+    "staging_clean": true,
+    "notebook_function_cell_anchors": 28,
+    "notebook_raw_json_slices_differ": 28,
+    "notebook_cell_anchor_export": {
+      "path": "lifecycle_cell_anchors.parquet",
+      "sha256": "69b0783c7e72127407473fca3da4cde074f4046b230470a5176c5febc8ea97e5",
+      "rows": 28
+    },
+    "scope": "Headless probe artifacts/context checks; no production UI, note service, automatic stale-state guard or remote publication."
+  },
+  "notebook_proof": "notebook-proof.json",
+  "preserved_user_files": {
+    "spur-notebook": {
+      "jute-notebook/src-tauri/src/guarded_cell_run.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/cpp.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/mod.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/runtime.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/runtime_lifecycle.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/runtime_provenance.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/runtime_provenance_tests.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/runtime_tests.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/rust.rs": true,
+      "jute-notebook/src-tauri/src/kernel_config/tests.rs": true,
+      "notebooks/etag-enhancement-eval.ipynb": true
+    },
+    "SpurCode": {
+      "crates/spur-acp/src/adapter/codex.rs": true,
+      "crates/spur-acp/src/adapter/mod.rs": true,
+      "docs/critical-findings.md": true,
+      "docs/research/2026-10-27-beads-maintenance-analysis.ipynb": true,
+      "duckdb-extension-journey-interactive-20261027.ipynb": true
+    }
+  },
+  "observed_runtime_recovery": "Initial 1.5.5 setup was rejected before LOAD. User selected DuckDB2.0; identical guarded setup then passed.",
+  "verdict": {
+    "explore": "Useful bounded real-data foundation with local-resolution and cell-coordinate handling.",
+    "notebook_review": "Not ready for semantic completeness; fix bd-3ct2 or expose an explicit per-API unsupported capability.",
+    "product": "UI/shared-Agent state, typed query service and automatic stale/reopen workflow remain separate integration work."
+  },
+  "limitations": [
+    "Historical component slice covers7of12changedfiles, not full repository/commit.",
+    "Project tests were parsed/indexed as source, not executed.",
+    "Moved identical declaration spans are not proof of unchanged semantics; overlapping ranges are not independent behavioral changes.",
+    "Notebook ranges require containing-cell identity/decoded source; standalone cell witness is not a production matcher.",
+    "Context checks and note are headless probe artifacts; successful publication replacement and historical-note reopening afterward were not tested.",
+    "No new native extension build/source changes, all-platform acceptance, compiler accuracy, benchmark or production readiness claim."
+  ],
+  "evidence_files": {
+    "analysis-command.json": {
+      "sha256": "fc1d2522f0358f1ee8931fdb2f187e7d416efc583502f76ab4aab98fd4689a9e",
+      "bytes": 614
+    },
+    "analysis.json": {
+      "sha256": "a533fecc6c5ecb3fc4a58a4b9f50a7f42928391aa8c6a780043899818fec4ede",
+      "bytes": 9693
+    },
+    "analysis.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "analysis.stdout": {
+      "sha256": "e2dbd0ae023255b0f96debedfb46d724ad522ba3d2024ff01fa5a7dca878b8b2",
+      "bytes": 6179
+    },
+    "cell-comparisons.parquet": {
+      "sha256": "83b7e321475e135bde70ff0ba36a7f60fd52e20d3a471e72c1494ddec1da29ec",
+      "bytes": 11503
+    },
+    "consumer-command.json": {
+      "sha256": "14edc55fa6cbc786f556896928cc8f4d6fd3008a7cda19e9073991fd973c7568",
+      "bytes": 837
+    },
+    "consumer.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "consumer.stdout": {
+      "sha256": "f28425981fb5308c160cc384f9d8e0829572b8340896b4b70259d36d297416ca",
+      "bytes": 126
+    },
+    "diff.jsonl": {
+      "sha256": "f30155d103c98f95b76a582262889d5b7751bc95bf3616da8dcb85ecde63b38c",
+      "bytes": 3230
+    },
+    "endpoint.patch": {
+      "sha256": "d08f0eec4ca1b365ec8581007fce8ad5bb88ddffd1ea98deede83ba8349b3e69",
+      "bytes": 2101
+    },
+    "freeze.json": {
+      "sha256": "4102afc06fa224887fc9c027fa7522d005060d7b85553e063af6c19c35adaf4c",
+      "bytes": 3326
+    },
+    "inventory.jsonl": {
+      "sha256": "82175c90ab846dd10348f0a3b8e42edc21cd4029f02adf8b3a37b9f0f3389e30",
+      "bytes": 28164
+    },
+    "lifecycle-command.json": {
+      "sha256": "7ddb5c89d2668317261f96baefee9e97a0bb248c043cb6fc76ba1c1f97b0d2f2",
+      "bytes": 615
+    },
+    "lifecycle.json": {
+      "sha256": "9efd5fe9657d6139b940aa7f1cbb5657441caf4a1079cb353e4beb0cac1355f1",
+      "bytes": 1657
+    },
+    "lifecycle.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "lifecycle.stdout": {
+      "sha256": "9efd5fe9657d6139b940aa7f1cbb5657441caf4a1079cb353e4beb0cac1355f1",
+      "bytes": 1657
+    },
+    "lifecycle_cell_anchors.parquet": {
+      "sha256": "69b0783c7e72127407473fca3da4cde074f4046b230470a5176c5febc8ea97e5",
+      "bytes": 3191
+    },
+    "native-analysis.py": {
+      "sha256": "411173832300ee9b8dcf8b87fc2e6ed4f1155f3daf78ff27e13f462c76d67c73",
+      "bytes": 10257
+    },
+    "native-lifecycle.py": {
+      "sha256": "2f9db9b8eb03f10ea2b5e821ffb148dbb53f623a95d403606f434b456bc63d63",
+      "bytes": 10488
+    },
+    "note-reopen.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "note-reopen.stdout": {
+      "sha256": "4930d47b9dd4c18d6b48ce8c88cd03ef69addab8710d035048051c9ead513e42",
+      "bytes": 750
+    },
+    "notebook-cell-anchors.jsonl": {
+      "sha256": "18a1bcaf3de14a67b0bc2184d7c29d8afa8c7406f0488756d2ad2cf89c1f7256",
+      "bytes": 9408
+    },
+    "notebook-cell-sources.jsonl": {
+      "sha256": "0d1c1160b55503b1b358812d2083a34d6e672b61fb59b70aac38334840f09b7c",
+      "bytes": 68500
+    },
+    "notebook-cell-symbols.jsonl": {
+      "sha256": "528ec1833e6562c97d9bd35f67d1d7148b47a35f8c193a6414eb1aae38823a34",
+      "bytes": 4801
+    },
+    "notebook-proof.json": {
+      "sha256": "8b73877bf861e7d41d2fb0cf41a18048c226445118000b1157b6c1f8e49db07f",
+      "bytes": 17987
+    },
+    "probe_anchor_checks.parquet": {
+      "sha256": "5b526c3edd40b42d87a28d53444411013e52299088de444ee94c593d4f239762",
+      "bytes": 7024
+    },
+    "probe_ast_checks.parquet": {
+      "sha256": "b6da4d47558d4238860a30b9f740c7a7ee3f58712a147eae3c45cf369747908e",
+      "bytes": 4978
+    },
+    "probe_notebook_cells.parquet": {
+      "sha256": "d8a0954dac2d72b5f01922eb8912f2f170acd13b1a5e22da6c63f6891c755307",
+      "bytes": 4137
+    },
+    "probe_review_checks.parquet": {
+      "sha256": "89233b2089cf199040f012159d0cf7aefe06075681e3457ab1fb5c3badf5ae26",
+      "bytes": 3751
+    },
+    "probe_symbol_parents.parquet": {
+      "sha256": "0a1d4b4357fd31fe807533860612dcedf3b57b5eabb7523a341422f12a1ee381",
+      "bytes": 1841
+    },
+    "probe_symbols.parquet": {
+      "sha256": "7d303de61dc09950982ffe547c97d5aae03d848fb0cb3339d9d51e229baa4a0d",
+      "bytes": 43030
+    },
+    "python-ast-checks.jsonl": {
+      "sha256": "32531211532e07b151ccc2ddd4e8c55f6db5113ac518e3efe62a0a6603fd29f2",
+      "bytes": 66010
+    },
+    "query-record.json": {
+      "sha256": "954e92a286f07f0af4b4a740a168cc9de701fe45ae18c850f6b3853900fba890",
+      "bytes": 1157
+    },
+    "review-note-receipt.json": {
+      "sha256": "d16d8de8978da8a53067d9e4182680246bfe0c6f0d780b8a0a4b9dbd63971a5a",
+      "bytes": 184
+    },
+    "review-note.json": {
+      "sha256": "bff7bda41bf56f25daa9f56533edfad051c506d24a135ab4fc6c8a08399bf332",
+      "bytes": 4013
+    },
+    "review-span-checks.jsonl": {
+      "sha256": "7db44142fd8dad8740d3b53afb88fb07e3350e91bce75f0004e8fa6df7f25a9c",
+      "bytes": 12869
+    },
+    "symbol-anchor-checks.jsonl": {
+      "sha256": "816d52840b2de80e5808cc785cae84abfc187934c6fe1c1cb54211f9f41d5512",
+      "bytes": 123299
+    },
+    "symbol-parents.jsonl": {
+      "sha256": "e1fbb5a7772c82c72c8d0547ca7074e79ee529aca4009e455db38c648e87ce38",
+      "bytes": 8829
+    },
+    "symbol-rows.jsonl": {
+      "sha256": "7ff1bbe44f65c51cde26b812bbf0fac179a2f09eb6826eda79521f9bfff1f70a",
+      "bytes": 309214
+    }
+  },
+  "published_tables": {
+    "explore": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/explore.parquet",
+      "sha256": "0963a428eab72a069e2cd59c7f7635cbac52d1425ae0e755d3bbedcf6f8ba455",
+      "row_count": 51
+    },
+    "file_facts_cache": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_cache.parquet",
+      "sha256": "c3c16b4064a4eb56eb77068a03103f540737e145a437e5efd76978f98be35ec2",
+      "row_count": 32
+    },
+    "file_facts_edges": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_edges.parquet",
+      "sha256": "2fb18a50ba0a52862e2e22f03eb018b19c3132e2046786603eb8c082c43ab1cb",
+      "row_count": 1375
+    },
+    "file_facts_macro_invocations": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_macro_invocations.parquet",
+      "sha256": "c07d0dd4036eadac4be2d3ce5e155d32d10fcf507eefd29694e26f7b11202e94",
+      "row_count": 0
+    },
+    "file_facts_macro_scopes": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_macro_scopes.parquet",
+      "sha256": "7436fbd7e18888e78b9fed6c836995027e1819493bc0e1045f3ef9d4bfa15770",
+      "row_count": 0
+    },
+    "file_facts_nodes": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_nodes.parquet",
+      "sha256": "71099d17f9e62a151cc6e4d7619ffe825b50437ba9b3e9b1b0f03a85ba4fa899",
+      "row_count": 349
+    },
+    "file_facts_occurrences": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_occurrences.parquet",
+      "sha256": "2df051ccb358f20175e2465d2281e60db52a8e20e3c743e2b65a76f2bb6ff1b7",
+      "row_count": 51
+    },
+    "file_facts_spans": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/snapshot/versions/facts/file_facts_spans.parquet",
+      "sha256": "1dcd02a1732dafed126e7dc0a22ff03d288fa5f678c8c64ae17aa9aea71bc024",
+      "row_count": 349
+    },
+    "review": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/review.parquet",
+      "sha256": "3ab1688a16b025c0a4fcb0d2035dba812e20fe84819f2e22c4572e7c35b71c5b",
+      "row_count": 7
+    },
+    "sources": {
+      "path": "consumer/runs/4cb8ea4c29e64c81ad3af5f8076fc8b7/sources.parquet",
+      "sha256": "36ad445124496a2f810b18b356f4e60b30603a6ded88536de76fb016571fc7ff",
+      "row_count": 51
+    }
+  }
+}

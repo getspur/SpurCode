@@ -1,0 +1,410 @@
+{
+  "format_version": 1,
+  "source": {
+    "database": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-spur-notebook-real-probe-bd-361m/consumer/runs/.staging-rjugrze9/facts.duckdb",
+    "duckdb_version": "2.0.0",
+    "schema": "main"
+  },
+  "source_labels": {
+    "independently_verified": false,
+    "provenance": "caller_supplied",
+    "values": {
+      "fixture_sha256": "f3432b1b9bf9631b718c522412f5039dc895904f2706ab1c848555eb17a7194a"
+    }
+  },
+  "tables": {
+    "file_facts_cache": {
+      "bytes": 47732,
+      "path": "versions/facts/file_facts_cache.parquet",
+      "row_count": 32,
+      "schema": [
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "facts",
+          "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])"
+        ],
+        [
+          "status",
+          "VARCHAR"
+        ],
+        [
+          "error_code",
+          "VARCHAR"
+        ],
+        [
+          "error_message",
+          "VARCHAR"
+        ]
+      ],
+      "sha256": "c3c16b4064a4eb56eb77068a03103f540737e145a437e5efd76978f98be35ec2"
+    },
+    "file_facts_edges": {
+      "bytes": 25245,
+      "path": "versions/facts/file_facts_edges.parquet",
+      "row_count": 1375,
+      "schema": [
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "fact_ordinal",
+          "BIGINT"
+        ],
+        [
+          "edge_id",
+          "UBIGINT"
+        ],
+        [
+          "source_node_id",
+          "UBIGINT"
+        ],
+        [
+          "target_node_id",
+          "UBIGINT"
+        ],
+        [
+          "relation",
+          "VARCHAR"
+        ],
+        [
+          "target_label",
+          "VARCHAR"
+        ],
+        [
+          "import_path",
+          "VARCHAR"
+        ],
+        [
+          "receiver_text",
+          "VARCHAR"
+        ],
+        [
+          "scope_text",
+          "VARCHAR"
+        ],
+        [
+          "confidence",
+          "VARCHAR"
+        ],
+        [
+          "confidence_score",
+          "FLOAT"
+        ],
+        [
+          "edge_kind",
+          "VARCHAR"
+        ],
+        [
+          "bind_method",
+          "VARCHAR"
+        ],
+        [
+          "evidence_id",
+          "UBIGINT"
+        ],
+        [
+          "directed",
+          "BOOLEAN"
+        ],
+        [
+          "change_kind",
+          "STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR)))"
+        ]
+      ],
+      "sha256": "2fb18a50ba0a52862e2e22f03eb018b19c3132e2046786603eb8c082c43ab1cb"
+    },
+    "file_facts_macro_invocations": {
+      "bytes": 1023,
+      "path": "versions/facts/file_facts_macro_invocations.parquet",
+      "row_count": 0,
+      "schema": [
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "fact_ordinal",
+          "BIGINT"
+        ],
+        [
+          "site_id",
+          "VARCHAR"
+        ],
+        [
+          "file_path",
+          "VARCHAR"
+        ],
+        [
+          "source_oid",
+          "VARCHAR"
+        ],
+        [
+          "caller_stable_symbol_id",
+          "VARCHAR"
+        ],
+        [
+          "enclosing",
+          "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        ],
+        [
+          "raw_macro_path",
+          "VARCHAR"
+        ],
+        [
+          "normalized_macro_path",
+          "VARCHAR"
+        ],
+        [
+          "byte_range",
+          "UBIGINT[]"
+        ],
+        [
+          "line_range",
+          "UBIGINT[]"
+        ],
+        [
+          "attributes",
+          "STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[]"
+        ],
+        [
+          "test_context",
+          "VARCHAR"
+        ],
+        [
+          "debug_assertions_candidate",
+          "BOOLEAN"
+        ],
+        [
+          "execution_phase",
+          "VARCHAR"
+        ],
+        [
+          "resolution",
+          "STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[]))"
+        ],
+        [
+          "sink_family_candidate",
+          "VARCHAR"
+        ]
+      ],
+      "sha256": "c07d0dd4036eadac4be2d3ce5e155d32d10fcf507eefd29694e26f7b11202e94"
+    },
+    "file_facts_macro_scopes": {
+      "bytes": 376,
+      "path": "versions/facts/file_facts_macro_scopes.parquet",
+      "row_count": 0,
+      "schema": [
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "fact_ordinal",
+          "BIGINT"
+        ],
+        [
+          "scope",
+          "STRUCT(stable_symbol_id VARCHAR, kind VARCHAR)"
+        ],
+        [
+          "file_path",
+          "VARCHAR"
+        ],
+        [
+          "source_oid",
+          "VARCHAR"
+        ],
+        [
+          "byte_range",
+          "UBIGINT[]"
+        ],
+        [
+          "line_range",
+          "UBIGINT[]"
+        ]
+      ],
+      "sha256": "7436fbd7e18888e78b9fed6c836995027e1819493bc0e1045f3ef9d4bfa15770"
+    },
+    "file_facts_nodes": {
+      "bytes": 17778,
+      "path": "versions/facts/file_facts_nodes.parquet",
+      "row_count": 349,
+      "schema": [
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "fact_ordinal",
+          "BIGINT"
+        ],
+        [
+          "node_id",
+          "UBIGINT"
+        ],
+        [
+          "stable_key",
+          "VARCHAR"
+        ],
+        [
+          "label",
+          "VARCHAR"
+        ],
+        [
+          "kind",
+          "VARCHAR"
+        ],
+        [
+          "file_id",
+          "UBIGINT"
+        ],
+        [
+          "source_span_id",
+          "UBIGINT"
+        ],
+        [
+          "first_seen_run_id",
+          "UBIGINT"
+        ]
+      ],
+      "sha256": "71099d17f9e62a151cc6e4d7619ffe825b50437ba9b3e9b1b0f03a85ba4fa899"
+    },
+    "file_facts_occurrences": {
+      "bytes": 6880,
+      "path": "versions/facts/file_facts_occurrences.parquet",
+      "row_count": 51,
+      "schema": [
+        [
+          "snapshot_id",
+          "VARCHAR"
+        ],
+        [
+          "occurrence_id",
+          "VARCHAR"
+        ],
+        [
+          "repository",
+          "VARCHAR"
+        ],
+        [
+          "commit_oid",
+          "VARCHAR"
+        ],
+        [
+          "parent_oid",
+          "VARCHAR"
+        ],
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "extraction_status",
+          "VARCHAR"
+        ]
+      ],
+      "sha256": "2df051ccb358f20175e2465d2281e60db52a8e20e3c743e2b65a76f2bb6ff1b7"
+    },
+    "file_facts_spans": {
+      "bytes": 11327,
+      "path": "versions/facts/file_facts_spans.parquet",
+      "row_count": 349,
+      "schema": [
+        [
+          "blob_oid",
+          "VARCHAR"
+        ],
+        [
+          "logical_path",
+          "VARCHAR"
+        ],
+        [
+          "extractor_sha",
+          "VARCHAR"
+        ],
+        [
+          "fact_ordinal",
+          "BIGINT"
+        ],
+        [
+          "span_id",
+          "UBIGINT"
+        ],
+        [
+          "file_id",
+          "UBIGINT"
+        ],
+        [
+          "start_byte",
+          "UINTEGER"
+        ],
+        [
+          "end_byte",
+          "UINTEGER"
+        ],
+        [
+          "start_line",
+          "UINTEGER"
+        ],
+        [
+          "end_line",
+          "UINTEGER"
+        ]
+      ],
+      "sha256": "1dcd02a1732dafed126e7dc0a22ff03d288fa5f678c8c64ae17aa9aea71bc024"
+    }
+  },
+  "version": "facts"
+}

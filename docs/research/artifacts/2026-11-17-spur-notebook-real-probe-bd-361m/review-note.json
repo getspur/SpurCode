@@ -1,0 +1,50 @@
+{
+  "format_version": 1,
+  "kind": "probe_candidate_note",
+  "origin": "agent_probe",
+  "status": "candidate",
+  "claim": "The new wb_query endpoint returns four panels directly. Confirm their snapshot and coverage identity before presenting a combined review result.",
+  "review_decision": "not_reviewed",
+  "analysis_id": "probe:8aec87d6d6c9bccbd2835a8d858cb217eb3dfd84a328c960aa9a2b35d3092741",
+  "publication_manifest_sha256": "b83daaa76b23bf494474d83be61deffa64bbd3b803ea0e0012bed293b2b29443",
+  "fixture_sha256": "f3432b1b9bf9631b718c522412f5039dc895904f2706ab1c848555eb17a7194a",
+  "snapshot_id": "git:07db59f08dbced2c8bedd17290c78f57b428a2bc",
+  "commit_oid": "07db59f08dbced2c8bedd17290c78f57b428a2bc",
+  "extractor_id": "source-sha256-v1:ea849cf9a54b442671ac3e2b4972291c24a64c03457bcffcee4e9a50ef22de35",
+  "facts_schema_version": 1,
+  "artifact_sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+  "pair_id": "git-diff:app_gallery/code-graph-workbench/server/tools/query.py",
+  "symbol_id": "9d7058a1b13f19d6",
+  "entity_name": "wb_query",
+  "source": {
+    "logical_path": "app_gallery/code-graph-workbench/server/tools/query.py",
+    "git_blob_oid": "d7f8ffb064f6fea5a3ee9dd3fc5d018c20afd5f3",
+    "source_sha256": "4a72c06ba06afd2a9d62862811cbb9673852336b73ea5a5ff48bbf392fe70564",
+    "source_id": "sha256:4a72c06ba06afd2a9d62862811cbb9673852336b73ea5a5ff48bbf392fe70564",
+    "byte_range": [
+      295,
+      1782
+    ],
+    "line_range": [
+      19,
+      55
+    ],
+    "coordinate_space": "git_blob_utf8"
+  },
+  "excerpt": "def wb_query(symbol: str, file: str | None = None, depth: int = 2) -> dict:\n    \"\"\"Compute all four workbench panels for `symbol` and RETURN them as JSON.\n\n    Unlike the wb_* push tools, this performs no port push: it returns the\n    subgraph / scorecard / blast / cochange rows directly so the in-app search\n    box can render results in place via callTool. `file` defaults to `symbol`\n    (the co-change panel matches on file path); `depth` is clamped to 0..3.\n    \"\"\"\n    target_symbol = str(symbol or \"\").strip()\n    if not target_symbol:\n        return {\"ok\": False, \"error\": \"symbol must not be empty\"}\n    target_file = (file or target_symbol).strip()\n    bounded_depth = _bounded_depth(depth)\n\n    subgraph = _subgraph_rows(\n        target_symbol, depth=bounded_depth, edge_kinds=graph.DEFAULT_EDGE_KINDS\n    )\n    scorecard = analyst.scorecard_rows(target_symbol)\n    blast = analyst.blast_radius_rows(target_symbol)\n    cochange = analyst.cochange_rows(target_file)\n\n    return {\n        \"ok\": True,\n        \"symbol\": target_symbol,\n        \"file\": target_file,\n        \"depth\": bounded_depth,\n        \"subgraph\": subgraph.to_pylist(),\n        \"scorecard\": scorecard.to_pylist(),\n        \"analyst_rows\": blast.to_pylist(),\n        \"cochange\": cochange.to_pylist(),\n        \"counts\": {\n            \"subgraph\": subgraph.num_rows,\n            \"scorecard\": scorecard.num_rows,\n            \"analyst_rows\": blast.num_rows,\n            \"cochange\": cochange.num_rows,\n        },\n    }",
+  "git_diff_sha256": "d08f0eec4ca1b365ec8581007fce8ad5bb88ddffd1ea98deede83ba8349b3e69",
+  "git_hunk_header": "@@ -0,0 +1,55 @@",
+  "result_ref": {
+    "table": "review",
+    "table_sha256": "3ab1688a16b025c0a4fcb0d2035dba812e20fe84819f2e22c4572e7c35b71c5b",
+    "pair_id": "git-diff:app_gallery/code-graph-workbench/server/tools/query.py"
+  },
+  "query_ref": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/docs/research/2026-11-17-spur-graph-real-repo-probe.ipynb",
+    "cell_id": "e20a7f99-9788-4dca-aa8d-6736f9503c7d",
+    "cell_version": 67,
+    "cell_etag": "cell:sha256:3a0165329c78317f8bbf88f6c2e4934aea4e60e63e71ac4633df1438dcfbabf9",
+    "source_sha256": "275ee9923bfe2b01f9d702858dec9ba7e3c1ada477d39ee1632baa9c7070803e"
+  },
+  "scope_note": "Candidate evidence only; no production note API, human decision or remote PR publication is implemented."
+}

@@ -1,0 +1,19 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/docs/research/2026-11-17-spur-graph-real-repo-probe.ipynb",
+  "cell_id": "e20a7f99-9788-4dca-aa8d-6736f9503c7d",
+  "cell_version": 67,
+  "cell_etag": "cell:sha256:3a0165329c78317f8bbf88f6c2e4934aea4e60e63e71ac4633df1438dcfbabf9",
+  "source": "-- A bounded human/agent query for the newly added endpoint.\nSELECT r.logical_path, d.symbol.entity_name, d.symbol.symbol_kind,\n d.symbol.line_start, d.symbol.line_end, d.symbol.byte_start, d.symbol.byte_end\nFROM real_review r, UNNEST(r.result.changes) AS u(d)\nWHERE r.logical_path='app_gallery/code-graph-workbench/server/tools/query.py'\nORDER BY d.symbol.line_start;",
+  "execution": {
+    "session_id": "92e1a091-2fd9-49b9-8b30-a2baa108194f",
+    "run_id": "7f85087d-c961-445c-83cf-82f5f772e60f",
+    "source_version": 67,
+    "execution_identity": "28625358abdc828c7347434917de1d6b599d974ce0ddb4de94d0e8783eecdb9e",
+    "output_hash": "0b99a8303079783008e679620593d1dd21c762aeaa25c57acee31908571f1c39",
+    "status": "succeeded",
+    "dependencies": [],
+    "published_ports": [],
+    "ports_at_start": [],
+    "lineage_complete": true
+  }
+}

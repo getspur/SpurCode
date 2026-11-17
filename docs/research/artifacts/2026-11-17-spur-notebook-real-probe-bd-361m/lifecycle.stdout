@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "runtime": "2.0.0",
+  "publication_manifest_sha256": "b83daaa76b23bf494474d83be61deffa64bbd3b803ea0e0012bed293b2b29443",
+  "note_reopen": {
+    "status": "verified",
+    "note_sha256": "bff7bda41bf56f25daa9f56533edfad051c506d24a135ab4fc6c8a08399bf332",
+    "snapshot_id": "git:07db59f08dbced2c8bedd17290c78f57b428a2bc",
+    "git_blob_verified": true,
+    "source_excerpt_verified": true,
+    "matching_delta_rows": 1,
+    "context_checks": [
+      {
+        "requested_snapshot": "git:07db59f08dbced2c8bedd17290c78f57b428a2bc",
+        "state": "current",
+        "eligible_as_current": true
+      },
+      {
+        "requested_snapshot": "git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41",
+        "state": "historical",
+        "eligible_as_current": false
+      },
+      {
+        "requested_snapshot": "git:fd06cab1f6df2654c43573aa972c3f2b51d3f37f",
+        "state": "historical",
+        "eligible_as_current": false
+      }
+    ]
+  },
+  "fault_after_candidate": {
+    "returncode": 23,
+    "pid": 51754,
+    "stdout": "candidate written\n",
+    "stderr": ""
+  },
+  "prior_pointer_unchanged": true,
+  "published_files_unchanged": true,
+  "validated_published_files": 11,
+  "native_child_reaped": true,
+  "staging_clean": true,
+  "notebook_function_cell_anchors": 28,
+  "notebook_raw_json_slices_differ": 28,
+  "notebook_cell_anchor_export": {
+    "path": "lifecycle_cell_anchors.parquet",
+    "sha256": "69b0783c7e72127407473fca3da4cde074f4046b230470a5176c5febc8ea97e5",
+    "rows": 28
+  },
+  "scope": "Headless probe artifacts/context checks; no production UI, note service, automatic stale-state guard or remote publication."
+}
