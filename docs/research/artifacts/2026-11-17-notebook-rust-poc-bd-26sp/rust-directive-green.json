@@ -1,0 +1,135 @@
+{
+  "checks": [
+    {
+      "name": "leading dependency directive no longer hides Rust function",
+      "pass": true
+    },
+    {
+      "name": "Rust directive mapping points to original cell line 2",
+      "pass": true
+    },
+    {
+      "name": "multibyte directive and CRLF preserve original UTF8 offsets",
+      "pass": true
+    },
+    {
+      "name": "dependency change stays visible even with unchanged function",
+      "pass": true
+    },
+    {
+      "name": "unsupported leading Rust command is explicit partial coverage",
+      "pass": true
+    },
+    {
+      "name": "directive-looking string contents are not rewritten",
+      "pass": true
+    },
+    {
+      "name": "multiline dependency declaration is explicitly unsupported",
+      "pass": true
+    }
+  ],
+  "dependency_change": {
+    "cell_changes": [
+      {
+        "cell_id": "rust-deps",
+        "kind": "cell_source_changed"
+      },
+      {
+        "after": [
+          ":dep sha2 = \"0.11\""
+        ],
+        "before": [
+          ":dep sha2 = \"0.10\""
+        ],
+        "cell_id": "rust-deps",
+        "kind": "dependency_directives_changed"
+      }
+    ],
+    "changes": [],
+    "coverage": "complete_for_poc_languages",
+    "diagnostics": [],
+    "document_changes": [],
+    "native_delta_paths_are_transport_only": true
+  },
+  "limitation": "Only leading single-line :dep headers are adapted. Other Evcxr forms, directives after code and arbitrary kernel syntax require production parser parity tests.",
+  "preprocessing": [
+    {
+      "analysis_bytes": 50,
+      "analysis_source_sha256": "3dd8e47321a4a62d5759561106d77533d3fdc6f936eb1a01af416dfe414b9403",
+      "cell_id": "rust-deps",
+      "coordinate_map": "identity_utf8_byte_offsets",
+      "directives": [
+        ":dep sha2 = \"0.10\""
+      ],
+      "original_bytes": 50,
+      "original_source_sha256": "f28c4614cd8f650e0512760643e59edaa3f60a588db5b1cec57d8f8254aed881",
+      "policy": "evcxr-leading-dep-mask-v1"
+    }
+  ],
+  "symbols": {
+    "cells": [
+      {
+        "cell_id": "rust-deps",
+        "cell_type": "code",
+        "diagnostics": [],
+        "identity_quality": "explicit",
+        "language": "rust",
+        "ordinal": 0,
+        "source_sha256": "f28c4614cd8f650e0512760643e59edaa3f60a588db5b1cec57d8f8254aed881",
+        "status": "ok",
+        "symbols": [
+          {
+            "source_ref": {
+              "byte_end": 49,
+              "byte_start": 19,
+              "cell_id": "rust-deps",
+              "cell_identity_quality": "explicit",
+              "cell_language": "rust",
+              "cell_source_sha256": "f28c4614cd8f650e0512760643e59edaa3f60a588db5b1cec57d8f8254aed881",
+              "coordinate_space": "decoded_code_cell_utf8",
+              "line_end": 2,
+              "line_start": 2,
+              "notebook_path": "directives.ipynb",
+              "notebook_source_sha256": "be54fa753970424048220b265f064bc13878ab01f2cb1aeefb980678cd41b10f",
+              "snapshot_id": "head"
+            },
+            "symbol": {
+              "anchor_hash": "9053987619320707334",
+              "byte_end": 49,
+              "byte_start": 19,
+              "enclosing_scope": null,
+              "entity_name": "directive_fn",
+              "line_end": 2,
+              "line_start": 2,
+              "symbol_kind": "function",
+              "tokens": [
+                "1",
+                "i32"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "coverage": "complete_for_poc_languages",
+    "diagnostics": [],
+    "notebook_path": "directives.ipynb",
+    "snapshot_id": "head",
+    "source_sha256": "be54fa753970424048220b265f064bc13878ab01f2cb1aeefb980678cd41b10f"
+  },
+  "unicode_preprocessing": [
+    {
+      "analysis_bytes": 50,
+      "analysis_source_sha256": "cb33eed0783ef752842f87839d9aa30bc0291d6a75c76bf73c24912006fc5222",
+      "cell_id": "unicode",
+      "coordinate_map": "identity_utf8_byte_offsets",
+      "directives": [
+        ":dep local = { path = \"café\" }"
+      ],
+      "original_bytes": 50,
+      "original_source_sha256": "ee24b1fdecf9af07f352420e430d9176f53d9a7d2f63967ca13cc1e0a774eb8a",
+      "policy": "evcxr-leading-dep-mask-v1"
+    }
+  ]
+}

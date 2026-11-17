@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "name": "language subset matches core aliases",
+      "pass": true
+    },
+    {
+      "name": "notebook runtime metadata preserved independently of symbol edits",
+      "pass": true
+    },
+    {
+      "name": "all real symbol refs resolve to their frozen cell source",
+      "pass": true
+    },
+    {
+      "name": "source reference rejects wrong snapshot_id",
+      "pass": true
+    },
+    {
+      "name": "source reference rejects wrong cell_source_sha256",
+      "pass": true
+    },
+    {
+      "name": "source reference rejects wrong coordinate_space",
+      "pass": true
+    },
+    {
+      "name": "source reference rejects wrong cell_id",
+      "pass": true
+    },
+    {
+      "name": "real comparison retains every cell-scoped delta",
+      "pass": true
+    }
+  ],
+  "root_metadata_change": {
+    "cell_changes": [],
+    "changes": [],
+    "coverage": "complete_for_poc_languages",
+    "diagnostics": [],
+    "document_changes": [
+      {
+        "after": {
+          "kernelspec": {
+            "name": "rust"
+          }
+        },
+        "before": {
+          "kernelspec": {
+            "name": "evcxr"
+          }
+        },
+        "kind": "notebook_metadata_changed"
+      }
+    ],
+    "native_delta_paths_are_transport_only": true
+  },
+  "validated_real_source_refs": 70
+}

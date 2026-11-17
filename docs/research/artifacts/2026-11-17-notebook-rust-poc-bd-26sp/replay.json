@@ -1,0 +1,875 @@
+{
+  "task": "bd-26sp",
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-rust-poc.ipynb",
+  "restart": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"slot_id\":\"notebook:/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-rust-poc.ipynb#evcxr\",\"generation\":2}"
+      }
+    ],
+    "structuredContent": {
+      "slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-rust-poc.ipynb#evcxr",
+      "generation": 2
+    },
+    "isError": false
+  },
+  "code_cell_count": 13,
+  "receipts": [
+    {
+      "cell_id": "51c7c6fc-a270-44dc-83da-4fb2de75ffb0",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"51c7c6fc-a270-44dc-83da-4fb2de75ffb0\",\"status\":\"succeeded\",\"exec_count\":3,\"output_count\":2,\"output_types\":[\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust kernel alive; aarch64\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"serde_json bootstrap: {\\\"poc\\\":\\\"cell-aware-notebook\\\"}\\n\"}],\"output_indices\":[0,1],\"cell_etag\":\"cell:sha256:da1f1833af13b57f3d63748941762123a00db4fb1d16fc5268d8e2ab648366d9\",\"document_generation\":119,\"disk_token\":\"blake3:03536b5c8d2a7bb701f32109b548a2f416d8148a557e94f5a165addad1a8dbb7\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "51c7c6fc-a270-44dc-83da-4fb2de75ffb0",
+          "status": "succeeded",
+          "exec_count": 3,
+          "output_count": 2,
+          "output_types": [
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Rust kernel alive; aarch64\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "serde_json bootstrap: {\"poc\":\"cell-aware-notebook\"}\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1
+          ],
+          "cell_etag": "cell:sha256:da1f1833af13b57f3d63748941762123a00db4fb1d16fc5268d8e2ab648366d9",
+          "document_generation": 119,
+          "disk_token": "blake3:03536b5c8d2a7bb701f32109b548a2f416d8148a557e94f5a165addad1a8dbb7",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "fdc48c80-5fb5-4fb5-9998-9b72e367fc55",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"fdc48c80-5fb5-4fb5-9998-9b72e367fc55\",\"status\":\"succeeded\",\"exec_count\":4,\"output_count\":2,\"output_types\":[\"stderr\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"The type of the variable spur was redefined, so was lost.\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"hash crates ready: sha256=a77e39d1098de82a4fa01254f660098a90378b3fb57d2d89a950cbda204be043 blake3=5880ccaed4a67cd67997d1ad0897ddab752231beccb09bc87f297ed62bc48d7c\\n\"}],\"output_indices\":[0,1],\"cell_etag\":\"cell:sha256:5f0e8be081b3f2429ef7c8414deb76b39275884f19d35432bb05f71cab3c5854\",\"document_generation\":123,\"disk_token\":\"blake3:6a7820ed48807aa55b2e2a1575a9998239bcdc799b22755dec1aa0b80f4936fc\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "fdc48c80-5fb5-4fb5-9998-9b72e367fc55",
+          "status": "succeeded",
+          "exec_count": 4,
+          "output_count": 2,
+          "output_types": [
+            "stderr",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stderr",
+              "text": "The type of the variable spur was redefined, so was lost.\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "hash crates ready: sha256=a77e39d1098de82a4fa01254f660098a90378b3fb57d2d89a950cbda204be043 blake3=5880ccaed4a67cd67997d1ad0897ddab752231beccb09bc87f297ed62bc48d7c\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1
+          ],
+          "cell_etag": "cell:sha256:5f0e8be081b3f2429ef7c8414deb76b39275884f19d35432bb05f71cab3c5854",
+          "document_generation": 123,
+          "disk_token": "blake3:6a7820ed48807aa55b2e2a1575a9998239bcdc799b22755dec1aa0b80f4936fc",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "3e5dc4a8-039a-4076-a381-7145e05bed3a",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"3e5dc4a8-039a-4076-a381-7145e05bed3a\",\"status\":\"succeeded\",\"exec_count\":5,\"output_count\":3,\"output_types\":[\"stdout\",\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"snapshot 0: raw symbols=0, graph-result keys=[\\\"error_code\\\", \\\"error_message\\\", \\\"facts\\\", \\\"status\\\"]\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"snapshot 1: raw symbols=0, graph-result keys=[\\\"error_code\\\", \\\"error_message\\\", \\\"facts\\\", \\\"status\\\"]\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Native baseline captured from frozen real notebook bytes.\\n\"}],\"output_indices\":[0,1,2],\"cell_etag\":\"cell:sha256:6d2f95474e725b535fa6264cfe1cf335cb99bacbd4fd902e6b9ba079dc589086\",\"document_generation\":128,\"disk_token\":\"blake3:f45c9a2fb0be65bef251e48c38cb6bb9e34e858de5ed69b98b3f4ea5d0a8e105\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "3e5dc4a8-039a-4076-a381-7145e05bed3a",
+          "status": "succeeded",
+          "exec_count": 5,
+          "output_count": 3,
+          "output_types": [
+            "stdout",
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "snapshot 0: raw symbols=0, graph-result keys=[\"error_code\", \"error_message\", \"facts\", \"status\"]\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "snapshot 1: raw symbols=0, graph-result keys=[\"error_code\", \"error_message\", \"facts\", \"status\"]\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Native baseline captured from frozen real notebook bytes.\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1,
+            2
+          ],
+          "cell_etag": "cell:sha256:6d2f95474e725b535fa6264cfe1cf335cb99bacbd4fd902e6b9ba079dc589086",
+          "document_generation": 128,
+          "disk_token": "blake3:f45c9a2fb0be65bef251e48c38cb6bb9e34e858de5ed69b98b3f4ea5d0a8e105",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "697161d2-9218-42e9-8f95-f9b051173e67",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"697161d2-9218-42e9-8f95-f9b051173e67\",\"status\":\"succeeded\",\"exec_count\":6,\"output_count\":4,\"output_types\":[\"stdout\",\"stdout\",\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"RED: raw notebook coverage snapshot 0 failed as expected\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"RED: raw notebook coverage snapshot 1 failed as expected\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"RED: flattened duplicate-name no-op failed as expected\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Observed false deltas: modified, added\\n\"}],\"output_indices\":[0,1,2,3],\"cell_etag\":\"cell:sha256:31b9db885200dc31e6088b3c390eb7a533abb0f45ec8cf2ac96f3dacc6c807c3\",\"document_generation\":134,\"disk_token\":\"blake3:33ff64cb7c493247079eb4580e9c057bff081de87cb2c000a7220fe6fca34c89\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "697161d2-9218-42e9-8f95-f9b051173e67",
+          "status": "succeeded",
+          "exec_count": 6,
+          "output_count": 4,
+          "output_types": [
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "RED: raw notebook coverage snapshot 0 failed as expected\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "RED: raw notebook coverage snapshot 1 failed as expected\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "RED: flattened duplicate-name no-op failed as expected\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Observed false deltas: modified, added\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cell_etag": "cell:sha256:31b9db885200dc31e6088b3c390eb7a533abb0f45ec8cf2ac96f3dacc6c807c3",
+          "document_generation": 134,
+          "disk_token": "blake3:33ff64cb7c493247079eb4580e9c057bff081de87cb2c000a7220fe6fca34c89",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "f364639e-37ed-4130-b6f0-56e4f4c9db61",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"f364639e-37ed-4130-b6f0-56e4f4c9db61\",\"status\":\"succeeded\",\"exec_count\":7,\"output_count\":3,\"output_types\":[\"stdout\",\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"GREEN extraction: {\\\"code_cells\\\":5,\\\"coverage_diagnostics\\\":[],\\\"functions\\\":17,\\\"snapshot\\\":\\\"git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41\\\",\\\"symbols\\\":46}\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"GREEN extraction: {\\\"code_cells\\\":6,\\\"coverage_diagnostics\\\":[],\\\"functions\\\":11,\\\"snapshot\\\":\\\"git:07db59f08dbced2c8bedd17290c78f57b428a2bc\\\",\\\"symbols\\\":24}\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Decoded-cell byte ranges and line coordinates validated for all real symbols.\\n\"}],\"output_indices\":[0,1,2],\"cell_etag\":\"cell:sha256:9e72cf2e0a8efa5b48db9202d0486c903b37aa8295a31960e7eea9880c2db39f\",\"document_generation\":139,\"disk_token\":\"blake3:71bd3d8e619cfba18b9b1ade4573c9db5863dba819ec463ca740fea20a6f21b9\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "f364639e-37ed-4130-b6f0-56e4f4c9db61",
+          "status": "succeeded",
+          "exec_count": 7,
+          "output_count": 3,
+          "output_types": [
+            "stdout",
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "GREEN extraction: {\"code_cells\":5,\"coverage_diagnostics\":[],\"functions\":17,\"snapshot\":\"git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41\",\"symbols\":46}\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "GREEN extraction: {\"code_cells\":6,\"coverage_diagnostics\":[],\"functions\":11,\"snapshot\":\"git:07db59f08dbced2c8bedd17290c78f57b428a2bc\",\"symbols\":24}\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Decoded-cell byte ranges and line coordinates validated for all real symbols.\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1,
+            2
+          ],
+          "cell_etag": "cell:sha256:9e72cf2e0a8efa5b48db9202d0486c903b37aa8295a31960e7eea9880c2db39f",
+          "document_generation": 139,
+          "disk_token": "blake3:71bd3d8e619cfba18b9b1ade4573c9db5863dba819ec463ca740fea20a6f21b9",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "b2ed35bf-216d-4f56-bc73-b80ccc23e263",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"b2ed35bf-216d-4f56-bc73-b80ccc23e263\",\"status\":\"succeeded\",\"exec_count\":8,\"output_count\":2,\"output_types\":[\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"GREEN duplicate-name no-op: 0 deltas\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Real notebook: 55 symbol deltas, 10 structural events, diagnostics=[]\\n\"}],\"output_indices\":[0,1],\"cell_etag\":\"cell:sha256:88ac2d61ad691a33d354bfbcb31600ea7b6c81335fb3a066ea1468ecef71ce16\",\"document_generation\":143,\"disk_token\":\"blake3:4b7a08e66c5a25c90110bd3df512d1edb837876e2de039fc93ab5adc6e9d8885\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "b2ed35bf-216d-4f56-bc73-b80ccc23e263",
+          "status": "succeeded",
+          "exec_count": 8,
+          "output_count": 2,
+          "output_types": [
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "GREEN duplicate-name no-op: 0 deltas\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Real notebook: 55 symbol deltas, 10 structural events, diagnostics=[]\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1
+          ],
+          "cell_etag": "cell:sha256:88ac2d61ad691a33d354bfbcb31600ea7b6c81335fb3a066ea1468ecef71ce16",
+          "document_generation": 143,
+          "disk_token": "blake3:4b7a08e66c5a25c90110bd3df512d1edb837876e2de039fc93ab5adc6e9d8885",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "da4c27f0-e286-41f7-9093-8a371b06f036",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"da4c27f0-e286-41f7-9093-8a371b06f036\",\"status\":\"succeeded\",\"exec_count\":9,\"output_count\":16,\"output_types\":[\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Boundary checks passed: 15\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS one-cell edit stays in that cell\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS reorder keeps zero symbol deltas and exposes movement\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS output-only change has no code or cell-structure deltas\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS imports-only cell addition and deletion remain visible\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS language change is add/delete with explicit cell event\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS code-to-markdown removes code and records type change\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS Python JavaScript Rust cells and UTF8 coordinates\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS source string/list encodings normalize identically\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS unsupported cells keep inventory and incomplete comparison\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS duplicate explicit IDs fail before map insertion\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS malformed notebook and malformed source are explicit errors\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS anonymous edit is conservative and identity-limited\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS identical anonymous occurrences get distinct but limited IDs\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS ambiguous same-cell identity is diagnosed\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"PASS Rust kernel-profile change stays visible in metadata\\n\"}],\"output_indices\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"cell_etag\":\"cell:sha256:36ce5f9853a334b71307a6845d44109302783242ab22ccd10a0d94716a8a84d9\",\"document_generation\":161,\"disk_token\":\"blake3:9879aa2669e20a457275547b97119b897c2430666c6d17a0c392409fe6a5270b\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "da4c27f0-e286-41f7-9093-8a371b06f036",
+          "status": "succeeded",
+          "exec_count": 9,
+          "output_count": 16,
+          "output_types": [
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Boundary checks passed: 15\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS one-cell edit stays in that cell\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS reorder keeps zero symbol deltas and exposes movement\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS output-only change has no code or cell-structure deltas\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS imports-only cell addition and deletion remain visible\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS language change is add/delete with explicit cell event\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS code-to-markdown removes code and records type change\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS Python JavaScript Rust cells and UTF8 coordinates\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS source string/list encodings normalize identically\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS unsupported cells keep inventory and incomplete comparison\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS duplicate explicit IDs fail before map insertion\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS malformed notebook and malformed source are explicit errors\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS anonymous edit is conservative and identity-limited\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS identical anonymous occurrences get distinct but limited IDs\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS ambiguous same-cell identity is diagnosed\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "PASS Rust kernel-profile change stays visible in metadata\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "cell_etag": "cell:sha256:36ce5f9853a334b71307a6845d44109302783242ab22ccd10a0d94716a8a84d9",
+          "document_generation": 161,
+          "disk_token": "blake3:9879aa2669e20a457275547b97119b897c2430666c6d17a0c392409fe6a5270b",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "9e5d9dc4-cdc5-44de-a31a-a2dc2249d34d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"9e5d9dc4-cdc5-44de-a31a-a2dc2249d34d\",\"status\":\"succeeded\",\"exec_count\":10,\"output_count\":2,\"output_types\":[\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"RED: PoC must not broaden the core language registry failed as expected\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"RED: notebook-level runtime metadata must survive comparison failed as expected\\n\"}],\"output_indices\":[0,1],\"cell_etag\":\"cell:sha256:bb5ce16374cbdf8a3973ff65aeaeeb5dbebdeb236da6ce25c48fdafb04dd42ce\",\"document_generation\":165,\"disk_token\":\"blake3:1bebb7d0ba0f2c689da028658a138855f01a5d5267333884df8aa864fdfe24a3\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "9e5d9dc4-cdc5-44de-a31a-a2dc2249d34d",
+          "status": "succeeded",
+          "exec_count": 10,
+          "output_count": 2,
+          "output_types": [
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "RED: PoC must not broaden the core language registry failed as expected\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "RED: notebook-level runtime metadata must survive comparison failed as expected\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1
+          ],
+          "cell_etag": "cell:sha256:bb5ce16374cbdf8a3973ff65aeaeeb5dbebdeb236da6ce25c48fdafb04dd42ce",
+          "document_generation": 165,
+          "disk_token": "blake3:1bebb7d0ba0f2c689da028658a138855f01a5d5267333884df8aa864fdfe24a3",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "26943136-c9b5-4228-8dc9-3c8a713741a2",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"26943136-c9b5-4228-8dc9-3c8a713741a2\",\"status\":\"succeeded\",\"exec_count\":11,\"output_count\":1,\"output_types\":[\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"GREEN stage 2: 8 context checks; 70 frozen source refs; real deltas=55\\n\"}],\"output_indices\":[0],\"cell_etag\":\"cell:sha256:2586d59e0fb842414c6e192782cfb1d5fab78f92dd4e61611043644a18d22303\",\"document_generation\":168,\"disk_token\":\"blake3:1fea927f1d1b4d3bdd868cdef1459d60a90dba815024fe69b07a6a2c0614c82f\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "26943136-c9b5-4228-8dc9-3c8a713741a2",
+          "status": "succeeded",
+          "exec_count": 11,
+          "output_count": 1,
+          "output_types": [
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "GREEN stage 2: 8 context checks; 70 frozen source refs; real deltas=55\n"
+            }
+          ],
+          "output_indices": [
+            0
+          ],
+          "cell_etag": "cell:sha256:2586d59e0fb842414c6e192782cfb1d5fab78f92dd4e61611043644a18d22303",
+          "document_generation": 168,
+          "disk_token": "blake3:1fea927f1d1b4d3bdd868cdef1459d60a90dba815024fe69b07a6a2c0614c82f",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "b360ca4e-4f1d-446c-8adf-bcbeb698cfa2",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"b360ca4e-4f1d-446c-8adf-bcbeb698cfa2\",\"status\":\"succeeded\",\"exec_count\":12,\"output_count\":6,\"output_types\":[\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\",\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell dependency-directive: symbols=0, functions=[], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell scoped-cell: symbols=1, functions=[\\\"scoped_fn\\\"], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell imports-only: symbols=0, functions=[], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell expression-cell: symbols=0, functions=[], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"RED: Rust :dep header must not hide its following function failed as expected\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"All 11 real code-cell IDs/languages/source hashes/counts match the independent frozen probe.\\n\"}],\"output_indices\":[0,1,2,3,4,5],\"cell_etag\":\"cell:sha256:5972455cd347788d8617a02383c0f504b70e1744e68ca2fd4500aede03b1200c\",\"document_generation\":176,\"disk_token\":\"blake3:ac34769c8339b200adab2ed9dedd892360e53d77f8cf9c592d3a558ab808bf31\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "b360ca4e-4f1d-446c-8adf-bcbeb698cfa2",
+          "status": "succeeded",
+          "exec_count": 12,
+          "output_count": 6,
+          "output_types": [
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout",
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Rust cell dependency-directive: symbols=0, functions=[], status=\"ok\"\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Rust cell scoped-cell: symbols=1, functions=[\"scoped_fn\"], status=\"ok\"\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Rust cell imports-only: symbols=0, functions=[], status=\"ok\"\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "Rust cell expression-cell: symbols=0, functions=[], status=\"ok\"\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "RED: Rust :dep header must not hide its following function failed as expected\n"
+            },
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "All 11 real code-cell IDs/languages/source hashes/counts match the independent frozen probe.\n"
+            }
+          ],
+          "output_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "cell_etag": "cell:sha256:5972455cd347788d8617a02383c0f504b70e1744e68ca2fd4500aede03b1200c",
+          "document_generation": 176,
+          "disk_token": "blake3:ac34769c8339b200adab2ed9dedd892360e53d77f8cf9c592d3a558ab808bf31",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "68d2b219-a58a-49db-a6b2-a0c65143cd61",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"68d2b219-a58a-49db-a6b2-a0c65143cd61\",\"status\":\"succeeded\",\"exec_count\":13,\"output_count\":1,\"output_types\":[\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"A Rust cell with a :dep header executes its function successfully.\\n\"}],\"output_indices\":[0],\"cell_etag\":\"cell:sha256:18863a3a5d7d4bbdf04066306a7eac14afd3c88de59daffac1425b1708ad0fa8\",\"document_generation\":179,\"disk_token\":\"blake3:4b66db04043c5ab72ef7f1e1b4de709746979858d9649faadacb7e6e0e709543\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "68d2b219-a58a-49db-a6b2-a0c65143cd61",
+          "status": "succeeded",
+          "exec_count": 13,
+          "output_count": 1,
+          "output_types": [
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "A Rust cell with a :dep header executes its function successfully.\n"
+            }
+          ],
+          "output_indices": [
+            0
+          ],
+          "cell_etag": "cell:sha256:18863a3a5d7d4bbdf04066306a7eac14afd3c88de59daffac1425b1708ad0fa8",
+          "document_generation": 179,
+          "disk_token": "blake3:4b66db04043c5ab72ef7f1e1b4de709746979858d9649faadacb7e6e0e709543",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "dc873730-a8a9-41c9-a76e-c017cf0f8442",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"dc873730-a8a9-41c9-a76e-c017cf0f8442\",\"status\":\"succeeded\",\"exec_count\":14,\"output_count\":1,\"output_types\":[\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"GREEN Rust directive adapter: 7 checks\\n\"}],\"output_indices\":[0],\"cell_etag\":\"cell:sha256:5109688391b30ec359231b366407f1642be3d9a05b502510e9e7812e5e0ed4b1\",\"document_generation\":182,\"disk_token\":\"blake3:ed4d1507d2a6902cb08b3c65ba6980ecbc43f20cafb32bd2af605b28a8ce1d61\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "dc873730-a8a9-41c9-a76e-c017cf0f8442",
+          "status": "succeeded",
+          "exec_count": 14,
+          "output_count": 1,
+          "output_types": [
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "GREEN Rust directive adapter: 7 checks\n"
+            }
+          ],
+          "output_indices": [
+            0
+          ],
+          "cell_etag": "cell:sha256:5109688391b30ec359231b366407f1642be3d9a05b502510e9e7812e5e0ed4b1",
+          "document_generation": 182,
+          "disk_token": "blake3:ed4d1507d2a6902cb08b3c65ba6980ecbc43f20cafb32bd2af605b28a8ce1d61",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    },
+    {
+      "cell_id": "746980c0-4209-4378-b8b3-4ed8e68c05d9",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"cell_id\":\"746980c0-4209-4378-b8b3-4ed8e68c05d9\",\"status\":\"succeeded\",\"exec_count\":15,\"output_count\":1,\"output_types\":[\"stdout\"],\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"POC_ACCEPTANCE_PASS {\\\"boundary_checks\\\":15,\\\"candidate_only\\\":true,\\\"checks\\\":30,\\\"context_checks\\\":8,\\\"directive_mask_policy\\\":\\\"evcxr-leading-dep-mask-v1\\\",\\\"function_anchors_matched\\\":28,\\\"native_binary_unchanged\\\":true,\\\"noop_symbol_deltas\\\":0,\\\"production_implementation_complete\\\":false,\\\"real_cell_events\\\":10,\\\"real_document_events\\\":0,\\\"real_functions\\\":[17,11],\\\"real_symbol_deltas\\\":55,\\\"real_symbols\\\":[46,24],\\\"resolved_delta_source_refs\\\":55,\\\"resolved_symbol_source_refs\\\":70,\\\"rust_directive_checks\\\":7,\\\"task\\\":\\\"bd-26sp\\\"}\\n\"}],\"output_indices\":[0],\"cell_etag\":\"cell:sha256:0853f349a19d306b559e98ab60a1ba924316d6e2b95113e7a25262f40a0319a6\",\"document_generation\":185,\"disk_token\":\"blake3:4d54e811f26f1b38bf2c6599598156bee45905af9ed592df7a333366f3df6470\",\"durable\":true,\"diagnostics\":null}"
+          }
+        ],
+        "structuredContent": {
+          "cell_id": "746980c0-4209-4378-b8b3-4ed8e68c05d9",
+          "status": "succeeded",
+          "exec_count": 15,
+          "output_count": 1,
+          "output_types": [
+            "stdout"
+          ],
+          "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+          "outputs": [
+            {
+              "output_type": "stream",
+              "name": "stdout",
+              "text": "POC_ACCEPTANCE_PASS {\"boundary_checks\":15,\"candidate_only\":true,\"checks\":30,\"context_checks\":8,\"directive_mask_policy\":\"evcxr-leading-dep-mask-v1\",\"function_anchors_matched\":28,\"native_binary_unchanged\":true,\"noop_symbol_deltas\":0,\"production_implementation_complete\":false,\"real_cell_events\":10,\"real_document_events\":0,\"real_functions\":[17,11],\"real_symbol_deltas\":55,\"real_symbols\":[46,24],\"resolved_delta_source_refs\":55,\"resolved_symbol_source_refs\":70,\"rust_directive_checks\":7,\"task\":\"bd-26sp\"}\n"
+            }
+          ],
+          "output_indices": [
+            0
+          ],
+          "cell_etag": "cell:sha256:0853f349a19d306b559e98ab60a1ba924316d6e2b95113e7a25262f40a0319a6",
+          "document_generation": 185,
+          "disk_token": "blake3:4d54e811f26f1b38bf2c6599598156bee45905af9ed592df7a333366f3df6470",
+          "durable": true,
+          "diagnostics": null
+        },
+        "isError": false
+      }
+    }
+  ],
+  "initial_directive_assertion": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"notebook_id\":\"nb-bb0ccebe1a5cdedf1b7131b0\",\"path\":\"/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-rust-poc.ipynb\",\"revision\":94,\"id\":\"b360ca4e-4f1d-446c-8adf-bcbeb698cfa2\",\"kind\":\"code\",\"version\":74,\"cell_etag\":\"cell:sha256:f0c56f393a1cf7151d0615726b3722e35d48cb2a3fa7530ff48367151f1598f1\",\"metadata\":{\"spur\":{\"version\":74,\"last_edited_by\":\"brain\",\"code_type\":\"rust\"},\"spur_output_provenance\":{\"session_id\":\"4b77cf7f-dd40-4793-8120-f9b547fc9f55\",\"run_id\":\"c31a1e4b-0939-4f88-a564-2bf2622d900a\",\"source_version\":74,\"execution_identity\":\"d81d2056e972c89f15e44ce418be91ccc69a4ec9ec6c33f046105cbae83c0fee\",\"lineage_complete\":true,\"output_hash\":\"52b11eb41c6940249dd3934018f374171fa208f589df1d5c3da68c2ca4ac2086\",\"status\":\"succeeded\",\"dependencies\":[],\"published_ports\":[],\"ports_at_start\":[],\"native_profile\":{\"profile_id\":\"factory\",\"language\":\"rust\",\"kernelspec\":\"evcxr\"}}},\"exec_count\":14,\"status\":\"success\",\"outputs\":[{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell dependency-directive: symbols=0, functions=[], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell scoped-cell: symbols=1, functions=[\\\"scoped_fn\\\"], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell imports-only: symbols=0, functions=[], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stdout\",\"text\":\"Rust cell expression-cell: symbols=0, functions=[], status=\\\"ok\\\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"thread '<unnamed>' (243948345) panicked at src/lib.rs:824:1:\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"assertion failed: directive_checks[0][\\\"functions\\\"].as_array().unwrap().iter().any(|n|\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"        n == \\\"directive_fn\\\")\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"stack backtrace:\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   0: __rustc::rust_begin_unwind\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   1: core::panicking::panic_fmt\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   2: core::panicking::panic\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   3: ctx::run_user_code_12::{{closure}}\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   4: _run_user_code_12\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   5: evcxr::runtime::Runtime::run_loop\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   6: evcxr::runtime::runtime_hook\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"   7: evcxr_jupyter::main\\n\"},{\"output_type\":\"stream\",\"name\":\"stderr\",\"text\":\"note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.\\n\"}],\"output_indices\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]}"
+      }
+    ],
+    "structuredContent": {
+      "notebook_id": "nb-bb0ccebe1a5cdedf1b7131b0",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-rust-poc.ipynb",
+      "revision": 94,
+      "id": "b360ca4e-4f1d-446c-8adf-bcbeb698cfa2",
+      "kind": "code",
+      "version": 74,
+      "cell_etag": "cell:sha256:f0c56f393a1cf7151d0615726b3722e35d48cb2a3fa7530ff48367151f1598f1",
+      "metadata": {
+        "spur": {
+          "version": 74,
+          "last_edited_by": "brain",
+          "code_type": "rust"
+        },
+        "spur_output_provenance": {
+          "session_id": "4b77cf7f-dd40-4793-8120-f9b547fc9f55",
+          "run_id": "c31a1e4b-0939-4f88-a564-2bf2622d900a",
+          "source_version": 74,
+          "execution_identity": "d81d2056e972c89f15e44ce418be91ccc69a4ec9ec6c33f046105cbae83c0fee",
+          "lineage_complete": true,
+          "output_hash": "52b11eb41c6940249dd3934018f374171fa208f589df1d5c3da68c2ca4ac2086",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "native_profile": {
+            "profile_id": "factory",
+            "language": "rust",
+            "kernelspec": "evcxr"
+          }
+        }
+      },
+      "exec_count": 14,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Rust cell dependency-directive: symbols=0, functions=[], status=\"ok\"\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Rust cell scoped-cell: symbols=1, functions=[\"scoped_fn\"], status=\"ok\"\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Rust cell imports-only: symbols=0, functions=[], status=\"ok\"\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Rust cell expression-cell: symbols=0, functions=[], status=\"ok\"\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "thread '<unnamed>' (243948345) panicked at src/lib.rs:824:1:\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "assertion failed: directive_checks[0][\"functions\"].as_array().unwrap().iter().any(|n|\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "        n == \"directive_fn\")\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "stack backtrace:\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   0: __rustc::rust_begin_unwind\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   1: core::panicking::panic_fmt\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   2: core::panicking::panic\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   3: ctx::run_user_code_12::{{closure}}\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   4: _run_user_code_12\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   5: evcxr::runtime::Runtime::run_loop\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   6: evcxr::runtime::runtime_hook\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "   7: evcxr_jupyter::main\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": "note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.\n"
+        }
+      ],
+      "output_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "isError": false
+  },
+  "interpretation": "Acceptance checks inspect actual outputs and final marker, not status alone: the initial Evcxr panic was labeled succeeded by notebook transport. Final replay has no uncaught panics or error outputs. Bootstrap dependency change emits a benign spur-variable redefinition warning."
+}

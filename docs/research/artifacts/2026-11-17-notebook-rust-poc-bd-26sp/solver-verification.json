@@ -1,0 +1,622 @@
+{
+  "scope": "Two-cell uniqueness witness only; no proof of parser or arbitrary-notebook behavior.",
+  "persisted": false,
+  "pre": [
+    {
+      "key": "flat_identity_collision",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "symbols": {
+              "fields": {
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "head"
+                  ]
+                },
+                "notebook": {
+                  "kind": "enum",
+                  "values": [
+                    "two-cells.ipynb"
+                  ]
+                },
+                "cell_id": {
+                  "kind": "enum",
+                  "values": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "name": {
+                  "kind": "enum",
+                  "values": [
+                    "helper"
+                  ]
+                },
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "function"
+                  ]
+                },
+                "scope_key": {
+                  "kind": "enum",
+                  "values": [
+                    "top_level"
+                  ]
+                }
+              },
+              "rows": {
+                "a": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "a"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                },
+                "b": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "b"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "match_key": {
+              "relation": "symbols",
+              "fields": [
+                "snapshot",
+                "notebook",
+                "name",
+                "kind",
+                "scope_key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "match_key"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": false,
+        "include_smt": true
+      },
+      "response": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.unique.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_match_key\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "cell_qualified_identity",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "symbols": {
+              "fields": {
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "head"
+                  ]
+                },
+                "notebook": {
+                  "kind": "enum",
+                  "values": [
+                    "two-cells.ipynb"
+                  ]
+                },
+                "cell_id": {
+                  "kind": "enum",
+                  "values": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "name": {
+                  "kind": "enum",
+                  "values": [
+                    "helper"
+                  ]
+                },
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "function"
+                  ]
+                },
+                "scope_key": {
+                  "kind": "enum",
+                  "values": [
+                    "top_level"
+                  ]
+                }
+              },
+              "rows": {
+                "a": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "a"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                },
+                "b": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "b"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "match_key": {
+              "relation": "symbols",
+              "fields": [
+                "snapshot",
+                "notebook",
+                "cell_id",
+                "name",
+                "kind",
+                "scope_key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "match_key"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": false,
+        "include_smt": true
+      },
+      "response": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"a\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"function\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"helper\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"two-cells.ipynb\",\n    \"di_r0_row0_f4_present\": 1,\n    \"di_r0_row0_f4_value\": \"top_level\",\n    \"di_r0_row0_f5_present\": 1,\n    \"di_r0_row0_f5_value\": \"head\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"b\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"function\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"helper\",\n    \"di_r0_row1_f3_present\": 1,\n    \"di_r0_row1_f3_value\": \"two-cells.ipynb\",\n    \"di_r0_row1_f4_present\": 1,\n    \"di_r0_row1_f4_value\": \"top_level\",\n    \"di_r0_row1_f5_present\": 1,\n    \"di_r0_row1_f5_value\": \"head\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "post": [
+    {
+      "key": "flat_identity_collision",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "symbols": {
+              "fields": {
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "head"
+                  ]
+                },
+                "notebook": {
+                  "kind": "enum",
+                  "values": [
+                    "two-cells.ipynb"
+                  ]
+                },
+                "cell_id": {
+                  "kind": "enum",
+                  "values": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "name": {
+                  "kind": "enum",
+                  "values": [
+                    "helper"
+                  ]
+                },
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "function"
+                  ]
+                },
+                "scope_key": {
+                  "kind": "enum",
+                  "values": [
+                    "top_level"
+                  ]
+                }
+              },
+              "rows": {
+                "a": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "a"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                },
+                "b": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "b"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "match_key": {
+              "relation": "symbols",
+              "fields": [
+                "snapshot",
+                "notebook",
+                "name",
+                "kind",
+                "scope_key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "match_key"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": false,
+        "include_smt": true
+      },
+      "response": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.unique.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_match_key\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "cell_qualified_identity",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "symbols": {
+              "fields": {
+                "snapshot": {
+                  "kind": "enum",
+                  "values": [
+                    "head"
+                  ]
+                },
+                "notebook": {
+                  "kind": "enum",
+                  "values": [
+                    "two-cells.ipynb"
+                  ]
+                },
+                "cell_id": {
+                  "kind": "enum",
+                  "values": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "name": {
+                  "kind": "enum",
+                  "values": [
+                    "helper"
+                  ]
+                },
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "function"
+                  ]
+                },
+                "scope_key": {
+                  "kind": "enum",
+                  "values": [
+                    "top_level"
+                  ]
+                }
+              },
+              "rows": {
+                "a": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "a"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                },
+                "b": {
+                  "active": true,
+                  "cells": {
+                    "snapshot": {
+                      "present": true,
+                      "value": "head"
+                    },
+                    "notebook": {
+                      "present": true,
+                      "value": "two-cells.ipynb"
+                    },
+                    "cell_id": {
+                      "present": true,
+                      "value": "b"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope_key": {
+                      "present": true,
+                      "value": "top_level"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "match_key": {
+              "relation": "symbols",
+              "fields": [
+                "snapshot",
+                "notebook",
+                "cell_id",
+                "name",
+                "kind",
+                "scope_key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "match_key"
+            ]
+          }
+        ],
+        "unknowns": [],
+        "persist": false,
+        "include_smt": true
+      },
+      "response": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"a\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"function\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"helper\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"two-cells.ipynb\",\n    \"di_r0_row0_f4_present\": 1,\n    \"di_r0_row0_f4_value\": \"top_level\",\n    \"di_r0_row0_f5_present\": 1,\n    \"di_r0_row0_f5_value\": \"head\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"b\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"function\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"helper\",\n    \"di_r0_row1_f3_present\": 1,\n    \"di_r0_row1_f3_value\": \"two-cells.ipynb\",\n    \"di_r0_row1_f4_present\": 1,\n    \"di_r0_row1_f4_value\": \"top_level\",\n    \"di_r0_row1_f5_present\": 1,\n    \"di_r0_row1_f5_value\": \"head\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
