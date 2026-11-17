@@ -1,0 +1,17 @@
+test_review_nullable_absent_notebook_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_notebook_pairs_are_retained) ... ok
+test_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_ordinary_pairs_are_retained) ... FAIL
+test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) ... ok
+test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs (test_app_consumer.AppConsumerTests.test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs) ... ok
+
+======================================================================
+FAIL: test_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_ordinary_pairs_are_retained)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 540, in test_review_nullable_absent_ordinary_pairs_are_retained
+    self.assertIsNotNone(row['result'], 'ok must carry the native comparison')
+AssertionError: unexpectedly None : ok must carry the native comparison
+
+----------------------------------------------------------------------
+Ran 4 tests in 6.155s
+
+FAILED (failures=1)

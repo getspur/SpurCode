@@ -1,0 +1,352 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "label": "NULL-dropping-routing",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "routes": {
+              "fields": {
+                "marker": {
+                  "kind": "boolean"
+                }
+              },
+              "rows": {
+                "ordinary_add-ordinary": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "ordinary_add-notebook": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "ordinary_delete-ordinary": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "ordinary_delete-notebook": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_add-ordinary": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_add-notebook": {
+                  "active": true,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_delete-ordinary": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_delete-notebook": {
+                  "active": true,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "ordinary_add": {
+              "relation": "routes",
+              "rows": [
+                "ordinary_add-ordinary",
+                "ordinary_add-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            },
+            "ordinary_delete": {
+              "relation": "routes",
+              "rows": [
+                "ordinary_delete-ordinary",
+                "ordinary_delete-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            },
+            "notebook_add": {
+              "relation": "routes",
+              "rows": [
+                "notebook_add-ordinary",
+                "notebook_add-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            },
+            "notebook_delete": {
+              "relation": "routes",
+              "rows": [
+                "notebook_delete-ordinary",
+                "notebook_delete-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "ordinary_add"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "ordinary_delete"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "notebook_add"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "notebook_delete"
+            ]
+          }
+        ],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.cardinality.violation\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 1,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.cardinality.violation\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 2,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 3,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 45,\n  \"status\": \"unsat\",\n  \"duration_ms\": 28,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_cardinality__subject_ordinary_add\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "label": "total-routing",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "routes": {
+              "fields": {
+                "marker": {
+                  "kind": "boolean"
+                }
+              },
+              "rows": {
+                "ordinary_add-ordinary": {
+                  "active": true,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "ordinary_add-notebook": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "ordinary_delete-ordinary": {
+                  "active": true,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "ordinary_delete-notebook": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_add-ordinary": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_add-notebook": {
+                  "active": true,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_delete-ordinary": {
+                  "active": false,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                },
+                "notebook_delete-notebook": {
+                  "active": true,
+                  "cells": {
+                    "marker": {
+                      "present": true,
+                      "value": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {},
+          "foreign_keys": {},
+          "cardinality_constraints": {
+            "ordinary_add": {
+              "relation": "routes",
+              "rows": [
+                "ordinary_add-ordinary",
+                "ordinary_add-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            },
+            "ordinary_delete": {
+              "relation": "routes",
+              "rows": [
+                "ordinary_delete-ordinary",
+                "ordinary_delete-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            },
+            "notebook_add": {
+              "relation": "routes",
+              "rows": [
+                "notebook_add-ordinary",
+                "notebook_add-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            },
+            "notebook_delete": {
+              "relation": "routes",
+              "rows": [
+                "notebook_delete-ordinary",
+                "notebook_delete-notebook"
+              ],
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "ordinary_add"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "ordinary_delete"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "notebook_add"
+            ]
+          },
+          {
+            "rule_id": "data_integrity.cardinality",
+            "subjects": [
+              "notebook_delete"
+            ]
+          }
+        ],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 1,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 2,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    },\n    {\n      \"rule_id\": \"data_integrity.cardinality\",\n      \"binding_index\": 3,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 6,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": 1,\n    \"di_r0_row1_active\": 0,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": 1,\n    \"di_r0_row2_active\": 1,\n    \"di_r0_row2_f0_present\": 1,\n    \"di_r0_row2_f0_value\": 1,\n    \"di_r0_row3_active\": 0,\n    \"di_r0_row3_f0_present\": 1,\n    \"di_r0_row3_f0_value\": 1,\n    \"di_r0_row4_active\": 0,\n    \"di_r0_row4_f0_present\": 1,\n    \"di_r0_row4_f0_value\": 1,\n    \"di_r0_row5_active\": 1,\n    \"di_r0_row5_f0_present\": 1,\n    \"di_r0_row5_f0_value\": 1,\n    \"di_r0_row6_active\": 0,\n    \"di_r0_row6_f0_present\": 1,\n    \"di_r0_row6_f0_value\": 1,\n    \"di_r0_row7_active\": 1,\n    \"di_r0_row7_f0_present\": 1,\n    \"di_r0_row7_f0_value\": 1\n  },\n  \"duration_ms\": 6,\n  \"reason\": null,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  }
+]

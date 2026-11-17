@@ -1,0 +1,680 @@
+[
+  [
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "NULL-dropping-routing",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "facts": {
+            "relations": {
+              "routes": {
+                "fields": {
+                  "marker": {
+                    "kind": "boolean"
+                  }
+                },
+                "rows": {
+                  "ordinary-add-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-add-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {},
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "ordinary-add": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-add-ordinary",
+                  "ordinary-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "ordinary-delete": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-delete-ordinary",
+                  "ordinary-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-add": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-add-ordinary",
+                  "notebook-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-delete": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-delete-ordinary",
+                  "notebook-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "ordinary-add",
+                "ordinary-delete",
+                "notebook-add",
+                "notebook-delete"
+              ]
+            }
+          ],
+          "persist": false
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: data integrity rule `data_integrity.cardinality`: rule `data_integrity.cardinality` requires 1 subjects, got 4"
+            }
+          ],
+          "isError": true
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "total-routing",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "facts": {
+            "relations": {
+              "routes": {
+                "fields": {
+                  "marker": {
+                    "kind": "boolean"
+                  }
+                },
+                "rows": {
+                  "ordinary-add-ordinary": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-add-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-ordinary": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {},
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "ordinary-add": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-add-ordinary",
+                  "ordinary-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "ordinary-delete": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-delete-ordinary",
+                  "ordinary-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-add": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-add-ordinary",
+                  "notebook-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-delete": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-delete-ordinary",
+                  "notebook-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "ordinary-add",
+                "ordinary-delete",
+                "notebook-add",
+                "notebook-delete"
+              ]
+            }
+          ],
+          "persist": false
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: data integrity rule `data_integrity.cardinality`: rule `data_integrity.cardinality` requires 1 subjects, got 4"
+            }
+          ],
+          "isError": true
+        }
+      }
+    }
+  ],
+  [
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "NULL-dropping-routing",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "facts": {
+            "relations": {
+              "routes": {
+                "fields": {
+                  "marker": {
+                    "kind": "boolean"
+                  }
+                },
+                "rows": {
+                  "ordinary-add-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-add-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {},
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "ordinary-add": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-add-ordinary",
+                  "ordinary-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "ordinary-delete": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-delete-ordinary",
+                  "ordinary-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-add": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-add-ordinary",
+                  "notebook-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-delete": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-delete-ordinary",
+                  "notebook-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "ordinary-add"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "ordinary-delete"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "notebook-add"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "notebook-delete"
+              ]
+            }
+          ],
+          "persist": false
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: compiled data integrity rules are invalid: invalid_constraint_id at constraints[0].id: constraint id \"data_integrity_rule_0_data_integrity_cardinality__subject_ordinary-add\" must match [A-Za-z_][A-Za-z0-9_]*"
+            }
+          ],
+          "isError": true
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "total-routing",
+        "request": {
+          "family": "data_integrity",
+          "mode": "verify",
+          "facts": {
+            "relations": {
+              "routes": {
+                "fields": {
+                  "marker": {
+                    "kind": "boolean"
+                  }
+                },
+                "rows": {
+                  "ordinary-add-ordinary": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-add-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-ordinary": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "ordinary-delete-notebook": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-add-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-ordinary": {
+                    "active": false,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  },
+                  "notebook-delete-notebook": {
+                    "active": true,
+                    "cells": {
+                      "marker": {
+                        "present": true,
+                        "value": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "unique_constraints": {},
+            "foreign_keys": {},
+            "cardinality_constraints": {
+              "ordinary-add": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-add-ordinary",
+                  "ordinary-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "ordinary-delete": {
+                "relation": "routes",
+                "rows": [
+                  "ordinary-delete-ordinary",
+                  "ordinary-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-add": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-add-ordinary",
+                  "notebook-add-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              },
+              "notebook-delete": {
+                "relation": "routes",
+                "rows": [
+                  "notebook-delete-ordinary",
+                  "notebook-delete-notebook"
+                ],
+                "minimum": 1,
+                "maximum": 1
+              }
+            },
+            "value_ranges": {},
+            "conditional_requirements": {},
+            "aggregate_balances": {},
+            "consistency_relations": {},
+            "temporal_constraints": {}
+          },
+          "rules": [
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "ordinary-add"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "ordinary-delete"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "notebook-add"
+              ]
+            },
+            {
+              "rule_id": "data_integrity.cardinality",
+              "subjects": [
+                "notebook-delete"
+              ]
+            }
+          ],
+          "persist": false
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `spur-worker-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32602: data_integrity rule compilation failed: compiled data integrity rules are invalid: invalid_constraint_id at constraints[0].id: constraint id \"data_integrity_rule_0_data_integrity_cardinality__subject_ordinary-add\" must match [A-Za-z_][A-Za-z0-9_]*"
+            }
+          ],
+          "isError": true
+        }
+      }
+    }
+  ]
+]

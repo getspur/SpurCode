@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/docs/research/artifacts/2026-11-17-notebook-u4-bd-qwpo/inspect_consumer.py", line 145, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/docs/research/artifacts/2026-11-17-notebook-u4-bd-qwpo/inspect_consumer.py", line 126, in main
+    old = old_app.run_consumer(ordinary_fixture, output, package,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-vnde7am2/legacy/examples/app_consumer.py", line 156, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+legacy_app.ChildFailure: native child 24958 exited 1: Traceback (most recent call last):
+  File "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-vnde7am2/legacy/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-vnde7am2/legacy/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-vnde7am2/legacy/examples/app_consumer.py", line 240, in native_candidate
+    from publish_snapshot import publish_snapshot, TABLES
+ModuleNotFoundError: No module named 'publish_snapshot'
+

@@ -24,6 +24,22 @@ harness, not a production supervisor. Atomic publication requires local rename
 and flock semantics; a pointer failure can leave an unreferenced immutable run.
 Old runs stay readable. Unsigned/local checksums do not authenticate a publisher
 or defend against an adversarial concurrent filesystem writer.
+
+Consumer contract v2 adds notebook_explore/document and notebook_review/result
+typed tables using native notebook contract v1. Ordinary table schemas stay v1;
+review contains ordinary pairs, notebook_review contains notebook pairs (either
+path ending in .ipynb). Graph-only explore remains available for all sources.
+Notebook coverage supplements graph coverage; complete is not runtime analysis.
+read_result also accepts historical v1 manifests without inventing notebook
+facts. An explicit run_id reads a retained immutable run independently of the
+current pointer. read_notebook_source binds a native SourceRef to an exact
+snapshot and blob within that run, without loading the extension.
+Review source reads use the exact before/after snapshot context independently
+of Explore occurrences. For A/D, a NULL absent-side path means absence; a D
+with no logical_path supplies its validated old_path only to the native call.
+Ordinary A calls map a NULL old_path to that API's empty-path absence sentinel.
+The published pair paths retain the caller's values. Native NULL notebook
+comparisons remain visible with null_input status.
 """
 
 import argparse
@@ -45,6 +61,7 @@ SOURCE_IDENTITY_SCHEME = 'sha256:utf8-v1'
 KEY = 'blob_oid, logical_path, extractor_sha'
 SUCCESS = ('ok', 'empty_source', 'empty_facts')
 FAULTS = (None, 'exit_after_candidate', 'interrupt_after_candidate', 'wait_after_candidate')
+NOTEBOOK_TABLES = ('notebook_explore', 'notebook_review')
 
 
 def checksum(path):
@@ -90,19 +107,27 @@ def validate_tables(manifest, root, prefix):
             raise ValueError('result checksum mismatch: ' + item['path'])
 
 
-def read_result(output, snapshot_id):
+def read_result(output, snapshot_id, *, run_id=None):
     """Bind an exact requested snapshot to one verified immutable result."""
     output = Path(output).resolve(strict=True)
-    manifest = json.loads((output / 'current.json').read_bytes())
-    run_id = manifest['run_id']
+    manifest = None if run_id is not None else json.loads((output / 'current.json').read_bytes())
+    run_id = run_id if manifest is None else manifest['run_id']
     if not isinstance(run_id, str) or uuid.UUID(run_id).hex != run_id:
         raise ValueError('invalid result run identity')
     prefix = Path('runs') / run_id
     root = output / prefix
-    if json.loads((root / 'manifest.json').read_bytes()) != manifest:
+    stored = json.loads((root / 'manifest.json').read_bytes())
+    if manifest is None:
+        manifest = stored
+    if stored != manifest or manifest['run_id'] != run_id:
         raise ValueError('current manifest disagrees with immutable run identity')
-    if manifest['status'] != 'complete' or manifest['contract_version'] != 1:
+    if manifest['status'] != 'complete' or manifest['contract_version'] not in (1, 2):
         raise ValueError('unsupported or incomplete result manifest')
+    if manifest['contract_version'] == 2:
+        if manifest.get('notebook_contract_version') != 1:
+            raise ValueError('unsupported notebook contract version')
+        if not all(t in manifest['tables'] for t in NOTEBOOK_TABLES):
+            raise ValueError('notebook contract tables are absent')
     if manifest.get('source_identity_scheme') != SOURCE_IDENTITY_SCHEME:
         raise ValueError('unsupported source identity scheme')
     if snapshot_id not in manifest['snapshots']:
@@ -111,6 +136,89 @@ def read_result(output, snapshot_id):
         raise ValueError('result extractor identity mismatch')
     validate_tables(manifest, root, prefix)
     return {'snapshot_id': snapshot_id, 'manifest': manifest}
+
+
+def resolve_source_ref(document, ref):
+    """Resolve original decoded-cell bytes; every native identity field matters."""
+    ordinal = ref['cell_ordinal']
+    if type(ordinal) is not int or not 0 <= ordinal < len(document['cells']):
+        raise ValueError('source reference cell ordinal mismatch')
+    cell = document['cells'][ordinal]
+    prepared = cell['source']
+    if prepared is None:
+        raise ValueError('source reference has no decoded cell source')
+    expected = dict(notebook_path=document['path'], notebook_source_sha256=document['source_sha256'],
+        cell_id=cell['id'], cell_ordinal=cell['ordinal'], cell_identity_quality=cell['identity_quality'],
+        cell_source_sha256=prepared['original_sha256'], cell_language=cell['language'],
+        coordinate_space='decoded_code_cell_utf8')
+    if any(ref.get(k) != v for k, v in expected.items()):
+        raise ValueError('source reference context mismatch')
+    raw = prepared['original'].encode('utf-8')
+    if hashlib.sha256(raw).hexdigest() != prepared['original_sha256']:
+        raise ValueError('original cell source identity mismatch')
+    start, end = ref['byte_start'], ref['byte_end']
+    if (type(start) is not int or type(end) is not int or not 0 <= start <= end <= len(raw)
+            or ref['line_start'] != raw[:start].count(b'\n') + 1
+            or ref['line_end'] != raw[:end].count(b'\n') + 1):
+        raise ValueError('source reference range mismatch')
+    try:
+        return raw[start:end].decode('utf-8')
+    except UnicodeDecodeError as error:
+        raise ValueError('source reference is not on UTF-8 boundaries') from error
+
+
+def validate_notebook_document(path, source, document):
+    """Validate native provenance before attaching caller snapshot labels."""
+    if source is None and document is None:
+        return
+    if (document is None or source is None or document['contract_version'] != 1
+            or document['path'] != path
+            or document['source_sha256'] != hashlib.sha256(source.encode('utf-8')).hexdigest()):
+        raise ValueError('native notebook source identity mismatch')
+    for cell in document['cells']:
+        if cell['source'] is not None:
+            prepared = cell['source']
+            if hashlib.sha256(prepared['original'].encode()).hexdigest() != prepared['original_sha256']:
+                raise ValueError('native original cell source identity mismatch')
+        for symbol in cell['symbols']:
+            resolve_source_ref(document, symbol['source_ref'])
+
+
+def read_notebook_source(output, snapshot_id, blob_oid, source_ref, *, run_id=None):
+    """Read a range only from the explicitly requested immutable source context."""
+    import duckdb
+    manifest = read_result(output, snapshot_id, run_id=run_id)['manifest']
+    if manifest['contract_version'] != 2:
+        raise ValueError('historical consumer contract has no notebook source references')
+    paths = {table: str(Path(output) / manifest['tables'][table]['path'])
+             for table in ('sources', *NOTEBOOK_TABLES)}
+    context = [snapshot_id, blob_oid, source_ref['notebook_path'], manifest['extractor_id']]
+    with duckdb.connect() as reader:
+        sources = reader.execute('SELECT DISTINCT source FROM read_parquet(?) '
+            'WHERE snapshot_id=? AND blob_oid=? AND logical_path=? AND extractor_sha=?',
+            [paths['sources'], *context]).fetchall()
+        # A review document is bound to its own published side. An occurrence
+        # in Explore is optional; neither the current run nor the opposite
+        # side is a substitute for this exact snapshot/blob/path/extractor key.
+        rows = reader.execute('SELECT DISTINCT document FROM ('
+            'SELECT document FROM read_parquet(?) '
+            'WHERE snapshot_id=? AND blob_oid=? AND logical_path=? AND extractor_sha=? '
+            'UNION ALL SELECT result."before" FROM read_parquet(?) '
+            'WHERE base_snapshot_id=? AND old_blob_oid=? AND old_path=? AND extractor_sha=? '
+            'UNION ALL SELECT result."after" FROM read_parquet(?) '
+            'WHERE head_snapshot_id=? AND new_blob_oid=? AND logical_path=? AND extractor_sha=?'
+            ') WHERE document IS NOT NULL',
+            [paths['notebook_explore'], *context, paths['notebook_review'], *context,
+             paths['notebook_review'], *context]).fetchall()
+    if len(sources) != 1 or sources[0][0] is None:
+        raise ValueError('source reference has no matching snapshot source')
+    if len(rows) != 1 or rows[0][0] is None:
+        raise ValueError('source reference has no matching snapshot source')
+    document = rows[0][0]
+    if 'sha256:' + document['source_sha256'] != blob_oid:
+        raise ValueError('source reference notebook hash mismatch')
+    validate_notebook_document(source_ref['notebook_path'], sources[0][0], document)
+    return resolve_source_ref(document, source_ref)
 
 
 def run_consumer(fixture, output, package, *, expected_extractor_id, timeout=None, fault=None):
@@ -232,6 +340,57 @@ def validate_fixture(fixture, extractor_id):
     return snapshots, sources, lineage, pairs
 
 
+def notebook_projections(c, snapshots, extractor_id):
+    # Materialize routing boundaries: the ordinary throwing APIs must never
+    # see a notebook row, even if DuckDB changes expression evaluation order.
+    c.execute("CREATE TEMP TABLE notebook_inputs AS SELECT * FROM staged_sources "
+              "WHERE ends_with(lower(logical_path), '.ipynb')")
+    c.execute('CREATE TEMP TABLE notebook_documents AS SELECT blob_oid, logical_path, extractor_sha, '
+              'spur_graph_notebook_symbols(logical_path, source) document FROM notebook_inputs')
+    for path, source, document in c.execute('SELECT logical_path, source, document '
+            'FROM notebook_inputs JOIN notebook_documents USING (' + KEY + ')').fetchall():
+        validate_notebook_document(path, source, document)
+    c.execute("CREATE TABLE notebook_explore AS SELECT l.*, coalesce(d.document.status, 'null_input') status, "
+              "d.document FROM source_lineage l JOIN notebook_documents d USING (" + KEY + ")")
+    c.execute('CREATE TEMP TABLE snapshot_context(snapshot_id VARCHAR, repository VARCHAR, '
+              'commit_oid VARCHAR, parent_oid VARCHAR)')
+    if snapshots:
+        c.executemany('INSERT INTO snapshot_context VALUES (?,?,?,?)',
+            [(sid, s['repository'], s['commit_oid'], s['parent_oid']) for sid, s in snapshots.items()])
+    c.execute("CREATE TEMP TABLE notebook_pair_inputs AS SELECT p.*, b.blob_oid old_blob_oid, "
+              "h.blob_oid new_blob_oid, b.source left_source, h.source right_source "
+              "FROM pairs p LEFT JOIN sources b ON p.base_snapshot_id=b.snapshot_id AND p.old_path=b.logical_path "
+              "LEFT JOIN sources h ON p.head_snapshot_id=h.snapshot_id AND p.logical_path=h.logical_path "
+              "WHERE coalesce(ends_with(lower(p.logical_path), '.ipynb'), false) "
+              "OR coalesce(ends_with(lower(p.old_path), '.ipynb'), false)")
+    c.execute('CREATE TEMP TABLE notebook_comparisons AS SELECT * EXCLUDE(left_source,right_source), '
+              'spur_graph_notebook_changes(CASE WHEN kind=\'D\' AND logical_path IS NULL '
+              'THEN old_path ELSE logical_path END,old_path,kind,left_source,right_source) result '
+              'FROM notebook_pair_inputs')
+    for path, old_path, left, right, result in c.execute(
+            'SELECT i.logical_path,i.old_path,i.left_source,i.right_source,r.result '
+            'FROM notebook_pair_inputs i JOIN notebook_comparisons r USING (pair_id)').fetchall():
+        if result is None:
+            continue  # Native NULL is absence, not a successful comparison.
+        if result['contract_version'] != 1:
+            raise ValueError('unsupported native notebook comparison contract')
+        # Invalid side/kind results may intentionally have no parsed document.
+        for side_path, source, document in [(old_path, left, result['before']), (path, right, result['after'])]:
+            if document is not None:
+                validate_notebook_document(side_path, source, document)
+        for change in result['symbol_changes']:
+            for side in ('before', 'after'):
+                if change[side] is not None:
+                    resolve_source_ref(result[side], change[side]['source_ref'])
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+              'b.repository base_repository,b.commit_oid base_commit_oid,b.parent_oid base_parent_oid, '
+              'h.repository head_repository,h.commit_oid head_commit_oid,h.parent_oid head_parent_oid, '
+              '?::VARCHAR extractor_sha,coalesce(r.result.status,\'null_input\') status,r.result FROM notebook_comparisons r '
+              'JOIN snapshot_context b ON r.base_snapshot_id=b.snapshot_id '
+              'JOIN snapshot_context h ON r.head_snapshot_id=h.snapshot_id',
+              [extractor_id])
+
+
 def native_candidate(request, staging):
     # These imports and every native operation stay in the isolated child.
     import duckdb
@@ -291,36 +450,54 @@ def native_candidate(request, staging):
                   'JOIN file_facts_cache c USING (' + KEY + ')')
         # Physically filter recoverable failures before the throwing symbols API.
         c.execute("CREATE TEMP TABLE symbol_inputs AS SELECT s.* FROM sources s JOIN file_facts_cache c "
-                  "USING (" + KEY + ") WHERE c.status IN ('ok','empty_source','empty_facts')")
+                  "USING (" + KEY + ") WHERE c.status IN ('ok','empty_source','empty_facts') "
+                  "AND NOT ends_with(lower(s.logical_path), '.ipynb')")
         c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
                   'spur_graph_symbols(logical_path, source) symbols FROM symbol_inputs')
         c.execute('CREATE TABLE pairs(pair_id VARCHAR, base_snapshot_id VARCHAR, head_snapshot_id VARCHAR, '
                   'logical_path VARCHAR, old_path VARCHAR, kind VARCHAR)')
         if pairs:
             c.executemany('INSERT INTO pairs VALUES (?, ?, ?, ?, ?, ?)', pairs)
+        c.execute("CREATE TEMP TABLE ordinary_pairs AS SELECT * FROM pairs "
+                  "WHERE NOT (coalesce(ends_with(lower(logical_path), '.ipynb'), false) "
+                  "OR coalesce(ends_with(lower(old_path), '.ipynb'), false))")
         c.execute("CREATE TEMP TABLE pair_inputs AS SELECT p.*, b.blob_oid old_blob_oid, h.blob_oid new_blob_oid, "
                   "b.symbols old_symbols, h.symbols new_symbols, "
                   "(p.kind='A' OR b.symbols IS NOT NULL) AND (p.kind='D' OR h.symbols IS NOT NULL) available "
-                  "FROM pairs p LEFT JOIN symbols b ON p.base_snapshot_id=b.snapshot_id AND p.old_path=b.logical_path "
+                  "FROM ordinary_pairs p LEFT JOIN symbols b ON p.base_snapshot_id=b.snapshot_id AND p.old_path=b.logical_path "
                   "LEFT JOIN symbols h ON p.head_snapshot_id=h.snapshot_id AND p.logical_path=h.logical_path")
         c.execute("CREATE TABLE review AS SELECT * EXCLUDE(old_symbols,new_symbols,available), "
                   "CASE WHEN available THEN 'ok' ELSE 'unavailable' END status, "
-                  "CASE WHEN available THEN spur_graph_symbol_changes(logical_path,old_path,kind,"
+                  "CASE WHEN available THEN spur_graph_symbol_changes("
+                  "CASE WHEN kind='D' AND logical_path IS NULL THEN old_path ELSE logical_path END,"
+                  "CASE WHEN kind='A' AND old_path IS NULL THEN '' ELSE old_path END,kind,"
                   "coalesce(old_symbols,[]),coalesce(new_symbols,[])) ELSE NULL END result FROM pair_inputs")
+        notebook_projections(c, snapshots, artifact['extractor_id'])
         coverage = {}
         for sid, snapshot in snapshots.items():
             counts = dict(c.execute('SELECT c.status,count(*) FROM sources s JOIN file_facts_cache c '
                                    'USING (' + KEY + ') WHERE s.snapshot_id=? GROUP BY c.status', [sid]).fetchall())
             unresolved = c.execute('SELECT count(*) FROM sources s JOIN file_facts_edges e USING (' + KEY + ') '
                                    'WHERE s.snapshot_id=? AND e.target_node_id IS NULL', [sid]).fetchone()[0]
+            notebook_counts = dict(c.execute('SELECT coalesce(d.document.status,\'null_input\'), count(*) '
+                'FROM sources s JOIN notebook_documents d USING (' + KEY + ') '
+                'WHERE s.snapshot_id=? GROUP BY ALL', [sid]).fetchall())
             coverage[sid] = dict(repository=snapshot['repository'], commit_oid=snapshot['commit_oid'],
                 parent_oid=snapshot['parent_oid'], coverage=dict(source_rows=len(snapshot['sources']),
-                status_counts=counts, extraction_complete=all(k in SUCCESS for k in counts),
+                status_counts=counts, notebook_status_counts=notebook_counts,
+                extraction_complete=all(k in SUCCESS for k in counts)
+                    and all(k == 'complete' for k in notebook_counts),
                 unresolved_edges=unresolved))
         review_coverage = dict(pair_rows=len(pairs), unavailable_pairs=c.execute(
             "SELECT count(*) FROM review WHERE status='unavailable'").fetchone()[0],
             pairs_with_diagnostics=c.execute(
             'SELECT count(*) FROM review WHERE len(result.diagnostics)>0').fetchone()[0])
+        review_coverage.update(notebook_pair_rows=c.execute('SELECT count(*) FROM notebook_review').fetchone()[0],
+            notebook_status_counts=dict(c.execute('SELECT status,count(*) FROM notebook_review GROUP BY status').fetchall()),
+            notebook_pairs_with_diagnostics=c.execute('SELECT count(*) FROM notebook_review '
+                'WHERE len(result.diagnostics)>0 OR list_has_any(list_transform(result."before".cells, '
+                'lambda cell: len(cell.diagnostics)>0), [true]) OR list_has_any(list_transform(result."after".cells, '
+                'lambda cell: len(cell.diagnostics)>0), [true])').fetchone()[0])
         native_version, platform = runtime_contract(c)
     finally:
         c.close()
@@ -333,7 +510,7 @@ def native_candidate(request, staging):
     # private immutable database, in one read-only transaction.
     with duckdb.connect(str(database), read_only=True) as reader:
         reader.execute('BEGIN TRANSACTION')
-        for table in ('sources', 'explore', 'review'):
+        for table in ('sources', 'explore', 'review', *NOTEBOOK_TABLES):
             path = staging / (table + '.parquet')
             reader.execute("COPY " + table + " TO '" + str(path).replace("'", "''") + "' (FORMAT PARQUET)")
             columns = reader.execute('DESCRIBE ' + table).fetchall()
@@ -345,7 +522,7 @@ def native_candidate(request, staging):
         reader.execute('COMMIT')
     if checksum(package) != artifact['binary']['sha256']:
         raise ValueError('package artifact changed during extraction')
-    candidate = dict(contract_version=1, status='candidate', run_id=request['run_id'], native_pid=os.getpid(),
+    candidate = dict(contract_version=2, notebook_contract_version=1, status='candidate', run_id=request['run_id'], native_pid=os.getpid(),
         fixture_sha256=request['fixture_sha256'], extractor_id=artifact['extractor_id'],
         facts_schema_version=artifact['facts_schema_version'], artifact=artifact,
         artifact_manifest_sha256=checksum(Path(str(package) + '.json')),
