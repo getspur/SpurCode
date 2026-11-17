@@ -1,0 +1,522 @@
+[
+  {
+    "commit_hash": "0b020d833cada6e3e3a30e146b69043c2387f4a9",
+    "author_name": "h4nsmuller",
+    "author_date": "2026-11-13 17:01:38",
+    "commit_date": "2026-11-13 17:01:51",
+    "message": "Merge remote-tracking branch 'upstream/main' into wide-decimal\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "cfab7d85499022f633c4c77008588fd806484018",
+    "author_name": "Maxxen",
+    "author_date": "2026-11-12 11:35:22",
+    "commit_date": "2026-11-13 10:08:58",
+    "message": "more immutable accessors\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "0d35404aa7c2e455b5a423ba2fabeae880492657",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-04 12:49:03",
+    "commit_date": "2026-11-04 12:49:03",
+    "message": "Simplify fixed-key domain optimizer implementation\n\nRemove aggregate statistics-effect API plumbing and the query-wide callback guard. Keep runtime-filter target discovery independent of optimizer settings, separate the domain pass scheduling block, and use descriptive cost variables without changing the equations. Cover implicit bitstring bounds when the rule fires.\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "926641cca61b95be07b64f2c69b05b3c488e4ec7",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-04 12:09:40",
+    "commit_date": "2026-11-04 12:09:40",
+    "message": "Restrict local grouped aggregates to fixed demand keys\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "286ba434a744d017dcb3fcf1a6e9889696af6df1",
+    "author_name": "h4nsmuller",
+    "author_date": "2026-11-02 15:39:59",
+    "commit_date": "2026-11-02 15:39:59",
+    "message": "Merge remote-tracking branch 'upstream/main' into wide-decimal-u32\n\n# Conflicts:\n#\tsrc/function/scalar/operator/arithmetic.cpp\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "e7c12d9ab5f90d593dfcb7be8c378a237dd9e8f8",
+    "author_name": "Daniel Gut",
+    "author_date": "2026-10-31 10:42:11",
+    "commit_date": "2026-11-02 08:14:25",
+    "message": "FIRST/LAST/ANY_VALUE: avoid unshredding shredded VARIANT vectors\n\nFirstVectorFunction::Update materialized the input with ToUnifiedFormat\nbefore checking the aggregate states. For a shredded VARIANT this\nunshreds the whole chunk, even when no row can be assigned anymore.\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "a190ba766e1b47a9216b94a6bae03d1f02f53242",
+    "author_name": "h4nsmuller",
+    "author_date": "2026-10-14 15:29:26",
+    "commit_date": "2026-10-14 15:29:26",
+    "message": "Merge upstream main into wide-decimal\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "ca4256b830d42eb4eff16d292729ae94274d9497",
+    "author_name": "h4nsmuller",
+    "author_date": "2026-10-12 15:05:58",
+    "commit_date": "2026-10-12 17:39:30",
+    "message": "Support DECIMAL widths up to 255 digits, stored as BIGNUM blobs\n\nDECIMAL(width, scale) with width > 38 now stores its unscaled value as a BIGNUM blob\n(PhysicalType::VARCHAR). The BIGNUM encoding is order-preserving, so comparisons, sorting,\nMIN/MAX, hashing, joins, zonemaps (string statistics) and storage work on wide decimals\nwithout decimal-specific code. Fixed-size decimals up to 38 digits are unchanged, and results\nonly become wider than 38 digits when one of the inputs already is.\n\nAdds casts to and from wide decimals (strings, integers, hugeints, floating point, booleans,\nBIGNUM and fixed-size decimals, with rounding and range checks), + - * % and unary - through\nBignumIntermediate, SUM/first/last/arg_min/arg_max/abs, Value support, CSV and JSON reading,\nand clear NotImplemented errors for AVG, round/ceil/floor/trunc, Parquet and the Appender,\nwhich previously fell through to the HUGEINT code path. Also adds DECIMAL -> BIGNUM casts and\nmakes the three statistics sites that assumed numeric types carry NumericStats check the\nstatistics kind instead.\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "43007333049051b658d40577c01a4c640ac4b72f",
+    "author_name": "Pedro Holanda",
+    "author_date": "2026-09-30 15:42:31",
+    "commit_date": "2026-09-30 15:42:31",
+    "message": "Add a throwing FunctionBinder::BindScalarFunction overload\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "85258f546eca92e2dc692097d46895336b6e8408",
+    "author_name": "Carlo Piovesan",
+    "author_date": "2026-09-20 15:36:21",
+    "commit_date": "2026-09-20 18:00:18",
+    "message": "Test and tidy the first/last string state after widening alloc_size\n\nThe previous commit widened FirstStringStateBase::alloc_size to idx_t so that\nNextPowerOfTwo(len) is no longer truncated to 0 for strings longer than 2^31\nbytes, which made Allocate(0) hand out a zero-length region that the following\nmemcpy wrote gigabytes past. Reachable from first(), last() or any_value() on a\nVARCHAR or BLOB.\n\nOn top of that, drop the remaining uint32_t cast on len (string_t::GetSize\nalready returns idx_t, and the cast belongs at the string_t constructor) and\nrecord on the field why it has to be wider than uint32_t.\n\nThis mirrors the fix that landed for the same defect in SuffixFunction.\n\nThe added test exercises the allocation-reuse branch that alloc_size governs -\ngrowing, shrinking and regrowing - since the truncation itself needs a\nmulti-gigabyte string to trigger and cannot be covered in an ordinary test.\n\nFixes duckdb/duckdb#25269\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "48edc2adb83cadc84e1e52fc0e976f277f0c706f",
+    "author_name": "Mark",
+    "author_date": "2026-09-16 08:00:29",
+    "commit_date": "2026-09-16 08:00:29",
+    "message": "Reduce stack usage in clustered aggregate (#25613)\n\nPossibly resolves\nhttps://github.com/duckdblabs/duckdb-internal/issues/10522 by reducing\nstack usage by moving scratch buffers to the heap.\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "6f3f02c3331832b35a5a3130369eeca2da99e7bb",
+    "author_name": "lghavami",
+    "author_date": "2026-09-11 13:08:08",
+    "commit_date": "2026-09-11 13:08:08",
+    "message": "re-sync with actual branch tip\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "66fa79ac0a58bf71f6669505d75cd03972f1c924",
+    "author_name": "Sebastiaan Gerritsen",
+    "author_date": "2026-09-11 12:48:46",
+    "commit_date": "2026-09-11 12:49:12",
+    "message": "Added range iterator to group runs\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "ff515d1dc5a66f0f98ada3e8bdbc0a15940ae78c",
+    "author_name": "lghavami",
+    "author_date": "2026-09-09 13:23:41",
+    "commit_date": "2026-09-10 11:31:20",
+    "message": "Added param names to distributive aggregate functions\n\nCovers count/count_star, first/last/any_value, min/max (including the\ntop-n overload), decimal_average, and combine_aggr (documented here,\nimplemented in scalar/system/aggregate_export.cpp).\n\nCo-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_017iyYayb2upfqthB4V7gHwZ\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "be5cc4de62d09d1a91ac75285819aa4c96c81dbc",
+    "author_name": "Brandon Barrante",
+    "author_date": "2026-09-07 00:21:49",
+    "commit_date": "2026-09-20 17:59:15",
+    "message": "aggregate: widen FirstStringStateBase::alloc_size to idx_t to stop the 2GB integer truncation\n\nFirstStringStateBase::Assign() stored the arena allocation size in a\nuint32_t after casting NextPowerOfTwo(len). For any input string with\nlen in (2^31, 2^32-1] -- a size DuckDB s own string_t cap permits --\nNextPowerOfTwo returns 2^32, and the outer UnsafeNumericCast to uint32_t\ntruncates that to 0. Release builds then Allocate(0) and memcpy(len)\nbytes past the returned stub, producing an attacker-controlled heap\nbuffer overflow reachable through any first()/last()/any_value() over\na VARCHAR or BLOB column. Debug builds crash at the checked cast.\n\nWiden alloc_size to idx_t so NextPowerOfTwo s uint64 result survives.\nThe field s doc comment already notes it is not part of the exported\nstate; the four extra bytes only touch the aggregate s internal state\nlayout. The alloc_size >= len reuse check keeps working because len is\npromoted to idx_t at the comparison.\n\nFixes: duckdb#25269\nReported-by: ylwango613 (github.com/ylwango613)\nSigned-off-by: Brandon Barrante <aetherai@aethersystems.net>\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "24a7365d7fd7aa81331beb05e55df3ff47ff3c2c",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-09-03 08:05:55",
+    "commit_date": "2026-09-11 07:24:41",
+    "message": "Simplify bound expression SQL export identity\n\nUse retained catalog definitions for logical function identity, derive structural syntax from validated bound state, and narrow extension hooks to owned local AST results. Remove SQL-export provenance recipes while leaving generic bound-function serialization unchanged.\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "ce29b1578572e9b69b5a35be3c61db3ba860e545",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-09-01 14:24:46",
+    "commit_date": "2026-09-11 07:24:29",
+    "message": "Authenticate SQL identity through catalog entry binding\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "f849df0cbf83d044f3d8e3c954c1537bf73cdfd8",
+    "author_name": "dentinyhao",
+    "author_date": "2026-08-25 05:34:04",
+    "commit_date": "2026-08-25 05:34:04",
+    "message": "propagate for aggregate functions\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "a4dea50a8a9d66e0ef400cbe185c44444053134f",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-08-12 12:38:37",
+    "commit_date": "2026-08-12 12:38:37",
+    "message": "Fix ordered aggregate rewrite static build\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "951be5f51e53218bdf411ec4f38ac516adb8dbc1",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-08-12 11:54:03",
+    "commit_date": "2026-08-12 11:54:03",
+    "message": "Generalize aggregate rewrite plans and policies\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "3a5d0c26c254ee4521b504e03a0f1315b821fcdc",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-08-09 12:12:48",
+    "commit_date": "2026-08-18 15:22:06",
+    "message": "Optimize USING KEY UNION delta tracking\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "ffadfe3a7ec7fda7975c3be93772aaae126c1599",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-08-04 13:49:54",
+    "commit_date": "2026-08-12 10:59:29",
+    "message": "Fix aggregate rewrite CI failures\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "a1f6e782e21317044c080470d5ded03231404869",
+    "author_name": "Denis Hirn",
+    "author_date": "2026-08-04 12:39:03",
+    "commit_date": "2026-08-12 10:59:29",
+    "message": "Generalize aggregate rewrite callbacks\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "71221719b56f39e9499e9afaa4f9e9e0fdb24501",
+    "author_name": "Mark",
+    "author_date": "2026-06-11 11:12:35",
+    "commit_date": "2026-06-11 11:12:35",
+    "message": "Expand aggregate state export to work with lists (`StateListType`) and sort keys (`StateSortKey`), and add aggregate state export to `list`, `any_value/first/last`, `arg_min/arg_max` (#23199)\n\nFollow-up to https://github.com/duckdb/duckdb/pull/23186\n\nThis PR extends the aggregate state export functions to allow for\nautomatically exporting lists and sort key-serialized values, which are\ncommonly used in aggregate functions in particular for complex nested\ntypes. These types can now be defined using the same state layout, and\nare automatically (de)serialized into states without requiring extra\nper-aggregate code to support the state layouts.\n\n### Lists\n\nLists can be defined using the `StateListType`, and operate on the\n`LinkedList` structure that we use to efficiently store lists of\narbitrary data in the `list` aggregate. This is what the `list`\naggregate state looks like now:\n\n```cpp\nstruct ListAggState {\n\tusing STATE_TYPE = StateListType<StateReturnType>;\n\n\tLinkedList linked_list;\n};\n```\n\n`StateReturnType` is a special marker that says \"the logical type of\nthis element is equivalent to the return type of the aggregate\nfunction\".\n\nThis is what the exported aggregate state looks like:\n\n```sql\nselect list({'a': i, 'b': date '2000-01-01' + interval (i) days}) export_state as list_state from range(3) t(i);\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                     list_state                                                     \u2502\n\u2502                                                  aggregate_state                                                   \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 [{'a': 0, 'b': '2000-01-01 00:00:00'}, {'a': 1, 'b': '2000-01-02 00:00:00'}, {'a': 2, 'b': '2000-01-03 00:00:00'}] \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n\nThe `LinkedList` structure is automatically traversed and (de)serialized\nto the structured aggregate state object, as part of the aggregate state\nexport.\n\n### Sort Key\n\nSimilarly, sort keys are used in `first/last/any_value` and\n`arg_min/arg_max` when dealing with complex (nested) objects. Objects\nare serialized to a `string_t` blob using the sort key format, and\ndeserialized again when the final result is constructed. The\n`StateSortKey` template is added which adds generic support for\n(de)serializing such structures. For example, here is what `first` looks\nlike:\n\n```cpp\nstruct FirstSortKeyState {\n\tstatic constexpr const char *STATE_NAMES[] = {\"value\"};\n\tusing STATE_TYPE =\n\t    OptionalStateType<StructStateType<OptionalStateType<StateSortKey<StateReturnType, OrderType::ASCENDING>>>>;\n\n\tstring_t value;\n\t//! Whether the recorded value is valid (i.e. not NULL)\n\tbool value_is_valid;\n\t//! Whether the state has been set (i.e. we have seen a row)\n\tbool is_set;\n\t//! The size of the arena allocation for a non-inlined string value - not part of the exported state\n\tuint32_t alloc_size;\n};\n```\n\n`first` is interesting because it has two layers of optionality - as the\nvalue can also be set to `NULL`, i.e. the following two values are\ndifferent:\n\n```sql\n-- single \"NULL\" value provided\nselect first(null) export_state value_set_to_null;\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502 value_set_to_null \u2502\n\u2502  aggregate_state  \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 {'value': NULL}   \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n-- no value provided\nselect first(null) export_state empty_value from range(0);\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502   empty_value   \u2502\n\u2502 aggregate_state \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 NULL            \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n\nThe two layers of `OptionalStateType` and the two booleans account for\nthis.\n\nThe actual sort key is specified by `StateSortKey<StateReturnType,\nOrderType::ASCENDING>` - which looks for a `string_t` and then uses the\nsort key helpers to (de)serialize it to construct the aggregate state:\n\n```sql\nselect first({'a': 42, 'b': 84}) export_state as state;\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502             state             \u2502\n\u2502        aggregate_state        \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 {'value': {'a': 42, 'b': 84}} \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "40e17e32299f4ee909f7cdefe45419847f31214c",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-10 16:42:24",
+    "commit_date": "2026-06-10 16:42:24",
+    "message": "Export min/max, first/last/any_value and arg_min/arg_max state values with the aggregate's runtime types (e.g. DATE or UUID instead of the physical type)\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "b45b46d063851c7d600863d6a27bdc8b9c3bbcfe",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-10 11:40:11",
+    "commit_date": "2026-06-10 11:40:11",
+    "message": "Resolve aggregate state field types via StateReturnType/StateInputType markers declared in STATE_TYPE, rename LINKED_LIST to LIST, make string alloc sizes conditional on the value type and clean up casts in the state export code\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "4f68fe5f28281444afbd65b94d79fa4157e4901f",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-10 09:43:05",
+    "commit_date": "2026-06-10 09:43:05",
+    "message": "Export string aggregate state values with the bound function's logical type (e.g. BLOB/BIT instead of VARCHAR) and add all-types roundtrip tests for min and arg_min\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "9c026882b87081f280af222ba6945ba3e3ff9afb",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-10 09:05:43",
+    "commit_date": "2026-06-10 09:05:43",
+    "message": "Rework first/last/any_value state to a two-level optional struct with arena-allocated strings, removing the destructor and adding EXPORT_STATE support\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "5c77e4bad09baad36a39a1854a305a188f5f0ea3",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-09 14:45:42",
+    "commit_date": "2026-06-09 14:45:42",
+    "message": "Merge branch 'main' into identifier\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "13f8550ef77c84c2c1a1cc3597edc8340437647c",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-09 12:07:05",
+    "commit_date": "2026-06-09 12:07:05",
+    "message": "Return the AggregateStateLayout instead of only a LogicalType, which allows more structured information to be returned w.r.t. how we need to (de)serialize types from the blob\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "3049f34939393e63a27fbad43a9613522974baac",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-09 12:05:07",
+    "commit_date": "2026-06-09 12:05:07",
+    "message": "Avoid passing STATE_NAMES into struct state type\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "368033cd3ef93e8e522d7735a02346d6ddeff377",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-09 10:46:42",
+    "commit_date": "2026-06-09 10:46:42",
+    "message": "Windows fix\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "81b49f0e49ef4af36dde11ca37a87a2832951ea2",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-09 09:06:34",
+    "commit_date": "2026-06-09 09:06:34",
+    "message": "More explicit state layout removal\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "ef19b7ba52aeb199577f3cf42524f0e54ffe5480",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-08 15:49:58",
+    "commit_date": "2026-06-08 15:49:58",
+    "message": "Merge branch 'main' into identifier\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "10b1527183e8d81ccf021bb7aad9e28fc6582429",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-07 07:04:58",
+    "commit_date": "2026-06-07 09:15:18",
+    "message": "Make StateInitialize zero-initialize by default if no Initialize method is provided\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "7a90a7d4155a22cce521a7b4cb85bf0a9dd7158a",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-05 06:47:29",
+    "commit_date": "2026-06-05 06:47:29",
+    "message": "Zero-initialize first/any_value strings to prevent accessing uninitialized memory when deserializing string_t\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "1669044e443cfc5237bba0858fc2b95ed31b569b",
+    "author_name": "Mytherin",
+    "author_date": "2026-06-05 06:02:09",
+    "commit_date": "2026-06-05 06:02:09",
+    "message": "More progress on Identifier propagation\n",
+    "file_path": "src/function/aggregate/distributive/first_last_any.cpp"
+  },
+  {
+    "commit_hash": "8f222911980d16af6fc7632563468c5ba21ed0c7",
+    "author_name": "xproblematique",
+    "author_date": "2026-11-13 12:38:09",
+    "commit_date": "2026-11-16 09:07:00",
+    "message": "Stop rendering expressions as SQL to name relation statistics columns\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "27a6019f54744dfc72a872525a6ec4e1d4ebb92a",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-13 10:09:06",
+    "commit_date": "2026-11-13 10:09:06",
+    "message": "Avoid redundant bindings in UNION group refinement\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "18a4b317b5a7033ceb52f88a470a0dbef17513a7",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-13 08:24:00",
+    "commit_date": "2026-11-13 08:24:00",
+    "message": "Simplify bounded UNION grouping refinement and CTE lookup\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "1b909366c2fef189d8bf6d978cd29919eb0dfce2",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-13 08:11:04",
+    "commit_date": "2026-11-13 08:11:04",
+    "message": "Fix partial aggregation plan checks for small vector sizes\n\nGive the CTE grouping and asymmetric join fixtures enough reduction to satisfy the large-group collapse margin at vector size two. Preserve the low-fanout rejection case.\n\nCompute the ordinary aggregate cardinality fallback only when the shared group estimate is not used.\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "255d752c99831484aa675d496d3934767c5ac0cb",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-12 12:55:04",
+    "commit_date": "2026-11-12 12:55:04",
+    "message": "Estimate partial aggregation from complete input grouping sets\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "5c0cbf469daa456b539331d1385409c32f817029",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-10 15:55:25",
+    "commit_date": "2026-11-10 15:55:25",
+    "message": "Merge upstream main before opening domain optimization PR\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "f3539b19779551ba079d93f25217baaf00112b1b",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-10 08:06:04",
+    "commit_date": "2026-11-10 08:06:04",
+    "message": "Merge upstream main to refresh CI\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "483ff0aaa8d691f6ce9c6999d5b3acb4fb187f36",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-09 10:14:34",
+    "commit_date": "2026-11-09 10:14:34",
+    "message": "Capture immutable scan statistics before join-order optimization\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "a546b9754b8f90ad44fb044acac790cd726dada3",
+    "author_name": "Robinho-MR",
+    "author_date": "2026-11-05 20:22:47",
+    "commit_date": "2026-11-05 20:22:47",
+    "message": "Merge main\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "2a8804560af424e8e682b93525167defce072b07",
+    "author_name": "Robinho-MR",
+    "author_date": "2026-11-05 20:22:19",
+    "commit_date": "2026-11-05 20:22:19",
+    "message": "Plan DISTINCT as an aggregate in the binder and remove LogicalDistinct optimizations\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "71af79206a7973b9a487f31a1cc16c1f7d2efc52",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-04 17:12:29",
+    "commit_date": "2026-11-10 08:14:54",
+    "message": "Defer generated domain reductions to optimizer costing\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "4a2783277abce33c440f8f5d7090cf8c8b381c8b",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-03 07:33:24",
+    "commit_date": "2026-11-03 07:33:24",
+    "message": "Share semi/anti fallback and cover large join estimates\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "9f2e9d8ad0115691cc22078c8a1b172bfed5ccc7",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-02 14:09:47",
+    "commit_date": "2026-11-04 08:20:36",
+    "message": "Estimate join cardinalities without join enumeration\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "caac8ce1b16fd9f68b0652f8752e4b8ad572fe50",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-11-02 13:55:37",
+    "commit_date": "2026-11-04 08:19:36",
+    "message": "Improve scan and filter cardinality estimates\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "243ebc1638236c53040ec1f77f6b898f257fe7bf",
+    "author_name": "Shubham Chaurasia",
+    "author_date": "2026-11-02 08:23:00",
+    "commit_date": "2026-11-05 15:25:18",
+    "message": "Cardinality estimator: don't let a one-sided distinct count shrink the join domain\n\nThe join domain is picked by tier (HLL/exact count, then min/max span,\nthen row count), not by size. When only one side of a join key has a\nstrong count, e.g. a native fact joined to a CSV, range() or multi-file\nParquet dimension, the fact's few distinct keys become the domain and\nthe join is over-estimated by dimension keys / fact keys (40x for a\nfact's 1,824 dates against a 73,049-row date dimension).\n\nLet a weaker bound from the other side raise the domain: a scan\ncolumn's row count (if it has no usable distinct count or span), or its\nmin/max span capped at the rows left after filters. The bound must be\nlarger than the strong count and no larger than the smallest relation\nbehind it; the smallest such bound wins. Computed columns, unions with\na computed branch, and LIMIT outputs don't qualify.\n\nThis assumes the side without a count is a key. If it isn't (e.g. a CSV\nor Parquet VARCHAR fact on the same keys), or if two tables with counts\njoin through one such dimension, the join is under-estimated.\n\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "006914146422a5118ec5d78e2654d3758bc91779",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-10-28 10:14:33",
+    "commit_date": "2026-10-28 10:14:33",
+    "message": "Cap UNION group estimates using per-arm domains\n\nBound grouping combinations within each UNION arm before combining them. Reuse the statistics extractor without storing per-arm state, and cap domain products by input cardinality without applying another occupancy discount.\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "664e879ccd1a3c8214877b67afe7b47130b09dd2",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-10-28 08:25:55",
+    "commit_date": "2026-10-28 08:25:55",
+    "message": "Preserve fractional SEMI and ANTI fallback estimates during costing\n\nKeep fractional fallback cardinalities when composing join costs so rounding small preserved inputs does not bias equivalent selectivities. Preserve empty-input behavior and the existing nonempty floor, add regression coverage, and update the affected plan estimate.\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "e62006d1fcc215153bd34aa937d5bad67a9c2ac9",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-10-28 07:03:14",
+    "commit_date": "2026-10-28 07:03:14",
+    "message": "Use integer semi-anti identities and reuse projection lookups\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "13348a279227df7f3f4792ca8de0cd8897ed10ce",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-10-28 06:52:12",
+    "commit_date": "2026-10-28 06:52:12",
+    "message": "Preserve cardinality evidence across operator boundaries\n\nApply deferred OR selectivity once through SEMI/ANTI ancestors and cache structural emptiness with raw cardinality. Preserve retention across row-preserving operators, establish fresh DISTINCT/recursive sources, and discard evidence through expanding operators. Add focused regressions and keep the window-statistics SQL test observable after upstream window elimination.\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "f7ba13c8c96eb55f4971a28005f7361f5273f04a",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-10-28 06:20:48",
+    "commit_date": "2026-10-28 06:20:48",
+    "message": "Merge upstream/main into current-domain-cardinality-estimation\n\nPreserve current-domain estimation while integrating upstream optimizer changes. Adapt CTE join-filter costing and restricted statistics to total/current domains.\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "a0bbcb5418f6062099fc44859f064467ef12b7f3",
+    "author_name": "Robinho-MR",
+    "author_date": "2026-10-13 11:21:58",
+    "commit_date": "2026-10-13 11:21:58",
+    "message": "Look up relation column statistics by binding through a hash map, and compact unused expressions in one pass\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "de83d688006c2e16d00e701073db0d1753c78124",
+    "author_name": "Max Gabrielsson",
+    "author_date": "2026-08-24 08:06:29",
+    "commit_date": "2026-08-24 08:06:29",
+    "message": "dont remove lambda expressions\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "e31f66dd65f77c7ecf320e5947241d631e552015",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-08-18 12:20:10",
+    "commit_date": "2026-08-18 12:20:10",
+    "message": "Refine semi anti domain evidence structure\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "3aa37bfa18b968665eef8594cb1cbaa06c092ca8",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-08-13 11:49:50",
+    "commit_date": "2026-08-13 11:49:50",
+    "message": "Centralize current-domain cardinality caps\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "c285825fb3b23267ddfbe3b52f8a2ff8762a36ef",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-08-11 13:53:56",
+    "commit_date": "2026-08-11 13:53:56",
+    "message": "Simplify current-domain evidence tracking\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "fe6a49588fcd3449845b8e73565fc5b4363a1b20",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-08-11 08:51:41",
+    "commit_date": "2026-08-11 08:51:41",
+    "message": "Reduce current-domain cardinality propagation scope\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "d743dd22ffa4521efffb5ee0f9b0f34981a3cd41",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-08-10 14:14:37",
+    "commit_date": "2026-08-10 14:14:37",
+    "message": "Improve current-domain cardinality estimates\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  },
+  {
+    "commit_hash": "00029c057eb5d46769207c5f5faa5981c4206069",
+    "author_name": "Laurens Kuiper",
+    "author_date": "2026-08-04 14:46:32",
+    "commit_date": "2026-08-04 14:46:32",
+    "message": "Add reusable relation statistics extraction\n",
+    "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+  }
+]

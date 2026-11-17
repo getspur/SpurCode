@@ -1,0 +1,63 @@
+[
+  {
+    "person": "kevintruong",
+    "role": "PR author",
+    "status": "confirmed_participant",
+    "reason": "Opened PR #28731; author of current change",
+    "url": "https://github.com/duckdb/duckdb/pull/28731",
+    "review_question": "Explain exact-key scope and confirm the unconstrained CTAS reproduction remains outside the fix"
+  },
+  {
+    "person": "ted-wq-x",
+    "role": "Affected reporter",
+    "status": "confirmed_participant",
+    "reason": "Reported issue #28615",
+    "url": "https://github.com/duckdb/duckdb/issues/28615",
+    "review_question": "Check representative constrained and unconstrained workloads; do not treat this as full issue resolution"
+  },
+  {
+    "person": "lnkuiper",
+    "git_author": "Laurens Kuiper",
+    "role": "Aggregation statistics technical candidate",
+    "status": "historical_expertise",
+    "reason": "108/116 base-region lines; 22/28 retained file-history commits",
+    "url": "https://github.com/duckdb/duckdb/commit/255d752c99831484aa675d496d3934767c5ac0cb",
+    "review_question": "Review unique-group cardinality, total/current domain evidence, filters and multiplying-join fallback"
+  },
+  {
+    "person": "kryonix",
+    "git_author": "Denis Hirn",
+    "role": "Aggregate rewrite technical candidate",
+    "status": "historical_expertise",
+    "reason": "38/42 base-region lines; 7/37 retained file-history commits",
+    "url": "https://github.com/duckdb/duckdb/commit/3a5d0c26c254ee4521b504e03a0f1315b821fcdc",
+    "review_question": "Review ordered first/last/any_value identity, nullable selectors and conservative serialized rebinding"
+  },
+  {
+    "person": "Robinho-MR",
+    "git_author": "Robinho-MR",
+    "role": "Related change context",
+    "status": "historical_expertise",
+    "reason": "Authored related PR #28456; 3/116 base-region lines and 3/28 retained helper-history commits",
+    "url": "https://github.com/duckdb/duckdb/pull/28456",
+    "review_question": "Review DISTINCT ON lowering intent and estimate behavior at the lowering/statistics seam"
+  },
+  {
+    "person": "dentiny",
+    "git_author": "dentinyhao",
+    "role": "Value statistics secondary candidate",
+    "status": "historical_expertise",
+    "reason": "Earlier input-value statistics propagation commit; not a formal owner",
+    "url": "https://github.com/duckdb/duckdb/commit/f849df0cbf83d044f3d8e3c954c1537bf73cdfd8",
+    "review_question": "Inspect interactions with propagated value statistics"
+  },
+  {
+    "person": "OneCyrus",
+    "git_author": "Daniel Gut",
+    "role": "Aggregate overload secondary candidate",
+    "status": "historical_expertise",
+    "reason": "Earlier VARIANT first/last/any_value change; not a formal owner",
+    "url": "https://github.com/duckdb/duckdb/commit/e7c12d9ab5f90d593dfcb7be8c378a237dd9e8f8",
+    "review_question": "Inspect scalar versus list/VARIANT overload boundaries"
+  }
+]
