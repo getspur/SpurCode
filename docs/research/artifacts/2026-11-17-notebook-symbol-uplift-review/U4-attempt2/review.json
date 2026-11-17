@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "task": "U4",
+  "attempt": 2,
+  "issue": "bd-qwpo",
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "delegation_id": "2910220961684c69",
+  "branch": "spur/worker/v2/codex/dc95897af65a8511/6074e791-ee02-4524-82f9-1e3b19f7e20c",
+  "reviewed_head": "c90ba9264fb99f620227f363bdbf146bd8b5e38a",
+  "test_commits": [
+    "31e5eb148",
+    "8f89b31a1"
+  ],
+  "fix_commit": "6df9ef629",
+  "original_final_commit": "051ec34ee",
+  "beads": {
+    "status": "in_progress/ready-for-review",
+    "completion_audit": "2910220961684c69, 2026-11-17 09:25:17",
+    "unresolved_signals": "none"
+  },
+  "root_cwd": "/private/tmp/spur-notebook-u1-root-review",
+  "root_consumer": {
+    "argv": [
+      "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "crates/spur-graph-duckdb/tests",
+      "-p",
+      "test_app_consumer.py",
+      "-v"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/spur_graph.duckdb_extension"
+    },
+    "exit_code": 0,
+    "passed": 22,
+    "output": "test_diagnostics_and_coverage_do_not_claim_full_resolution (test_app_consumer.AppConsumerTests.test_diagnostics_and_coverage_do_not_claim_full_resolution) ... ok\ntest_early_exit_and_interruption_cannot_publish_even_with_candidate_written (test_app_consumer.AppConsumerTests.test_early_exit_and_interruption_cannot_publish_even_with_candidate_written) ... ok\ntest_explicit_timeout_reaps_child_and_next_healthy_run_succeeds (test_app_consumer.AppConsumerTests.test_explicit_timeout_reaps_child_and_next_healthy_run_succeeds) ... ok\ntest_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths (test_app_consumer.AppConsumerTests.test_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths) ... ok\ntest_interrupting_parent_reaps_native_child_before_cleanup (test_app_consumer.AppConsumerTests.test_interrupting_parent_reaps_native_child_before_cleanup) ... ok\ntest_manifest_binds_snapshot_schema_source_runtime_and_artifact (test_app_consumer.AppConsumerTests.test_manifest_binds_snapshot_schema_source_runtime_and_artifact) ... ok\ntest_mislabeled_source_and_wrong_extractor_fail_before_publication (test_app_consumer.AppConsumerTests.test_mislabeled_source_and_wrong_extractor_fail_before_publication) ... ok\ntest_missing_full_lineage_key_and_conflicting_snapshot_are_rejected (test_app_consumer.AppConsumerTests.test_missing_full_lineage_key_and_conflicting_snapshot_are_rejected) ... ok\ntest_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback (test_app_consumer.AppConsumerTests.test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback) ... ok\ntest_notebook_inventory_refs_and_coverage_survive_native_child (test_app_consumer.AppConsumerTests.test_notebook_inventory_refs_and_coverage_survive_native_child) ... ok\ntest_notebook_real_frozen_inputs_through_consumer_and_original_anchors (test_app_consumer.AppConsumerTests.test_notebook_real_frozen_inputs_through_consumer_and_original_anchors) ... ok\ntest_notebook_review_preserves_structure_config_and_metadata (test_app_consumer.AppConsumerTests.test_notebook_review_preserves_structure_config_and_metadata) ... ok\ntest_notebook_source_context_and_historical_run_guards (test_app_consumer.AppConsumerTests.test_notebook_source_context_and_historical_run_guards) ... ok\ntest_reader_checks_the_coherent_snapshot_manifest (test_app_consumer.AppConsumerTests.test_reader_checks_the_coherent_snapshot_manifest) ... ok\ntest_reader_rejects_coherent_stored_result_with_unsupported_source_scheme (test_app_consumer.AppConsumerTests.test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme) ... ok\ntest_reader_rejects_corrupt_exports_and_snapshot_relabeling (test_app_consumer.AppConsumerTests.test_reader_rejects_corrupt_exports_and_snapshot_relabeling) ... ok\ntest_review_nullable_absent_notebook_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_notebook_pairs_are_retained) ... ok\ntest_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_ordinary_pairs_are_retained) ... ok\ntest_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) ... ok\ntest_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs (test_app_consumer.AppConsumerTests.test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs) ... ok\ntest_typed_exports_reopen_and_replay_without_added_duplicates (test_app_consumer.AppConsumerTests.test_typed_exports_reopen_and_replay_without_added_duplicates) ... ok\ntest_unsupported_fixture_scheme_preserves_completed_pointer_and_files (test_app_consumer.AppConsumerTests.test_unsupported_fixture_scheme_preserves_completed_pointer_and_files) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 28.983s\n\nOK\n"
+  },
+  "root_verification": {
+    "exit_code": 0,
+    "output": "Normalized output bytes match original051ec34ee, final predicates match8f89b31a1. Verifying original TDD ancestry on051ec34ee because Plan Engine normalizes worker commits; all source/native/readback checks use the current checkout.\n{\n  \"phases\": {\n    \"review-red\": 1,\n    \"review-red-final\": 1,\n    \"review-green-attempt1\": 1,\n    \"review-green-attempt2\": 0,\n    \"review-green-final\": 0,\n    \"consumer-green\": 0,\n    \"native-readback\": 0\n  },\n  \"mode\": \"HOST\",\n  \"package_sha256\": \"ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b\",\n  \"sidecar_sha256\": \"7f6cd25b5db413e29ca23b5bfa36e78b2bacfb17b4c43ed7c7537f0b900cbb66\",\n  \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n  \"native_inputs_verified\": 325,\n  \"preserved_immutable_files\": 37,\n  \"fresh_immutable_files\": 37,\n  \"archived\": [\n    {\n      \"work\": \"/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-muejy15h/results\",\n      \"immutable_files\": 37,\n      \"symbol_refs\": 70,\n      \"historical_v1\": true,\n      \"historical_v2\": true,\n      \"ordinary_schemas_equal\": true\n    },\n    {\n      \"work\": \"/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-3_467ko_/results\",\n      \"immutable_files\": 37,\n      \"symbol_refs\": 70,\n      \"historical_v1\": true,\n      \"historical_v2\": true,\n      \"ordinary_schemas_equal\": true\n    }\n  ],\n  \"symbols\": [\n    46,\n    24\n  ],\n  \"functions\": [\n    17,\n    11\n  ],\n  \"independent_anchors\": 28,\n  \"resolved_symbol_refs\": 70,\n  \"source_identity_scheme\": \"sha256:utf8-v1\",\n  \"source_sha256\": {\n    \"crates/spur-graph-duckdb/examples/app_consumer.py\": \"8f3520e55826d1151f44c1daf3d22f9971dd0217dc41323933168770c9c7e6b1\",\n    \"crates/spur-graph-duckdb/tests/test_app_consumer.py\": \"de354d45eaba87be8b40f2f2b1e845e8246f369e71fa81cc8e8d79d91793d6d0\"\n  },\n  \"real_input_sha256\": \"bc0e5f23ba34c20149d5c8168f4a3a1fa8b3af3c8759adaef418f2343686b608\",\n  \"real_source_hashes\": [\n    \"9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072\",\n    \"2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b\"\n  ],\n  \"ordinary_schemas_equal\": true,\n  \"preserved_remote_exit\": 200,\n  \"preserved_remote_receipt_sha256\": \"0f74fe35a860681aa0525ada9d2647798e7d6f554e23ebd0fc55a5a1420dad4a\",\n  \"historical_package_sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n  \"public_signatures\": {\n    \"run_consumer\": \"(fixture, output, package, *, expected_extractor_id, timeout=None, fault=None)\",\n    \"read_result\": \"(output, snapshot_id, *, run_id=None)\",\n    \"read_notebook_source\": \"(output, snapshot_id, blob_oid, source_ref, *, run_id=None)\"\n  },\n  \"limitations\": [\n    \"HOST validation, not remote compiler success\",\n    \"no Rust/native changes or rebuild\",\n    \"finite solver snapshots do not prove arbitrary runtime behavior\",\n    \"U5 remains gated\"\n  ]\n}\n",
+    "method": "Read-only immutable helper ran with sole original-ancestry HEAD selector changed in memory to original051ec34ee because Plan Engine normalizes worker history. First checked current app/test bytes equal051ec34ee and exact test predicates equal8f89b31a1; source/native/archived read checks remain against actual current bytes. No file or assertion changed."
+  },
+  "review": {
+    "decision": "approve",
+    "scope": "Only existing consumer/test files and task evidence differ from prior U4; native/core/publisher/cache/fixtures/prior evidence unchanged.",
+    "resolution": "NULL-safe complementary routing preserves every accepted A/D pair and raw caller columns, with only validated absence normalization for native calls. Native NULL remains explicit null_input. Source reader verifies full published sources key and exact Explore or Review before/after context independently of occurrences, then native source version/hash and cell coordinates.",
+    "guards": "Tests exercise ordinary/notebook A/D, uppercase extension, M/R with absent/base-only/head-only/duplicate lineage, before/after reads, wrong snapshot/blob/path/extractor context, historical run selection, corruption and unknown versions, ordinary schemas and all publication/child faults.",
+    "evidence": "Root22 tests pass; verified seven phase logs/exits, final RED6 failures→GREEN, originalTDD ancestry and exact predicates,325 native inputs,37 preserved+37 fresh immutable files,70 refs in each archived real run,v1/v2 readback,46/24symbols17/11functions28anchors and unchanged sha256:utf8-v1.",
+    "limitations": "HOST Python-only validation reuses approved ed42b39b candidate. Final U5 release driver/docs and root native notebook review/integration remain pending."
+  }
+}
