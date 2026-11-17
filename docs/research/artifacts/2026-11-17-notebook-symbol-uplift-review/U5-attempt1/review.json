@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task": "U5",
+  "issue": "bd-c1v3",
+  "review_issue": "bd-3mnu",
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "delegation_id": "b0d1b80cd5414e2e",
+  "reviewed_head": "f62d6201e1b4ecfea2392e8eee895a52d4094a2b",
+  "original_final": "040dc7ba6",
+  "branch": "spur/worker/v2/codex/dc95897af65a8511/b4656805-0edb-40cd-a87d-71c696abd018",
+  "receipt_verification": {
+    "chunk_id": "94b155",
+    "wall_time_seconds": 0.20851075,
+    "exit_code": 0,
+    "original_token_count": 400,
+    "output": "{\n  \"status\": \"passed\",\n  \"phases\": {\n    \"release-remote\": 200,\n    \"driver-green\": 0,\n    \"ssm-health\": 0,\n    \"verification-final\": 0,\n    \"documented-sql\": 0,\n    \"ec2-health\": 0,\n    \"driver-red\": 1,\n    \"fixture-sync-red\": 1,\n    \"release-stable\": 101,\n    \"native-names-acceptance\": 0,\n    \"release-final\": 0,\n    \"release-network\": 1,\n    \"verification\": 0,\n    \"native-acceptance\": 0,\n    \"fixture-sync-green\": 0,\n    \"documented-python\": 0\n  },\n  \"rust\": \"REMOTE 61 core + 4 adapter\",\n  \"native_suite\": {\n    \"errors\": 0,\n    \"expected_failures\": 0,\n    \"failures\": 0,\n    \"release_pass\": true,\n    \"skipped\": 0,\n    \"skipped_tests\": [],\n    \"tests_run\": 223,\n    \"unexpected_successes\": 0\n  },\n  \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n  \"package_sha256\": \"c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48\",\n  \"sidecar_sha256\": \"187b64ec5da7b4fe5a3120df233b63983e62fb6c811c4ff77339a572f92b069d\",\n  \"preserved_prior_files\": 281,\n  \"preserved_historical_package\": {\n    \"/private/tmp/spur-r7-65bb3605-release-1/spur_graph.duckdb_extension\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n    \"/private/tmp/spur-r7-65bb3605-release-1/spur_graph.duckdb_extension.json\": \"db50a83c8c652d468b560deb25769a8826250d34659198e90213d6be415cf6f8\"\n  },\n  \"source_inputs\": 325,\n  \"real_counts\": {\n    \"cell_changes\": 10,\n    \"kinds\": {\n      \"added\": 12,\n      \"deleted\": 34,\n      \"modified\": 4\n    },\n    \"symbol_changes\": 50\n  },\n  \"anchors\": 28,\n  \"refs\": 70,\n  \"old_and_current_runs_reopened\": true\n}\n"
+  },
+  "review": {
+    "decision": "request_changes",
+    "scope": "Documentation-only correction and fresh documentation-bound acceptance evidence; no production behavior changes requested.",
+    "finding": "release-contract.md:383-384 claims read_result verifies table schemas/counts. Actual read_result/validate_tables validates manifests, declared contracts/source scheme, exact run/snapshot and file paths/bytes/checksums; it does not read/compare schemas or row counts. Reviewer confirmed a no-write manifest overlay accepts invented schema and row_count=-1.",
+    "resolution": "Correct wording to distinguish publication-recorded schemas/counts from read-time file integrity/context checks, and refresh the final contract hash in new acceptance evidence without rewriting prior receipts.",
+    "positive_evidence": "REMOTE61 core+4 adapter tests and HOST223 native Python tests pass with zero skips; actual release driver/final source guard,325 inputs,281 preserved files, real46/24symbols17/11functions28anchors70refs50deltas10cells verified. No other important/critical issue found by independent reviewer.",
+    "native_package": "/private/tmp/spur-notebook-u5-bd-c1v3-final/spur_graph.duckdb_extension",
+    "sha256": "c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48"
+  },
+  "notebook": {
+    "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+    "status": "Root acceptance in progress. New notebook initially reports v1.5.5; runtime2 selection is being configured before LOAD. No incompatible candidate loaded. Cells created via notebook MCP; historical notebooks preserved."
+  }
+}
