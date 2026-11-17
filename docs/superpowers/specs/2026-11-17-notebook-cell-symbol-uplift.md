@@ -56,7 +56,7 @@ Document runnable SQL, exact schemas, partial/anonymous/unsupported semantics, c
 
 ## Verification gates
 
-Every production task must commit meaningful failing regression tests before the fix/feature commit, retain exact RED/GREEN commands/exits, and use scripts/spur-cargo for Rust builds/tests. Remote red is real; no local rerun to conceal failures. Local fmt only. No invented quotas/timeouts, no broad unrelated refactor.
+Every production task must commit meaningful failing regression tests before the fix/feature commit, retain exact RED/GREEN commands/exits, and use scripts/spur-cargo for Rust builds/tests. Remote red is real; no local rerun to conceal failures. Root verified an infrastructure-only exception: both routes returned200 before compilation, with the shared builder EC2healthy but SSMConnectionLost. The wrapper-supported host fallback is authorized in that case, explicitly recorded as host execution; it is never a retry of a failed remote compile/assertion. Preserve remote error receipts. Local fmt only. No invented quotas/timeouts, no broad unrelated refactor.
 
 Reuse catalog-first uniqueness and SourceRef contract verification; store exact requests/responses locally if persistence quota remains full. Tests and finite solver results have distinct claims.
 
