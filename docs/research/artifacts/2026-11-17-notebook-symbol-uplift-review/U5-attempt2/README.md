@@ -28,3 +28,19 @@ unchanged. The stable local candidate copy is under
 This validates extension/consumer support for Explore and Review. Completing
 their notebook app UI remains separate work. The artifact is local and unsigned;
 the reader does not revalidate advertised schemas/counts.
+
+## Final integration
+
+All five approved tasks were integrated into the local working branch at
+`108e395bafdcfed63f236c2de6b8aa14b49d676b`. Its production crates exactly match
+the approved normalized U5 output. A clean checkout of that integrated commit
+passes the source guard for all 325 recorded inputs and the same extractor ID.
+The guard correctly rejects the main working tree's two pre-existing ACP edits;
+those edits are preserved rather than included in the release candidate.
+All five main and eleven external tracked user files remain byte-identical.
+
+[integration.json](integration.json) records the source checks, preserved hashes,
+closed execution/planning issues and fixed bugs. Original RED/implementation
+histories remain reachable through `spur/notebook-uplift-original-tdd-u1` through
+`u5`, alongside the Plan Engine's normalized integration history. No PR, push,
+deployment or full app UI change was made.
