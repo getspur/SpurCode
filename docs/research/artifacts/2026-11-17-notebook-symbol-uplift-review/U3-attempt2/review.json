@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "task": "U3",
+  "attempt": 2,
+  "issue": "bd-lnhs",
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "delegation_id": "5983b21b49ce4d13",
+  "branch": "spur/worker/v2/codex/dc95897af65a8511/1206297f-98e3-4a3d-8a39-a63bac293d44",
+  "reviewed_head": "1d23aee62d80b1964d322fb5af742feddbccbacb",
+  "test_commit": "61d65f537",
+  "fix_commit": "df39b0d8d",
+  "beads": {
+    "status": "in_progress/ready-for-review",
+    "completion_audit": "5983b21b49ce4d13, 2026-11-17 08:35:10",
+    "unresolved_signals": "none"
+  },
+  "candidate": {
+    "path": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/spur_graph.duckdb_extension",
+    "sha256": "ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b",
+    "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "runtime": "DuckDB 2.0.0, osx_arm64"
+  },
+  "root_cwd": "/private/tmp/spur-notebook-u1-root-review",
+  "root_legacy": {
+    "argv": [
+      "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+      "-m",
+      "unittest",
+      "test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics",
+      "-v"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "crates/spur-graph-duckdb/tests",
+      "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/spur_graph.duckdb_extension",
+      "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-target/debug/examples/reference_file_facts"
+    },
+    "result": {
+      "chunk_id": "97e782",
+      "wall_time_seconds": 0.727041792,
+      "exit_code": 0,
+      "original_token_count": 71,
+      "output": "test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.754s\n\nOK\n"
+    }
+  },
+  "root_eight_input_probe": {
+    "chunk_id": "740a5c",
+    "wall_time_seconds": 0.122144791,
+    "exit_code": 0,
+    "original_token_count": 69,
+    "output": "{\"runtime\": \"2.0.0\", \"package_sha256\": \"ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b\", \"malformed_inputs\": 8, \"connection_usable_after_every_error\": true, \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\"}\n"
+  },
+  "root_receipt_and_source_verification": {
+    "chunk_id": "208072",
+    "wall_time_seconds": 0.756060667,
+    "exit_code": 0,
+    "original_token_count": 409,
+    "output": "Verified normalized output equals original df39b0d8d source and test predicates equal61d65f537. Checking original TDD ancestry ondf39b0d8d because Plan Engine normalizes worker commits.\n{\n  \"phase_count\": 10,\n  \"package\": \"/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/.spur_graph.duckdb_extension.packages/release-7b02e5df31ad41049480a41d4ced1f7d/spur_graph.duckdb_extension\",\n  \"package_sha256\": \"ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b\",\n  \"sidecar_sha256\": \"7f6cd25b5db413e29ca23b5bfa36e78b2bacfb17b4c43ed7c7537f0b900cbb66\",\n  \"raw_library_sha256\": \"ec6f5fb18070de55175536384b8f1528f06c59123547a7e6a15e99098547e64a\",\n  \"build_script\": \"/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-target/debug/build/spur-graph-duckdb-bc3a2be281cee99d/build-script-build\",\n  \"build_script_sha256\": \"6178e08e6e198106258d1c5a9e7b2d8724dc2e5b50c733002b74c326464d0165\",\n  \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n  \"all_green_bound_to_source\": true,\n  \"suites\": {\n    \"notebook\": 7,\n    \"provenance\": 8,\n    \"rust\": 4,\n    \"legacy_consumer\": 76\n  },\n  \"prior_receipts_preserved\": 17,\n  \"prior_package_hashes_preserved\": [\n    \"0ea46655f5968dec09e3116e6941eb6fae6f2d2607a7e50b00049f9c55c66955\",\n    \"3409c6b1f268865007202da595cd5be4a33c134146d2abadcf35e787e8e0df59\",\n    \"790a1922f7cf194771706338f3ea6e466945b6ad26692d305225897c341ded6a\"\n  ],\n  \"prior_raw_library_sha256\": \"3e058f60c5a75a28537b5b539112b4aaddf946048b42576dbf193d4847c1c63d\",\n  \"historical_package_sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n  \"mode\": \"HOST\"\n}\n"
+  },
+  "verification_method": "Ran immutable read-only verifier with its sole original-ancestry HEAD selector changed in memory to original fix df39b0d8d, because Plan Engine normalizes worker commits. First independently checked normalized source bytes equal df39b0d8d and cfg(test) predicates equal61d65f537. No file or assertion was changed. All package/source/build identity assertions ran against the current checkout and actual native artifacts.",
+  "review": {
+    "decision": "approve",
+    "scope": "Only file_facts.rs production repair and embedded tests differ from prior U3; all original adapter/tests/core/metadata/build and immutable receipts preserved.",
+    "resolution": "Known normalized input-error contexts require opening and closing list delimiters; malformed JSON/inventory preserve original error text, extraction_error/malformed_input and NULL facts. NoTree/setup/arbitrary internal and near-miss errors still propagate.",
+    "tests": "Worker exact RED Rust101/native1, then GREEN7 notebook/8 provenance/4 Rust/76 legacy-consumer/1 diagnostic, no skips; all bound to the same rebuilt native library, package and325-input extractor identity. Root independently reproduced legacy GREEN and eight malformed inputs with live connection after each.",
+    "schemas": "All exact SQL schemas compare equal to prior U3; ordinary v1/info contracts unchanged.",
+    "limitations": "Authorized HOST infrastructure-recovery validation, no remote compiled success. U4 notebook consumer routing/cache/publication and U5 final release/docs/notebook verification remain pending."
+  }
+}
