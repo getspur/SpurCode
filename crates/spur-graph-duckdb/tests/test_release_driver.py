@@ -133,6 +133,7 @@ class SourceStabilityTests(DriverFixture, unittest.TestCase):
         shutil.copy2(os.environ["SPUR_GRAPH_BUILD_SCRIPT"], probe)
         self.artifacts["build_script"] = str(probe)
         self.probes = []
+        self.phases = []
 
     def release(self, mutation=lambda: None):
         run_phases = self.driver.run_phases
@@ -140,6 +141,7 @@ class SourceStabilityTests(DriverFixture, unittest.TestCase):
 
         def phases(items, output, env, receipt):
             for name, command in items:
+                self.phases.append((name, command, env))
                 if name.startswith("source-probe"):
                     self.probes.append((name, command, env["OUT_DIR"]))
                     return run_phases([(name, command)], output, env, receipt)
@@ -162,6 +164,24 @@ class SourceStabilityTests(DriverFixture, unittest.TestCase):
                 patch.object(self.driver, "approved_extension_sha", return_value="controlled approval"), \
                 patch.object(self.driver, "run_phases", side_effect=phases):
             self.driver.check_release(args, self.output, {"commands": []})
+
+    def test_release_runs_focused_core_notebook_tests_before_adapter_tests(self):
+        self.release()
+        names = [name for name, _, _ in self.phases]
+        self.assertIn("core-notebook-tests", names,
+                      "release must exercise shared normalization and notebook comparison core")
+        self.assertLess(names.index("core-notebook-tests"), names.index("rust-tests"))
+        _, command, env = self.phases[names.index("core-notebook-tests")]
+        self.assertEqual(Path(command[0]), self.driver.WRAPPER)
+        self.assertIn("spur-graph", command)
+        self.assertIn("--no-default-features", command)
+        self.assertIn("--locked", command)
+        self.assertIn("--lib", command)
+        self.assertIn("extract::notebook", command)
+        self.assertEqual(env["SPUR_REMOTE"], "1")
+        self.assertEqual(env["SPUR_NO_LOCAL_FALLBACK"], "1")
+        self.assertEqual(env.get("SPUR_SYNC_FULL"), "1",
+                         "core include_str fixtures under docs must reach the remote compiler")
 
     def test_final_guard_reruns_compiled_probe_in_fresh_directory(self):
         self.release()

@@ -1,0 +1,308 @@
+{
+  "cargo_version": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "source-head",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-head.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-head.stdout"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "source-status",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-status.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-status.stdout"
+    },
+    {
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "rustc-version",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/rustc-version.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/rustc-version.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/scripts/spur-cargo",
+        "--version"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "cargo-version",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/cargo-version.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/cargo-version.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/scripts/spur-cargo",
+        "--workdir",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+        "test",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "target/release-check/spur-notebook-u5-bd-c1v3-final/rust-tests-core",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "extract::notebook"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "core-notebook-tests",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/core-notebook-tests.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/core-notebook-tests.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/scripts/spur-cargo",
+        "--workdir",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb",
+        "test",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "target/release-check/spur-notebook-u5-bd-c1v3-final/rust-tests"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "rust-tests",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/rust-tests.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/rust-tests.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/scripts/spur-cargo",
+        "--workdir",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb",
+        "build",
+        "--locked",
+        "--release",
+        "--lib",
+        "--examples",
+        "--target",
+        "aarch64-apple-darwin",
+        "--target-dir",
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target",
+        "--message-format=json"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "native-build",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-build.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-build.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "source-probe",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-probe.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-probe.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb/scripts/package_extension.py",
+        "--library",
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "--out",
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/spur_graph.duckdb_extension"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "package",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/package.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/package.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb/scripts/verify_package.py",
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/spur_graph.duckdb_extension"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "verify-package",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/verify-package.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/verify-package.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb/scripts/check_release.py",
+        "--unittest-child",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb/tests",
+        "--summary",
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/unittest-summary.json"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "unittests",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/unittests.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/unittests.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+      ],
+      "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018",
+      "phase": "source-probe-final",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-probe-final.stderr",
+      "stdout": "/private/tmp/spur-notebook-u5-bd-c1v3-final/source-probe-final.stdout"
+    }
+  ],
+  "configured_target": "aarch64-apple-darwin",
+  "driver_sha256": "97c43f8aef8962108124e393d2f3606bfe77601673bfd04178753c93ce612b18",
+  "exit_code": 0,
+  "native_artifacts": {
+    "build_script": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+      "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404"
+    },
+    "catalog_git_sources": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/catalog_git_sources",
+      "sha256": "8b171d636916bad2a9a1eb2373f945917f1ca96fa847a849db5423c95b7665b5"
+    },
+    "history_catalog": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+      "sha256": "531f00ea67b7624a2d74eee1508e2458a166656b7806949208ffd0a8599e1216"
+    },
+    "library": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+      "sha256": "da4d546647b92af08ce5e2c4ff0b7687e7383f1979a53fcb2a9e5e89aa1170c6"
+    },
+    "reference_file_facts": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+      "sha256": "5800947d76c51263d74a49e86e7a193c8cfb813df129dd789d953f076eb1600a"
+    },
+    "reference_symbols": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/reference_symbols",
+      "sha256": "5ad176361edb53cbadad988495859bc6d76305454a3d763c89297539446d2cc4"
+    },
+    "retrieval_native": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+      "sha256": "01b230db96898120a41f8abe35eea72aff85c1bcdb43d76cbbf62025beb90edb"
+    },
+    "temporal_reference": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/temporal_reference",
+      "sha256": "46286861f542922cfd463caac4ff2850c375970afe193fb9fb641f7e10454125"
+    },
+    "temporal_symbol_oracle": {
+      "path": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/temporal_symbol_oracle",
+      "sha256": "10ef15e3b5e7b69a5ff25c739eb5375044f865a872dc1e3e9a8cdb2c14dcd237"
+    }
+  },
+  "package": {
+    "abi": "C_STRUCT_UNSTABLE",
+    "binary": {
+      "name": "spur_graph.duckdb_extension",
+      "sha256": "c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48",
+      "size_bytes": 17417702
+    },
+    "duckdb_api_version": "2.0.0",
+    "extension_version": "0.1.0",
+    "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "facts_schema_version": 1,
+    "format_version": 1,
+    "platform": "osx_arm64",
+    "resolution_scope": "single_file",
+    "source_identity": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "trust": {
+      "mode": "unsigned_local",
+      "signature": "absent"
+    }
+  },
+  "release_trust": {
+    "manifest": "/private/tmp/spur-notebook-u5-bd-c1v3-final/.spur_graph.duckdb_extension.packages/release-c5628224297948c68bc7893319ddc7b7/spur_graph.duckdb_extension.json",
+    "manifest_sha256": "187b64ec5da7b4fe5a3120df233b63983e62fb6c811c4ff77339a572f92b069d",
+    "source_identity": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2"
+  },
+  "runtime": {
+    "duckdb": "2.0.0",
+    "duckdb_platform": "osx_arm64",
+    "host": "macOS-26.7.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "native_engine": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/_duckdb.abi3.so",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "native_version": "v2.0.0",
+    "python": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+    "python_executable": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+    "python_sha256": "08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada"
+  },
+  "rust_tests_mode": "remote",
+  "rustc": {
+    "LLVM version": "21.1.8",
+    "binary": "rustc",
+    "commit-date": "2026-03-25",
+    "commit-hash": "e408947bfd200af42db322daf0fadfe7e26d3bd1",
+    "host": "aarch64-apple-darwin",
+    "release": "1.94.1"
+  },
+  "source_head": "5545f6d1e8decc68ed7a287286b1b0bc583b8d31",
+  "source_status": " M crates/spur-graph-duckdb/README.md\n M crates/spur-graph-duckdb/docs/release-contract.md\n",
+  "status": "passed",
+  "test_environment": {
+    "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+    "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+    "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-notebook-u5-bd-c1v3-final/spur_graph.duckdb_extension",
+    "SPUR_GRAPH_LIBRARY": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+    "SPUR_HISTORY_CATALOG": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+    "SPUR_RELEASE_MANIFEST": "/private/tmp/spur-notebook-u5-bd-c1v3-final/.spur_graph.duckdb_extension.packages/release-c5628224297948c68bc7893319ddc7b7/spur_graph.duckdb_extension.json",
+    "SPUR_RELEASE_MANIFEST_SHA256": "187b64ec5da7b4fe5a3120df233b63983e62fb6c811c4ff77339a572f92b069d",
+    "SPUR_RELEASE_SOURCE_IDENTITY": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "SPUR_RETRIEVAL_NATIVE": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+    "SPUR_TEMPORAL_EXAMPLES_DIR": "/private/tmp/spur-notebook-u5-bd-c1v3-final/native-target/aarch64-apple-darwin/release/examples"
+  },
+  "unittests": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "release_pass": true,
+    "skipped": 0,
+    "skipped_tests": [],
+    "tests_run": 223,
+    "unexpected_successes": 0
+  }
+}

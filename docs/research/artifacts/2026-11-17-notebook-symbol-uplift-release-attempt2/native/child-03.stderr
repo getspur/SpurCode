@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6004a22b-8eff-41c6-9df6-5f203ba8c921/crates/spur-graph-duckdb/examples/app_consumer.py", line 567, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6004a22b-8eff-41c6-9df6-5f203ba8c921/crates/spur-graph-duckdb/examples/app_consumer.py", line 557, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6004a22b-8eff-41c6-9df6-5f203ba8c921/crates/spur-graph-duckdb/examples/app_consumer.py", line 409, in native_candidate
+    snapshots, sources, lineage, pairs = validate_fixture(fixture, artifact['extractor_id'])
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6004a22b-8eff-41c6-9df6-5f203ba8c921/crates/spur-graph-duckdb/examples/app_consumer.py", line 313, in validate_fixture
+    raise ValueError('source byte identity mismatch: ' + path)
+ValueError: source byte identity mismatch: app_gallery/code-graph-workbench/app.ipynb
