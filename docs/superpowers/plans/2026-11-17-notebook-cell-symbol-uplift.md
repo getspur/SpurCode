@@ -39,7 +39,7 @@ CONTEXT: Existing notebook.rs owns IDs/language/source decoding and extract_cell
 4. Record exact commands/exits and source/native identities, commit the implementation, and return the final interface. Root reviews before the next dependency dispatches.
 
 ```rust
-let source = br#"{"metadata":{},"cells":[{"id":"rust","cell_type":"code","metadata":{"spur":{"code_type":"rust"}},"source":":dep sha2 = \\"0.10\\"\\nfn f() {}\\n"}]}"#;
+let source = br#"{"metadata":{},"cells":[{"id":"rust","cell_type":"code","metadata":{"spur":{"code_type":"rust"}},"source":":dep sha2 = \"0.10\"\nfn f() {}\n"}]}"#;
 // Shared normalization is the public seam; assert original bytes and mapped analysis offsets.
 let result = normalize_notebook(std::path::Path::new("n.ipynb"), source).unwrap();
 assert_eq!(result.cells.len(), 1);
@@ -69,7 +69,7 @@ CONTEXT: Approved U1 exports normalized notebook model; inspect actual approved 
 4. Record exact commands/exits and source/native identities, commit the implementation, and return the final interface. Root reviews before the next dependency dispatches.
 
 ```rust
-let left = br#"{"cells":[{"id":"a","cell_type":"code","metadata":{"spur":{"code_type":"python"}},"source":"def helper():\\n    return 1\\n"},{"id":"b","cell_type":"code","metadata":{"spur":{"code_type":"python"}},"source":"def helper():\\n    return 2\\n"}]}"#;
+let left = br#"{"cells":[{"id":"a","cell_type":"code","metadata":{"spur":{"code_type":"python"}},"source":"def helper():\n    return 1\n"},{"id":"b","cell_type":"code","metadata":{"spur":{"code_type":"python"}},"source":"def helper():\n    return 2\n"}]}"#;
 let result = compare_notebook_sources(std::path::Path::new("n.ipynb"), None, "M", Some(left), Some(left)).unwrap();
 assert!(result.changes.is_empty());
 ```
