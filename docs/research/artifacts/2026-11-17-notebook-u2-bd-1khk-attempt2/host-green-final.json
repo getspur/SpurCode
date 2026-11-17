@@ -1,0 +1,46 @@
+{
+  "execution": "host",
+  "command": [
+    "scripts/spur-cargo",
+    "test",
+    "-p",
+    "spur-graph",
+    "--no-default-features",
+    "--lib",
+    "extract::notebook_symbols::tests::ambiguous_group_"
+  ],
+  "environment_overrides": {
+    "SPUR_REMOTE": "0",
+    "SPUR_NO_LOCAL_FALLBACK": "1",
+    "CARGO_TARGET_DIR": "/private/tmp/spur-notebook-u1-bd-bi1d-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "SPUR_SCCACHE_S3": "0",
+    "RUSTC_WRAPPER": "",
+    "TMPDIR": "/private/tmp/spur-notebook-u1-bd-bi1d-tmp"
+  },
+  "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/4daadd54-374b-4d4b-9654-6d3598bb4f96",
+  "capture_sha256": "0918cc3ecfeacf942afaa0ebae45185be0b762b96563626dac9b78240bb19864",
+  "source_commit": "6fa59d9f26e57b35c29fffc41c77647880a73cda",
+  "source_sha256": {
+    "Cargo.toml": "e7b8bac5cce8c689b917068859334dd290c2eafa14cd6a2c2cd28d52d8dc7ed0",
+    "Cargo.lock": "c8828e810291326802aaa9cefb0cebcb001949bf97f818222e95ba2147bc3b30",
+    "scripts/spur-cargo": "ae3f69570276781d5a1ab286b61609909c0bfd1eef026f47e679e2179a888b80",
+    "crates/spur-graph/Cargo.toml": "52cf2b3cc73ce839a1d40b299705429a2797dcfe9e5a33b790fb0abd3b3f4bc5",
+    "crates/spur-graph/src/git_walk.rs": "2d6f4636124b508c9ad870a75a0785e6c77e5d3b2c485a73c2cb87a35189a7b9",
+    "crates/spur-graph/src/extract/mod.rs": "b4a09fc18e2b8a3fef889041cf5d5b612afbbc63c0b41fcb38cf251eb374f52c",
+    "crates/spur-graph/src/extract/notebook.rs": "5d8713c8476743d009f1a0faaab1b05abd91b83d884a98fb30dcb4292b4f0b25",
+    "crates/spur-graph/src/extract/notebook_model.rs": "76f85c09239204dbc2a575654e921353e663a665855daf63c1c6e7fe7db56186",
+    "crates/spur-graph/src/extract/notebook_symbols.rs": "256998fa0293fe5c87494b99883ca3c68b200ab75745ec8909245c7b36c109b3",
+    "crates/spur-graph/src/extract/notebook_symbols_tests.rs": "da714f6ebdd7b6e0cc867dc5786afc766af6c058b28da85fcc5e233d66525ef8",
+    "crates/spur-graph/src/extract/tree_sitter.rs": "fb2cfe92fccc1f35d551978a5f43f3c95ae57cf68821968add9fe23cab5efc59",
+    "crates/spur-graph/src/extract/languages.rs": "b562efe35535e34e98e65c09d627d043baa6c1380053c77d813a28dce5acf875",
+    "docs/research/artifacts/2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json": "bc0e5f23ba34c20149d5c8168f4a3a1fa8b3af3c8759adaef418f2343686b608",
+    "docs/research/artifacts/2026-11-17-notebook-symbol-diagnosis-bd-nb4c/frozen-cell-model-input.json": "93623d013f4767ac621853e7855aa84a700b73d1814f84c6b3c02a555928fd83"
+  },
+  "started_utc": "2026-11-17T07:32:32.745938+00:00",
+  "working_diff_sha256": "a2a03f4dfbbb9787b21f0ab3f9309352dbf9ed710b2c0e0470ab7611b3090a3b",
+  "exit_code": 0,
+  "finished_utc": "2026-11-17T07:33:13.199568+00:00",
+  "log_sha256": "f1e15012cf1998d1975aea30616a9b87650f8c71f6c85a7fc9be808548179f5c"
+}

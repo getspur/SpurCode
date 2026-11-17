@@ -7,6 +7,7 @@ pub mod markdown;
 pub mod mcp_tools;
 pub(crate) mod notebook;
 pub mod notebook_model;
+pub mod notebook_symbols;
 pub(crate) mod openapi;
 mod rust_bindings;
 pub(crate) mod rust_macros;

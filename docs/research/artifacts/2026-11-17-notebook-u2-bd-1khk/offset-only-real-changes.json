@@ -1,0 +1,133 @@
+{
+  "poc_count": 55,
+  "u2_count": 50,
+  "cell_events": 10,
+  "reason": "Five paired same-cell/same-language/same-symbol identities have byte-identical original slices at different offsets. Cell source events remain; no semantic equivalence is claimed.",
+  "input_hashes": {
+    "real-inputs.json": "bc0e5f23ba34c20149d5c8168f4a3a1fa8b3af3c8759adaef418f2343686b608",
+    "candidate-documents.json": "63fbd1f1418dfdb7702c80eefb279b6bc959038c30b449e5ff0df7325d9d6d4b",
+    "candidate-comparison.json": "167337d73b93e62e47628adf8bbd7368a998d587a9f97055d174cefc73864408"
+  },
+  "offset_only": [
+    {
+      "cell_id": "wb-graph",
+      "entity_name": "PERSPECTIVE_VERSION",
+      "symbol_kind": "constant",
+      "enclosing_scope": null,
+      "before_byte_range": [
+        118,
+        147
+      ],
+      "after_byte_range": [
+        128,
+        157
+      ],
+      "before_line_range": [
+        4,
+        4
+      ],
+      "after_line_range": [
+        4,
+        4
+      ],
+      "identical_original_slice_sha256": "fe99e92e91443a2fb457fcbf29a94c1928440486e3a8e6f041c2896361decc28",
+      "original_slice": "PERSPECTIVE_VERSION = \"4.5.1\""
+    },
+    {
+      "cell_id": "wb-graph",
+      "entity_name": "EvidencePort",
+      "symbol_kind": "type_alias",
+      "enclosing_scope": null,
+      "before_byte_range": [
+        240,
+        391
+      ],
+      "after_byte_range": [
+        329,
+        480
+      ],
+      "before_line_range": [
+        7,
+        14
+      ],
+      "after_line_range": [
+        10,
+        17
+      ],
+      "identical_original_slice_sha256": "1885cb02b86f0eb7a7fb9e132aaf4bfba7c570f2d7e1cb4a741aee0efafa53e9",
+      "original_slice": "type EvidencePort = {\n  name: string;\n  rows: Record<string, any>[];\n  status: string;\n  version: number | null;\n  bytes: number;\n  message: string;\n};"
+    },
+    {
+      "cell_id": "wb-graph",
+      "entity_name": "esc",
+      "symbol_kind": "function",
+      "enclosing_scope": null,
+      "before_byte_range": [
+        393,
+        599
+      ],
+      "after_byte_range": [
+        647,
+        853
+      ],
+      "before_line_range": [
+        16,
+        24
+      ],
+      "after_line_range": [
+        30,
+        38
+      ],
+      "identical_original_slice_sha256": "53c9d14b11bf56f415541b38268ea45ac432ed03038812ac31071c6e1845be59",
+      "original_slice": "function esc(value: unknown): string {\n  return String(value ?? \"\").replace(/[&<>\"']/g, (ch) => ({\n    \"&\": \"&amp;\",\n    \"<\": \"&lt;\",\n    \">\": \"&gt;\",\n    '\"': \"&quot;\",\n    \"'\": \"&#39;\",\n  }[ch] ?? ch));\n}"
+    },
+    {
+      "cell_id": "wb-graph",
+      "entity_name": "normalizeValue",
+      "symbol_kind": "function",
+      "enclosing_scope": null,
+      "before_byte_range": [
+        757,
+        1362
+      ],
+      "after_byte_range": [
+        1026,
+        1631
+      ],
+      "before_line_range": [
+        30,
+        44
+      ],
+      "after_line_range": [
+        47,
+        61
+      ],
+      "identical_original_slice_sha256": "5d4050e1cff4e3669e84f1ceef205122383d8a0996dfd1934aea85dfd1ebc3b0",
+      "original_slice": "function normalizeValue(value: any): any {\n  if (value === null || value === undefined) return null;\n  if (typeof value === \"bigint\") {\n    const asNumber = Number(value);\n    return Number.isSafeInteger(asNumber) ? asNumber : value.toString();\n  }\n  if (typeof value?.toJSON === \"function\") return normalizeValue(value.toJSON());\n  if (Array.isArray(value)) return value.map(normalizeValue);\n  if (typeof value === \"object\") {\n    const output: Record<string, unknown> = {};\n    for (const [key, item] of Object.entries(value)) output[key] = normalizeValue(item);\n    return output;\n  }\n  return value;\n}"
+    },
+    {
+      "cell_id": "wb-graph",
+      "entity_name": "tableRows",
+      "symbol_kind": "function",
+      "enclosing_scope": null,
+      "before_byte_range": [
+        1364,
+        1550
+      ],
+      "after_byte_range": [
+        1633,
+        1819
+      ],
+      "before_line_range": [
+        46,
+        49
+      ],
+      "after_line_range": [
+        63,
+        66
+      ],
+      "identical_original_slice_sha256": "4229adda2cd9ca4bf753a877560db0a7c743462523e897a8b70b3e4525b3045a",
+      "original_slice": "function tableRows(table: any): Record<string, any>[] {\n  if (!table || typeof table.toArray !== \"function\") return [];\n  return table.toArray().map((row: any) => normalizeValue(row));\n}"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "issue": "bd-1khk",
+  "task": "U2",
+  "attempt": 2,
+  "source_commit_before_fix": "6fa59d9f26e57b35c29fffc41c77647880a73cda",
+  "source_patch_sha256": "005073c88e4bd863c9f15b4a4e0d2ea00a345abdf54306d426a36ddd1754cd75",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "docs/research/artifacts/2026-11-17-notebook-u2-bd-1khk-attempt2/verify_receipts.py"
+      ],
+      "exit_code": 0,
+      "output": "{\n  \"red\": \"host: final seven-test predicate failed meaningfully against unchanged production; exit 101\",\n  \"green\": \"host: 7 regressions, 143 extraction tests, 48 matcher tests; exit 0\",\n  \"remote\": \"both routes unavailable before compilation; exit 200; not a remote test result\",\n  \"frozen\": \"46/24 symbols, 17/11 functions, 28 anchors asserted; 50 symbol changes / 10 cell events retained\",\n  \"solver\": \"six finite snapshots replayed pre/post; expected pass/fail, no unbounded proof\",\n  \"rework_patch_sha256\": \"005073c88e4bd863c9f15b4a4e0d2ea00a345abdf54306d426a36ddd1754cd75\",\n  \"prior_evidence\": \"unchanged; original test/implementation commits retained in ancestry\",\n  \"public_interface\": \"unchanged from 033b9edad\"\n}\n"
+    },
+    {
+      "command": [
+        "scripts/spur-cargo",
+        "fmt",
+        "-p",
+        "spur-graph",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "033b9edad",
+        "--stat",
+        "--",
+        "crates/spur-graph"
+      ],
+      "exit_code": 0,
+      "output": " crates/spur-graph/src/extract/notebook_symbols.rs  |  11 +\n .../src/extract/notebook_symbols_tests.rs          | 223 +++++++++++++++++++++\n 2 files changed, 234 insertions(+)\n"
+    },
+    {
+      "command": [
+        "git",
+        "log",
+        "-5",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "output": "6fa59d9f2 test(spur-graph): U2 require only genuine anonymous additions\nbce9f671a test(spur-graph): U2 regress unchanged ambiguous cell inventories\n033b9edad feat(spur-graph): U2 expose cell-aware notebook symbols and changes\n6eb1c4cf6 test(spur-graph): U2 cover notebook symbols and original source changes\n26ce5a162 spur: worker codex output\n"
+    }
+  ],
+  "evidence_sha256": {
+    "rework-final.patch": "005073c88e4bd863c9f15b4a4e0d2ea00a345abdf54306d426a36ddd1754cd75",
+    "remote-red.json": "df5e12148dba3b9312f531cf0e6c64c81a2369bcf6ef360f81898c354c2c4167",
+    "setup.json": "a2e7430931c7f0956bf9f1a008d84aae10553ff5e8bc1605da04fd9c635e33e7",
+    "host-red.json": "e7861f4aebc2b97a3a531b63bfe73a8c4993d5c9aa853cd341de9738c0e659b2",
+    "host-red-final.json": "a39f73c327aa5994c4a86e39e83d546d9c2d571cdd3e16f7adad277b07293c66",
+    "host-extract-green.log": "eab60f7596b69c1f5b402578be0e282edf08397655e121a843fe74192334a933",
+    "host-green.log": "58d8b8f57f28e72a6bedaa850946c3b2c2ab94ea49503199b8344086643a5b66",
+    "host-red.log": "eb75ddd3f3a7355a2fa94497e7224641755b3421681fe642e83514f4aed313d3",
+    "host-red-final.log": "036615c805df93b49d88bf92ba65c7791363886d66143f011f82c8532854f710",
+    "host-green.json": "d5167622838bd485a6844262ef2f088f6a2bc6596d319022902ebb561bba0688",
+    "rework.patch": "6746584c96af931e7b465eb09744d322778a7662622a7fa2a6b3bccbb11a9a37",
+    "host-green-final.json": "896009035bed8ac16e2c8c42e1bb2f21d8cb3f183b203b085a9c5ebe7f6daaff",
+    "solver-post-final.json": "edc260c7aa2bee29f47e07dca0eb7b79af8e987ad8e5507c555ec7e14833733d",
+    "README.md": "7845885fa15d8a0721ecd1c10920cec53c0ec0da1788bb3a3182f2beee5ac87a",
+    "solver-pre.json": "f961832414c77ef1426075a7426498fa683e0b63fc41689bb502d06c26ad7f5a",
+    "capture.py": "0918cc3ecfeacf942afaa0ebae45185be0b762b96563626dac9b78240bb19864",
+    "host-extract-green.json": "e028f03be2d29c75416ab648dd397364a1fed7dc990bee1efb71a7c16ed36578",
+    "host-matcher-green.log": "149e5b0224ce59db163b95f0570e60c2664f2c536f0549dde58ab8aceede5047",
+    "remote-red.log": "622f136ccbba8bb24605f708749ea5025ddf8a4345b7f6162d4be3c5ba86597e",
+    "solver-post.json": "f961832414c77ef1426075a7426498fa683e0b63fc41689bb502d06c26ad7f5a",
+    "host-matcher-green.json": "ebd4606b3701176972a4a85da7a9c91382f6d73f17d6fd83f8a8f3e858f40fc1",
+    "host-green-final.log": "f1e15012cf1998d1975aea30616a9b87650f8c71f6c85a7fc9be808548179f5c",
+    "verify_receipts.py": "4d195b32b6e05a928eb8a6ad0e07ad9b4d01b1c96284bccf299667aceb3e5c0d"
+  },
+  "scope": "Only notebook_symbols.rs, notebook_symbols_tests.rs and task-owned receipts differ from prior implementation. Public definitions, normalization, ordinary matcher and SQL crate unchanged.",
+  "limitations": "Host tests only, authorized infrastructure exit200 recovery. Two existing dead-code warnings. Solver snapshots finite; no execution equivalence or native SQL/consumer/release claim."
+}

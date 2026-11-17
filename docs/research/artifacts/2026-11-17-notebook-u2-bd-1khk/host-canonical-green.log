@@ -1,0 +1,26 @@
+   Compiling spur-graph v1.24.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/29905efe-e3ee-4a71-9e03-fd765d6b07fa/crates/spur-graph)
+warning: function `file_oid_match_after_first_stat` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:839:19
+    |
+839 |     pub(super) fn file_oid_match_after_first_stat(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+
+warning: `spur-graph` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized] target(s) in 13.63s
+     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)
+
+running 1 test
+test extract::notebook_symbols::tests::canonical_ids_separate_delimiter_and_percent_witnesses ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 633 filtered out; finished in 0.50s
+
