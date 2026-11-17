@@ -1,0 +1,19 @@
+diff --git a/crates/spur-graph/src/extract/notebook_model.rs b/crates/spur-graph/src/extract/notebook_model.rs
+index a3f997aba..db8b11958 100644
+--- a/crates/spur-graph/src/extract/notebook_model.rs
++++ b/crates/spur-graph/src/extract/notebook_model.rs
+@@ -607,0 +608,14 @@ mod tests {
++    #[test]
++    fn root_review_type_aliases_are_not_kernel_commands() {
++        for source in [
++            "type dep = i32;\nfn f(x:dep ) {}\n",
++            "type load = i32;\nfn f(x:load ) {}\n",
++            "type dep = i32;\nfn f(x\n    :dep ) {}\n",
++        ] {
++            let cell = rust(source);
++            assert_eq!(cell.status, NotebookStatus::Complete, "{source}: {:?}", cell.diagnostics);
++            assert!(cell.diagnostics.is_empty());
++            assert_eq!(cell.source.unwrap().analysis, source);
++        }
++    }
++
