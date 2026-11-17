@@ -1,0 +1,308 @@
+{
+  "cargo_version": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "source-head",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-head.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-head.stdout"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "source-status",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-status.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-status.stdout"
+    },
+    {
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "rustc-version",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/rustc-version.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/rustc-version.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/scripts/spur-cargo",
+        "--version"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "cargo-version",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/cargo-version.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/cargo-version.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/scripts/spur-cargo",
+        "--workdir",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+        "test",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "target/release-check/spur-graph-explore-audit-bd-2bhj-release-v2/rust-tests-core",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "extract::notebook"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "core-notebook-tests",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/core-notebook-tests.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/core-notebook-tests.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/scripts/spur-cargo",
+        "--workdir",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/crates/spur-graph-duckdb",
+        "test",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "target/release-check/spur-graph-explore-audit-bd-2bhj-release-v2/rust-tests"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "rust-tests",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/rust-tests.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/rust-tests.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/scripts/spur-cargo",
+        "--workdir",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/crates/spur-graph-duckdb",
+        "build",
+        "--locked",
+        "--release",
+        "--lib",
+        "--examples",
+        "--target",
+        "aarch64-apple-darwin",
+        "--target-dir",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target",
+        "--message-format=json"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "native-build",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-build.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-build.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "source-probe",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-probe.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-probe.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/crates/spur-graph-duckdb/scripts/package_extension.py",
+        "--library",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+        "--out",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/spur_graph.duckdb_extension"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "package",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/package.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/package.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/crates/spur-graph-duckdb/scripts/verify_package.py",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/spur_graph.duckdb_extension"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "verify-package",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/verify-package.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/verify-package.stdout"
+    },
+    {
+      "argv": [
+        "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/crates/spur-graph-duckdb/scripts/check_release.py",
+        "--unittest-child",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/crates/spur-graph-duckdb/tests",
+        "--summary",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/unittest-summary.json"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "unittests",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/unittests.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/unittests.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "source-probe-final",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-probe-final.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/source-probe-final.stdout"
+    }
+  ],
+  "configured_target": "aarch64-apple-darwin",
+  "driver_sha256": "97c43f8aef8962108124e393d2f3606bfe77601673bfd04178753c93ce612b18",
+  "exit_code": 0,
+  "native_artifacts": {
+    "build_script": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+      "sha256": "8a2d63c9bb21ca0cbb68be89ade079f0b9aeef62f5efd55c0b1c7f9656c2f404"
+    },
+    "catalog_git_sources": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/catalog_git_sources",
+      "sha256": "ebe5581d85de2b29dac69aaf1c75ea1fbda47e689a936e575b1e655a5bc3e088"
+    },
+    "history_catalog": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+      "sha256": "5de911aaaa4530dff1f1054a688f78ad399a0aa0a1d3abc8bc881ce7c1888a48"
+    },
+    "library": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+      "sha256": "4215b95009a72c2b9e187234e296444d091dff00d381482dc91d3fd3c64322e9"
+    },
+    "reference_file_facts": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+      "sha256": "1949b079a354bc5173fa9b7dc8a05b2483654db4eaf8ddbf98e2c5b6dbbdc053"
+    },
+    "reference_symbols": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/reference_symbols",
+      "sha256": "7a8682baea29f0c7b9b9c89daa5e2147152db52dc4bfbfe6320397ee46c9047b"
+    },
+    "retrieval_native": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+      "sha256": "bb87882bd0dcdff94804114abb915e908b3aea66e42dac21b738643fa1c99ddd"
+    },
+    "temporal_reference": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/temporal_reference",
+      "sha256": "a5a12b822ff028af1e4b77be5d315def30c4548d1f9d72154a71051c0fca8ae1"
+    },
+    "temporal_symbol_oracle": {
+      "path": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/temporal_symbol_oracle",
+      "sha256": "aad37ac120d03fbccb72f871692b57ad9d30429d212474a4a8e2eb93fa795200"
+    }
+  },
+  "package": {
+    "abi": "C_STRUCT_UNSTABLE",
+    "binary": {
+      "name": "spur_graph.duckdb_extension",
+      "sha256": "41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f",
+      "size_bytes": 17417686
+    },
+    "duckdb_api_version": "2.0.0",
+    "extension_version": "0.1.0",
+    "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "facts_schema_version": 1,
+    "format_version": 1,
+    "platform": "osx_arm64",
+    "resolution_scope": "single_file",
+    "source_identity": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "trust": {
+      "mode": "unsigned_local",
+      "signature": "absent"
+    }
+  },
+  "release_trust": {
+    "manifest": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/.spur_graph.duckdb_extension.packages/release-0b400cd559c84620a34bb12e4f46b097/spur_graph.duckdb_extension.json",
+    "manifest_sha256": "2c38eda52ea71acfc3618875c228d321eabbf14b596f699e7a1e8c10f4b7cccc",
+    "source_identity": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2"
+  },
+  "runtime": {
+    "duckdb": "2.0.0",
+    "duckdb_platform": "osx_arm64",
+    "host": "macOS-26.7.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "native_engine": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/_duckdb.abi3.so",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "native_version": "v2.0.0",
+    "python": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+    "python_executable": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+    "python_sha256": "08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada"
+  },
+  "rust_tests_mode": "remote",
+  "rustc": {
+    "LLVM version": "21.1.8",
+    "binary": "rustc",
+    "commit-date": "2026-03-25",
+    "commit-hash": "e408947bfd200af42db322daf0fadfe7e26d3bd1",
+    "host": "aarch64-apple-darwin",
+    "release": "1.94.1"
+  },
+  "source_head": "52e5a972df370a989b4b557bd58350d7d67d0c5c",
+  "source_status": "",
+  "status": "passed",
+  "test_environment": {
+    "SPUR_FILE_FACTS_ORACLE": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/reference_file_facts",
+    "SPUR_GRAPH_BUILD_SCRIPT": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/release/build/spur-graph-duckdb-51bb1ef19b67425b/build-script-build",
+    "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/spur_graph.duckdb_extension",
+    "SPUR_GRAPH_LIBRARY": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/libspur_graph_duckdb.dylib",
+    "SPUR_HISTORY_CATALOG": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/history_catalog",
+    "SPUR_RELEASE_MANIFEST": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/.spur_graph.duckdb_extension.packages/release-0b400cd559c84620a34bb12e4f46b097/spur_graph.duckdb_extension.json",
+    "SPUR_RELEASE_MANIFEST_SHA256": "2c38eda52ea71acfc3618875c228d321eabbf14b596f699e7a1e8c10f4b7cccc",
+    "SPUR_RELEASE_SOURCE_IDENTITY": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "SPUR_RETRIEVAL_NATIVE": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples/retrieval_native",
+    "SPUR_TEMPORAL_EXAMPLES_DIR": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v2/native-target/aarch64-apple-darwin/release/examples"
+  },
+  "unittests": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "release_pass": true,
+    "skipped": 0,
+    "skipped_tests": [],
+    "tests_run": 223,
+    "unexpected_successes": 0
+  }
+}

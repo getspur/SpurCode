@@ -1,0 +1,25 @@
+{
+  "schema": "spur.app/v1",
+  "name": "code-graph-workbench",
+  "entry_notebook": "app.ipynb",
+  "open_mode": "app",
+  "archetype": "interactive-decoupled",
+  "runtime": { "jute_min": "0.1.0", "features": [] },
+  "widgets": [],
+  "ports": null,
+  "dependencies": { "python": "server/requirements.txt" },
+  "mcp_server": {
+    "type": "python",
+    "entry": "server/main.py",
+    "requirements": "server/requirements.txt",
+    "env": {}
+  },
+  "capabilities": {
+    "active_output_scripts": true,
+    "ports": {
+      "read": ["subgraph", "scorecard", "analyst_rows", "cochange"],
+      "write": []
+    }
+  },
+  "skill": "skill/SKILL.md"
+}

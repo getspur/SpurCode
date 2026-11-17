@@ -1,0 +1,1280 @@
+{
+  "issue": "bd-2bhj",
+  "source_commit": "52e5a972df370a989b4b557bd58350d7d67d0c5c",
+  "build": {
+    "status": "passed",
+    "mode": {
+      "rust_tests": "remote",
+      "native_build": "macOS host"
+    },
+    "core_tests": 61,
+    "adapter_tests": 4,
+    "python_tests": 223,
+    "skips": 0,
+    "binary_sha256": "41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f",
+    "manifest_sha256": "2c38eda52ea71acfc3618875c228d321eabbf14b596f699e7a1e8c10f4b7cccc",
+    "source_identity": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "stable_binary": "/Users/kevintruong/project/SpurCode/.spur/artifacts/explore-audit-bd-2bhj-native/spur_graph.duckdb_extension",
+    "setup_attempt_1": "Exit200 before compilation because isolated checkout could not discover sibling cloud helper. Recovered using supported SPUR_NOTEBOOK_REPO; reran remotely, no local retry of compiler/test failures."
+  },
+  "app": {
+    "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+    "source_snapshot": [
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "intro",
+        "kind": "markdown",
+        "version": 1,
+        "cell_etag": "cell:sha256:64a59f1b7f63d03b2617b5c25307d77cbb1a18564140711acc337f03b2f391df",
+        "source": "# Code Graph Workbench\n\nAsk the AI sidebar about the codebase; evidence tools paint these panels.\nPanels: analyst (left), graph (center), inspector (bottom). Spec:\n`docs/superpowers/specs/2026-06-09-code-graph-workbench-app-design.md`.",
+        "exec_count": null,
+        "status": "idle",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 1
+          }
+        },
+        "output_indices": []
+      },
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+        "kind": "code",
+        "version": 30,
+        "cell_etag": "cell:sha256:173569a7115e28535fd00e0246ed37002d51fd038bffcc960685d23aaacbe9af",
+        "source": "import { callTool as wbExploreCallTool, display as wbExploreDisplay } from \"@getspur/spurlab-sdk\";\n\n{\n  const target = {\n    symbol: \"notebook_app_doctor\",\n    file: \"src/mcp/tools/notebook_app_doctor.rs\",\n  };\n  const depth = 2;\n  const edgeKinds = [\"calls\", \"references_other\", \"references_hof\", \"calls_dyn\"];\n\n  function toolErrorText(result: unknown): string | null {\n    if (!result || typeof result !== \"object\") return null;\n    const text = (result as { text?: unknown }).text;\n    if (typeof text !== \"string\") return null;\n    return text.startsWith(\"Error executing tool\") ? text : null;\n  }\n\n  async function safeEvidenceCall(name: string, args: Record<string, unknown>): Promise<Record<string, unknown>> {\n    try {\n      const result = await wbExploreCallTool(name, args);\n      const textError = toolErrorText(result);\n      if (textError) return { name, ok: false, error: textError };\n      return { name, ok: true, result };\n    } catch (error) {\n      return {\n        name,\n        ok: false,\n        error: error instanceof Error ? error.message : String(error),\n      };\n    }\n  }\n\n  const calls: Array<Promise<Record<string, unknown>>> = [];\n  if (target.symbol.trim()) {\n    calls.push(safeEvidenceCall(\"wb_scorecard\", { symbol: target.symbol }));\n    calls.push(safeEvidenceCall(\"wb_subgraph\", { symbol: target.symbol, depth, edge_kinds: edgeKinds }));\n    calls.push(safeEvidenceCall(\"wb_blast_radius\", { symbol: target.symbol }));\n  }\n  if (target.file.trim()) {\n    calls.push(safeEvidenceCall(\"wb_cochange\", { file: target.file }));\n  }\n\n  const results = await Promise.all(calls);\n  const failed = results.filter((item) => !item.ok);\n  const status = failed.length ? \"warn\" : \"ok\";\n\n  const escapeWorkbenchValue = (value: unknown) => String(value ?? \"\").replace(/[&<>\"']/g, (ch) => ({\n    \"&\": \"&amp;\",\n    \"<\": \"&lt;\",\n    \">\": \"&gt;\",\n    '\"': \"&quot;\",\n    \"'\": \"&#39;\",\n  }[ch] ?? ch));\n\n  const html = `<div data-wb-source-stub=\"explore\" style=\"display:none\" data-status=\"${escapeWorkbenchValue(status)}\">${escapeWorkbenchValue(JSON.stringify(results))}</div>`;\n  wbExploreDisplay.html(html)\n}\n",
+        "exec_count": 3,
+        "status": "success",
+        "outputs": [
+          {
+            "output_type": "execute_result",
+            "execution_count": 3,
+            "data": {
+              "text/html": "<div data-wb-source-stub=\"explore\" style=\"display:none\" data-status=\"ok\">[{&quot;name&quot;:&quot;wb_scorecard&quot;,&quot;ok&quot;:true,&quot;result&quot;:{&quot;ok&quot;:true,&quot;status&quot;:&quot;ok&quot;,&quot;port&quot;:&quot;scorecard&quot;,&quot;symbol&quot;:&quot;notebook_app_doctor&quot;,&quot;row_count&quot;:25,&quot;stable_symbol_id&quot;:&quot;d3303c8991af3e91&quot;,&quot;stable_symbol_ids&quot;:[&quot;d3303c8991af3e91&quot;,&quot;8d7e51fa3aa97aaa&quot;,&quot;a7afc25882df53c4&quot;,&quot;d11c65b83ba8d8a5&quot;,&quot;14a177302d6a2258&quot;,&quot;19090194f6bd20db&quot;,&quot;79af39616c16509d&quot;,&quot;db1838e2e3d31b2c&quot;,&quot;27594585053323e6&quot;,&quot;e5a1ee6cd79ac6c4&quot;,&quot;bf09c846387b680f&quot;,&quot;fd841fe30ae53a77&quot;,&quot;2e1435839e0d0b41&quot;,&quot;f307035afa3d0359&quot;,&quot;efe80df01316199c&quot;,&quot;04c9fb40e030e502&quot;,&quot;6d545b650106c8c6&quot;,&quot;1743fb641e53870f&quot;,&quot;57e869f4d5dc9c43&quot;,&quot;43b7ea1d52aa47da&quot;,&quot;707a9c1535959bba&quot;,&quot;00571307ba4c170c&quot;,&quot;af741fe0680aeef7&quot;,&quot;32da58ba5212b638&quot;,&quot;1b314f75c8ba7ecd&quot;],&quot;pushed_stable_symbol_ids&quot;:[&quot;d3303c8991af3e91&quot;,&quot;8d7e51fa3aa97aaa&quot;,&quot;a7afc25882df53c4&quot;,&quot;d11c65b83ba8d8a5&quot;,&quot;14a177302d6a2258&quot;,&quot;19090194f6bd20db&quot;,&quot;79af39616c16509d&quot;,&quot;db1838e2e3d31b2c&quot;,&quot;27594585053323e6&quot;,&quot;e5a1ee6cd79ac6c4&quot;,&quot;bf09c846387b680f&quot;,&quot;fd841fe30ae53a77&quot;,&quot;2e1435839e0d0b41&quot;,&quot;f307035afa3d0359&quot;,&quot;efe80df01316199c&quot;,&quot;04c9fb40e030e502&quot;,&quot;6d545b650106c8c6&quot;,&quot;1743fb641e53870f&quot;,&quot;57e869f4d5dc9c43&quot;,&quot;43b7ea1d52aa47da&quot;,&quot;707a9c1535959bba&quot;,&quot;00571307ba4c170c&quot;,&quot;af741fe0680aeef7&quot;,&quot;32da58ba5212b638&quot;,&quot;1b314f75c8ba7ecd&quot;]}},{&quot;name&quot;:&quot;wb_subgraph&quot;,&quot;ok&quot;:true,&quot;result&quot;:{&quot;ok&quot;:true,&quot;status&quot;:&quot;ok&quot;,&quot;port&quot;:&quot;subgraph&quot;,&quot;symbol&quot;:&quot;notebook_app_doctor&quot;,&quot;depth&quot;:2,&quot;edge_kinds&quot;:[&quot;calls&quot;,&quot;references_other&quot;,&quot;references_hof&quot;,&quot;calls_dyn&quot;],&quot;row_count&quot;:142,&quot;stable_symbol_ids&quot;:[&quot;69e020ab4584ac12&quot;,&quot;03bcd2f0830b88d0&quot;,&quot;0489eb880aaa2e41&quot;,&quot;07026e1e5bd8c8fd&quot;,&quot;0a10ff4367fa7f95&quot;,&quot;0c93448d95c13259&quot;,&quot;127d7258ab1b6284&quot;,&quot;13b963f005b4475f&quot;,&quot;14cd013bb5e68ed4&quot;,&quot;1500b61dbfbf6ec0&quot;,&quot;1aa67fb0cf9e6445&quot;,&quot;20a6f2c5e0e81ac8&quot;,&quot;26bea30753c4efb3&quot;,&quot;2b15f2d41e9848a6&quot;,&quot;2c33fd7f291663d0&quot;,&quot;2cb067bdfee9f5e1&quot;,&quot;2d8eda54900c3180&quot;,&quot;315f2ef8aa56100e&quot;,&quot;349765bacb4ad873&quot;,&quot;37c17a9fddb36242&quot;,&quot;38f2f489eeadf355&quot;,&quot;3a00d79e9a0d495d&quot;,&quot;3ef0696f24c2c089&quot;,&quot;4605fff0b76ae740&quot;,&quot;46468b6d478c04d5&quot;,&quot;49332c22607ac6cf&quot;,&quot;49866b5c7c927b12&quot;,&quot;4af7f07cd0070146&quot;,&quot;4bc1f0daf0002ebb&quot;,&quot;4c32bee951779029&quot;,&quot;599b46d6d23d5352&quot;,&quot;599ed7757d16cf10&quot;,&quot;5cf98b620f6025ae&quot;,&quot;5db4f8d4e7d338cb&quot;,&quot;5fe730b1a5215729&quot;,&quot;6395e1fcaee4e494&quot;,&quot;66b81c0d27df1818&quot;,&quot;6a1740e0ce2286de&quot;,&quot;6fe823b83e68412d&quot;,&quot;739db064a2ae7e3d&quot;,&quot;7b5cbd19c164a902&quot;,&quot;8905cf2505b6a59a&quot;,&quot;8de297488c1f745d&quot;,&quot;8f3313541538747e&quot;,&quot;9655dfe51e618334&quot;,&quot;96a81af6b4e21f28&quot;,&quot;979310f7c9b4859c&quot;,&quot;99a3fe38041e4546&quot;,&quot;9bfed40b6e52fd76&quot;,&quot;9c205d695aec31f1&quot;,&quot;a90ec2da2701e1d1&quot;,&quot;ae746544722990bf&quot;,&quot;baa9bc46e0ea68f1&quot;,&quot;bc7a19be5eb4d67d&quot;,&quot;bdab869dfe469650&quot;,&quot;bee5c46ad3176ca1&quot;,&quot;c0eb678bb24d039b&quot;,&quot;c46c6600c8e45182&quot;,&quot;c7590dfb1c735e67&quot;,&quot;ce9ca2a74efec270&quot;,&quot;cea814fe3515153d&quot;,&quot;d4b09f4101654966&quot;,&quot;de358ddf4cca5c46&quot;,&quot;e4562110db629e9b&quot;,&quot;e5370c8959ecad7f&quot;,&quot;eadc8c7251f4e0c6&quot;,&quot;f8b878ae076bb606&quot;,&quot;f991658310d716c1&quot;,&quot;fa1f7bba7aa8da19&quot;,&quot;00022b2ab24ae591&quot;],&quot;pushed_stable_symbol_ids&quot;:[&quot;69e020ab4584ac12&quot;,&quot;03bcd2f0830b88d0&quot;,&quot;0489eb880aaa2e41&quot;,&quot;07026e1e5bd8c8fd&quot;,&quot;0a10ff4367fa7f95&quot;,&quot;0c93448d95c13259&quot;,&quot;127d7258ab1b6284&quot;,&quot;13b963f005b4475f&quot;,&quot;14cd013bb5e68ed4&quot;,&quot;1500b61dbfbf6ec0&quot;,&quot;1aa67fb0cf9e6445&quot;,&quot;20a6f2c5e0e81ac8&quot;,&quot;26bea30753c4efb3&quot;,&quot;2b15f2d41e9848a6&quot;,&quot;2c33fd7f291663d0&quot;,&quot;2cb067bdfee9f5e1&quot;,&quot;2d8eda54900c3180&quot;,&quot;315f2ef8aa56100e&quot;,&quot;349765bacb4ad873&quot;,&quot;37c17a9fddb36242&quot;,&quot;38f2f489eeadf355&quot;,&quot;3a00d79e9a0d495d&quot;,&quot;3ef0696f24c2c089&quot;,&quot;4605fff0b76ae740&quot;,&quot;46468b6d478c04d5&quot;,&quot;49332c22607ac6cf&quot;,&quot;49866b5c7c927b12&quot;,&quot;4af7f07cd0070146&quot;,&quot;4bc1f0daf0002ebb&quot;,&quot;4c32bee951779029&quot;,&quot;599b46d6d23d5352&quot;,&quot;599ed7757d16cf10&quot;,&quot;5cf98b620f6025ae&quot;,&quot;5db4f8d4e7d338cb&quot;,&quot;5fe730b1a5215729&quot;,&quot;6395e1fcaee4e494&quot;,&quot;66b81c0d27df1818&quot;,&quot;6a1740e0ce2286de&quot;,&quot;6fe823b83e68412d&quot;,&quot;739db064a2ae7e3d&quot;,&quot;7b5cbd19c164a902&quot;,&quot;8905cf2505b6a59a&quot;,&quot;8de297488c1f745d&quot;,&quot;8f3313541538747e&quot;,&quot;9655dfe51e618334&quot;,&quot;96a81af6b4e21f28&quot;,&quot;979310f7c9b4859c&quot;,&quot;99a3fe38041e4546&quot;,&quot;9bfed40b6e52fd76&quot;,&quot;9c205d695aec31f1&quot;,&quot;a90ec2da2701e1d1&quot;,&quot;ae746544722990bf&quot;,&quot;baa9bc46e0ea68f1&quot;,&quot;bc7a19be5eb4d67d&quot;,&quot;bdab869dfe469650&quot;,&quot;bee5c46ad3176ca1&quot;,&quot;c0eb678bb24d039b&quot;,&quot;c46c6600c8e45182&quot;,&quot;c7590dfb1c735e67&quot;,&quot;ce9ca2a74efec270&quot;,&quot;cea814fe3515153d&quot;,&quot;d4b09f4101654966&quot;,&quot;de358ddf4cca5c46&quot;,&quot;e4562110db629e9b&quot;,&quot;e5370c8959ecad7f&quot;,&quot;eadc8c7251f4e0c6&quot;,&quot;f8b878ae076bb606&quot;,&quot;f991658310d716c1&quot;,&quot;fa1f7bba7aa8da19&quot;,&quot;00022b2ab24ae591&quot;]}},{&quot;name&quot;:&quot;wb_blast_radius&quot;,&quot;ok&quot;:true,&quot;result&quot;:{&quot;ok&quot;:true,&quot;status&quot;:&quot;ok&quot;,&quot;port&quot;:&quot;analyst_rows&quot;,&quot;symbol&quot;:&quot;notebook_app_doctor&quot;,&quot;row_count&quot;:50,&quot;stable_symbol_ids&quot;:[&quot;d3303c8991af3e91&quot;,&quot;8d7e51fa3aa97aaa&quot;,&quot;a7afc25882df53c4&quot;,&quot;d11c65b83ba8d8a5&quot;,&quot;14a177302d6a2258&quot;,&quot;19090194f6bd20db&quot;,&quot;79af39616c16509d&quot;,&quot;27594585053323e6&quot;,&quot;bf09c846387b680f&quot;,&quot;db1838e2e3d31b2c&quot;,&quot;e5a1ee6cd79ac6c4&quot;,&quot;fd841fe30ae53a77&quot;,&quot;2e1435839e0d0b41&quot;,&quot;1b314f75c8ba7ecd&quot;,&quot;7594713ce72d10a7&quot;,&quot;a88096f8f47f8ff3&quot;,&quot;00571307ba4c170c&quot;,&quot;04c9fb40e030e502&quot;,&quot;1743fb641e53870f&quot;,&quot;1e342bccffda8ca5&quot;,&quot;32da58ba5212b638&quot;,&quot;43b7ea1d52aa47da&quot;,&quot;464cc04f8659ec1b&quot;,&quot;57e869f4d5dc9c43&quot;,&quot;6d545b650106c8c6&quot;,&quot;707a9c1535959bba&quot;,&quot;7c1c3c30f96b254a&quot;,&quot;7c30b06db86f3803&quot;,&quot;7e3f11e5a34ccf9b&quot;,&quot;a4a5b6dd1260ec92&quot;,&quot;a7e8d44a805b9c64&quot;,&quot;af741fe0680aeef7&quot;,&quot;ba8446b56702c2e8&quot;,&quot;efe80df01316199c&quot;,&quot;f307035afa3d0359&quot;,&quot;fa6e3db1b113dc5c&quot;,&quot;feec71f542d79427&quot;,&quot;3b103b62de5574f0&quot;,&quot;5241a46ede1c04cd&quot;,&quot;56a80ecbd652d163&quot;,&quot;750fe2fa48ca9582&quot;,&quot;7801184de2707f75&quot;,&quot;6d05f87825db206e&quot;,&quot;1b367bf52e482ae4&quot;,&quot;24b0239e0df379e0&quot;,&quot;bbf19697c696830f&quot;,&quot;e8f73143184e9baa&quot;,&quot;ca4bb5dde8098232&quot;,&quot;ccd4b3fa8fb2b6a5&quot;,&quot;e5eafa40d4aa39e7&quot;],&quot;pushed_stable_symbol_ids&quot;:[&quot;d3303c8991af3e91&quot;,&quot;8d7e51fa3aa97aaa&quot;,&quot;a7afc25882df53c4&quot;,&quot;d11c65b83ba8d8a5&quot;,&quot;14a177302d6a2258&quot;,&quot;19090194f6bd20db&quot;,&quot;79af39616c16509d&quot;,&quot;27594585053323e6&quot;,&quot;bf09c846387b680f&quot;,&quot;db1838e2e3d31b2c&quot;,&quot;e5a1ee6cd79ac6c4&quot;,&quot;fd841fe30ae53a77&quot;,&quot;2e1435839e0d0b41&quot;,&quot;1b314f75c8ba7ecd&quot;,&quot;7594713ce72d10a7&quot;,&quot;a88096f8f47f8ff3&quot;,&quot;00571307ba4c170c&quot;,&quot;04c9fb40e030e502&quot;,&quot;1743fb641e53870f&quot;,&quot;1e342bccffda8ca5&quot;,&quot;32da58ba5212b638&quot;,&quot;43b7ea1d52aa47da&quot;,&quot;464cc04f8659ec1b&quot;,&quot;57e869f4d5dc9c43&quot;,&quot;6d545b650106c8c6&quot;,&quot;707a9c1535959bba&quot;,&quot;7c1c3c30f96b254a&quot;,&quot;7c30b06db86f3803&quot;,&quot;7e3f11e5a34ccf9b&quot;,&quot;a4a5b6dd1260ec92&quot;,&quot;a7e8d44a805b9c64&quot;,&quot;af741fe0680aeef7&quot;,&quot;ba8446b56702c2e8&quot;,&quot;efe80df01316199c&quot;,&quot;f307035afa3d0359&quot;,&quot;fa6e3db1b113dc5c&quot;,&quot;feec71f542d79427&quot;,&quot;3b103b62de5574f0&quot;,&quot;5241a46ede1c04cd&quot;,&quot;56a80ecbd652d163&quot;,&quot;750fe2fa48ca9582&quot;,&quot;7801184de2707f75&quot;,&quot;6d05f87825db206e&quot;,&quot;1b367bf52e482ae4&quot;,&quot;24b0239e0df379e0&quot;,&quot;bbf19697c696830f&quot;,&quot;e8f73143184e9baa&quot;,&quot;ca4bb5dde8098232&quot;,&quot;ccd4b3fa8fb2b6a5&quot;,&quot;e5eafa40d4aa39e7&quot;]}},{&quot;name&quot;:&quot;wb_cochange&quot;,&quot;ok&quot;:true,&quot;result&quot;:{&quot;ok&quot;:true,&quot;status&quot;:&quot;ok&quot;,&quot;port&quot;:&quot;cochange&quot;,&quot;file&quot;:&quot;src/mcp/tools/notebook_app_doctor.rs&quot;,&quot;row_count&quot;:26,&quot;stable_symbol_ids&quot;:[],&quot;pushed_stable_symbol_ids&quot;:[],&quot;file_paths&quot;:[&quot;src/mcp/tools/notebook_app_doctor.rs&quot;,&quot;src/spur_app.rs&quot;,&quot;tests/notebook_app_doctor.rs&quot;,&quot;jute-notebook/src-tauri/src/commands.rs&quot;,&quot;src/spur_app/scaffold.rs&quot;,&quot;jute-notebook/src-tauri/src/spur_app.rs&quot;,&quot;sdk/docs/dev-loop.md&quot;,&quot;src/context/pack.rs&quot;,&quot;src/mcp/mod.rs&quot;,&quot;src/mcp/tools/mod.rs&quot;,&quot;src/sidebar_chat/scope.rs&quot;,&quot;app_gallery/code-graph-workbench/sdk/wire.ts&quot;,&quot;app_gallery/html_video/sdk/wire.ts&quot;,&quot;app_gallery/world-cup-2026/sdk/wire.ts&quot;,&quot;sdk/docs/manifest.md&quot;,&quot;sdk/skill/AGENTS.md&quot;,&quot;sdk/skill/SKILL.md&quot;,&quot;sdk/skill/references/validation-ladder.md&quot;,&quot;sdk/typescript/src/wire.ts&quot;,&quot;sdk/typescript/tests/wire_test.ts&quot;,&quot;src/mcp/plugin_loader.rs&quot;,&quot;src/mcp/server.rs&quot;,&quot;src/mcp/tools/notebook_app_briefing.rs&quot;,&quot;src/mcp/tools/notebook_app_init.rs&quot;,&quot;src/sidebar_chat/manager.rs&quot;,&quot;tests/spur_app_archive.rs&quot;,&quot;tests/spur_app_mcp_tools.rs&quot;],&quot;pushed_file_paths&quot;:[&quot;src/mcp/tools/notebook_app_doctor.rs&quot;,&quot;src/spur_app.rs&quot;,&quot;tests/notebook_app_doctor.rs&quot;,&quot;jute-notebook/src-tauri/src/commands.rs&quot;,&quot;src/spur_app/scaffold.rs&quot;,&quot;jute-notebook/src-tauri/src/spur_app.rs&quot;,&quot;sdk/docs/dev-loop.md&quot;,&quot;src/context/pack.rs&quot;,&quot;src/mcp/mod.rs&quot;,&quot;src/mcp/tools/mod.rs&quot;,&quot;src/sidebar_chat/scope.rs&quot;,&quot;app_gallery/code-graph-workbench/sdk/wire.ts&quot;,&quot;app_gallery/html_video/sdk/wire.ts&quot;,&quot;app_gallery/world-cup-2026/sdk/wire.ts&quot;,&quot;sdk/docs/manifest.md&quot;,&quot;sdk/skill/AGENTS.md&quot;,&quot;sdk/skill/SKILL.md&quot;,&quot;sdk/skill/references/validation-ladder.md&quot;,&quot;sdk/typescript/src/wire.ts&quot;,&quot;sdk/typescript/tests/wire_test.ts&quot;,&quot;src/mcp/plugin_loader.rs&quot;,&quot;src/mcp/server.rs&quot;,&quot;src/mcp/tools/notebook_app_briefing.rs&quot;,&quot;src/mcp/tools/notebook_app_init.rs&quot;,&quot;src/sidebar_chat/manager.rs&quot;,&quot;tests/spur_app_archive.rs&quot;,&quot;tests/spur_app_mcp_tools.rs&quot;]}}]</div>"
+            },
+            "metadata": {}
+          }
+        ],
+        "metadata": {
+          "spur": {
+            "version": 30,
+            "last_edited_by": "brain",
+            "code_type": "javascript"
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "afa9c454-06dd-497a-b1e2-3b2bc60fbd1e",
+        "kind": "code",
+        "version": 9,
+        "cell_etag": "cell:sha256:01a4566a23e589eff3201fd9f8bb828a026b5e6116427f1c1015f7edf42ce4a9",
+        "source": "// Source-port declaration: `scorecard` (pushed by the wb_scorecard evidence tool).\n// No-op body \u2014 this cell only declares the DAG source so notebook_push_source resolves,\n// and `produces: scorecard` lets a push cascade a rerun into the wb-graph dashboard.\n",
+        "exec_count": 3,
+        "status": "success",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 9,
+            "last_edited_by": "brain",
+            "dag": {
+              "produces": [
+                {
+                  "port": "scorecard",
+                  "repr": "arrow"
+                }
+              ],
+              "consumes": [],
+              "source": {
+                "kind": "frontend",
+                "port": "scorecard"
+              }
+            },
+            "code_type": "javascript"
+          }
+        },
+        "output_indices": []
+      },
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "56cc071f-9bae-4af8-84d8-b7268f5b4cf1",
+        "kind": "code",
+        "version": 10,
+        "cell_etag": "cell:sha256:fb8e19df8643d4035d369d8657034a60b2a766d1bc0a59c427ef540233a37bb6",
+        "source": "// Source-port declaration: `analyst_rows` (pushed by the wb_blast_radius evidence tool).\n// No-op body \u2014 declares the DAG source so notebook_push_source resolves, and\n// `produces: analyst_rows` lets a push cascade a rerun into the wb-graph dashboard.\n",
+        "exec_count": 4,
+        "status": "success",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 10,
+            "last_edited_by": "brain",
+            "dag": {
+              "produces": [
+                {
+                  "port": "analyst_rows",
+                  "repr": "arrow"
+                }
+              ],
+              "consumes": [],
+              "source": {
+                "kind": "frontend",
+                "port": "analyst_rows"
+              }
+            },
+            "code_type": "javascript"
+          }
+        },
+        "output_indices": []
+      },
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "f91df3f3-5e85-460e-a890-72192bdc06f1",
+        "kind": "code",
+        "version": 11,
+        "cell_etag": "cell:sha256:6e654c9221d644dc877e568175cd22f37348b78ad2aa7e88ba252e724b6f2e02",
+        "source": "// Source-port declaration: `cochange` (pushed by the wb_cochange evidence tool).\n// No-op body \u2014 declares the DAG source so notebook_push_source resolves, and\n// `produces: cochange` lets a push cascade a rerun into the wb-graph dashboard.\n",
+        "exec_count": 5,
+        "status": "success",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 11,
+            "last_edited_by": "brain",
+            "dag": {
+              "produces": [
+                {
+                  "port": "cochange",
+                  "repr": "arrow"
+                }
+              ],
+              "consumes": [],
+              "source": {
+                "kind": "frontend",
+                "port": "cochange"
+              }
+            },
+            "code_type": "javascript"
+          }
+        },
+        "output_indices": []
+      },
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "8ee3649a-5627-4f06-9453-0184f9f62d7c",
+        "kind": "code",
+        "version": 77,
+        "cell_etag": "cell:sha256:192ffe4bcee2254af4b3e0fe2b3f5f51e4ee4832a3aecc0a5fcbd379825f5c8c",
+        "source": "# --- Query (the input) ---------------------------------------------------------\n# Set TARGET_SYMBOL (and optionally TARGET_FILE) below, then RUN this cell to load\n# that symbol into the workbench, then run the \"Code Graph Workbench\" cell below.\n# Suggestions (top symbols by blast radius) are printed underneath to type from.\nimport os, sys\n\n\ndef _find_up(rel: str) -> str | None:\n    d = os.getcwd()\n    while True:\n        cand = os.path.join(d, rel)\n        if os.path.exists(cand):\n            return cand\n        parent = os.path.dirname(d)\n        if parent == d:\n            return None\n        d = parent\n\n\nfor _p in (os.path.join(os.getcwd(), \"server\"), _find_up(\"sdk/python/src\")):\n    if _p and _p not in sys.path:\n        sys.path.insert(0, _p)\n\nimport analyst\nfrom tools.subgraph import _subgraph_rows\n\n# \u2500\u2500 INPUT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nTARGET_SYMBOL = \"PortStore\"\nTARGET_FILE = \"src/dag/ports.rs\"   # drives the co-change panel\n# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nEDGE_KINDS = [\"calls\", \"references_other\", \"references_hof\", \"calls_dyn\"]\nspur.put(\"subgraph\", _subgraph_rows(TARGET_SYMBOL, depth=2, edge_kinds=EDGE_KINDS))\nspur.put(\"scorecard\", analyst.scorecard_rows(TARGET_SYMBOL))\nspur.put(\"analyst_rows\", analyst.blast_radius_rows(TARGET_SYMBOL))\nspur.put(\"cochange\", analyst.cochange_rows(TARGET_FILE))\nprint(f\"Loaded {TARGET_SYMBOL!r} / {TARGET_FILE!r} \u2014 run the workbench cell below to view.\\n\")\n\n# Suggestions \u2014 type one of these into TARGET_SYMBOL above and re-run.\ncon = analyst.open_analyst()\nif con is not None:\n    rows = con.execute(\n        \"\"\"\n        SELECT entity_name, symbol_kind, file_path\n        FROM v_symbol_scorecard\n        WHERE entity_name IS NOT NULL AND entity_name <> ''\n        ORDER BY blast_radius_score DESC NULLS LAST, pagerank DESC NULLS LAST\n        LIMIT 20\n        \"\"\"\n    ).fetchall()\n    con.close()\n    print(\"Suggestions (top by blast radius):\")\n    for name, kind, path in rows:\n        print(f\"  \u2022 {str(name):<30} {str(kind):<14} {path}\")\n",
+        "exec_count": 10,
+        "status": "success",
+        "outputs": [
+          {
+            "output_type": "display_data",
+            "data": {
+              "application/vnd.spur.port+json": {
+                "port": "subgraph",
+                "version": 3,
+                "schema": {
+                  "fields": [
+                    {
+                      "name": "row_kind",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "stable_symbol_id",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "node_id",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "qualified_name",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "entity_name",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "symbol_kind",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "file_path",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "source_stable_id",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "target_stable_id",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "edge_kind",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "relation",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "confidence",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "bind_method",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "depth",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "is_shortest_path",
+                      "data_type": "Boolean",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    }
+                  ],
+                  "metadata": {}
+                }
+              },
+              "text/html": "<div><strong>SPUR port</strong> <code>subgraph</code> <span>v3</span><p>722 rows x 15 columns</p><table><thead><tr><th>row_kind</th><th>stable_symbol_id</th><th>node_id</th><th>qualified_name</th><th>entity_name</th><th>symbol_kind</th><th>file_path</th><th>source_stable_id</th><th>target_stable_id</th><th>edge_kind</th><th>relation</th><th>confidence</th><th>bind_method</th><th>depth</th><th>is_shortest_path</th></tr></thead><tbody><tr><td>node</td><td>222da3095aaa61ad</td><td>3289</td><td>PortStore</td><td>PortStore</td><td>struct</td><td>src/dag/ports.rs</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>0</td><td>True</td></tr><tr><td>node</td><td>0804b8ef219d75d0</td><td>735</td><td>tests</td><td>tests</td><td>module</td><td>src/mcp/tools/notebook_lineage.rs</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>1</td><td>False</td></tr><tr><td>node</td><td>089a0811cfd17a64</td><td>791</td><td>PortStore::notebook_root</td><td>notebook_root</td><td>field</td><td>src/dag/ports.rs</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>1</td><td>False</td></tr><tr><td>node</td><td>6e587f9d033c98ed</td><td>10536</td><td>PortStore::manifest_path</td><td>manifest_path</td><td>field</td><td>src/dag/ports.rs</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>1</td><td>False</td></tr><tr><td>node</td><td>72c7c7a94bb21bf7</td><td>10968</td><td>tests</td><td>tests</td><td>module</td><td>src/dag/cell_runner.rs</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>None</td><td>1</td><td>False</td></tr></tbody></table></div>"
+            },
+            "metadata": {}
+          },
+          {
+            "output_type": "display_data",
+            "data": {
+              "application/vnd.spur.port+json": {
+                "port": "scorecard",
+                "version": 3,
+                "schema": {
+                  "fields": [
+                    {
+                      "name": "stable_symbol_id",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "entity_name",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "qualified_name",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "symbol_kind",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "file_path",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "pagerank",
+                      "data_type": "Float64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "in_degree",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "out_degree",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "component_id",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "community_id",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "callers",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "importers",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "churn_90d",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "last_touched",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "posture",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "blast_radius_score",
+                      "data_type": "Float64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    }
+                  ],
+                  "metadata": {}
+                }
+              },
+              "text/html": "<div><strong>SPUR port</strong> <code>scorecard</code> <span>v3</span><p>25 rows x 16 columns</p><table><thead><tr><th>stable_symbol_id</th><th>entity_name</th><th>qualified_name</th><th>symbol_kind</th><th>file_path</th><th>pagerank</th><th>in_degree</th><th>out_degree</th><th>component_id</th><th>community_id</th><th>callers</th><th>importers</th><th>churn_90d</th><th>last_touched</th><th>posture</th><th>blast_radius_score</th></tr></thead><tbody><tr><td>f4327ddd601bd05c</td><td>FakePortStore</td><td>FakePortStore</td><td>class</td><td>sdk/python/src/spur_app/testing.py</td><td>9.832859168445554e-05</td><td>22</td><td>0</td><td>0</td><td>988</td><td>22</td><td>5</td><td>1</td><td>2026-06-19 16:26:38+07</td><td>active</td><td>10.524471158685099</td></tr><tr><td>9b087c5e0b91a484</td><td>from_fixtures</td><td>FakePortStore::from_fixtures</td><td>method</td><td>sdk/python/src/spur_app/testing.py</td><td>0.00011010570140086072</td><td>19</td><td>0</td><td>0</td><td>1009</td><td>19</td><td>0</td><td>1</td><td>2026-06-19 16:26:38+07</td><td>active</td><td>9.667559035372909</td></tr><tr><td>e8e40ae83c44d056</td><td>open</td><td>impl PortStore::open</td><td>method</td><td>src/dag/ports.rs</td><td>7.6619560708856e-05</td><td>19</td><td>2</td><td>0</td><td>1014</td><td>19</td><td>0</td><td>0</td><td>None</td><td>load-bearing wall</td><td>6.89792847568658</td></tr><tr><td>acb1903f52679bde</td><td>add_media</td><td>FakePortStore::add_media</td><td>method</td><td>sdk/python/src/spur_app/testing.py</td><td>8.096136690397591e-05</td><td>10</td><td>0</td><td>0</td><td>1018</td><td>10</td><td>0</td><td>1</td><td>2026-06-19 16:26:38+07</td><td>active</td><td>6.443048919868718</td></tr><tr><td>4f12fbfbc350acb7</td><td>list</td><td>PortStore::list</td><td>method</td><td>sdk/python/src/spur_app/ports.py</td><td>7.6619560708856e-05</td><td>8</td><td>1</td><td>0</td><td>985</td><td>8</td><td>0</td><td>1</td><td>2026-06-19 16:26:38+07</td><td>active</td><td>5.520943023810274</td></tr></tbody></table></div>"
+            },
+            "metadata": {}
+          },
+          {
+            "output_type": "display_data",
+            "data": {
+              "application/vnd.spur.port+json": {
+                "port": "analyst_rows",
+                "version": 3,
+                "schema": {
+                  "fields": [
+                    {
+                      "name": "stable_symbol_id",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "entity_name",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "symbol_kind",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "file_path",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "caller_count",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "hot_caller_count",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "caller_churn_90d",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "self_churn_90d",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "self_last_touched",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "blast_radius_score",
+                      "data_type": "Float64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    }
+                  ],
+                  "metadata": {}
+                }
+              },
+              "text/html": "<div><strong>SPUR port</strong> <code>analyst_rows</code> <span>v3</span><p>9 rows x 10 columns</p><table><thead><tr><th>stable_symbol_id</th><th>entity_name</th><th>symbol_kind</th><th>file_path</th><th>caller_count</th><th>hot_caller_count</th><th>caller_churn_90d</th><th>self_churn_90d</th><th>self_last_touched</th><th>blast_radius_score</th></tr></thead><tbody><tr><td>f4327ddd601bd05c</td><td>FakePortStore</td><td>class</td><td>sdk/python/src/spur_app/testing.py</td><td>22</td><td>22</td><td>22</td><td>1</td><td>2026-06-19 16:26:38+07</td><td>10.524471158685099</td></tr><tr><td>ba56118ddf2acfa1</td><td>PortStore</td><td>class</td><td>sdk/python/src/spur_app/ports.py</td><td>0</td><td>0</td><td>0</td><td>1</td><td>2026-06-19 16:26:38+07</td><td>0.6931471805599453</td></tr><tr><td>1a940a0d2296633e</td><td>From&lt;PortStoreError&gt; for EngineError</td><td>impl</td><td>src/dag/engine.rs</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td><td>0.0</td></tr><tr><td>222da3095aaa61ad</td><td>PortStore</td><td>struct</td><td>src/dag/ports.rs</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td><td>0.0</td></tr><tr><td>a3375ba17f839f27</td><td>PortStore</td><td>impl</td><td>src/dag/ports.rs</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td><td>0.0</td></tr></tbody></table></div>"
+            },
+            "metadata": {}
+          },
+          {
+            "output_type": "display_data",
+            "data": {
+              "application/vnd.spur.port+json": {
+                "port": "cochange",
+                "version": 3,
+                "schema": {
+                  "fields": [
+                    {
+                      "name": "file_a",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "file_b",
+                      "data_type": "Utf8",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "cochange_count",
+                      "data_type": "Int64",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    },
+                    {
+                      "name": "has_static_edge",
+                      "data_type": "Boolean",
+                      "nullable": true,
+                      "dict_id": 0,
+                      "dict_is_ordered": false,
+                      "metadata": {}
+                    }
+                  ],
+                  "metadata": {}
+                }
+              },
+              "text/html": "<div><strong>SPUR port</strong> <code>cochange</code> <span>v3</span><p>50 rows x 4 columns</p><table><thead><tr><th>file_a</th><th>file_b</th><th>cochange_count</th><th>has_static_edge</th></tr></thead><tbody><tr><td>src/dag/engine.rs</td><td>src/dag/ports.rs</td><td>9</td><td>True</td></tr><tr><td>src/commands.rs</td><td>src/dag/ports.rs</td><td>7</td><td>False</td></tr><tr><td>src/dag/ports.rs</td><td>tests/notebook_read_tools.rs</td><td>7</td><td>True</td></tr><tr><td>src/dag/ports.rs</td><td>tests/reactive_dag.rs</td><td>7</td><td>True</td></tr><tr><td>jute-notebook/src-tauri/src/notebook_store.rs</td><td>src/dag/ports.rs</td><td>6</td><td>False</td></tr></tbody></table></div>"
+            },
+            "metadata": {}
+          },
+          {
+            "output_type": "stream",
+            "name": "stdout",
+            "text": [
+              "Loaded 'PortStore' / 'src/dag/ports.rs' \u2014 run the workbench cell below to view.\n\n",
+              "Suggestions (top by blast radius):\n  \u2022 Ok                             enum_variant   jute-notebook/src-tauri/src/backend/wire_protocol.rs\n  \u2022 invalid_params                 function       src/mcp/loopback_requester.rs\n  \u2022 String                         enum_variant   jute-notebook/src-tauri/src/backend/notebook.rs\n  \u2022 match                          function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 slice                          function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 mount                          method         rest-table-gateway/tests/support/provider_manifest_harness.rs\n  \u2022 from_bridge                    method         src/mcp/server.rs\n  \u2022 warn                           function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 FakePortStore                  class          sdk/python/src/spur_app/testing.py\n  \u2022 Xt                             function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 from_toml                      method         rest-table-gateway/src/adapter/manifest.rs\n  \u2022 from_fixtures                  method         sdk/python/src/spur_app/testing.py\n  \u2022 path                           method         src/mcp/daemon/control.rs\n  \u2022 create                         function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 new                            method         src/mcp/bridge.rs\n  \u2022 oA                             function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 new                            method         rest-table-gateway/src/adapter/manifest_adapter.rs\n  \u2022 Single                         enum_variant   jute-notebook/src-tauri/src/backend/notebook.rs\n  \u2022 uA                             function       app_gallery/html_video/templates/frame-scene-transition/shader-transitions.global.js\n  \u2022 without_app                    method         src/mcp/bridge.rs\n"
+            ]
+          }
+        ],
+        "metadata": {
+          "spur": {
+            "version": 77,
+            "last_edited_by": "brain",
+            "code_type": "python"
+          }
+        },
+        "output_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "notebook_id": "nb-5a15a4926fb738f4aaffc484",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/app.ipynb",
+        "revision": 1,
+        "id": "wb-graph",
+        "kind": "code",
+        "version": 99,
+        "cell_etag": "cell:sha256:3d10759c16c808c56ecb280ed54020dd7d4a1a69f71ead92456675445af2e307",
+        "source": "import { display, ports, callTool } from \"@getspur/spurlab-sdk\";\nimport { tableFromIPC } from \"npm:apache-arrow@21.1.0\";\n\nconst PERSPECTIVE_VERSION = \"4.5.1\";\nconst DEFAULT_SYMBOL = \"PortStore\";\nconst DEFAULT_FILE = \"src/dag/ports.rs\";\nconst DEFAULT_DEPTH = 2;\nconst EMPTY_TEXT = \"No graph evidence matched the current query.\";\n\ntype EvidencePort = {\n  name: string;\n  rows: Record<string, any>[];\n  status: string;\n  version: number | null;\n  bytes: number;\n  message: string;\n};\n\ntype WorkbenchState = {\n  query: {\n    symbol: string;\n    file: string;\n    depth: number;\n    status: string;\n    error: string;\n  };\n  ports: EvidencePort[];\n};\n\nfunction esc(value: unknown): string {\n  return String(value ?? \"\").replace(/[&<>\"']/g, (ch) => ({\n    \"&\": \"&amp;\",\n    \"<\": \"&lt;\",\n    \">\": \"&gt;\",\n    '\"': \"&quot;\",\n    \"'\": \"&#39;\",\n  }[ch] ?? ch));\n}\n\nfunction jsonScript(value: unknown): string {\n  return JSON.stringify(value)\n    .replace(/</g, \"\\\\u003c\")\n    .replace(/>/g, \"\\\\u003e\")\n    .replace(/&/g, \"\\\\u0026\");\n}\n\nfunction normalizeValue(value: any): any {\n  if (value === null || value === undefined) return null;\n  if (typeof value === \"bigint\") {\n    const asNumber = Number(value);\n    return Number.isSafeInteger(asNumber) ? asNumber : value.toString();\n  }\n  if (typeof value?.toJSON === \"function\") return normalizeValue(value.toJSON());\n  if (Array.isArray(value)) return value.map(normalizeValue);\n  if (typeof value === \"object\") {\n    const output: Record<string, unknown> = {};\n    for (const [key, item] of Object.entries(value)) output[key] = normalizeValue(item);\n    return output;\n  }\n  return value;\n}\n\nfunction tableRows(table: any): Record<string, any>[] {\n  if (!table || typeof table.toArray !== \"function\") return [];\n  return table.toArray().map((row: any) => normalizeValue(row));\n}\n\nasync function readEvidencePort(name: string): Promise<EvidencePort> {\n  try {\n    const data = await ports.read(name);\n    const looksArrow = data.kind === \"arrow\" || (data.kind == null && (data.bytes?.byteLength ?? 0) > 0);\n    if (!looksArrow) {\n      return {\n        name,\n        rows: [],\n        status: \"not_arrow\",\n        version: data.version,\n        bytes: data.bytes.byteLength,\n        message: `${name} is ${data.kind}, not Arrow IPC`,\n      };\n    }\n    const table = tableFromIPC(data.bytes);\n    const rows = tableRows(table);\n    return {\n      name,\n      rows,\n      status: rows.length ? \"ok\" : \"empty\",\n      version: data.version,\n      bytes: data.bytes.byteLength,\n      message: rows.length ? \"\" : EMPTY_TEXT,\n    };\n  } catch (error) {\n    return {\n      name,\n      rows: [],\n      status: \"missing\",\n      version: null,\n      bytes: 0,\n      message: error instanceof Error ? error.message : String(error),\n    };\n  }\n}\n\nfunction evidencePort(name: string, rows: unknown): EvidencePort {\n  const normalized = Array.isArray(rows) ? rows.map(normalizeValue) : [];\n  return {\n    name,\n    rows: normalized,\n    status: normalized.length ? \"ok\" : \"empty\",\n    version: null,\n    bytes: 0,\n    message: normalized.length ? \"\" : EMPTY_TEXT,\n  };\n}\n\nasync function fetchInitialState(symbol: string, file: string, depth: number): Promise<WorkbenchState> {\n  try {\n    const result: any = await callTool(\"wb_query\", { symbol, file, depth });\n    if (result?.ok) {\n      return {\n        query: {\n          symbol: String(result.symbol || symbol),\n          file: String(result.file || file || symbol),\n          depth: Number(result.depth ?? depth),\n          status: \"live\",\n          error: \"\",\n        },\n        ports: [\n          evidencePort(\"subgraph\", result.subgraph),\n          evidencePort(\"scorecard\", result.scorecard),\n          evidencePort(\"analyst_rows\", result.analyst_rows),\n          evidencePort(\"cochange\", result.cochange),\n        ],\n      };\n    }\n  } catch (_error) {\n    // The app may be loaded before the plugin is restarted. Fall back to the\n    // last DAG evidence ports so the workbench still renders.\n  }\n\n  return {\n    query: { symbol, file: file || symbol, depth, status: \"ports\", error: \"\" },\n    ports: [\n      await readEvidencePort(\"subgraph\"),\n      await readEvidencePort(\"scorecard\"),\n      await readEvidencePort(\"analyst_rows\"),\n      await readEvidencePort(\"cochange\"),\n    ],\n  };\n}\n\nconst initialState = await fetchInitialState(DEFAULT_SYMBOL, DEFAULT_FILE, DEFAULT_DEPTH);\n\nconst html = `\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@perspective-dev/viewer@${PERSPECTIVE_VERSION}/dist/css/pro-dark.css\">\n<style>\n:root{color-scheme:dark}html,body{margin:0;height:100%;min-height:100dvh;background:#090a0d;overflow:hidden}.cg-app{position:fixed;inset:0;width:100vw;height:100dvh;min-height:640px;box-sizing:border-box;display:grid;grid-template-columns:320px minmax(520px,1fr) 360px;grid-template-rows:64px minmax(340px,1fr) 252px;background:#090a0d;color:#e7eef0;font:12px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;overflow:hidden}.cg-app *{box-sizing:border-box}.cg-querybar{grid-column:1/4;display:grid;grid-template-columns:300px minmax(0,1fr) auto;gap:12px;align-items:center;border-bottom:1px solid #263036;background:#0d1114;padding:0 12px;min-width:0}.cg-brand{display:flex;align-items:center;gap:10px;min-width:0}.cg-mark{width:13px;height:13px;border-radius:50%;background:#2bd1a3;box-shadow:0 0 18px rgba(43,209,163,.65)}.cg-title{min-width:0}.cg-title h1{margin:0;color:#f6f8fa;font-size:14px;font-weight:800;letter-spacing:0}.cg-title div{color:#829099;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cg-form{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(160px,.9fr) 96px 82px;gap:8px;align-items:end;min-width:0}.cg-field{display:grid;gap:3px;min-width:0}.cg-field span{color:#829099;font-size:10px;font-weight:800;text-transform:uppercase}.cg-field input,.cg-field select{width:100%;height:32px;border:1px solid #35424a;border-radius:6px;background:#090e11;color:#edf4f6;padding:0 9px;font:12px/1.2 inherit;outline:none}.cg-field input:focus,.cg-field select:focus{border-color:#2bd1a3;box-shadow:0 0 0 2px rgba(43,209,163,.16)}.cg-button{height:32px;border:1px solid #238b70;border-radius:6px;background:#1fb98f;color:#06100d;font-weight:850;cursor:pointer}.cg-button:disabled{border-color:#38454c;background:#20282d;color:#7f8d95;cursor:wait}.cg-status{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0}.cg-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #374148;background:#151a1e;color:#b8c6cc;border-radius:999px;padding:4px 8px;white-space:nowrap}.cg-chip strong{color:#74828a;font-weight:700}.cg-chip.ok{border-color:#1f745e;color:#8ef0c9;background:#0f211c}.cg-chip.warn{border-color:#8a6424;color:#ffd485;background:#21190d}.cg-chip.idle{border-color:#3a454d;color:#9ba9b0;background:#11171b}.cg-chip.busy{border-color:#2a6d8f;color:#94d8ff;background:#0d1b23}.cg-pane{min-width:0;min-height:0;border-right:1px solid #263036;border-bottom:1px solid #263036;background:#0b0f12;overflow:hidden}.cg-pane-head{height:42px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;border-bottom:1px solid #222b31;background:#11161a}.cg-pane-head h2{margin:0;color:#f6f8fa;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0}.cg-pane-head span{color:#829099;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cg-left{grid-column:1;grid-row:2/4}.cg-center{grid-column:2;grid-row:2}.cg-right{grid-column:3;grid-row:2/4;border-right:0}.cg-bottom{grid-column:2;grid-row:3;display:grid;grid-template-columns:1fr 1fr;border-right:1px solid #263036}.cg-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}.cg-kpi{border:1px solid #263036;background:#10161a;border-radius:8px;padding:8px;min-width:0}.cg-kpi span{display:block;color:#7f8d95;font-size:10px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cg-kpi strong{display:block;color:#f6f8fa;font-size:18px;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cg-kpi.green strong{color:#6ce6bd}.cg-kpi.amber strong{color:#f1b45a}.cg-kpi.blue strong{color:#66c7ff}.cg-kpi.coral strong{color:#ff8f8f}.cg-perspective-wrap{height:100%;min-height:0;padding:8px}.cg-left .cg-perspective-wrap{height:calc(100% - 158px)}.cg-right .cg-perspective-wrap{height:calc(100% - 270px);min-height:180px}perspective-viewer{width:100%;height:100%;border:1px solid #263036;border-radius:8px;background:#0b0f12;overflow:hidden}.cg-topology-wrap{height:100%;padding:10px;display:grid;grid-template-rows:minmax(0,1fr) 34px;gap:8px}.cg-cy{width:100%;height:100%;min-height:0;border:1px solid #263036;border-radius:8px;background:#080a0d;overflow:hidden}.cg-legend{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}.cg-legend span{border:1px solid #2c3940;background:#11181c;color:#b7c3c9;border-radius:999px;padding:3px 8px;white-space:nowrap}.cg-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px dashed #3a474f;border-radius:8px;color:#a8b4ba;background:#0d1215;text-align:center;padding:16px}.cg-empty strong{color:#f1b45a;margin-bottom:4px}.cg-detail{padding:12px;display:grid;gap:10px}.cg-symbol{border-bottom:1px solid #263036;padding-bottom:10px;min-width:0}.cg-symbol h3{margin:0 0 5px;color:#f6f8fa;font-size:14px;line-height:1.3;overflow-wrap:anywhere}.cg-symbol div{color:#8998a0;overflow-wrap:anywhere}.cg-score-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cg-toast{position:absolute;right:14px;top:74px;z-index:20;max-width:min(520px,calc(100vw - 28px));border:1px solid #8a6424;background:#21190d;color:#ffd485;border-radius:8px;padding:8px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);display:none}.cg-toast[data-show=\"true\"]{display:block}@media (max-width:1180px){.cg-app{grid-template-columns:280px minmax(420px,1fr);grid-template-rows:104px minmax(340px,1fr) 300px 280px}.cg-querybar{grid-column:1/3;grid-template-columns:1fr;gap:6px;padding:8px 12px}.cg-status{display:none}.cg-form{grid-template-columns:minmax(160px,1fr) minmax(140px,1fr) 86px 78px}.cg-left{grid-column:1;grid-row:2/4}.cg-center{grid-column:2;grid-row:2}.cg-bottom{grid-column:2;grid-row:3}.cg-right{grid-column:1/3;grid-row:4;border-right:0}.cg-right .cg-perspective-wrap{height:calc(100% - 130px)}}@media (max-width:780px){html,body{overflow:auto}.cg-app{position:relative;grid-template-columns:1fr;grid-template-rows:auto 360px 360px 320px 360px;min-height:100dvh;height:auto;overflow:visible}.cg-querybar{position:sticky;top:0;z-index:5;grid-column:1;grid-template-columns:1fr}.cg-form{grid-template-columns:1fr 1fr;align-items:end}.cg-left,.cg-center,.cg-right,.cg-bottom{grid-column:1;grid-row:auto}.cg-bottom{grid-template-columns:1fr;grid-template-rows:1fr 1fr}.cg-pane{border-right:0}.cg-left .cg-perspective-wrap,.cg-right .cg-perspective-wrap{height:calc(100% - 128px)}}\n</style>\n<section class=\"cg-app\" data-wb=\"workbench\">\n  <header class=\"cg-querybar\">\n    <div class=\"cg-brand\"><div class=\"cg-mark\"></div><div class=\"cg-title\"><h1>Code Graph Workbench</h1><div id=\"cg-subtitle\">Perspective ${esc(PERSPECTIVE_VERSION)}</div></div></div>\n    <form id=\"cg-query-form\" class=\"cg-form\" data-wb-query=\"form\">\n      <label class=\"cg-field\"><span>Symbol</span><input data-wb-query=\"symbol\" name=\"symbol\" value=\"${esc(initialState.query.symbol)}\" autocomplete=\"off\" spellcheck=\"false\"></label>\n      <label class=\"cg-field\"><span>File</span><input data-wb-query=\"file\" name=\"file\" value=\"${esc(initialState.query.file)}\" autocomplete=\"off\" spellcheck=\"false\"></label>\n      <label class=\"cg-field\"><span>Depth</span><select data-wb-query=\"depth\" name=\"depth\"><option value=\"0\">0</option><option value=\"1\">1</option><option value=\"2\" selected>2</option><option value=\"3\">3</option></select></label>\n      <button id=\"cg-run\" class=\"cg-button\" type=\"submit\">Run</button>\n    </form>\n    <div id=\"cg-status\" class=\"cg-status\"></div>\n  </header>\n  <aside class=\"cg-pane cg-left\"><div class=\"cg-pane-head\"><h2>Blast Radius</h2><span id=\"cg-blast-line\"></span></div><div id=\"cg-kpis\" class=\"cg-kpis\"></div><div class=\"cg-perspective-wrap\"><perspective-viewer id=\"wb-perspective-blast\" plugin=\"Datagrid\"></perspective-viewer></div></aside>\n  <main class=\"cg-pane cg-center\"><div class=\"cg-pane-head\"><h2>Topology</h2><span id=\"cg-topology-line\"></span></div><div class=\"cg-topology-wrap\"><div id=\"cg-cy\" class=\"cg-cy\"></div><div id=\"cg-legend\" class=\"cg-legend\"></div></div></main>\n  <aside class=\"cg-pane cg-right\"><div class=\"cg-pane-head\"><h2>Inspector</h2><span id=\"cg-scorecard-line\"></span></div><div class=\"cg-detail\"><div class=\"cg-symbol\"><h3 id=\"cg-insp-name\"></h3><div id=\"cg-insp-file\"></div><div id=\"cg-insp-kind\"></div></div><div id=\"cg-score-grid\" class=\"cg-score-grid\"></div></div><div class=\"cg-perspective-wrap\"><perspective-viewer id=\"wb-perspective-scorecard\" plugin=\"Datagrid\"></perspective-viewer></div></aside>\n  <section class=\"cg-pane cg-bottom\"><div class=\"cg-pane\"><div class=\"cg-pane-head\"><h2>Nodes</h2><span id=\"cg-node-line\"></span></div><div class=\"cg-perspective-wrap\"><perspective-viewer id=\"wb-perspective-nodes\" plugin=\"Datagrid\"></perspective-viewer></div></div><div class=\"cg-pane\"><div class=\"cg-pane-head\"><h2>Edges / Co-change</h2><span id=\"cg-edge-line\"></span></div><div class=\"cg-perspective-wrap\"><perspective-viewer id=\"wb-perspective-edges\" plugin=\"Datagrid\"></perspective-viewer></div></div></section>\n  <div id=\"cg-toast\" class=\"cg-toast\" role=\"status\"></div>\n  <script type=\"application/json\" id=\"cg-initial-state\">${jsonScript(initialState)}</script>\n  <script type=\"module\">\n    import perspective from \"https://cdn.jsdelivr.net/npm/@perspective-dev/client@${PERSPECTIVE_VERSION}/dist/cdn/perspective.js\";\n    import \"https://cdn.jsdelivr.net/npm/@perspective-dev/viewer@${PERSPECTIVE_VERSION}/dist/cdn/perspective-viewer.js\";\n    import \"https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-datagrid@${PERSPECTIVE_VERSION}/dist/cdn/perspective-viewer-datagrid.js\";\n    import cytoscape from \"https://esm.sh/cytoscape@3.30.2\";\n\n    const EMPTY_TEXT = ${jsonScript(EMPTY_TEXT)};\n    const worker = await perspective.worker();\n    const viewerTables = new Map();\n    let cy = null;\n    let currentState = JSON.parse(document.getElementById(\"cg-initial-state\").textContent || \"{}\");\n\n    const schemas = {\n      blast: {entity_name: \"string\", symbol_kind: \"string\", caller_count: \"integer\", hot_caller_count: \"integer\", caller_churn_90d: \"integer\", blast_radius_score: \"float\", file_path: \"string\", stable_symbol_id: \"string\"},\n      scorecard: {entity_name: \"string\", qualified_name: \"string\", symbol_kind: \"string\", pagerank: \"float\", in_degree: \"integer\", out_degree: \"integer\", callers: \"integer\", churn_90d: \"integer\", posture: \"string\", file_path: \"string\"},\n      nodes: {depth: \"integer\", entity_name: \"string\", symbol_kind: \"string\", qualified_name: \"string\", file_path: \"string\", stable_symbol_id: \"string\"},\n      edges: {depth: \"integer\", edge_kind: \"string\", relation: \"string\", source_stable_id: \"string\", target_stable_id: \"string\", file_a: \"string\", file_b: \"string\", cochange_count: \"integer\", has_static_edge: \"boolean\"},\n    };\n\n    function text(id, value) {\n      const el = document.getElementById(id);\n      if (el) el.textContent = String(value ?? \"\");\n    }\n\n    function html(id, value) {\n      const el = document.getElementById(id);\n      if (el) el.innerHTML = value;\n    }\n\n    function escapeHtml(value) {\n      return String(value ?? \"\").replace(/[&<>\"']/g, function(ch) {\n        if (ch === \"&\") return \"&amp;\";\n        if (ch === \"<\") return \"&lt;\";\n        if (ch === \">\") return \"&gt;\";\n        if (ch === '\"') return \"&quot;\";\n        if (ch === \"'\") return \"&#39;\";\n        return ch;\n      });\n    }\n\n    function fmtInt(value) {\n      const n = Number(value ?? 0);\n      return Number.isFinite(n) ? Math.round(n).toLocaleString(\"en-US\") : \"0\";\n    }\n\n    function fmtNumber(value, digits) {\n      const n = Number(value);\n      return Number.isFinite(n) ? n.toFixed(digits ?? 3) : \"-\";\n    }\n\n    function shortId(value) {\n      const s = String(value ?? \"\");\n      if (!s) return \"-\";\n      return s.length > 20 ? s.slice(0, 10) + \"...\" + s.slice(-6) : s;\n    }\n\n    function labelFor(row) {\n      return String(row?.entity_name || row?.qualified_name || shortId(row?.stable_symbol_id));\n    }\n\n    function rowsFor(state, name) {\n      const port = (state.ports || []).find(function(item) { return item.name === name; });\n      return Array.isArray(port?.rows) ? port.rows : [];\n    }\n\n    function portFor(state, name) {\n      return (state.ports || []).find(function(item) { return item.name === name; }) || {name, rows: [], status: \"missing\", version: null, message: EMPTY_TEXT};\n    }\n\n    function portLine(port) {\n      if (port.status !== \"ok\") return port.status || \"missing\";\n      const tag = port.version == null ? \"live\" : \"v\" + port.version;\n      return tag + \" / \" + fmtInt((port.rows || []).length) + \" rows\";\n    }\n\n    function statusClass(port) {\n      if (port.status === \"ok\") return \"ok\";\n      if (port.status === \"empty\" || port.status === \"missing\") return \"idle\";\n      return \"warn\";\n    }\n\n    function chip(label, value, klass) {\n      return '<span class=\"cg-chip ' + (klass || \"\") + '\"><strong>' + escapeHtml(label) + '</strong>' + escapeHtml(value) + '</span>';\n    }\n\n    function kpi(label, value, accent) {\n      return '<div class=\"cg-kpi ' + (accent || \"\") + '\"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value) + '</strong></div>';\n    }\n\n    function nodeFill(kind) {\n      const value = String(kind || \"\").toLowerCase();\n      if (value.includes(\"function\") || value.includes(\"method\")) return \"#2bd1a3\";\n      if (value.includes(\"struct\") || value.includes(\"class\") || value.includes(\"enum\") || value.includes(\"trait\")) return \"#66c7ff\";\n      if (value.includes(\"module\") || value.includes(\"file\")) return \"#b48cff\";\n      if (value.includes(\"constant\")) return \"#f1b45a\";\n      return \"#9aa5ad\";\n    }\n\n    function normalizeRows(rows) {\n      return Array.isArray(rows) ? rows.map(function(row) { return row || {}; }) : [];\n    }\n\n    function evidencePort(name, rows) {\n      const normalized = normalizeRows(rows);\n      return {name, rows: normalized, status: normalized.length ? \"ok\" : \"empty\", version: null, bytes: 0, message: normalized.length ? \"\" : EMPTY_TEXT};\n    }\n\n    function stateFromQueryResult(result, requested) {\n      if (!result || !result.ok) {\n        return {query: {symbol: requested.symbol, file: requested.file || requested.symbol, depth: requested.depth, status: \"error\", error: String(result?.error || \"query failed\")}, ports: currentState.ports || []};\n      }\n      return {\n        query: {symbol: String(result.symbol || requested.symbol), file: String(result.file || requested.file || requested.symbol), depth: Number(result.depth ?? requested.depth), status: \"live\", error: \"\"},\n        ports: [\n          evidencePort(\"subgraph\", result.subgraph),\n          evidencePort(\"scorecard\", result.scorecard),\n          evidencePort(\"analyst_rows\", result.analyst_rows),\n          evidencePort(\"cochange\", result.cochange),\n        ],\n      };\n    }\n\n    function buildModel(state) {\n      const subgraph = rowsFor(state, \"subgraph\");\n      const edgeRows = subgraph.filter(function(row) { return row.row_kind === \"edge\" || row.source_stable_id || row.target_stable_id; });\n      const nodeRows = subgraph.filter(function(row) { return row.row_kind === \"node\" || (row.stable_symbol_id && !row.source_stable_id && !row.target_stable_id); });\n      const nodesById = new Map();\n      nodeRows.forEach(function(row) {\n        const id = String(row.stable_symbol_id || \"\");\n        if (id) nodesById.set(id, row);\n      });\n      edgeRows.forEach(function(edge) {\n        [edge.source_stable_id, edge.target_stable_id].forEach(function(endpoint) {\n          const id = String(endpoint || \"\");\n          if (id && !nodesById.has(id)) nodesById.set(id, {stable_symbol_id: id, entity_name: shortId(id), symbol_kind: \"external\", depth: edge.depth ?? 1});\n        });\n      });\n      const nodes = Array.from(nodesById.values()).slice(0, 120);\n      const nodeIds = new Set(nodes.map(function(node) { return String(node.stable_symbol_id || \"\"); }));\n      const cyNodes = nodes.map(function(node) {\n        return {data: {id: String(node.stable_symbol_id || \"\"), label: labelFor(node).slice(0, 28), kind: String(node.symbol_kind || \"\"), qname: String(node.qualified_name || labelFor(node)), file: String(node.file_path || \"\"), depth: Number(node.depth ?? 0), root: Number(node.depth ?? 0) === 0 ? 1 : 0}};\n      });\n      const cyEdges = [];\n      edgeRows.slice(0, 260).forEach(function(edge, index) {\n        const source = String(edge.source_stable_id || \"\");\n        const target = String(edge.target_stable_id || \"\");\n        if (source && target && nodeIds.has(source) && nodeIds.has(target)) {\n          cyEdges.push({data: {id: \"cge\" + index, source, target, kind: String(edge.edge_kind || \"\"), hot: edge.is_shortest_path ? 1 : 0, dyn: String(edge.edge_kind || \"\") === \"calls_dyn\" ? 1 : 0}});\n        }\n      });\n      const scorecard = rowsFor(state, \"scorecard\");\n      const blast = rowsFor(state, \"analyst_rows\");\n      const cochange = rowsFor(state, \"cochange\");\n      const tables = {\n        blast: blast.map(function(row) { return {entity_name: String(row.entity_name || \"\"), symbol_kind: String(row.symbol_kind || \"\"), caller_count: Number(row.caller_count ?? 0), hot_caller_count: Number(row.hot_caller_count ?? 0), caller_churn_90d: Number(row.caller_churn_90d ?? 0), blast_radius_score: Number(row.blast_radius_score ?? 0), file_path: String(row.file_path || \"\"), stable_symbol_id: String(row.stable_symbol_id || \"\")}; }),\n        scorecard: scorecard.map(function(row) { return {entity_name: String(row.entity_name || \"\"), qualified_name: String(row.qualified_name || \"\"), symbol_kind: String(row.symbol_kind || \"\"), pagerank: Number(row.pagerank ?? 0), in_degree: Number(row.in_degree ?? 0), out_degree: Number(row.out_degree ?? 0), callers: Number(row.callers ?? 0), churn_90d: Number(row.churn_90d ?? 0), posture: String(row.posture || \"\"), file_path: String(row.file_path || \"\")}; }),\n        nodes: nodes.map(function(node) { return {depth: Number(node.depth ?? 0), entity_name: labelFor(node), symbol_kind: String(node.symbol_kind || \"\"), qualified_name: String(node.qualified_name || \"\"), file_path: String(node.file_path || \"\"), stable_symbol_id: String(node.stable_symbol_id || \"\")}; }),\n        edges: edgeRows.map(function(edge) { return {depth: Number(edge.depth ?? 0), edge_kind: String(edge.edge_kind || \"\"), relation: String(edge.relation || \"\"), source_stable_id: String(edge.source_stable_id || \"\"), target_stable_id: String(edge.target_stable_id || \"\"), confidence: String(edge.confidence || \"\"), bind_method: String(edge.bind_method || \"\"), is_shortest_path: Boolean(edge.is_shortest_path)}; }),\n        cochange: cochange.map(function(row) { return {file_a: String(row.file_a || \"\"), file_b: String(row.file_b || \"\"), cochange_count: Number(row.cochange_count ?? 0), has_static_edge: Boolean(row.has_static_edge)}; }),\n      };\n      return {nodes, edgeRows, cyElements: {nodes: cyNodes, edges: cyEdges}, tables};\n    }\n\n    async function loadViewer(id, rows, schema, config) {\n      const viewer = document.getElementById(id);\n      if (!viewer) return;\n      const previous = viewerTables.get(id);\n      const table = await worker.table(rows.length ? rows : schema);\n      await viewer.load(table);\n      if (config && typeof viewer.restore === \"function\") await viewer.restore(config);\n      viewerTables.set(id, table);\n      if (previous && typeof previous.delete === \"function\") await previous.delete();\n    }\n\n    function renderGraph(model) {\n      const container = document.getElementById(\"cg-cy\");\n      if (!container) return;\n      if (!model.cyElements.nodes.length) {\n        container.innerHTML = '<div class=\"cg-empty\"><strong>No graph evidence</strong><span>' + escapeHtml(EMPTY_TEXT) + '</span></div>';\n        if (cy) { cy.destroy(); cy = null; }\n        return;\n      }\n      container.innerHTML = \"\";\n      if (!cy) {\n        cy = cytoscape({\n          container,\n          elements: model.cyElements,\n          style: [\n            {selector: \"node\", style: {\"background-color\": function(ele) { return nodeFill(ele.data(\"kind\")); }, \"label\": \"data(label)\", \"color\": \"#cdd8dd\", \"font-size\": 7, \"text-valign\": \"bottom\", \"text-halign\": \"center\", \"text-margin-y\": 2, \"text-background-color\": \"#080a0d\", \"text-background-opacity\": 0.65, \"text-background-padding\": 1.5, \"width\": 11, \"height\": 11, \"border-width\": 1, \"border-color\": \"#091014\"}},\n            {selector: \"node[root = 1]\", style: {\"width\": 22, \"height\": 22, \"border-width\": 2, \"border-color\": \"#f7fbff\", \"font-size\": 10, \"font-weight\": \"bold\", \"color\": \"#f6f8fa\"}},\n            {selector: \"edge\", style: {\"width\": 1, \"line-color\": \"#355767\", \"curve-style\": \"haystack\", \"opacity\": 0.55}},\n            {selector: \"edge[dyn = 1]\", style: {\"line-color\": \"#ff6b6b\"}},\n            {selector: \"edge[hot = 1]\", style: {\"line-color\": \"#f1b45a\", \"width\": 2.2, \"opacity\": 0.95}},\n            {selector: \".cg-faded\", style: {\"opacity\": 0.1, \"text-opacity\": 0.08}},\n            {selector: \".cg-pick\", style: {\"border-color\": \"#2bd1a3\", \"border-width\": 3}},\n          ],\n          wheelSensitivity: 0.2,\n          minZoom: 0.2,\n          maxZoom: 3,\n        });\n        cy.on(\"tap\", \"node\", function(evt) {\n          const node = evt.target;\n          cy.elements().addClass(\"cg-faded\");\n          node.closedNeighborhood().removeClass(\"cg-faded\");\n          cy.elements().removeClass(\"cg-pick\");\n          node.addClass(\"cg-pick\");\n          text(\"cg-insp-name\", node.data(\"qname\") || node.data(\"label\"));\n          text(\"cg-insp-file\", node.data(\"file\") || \"-\");\n          text(\"cg-insp-kind\", (node.data(\"kind\") || \"-\") + \" / selected\");\n        });\n        cy.on(\"tap\", function(evt) { if (evt.target === cy) cy.elements().removeClass(\"cg-faded cg-pick\"); });\n      } else {\n        cy.elements().remove();\n        cy.add(model.cyElements);\n      }\n      cy.layout({name: \"concentric\", concentric: function(n) { return 100 - (Number(n.data(\"depth\")) || 0) * 25; }, levelWidth: function() { return 1; }, minNodeSpacing: 14, spacingFactor: 1.05, animate: false}).run();\n      cy.ready(function() { cy.fit(undefined, 24); });\n      setTimeout(function() { if (cy) cy.fit(undefined, 24); }, 30);\n    }\n\n    function setBusy(active) {\n      const button = document.getElementById(\"cg-run\");\n      if (button) {\n        button.disabled = active;\n        button.textContent = active ? \"Run...\" : \"Run\";\n      }\n      const status = document.getElementById(\"cg-status\");\n      if (status && active) status.innerHTML = chip(\"query\", \"running\", \"busy\");\n    }\n\n    function showToast(message) {\n      const toast = document.getElementById(\"cg-toast\");\n      if (!toast) return;\n      toast.textContent = message || \"\";\n      toast.dataset.show = message ? \"true\" : \"false\";\n    }\n\n    async function renderWorkbench(state) {\n      currentState = state;\n      const model = buildModel(state);\n      const subgraph = portFor(state, \"subgraph\");\n      const scorecard = portFor(state, \"scorecard\");\n      const analystRows = portFor(state, \"analyst_rows\");\n      const cochange = portFor(state, \"cochange\");\n      const primaryScore = model.tables.scorecard[0] || {};\n      const selectedNode = model.nodes.find(function(node) { return Number(node.depth ?? 0) === 0; }) || model.nodes[0] || {};\n      const selectedLabel = primaryScore.qualified_name || primaryScore.entity_name || labelFor(selectedNode) || state.query.symbol || \"No symbol selected\";\n      const selectedFile = primaryScore.file_path || selectedNode.file_path || state.query.file || \"-\";\n      const edgeKinds = Array.from(new Set(model.edgeRows.map(function(row) { return String(row.edge_kind || row.relation || \"edge\"); }).filter(Boolean))).sort();\n      const totalHotCallers = model.tables.blast.reduce(function(sum, row) { return sum + Number(row.hot_caller_count || 0); }, 0);\n      const maxBlast = Math.max(0, ...model.tables.blast.map(function(row) { return Number(row.blast_radius_score || 0); }));\n\n      text(\"cg-subtitle\", \"Perspective ${esc(PERSPECTIVE_VERSION)} / \" + state.query.symbol + \" / depth \" + state.query.depth);\n      html(\"cg-status\", [subgraph, scorecard, analystRows, cochange].map(function(port) { return chip(port.name, portLine(port), statusClass(port)); }).join(\"\"));\n      text(\"cg-blast-line\", portLine(analystRows));\n      text(\"cg-scorecard-line\", portLine(scorecard));\n      text(\"cg-topology-line\", fmtInt(model.nodes.length) + \" nodes / \" + fmtInt(model.edgeRows.length) + \" edges\");\n      text(\"cg-node-line\", fmtInt(model.tables.nodes.length));\n      text(\"cg-edge-line\", fmtInt(model.tables.edges.length) + \" / \" + fmtInt(model.tables.cochange.length));\n      text(\"cg-insp-name\", selectedLabel);\n      text(\"cg-insp-file\", selectedFile);\n      text(\"cg-insp-kind\", String(primaryScore.symbol_kind || selectedNode.symbol_kind || \"-\") + \" / posture \" + String(primaryScore.posture || \"-\"));\n      html(\"cg-kpis\", kpi(\"Rows\", fmtInt(model.tables.blast.length), \"green\") + kpi(\"Hot callers\", fmtInt(totalHotCallers), \"amber\") + kpi(\"Max blast\", fmtNumber(maxBlast, 2), \"blue\") + kpi(\"Co-change\", fmtInt(model.tables.cochange.length), \"coral\"));\n      html(\"cg-score-grid\", kpi(\"Pagerank\", fmtNumber(primaryScore.pagerank, 5), \"green\") + kpi(\"In / Out\", fmtInt(primaryScore.in_degree) + \" / \" + fmtInt(primaryScore.out_degree), \"blue\") + kpi(\"Callers\", fmtInt(primaryScore.callers), \"amber\") + kpi(\"Churn 90d\", fmtInt(primaryScore.churn_90d), \"coral\"));\n      html(\"cg-legend\", edgeKinds.length ? edgeKinds.map(function(kind) { return \"<span>\" + escapeHtml(kind) + \"</span>\"; }).join(\"\") : \"<span>\" + escapeHtml(EMPTY_TEXT) + \"</span>\");\n      showToast(state.query.error || \"\");\n\n      renderGraph(model);\n      await loadViewer(\"wb-perspective-blast\", model.tables.blast, schemas.blast, {columns: [\"entity_name\", \"caller_count\", \"hot_caller_count\", \"caller_churn_90d\", \"blast_radius_score\", \"file_path\"], sort: [[\"blast_radius_score\", \"desc\"]]});\n      await loadViewer(\"wb-perspective-scorecard\", model.tables.scorecard, schemas.scorecard, {columns: [\"entity_name\", \"pagerank\", \"in_degree\", \"out_degree\", \"callers\", \"churn_90d\", \"posture\", \"file_path\"]});\n      await loadViewer(\"wb-perspective-nodes\", model.tables.nodes, schemas.nodes, {columns: [\"depth\", \"entity_name\", \"symbol_kind\", \"qualified_name\", \"file_path\", \"stable_symbol_id\"], sort: [[\"depth\", \"asc\"]]});\n      await loadViewer(\"wb-perspective-edges\", model.tables.edges.concat(model.tables.cochange), schemas.edges, {columns: [\"depth\", \"edge_kind\", \"relation\", \"source_stable_id\", \"target_stable_id\", \"file_a\", \"file_b\", \"cochange_count\", \"has_static_edge\"]});\n    }\n\n    function callAppTool(tool, args) {\n      const id = \"cg-tool-\" + Date.now() + \"-\" + Math.random().toString(36).slice(2);\n      return new Promise(function(resolve, reject) {\n        const timer = window.setTimeout(function() {\n          window.removeEventListener(\"message\", onMessage);\n          reject(new Error(\"app tool call timed out\"));\n        }, 30000);\n        function onMessage(event) {\n          const data = event.data;\n          if (!data || data.type !== \"jute-app-tool-result\" || data.id !== id) return;\n          window.clearTimeout(timer);\n          window.removeEventListener(\"message\", onMessage);\n          if (data.ok) resolve(data.result);\n          else reject(new Error(String(data.error || \"app tool call failed\")));\n        }\n        window.addEventListener(\"message\", onMessage);\n        window.parent.postMessage({type: \"jute-app-tool-call\", id, tool, args}, \"*\");\n      });\n    }\n\n    const form = document.getElementById(\"cg-query-form\");\n    if (form) {\n      const depth = form.elements.namedItem(\"depth\");\n      if (depth) depth.value = String(currentState.query?.depth ?? ${DEFAULT_DEPTH});\n      form.addEventListener(\"submit\", async function(event) {\n        event.preventDefault();\n        const symbolInput = form.elements.namedItem(\"symbol\");\n        const fileInput = form.elements.namedItem(\"file\");\n        const depthInput = form.elements.namedItem(\"depth\");\n        const symbol = String(symbolInput?.value || \"\").trim();\n        const file = String(fileInput?.value || \"\").trim();\n        const parsedDepth = Math.max(0, Math.min(3, Number(depthInput?.value ?? ${DEFAULT_DEPTH}) || ${DEFAULT_DEPTH}));\n        if (!symbol) {\n          showToast(\"symbol must not be empty\");\n          return;\n        }\n        setBusy(true);\n        showToast(\"\");\n        try {\n          const result = await callAppTool(\"wb_query\", {symbol, file: file || null, depth: parsedDepth});\n          await renderWorkbench(stateFromQueryResult(result, {symbol, file, depth: parsedDepth}));\n        } catch (error) {\n          const message = error instanceof Error ? error.message : String(error);\n          await renderWorkbench({query: {symbol, file: file || symbol, depth: parsedDepth, status: \"error\", error: message}, ports: currentState.ports || []});\n        } finally {\n          setBusy(false);\n        }\n      });\n    }\n\n    await renderWorkbench(currentState);\n  </script>\n</section>`;\n\ndisplay.html(html)\n",
+        "exec_count": 13,
+        "status": "success",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 99,
+            "last_edited_by": "brain",
+            "dag": {
+              "produces": [],
+              "consumes": [
+                "scorecard",
+                "analyst_rows",
+                "cochange"
+              ],
+              "source": {
+                "kind": "frontend",
+                "port": "subgraph"
+              }
+            },
+            "code_type": "javascript",
+            "frontend": {
+              "kind": "custom",
+              "binds": [
+                "subgraph",
+                "scorecard",
+                "analyst_rows",
+                "cochange"
+              ],
+              "emits": []
+            }
+          }
+        },
+        "output_indices": [],
+        "output_budget": {
+          "max_output_tokens": 4096,
+          "max_output_bytes": 32768,
+          "omitted": {
+            "count": 1,
+            "original_output_count": 1,
+            "first_output_index": 0,
+            "last_output_index": 0,
+            "retrieve": "Call notebook_read_cell with the same target/id and cell_etag, output_index=first_output_index, output_offset=0, include_source=false. Follow output_chunk.next_offset."
+          }
+        }
+      }
+    ],
+    "doctor": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"ok\":true,\"level_reached\":2,\"findings\":[{\"check\":\"contract_version\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"contract_version 1 is supported by this runtime\"},{\"check\":\"manifest\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"Spur App manifest is valid, schema matches, entry_notebook exists\"},{\"check\":\"capability:active_output_scripts\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"active_output_scripts is a known grantable capability\"},{\"check\":\"capability:ports\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"ports is a known grantable capability\"},{\"check\":\"port:subgraph\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"port \\\"subgraph\\\" is declared as a DAG source in the entry notebook\"},{\"check\":\"port:scorecard\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"port \\\"scorecard\\\" is declared as a DAG source in the entry notebook\"},{\"check\":\"port:analyst_rows\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"port \\\"analyst_rows\\\" is declared as a DAG source in the entry notebook\"},{\"check\":\"port:cochange\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"port \\\"cochange\\\" is declared as a DAG source in the entry notebook\"},{\"check\":\"agent_plugin\",\"level\":\"warn\",\"ladder_level\":0,\"message\":\"plugin.json is absent; this Spur App is not yet an Agent Plugin package\",\"location\":\"/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/plugin.json\"},{\"check\":\"archetype:interactive-decoupled\",\"level\":\"pass\",\"ladder_level\":0,\"message\":\"interactive-decoupled ports.read entries all have DAG source cells\"},{\"check\":\"port_store\",\"level\":\"warn\",\"ladder_level\":2,\"message\":\"port store directory exists but manifest.json is absent (/Users/kevintruong/.spur/notebooks/nb-5a15a4926fb738f4aaffc484/ports/manifest.json)\"},{\"check\":\"plugin_spawn\",\"level\":\"pass\",\"ladder_level\":2,\"message\":\"plugin spawned and exposed 6 tool(s): [\\\"wb_blast_radius\\\", \\\"wb_subgraph\\\", \\\"wb_scorecard\\\", \\\"wb_cochange\\\", \\\"wb_query\\\", \\\"wb_ping\\\"]\"},{\"check\":\"skill\",\"level\":\"pass\",\"ladder_level\":2,\"message\":\"skill file \\\"skill/SKILL.md\\\" found\"},{\"check\":\"skill:tool:wb_ping\",\"level\":\"pass\",\"ladder_level\":2,\"message\":\"HARD-GATE tool \\\"wb_ping\\\" is present in the live tool surface\"},{\"check\":\"skill:tool:notebook_push_source\",\"level\":\"pass\",\"ladder_level\":2,\"message\":\"HARD-GATE tool \\\"notebook_push_source\\\" is present in the live tool surface\"},{\"check\":\"skill:tool:notebook_run_cell\",\"level\":\"pass\",\"ladder_level\":2,\"message\":\"HARD-GATE tool \\\"notebook_run_cell\\\" is present in the live tool surface\"}]}"
+        }
+      ],
+      "structuredContent": {
+        "ok": true,
+        "level_reached": 2,
+        "findings": [
+          {
+            "check": "contract_version",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "contract_version 1 is supported by this runtime"
+          },
+          {
+            "check": "manifest",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "Spur App manifest is valid, schema matches, entry_notebook exists"
+          },
+          {
+            "check": "capability:active_output_scripts",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "active_output_scripts is a known grantable capability"
+          },
+          {
+            "check": "capability:ports",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "ports is a known grantable capability"
+          },
+          {
+            "check": "port:subgraph",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "port \"subgraph\" is declared as a DAG source in the entry notebook"
+          },
+          {
+            "check": "port:scorecard",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "port \"scorecard\" is declared as a DAG source in the entry notebook"
+          },
+          {
+            "check": "port:analyst_rows",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "port \"analyst_rows\" is declared as a DAG source in the entry notebook"
+          },
+          {
+            "check": "port:cochange",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "port \"cochange\" is declared as a DAG source in the entry notebook"
+          },
+          {
+            "check": "agent_plugin",
+            "level": "warn",
+            "ladder_level": 0,
+            "message": "plugin.json is absent; this Spur App is not yet an Agent Plugin package",
+            "location": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/plugin.json"
+          },
+          {
+            "check": "archetype:interactive-decoupled",
+            "level": "pass",
+            "ladder_level": 0,
+            "message": "interactive-decoupled ports.read entries all have DAG source cells"
+          },
+          {
+            "check": "port_store",
+            "level": "warn",
+            "ladder_level": 2,
+            "message": "port store directory exists but manifest.json is absent (/Users/kevintruong/.spur/notebooks/nb-5a15a4926fb738f4aaffc484/ports/manifest.json)"
+          },
+          {
+            "check": "plugin_spawn",
+            "level": "pass",
+            "ladder_level": 2,
+            "message": "plugin spawned and exposed 6 tool(s): [\"wb_blast_radius\", \"wb_subgraph\", \"wb_scorecard\", \"wb_cochange\", \"wb_query\", \"wb_ping\"]"
+          },
+          {
+            "check": "skill",
+            "level": "pass",
+            "ladder_level": 2,
+            "message": "skill file \"skill/SKILL.md\" found"
+          },
+          {
+            "check": "skill:tool:wb_ping",
+            "level": "pass",
+            "ladder_level": 2,
+            "message": "HARD-GATE tool \"wb_ping\" is present in the live tool surface"
+          },
+          {
+            "check": "skill:tool:notebook_push_source",
+            "level": "pass",
+            "ladder_level": 2,
+            "message": "HARD-GATE tool \"notebook_push_source\" is present in the live tool surface"
+          },
+          {
+            "check": "skill:tool:notebook_run_cell",
+            "level": "pass",
+            "ladder_level": 2,
+            "message": "HARD-GATE tool \"notebook_run_cell\" is present in the live tool surface"
+          }
+        ]
+      },
+      "isError": false
+    },
+    "evidence_calls": [
+      {
+        "name": "wb_scorecard",
+        "ok": false,
+        "error": "Error executing tool wb_scorecard: 'DuckDBPyConnection' object has no attribute 'fetch_arrow_table'"
+      },
+      {
+        "name": "wb_subgraph",
+        "ok": false,
+        "error": "Error executing tool wb_subgraph: 'DuckDBPyConnection' object has no attribute 'fetch_arrow_table'"
+      },
+      {
+        "name": "wb_blast_radius",
+        "ok": false,
+        "error": "Error executing tool wb_blast_radius: 'DuckDBPyConnection' object has no attribute 'fetch_arrow_table'"
+      },
+      {
+        "name": "wb_cochange",
+        "ok": false,
+        "error": "Error executing tool wb_cochange: 'DuckDBPyConnection' object has no attribute 'fetch_arrow_table'"
+      }
+    ],
+    "dag_after_evidence": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"notebook_version\":7,\"nodes\":[{\"id\":\"afa9c454-06dd-497a-b1e2-3b2bc60fbd1e\",\"state\":{\"kind\":\"code\",\"version\":9,\"execution_count\":3},\"dag\":{\"produces\":[{\"port\":\"scorecard\",\"repr\":\"arrow\"}],\"consumes\":[],\"source\":{\"kind\":\"frontend\",\"port\":\"scorecard\"}}},{\"id\":\"56cc071f-9bae-4af8-84d8-b7268f5b4cf1\",\"state\":{\"kind\":\"code\",\"version\":10,\"execution_count\":4},\"dag\":{\"produces\":[{\"port\":\"analyst_rows\",\"repr\":\"arrow\"}],\"consumes\":[],\"source\":{\"kind\":\"frontend\",\"port\":\"analyst_rows\"}}},{\"id\":\"f91df3f3-5e85-460e-a890-72192bdc06f1\",\"state\":{\"kind\":\"code\",\"version\":11,\"execution_count\":5},\"dag\":{\"produces\":[{\"port\":\"cochange\",\"repr\":\"arrow\"}],\"consumes\":[],\"source\":{\"kind\":\"frontend\",\"port\":\"cochange\"}}},{\"id\":\"wb-graph\",\"state\":{\"kind\":\"code\",\"version\":99,\"execution_count\":2},\"dag\":{\"produces\":[],\"consumes\":[\"scorecard\",\"analyst_rows\",\"cochange\"],\"source\":{\"kind\":\"frontend\",\"port\":\"subgraph\"}}}],\"edges\":[{\"producer\":\"56cc071f-9bae-4af8-84d8-b7268f5b4cf1\",\"consumer\":\"wb-graph\",\"kind\":\"port\",\"port\":\"analyst_rows\"},{\"producer\":\"f91df3f3-5e85-460e-a890-72192bdc06f1\",\"consumer\":\"wb-graph\",\"kind\":\"port\",\"port\":\"cochange\"},{\"producer\":\"afa9c454-06dd-497a-b1e2-3b2bc60fbd1e\",\"consumer\":\"wb-graph\",\"kind\":\"port\",\"port\":\"scorecard\"}],\"port_manifest\":{}}"
+        }
+      ],
+      "structuredContent": {
+        "notebook_version": 7,
+        "nodes": [
+          {
+            "id": "afa9c454-06dd-497a-b1e2-3b2bc60fbd1e",
+            "state": {
+              "kind": "code",
+              "version": 9,
+              "execution_count": 3
+            },
+            "dag": {
+              "produces": [
+                {
+                  "port": "scorecard",
+                  "repr": "arrow"
+                }
+              ],
+              "consumes": [],
+              "source": {
+                "kind": "frontend",
+                "port": "scorecard"
+              }
+            }
+          },
+          {
+            "id": "56cc071f-9bae-4af8-84d8-b7268f5b4cf1",
+            "state": {
+              "kind": "code",
+              "version": 10,
+              "execution_count": 4
+            },
+            "dag": {
+              "produces": [
+                {
+                  "port": "analyst_rows",
+                  "repr": "arrow"
+                }
+              ],
+              "consumes": [],
+              "source": {
+                "kind": "frontend",
+                "port": "analyst_rows"
+              }
+            }
+          },
+          {
+            "id": "f91df3f3-5e85-460e-a890-72192bdc06f1",
+            "state": {
+              "kind": "code",
+              "version": 11,
+              "execution_count": 5
+            },
+            "dag": {
+              "produces": [
+                {
+                  "port": "cochange",
+                  "repr": "arrow"
+                }
+              ],
+              "consumes": [],
+              "source": {
+                "kind": "frontend",
+                "port": "cochange"
+              }
+            }
+          },
+          {
+            "id": "wb-graph",
+            "state": {
+              "kind": "code",
+              "version": 99,
+              "execution_count": 2
+            },
+            "dag": {
+              "produces": [],
+              "consumes": [
+                "scorecard",
+                "analyst_rows",
+                "cochange"
+              ],
+              "source": {
+                "kind": "frontend",
+                "port": "subgraph"
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "producer": "56cc071f-9bae-4af8-84d8-b7268f5b4cf1",
+            "consumer": "wb-graph",
+            "kind": "port",
+            "port": "analyst_rows"
+          },
+          {
+            "producer": "f91df3f3-5e85-460e-a890-72192bdc06f1",
+            "consumer": "wb-graph",
+            "kind": "port",
+            "port": "cochange"
+          },
+          {
+            "producer": "afa9c454-06dd-497a-b1e2-3b2bc60fbd1e",
+            "consumer": "wb-graph",
+            "kind": "port",
+            "port": "scorecard"
+          }
+        ],
+        "port_manifest": {}
+      },
+      "isError": false
+    },
+    "viewport": {
+      "width": 960,
+      "height": 800,
+      "iframe_height": 40,
+      "dashboard_height": 640,
+      "body_scroll_height": 40
+    },
+    "displayed_project": "/Users/kevintruong/project/duckdb",
+    "provider_database": "/Users/kevintruong/project/spur-notebook/.spur/analyst.duckdb",
+    "active_script_grant": "Granted existing app capability request to run authorized evaluation; no source edits.",
+    "source_edits": false,
+    "original_cell_sources_verified_unchanged": 7
+  },
+  "notebook": {
+    "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+    "id": "nb-77dc62def6db3feed5dd1445",
+    "version": 41,
+    "kernel_pid_after_restart": 78673,
+    "cells": [
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "19d45f62-d100-4109-b67a-06c7e7d52ef8",
+        "kind": "markdown",
+        "version": 2,
+        "cell_etag": "cell:sha256:c56920b70ce091a965128152da158a620f7fd44c2b556946f32bff2e621d42c8",
+        "source": "# Rebuilt Spur Graph \u2014 capability and experience audit\n\nThis notebook tests the newly rebuilt native DuckDB 2 extension and records capability limits relevant to the Code Graph Explore app. The production app is inspected separately, without source changes.\n\nResults distinguish successful extraction from product readiness. A passing release suite does not establish repository-wide semantic resolution, complete review semantics, exact call-site navigation, or a usable human/agent interaction loop.\n\nStart in **Edit** mode with DuckDB **2.0.0** selected. The next cells load the newly verified build, then probe edge cases and the real notebook corpus.",
+        "exec_count": null,
+        "status": "idle",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 2,
+            "last_edited_by": "brain"
+          }
+        },
+        "output_indices": []
+      },
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "3292fc97-f88a-40fb-b2a5-3fcbe2c005c3",
+        "kind": "code",
+        "version": 3,
+        "cell_etag": "cell:sha256:cf09941dc82a3db9723843c2832e864844dbe3e59012719925b7ea4ab876be09",
+        "source": "import json, os, sys, hashlib, time\nfrom pathlib import Path\nimport duckdb\nassert duckdb.__version__ == '2.0.0', duckdb.__version__\nprint(json.dumps({'runtime': duckdb.__version__, 'kernel_pid': os.getpid(), 'python': sys.executable}, indent=2))\n",
+        "exec_count": 2,
+        "status": "success",
+        "outputs": [
+          {
+            "output_type": "stream",
+            "name": "stdout",
+            "text": "{\n  \"runtime\": \"2.0.0\",\n  \"kernel_pid\": 78673,\n  \"python\": \"/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python\"\n}\n"
+          }
+        ],
+        "metadata": {
+          "spur": {
+            "version": 3,
+            "last_edited_by": "brain",
+            "code_type": "python"
+          },
+          "spur_output_provenance": {
+            "session_id": "2e6a0386-b33b-4ca2-968d-70545de4d87e",
+            "run_id": "05332d06-3c3b-4af5-9760-7f0c4654cdbc",
+            "source_version": 3,
+            "execution_identity": "1b02bcb202cb5f7e49c057b3e828e9bd1726b45250117002a77c43504b7fffd6",
+            "output_hash": "34d13826955fb2c3c114ca0ef1a19d7ffdb9a09abaf2d470ccd05d1440d1a045",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "89644340-9d06-43fe-8936-cbd7f6702d74",
+        "kind": "code",
+        "version": 24,
+        "cell_etag": "cell:sha256:2f40151e352924dbf7405993eb53afdef98a568aac2307702b0d93f7bbac0a71",
+        "source": "release = Path('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-explore-experience-audit-bd-2bhj/release')\npackage = Path('/Users/kevintruong/project/SpurCode/.spur/artifacts/explore-audit-bd-2bhj-native/spur_graph.duckdb_extension')\nverified = json.loads((release / 'verify-package.stdout').read_text())['artifact']\nsource_probe = json.loads((release / 'source-probe-final.json').read_text())\nassert hashlib.sha256(package.read_bytes()).hexdigest() == verified['binary']['sha256']\nassert source_probe['extractor_id'] == 'source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2'\nassert duckdb.execute(\"SELECT count(*) FROM duckdb_functions() WHERE function_name LIKE 'spur_graph_%'\").fetchall()[0][0] == 0\nduckdb.execute(\"LOAD '\" + str(package).replace(\"'\", \"''\") + \"'\")\ninfo = duckdb.execute('SELECT spur_graph_info()').fetchall()[0][0]\nassert info['extractor_id'] == source_probe['extractor_id']\nprint(json.dumps({'package_sha256': verified['binary']['sha256'], 'fresh_build': True, 'native_info': info}, indent=2))\n",
+        "exec_count": 3,
+        "status": "success",
+        "outputs": [
+          {
+            "output_type": "stream",
+            "name": "stdout",
+            "text": "{\n  \"package_sha256\": \"41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f\",\n  \"fresh_build\": true,\n  \"native_info\": {\n    \"extension_version\": \"0.1.0\",\n    \"facts_schema_version\": 1,\n    \"duckdb_api_version\": \"2.0.0\",\n    \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n    \"supported_languages\": [\n      \"C\",\n      \"Cpp\",\n      \"Css\",\n      \"Go\",\n      \"Hcl\",\n      \"Html\",\n      \"Javascript\",\n      \"Json\",\n      \"JupyterNotebook\",\n      \"Lua\",\n      \"Markdown\",\n      \"Mermaid\",\n      \"Python\",\n      \"Rust\",\n      \"Shell\",\n      \"Sql\",\n      \"Terraform\",\n      \"Toml\",\n      \"Tsx\",\n      \"TypeScript\",\n      \"Yaml\"\n    ],\n    \"resolution_scope\": \"single_file\"\n  }\n}\n"
+          }
+        ],
+        "metadata": {
+          "spur": {
+            "version": 24,
+            "last_edited_by": "brain",
+            "code_type": "python"
+          },
+          "spur_output_provenance": {
+            "session_id": "2e6a0386-b33b-4ca2-968d-70545de4d87e",
+            "run_id": "144b46dd-3c73-4b5d-91cc-0d769979de22",
+            "source_version": 24,
+            "execution_identity": "1dcc46f49189602889ba964cc998917cf36d0fba19cf95ba19a006551c1816cb",
+            "output_hash": "d7f917ddc95a97947e00d7a2cd12ed45b1755931daddd10312994e9c91272880",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "7f9ef270-0121-4504-96fe-5593469c3647",
+        "kind": "code",
+        "version": 16,
+        "cell_etag": "cell:sha256:6af0a6177613da5b7f624df5d88100a23e43454703ba64cac314ce1920b93c6f",
+        "source": "# Capability probes record observed gaps; they do not hide them as passing UX tests.\ndef one(sql, params=None):\n    return duckdb.execute(sql, params or []).fetchall()[0][0]\n\ncapability_results = {}\nordinary_noops = []\nfor path, source in [\n    ('duplicate.py', 'def f():\\n    return 1\\n\\ndef f():\\n    return 2\\n'),\n    ('duplicate.rs', '#[cfg(unix)]\\nfn f() {}\\n#[cfg(windows)]\\nfn f() {}\\n'),\n    ('overload.cpp', 'int f(int x) { return x; }\\ndouble f(double x) { return x; }\\n'),\n]:\n    symbols = one('SELECT spur_graph_symbols(?, ?)', [path, source])\n    result = one('SELECT spur_graph_symbol_changes(?, ?, ?, spur_graph_symbols(?, ?), spur_graph_symbols(?, ?))',\n                 [path, path, 'M', path, source, path, source])\n    ordinary_noops.append({'path': path, 'symbols': len(symbols),\n                           'changes_on_identical_input': len(result['changes']),\n                           'change_kinds': [c['change_kind'] for c in result['changes']],\n                           'diagnostics': result['diagnostics']})\ncapability_results['ordinary_duplicate_noops'] = ordinary_noops\n\nmixed = json.dumps({'metadata': {}, 'cells': [\n    {'id': 'supported', 'cell_type': 'code', 'metadata': {'spur': {'code_type': 'python'}},\n     'source': 'def supported():\\n    return 1\\n'},\n    {'id': 'unsupported', 'cell_type': 'code', 'metadata': {'spur': {'code_type': 'cobol'}},\n     'source': 'DISPLAY \"HELLO\".'},\n]})\ngraph_result = one(\"SELECT spur_graph_file_facts_result('mixed.ipynb', ?)\", [mixed])\nnotebook_result = one(\"SELECT spur_graph_notebook_symbols('mixed.ipynb', ?)\", [mixed])\ncapability_results['notebook_coverage'] = {\n    'graph_result_status': graph_result['status'],\n    'notebook_status': notebook_result['status'],\n    'notebook_cells': len(notebook_result['cells']),\n    'notebook_diagnostic_codes': [d['code'] for d in notebook_result['diagnostics']],\n}\n\ncalls = one(\"SELECT spur_graph_file_facts('calls.rs', ?)\",\n            ['fn helper() {}\\nfn root() { helper(); helper(); }\\n'])\ncapability_results['repeated_call_evidence'] = {\n    'source_call_expressions': 2, 'facts_keys': list(calls),\n    'edges': calls['edges'], 'span_sample': calls['spans'][:4],\n    'span_count': len(calls['spans']),\n}\nrecovered = one(\"SELECT spur_graph_file_facts_result('recovery.py', ?)\",\n                ['def good():\\n    return 1\\n\\ndef broken(\\n'])\ncapability_results['syntax_recovery'] = {\n    'status': recovered['status'], 'diagnostic_keys': list(recovered),\n    'facts_present': recovered.get('facts') is not None,\n}\nprint(json.dumps(capability_results, indent=2))\n",
+        "exec_count": 4,
+        "status": "success",
+        "outputs": [
+          {
+            "output_type": "stream",
+            "name": "stdout",
+            "text": "{\n  \"ordinary_duplicate_noops\": [\n    {\n      \"path\": \"duplicate.py\",\n      \"symbols\": 2,\n      \"changes_on_identical_input\": 2,\n      \"change_kinds\": [\n        \"modified\",\n        \"added\"\n      ],\n      \"diagnostics\": []\n    },\n    {\n      \"path\": \"duplicate.rs\",\n      \"symbols\": 2,\n      \"changes_on_identical_input\": 2,\n      \"change_kinds\": [\n        \"modified\",\n        \"added\"\n      ],\n      \"diagnostics\": []\n    },\n    {\n      \"path\": \"overload.cpp\",\n      \"symbols\": 2,\n      \"changes_on_identical_input\": 2,\n      \"change_kinds\": [\n        \"modified\",\n        \"added\"\n      ],\n      \"diagnostics\": []\n    }\n  ],\n  \"notebook_coverage\": {\n    \"graph_result_status\": \"ok\",\n    \"notebook_status\": \"partial\",\n    \"notebook_cells\": 2,\n    \"notebook_diagnostic_codes\": [\n      \"unsupported_language\"\n    ]\n  },\n  \"repeated_call_evidence\": {\n    \"source_call_expressions\": 2,\n    \"facts_keys\": [\n      \"nodes\",\n      \"edges\",\n      \"spans\",\n      \"macro_invocations\",\n      \"macro_scopes\"\n    ],\n    \"edges\": [\n      {\n        \"edge_id\": 1,\n        \"source_node_id\": 1,\n        \"target_node_id\": 2,\n        \"relation\": \"contains\",\n        \"target_label\": null,\n        \"import_path\": null,\n        \"receiver_text\": null,\n        \"scope_text\": null,\n        \"confidence\": \"syntax_exact\",\n        \"confidence_score\": 1.0,\n        \"edge_kind\": null,\n        \"bind_method\": null,\n        \"evidence_id\": 1,\n        \"directed\": true,\n        \"change_kind\": null\n      },\n      {\n        \"edge_id\": 2,\n        \"source_node_id\": 1,\n        \"target_node_id\": 3,\n        \"relation\": \"contains\",\n        \"target_label\": null,\n        \"import_path\": null,\n        \"receiver_text\": null,\n        \"scope_text\": null,\n        \"confidence\": \"syntax_exact\",\n        \"confidence_score\": 1.0,\n        \"edge_kind\": null,\n        \"bind_method\": null,\n        \"evidence_id\": 2,\n        \"directed\": true,\n        \"change_kind\": null\n      },\n      {\n        \"edge_id\": 3,\n        \"source_node_id\": 3,\n        \"target_node_id\": 2,\n        \"relation\": \"calls\",\n        \"target_label\": \"helper\",\n        \"import_path\": null,\n        \"receiver_text\": null,\n        \"scope_text\": null,\n        \"confidence\": \"syntax_exact\",\n        \"confidence_score\": 1.0,\n        \"edge_kind\": null,\n        \"bind_method\": \"singleton\",\n        \"evidence_id\": 3,\n        \"directed\": true,\n        \"change_kind\": null\n      }\n    ],\n    \"span_sample\": [\n      {\n        \"span_id\": 1,\n        \"file_id\": 1,\n        \"start_byte\": 0,\n        \"end_byte\": 49,\n        \"start_line\": 1,\n        \"end_line\": 3\n      },\n      {\n        \"span_id\": 2,\n        \"file_id\": 1,\n        \"start_byte\": 0,\n        \"end_byte\": 14,\n        \"start_line\": 1,\n        \"end_line\": 1\n      },\n      {\n        \"span_id\": 3,\n        \"file_id\": 1,\n        \"start_byte\": 15,\n        \"end_byte\": 48,\n        \"start_line\": 2,\n        \"end_line\": 2\n      }\n    ],\n    \"span_count\": 3\n  },\n  \"syntax_recovery\": {\n    \"status\": \"ok\",\n    \"diagnostic_keys\": [\n      \"status\",\n      \"error_code\",\n      \"error_message\",\n      \"facts\"\n    ],\n    \"facts_present\": true\n  }\n}\n"
+          }
+        ],
+        "metadata": {
+          "spur": {
+            "version": 16,
+            "last_edited_by": "brain",
+            "code_type": "python"
+          },
+          "spur_output_provenance": {
+            "session_id": "2e6a0386-b33b-4ca2-968d-70545de4d87e",
+            "run_id": "e3201586-898a-43bd-8251-0ab8351c680a",
+            "source_version": 16,
+            "execution_identity": "a8baa523b0488c8a256d0a03472827d1b86bafe7743ce6f1b9159abab4df6051",
+            "output_hash": "bcaca5318a643c1d962bb9dae1cba1ca0092a285b37f07f53ec66fffe5a7e676",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "b3ac7ccc-1d76-4f66-9698-e0ad905f12ee",
+        "kind": "code",
+        "version": 20,
+        "cell_etag": "cell:sha256:0f94b3319dd89e96a1a3265ec1537ebcfecdbfa6152ecfcf114ee472d1cf43cb",
+        "source": "-- Real source corpus using this rebuilt artifact.\nCREATE OR REPLACE TEMP TABLE audit_notebooks AS\nSELECT s.snapshot_id, s.notebook_path, s.source,\n       spur_graph_notebook_symbols(s.notebook_path, s.source) AS document\nFROM read_json('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json') f,\n     UNNEST(f.snapshots) t(s);\nSELECT snapshot_id, document.status AS coverage,\n       sum(len(c.symbols)) AS symbols,\n       sum(list_count(list_filter(c.symbols, lambda s: s.symbol.symbol_kind = 'function'))) AS functions\nFROM audit_notebooks, UNNEST(document.cells) cells(c) GROUP BY ALL ORDER BY snapshot_id;\n",
+        "exec_count": 5,
+        "status": "success",
+        "outputs": [
+          "\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                 snapshot_id                  \u2502 coverage \u2502    symbols    \u2502   functions   \u2502\n\u2502                   varchar                    \u2502 varchar  \u2502 decimal(38,0) \u2502 decimal(38,0) \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 git:07db59f08dbced2c8bedd17290c78f57b428a2bc \u2502 complete \u2502            24 \u2502            11 \u2502\n\u2502 git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 \u2502 complete \u2502            46 \u2502            17 \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 20,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "2e6a0386-b33b-4ca2-968d-70545de4d87e",
+            "run_id": "55bf25dc-6e7b-415f-a56d-7597c94cc700",
+            "source_version": 20,
+            "execution_identity": "e7f6d3f8ff820325381eddba36ab2c1533fc8b410252b06e19241124ad911eef",
+            "output_hash": "df2c54805befa35ad8f331c9b78bb71d1b224e68c1b7c12df53627ae842c98f9",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "edfe53d9-68a1-4269-a6e9-3e5984647d7b",
+        "kind": "code",
+        "version": 37,
+        "cell_etag": "cell:sha256:6fac8aa53dbde5d93da675e437330d7c40de0a310168805075429a9efe530c11",
+        "source": "import statistics\nreal = duckdb.sql('SELECT snapshot_id, notebook_path, source, document FROM audit_notebooks ORDER BY snapshot_id').fetchall()\nby_snapshot = {row[0]: row for row in real}\nleft = by_snapshot['git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41']\nright = by_snapshot['git:07db59f08dbced2c8bedd17290c78f57b428a2bc']\ncomparison = one('SELECT spur_graph_notebook_changes(?, ?, ?, ?, ?)', [right[1], left[1], 'M', left[2], right[2]])\nassert len(comparison['symbol_changes']) == 50\nassert len(comparison['cell_changes']) == 10\nwarm_ms = []\nfor _ in range(5):\n    began = time.perf_counter()\n    result = one('SELECT spur_graph_notebook_symbols(?, ?)', [right[1], right[2]])\n    warm_ms.append((time.perf_counter() - began) * 1000)\n    assert result['status'] == 'complete'\nreadiness = {\n    'release_gate': 'PASS: 61 remote core + 4 remote adapter + 223 native Python; zero skips',\n    'real_notebook_review': {'symbol_changes': 50, 'cell_events': 10},\n    'ordinary_duplicate_review': 'FAIL: unchanged Python/Rust/C++ each produce modified + added',\n    'callsite_capability': {'call_expressions': 2, 'relationship_edges': len([e for e in calls['edges'] if e['relation'] == 'calls']), 'individual_callsite_spans': False},\n    'coverage_contract': capability_results['notebook_coverage'],\n    'warm_extraction_sample_ms': {'n': 5, 'median': round(statistics.median(warm_ms), 2), 'max': round(max(warm_ms), 2), 'source_bytes': len(right[2].encode()), 'scope': 'small local sample; no concurrency, cancellation or capacity guarantee'},\n}\nprint(json.dumps(readiness, indent=2))\n",
+        "exec_count": 6,
+        "status": "success",
+        "outputs": [
+          {
+            "output_type": "stream",
+            "name": "stdout",
+            "text": "{\n  \"release_gate\": \"PASS: 61 remote core + 4 remote adapter + 223 native Python; zero skips\",\n  \"real_notebook_review\": {\n    \"symbol_changes\": 50,\n    \"cell_events\": 10\n  },\n  \"ordinary_duplicate_review\": \"FAIL: unchanged Python/Rust/C++ each produce modified + added\",\n  \"callsite_capability\": {\n    \"call_expressions\": 2,\n    \"relationship_edges\": 1,\n    \"individual_callsite_spans\": false\n  },\n  \"coverage_contract\": {\n    \"graph_result_status\": \"ok\",\n    \"notebook_status\": \"partial\",\n    \"notebook_cells\": 2,\n    \"notebook_diagnostic_codes\": [\n      \"unsupported_language\"\n    ]\n  },\n  \"warm_extraction_sample_ms\": {\n    \"n\": 5,\n    \"median\": 189.05,\n    \"max\": 194.51,\n    \"source_bytes\": 415293,\n    \"scope\": \"small local sample; no concurrency, cancellation or capacity guarantee\"\n  }\n}\n"
+          }
+        ],
+        "metadata": {
+          "spur": {
+            "version": 37,
+            "last_edited_by": "brain",
+            "code_type": "python"
+          },
+          "spur_output_provenance": {
+            "session_id": "2e6a0386-b33b-4ca2-968d-70545de4d87e",
+            "run_id": "e4c63fb2-701d-4fb7-a144-407fa58efdc1",
+            "source_version": 37,
+            "execution_identity": "11f2cd88c2294fdfe4024b9acd42fdd36f4f2b24e50d8b20e5f40a88ad13d0ba",
+            "output_hash": "8327342dca9e31b3862ca0eabbbcd9c6d1ec7638a99604c1a24ce4d929d395fa",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-77dc62def6db3feed5dd1445",
+        "path": "/Users/kevintruong/project/spur-notebook/app_gallery/code-graph-workbench/2026-11-17-spur-graph-explore-capability-audit.ipynb",
+        "revision": 41,
+        "id": "e56ee354-8bd2-432c-98cf-9e4f1124e631",
+        "kind": "markdown",
+        "version": 41,
+        "cell_etag": "cell:sha256:9d52d9f7d043a029f8a8a96a424d353f53ab90925c769e029ce05a8f27537283",
+        "source": "## Verdict: build verified; product capability gaps remain\n\nThe new `41f5e65a\u2026` artifact passed **61 remote core + 4 remote adapter tests** and **223 native Python tests**, with no skips. Standalone real-notebook acceptance also verified **28 anchors**, **70 source refs**, **50 symbol changes**, and failure-safe publication.\n\nThe stronger evaluation found:\n\n| Layer | Observed gap | Consequence |\n|---|---|---|\n| Ordinary review matcher | Identical Python/Rust/C++ files with duplicate definitions each produce `modified` + `added`, with no diagnostic | Review can invent changes |\n| Notebook graph coverage | Graph result reports `ok` while typed notebook symbols report `partial` for a skipped unsupported cell | Providers must propagate the richer coverage evidence |\n| Call evidence | Two calls collapse to one relationship edge; only declaration/file spans are returned | Cannot navigate or count every call site |\n| App provider | All four live `wb_*` evidence calls fail with missing `fetch_arrow_table` on DuckDB 2 | Human and agent evidence retrieval is blocked |\n| App rendering | Actual iframe is 40px high while its fixed dashboard is 640px high | Graph, query controls and inspector are clipped |\n| Query identity | Exact current provider SQL resolves `PortStore` differently for graph root and top scorecard row | One screen can combine evidence about different symbols |\n| Human/agent coordination | Default query is retried before pushed ports; frontend has no emitted selection state | Shared query/selection/evidence acknowledgments are missing |\n\nA rebuilt extractor does not refresh or replace the Workbench\u2019s existing `.spur/analyst.duckdb` provider. It needs an explicit repository/snapshot provider and graph-ID \u2194 notebook SourceRef bridge, followed by human/agent journey acceptance.\n\nThe detailed audit, reproduction evidence and prioritized backlog are in `SpurCode/docs/research/2026-11-17-spur-graph-explore-experience-audit.md`. Full rerun: restart this notebook\u2019s kernel, keep DuckDB 2.0.0 selected, and run top to bottom. No production app or extension source was changed by this evaluation.",
+        "exec_count": null,
+        "status": "idle",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 41,
+            "last_edited_by": "brain"
+          }
+        },
+        "output_indices": []
+      }
+    ]
+  },
+  "retrieval_tools": {
+    "orientation": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"query\": \"spur-graph-duckdb native extension build packaging release check app_consumer Explore Review\",\n  \"intent\": \"review\",\n  \"scope\": \"all\",\n  \"limit\": 8,\n  \"include_tests\": true,\n  \"max_symbol_bodies\": 0,\n  \"answerable\": true,\n  \"confidence\": \"low\",\n  \"graph_content_hash\": \"99ffd172271eef6990a7034bc2a001d6ae5f332ba8e5eac007bfe6e612895306\",\n  \"staleness\": {\n    \"delta_applied\": true,\n    \"algo_as_of\": \"99ffd172271eef6990a7034bc2a001d6ae5f332ba8e5eac007bfe6e612895306\"\n  },\n  \"primary_evidence\": [\n    {\n      \"kind\": \"symbol\",\n      \"title\": \"duckdb_extension_dir\",\n      \"file\": \"crates/spur-context-service/src/catalog.rs\",\n      \"stable_symbol_id\": \"graph://symbol/042a05e2fae40e7b\",\n      \"symbol_kind\": \"function\",\n      \"score\": 0.5,\n      \"signal\": \"load-bearing wall \u00b7 pr=2.7 \u00b7 churn=0\",\n      \"impact\": {\n        \"callers_count\": 1,\n        \"callees_count\": 7,\n        \"popular_sink\": false\n      },\n      \"grounding\": \"bm25-code\",\n      \"posture\": \"load-bearing wall\",\n      \"churn_90d\": 0,\n      \"community_id\": 10917,\n      \"component_size\": 35624\n    },\n    {\n      \"kind\": \"symbol\",\n      \"title\": \"load_duckdb_extension\",\n      \"file\": \"crates/spur-context-service/src/catalog.rs\",\n      \"stable_symbol_id\": \"graph://symbol/18c96e302e49a494\",\n      \"symbol_kind\": \"function\",\n      \"score\": 0.484127,\n      \"signal\": \"load-bearing wall \u00b7 pr=2.0 \u00b7 churn=0\",\n      \"impact\": {\n        \"callers_count\": 5,\n        \"callees_count\": 3,\n        \"popular_sink\": false\n      },\n      \"grounding\": \"bm25-code\",\n      \"posture\": \"load-bearing wall\",\n      \"churn_90d\": 0,\n      \"community_id\": 8998,\n      \"component_size\": 35624\n    }\n  ],\n  \"supporting_docs\": [\n    {\n      \"kind\": \"doc\",\n      \"title\": \"SPUR graph DuckDB extension::Build, package and test\",\n      \"file\": \"crates/spur-graph-duckdb/README.md\",\n      \"stable_symbol_id\": \"a8fddfac501ced8b\",\n      \"symbol_kind\": \"section\",\n      \"score\": 0.491935,\n      \"signal\": null,\n      \"neighbor_kind\": null,\n      \"edge_bind_method\": null,\n      \"grounding\": \"bm25-doc\",\n      \"why_relevant\": \"BM25 0.5, kind=section, grounding=bm25-doc\",\n      \"next\": [\n        {\n          \"tool\": \"code_read_symbol\",\n          \"stable_symbol_id\": \"a8fddfac501ced8b\",\n          \"reason\": \"Read full section body; doc_navigate lede is discovery-only.\"\n        },\n        {\n          \"tool\": \"doc_navigate\",\n          \"root\": \"a8fddfac501ced8b\",\n          \"reason\": \"Expand one-hop child sections when outline under this section is needed.\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"doc\",\n      \"title\": \"Rust binding and macro expansion evaluation \u2014 2026-11-15\",\n      \"file\": \"docs/research/2026-11-15-rust-binding-gap.md\",\n      \"stable_symbol_id\": \"41c1d7f1fc7df0d5\",\n      \"symbol_kind\": \"section\",\n      \"score\": 0.476563,\n      \"signal\": null,\n      \"neighbor_kind\": null,\n      \"edge_bind_method\": null,\n      \"grounding\": \"bm25-doc\",\n      \"why_relevant\": \"BM25 0.5, kind=section, grounding=bm25-doc\",\n      \"next\": [\n        {\n          \"tool\": \"code_read_symbol\",\n          \"stable_symbol_id\": \"41c1d7f1fc7df0d5\",\n          \"reason\": \"Read full section body; doc_navigate lede is discovery-only.\"\n        },\n        {\n          \"tool\": \"doc_navigate\",\n          \"root\": \"41c1d7f1fc7df0d5\",\n          \"reason\": \"Expand one-hop child sections when outline under this section is needed.\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"doc\",\n      \"title\": \"Analyst Recovery Implementation Plan\",\n      \"file\": \"docs/superpowers/plans/2026-11-04-analyst-recovery.md\",\n      \"stable_symbol_id\": \"a84f64d6a71d596c\",\n      \"symbol_kind\": \"section\",\n      \"score\": 0.469231,\n      \"signal\": null,\n      \"neighbor_kind\": null,\n      \"edge_bind_method\": null,\n      \"grounding\": \"bm25-doc\",\n      \"why_relevant\": \"BM25 0.5, kind=section, grounding=bm25-doc\",\n      \"next\": [\n        {\n          \"tool\": \"code_read_symbol\",\n          \"stable_symbol_id\": \"a84f64d6a71d596c\",\n          \"reason\": \"Read full section body; doc_navigate lede is discovery-only.\"\n        },\n        {\n          \"tool\": \"doc_navigate\",\n          \"root\": \"a84f64d6a71d596c\",\n          \"reason\": \"Expand one-hop child sections when outline under this section is needed.\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"doc\",\n      \"title\": \"Repository Guidelines\",\n      \"file\": \"docs/research/artifacts/2026-11-02-spur-notebook-panic-evaluation/source-snapshot/AGENTS.md\",\n      \"stable_symbol_id\": \"e489738bcde0d387\",\n      \"symbol_kind\": \"section\",\n      \"score\": 0.462121,\n      \"signal\": null,\n      \"neighbor_kind\": null,\n      \"edge_bind_method\": null,\n      \"grounding\": \"bm25-doc\",\n      \"why_relevant\": \"BM25 0.5, kind=section, grounding=bm25-doc\",\n      \"next\": [\n        {\n          \"tool\": \"code_read_symbol\",\n          \"stable_symbol_id\": \"e489738bcde0d387\",\n          \"reason\": \"Read full section body; doc_navigate lede is discovery-only.\"\n        },\n        {\n          \"tool\": \"doc_navigate\",\n          \"root\": \"e489738bcde0d387\",\n          \"reason\": \"Expand one-hop child sections when outline under this section is needed.\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"doc\",\n      \"title\": \"DuckDB Loadable Extension Probe Verdict\",\n      \"file\": \"docs/spikes/duckdb-loadable-ext-probe/VERDICT.md\",\n      \"stable_symbol_id\": \"71100676cff3f540\",\n      \"symbol_kind\": \"section\",\n      \"score\": 0.455224,\n      \"signal\": null,\n      \"neighbor_kind\": null,\n      \"edge_bind_method\": null,\n      \"grounding\": \"bm25-doc\",\n      \"why_relevant\": \"BM25 0.5, kind=section, grounding=bm25-doc\",\n      \"next\": [\n        {\n          \"tool\": \"code_read_symbol\",\n          \"stable_symbol_id\": \"71100676cff3f540\",\n          \"reason\": \"Read full section body; doc_navigate lede is discovery-only.\"\n        },\n        {\n          \"tool\": \"doc_navigate\",\n          \"root\": \"71100676cff3f540\",\n          \"reason\": \"Expand one-hop child sections when outline under this section is needed.\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"doc\",\n      \"title\": \"Rust macro call qualification: bd-38yz\",\n      \"file\": \"docs/research/2026-11-15-rust-macro-qualification-fix.md\",\n      \"stable_symbol_id\": \"d6ea97879ffac94a\",\n      \"symbol_kind\": \"section\",\n      \"score\": 0.448529,\n      \"signal\": null,\n      \"neighbor_kind\": null,\n      \"edge_bind_method\": null,\n      \"grounding\": \"bm25-doc\",\n      \"why_relevant\": \"BM25 0.4, kind=section, grounding=bm25-doc\",\n      \"next\": [\n        {\n          \"tool\": \"code_read_symbol\",\n          \"stable_symbol_id\": \"d6ea97879ffac94a\",\n          \"reason\": \"Read full section body; doc_navigate lede is discovery-only.\"\n        },\n        {\n          \"tool\": \"doc_navigate\",\n          \"root\": \"d6ea97879ffac94a\",\n          \"reason\": \"Expand one-hop child sections when outline under this section is needed.\"\n        }\n      ]\n    }\n  ],\n  \"impact\": {\n    \"summary\": \"bounded exact graph impact summary\",\n    \"callers_count\": 6,\n    \"callees_count\": 10,\n    \"popular_sink\": false\n  },\n  \"recommended_next_tools\": [\n    {\n      \"tool\": \"code_read_symbol\",\n      \"selector\": \"graph://symbol/042a05e2fae40e7b\",\n      \"reason\": \"Read exact current symbol body for review.\"\n    },\n    {\n      \"tool\": \"code_callers\",\n      \"selector\": \"graph://symbol/042a05e2fae40e7b\",\n      \"reason\": \"Verify behavioral impact from direct callers.\"\n    }\n  ],\n  \"candidates\": {\n    \"total\": 8,\n    \"returned_primary\": 2,\n    \"returned_supporting_docs\": 6,\n    \"total_code\": 2,\n    \"total_docs\": 6\n  },\n  \"graph_paths\": [\n    {\n      \"source_stable_id\": \"042a05e2fae40e7b\",\n      \"target_stable_id\": \"18c96e302e49a494\",\n      \"graph_content_hash\": null,\n      \"max_hops\": 4,\n      \"max_paths\": 6,\n      \"engine\": \"recursive_sql\",\n      \"status\": \"path_found\",\n      \"caveat\": null,\n      \"rows\": [\n        {\n          \"path_index\": 0,\n          \"hop_index\": 0,\n          \"source_stable_id\": \"042a05e2fae40e7b\",\n          \"target_stable_id\": \"1e9fd8570ddcebb9\",\n          \"relation\": \"calls\",\n          \"edge_kind\": \"calls\",\n          \"confidence\": \"syntax_exact\",\n          \"bind_method\": \"singleton\",\n          \"direction\": \"reverse\",\n          \"engine\": \"recursive_sql\",\n          \"status\": \"path_found\",\n          \"caveat\": null\n        },\n        {\n          \"path_index\": 0,\n          \"hop_index\": 1,\n          \"source_stable_id\": \"1e9fd8570ddcebb9\",\n          \"target_stable_id\": \"18c96e302e49a494\",\n          \"relation\": \"calls\",\n          \"edge_kind\": \"calls\",\n          \"confidence\": \"syntax_exact\",\n          \"bind_method\": \"singleton\",\n          \"direction\": \"reverse\",\n          \"engine\": \"recursive_sql\",\n          \"status\": \"path_found\",\n          \"caveat\": null\n        }\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    "read_schema_mismatch": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-mcp/code_read_symbol`\n\nCaused by:\n    Mcp error: -32602: Missing required field 'stable_symbol_id' or fields 'path' and 'name'({\"graph_content_hash\":\"99ffd172271eef6990a7034bc2a001d6ae5f332ba8e5eac007bfe6e612895306\",\"graph_index_version\":\"4\",\"graph_built_at\":\"2026-11-16T19:20:55.343Z\",\"indexed_head_oid\":\"adaa1f86e2c95201a331046a8c0ea785b8781399\",\"worktree_head_oid\":null,\"worktree_dirty\":true,\"response_file_oids_match\":null,\"rebuild_status\":\"not_needed\"})"
+        }
+      ],
+      "isError": true
+    },
+    "root_search": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"query\": \"symbol_changes_from_extracted_with_language\",\n  \"mode\": \"exact\",\n  \"symbol_kind\": \"function\",\n  \"file\": \"crates/spur-graph/src/git_walk.rs\",\n  \"file_glob\": null,\n  \"limit\": 3,\n  \"total_matches\": 0,\n  \"truncated\": false,\n  \"candidates\": [],\n  \"graph_content_hash\": \"99ffd172271eef6990a7034bc2a001d6ae5f332ba8e5eac007bfe6e612895306\",\n  \"graph_index_version\": \"4\",\n  \"graph_built_at\": \"2026-11-16T19:20:55.343Z\",\n  \"indexed_head_oid\": \"adaa1f86e2c95201a331046a8c0ea785b8781399\",\n  \"worktree_head_oid\": null,\n  \"worktree_dirty\": true,\n  \"response_file_oids_match\": null,\n  \"rebuild_status\": \"not_needed\"\n}"
+        }
+      ]
+    },
+    "root_read": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `spur-mcp/code_read_symbol`\n\nCaused by:\n    Mcp error: -32603: resolved symbol id `77ffe874d20e3612` missing from graph artifact({\"graph_content_hash\":\"99ffd172271eef6990a7034bc2a001d6ae5f332ba8e5eac007bfe6e612895306\",\"graph_index_version\":\"4\",\"graph_built_at\":\"2026-11-16T19:20:55.343Z\",\"indexed_head_oid\":\"adaa1f86e2c95201a331046a8c0ea785b8781399\",\"worktree_head_oid\":null,\"worktree_dirty\":true,\"response_file_oids_match\":null,\"rebuild_status\":\"not_needed\"})"
+        }
+      ],
+      "isError": true
+    },
+    "kernel_start": "Attempting notebook_start_kernel(spec_name=duckdb-2.0) on active audit failed unknown or conflicting kernel slot owner; notebook-scoped UI restart succeeded."
+  },
+  "measured_findings": [
+    "ordinary duplicate no-op has modified+added in Python, Rust and C++ without diagnostics",
+    "mixed notebook graph status ok vs symbols partial",
+    "two call expressions collapse to one edge; no individual site ranges",
+    "malformed Python syntax recovery returns ok facts",
+    "all4 wb evidence calls fail removed fetch_arrow_table",
+    "doctor says ok while live calls fail and iframe clips",
+    "same PortStore text resolves different graph and scorecard primary IDs via exact provider SQL",
+    "missing analyst database becomes ok:true zero rows at wb_query"
+  ],
+  "static_findings_not_live_verified": [
+    "default successful wb_query takes precedence over pushed ports",
+    "human node selection changes title but leaves root metrics",
+    "depth0 coerces to2 by UI form",
+    "120-node/260-edge visual caps are silent; query pagination inconsistent",
+    "no source inspector, review range, state readback or file citation journey"
+  ],
+  "open_issues": [
+    "bd-1gyj",
+    "bd-1kp7",
+    "bd-sl5a",
+    "bd-3pqb",
+    "bd-oz9u",
+    "bd-5f8w"
+  ],
+  "limits": [
+    "No production source fix implemented.",
+    "Build/test pass is separate from product readiness.",
+    "Native resolution is single-file syntax, not compiler or repository resolution.",
+    "Warm n5 extraction sample is not capacity/cancellation/latency guarantee."
+  ],
+  "preservation": {
+    "main_user_files_verified_unchanged": 5,
+    "extension_crates_match_build_commit": true
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "cargo_version": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "source-head",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/source-head.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/source-head.stdout"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "source-status",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/source-status.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/source-status.stdout"
+    },
+    {
+      "argv": [
+        "rustc",
+        "-vV"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "rustc-version",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/rustc-version.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/rustc-version.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/scripts/spur-cargo",
+        "--version"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "cargo-version",
+      "returncode": 0,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/cargo-version.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/cargo-version.stdout"
+    },
+    {
+      "argv": [
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src/scripts/spur-cargo",
+        "--workdir",
+        "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+        "test",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "target/release-check/spur-graph-explore-audit-bd-2bhj-release-v1/rust-tests-core",
+        "-p",
+        "spur-graph",
+        "--no-default-features",
+        "extract::notebook"
+      ],
+      "cwd": "/private/tmp/spur-graph-explore-audit-bd-2bhj-src",
+      "phase": "core-notebook-tests",
+      "returncode": 200,
+      "stderr": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/core-notebook-tests.stderr",
+      "stdout": "/private/tmp/spur-graph-explore-audit-bd-2bhj-release-v1/core-notebook-tests.stdout"
+    }
+  ],
+  "configured_target": "aarch64-apple-darwin",
+  "driver_sha256": "97c43f8aef8962108124e393d2f3606bfe77601673bfd04178753c93ce612b18",
+  "exit_code": 200,
+  "raw_child_exit": 200,
+  "runtime": {
+    "duckdb": "2.0.0",
+    "duckdb_platform": "osx_arm64",
+    "host": "macOS-26.7.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "native_engine": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/_duckdb.abi3.so",
+    "native_engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+    "native_version": "v2.0.0",
+    "python": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+    "python_executable": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+    "python_sha256": "08b9cf48ba3b352010826e1b28dac25cdf45d1028efed29691c360123c09aada"
+  },
+  "rust_tests_mode": "remote",
+  "rustc": {
+    "LLVM version": "21.1.8",
+    "binary": "rustc",
+    "commit-date": "2026-03-25",
+    "commit-hash": "e408947bfd200af42db322daf0fadfe7e26d3bd1",
+    "host": "aarch64-apple-darwin",
+    "release": "1.94.1"
+  },
+  "source_head": "52e5a972df370a989b4b557bd58350d7d67d0c5c",
+  "source_status": "",
+  "status": "failed"
+}

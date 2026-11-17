@@ -1,0 +1,55 @@
+from __future__ import annotations
+
+from typing import Any
+
+import analyst
+import graph
+
+from .subgraph import _subgraph_rows
+
+
+def _bounded_depth(depth: Any) -> int:
+    try:
+        parsed = int(depth)
+    except (TypeError, ValueError):
+        parsed = 2
+    return max(0, min(3, parsed))
+
+
+def wb_query(symbol: str, file: str | None = None, depth: int = 2) -> dict:
+    """Compute all four workbench panels for `symbol` and RETURN them as JSON.
+
+    Unlike the wb_* push tools, this performs no port push: it returns the
+    subgraph / scorecard / blast / cochange rows directly so the in-app search
+    box can render results in place via callTool. `file` defaults to `symbol`
+    (the co-change panel matches on file path); `depth` is clamped to 0..3.
+    """
+    target_symbol = str(symbol or "").strip()
+    if not target_symbol:
+        return {"ok": False, "error": "symbol must not be empty"}
+    target_file = (file or target_symbol).strip()
+    bounded_depth = _bounded_depth(depth)
+
+    subgraph = _subgraph_rows(
+        target_symbol, depth=bounded_depth, edge_kinds=graph.DEFAULT_EDGE_KINDS
+    )
+    scorecard = analyst.scorecard_rows(target_symbol)
+    blast = analyst.blast_radius_rows(target_symbol)
+    cochange = analyst.cochange_rows(target_file)
+
+    return {
+        "ok": True,
+        "symbol": target_symbol,
+        "file": target_file,
+        "depth": bounded_depth,
+        "subgraph": subgraph.to_pylist(),
+        "scorecard": scorecard.to_pylist(),
+        "analyst_rows": blast.to_pylist(),
+        "cochange": cochange.to_pylist(),
+        "counts": {
+            "subgraph": subgraph.num_rows,
+            "scorecard": scorecard.num_rows,
+            "analyst_rows": blast.num_rows,
+            "cochange": cochange.num_rows,
+        },
+    }
