@@ -1,0 +1,400 @@
+{
+  "issue": "bd-os9f",
+  "result": "passed",
+  "date": "2026-11-17",
+  "branch": "main",
+  "implementation_merge": "108e395bafdcfed63f236c2de6b8aa14b49d676b",
+  "main_before_probe": "ae7a76f61",
+  "merge_verified": "git merge-base --is-ancestor 108e395bafdcfed63f236c2de6b8aa14b49d676b main; exit0. Already merged; no duplicate merge required.",
+  "notebook": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+  "notebook_id": "nb-8df04a2fb0819795b74ed640",
+  "notebook_version": 40,
+  "executed_code_cells": 8,
+  "kernel": {
+    "runtime": "2.0.0",
+    "pid": 4929,
+    "generation": 1,
+    "spur_functions_before_load": 0
+  },
+  "candidate": {
+    "path": "/Users/kevintruong/project/SpurCode/.spur/artifacts/notebook-symbol-uplift-native/spur_graph.duckdb_extension",
+    "sha256": "c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48",
+    "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "build": "Reused verified artifact compiled from the clean approved source, matching integrated implementation; no extension source changed."
+  },
+  "verification": {
+    "real_symbols": [
+      46,
+      24
+    ],
+    "real_functions": [
+      17,
+      11
+    ],
+    "real_symbol_changes": 50,
+    "real_cell_events": 10,
+    "independent_function_anchors": 28,
+    "original_utf8_refs_resolved": 70,
+    "real_noops": 2,
+    "independent_scenarios": 18,
+    "scenario_language_count": 3,
+    "scenario_functions": 4,
+    "duplicate_helpers": 2
+  },
+  "authoring_correction": "DuckDB 2 relation fetchone() is unavailable; preflight corrected to fetchall()[0][0], then passed before extension loading. Extension code unchanged.",
+  "limits": [
+    "Local unsigned artifact; no distribution/deployment.",
+    "Complete Explore/Review UI and cross-cell runtime semantics remain separate.",
+    "Full rerun requires restarting this notebook kernel, because preflight checks no functions loaded."
+  ],
+  "cells": [
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "1b831021-2b31-4edf-a4fc-5a0f18e90cbb",
+      "kind": "markdown",
+      "version": 3,
+      "cell_etag": "cell:sha256:d64688cbf871f921c721d188be1da30ca26abe04d28d0b3a0b086b7d17f86076",
+      "source": "# Spur Graph — fresh playground after local-main merge\n\nThis notebook independently exercises the implementation merged at `108e395ba` on local `main`. Run top to bottom using this notebook’s **DuckDB 2.0.0** runtime.\n\nWe verify a fresh kernel starts without Spur Graph functions, verify the candidate hash before loading, then explore two real spur-notebook snapshots. Independent cases cover cell-scoped duplicate function names, Rust `:dep` source coordinates, modifications, additions/deletions, output-only edits, no-ops and explicit unsupported/invalid inputs.\n\nThe local unsigned candidate comes from the verified clean source snapshot; pre-existing edits in the working repository remain untouched.",
+      "exec_count": null,
+      "status": "idle",
+      "outputs": [],
+      "metadata": {
+        "spur": {
+          "version": 3,
+          "last_edited_by": "brain"
+        }
+      },
+      "output_indices": []
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "4383b59d-7f98-41c3-8485-9095bd2f6ffa",
+      "kind": "code",
+      "version": 8,
+      "cell_etag": "cell:sha256:0cf995af30acd8b814f067a70561dcccdec591d7e677d5a79ee417e3a910780d",
+      "source": "import os, hashlib, json\nfrom pathlib import Path\nimport duckdb\n\nextension = Path('/Users/kevintruong/project/SpurCode/.spur/artifacts/notebook-symbol-uplift-native/spur_graph.duckdb_extension')\nexpected_sha = 'c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48'\nassert duckdb.__version__ == '2.0.0', duckdb.__version__\nassert hashlib.sha256(extension.read_bytes()).hexdigest() == expected_sha\ninitial_functions = duckdb.sql(\"SELECT count(*) FROM duckdb_functions() WHERE function_name LIKE 'spur_graph_%'\").fetchall()[0][0]\nassert initial_functions == 0, 'Expected an independent fresh kernel'\nprint(json.dumps({'runtime': duckdb.__version__, 'kernel_pid': os.getpid(), 'spur_functions_before_load': initial_functions, 'package_sha256': expected_sha}, indent=2))\n",
+      "exec_count": 3,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"runtime\": \"2.0.0\",\n  \"kernel_pid\": 4929,\n  \"spur_functions_before_load\": 0,\n  \"package_sha256\": \"c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48\"\n}\n"
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 8,
+          "last_edited_by": "brain",
+          "code_type": "python"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "b583f269-0e45-41fd-9ac2-3bbb8a12cde1",
+          "source_version": 8,
+          "execution_identity": "4f8c2d941ee67659c0e800123935436488f7635a36b674c7a3269b4a5652ef8f",
+          "output_hash": "91faa75f58e59af39400551082be1d4908033136d86ce2c13ddcb1dcf8787253",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "dc0b9010-c28f-4a39-80c7-57450b199579",
+      "kind": "code",
+      "version": 12,
+      "cell_etag": "cell:sha256:5a7b22bfc6d6ce119a21bc636f29678ed1e05a88dfe82e7d0d7c25f42ef0d667",
+      "source": "-- Verify bytes and the actual runtime before loading a local unsigned candidate.\nSELECT CASE WHEN version() = 'v2.0.0' THEN true ELSE error('DuckDB 2.0.0 required') END AS runtime_ok;\nSELECT CASE WHEN sha256(content) = 'c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48'\n            THEN true ELSE error('Extension hash mismatch') END AS artifact_ok\nFROM read_blob('/Users/kevintruong/project/SpurCode/.spur/artifacts/notebook-symbol-uplift-native/spur_graph.duckdb_extension');\nLOAD '/Users/kevintruong/project/SpurCode/.spur/artifacts/notebook-symbol-uplift-native/spur_graph.duckdb_extension';\nSELECT version() AS runtime, (spur_graph_info()).duckdb_api_version AS extension_api,\n       (spur_graph_info()).extractor_id AS extractor_id;\n",
+      "exec_count": 4,
+      "status": "success",
+      "outputs": [
+        "┌─────────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐\n│ runtime │ extension_api │                                   extractor_id                                    │\n│ varchar │    varchar    │                                      varchar                                      │\n├─────────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤\n│ v2.0.0  │ 2.0.0         │ source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2 │\n└─────────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 12,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "99248bf3-e649-4d72-b903-9cea9ab6f7b3",
+          "source_version": 12,
+          "execution_identity": "6ad1747eba7fb2d55121f8167e2ff78c4c53da1bfd15b73b2749dcdfe27830da",
+          "output_hash": "2be752a40b06744789292347105109f3114074a418ace5e1c5d1bd4bef87ae01",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "0b96a2d8-1170-413c-b017-5e23c7dd0154",
+      "kind": "code",
+      "version": 16,
+      "cell_etag": "cell:sha256:e256ad46ec49fa3a9f51b56f8d7a8e5bb0cfe0b7420ee4525f9ced669630628e",
+      "source": "-- Real spur-notebook source bytes, independently decoded by the extension.\nCREATE OR REPLACE TEMP TABLE smoke_inputs AS\nSELECT s.snapshot_id, s.notebook_path, s.source_sha256, s.source,\n       spur_graph_notebook_symbols(s.notebook_path, s.source) AS document\nFROM read_json('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json') f,\n     UNNEST(f.snapshots) t(s);\nCREATE OR REPLACE TEMP VIEW smoke_symbols AS\nSELECT snapshot_id, document.status AS coverage, c.id AS cell_id,\n       c.\"language\" AS cell_language, n.id AS occurrence_id, n.symbol, n.source_ref\nFROM smoke_inputs, UNNEST(document.cells) cells(c), UNNEST(c.symbols) symbols(n);\nSELECT snapshot_id, coverage, count(*) AS symbols,\n       count(*) FILTER (WHERE symbol.symbol_kind = 'function') AS functions\nFROM smoke_symbols GROUP BY ALL ORDER BY snapshot_id;\n",
+      "exec_count": 5,
+      "status": "success",
+      "outputs": [
+        "┌──────────────────────────────────────────────┬──────────┬─────────┬───────────┐\n│                 snapshot_id                  │ coverage │ symbols │ functions │\n│                   varchar                    │ varchar  │  int64  │   int64   │\n├──────────────────────────────────────────────┼──────────┼─────────┼───────────┤\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ complete │      24 │        11 │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ complete │      46 │        17 │\n└──────────────────────────────────────────────┴──────────┴─────────┴───────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 16,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "25b66b57-5f46-48ed-b7c6-cf22aee5c183",
+          "source_version": 16,
+          "execution_identity": "9beffd4d9635ff3d3af11ececff32d1b1c255825fbcbc193eb862f3f7793ce25",
+          "output_hash": "1949d7277945b401ce1eba6d17a0b4be9767b2dd299115811189aeab362a2eab",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "5b6a1d76-f230-440a-a243-81e9ce08e0fc",
+      "kind": "code",
+      "version": 20,
+      "cell_etag": "cell:sha256:6af0e4b4efeb2af03bf97c017924d2f5360d5b3556855515f9d8cab1a27ae287",
+      "source": "CREATE OR REPLACE TEMP TABLE smoke_review AS\nSELECT spur_graph_notebook_changes(r.notebook_path, l.notebook_path, 'M', l.source, r.source) AS comparison\nFROM smoke_inputs l, smoke_inputs r\nWHERE l.snapshot_id = 'git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41'\n  AND r.snapshot_id = 'git:07db59f08dbced2c8bedd17290c78f57b428a2bc';\nSELECT comparison.status AS coverage, len(comparison.symbol_changes) AS symbol_changes,\n       len(comparison.cell_changes) AS cell_events,\n       list_count(list_filter(comparison.symbol_changes, lambda c: c.kind = 'added')) AS added,\n       list_count(list_filter(comparison.symbol_changes, lambda c: c.kind = 'modified')) AS modified,\n       list_count(list_filter(comparison.symbol_changes, lambda c: c.kind = 'deleted')) AS deleted\nFROM smoke_review;\n",
+      "exec_count": 6,
+      "status": "success",
+      "outputs": [
+        "┌──────────┬────────────────┬─────────────┬───────┬──────────┬─────────┐\n│ coverage │ symbol_changes │ cell_events │ added │ modified │ deleted │\n│ varchar  │     int64      │    int64    │ int64 │  int64   │  int64  │\n├──────────┼────────────────┼─────────────┼───────┼──────────┼─────────┤\n│ complete │             50 │          10 │    12 │        4 │      34 │\n└──────────┴────────────────┴─────────────┴───────┴──────────┴─────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 20,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "9912f796-48ca-4935-95e9-4f130f8ecbeb",
+          "source_version": 20,
+          "execution_identity": "54c4a19243a0efe22ddf29325b2f0f9b4eee3b3bd6c68868ca704a54fae10fe9",
+          "output_hash": "5f665c2a6f6b3ad4cea4cf8acd70e139f044609eb14c390021b76f9b4a9f2a62",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "b49e83d6-24cc-4a89-9bc6-b80b6c889de5",
+      "kind": "code",
+      "version": 24,
+      "cell_etag": "cell:sha256:40ffed23cc3ac166396bffa5104a33ce6fcd4eb92abc12a5c85066200b034cea",
+      "source": "# Independently resolve native source references against original notebook JSON.\ndef one(sql, params=None):\n    return duckdb.execute(sql, params or []).fetchall()[0][0]\n\nroot = Path('/Users/kevintruong/project/SpurCode')\nfrozen_file = root / 'docs/research/artifacts/2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json'\nanchor_file = root / 'docs/research/artifacts/2026-11-17-notebook-symbol-diagnosis-bd-nb4c/frozen-cell-model-input.json'\nassert hashlib.sha256(frozen_file.read_bytes()).hexdigest() == 'bc0e5f23ba34c20149d5c8168f4a3a1fa8b3af3c8759adaef418f2343686b608'\nassert hashlib.sha256(anchor_file.read_bytes()).hexdigest() == '93623d013f4767ac621853e7855aa84a700b73d1814f84c6b3c02a555928fd83'\nanchors = json.loads(anchor_file.read_text())['anchors']\nexpected = {\n    'git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41': (46, 17),\n    'git:07db59f08dbced2c8bedd17290c78f57b428a2bc': (24, 11),\n}\nresolved_refs, matched_anchors = 0, 0\nfor snapshot_id, source, document in duckdb.sql('SELECT snapshot_id, source, document FROM smoke_inputs').fetchall():\n    assert document['status'] == 'complete'\n    cells = json.loads(source)['cells']\n    symbols = [s for c in document['cells'] for s in c['symbols']]\n    functions = [s for s in symbols if s['symbol']['symbol_kind'] == 'function']\n    assert (len(symbols), len(functions)) == expected[snapshot_id]\n    assert len({s['id'] for s in symbols}) == len(symbols)\n    for occurrence in symbols:\n        ref = occurrence['source_ref']\n        original_cell = cells[ref['cell_ordinal']]\n        original = original_cell['source']\n        if isinstance(original, list):\n            original = ''.join(original)\n        raw = original.encode('utf-8')\n        start, end = ref['byte_start'], ref['byte_end']\n        assert original_cell['id'] == ref['cell_id']\n        assert ref['notebook_source_sha256'] == hashlib.sha256(source.encode()).hexdigest()\n        assert ref['cell_source_sha256'] == hashlib.sha256(raw).hexdigest()\n        assert ref['coordinate_space'] == 'decoded_code_cell_utf8'\n        assert 0 <= start < end <= len(raw)\n        assert raw[start:end].decode('utf-8').strip()\n        assert ref['line_start'] == raw[:start].count(b'\\n') + 1\n        assert ref['line_end'] == raw[:end].count(b'\\n') + 1\n        resolved_refs += 1\n    for anchor in [a for a in anchors if a['snapshot_id'] == snapshot_id]:\n        matches = [s for s in functions if s['symbol']['entity_name'] == anchor['entity_name']\n                   and s['source_ref']['cell_id'] == anchor['cell_id']]\n        assert len(matches) == 1\n        for field in ('byte_start', 'byte_end', 'line_start', 'line_end', 'coordinate_space'):\n            assert matches[0]['source_ref'][field] == anchor[field]\n        matched_anchors += 1\n    noop = one('SELECT spur_graph_notebook_changes(?, ?, ?, ?, ?)',\n               [document['path'], document['path'], 'M', source, source])\n    assert noop['status'] == 'complete'\n    assert not noop['symbol_changes'] and not noop['cell_changes']\ncomparison = one('SELECT comparison FROM smoke_review')\nassert len(comparison['symbol_changes']) == 50 and len(comparison['cell_changes']) == 10\nassert resolved_refs == 70 and matched_anchors == 28\nprint(json.dumps({'result': 'PASS', 'original_utf8_refs_resolved': resolved_refs,\n                  'independent_function_anchors': matched_anchors, 'real_noops': 2}, indent=2))\n",
+      "exec_count": 7,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"result\": \"PASS\",\n  \"original_utf8_refs_resolved\": 70,\n  \"independent_function_anchors\": 28,\n  \"real_noops\": 2\n}\n"
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 24,
+          "last_edited_by": "brain",
+          "code_type": "python"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "bd7b6885-a775-4e87-b0b0-1d5345f07829",
+          "source_version": 24,
+          "execution_identity": "b0b69bd909abd7c7a3f2a02a22ed72a23ec0a038f591c3fb31cf875d64456126",
+          "output_hash": "87f1d831dbfde928ba641b42590c6669f4a3df5cdec4a6d84345f3fbfbda49b7",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "14828604-06d4-4b05-8364-d9d4bbf4cc96",
+      "kind": "code",
+      "version": 28,
+      "cell_etag": "cell:sha256:0463a0ee5db92e5333750c47541d42daae1f00c569f9b43e80818db399a687da",
+      "source": "# Small independent examples: these do not reuse the real-repository fixture.\nfrom copy import deepcopy\n\ndef cell(identity, language, source):\n    return {'id': identity, 'cell_type': 'code',\n            'metadata': {'spur': {'code_type': language}},\n            'source': source, 'execution_count': None, 'outputs': []}\n\ndef serialized(notebook):\n    return json.dumps(notebook, ensure_ascii=False)\n\ndef extract(notebook):\n    return one('SELECT spur_graph_notebook_symbols(?::VARCHAR, ?::VARCHAR)',\n               ['independent.ipynb', serialized(notebook)])\n\ndef compare(left, right, kind='M'):\n    return one('SELECT spur_graph_notebook_changes(?::VARCHAR, ?::VARCHAR, ?::VARCHAR, ?::VARCHAR, ?::VARCHAR)',\n               ['independent.ipynb', None, kind,\n                None if left is None else serialized(left),\n                None if right is None else serialized(right)])\n\nchecks = []\ndef check(name, condition):\n    assert condition, name\n    checks.append(name)\n\nbase = {'metadata': {}, 'cells': [\n    cell('rust-a', 'rust', ':dep serde = \"1\" # café\\nfn helper() -> i32 { 1 }\\n'),\n    cell('rust-b', 'rust', 'fn helper() -> i32 { 2 }\\n'),\n    cell('python-a', 'python', 'def calculate(value):\\n    return value + 1\\n'),\n    cell('javascript-a', 'javascript', 'function greet(name) { return \"Hello \" + name; }\\n'),\n]}\ndocument = extract(base)\nsymbols = [s for c in document['cells'] for s in c['symbols']]\nfunctions = [s for s in symbols if s['symbol']['symbol_kind'] == 'function']\ncheck('three languages / four functions', document['status'] == 'complete' and len(functions) == 4)\nhelpers = [s for s in functions if s['symbol']['entity_name'] == 'helper']\ncheck('duplicate helper names stay in separate cells', len(helpers) == 2\n      and len({s['id'] for s in helpers}) == 2\n      and {s['source_ref']['cell_id'] for s in helpers} == {'rust-a', 'rust-b'})\nfirst = document['cells'][0]\nref = first['symbols'][0]['source_ref']\nraw = base['cells'][0]['source'].encode()\ncheck('Rust dep keeps original UTF-8 coordinates', ref['line_start'] == 2\n      and raw[ref['byte_start']:ref['byte_end']].decode().startswith('fn helper()')\n      and first['source']['original'] == base['cells'][0]['source']\n      and first['source']['policy'] == 'evcxr-leading-dep-mask-v1')\n\ntyped = {'metadata': {}, 'cells': [cell('types', 'rust',\n    'type dep = u8;\\ntype load = u8;\\nfn typed(x: dep, y: load) -> dep { x + y }\\n')]}\ntyped_doc = extract(typed)\ncheck('Rust dep/load type aliases are ordinary syntax', typed_doc['status'] == 'complete'\n      and any(s['symbol']['entity_name'] == 'typed' for s in typed_doc['cells'][0]['symbols']))\n\nedited = deepcopy(base)\nedited['cells'][2]['source'] = 'def calculate(value):\\n    return value + 2\\n'\nchanges = compare(base, edited)\ncheck('one function edit gives one modification', changes['status'] == 'complete'\n      and len(changes['symbol_changes']) == 1\n      and changes['symbol_changes'][0]['kind'] == 'modified')\n\ndependency = deepcopy(base)\ndependency['cells'][0]['source'] = dependency['cells'][0]['source'].replace('serde = \"1\"', 'serde = \"2\"')\nchanges = compare(base, dependency)\ncheck('dependency-only edit keeps symbols and emits cell evidence',\n      changes['status'] == 'complete' and not changes['symbol_changes'] and bool(changes['cell_changes']))\n\noutput_only = deepcopy(base)\noutput_only['cells'][2]['execution_count'] = 100\noutput_only['cells'][2]['outputs'] = [{'output_type': 'stream', 'name': 'stdout', 'text': 'cached output'}]\nchanges = compare(base, output_only)\ncheck('output-only edit creates no source changes', not changes['symbol_changes'] and not changes['cell_changes'])\n\nreordered = deepcopy(base)\nreordered['cells'].reverse()\ncheck('cell reorder creates no false symbol edits', not compare(base, reordered)['symbol_changes'])\nadded, deleted = compare(None, base, 'A'), compare(base, None, 'D')\ncheck('added notebook retains four added functions', added['status'] == 'complete'\n      and len(added['symbol_changes']) == 4 and all(s['kind'] == 'added' for s in added['symbol_changes']))\ncheck('deleted notebook retains four deleted functions', deleted['status'] == 'complete'\n      and len(deleted['symbol_changes']) == 4 and all(s['kind'] == 'deleted' for s in deleted['symbol_changes']))\nsame = compare(base, base)\ncheck('same-document no-op stays empty', same['status'] == 'complete'\n      and not same['symbol_changes'] and not same['cell_changes'])\n\nunsupported = extract({'metadata': {}, 'cells': [cell('load', 'rust', ':load secret.rs\\n')]})\ncheck('unsupported command reports partial coverage', unsupported['status'] == 'partial'\n      and bool(unsupported['diagnostics']))\nunknown = extract({'metadata': {}, 'cells': [cell('unknown', 'cobol', 'DISPLAY \"HELLO\".')]})\ncheck('unknown language reports partial coverage', unknown['status'] == 'partial' and bool(unknown['diagnostics']))\ninvalid = compare(None, base, 'M')\ncheck('missing comparison side reports invalid', invalid['status'] == 'invalid' and bool(invalid['diagnostics']))\ninvalid_json = one(\"SELECT spur_graph_notebook_symbols('bad.ipynb', '{')\")\ncheck('malformed JSON reports invalid', invalid_json['status'] == 'invalid' and bool(invalid_json['diagnostics']))\nordinary = one(\"SELECT spur_graph_symbols('ordinary.rs', 'fn ordinary() {}')\")\ncheck('ordinary Rust API remains usable', len(ordinary) == 1 and ordinary[0]['entity_name'] == 'ordinary')\ntry:\n    one(\"SELECT spur_graph_symbols('legacy.ipynb', '{}')\")\nexcept duckdb.InvalidInputException as error:\n    check('legacy notebook API names the typed replacement', 'spur_graph_notebook_symbols' in str(error))\nelse:\n    raise AssertionError('Legacy API silently accepted notebook input')\ncheck('connection remains usable after expected error', one('SELECT 42') == 42)\n\nduckdb.execute('CREATE OR REPLACE TEMP TABLE smoke_cases (scenario VARCHAR, result VARCHAR)')\nduckdb.executemany('INSERT INTO smoke_cases VALUES (?, ?)', [(name, 'PASS') for name in checks])\nduckdb.execute(\"CREATE OR REPLACE TEMP TABLE smoke_synthetic AS SELECT spur_graph_notebook_symbols('independent.ipynb', ?::VARCHAR) AS document\",\n               [serialized(base)])\nprint(json.dumps({'result': 'PASS', 'independent_scenarios': len(checks),\n                  'duplicate_helpers': len(helpers), 'functions': len(functions)}, indent=2))\n",
+      "exec_count": 8,
+      "status": "success",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"result\": \"PASS\",\n  \"independent_scenarios\": 18,\n  \"duplicate_helpers\": 2,\n  \"functions\": 4\n}\n"
+        }
+      ],
+      "metadata": {
+        "spur": {
+          "version": 28,
+          "last_edited_by": "brain",
+          "code_type": "python"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "3cf45d54-4752-4540-9381-8ac70260f301",
+          "source_version": 28,
+          "execution_identity": "01446b011f5628533a736dd85890fee01cc0c9ca5aee162267bb3b460f0fcfa4",
+          "output_hash": "d429939048974f9480e22bdd6bd37764f4a46f74f14830c80b252460f4c63f00",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "6b7d40f7-f793-42f0-af71-924ee4882236",
+      "kind": "code",
+      "version": 32,
+      "cell_etag": "cell:sha256:d2da7021cb6274b3d7b94dacf0ea095bb1ab1dc7638358b19ca1bec6fa007544",
+      "source": "-- Inspect the independent acceptance scenarios.\nSELECT scenario, result FROM smoke_cases ORDER BY scenario;\n",
+      "exec_count": 9,
+      "status": "success",
+      "outputs": [
+        "┌────────────────────────────────────────────────────────────┬─────────┐\n│                          scenario                          │ result  │\n│                          varchar                           │ varchar │\n├────────────────────────────────────────────────────────────┼─────────┤\n│ Rust dep keeps original UTF-8 coordinates                  │ PASS    │\n│ Rust dep/load type aliases are ordinary syntax             │ PASS    │\n│ added notebook retains four added functions                │ PASS    │\n│ cell reorder creates no false symbol edits                 │ PASS    │\n│ connection remains usable after expected error             │ PASS    │\n│ deleted notebook retains four deleted functions            │ PASS    │\n│ dependency-only edit keeps symbols and emits cell evidence │ PASS    │\n│ duplicate helper names stay in separate cells              │ PASS    │\n│ legacy notebook API names the typed replacement            │ PASS    │\n│ malformed JSON reports invalid                             │ PASS    │\n│ missing comparison side reports invalid                    │ PASS    │\n│ one function edit gives one modification                   │ PASS    │\n│ ordinary Rust API remains usable                           │ PASS    │\n│ output-only edit creates no source changes                 │ PASS    │\n│ same-document no-op stays empty                            │ PASS    │\n│ three languages / four functions                           │ PASS    │\n│ unknown language reports partial coverage                  │ PASS    │\n│ unsupported command reports partial coverage               │ PASS    │\n└────────────────────────────────────────────────────────────┴─────────┘\n  18 rows                                                    2 columns\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 32,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "f2bc1af9-ccee-49d2-9cf8-813a178d953e",
+          "source_version": 32,
+          "execution_identity": "939dfe77d8dbe23f3dcc84260ebb89d865ff64ceb880b3e3413b373b83d7be0b",
+          "output_hash": "641be8ca4097524cd8d797bb6e4569857f33bdd5cd842dd9498a6ab9fe88e35a",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "4c462645-030e-4288-9fd7-28535ce402de",
+      "kind": "code",
+      "version": 36,
+      "cell_etag": "cell:sha256:cdb6eaf936e51ad9d99fef4f20de88b2d2c1fe771316c25bd9bd4f48aa5c7927",
+      "source": "-- Playground: two helper functions keep their own cell identities and ranges.\nSELECT c.id AS cell_id, c.\"language\" AS cell_language,\n       s.symbol.entity_name AS function, s.source_ref.line_start AS original_line,\n       s.source_ref.byte_start, s.source_ref.byte_end\nFROM smoke_synthetic, UNNEST(document.cells) cells(c), UNNEST(c.symbols) symbols(s)\nWHERE s.symbol.symbol_kind = 'function' ORDER BY cell_id;\n",
+      "exec_count": 10,
+      "status": "success",
+      "outputs": [
+        "┌──────────────┬───────────────┬───────────┬───────────────┬────────────┬──────────┐\n│   cell_id    │ cell_language │ function  │ original_line │ byte_start │ byte_end │\n│   varchar    │    varchar    │  varchar  │    uint64     │   uint64   │  uint64  │\n├──────────────┼───────────────┼───────────┼───────────────┼────────────┼──────────┤\n│ javascript-a │ Javascript    │ greet     │             1 │          0 │       48 │\n│ python-a     │ Python        │ calculate │             1 │          0 │       42 │\n│ rust-a       │ Rust          │ helper    │             2 │         25 │       49 │\n│ rust-b       │ Rust          │ helper    │             1 │          0 │       24 │\n└──────────────┴───────────────┴───────────┴───────────────┴────────────┴──────────┘\n"
+      ],
+      "metadata": {
+        "spur": {
+          "version": 36,
+          "last_edited_by": "brain",
+          "code_type": "sql"
+        },
+        "spur_output_provenance": {
+          "session_id": "09d517ab-36ba-4a4b-82d3-095274f42f0a",
+          "run_id": "a2bcad58-8f3e-4d2a-be2a-7d1d849cc2a1",
+          "source_version": 36,
+          "execution_identity": "079d1424643d4755085d80e5f738046e068c9266af95802e5c3a941f3f7fed40",
+          "output_hash": "e02b86963bc791129309ff60e7e883b1b242456c3efa753b0d6461b8a53f2c9b",
+          "status": "succeeded",
+          "dependencies": [],
+          "published_ports": [],
+          "ports_at_start": [],
+          "lineage_complete": true
+        }
+      },
+      "output_indices": [
+        0
+      ]
+    },
+    {
+      "notebook_id": "nb-8df04a2fb0819795b74ed640",
+      "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-local-main-playground.ipynb",
+      "revision": 40,
+      "id": "24f8973c-012e-4205-b016-7f73850030a4",
+      "kind": "markdown",
+      "version": 40,
+      "cell_etag": "cell:sha256:472efae3605634c17b8200d03d27062a69a77ef729d9908facf2ba275e6282a4",
+      "source": "## Result\n\nThe extension loaded in a fresh DuckDB **2.0.0** kernel. Before loading, the kernel had **zero Spur Graph functions**. The loaded candidate hash and extractor identity match the reviewed implementation merged on local `main`.\n\n- Real snapshots: **46/24 symbols**, **17/11 functions**, **50 symbol changes**, **10 cell events**.\n- Independent original-source checks: **70 UTF-8 references**, **28 function anchors**, and both real no-op comparisons passed.\n- All **18 independent scenarios** passed, including duplicate names in different cells, Rust `:dep` and type annotations, ordinary-file compatibility, additions/deletions, output-only edits, reordering, invalid inputs and explicit partial coverage.\n\nFor a full rerun, **restart this notebook’s kernel**, keep DuckDB 2.0.0 selected, and run the cells from top to bottom. The preflight intentionally requires no already-loaded Spur Graph functions. After setup, the SQL tables `smoke_inputs`, `smoke_symbols`, `smoke_review`, `smoke_cases` and `smoke_synthetic` are available for further queries.\n\nThis verifies the local unsigned extension. Cross-cell execution semantics and the complete Explore/Review app UI remain separate work. No extension source changes were needed for this probe.",
+      "exec_count": null,
+      "status": "idle",
+      "outputs": [],
+      "metadata": {
+        "spur": {
+          "version": 40,
+          "last_edited_by": "brain"
+        }
+      },
+      "output_indices": []
+    }
+  ]
+}
