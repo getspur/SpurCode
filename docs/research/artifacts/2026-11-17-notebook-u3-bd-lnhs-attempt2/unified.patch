@@ -1,0 +1,1075 @@
+diff --git a/crates/spur-graph-duckdb/src/file_facts.rs b/crates/spur-graph-duckdb/src/file_facts.rs
+index 1611c3542..7726d1407 100644
+--- a/crates/spur-graph-duckdb/src/file_facts.rs
++++ b/crates/spur-graph-duckdb/src/file_facts.rs
+@@ -588,6 +588,16 @@ fn diagnostic_error(error: ExtractError) -> Result<FileFactsResult> {
+             | "logical path must name a file"
+             | "logical path must not have a drive prefix" => "invalid_path",
+             "parse .ipynb JSON" | "read .ipynb as UTF-8" => "malformed_input",
++            // Shared normalization appends its diagnostic inventory to these
++            // known input errors. Require the list delimiters as well as the
++            // exact context so unrelated setup/internal errors still propagate.
++            message
++                if (message.starts_with("parse .ipynb JSON: [")
++                    || message.starts_with("invalid .ipynb notebook inventory: ["))
++                    && message.ends_with(']') =>
++            {
++                "malformed_input"
++            }
+             _ => {
+                 return Err(Error::internal(format!(
+                     "spur_graph_file_facts_result: {error}"
+@@ -827,6 +837,46 @@ mod diagnostic_tests {
+         }
+     }
+ 
++    #[test]
++    fn malformed_notebook_json_keeps_core_diagnostic() {
++        assert_notebook_input_diagnostics(&["", "not JSON", "{"], "parse .ipynb JSON: [");
++    }
++
++    #[test]
++    fn invalid_notebook_inventory_keeps_core_diagnostic() {
++        assert_notebook_input_diagnostics(
++            &[
++                "{}",
++                r#"{"cells":null}"#,
++                r#"{"cells":[{"cell_type":"code","source":[1]}]}"#,
++                r#"{"cells":[{"source":"fn helper() {}"}]}"#,
++                r#"{"cells":[{"id":"same","cell_type":"code","source":""},{"id":"same","cell_type":"code","source":""}]}"#,
++            ],
++            "invalid .ipynb notebook inventory: [",
++        );
++    }
++
++    fn assert_notebook_input_diagnostics(sources: &[&str], prefix: &str) {
++        let mut parser = BytesExtractor::for_language(Language::JupyterNotebook).unwrap();
++        for source in sources {
++            let error = parser
++                .extract_file_facts(Path::new("bad.ipynb"), source.as_bytes())
++                .err()
++                .expect("invalid notebook must fail core extraction");
++            assert!(
++                matches!(&error, ExtractError::Extraction(message) if message.starts_with(prefix)),
++                "{error}"
++            );
++            let message = error.to_string();
++            let result = diagnostic_error(error)
++                .expect("known core notebook input error must retain row diagnostics");
++            assert_eq!(result.status, "extraction_error");
++            assert_eq!(result.error_code.as_deref(), Some("malformed_input"));
++            assert_eq!(result.error_message.as_deref(), Some(message.as_str()));
++            assert!(result.facts.is_none());
++        }
++    }
++
+     #[test]
+     fn native_row_errors_keep_diagnostics_and_internal_errors_propagate() {
+         let bytes = vec![0xff];
+@@ -854,6 +904,12 @@ mod diagnostic_tests {
+             ExtractError::Setup("query compiler failed".into()),
+             ExtractError::Extraction("set rust parser language".into()),
+             ExtractError::Extraction("unexpected kernel failure".into()),
++            ExtractError::Extraction("parse .ipynb JSON parser setup failed".into()),
++            ExtractError::Extraction("parse .ipynb JSON: parser setup failed".into()),
++            ExtractError::Extraction("parse .ipynb JSON: [parser setup failed".into()),
++            ExtractError::Extraction("invalid .ipynb notebook infrastructure".into()),
++            ExtractError::Extraction("invalid .ipynb notebook inventory: setup failed".into()),
++            ExtractError::Extraction("invalid .ipynb notebook inventory: [setup failed".into()),
+         ] {
+             let message = error.to_string();
+             let error = diagnostic_error(error)
+diff --git a/crates/spur-graph-duckdb/src/lib.rs b/crates/spur-graph-duckdb/src/lib.rs
+index 008b42131..c1d9c45c3 100644
+--- a/crates/spur-graph-duckdb/src/lib.rs
++++ b/crates/spur-graph-duckdb/src/lib.rs
+@@ -10,6 +10,7 @@
+ 
+ mod file_facts;
+ mod metadata;
++mod notebook;
+ 
+ use std::collections::HashMap;
+ use std::path::Path;
+@@ -174,6 +175,8 @@ impl ScalarCallbacks for MatchSymbols {
+                 rows.push(None);
+                 continue;
+             };
++            reject_legacy_notebook(path, "spur_graph_notebook_changes")?;
++            reject_legacy_notebook(old_path, "spur_graph_notebook_changes")?;
+             let kind = match kind {
+                 "A" => FileChangeKind::Added,
+                 "M" => FileChangeKind::Modified,
+@@ -318,6 +321,7 @@ impl ScalarCallbacks for ParseSymbols {
+                 rows.push(None);
+                 continue;
+             };
++            reject_legacy_notebook(path, "spur_graph_notebook_symbols")?;
+             let path = Path::new(path);
+             let language = Language::from_path(path).ok_or_else(|| {
+                 Error::invalid_input(format!("unsupported language for path: {}", path.display()))
+@@ -379,6 +383,7 @@ impl ScalarCallbacks for ParseSymbols {
+ pub fn entrypoint(extension: &Extension) -> Result<()> {
+     metadata::register(extension)?;
+     file_facts::register(extension)?;
++    notebook::register(extension)?;
+     ScalarFunctionBuilder::new(
+         "spur_graph_symbols",
+         SignatureBuilder::new()
+@@ -387,7 +392,7 @@ pub fn entrypoint(extension: &Extension) -> Result<()> {
+             .return_type(List::<SymbolFact>::logical_type(extension)?)
+             .documentation(
+                 FunctionDocumentationBuilder::new()
+-                    .description("Extract SPUR symbol facts from source text using the language of its logical path")
++                    .description("Extract SPUR symbol facts from ordinary source text using its logical path; notebooks require spur_graph_notebook_symbols for cell coverage and original-source refs")
+                     .add_example("Parse Rust source", "SELECT unnest(spur_graph_symbols('input.rs', 'pub fn alpha() {}'), recursive := true)")
+                     .add_category("spur_graph"),
+             ),
+@@ -407,10 +412,19 @@ pub fn entrypoint(extension: &Extension) -> Result<()> {
+             .return_type(SymbolDiff::logical_type(extension)?)
+             .documentation(
+                 FunctionDocumentationBuilder::new()
+-                    .description("Match ordered extracted symbol facts for one file-change pair; project commit and parent lineage separately")
++                    .description("Match ordered extracted ordinary-file symbols; notebooks require spur_graph_notebook_changes for cell-aware comparison and coverage; project commit and parent lineage separately")
+                     .add_category("spur_graph"),
+             ),
+         MatchSymbols,
+     )
+     .register(extension)
+ }
++
++fn reject_legacy_notebook(path: &str, api: &str) -> Result<()> {
++    if Language::from_path(Path::new(path)) == Some(Language::JupyterNotebook) {
++        return Err(Error::invalid_input(format!(
++            "notebook paths require {api}; pass original notebook source text to retain cell identities, coverage diagnostics and source references"
++        )));
++    }
++    Ok(())
++}
+diff --git a/crates/spur-graph-duckdb/src/notebook.rs b/crates/spur-graph-duckdb/src/notebook.rs
+new file mode 100644
+index 000000000..f181f1a47
+--- /dev/null
++++ b/crates/spur-graph-duckdb/src/notebook.rs
+@@ -0,0 +1,597 @@
++//! Additive notebook contract. Core owns normalization, preparation and matching;
++//! this module only translates typed facts and sizes DuckDB's nested vectors.
++
++use duckdb_neo::connection::Context;
++use duckdb_neo::data_chunk::{ChildrenMut, VectorCollection};
++use duckdb_neo::enums::FunctionProperty;
++use duckdb_neo::error::Error;
++use duckdb_neo::extension::Extension;
++use duckdb_neo::scalar::{ScalarCallbacks, ScalarFunctionBuilder};
++use duckdb_neo::signature::{FunctionDocumentationBuilder, FunctionParameter, SignatureBuilder};
++use duckdb_neo::types::List;
++use duckdb_neo::vector::{NativeElement, RowWriter, Unknown, Vector};
++use duckdb_neo::{AsDuckDB, DuckDBType, Result};
++use spur_graph::extract::notebook_model as model;
++use spur_graph::extract::notebook_symbols as core;
++
++use super::SymbolFact;
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct Diagnostic {
++    code: String,
++    side: Option<String>,
++    cell_ordinal: Option<u64>,
++    byte_start: Option<u64>,
++    byte_end: Option<u64>,
++    message: String,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct SourceRef {
++    notebook_path: String,
++    notebook_source_sha256: String,
++    cell_id: String,
++    cell_ordinal: u64,
++    cell_identity_quality: String,
++    cell_source_sha256: String,
++    cell_language: String,
++    coordinate_space: String,
++    byte_start: u64,
++    byte_end: u64,
++    line_start: u64,
++    line_end: u64,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct Symbol {
++    id: String,
++    symbol: SymbolFact,
++    source_ref: SourceRef,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct Directive {
++    text: String,
++    byte_start: u64,
++    byte_end: u64,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct PreparedSource {
++    original: String,
++    original_sha256: String,
++    analysis: String,
++    analysis_sha256: String,
++    policy: String,
++    coordinate_map: String,
++    directives: List<Directive>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct Cell {
++    id: String,
++    identity_quality: String,
++    ordinal: u64,
++    cell_type: Option<String>,
++    language: Option<String>,
++    metadata_json: String,
++    source: Option<PreparedSource>,
++    status: String,
++    diagnostics: List<Diagnostic>,
++    symbols: List<Symbol>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct Document {
++    contract_version: u32,
++    path: String,
++    source_sha256: String,
++    metadata_json: String,
++    cells: List<Cell>,
++    status: String,
++    diagnostics: List<Diagnostic>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct SymbolChange {
++    kind: String,
++    before: Option<Symbol>,
++    after: Option<Symbol>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct CellRef {
++    notebook_path: String,
++    notebook_source_sha256: String,
++    cell_id: String,
++    cell_ordinal: u64,
++    cell_source_sha256: Option<String>,
++    language: Option<String>,
++    cell_type: Option<String>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct CellChange {
++    kind: String,
++    before: Option<CellRef>,
++    after: Option<CellRef>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct DocumentChange {
++    kind: String,
++    before_path: Option<String>,
++    after_path: Option<String>,
++    before_metadata_json: Option<String>,
++    after_metadata_json: Option<String>,
++}
++
++#[derive(AsDuckDB)]
++#[duckdb(writer)]
++struct Comparison {
++    contract_version: u32,
++    status: String,
++    diagnostics: List<Diagnostic>,
++    before: Option<Document>,
++    after: Option<Document>,
++    symbol_changes: List<SymbolChange>,
++    cell_changes: List<CellChange>,
++    document_changes: List<DocumentChange>,
++}
++
++// Exhaustive mappings freeze SQL spellings independently of Debug formatting.
++macro_rules! enum_name {
++    ($fn:ident, $type:path, {$($variant:ident => $name:literal),+ $(,)?}) => {
++        fn $fn(value: $type) -> &'static str {
++            use $type as E;
++            match value { $(E::$variant => $name),+ }
++        }
++    };
++}
++enum_name!(status, model::NotebookStatus, {
++    Complete => "complete", Partial => "partial", Invalid => "invalid"
++});
++enum_name!(identity, model::CellIdentityQuality, {
++    Explicit => "explicit", SourceDerived => "source_derived", Ambiguous => "ambiguous"
++});
++enum_name!(normalization_code, model::NotebookDiagnosticCode, {
++    InvalidJson => "invalid_json", InvalidNotebook => "invalid_notebook",
++    InvalidCells => "invalid_cells", InvalidCell => "invalid_cell",
++    InvalidCellType => "invalid_cell_type", InvalidCellId => "invalid_cell_id",
++    InvalidSource => "invalid_source", InvalidMetadata => "invalid_metadata",
++    DuplicateEffectiveId => "duplicate_effective_id", SourceDerivedIdentity => "source_derived_identity",
++    RepeatedAnonymousSource => "repeated_anonymous_source", UnsupportedLanguage => "unsupported_language",
++    UnsupportedRustCommand => "unsupported_rust_command", UnsupportedRustDependency => "unsupported_rust_dependency",
++    NonLeadingRustDirective => "non_leading_rust_directive", UnsupportedPythonMagic => "unsupported_python_magic"
++});
++enum_name!(symbol_kind, core::NotebookSymbolChangeKind, {
++    Added => "added", Modified => "modified", Deleted => "deleted", Renamed => "renamed"
++});
++enum_name!(cell_kind, core::NotebookCellChangeKind, {
++    Added => "added", Deleted => "deleted", Moved => "moved", TypeChanged => "type_changed",
++    LanguageChanged => "language_changed", SourceChanged => "source_changed", MetadataChanged => "metadata_changed",
++    DependencyDirectivesChanged => "dependency_directives_changed"
++});
++enum_name!(document_kind, core::NotebookDocumentChangeKind, {
++    Added => "added", Deleted => "deleted", Renamed => "renamed", MetadataChanged => "metadata_changed"
++});
++
++impl From<core::SymbolDiagnostic> for Diagnostic {
++    fn from(d: core::SymbolDiagnostic) -> Self {
++        use core::SymbolDiagnosticCode as C;
++        let code = match d.code {
++            C::Normalization(code) => normalization_code(code),
++            C::InvalidPath => "invalid_path",
++            C::MissingSide => "missing_side",
++            C::UnexpectedSide => "unexpected_side",
++            C::UnsupportedChangeKind => "unsupported_change_kind",
++            C::UnsupportedCellLanguage => "unsupported_cell_language",
++            C::AmbiguousSymbolIdentity => "ambiguous_symbol_identity",
++            C::AmbiguousCellIdentity => "ambiguous_cell_identity",
++            C::AmbiguousRename => "ambiguous_rename",
++            C::SnapshotIdentityCollision => "snapshot_identity_collision",
++        };
++        Self {
++            code: code.into(),
++            side: d.side.map(|s| {
++                match s {
++                    core::NotebookSide::Before => "before",
++                    core::NotebookSide::After => "after",
++                }
++                .into()
++            }),
++            cell_ordinal: d.cell_ordinal.map(|n| n as u64),
++            byte_start: d.byte_range.map(|r| r[0] as u64),
++            byte_end: d.byte_range.map(|r| r[1] as u64),
++            message: d.message,
++        }
++    }
++}
++
++fn list<T, U: Into<T>>(items: impl IntoIterator<Item = U>) -> List<T> {
++    items.into_iter().map(|item| Some(item.into())).collect()
++}
++
++impl From<core::SourceRef> for SourceRef {
++    fn from(r: core::SourceRef) -> Self {
++        let coordinate_space = match r.coordinate_space {
++            core::CoordinateSpace::DecodedCodeCellUtf8 => "decoded_code_cell_utf8",
++        };
++        Self {
++            notebook_path: r.notebook_path,
++            notebook_source_sha256: r.notebook_source_sha256,
++            cell_id: r.cell_id,
++            cell_ordinal: r.cell_ordinal as u64,
++            cell_identity_quality: identity(r.cell_identity_quality).into(),
++            cell_source_sha256: r.cell_source_sha256,
++            cell_language: format!("{:?}", r.cell_language),
++            coordinate_space: coordinate_space.into(),
++            byte_start: r.byte_range[0] as u64,
++            byte_end: r.byte_range[1] as u64,
++            line_start: r.line_range[0] as u64,
++            line_end: r.line_range[1] as u64,
++        }
++    }
++}
++impl From<core::NotebookSymbol> for Symbol {
++    fn from(s: core::NotebookSymbol) -> Self {
++        Self {
++            id: s.id,
++            symbol: s.symbol.into(),
++            source_ref: s.source_ref.into(),
++        }
++    }
++}
++impl From<model::PreparedSource> for PreparedSource {
++    fn from(s: model::PreparedSource) -> Self {
++        let coordinate_map = match s.coordinate_map {
++            model::SourceCoordinateMap::Identity => "identity",
++        };
++        Self {
++            original: s.original,
++            original_sha256: s.original_sha256,
++            analysis: s.analysis,
++            analysis_sha256: s.analysis_sha256,
++            policy: s.policy.into(),
++            coordinate_map: coordinate_map.into(),
++            directives: list(s.directives.into_iter().map(|d| Directive {
++                text: d.text,
++                byte_start: d.byte_range[0] as u64,
++                byte_end: d.byte_range[1] as u64,
++            })),
++        }
++    }
++}
++impl From<core::NotebookCellSymbols> for Cell {
++    fn from(c: core::NotebookCellSymbols) -> Self {
++        let cell = c.cell;
++        Self {
++            id: cell.id,
++            identity_quality: identity(cell.identity_quality).into(),
++            ordinal: cell.ordinal as u64,
++            cell_type: cell.cell_type,
++            language: cell.language.map(|l| format!("{l:?}")),
++            metadata_json: cell.metadata.to_string(),
++            source: cell.source.map(Into::into),
++            status: status(cell.status).into(),
++            diagnostics: list(cell.diagnostics.into_iter().map(|d| Diagnostic {
++                code: normalization_code(d.code).into(),
++                side: None,
++                cell_ordinal: d.cell_ordinal.map(|n| n as u64),
++                byte_start: d.byte_range.map(|r| r[0] as u64),
++                byte_end: d.byte_range.map(|r| r[1] as u64),
++                message: d.message,
++            })),
++            symbols: list(c.symbols),
++        }
++    }
++}
++impl From<core::NotebookSymbolDocument> for Document {
++    fn from(d: core::NotebookSymbolDocument) -> Self {
++        Self {
++            contract_version: d.contract_version,
++            path: d.path,
++            source_sha256: d.source_sha256,
++            metadata_json: d.metadata.to_string(),
++            cells: list(d.cells),
++            status: status(d.status).into(),
++            diagnostics: list(d.diagnostics),
++        }
++    }
++}
++impl From<core::CellRef> for CellRef {
++    fn from(r: core::CellRef) -> Self {
++        Self {
++            notebook_path: r.notebook_path,
++            notebook_source_sha256: r.notebook_source_sha256,
++            cell_id: r.cell_id,
++            cell_ordinal: r.cell_ordinal as u64,
++            cell_source_sha256: r.cell_source_sha256,
++            language: r.language.map(|l| format!("{l:?}")),
++            cell_type: r.cell_type,
++        }
++    }
++}
++impl From<core::NotebookComparison> for Comparison {
++    fn from(c: core::NotebookComparison) -> Self {
++        Self {
++            contract_version: c.contract_version,
++            status: status(c.status).into(),
++            diagnostics: list(c.diagnostics),
++            before: c.before.map(Into::into),
++            after: c.after.map(Into::into),
++            symbol_changes: list(c.symbol_changes.into_iter().map(|c| SymbolChange {
++                kind: symbol_kind(c.kind).into(),
++                before: c.before.map(Into::into),
++                after: c.after.map(Into::into),
++            })),
++            cell_changes: list(c.cell_changes.into_iter().map(|c| CellChange {
++                kind: cell_kind(c.kind).into(),
++                before: c.before.map(Into::into),
++                after: c.after.map(Into::into),
++            })),
++            document_changes: list(c.document_changes.into_iter().map(|c| DocumentChange {
++                kind: document_kind(c.kind).into(),
++                before_path: c.before_path,
++                after_path: c.after_path,
++                before_metadata_json: c.before_metadata.map(|v| v.to_string()),
++                after_metadata_json: c.after_metadata.map(|v| v.to_string()),
++            })),
++        }
++    }
++}
++
++fn missing_children() -> Error {
++    Error::internal("spur_graph_notebook: nested vector children missing")
++}
++
++fn reserve_list<T: NativeElement>(
++    fields: &mut ChildrenMut<'_>,
++    index: usize,
++    rows: &[&T],
++    reserve: impl FnOnce(&mut ChildrenMut<'_>, &[&T]) -> Result<()>,
++) -> Result<()> {
++    let mut vector = fields.get_vector_at_mut::<List<T>>(index)?;
++    vector.set_child_size(rows.len())?;
++    let mut elements = vector.children_mut().ok_or_else(missing_children)?;
++    let mut elements = elements.get_vector_at_mut::<T>(0)?;
++    reserve(
++        &mut elements.children_mut().ok_or_else(missing_children)?,
++        rows,
++    )
++}
++
++fn reserve_struct<T: NativeElement>(
++    fields: &mut ChildrenMut<'_>,
++    index: usize,
++    rows: &[&T],
++    reserve: impl FnOnce(&mut ChildrenMut<'_>, &[&T]) -> Result<()>,
++) -> Result<()> {
++    let mut vector = fields.get_vector_at_mut::<T>(index)?;
++    reserve(
++        &mut vector.children_mut().ok_or_else(missing_children)?,
++        rows,
++    )
++}
++
++fn reserve_symbols(fields: &mut ChildrenMut<'_>, rows: &[&Symbol]) -> Result<()> {
++    let count = rows
++        .iter()
++        .try_fold(0usize, |n, s| n.checked_add(s.symbol.tokens.0.len()))
++        .ok_or_else(|| Error::internal("spur_graph_notebook: token count overflow"))?;
++    fields
++        .get_vector_at_mut::<SymbolFact>(1)?
++        .children_mut()
++        .ok_or_else(missing_children)?
++        .get_vector_at_mut::<List<String>>(8)?
++        .set_child_size(count)
++}
++
++fn reserve_cells(fields: &mut ChildrenMut<'_>, rows: &[&Cell]) -> Result<()> {
++    let diagnostics = rows.iter().map(|c| c.diagnostics.0.len()).sum();
++    fields
++        .get_vector_at_mut::<List<Diagnostic>>(8)?
++        .set_child_size(diagnostics)?;
++    let sources: Vec<_> = rows.iter().filter_map(|c| c.source.as_ref()).collect();
++    reserve_struct(fields, 6, &sources, |fields, rows| {
++        fields
++            .get_vector_at_mut::<List<Directive>>(6)?
++            .set_child_size(rows.iter().map(|s| s.directives.0.len()).sum())
++    })?;
++    let symbols: Vec<_> = rows
++        .iter()
++        .flat_map(|c| c.symbols.0.iter().flatten())
++        .collect();
++    reserve_list(fields, 9, &symbols, reserve_symbols)
++}
++
++fn reserve_documents(fields: &mut ChildrenMut<'_>, rows: &[&Document]) -> Result<()> {
++    let diagnostics = rows.iter().map(|d| d.diagnostics.0.len()).sum();
++    fields
++        .get_vector_at_mut::<List<Diagnostic>>(6)?
++        .set_child_size(diagnostics)?;
++    let cells: Vec<_> = rows
++        .iter()
++        .flat_map(|d| d.cells.0.iter().flatten())
++        .collect();
++    reserve_list(fields, 4, &cells, reserve_cells)
++}
++
++fn reserve_comparisons(fields: &mut ChildrenMut<'_>, rows: &[&Comparison]) -> Result<()> {
++    fields
++        .get_vector_at_mut::<List<Diagnostic>>(2)?
++        .set_child_size(rows.iter().map(|c| c.diagnostics.0.len()).sum())?;
++    for index in [3, 4] {
++        let docs: Vec<_> = rows
++            .iter()
++            .filter_map(|c| {
++                if index == 3 {
++                    c.before.as_ref()
++                } else {
++                    c.after.as_ref()
++                }
++            })
++            .collect();
++        reserve_struct(fields, index, &docs, reserve_documents)?;
++    }
++    let changes: Vec<_> = rows
++        .iter()
++        .flat_map(|c| c.symbol_changes.0.iter().flatten())
++        .collect();
++    reserve_list(fields, 5, &changes, |fields, rows| {
++        for index in [1, 2] {
++            let symbols: Vec<_> = rows
++                .iter()
++                .filter_map(|c| {
++                    if index == 1 {
++                        c.before.as_ref()
++                    } else {
++                        c.after.as_ref()
++                    }
++                })
++                .collect();
++            reserve_struct(fields, index, &symbols, reserve_symbols)?;
++        }
++        Ok(())
++    })?;
++    fields
++        .get_vector_at_mut::<List<CellChange>>(6)?
++        .set_child_size(rows.iter().map(|c| c.cell_changes.0.len()).sum())?;
++    fields
++        .get_vector_at_mut::<List<DocumentChange>>(7)?
++        .set_child_size(rows.iter().map(|c| c.document_changes.0.len()).sum())
++}
++
++struct ParseNotebook;
++impl ScalarCallbacks for ParseNotebook {
++    type BindData = ();
++    type InitData = ();
++    fn exec(
++        &self,
++        _context: &Context,
++        _bind: Option<&()>,
++        _init: Option<&mut ()>,
++        vectors: &mut VectorCollection,
++        output: Vector<'_, Unknown>,
++    ) -> Result<()> {
++        let paths = vectors.get_vector_at::<String>(0)?;
++        let sources = vectors.get_vector_at::<String>(1)?;
++        let paths = paths.reader()?;
++        let sources = sources.reader()?;
++        let mut rows: Vec<Option<Document>> = Vec::with_capacity(vectors.row_count()?);
++        for index in 0..vectors.row_count()? {
++            rows.push(match (paths.get(index)?, sources.get(index)?) {
++                (Some(path), Some(source)) => Some(
++                    core::extract_notebook_symbols(path, source.as_bytes())
++                        .map_err(|e| {
++                            Error::internal(format!("spur_graph_notebook_symbols: {e:#}"))
++                        })?
++                        .into(),
++                ),
++                _ => None,
++            });
++        }
++        let mut output = output.cast::<Document>()?;
++        output.set_size(rows.len())?;
++        // Allocate every LIST descendant before any writer borrows the buffers,
++        // including children of absent optional structs and zero-length lists.
++        reserve_documents(
++            &mut output.children_mut().ok_or_else(missing_children)?,
++            &rows.iter().flatten().collect::<Vec<_>>(),
++        )?;
++        let mut writer = output.row_writer()?;
++        for (index, row) in rows.iter().enumerate() {
++            writer.set_option(index, row.as_ref())?;
++        }
++        Ok(())
++    }
++}
++
++struct CompareNotebooks;
++impl ScalarCallbacks for CompareNotebooks {
++    type BindData = ();
++    type InitData = ();
++    fn exec(
++        &self,
++        _context: &Context,
++        _bind: Option<&()>,
++        _init: Option<&mut ()>,
++        vectors: &mut VectorCollection,
++        output: Vector<'_, Unknown>,
++    ) -> Result<()> {
++        let paths = vectors.get_vector_at::<String>(0)?;
++        let old_paths = vectors.get_vector_at::<String>(1)?;
++        let kinds = vectors.get_vector_at::<String>(2)?;
++        let left = vectors.get_vector_at::<String>(3)?;
++        let right = vectors.get_vector_at::<String>(4)?;
++        let paths = paths.reader()?;
++        let old_paths = old_paths.reader()?;
++        let kinds = kinds.reader()?;
++        let left = left.reader()?;
++        let right = right.reader()?;
++        let mut rows: Vec<Option<Comparison>> = Vec::with_capacity(vectors.row_count()?);
++        for index in 0..vectors.row_count()? {
++            rows.push(match (paths.get(index)?, kinds.get(index)?) {
++                (Some(path), Some(kind)) => Some(
++                    core::compare_notebook_sources(
++                        path,
++                        old_paths.get(index)?,
++                        kind,
++                        left.get(index)?.map(str::as_bytes),
++                        right.get(index)?.map(str::as_bytes),
++                    )
++                    .map_err(|e| Error::internal(format!("spur_graph_notebook_changes: {e:#}")))?
++                    .into(),
++                ),
++                _ => None,
++            });
++        }
++        let mut output = output.cast::<Comparison>()?;
++        output.set_size(rows.len())?;
++        reserve_comparisons(
++            &mut output.children_mut().ok_or_else(missing_children)?,
++            &rows.iter().flatten().collect::<Vec<_>>(),
++        )?;
++        let mut writer = output.row_writer()?;
++        for (index, row) in rows.iter().enumerate() {
++            writer.set_option(index, row.as_ref())?;
++        }
++        Ok(())
++    }
++}
++
++pub(crate) fn register(extension: &Extension) -> Result<()> {
++    let contract = "contract_version=1; typed cell coverage complete/partial/invalid and diagnostics; metadata_json is opaque; original SourceRefs use decoded_code_cell_utf8; Rust leading :dep masking preserves offsets, never executes directives";
++    ScalarFunctionBuilder::new("spur_graph_notebook_symbols", SignatureBuilder::new()
++        .param(FunctionParameter::new::<String>("path"))
++        .param(FunctionParameter::new::<String>("source"))
++        .return_type(Document::logical_type(extension)?)
++        .documentation(FunctionDocumentationBuilder::new()
++            .description(format!("Extract cell-aware notebook symbols; {contract}; NULL path/source returns NULL; invalid JSON is typed invalid coverage; infrastructure errors propagate"))
++            .add_example("Keep notebook inventory", "SELECT spur_graph_notebook_symbols('n.ipynb', '{\"cells\":[]}')")
++            .add_category("spur_graph")), ParseNotebook)
++        .set_property(FunctionProperty::HasSpecialNullHandling(true)).register(extension)?;
++    ScalarFunctionBuilder::new("spur_graph_notebook_changes", SignatureBuilder::new()
++        .param(FunctionParameter::new::<String>("path"))
++        .param(FunctionParameter::new::<String>("old_path"))
++        .param(FunctionParameter::new::<String>("kind"))
++        .param(FunctionParameter::new::<String>("left_source"))
++        .param(FunctionParameter::new::<String>("right_source"))
++        .return_type(Comparison::logical_type(extension)?)
++        .documentation(FunctionDocumentationBuilder::new()
++            .description(format!("Compare paired notebook cells; {contract}; NULL path/kind returns NULL; M requires both sources, A absent left, D absent right; R/R100 requires distinct old_path, otherwise old_path defaults to path; missing/unexpected sides are invalid, other kinds partial; infrastructure errors propagate"))
++            .add_example("Compare notebook sources", "SELECT spur_graph_notebook_changes('n.ipynb', NULL, 'M', '{\"cells\":[]}', '{\"cells\":[]}')")
++            .add_category("spur_graph")), CompareNotebooks)
++        .set_property(FunctionProperty::HasSpecialNullHandling(true)).register(extension)
++}
+diff --git a/crates/spur-graph-duckdb/tests/test_contract.py b/crates/spur-graph-duckdb/tests/test_contract.py
+index 1c9f93a20..c016779da 100644
+--- a/crates/spur-graph-duckdb/tests/test_contract.py
++++ b/crates/spur-graph-duckdb/tests/test_contract.py
+@@ -188,6 +188,26 @@ class SourceIdentityTests(unittest.TestCase):
+         added.write_text("// newly added native source")
+         self.assertNotEqual(self.probe(fixture)["extractor_id"], receipt["extractor_id"])
+ 
++    def test_notebook_sources_and_preparation_policy_are_provenance_inputs(self):
++        receipt = self.probe(ROOT)
++        paths = {entry['path'] for entry in receipt['inputs']}
++        required = ['crates/spur-graph-duckdb/src/notebook.rs',
++                    'crates/spur-graph/src/extract/notebook_model.rs',
++                    'crates/spur-graph/src/extract/notebook_symbols.rs',
++                    'crates/spur-graph/src/extract/notebook.rs']
++        self.assertTrue(set(required) <= paths)
++        fixture = self.source_copy('notebook-inputs', receipt)
++        for path in required:
++            with self.subTest(path=path):
++                target = fixture / path
++                original = target.read_text()
++                changed = (original.replace('evcxr-leading-dep-mask-v1', 'changed-policy')
++                           if path.endswith('notebook_model.rs') else original + '\n// changed notebook source\n')
++                self.assertNotEqual(original, changed)
++                target.write_text(changed)
++                self.assertNotEqual(self.probe(fixture)['extractor_id'], receipt['extractor_id'])
++                target.write_text(original)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/crates/spur-graph-duckdb/tests/test_notebook.py b/crates/spur-graph-duckdb/tests/test_notebook.py
+new file mode 100644
+index 000000000..ad4dd0ad7
+--- /dev/null
++++ b/crates/spur-graph-duckdb/tests/test_notebook.py
+@@ -0,0 +1,287 @@
++"""Native DuckDB 2 notebook v1 contract; requires a freshly packaged candidate."""
++import hashlib
++import json
++import os
++from pathlib import Path
++import tempfile
++import unittest
++
++import duckdb
++
++ROOT = Path(__file__).resolve().parents[3]
++SYMBOL = ('STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, '
++          'byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, '
++          'anchor_hash VARCHAR, tokens VARCHAR[])')
++DIAGNOSTIC = ('STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, '
++              'byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)')
++REF = ('STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, '
++       'cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, '
++       'cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, '
++       'line_start UBIGINT, line_end UBIGINT)')
++NOTEBOOK_SYMBOL = f'STRUCT(id VARCHAR, symbol {SYMBOL}, source_ref {REF})'
++DIRECTIVE = 'STRUCT("text" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)'
++SOURCE = ('STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, '
++          'analysis_sha256 VARCHAR, "policy" VARCHAR, coordinate_map VARCHAR, '
++          f'directives {DIRECTIVE}[])')
++CELL = ('STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, '
++        f'"language" VARCHAR, metadata_json VARCHAR, "source" {SOURCE}, status VARCHAR, '
++        f'diagnostics {DIAGNOSTIC}[], symbols {NOTEBOOK_SYMBOL}[])')
++DOCUMENT = ('STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, '
++            f'metadata_json VARCHAR, cells {CELL}[], status VARCHAR, diagnostics {DIAGNOSTIC}[])')
++CELL_REF = ('STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, '
++            'cell_ordinal UBIGINT, cell_source_sha256 VARCHAR, "language" VARCHAR, cell_type VARCHAR)')
++CHANGE = f'STRUCT(kind VARCHAR, "before" {NOTEBOOK_SYMBOL}, "after" {NOTEBOOK_SYMBOL})'
++CELL_CHANGE = f'STRUCT(kind VARCHAR, "before" {CELL_REF}, "after" {CELL_REF})'
++DOCUMENT_CHANGE = ('STRUCT(kind VARCHAR, before_path VARCHAR, after_path VARCHAR, '
++                   'before_metadata_json VARCHAR, after_metadata_json VARCHAR)')
++COMPARISON = (f'STRUCT(contract_version UINTEGER, status VARCHAR, diagnostics {DIAGNOSTIC}[], '
++              f'"before" {DOCUMENT}, "after" {DOCUMENT}, symbol_changes {CHANGE}[], '
++              f'cell_changes {CELL_CHANGE}[], document_changes {DOCUMENT_CHANGE}[])')
++
++def digest(text):
++    return hashlib.sha256(text.encode()).hexdigest()
++
++def code(id='r', language='rust', source='fn helper() {}\n'):
++    return dict(id=id, cell_type='code', metadata={'spur': {'code_type': language}}, source=source)
++
++def notebook(cells=None, metadata=None):
++    return json.dumps(dict(cells=cells if cells is not None else [code()],
++                           metadata=metadata or {}), ensure_ascii=False)
++
++class NotebookTests(unittest.TestCase):
++    def setUp(self):
++        self.assertEqual(duckdb.__version__, '2.0.0')
++        extension = Path(os.environ['SPUR_GRAPH_EXTENSION']).resolve(strict=True)
++        self.con = duckdb.connect(config={'allow_unsigned_extensions': True})
++        self.addCleanup(self.con.close)
++        self.con.execute("LOAD '" + str(extension).replace("'", "''") + "'")
++
++    def symbols(self, source, path='n.ipynb'):
++        return self.con.execute('SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)',
++                                [path, source]).fetchone()[0]
++
++    def changes(self, left, right, kind='M', path='n.ipynb', old_path=None):
++        return self.con.execute('SELECT spur_graph_notebook_changes(' + ','.join(['?::VARCHAR'] * 5) + ')',
++                                [path, old_path, kind, left, right]).fetchone()[0]
++
++    def resolve(self, document, symbol):
++        ref = symbol['source_ref']
++        cell = document['cells'][ref['cell_ordinal']]
++        source = cell['source']['original']
++        self.assertEqual(ref['notebook_path'], document['path'])
++        self.assertEqual(ref['notebook_source_sha256'], document['source_sha256'])
++        self.assertEqual(ref['cell_id'], cell['id'])
++        self.assertEqual(ref['cell_source_sha256'], digest(source))
++        self.assertEqual(ref['cell_language'], cell['language'])
++        self.assertEqual(ref['cell_identity_quality'], cell['identity_quality'])
++        self.assertEqual(ref['coordinate_space'], 'decoded_code_cell_utf8')
++        raw = source.encode()
++        start, end = ref['byte_start'], ref['byte_end']
++        text = raw[start:end].decode()
++        self.assertTrue(text)
++        self.assertEqual(ref['line_start'], raw[:start].count(b'\n') + 1)
++        self.assertEqual(ref['line_end'], raw[:end].count(b'\n') + 1)
++        for key in ('byte_start', 'byte_end', 'line_start', 'line_end'):
++            self.assertEqual(ref[key], symbol['symbol'][key])
++        return text
++
++    def test_exact_schemas_and_registry_docs(self):
++        self.assertEqual(self.con.execute("DESCRIBE SELECT spur_graph_notebook_symbols('n.ipynb','{}')").fetchone()[1], DOCUMENT)
++        self.assertEqual(self.con.execute("DESCRIBE SELECT spur_graph_notebook_changes('n.ipynb',NULL,'M','{}','{}')").fetchone()[1], COMPARISON)
++        rows = self.con.execute("SELECT function_name, parameter_types, description FROM duckdb_functions() "
++                                "WHERE function_name LIKE 'spur_graph_notebook_%' ORDER BY function_name").fetchall()
++        self.assertEqual([r[0] for r in rows], ['spur_graph_notebook_changes', 'spur_graph_notebook_symbols'])
++        self.assertEqual([r[1] for r in rows], [['VARCHAR'] * 5, ['VARCHAR'] * 2])
++        for _, _, description in rows:
++            for term in ('contract_version=1', 'decoded_code_cell_utf8', 'partial', 'metadata_json'):
++                self.assertIn(term, description)
++        # Exact ordinary v1 structs remain unchanged.
++        self.assertEqual(self.con.execute("DESCRIBE SELECT spur_graph_symbols('x.rs','')").fetchone()[1], SYMBOL + '[]')
++        self.assertEqual(self.con.execute("DESCRIBE SELECT spur_graph_symbol_changes('x.rs','x.rs','M',[],[])").fetchone()[1],
++                         f'STRUCT(changes STRUCT(symbol {SYMBOL}, stable_symbol_id VARCHAR, file_path VARCHAR, '
++                         'change_kind VARCHAR, previous_stable_symbol_id VARCHAR)[], diagnostics VARCHAR[])')
++
++    def test_original_source_preparation_metadata_and_inventory(self):
++        original = ':dep serde = "1" # café\r\nfn helper() -> i32 { 1 }\r\n'
++        cells = [code(source=original), code('p', 'python', ['def alpha():\n', '    return 1\n']),
++                 code('j', 'javascript', 'function beta() { return 2; }'),
++                 code('i', 'python', 'import os\n'), code('e', 'rust', ''),
++                 dict(id='m', cell_type='markdown', metadata={}, source='# hi')]
++        source = notebook(cells, {'profile': 'asserted-only'})
++        doc = self.symbols(source)
++        self.assertEqual(doc['contract_version'], 1)
++        self.assertEqual(doc['status'], 'complete')
++        self.assertEqual(doc['source_sha256'], digest(source))
++        self.assertEqual(json.loads(doc['metadata_json']), {'profile': 'asserted-only'})
++        self.assertEqual(len(doc['cells']), 6)
++        prepared = doc['cells'][0]['source']
++        self.assertEqual(prepared['original'], original)
++        self.assertEqual(prepared['original_sha256'], digest(original))
++        self.assertEqual(prepared['analysis_sha256'], digest(prepared['analysis']))
++        self.assertEqual(len(prepared['analysis'].encode()), len(original.encode()))
++        self.assertEqual(prepared['policy'], 'evcxr-leading-dep-mask-v1')
++        self.assertEqual(prepared['coordinate_map'], 'identity')
++        self.assertEqual(prepared['directives'][0]['text'], original.split('\r\n')[0])
++        for cell in doc['cells']:
++            for symbol in cell['symbols']:
++                self.resolve(doc, symbol)
++        self.assertEqual(doc['cells'][0]['symbols'][0]['source_ref']['line_start'], 2)
++        self.assertEqual([len(c['symbols']) for c in doc['cells']][3:], [0, 0, 0])
++
++    def test_null_absence_invalid_unsupported_and_legacy_guards(self):
++        source = notebook()
++        self.assertIsNone(self.symbols(source, None))
++        self.assertIsNone(self.symbols(None))
++        self.assertIsNone(self.changes(source, source, path=None))
++        self.assertIsNone(self.changes(source, source, kind=None))
++        for kind, left, right, missing in [('A', None, source, 'before'), ('D', source, None, 'after')]:
++            result = self.changes(left, right, kind)
++            self.assertEqual(result['status'], 'complete')
++            self.assertIsNone(result[missing])
++            self.assertTrue(result['symbol_changes'])
++            self.assertTrue(result['document_changes'])
++        for left, right, kind in [(None, source, 'M'), (source, None, 'M'),
++                                  (source, source, 'A'), (source, source, 'D'),
++                                  (None, None, 'M'), ('', source, 'M')]:
++            result = self.changes(left, right, kind)
++            self.assertEqual(result['status'], 'invalid')
++            self.assertTrue(result['diagnostics'])
++        for kind in ('T', 'C', '?', 'R90'):
++            result = self.changes(source, source, kind)
++            self.assertEqual(result['status'], 'partial')
++            self.assertIn('unsupported_change_kind', [d['code'] for d in result['diagnostics']])
++        for bad in ('', '{', '{}', '{"cells":{}}', notebook([dict(cell_type='code', source=[1])])):
++            result = self.symbols(bad)
++            self.assertEqual(result['status'], 'invalid')
++            self.assertTrue(result['diagnostics'])
++        for unsupported in (code(language='unknown'), code(source=':load secret.rs\n'), code(source=':dep foo = {\nversion="1"\n}\n')):
++            result = self.symbols(notebook([unsupported]))
++            self.assertEqual(result['status'], 'partial')
++            self.assertTrue(result['diagnostics'])
++        for sql, new_api in [("SELECT spur_graph_symbols('x.ipynb','{}')", 'spur_graph_notebook_symbols'),
++                             ("SELECT spur_graph_symbol_changes('x.ipynb','x.ipynb','M',[],[])", 'spur_graph_notebook_changes'),
++                             ("SELECT spur_graph_symbol_changes('x.rs','x.ipynb','R',[],[])", 'spur_graph_notebook_changes')]:
++            with self.assertRaisesRegex(duckdb.InvalidInputException, new_api):
++                self.con.execute(sql).fetchall()
++
++    def test_duplicate_helper_noop_ambiguity_and_rename_refs(self):
++        source = notebook([code('a'), code('b', source='fn helper() { let x = 1; }')])
++        result = self.changes(source, source)
++        self.assertEqual(result['status'], 'complete')
++        for field in ('symbol_changes', 'cell_changes', 'document_changes'):
++            self.assertEqual(result[field], [])
++        ids = [c['symbols'][0]['id'] for c in result['after']['cells']]
++        self.assertEqual(len(set(ids)), 2)
++        changed = source.replace('let x = 1', 'let x = 2')
++        result = self.changes(source, changed)
++        self.assertTrue(result['symbol_changes'])
++        for change in result['symbol_changes']:
++            for side in ('before', 'after'):
++                if change[side]:
++                    self.resolve(result[side], change[side])
++        for kind in ('R', 'R100'):
++            result = self.changes(source, source, kind, path='new.ipynb', old_path='old.ipynb')
++            self.assertEqual(result['status'], 'complete')
++            self.assertTrue(result['symbol_changes'])
++            for change in result['symbol_changes']:
++                self.resolve(result['before'], change['before'])
++                self.resolve(result['after'], change['after'])
++                self.assertEqual(change['before']['source_ref']['notebook_path'], 'old.ipynb')
++                self.assertEqual(change['after']['source_ref']['notebook_path'], 'new.ipynb')
++        self.assertEqual(self.changes(source, source, 'R')['status'], 'invalid')
++        for cells in ([code('a', source='fn f() {} fn f() {}')], [code('a'), code('a')],
++                      [{k: v for k, v in code().items() if k != 'id'}] * 2):
++            ambiguous = notebook(cells)
++            result = self.changes(ambiguous, ambiguous)
++            self.assertEqual(result['status'], 'partial')
++            self.assertTrue(result['diagnostics'])
++            self.assertEqual(result['symbol_changes'], [])
++            self.assertEqual(result['cell_changes'], [])
++
++    def test_structural_dependency_and_metadata_events(self):
++        cells = [code('a', source=':dep serde = "1"\nfn helper() {}\n'), code('b', 'python', 'import os\n')]
++        left = notebook(cells)
++        right = notebook([cells[1], dict(cells[0], source=cells[0]['source'].replace('"1"', '"2"'))], {'profile': 'new'})
++        result = self.changes(left, right)
++        self.assertEqual(result['symbol_changes'], [])
++        self.assertIn('dependency_directives_changed', [e['kind'] for e in result['cell_changes']])
++        self.assertIn('moved', [e['kind'] for e in result['cell_changes']])
++        self.assertEqual(result['document_changes'][0]['kind'], 'metadata_changed')
++        self.assertEqual(json.loads(result['document_changes'][0]['after_metadata_json']), {'profile': 'new'})
++        for replacement, event in [(dict(cells[0], cell_type='raw'), 'type_changed'),
++                                    (code('a', 'python', 'def helper():\n    return 1\n'), 'language_changed'),
++                                    (dict(cells[0], metadata={'spur': {'code_type': 'rust'}, 'profile': 'x'}), 'metadata_changed')]:
++            result = self.changes(left, notebook([replacement, cells[1]]))
++            self.assertIn(event, [e['kind'] for e in result['cell_changes']])
++        output_only = notebook([dict(c, outputs=[{'text': 'changed'}]) for c in cells])
++        self.assertEqual(self.changes(left, output_only)['symbol_changes'], [])
++        self.assertEqual(self.changes(left, output_only)['cell_changes'], [])
++
++    def test_real_frozen_sources_and_original_refs(self):
++        fixtures = ROOT / 'docs/research/artifacts'
++        inputs = json.loads((fixtures / '2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json').read_text())
++        frozen = json.loads((fixtures / '2026-11-17-notebook-symbol-diagnosis-bd-nb4c/frozen-cell-model-input.json').read_text())
++        docs = []
++        anchors = 0
++        for i, snapshot in enumerate(inputs['snapshots']):
++            self.assertEqual(digest(snapshot['source']), snapshot['source_sha256'])
++            doc = self.symbols(snapshot['source'], snapshot['notebook_path'])
++            docs.append(doc)
++            symbols = [s for c in doc['cells'] for s in c['symbols']]
++            self.assertEqual(len(symbols), [46, 24][i])
++            self.assertEqual(sum(s['symbol']['symbol_kind'] == 'function' for s in symbols), [17, 11][i])
++            self.assertEqual(len(set(s['id'] for s in symbols)), len(symbols))
++            for symbol in symbols:
++                self.resolve(doc, symbol)
++            for anchor in frozen['anchors']:
++                if anchor['snapshot_id'] != snapshot['snapshot_id']:
++                    continue
++                matches = [s for s in symbols if s['symbol']['entity_name'] == anchor['entity_name']
++                           and s['source_ref']['cell_id'] == anchor['cell_id']]
++                self.assertEqual(len(matches), 1)
++                for field in ('byte_start', 'byte_end', 'line_start', 'line_end'):
++                    self.assertEqual(matches[0]['source_ref'][field], anchor[field])
++                anchors += 1
++            self.assertEqual(self.changes(snapshot['source'], snapshot['source'], path=snapshot['notebook_path'])['symbol_changes'], [])
++        snapshots = inputs['snapshots']
++        self.assertEqual(anchors, 28)
++        result = self.changes(snapshots[0]['source'], snapshots[1]['source'], path=snapshots[1]['notebook_path'])
++        self.assertEqual(result['status'], 'complete')
++        self.assertTrue(result['symbol_changes'])
++        self.assertTrue(result['cell_changes'])
++        for change in result['symbol_changes']:
++            for side in ('before', 'after'):
++                if change[side]:
++                    self.resolve(result[side], change[side])
++
++    def test_varied_nested_batches_null_empty_large_selection_and_parquet(self):
++        large = notebook([code('large', source='\n'.join(f'fn f{i}() {{ let x = {i}; }}' for i in range(2300))),
++                          code('directives', source=''.join(f':dep d{i} = "1"\n' for i in range(25)) + 'fn dep() {}')])
++        values = [None, notebook([]), notebook(), notebook([code('a'), code('b')]), large,
++                  notebook([code(language='unknown')]), '{']
++        self.con.execute('CREATE TEMP TABLE nb(i INTEGER, source VARCHAR)')
++        count = 2 * duckdb.__standard_vector_size__ + 1
++        selected = {i: (4 if i % 1024 == 4 else (i % 7 if i % 7 != 4 else 3)) for i in range(count)}
++        self.con.executemany('INSERT INTO nb VALUES (?,?)', [(i, values[selected[i]]) for i in range(count)])
++        self.con.execute("CREATE TEMP TABLE parsed AS SELECT i, spur_graph_notebook_symbols('n.ipynb',source) AS doc, "
++                         "spur_graph_notebook_changes('n.ipynb',NULL,'A',NULL,source) AS diff FROM nb WHERE i%2=0")
++        rows = self.con.execute('SELECT i, doc, diff FROM parsed ORDER BY i').fetchall()
++        expected_counts = [None, 0, 1, 2, 2301, 0, 0]
++        for i, doc, diff in rows:
++            if doc is None:
++                self.assertEqual(selected[i], 0)
++                self.assertEqual(diff['status'], 'invalid')
++                continue
++            self.assertEqual(sum(len(c['symbols']) for c in doc['cells']), expected_counts[selected[i]])
++            if doc['status'] == 'complete':
++                self.assertEqual(len(diff['symbol_changes']), expected_counts[selected[i]])
++        # Smaller subset preserves all shapes through independent readback.
++        with tempfile.TemporaryDirectory() as directory:
++            path = str(Path(directory) / 'nb.parquet').replace("'", "''")
++            self.con.execute(f"COPY (SELECT * FROM parsed WHERE i<14) TO '{path}' (FORMAT PARQUET)")
++            with duckdb.connect() as reader:
++                actual = reader.execute(f"SELECT * FROM read_parquet('{path}') ORDER BY i").fetchall()
++            self.assertEqual(actual, [r for r in rows if r[0] < 14])
++
++if __name__ == '__main__':
++    unittest.main()

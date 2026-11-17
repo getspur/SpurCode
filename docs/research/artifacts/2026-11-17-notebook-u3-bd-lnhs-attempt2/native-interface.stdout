@@ -1,0 +1,731 @@
+{
+  "package": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/.spur_graph.duckdb_extension.packages/release-7b02e5df31ad41049480a41d4ced1f7d/spur_graph.duckdb_extension",
+  "package_sha256": "ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b",
+  "baseline_sha256": "3409c6b1f268865007202da595cd5be4a33c134146d2abadcf35e787e8e0df59",
+  "python": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+  "python_version": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+  "native_engine": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/_duckdb.abi3.so",
+  "engine_sha256": "1e0c41d7d52834b43bf66c1e8b25d6aeee7911609515c9563383b3ffb28919b3",
+  "version": "v2.0.0",
+  "platform": "osx_arm64",
+  "info": {
+    "extension_version": "0.1.0",
+    "facts_schema_version": 1,
+    "duckdb_api_version": "2.0.0",
+    "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+    "supported_languages": [
+      "C",
+      "Cpp",
+      "Css",
+      "Go",
+      "Hcl",
+      "Html",
+      "Javascript",
+      "Json",
+      "JupyterNotebook",
+      "Lua",
+      "Markdown",
+      "Mermaid",
+      "Python",
+      "Rust",
+      "Shell",
+      "Sql",
+      "Terraform",
+      "Toml",
+      "Tsx",
+      "TypeScript",
+      "Yaml"
+    ],
+    "resolution_scope": "single_file"
+  },
+  "functions": [
+    {
+      "name": "spur_graph_file_facts",
+      "parameters": [
+        "logical_path",
+        "source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "return_type": "STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[])",
+      "description": "Extract native one-file graph facts; join local IDs with the input key and retain path/blob/version lineage",
+      "examples": []
+    },
+    {
+      "name": "spur_graph_file_facts_result",
+      "parameters": [
+        "logical_path",
+        "source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "return_type": "STRUCT(status VARCHAR, error_code VARCHAR, error_message VARCHAR, facts STRUCT(nodes STRUCT(node_id UBIGINT, stable_key VARCHAR, \"label\" VARCHAR, kind VARCHAR, file_id UBIGINT, source_span_id UBIGINT, first_seen_run_id UBIGINT)[], edges STRUCT(edge_id UBIGINT, source_node_id UBIGINT, target_node_id UBIGINT, relation VARCHAR, target_label VARCHAR, import_path VARCHAR, receiver_text VARCHAR, scope_text VARCHAR, confidence VARCHAR, confidence_score FLOAT, edge_kind VARCHAR, bind_method VARCHAR, evidence_id UBIGINT, directed BOOLEAN, change_kind STRUCT(kind VARCHAR, renamed_from STRUCT(kind VARCHAR, file STRUCT(path VARCHAR, \"encoding\" VARCHAR, bytes VARCHAR), symbol STRUCT(stable_symbol_id VARCHAR, \"commit\" VARCHAR))))[], spans STRUCT(span_id UBIGINT, file_id UBIGINT, start_byte UINTEGER, end_byte UINTEGER, start_line UINTEGER, end_line UINTEGER)[], macro_invocations STRUCT(site_id VARCHAR, file_path VARCHAR, source_oid VARCHAR, caller_stable_symbol_id VARCHAR, enclosing STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), raw_macro_path VARCHAR, normalized_macro_path VARCHAR, byte_range UBIGINT[], line_range UBIGINT[], attributes STRUCT(raw_text VARCHAR, \"owner\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), byte_range UBIGINT[], line_range UBIGINT[])[], test_context VARCHAR, debug_assertions_candidate BOOLEAN, execution_phase VARCHAR, resolution STRUCT(kind VARCHAR, definition STRUCT(file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])), sink_family_candidate VARCHAR)[], macro_scopes STRUCT(\"scope\" STRUCT(stable_symbol_id VARCHAR, kind VARCHAR), file_path VARCHAR, source_oid VARCHAR, byte_range UBIGINT[], line_range UBIGINT[])[]))",
+      "description": "Extract native one-file facts with status ok, empty_source, empty_facts, null_input or extraction_error. NULL inputs retain a diagnostic parent without error fields; recoverable input errors retain native diagnostic text and NULL facts. Facts and list order match spur_graph_file_facts; parser setup and infrastructure errors still fail the query.",
+      "examples": [
+        "SELECT spur_graph_file_facts_result('input.rs', 'fn helper() {}');"
+      ]
+    },
+    {
+      "name": "spur_graph_info",
+      "parameters": [],
+      "parameter_types": [],
+      "return_type": "STRUCT(extension_version VARCHAR, facts_schema_version UINTEGER, duckdb_api_version VARCHAR, extractor_id VARCHAR, supported_languages VARCHAR[], resolution_scope VARCHAR)",
+      "description": "Versioned single-file facts contract; extractor_id hashes source inputs, not binary bytes; supported_languages uses native Language variant names",
+      "examples": [
+        "SELECT spur_graph_info()"
+      ]
+    },
+    {
+      "name": "spur_graph_notebook_changes",
+      "parameters": [
+        "path",
+        "old_path",
+        "kind",
+        "left_source",
+        "right_source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "return_type": "STRUCT(contract_version UINTEGER, status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], \"before\" STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, metadata_json VARCHAR, cells STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, \"language\" VARCHAR, metadata_json VARCHAR, \"source\" STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, analysis_sha256 VARCHAR, \"policy\" VARCHAR, coordinate_map VARCHAR, directives STRUCT(\"text\" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)[]), status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], symbols STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT))[])[], status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[]), \"after\" STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, metadata_json VARCHAR, cells STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, \"language\" VARCHAR, metadata_json VARCHAR, \"source\" STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, analysis_sha256 VARCHAR, \"policy\" VARCHAR, coordinate_map VARCHAR, directives STRUCT(\"text\" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)[]), status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], symbols STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT))[])[], status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[]), symbol_changes STRUCT(kind VARCHAR, \"before\" STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT)), \"after\" STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT)))[], cell_changes STRUCT(kind VARCHAR, \"before\" STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_source_sha256 VARCHAR, \"language\" VARCHAR, cell_type VARCHAR), \"after\" STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_source_sha256 VARCHAR, \"language\" VARCHAR, cell_type VARCHAR))[], document_changes STRUCT(kind VARCHAR, before_path VARCHAR, after_path VARCHAR, before_metadata_json VARCHAR, after_metadata_json VARCHAR)[])",
+      "description": "Compare paired notebook cells; contract_version=1; typed cell coverage complete/partial/invalid and diagnostics; metadata_json is opaque; original SourceRefs use decoded_code_cell_utf8; Rust leading :dep masking preserves offsets, never executes directives; NULL path/kind returns NULL; M requires both sources, A absent left, D absent right; R/R100 requires distinct old_path, otherwise old_path defaults to path; missing/unexpected sides are invalid, other kinds partial; infrastructure errors propagate",
+      "examples": [
+        "SELECT spur_graph_notebook_changes('n.ipynb', NULL, 'M', '{\"cells\":[]}', '{\"cells\":[]}')"
+      ]
+    },
+    {
+      "name": "spur_graph_notebook_symbols",
+      "parameters": [
+        "path",
+        "source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "return_type": "STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, metadata_json VARCHAR, cells STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, \"language\" VARCHAR, metadata_json VARCHAR, \"source\" STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, analysis_sha256 VARCHAR, \"policy\" VARCHAR, coordinate_map VARCHAR, directives STRUCT(\"text\" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)[]), status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], symbols STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT))[])[], status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[])",
+      "description": "Extract cell-aware notebook symbols; contract_version=1; typed cell coverage complete/partial/invalid and diagnostics; metadata_json is opaque; original SourceRefs use decoded_code_cell_utf8; Rust leading :dep masking preserves offsets, never executes directives; NULL path/source returns NULL; invalid JSON is typed invalid coverage; infrastructure errors propagate",
+      "examples": [
+        "SELECT spur_graph_notebook_symbols('n.ipynb', '{\"cells\":[]}')"
+      ]
+    },
+    {
+      "name": "spur_graph_symbol_changes",
+      "parameters": [
+        "path",
+        "old_path",
+        "kind",
+        "old_symbols",
+        "new_symbols"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]",
+        "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]"
+      ],
+      "return_type": "STRUCT(changes STRUCT(symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), stable_symbol_id VARCHAR, file_path VARCHAR, change_kind VARCHAR, previous_stable_symbol_id VARCHAR)[], diagnostics VARCHAR[])",
+      "description": "Match ordered extracted ordinary-file symbols; notebooks require spur_graph_notebook_changes for cell-aware comparison and coverage; project commit and parent lineage separately",
+      "examples": []
+    },
+    {
+      "name": "spur_graph_symbols",
+      "parameters": [
+        "logical_path",
+        "source"
+      ],
+      "parameter_types": [
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      "return_type": "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]",
+      "description": "Extract SPUR symbol facts from ordinary source text using its logical path; notebooks require spur_graph_notebook_symbols for cell coverage and original-source refs",
+      "examples": [
+        "SELECT unnest(spur_graph_symbols('input.rs', 'pub fn alpha() {}'), recursive := true)"
+      ]
+    }
+  ],
+  "describe": {
+    "symbols": "STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, metadata_json VARCHAR, cells STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, \"language\" VARCHAR, metadata_json VARCHAR, \"source\" STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, analysis_sha256 VARCHAR, \"policy\" VARCHAR, coordinate_map VARCHAR, directives STRUCT(\"text\" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)[]), status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], symbols STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT))[])[], status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[])",
+    "changes": "STRUCT(contract_version UINTEGER, status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], \"before\" STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, metadata_json VARCHAR, cells STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, \"language\" VARCHAR, metadata_json VARCHAR, \"source\" STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, analysis_sha256 VARCHAR, \"policy\" VARCHAR, coordinate_map VARCHAR, directives STRUCT(\"text\" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)[]), status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], symbols STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT))[])[], status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[]), \"after\" STRUCT(contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR, metadata_json VARCHAR, cells STRUCT(id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR, \"language\" VARCHAR, metadata_json VARCHAR, \"source\" STRUCT(original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR, analysis_sha256 VARCHAR, \"policy\" VARCHAR, coordinate_map VARCHAR, directives STRUCT(\"text\" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)[]), status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[], symbols STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT))[])[], status VARCHAR, diagnostics STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT, byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)[]), symbol_changes STRUCT(kind VARCHAR, \"before\" STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT)), \"after\" STRUCT(id VARCHAR, symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), source_ref STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR, cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT)))[], cell_changes STRUCT(kind VARCHAR, \"before\" STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_source_sha256 VARCHAR, \"language\" VARCHAR, cell_type VARCHAR), \"after\" STRUCT(notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR, cell_ordinal UBIGINT, cell_source_sha256 VARCHAR, \"language\" VARCHAR, cell_type VARCHAR))[], document_changes STRUCT(kind VARCHAR, before_path VARCHAR, after_path VARCHAR, before_metadata_json VARCHAR, after_metadata_json VARCHAR)[])",
+    "ordinary_symbols": "STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[])[]",
+    "ordinary_changes": "STRUCT(changes STRUCT(symbol STRUCT(entity_name VARCHAR, symbol_kind VARCHAR, enclosing_scope VARCHAR, byte_start UBIGINT, byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT, anchor_hash VARCHAR, tokens VARCHAR[]), stable_symbol_id VARCHAR, file_path VARCHAR, change_kind VARCHAR, previous_stable_symbol_id VARCHAR)[], diagnostics VARCHAR[])",
+    "info": "STRUCT(extension_version VARCHAR, facts_schema_version UINTEGER, duckdb_api_version VARCHAR, extractor_id VARCHAR, supported_languages VARCHAR[], resolution_scope VARCHAR)"
+  },
+  "fixture_sha256": "bc0e5f23ba34c20149d5c8168f4a3a1fa8b3af3c8759adaef418f2343686b608",
+  "snapshots": [
+    {
+      "snapshot_id": "git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41",
+      "path": "app_gallery/code-graph-workbench/app.ipynb",
+      "source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+      "status": "complete",
+      "cells": 6,
+      "symbols": 46,
+      "functions": [
+        {
+          "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"toolErrorText\",\"function\",null,315,null]",
+          "name": "toolErrorText",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+            "cell_ordinal": 1,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "e061dbdceb728fad02039aa446e6ddc0d6075b6ac133eb8ee06564efdf5636f8",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 315,
+            "byte_end": 602,
+            "line_start": 11,
+            "line_end": 16
+          }
+        },
+        {
+          "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"safeEvidenceCall\",\"function\",null,606,null]",
+          "name": "safeEvidenceCall",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+            "cell_ordinal": 1,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "e061dbdceb728fad02039aa446e6ddc0d6075b6ac133eb8ee06564efdf5636f8",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 606,
+            "byte_end": 1101,
+            "line_start": 18,
+            "line_end": 31
+          }
+        },
+        {
+          "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"escapeWorkbenchValue\",\"function\",null,1720,null]",
+          "name": "escapeWorkbenchValue",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+            "cell_ordinal": 1,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "e061dbdceb728fad02039aa446e6ddc0d6075b6ac133eb8ee06564efdf5636f8",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1720,
+            "byte_end": 1918,
+            "line_start": 47,
+            "line_end": 53
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"esc\",\"function\",null,393,null]",
+          "name": "esc",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 393,
+            "byte_end": 599,
+            "line_start": 16,
+            "line_end": 24
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"jsonScript\",\"function\",null,601,null]",
+          "name": "jsonScript",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 601,
+            "byte_end": 755,
+            "line_start": 26,
+            "line_end": 28
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"normalizeValue\",\"function\",null,757,null]",
+          "name": "normalizeValue",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 757,
+            "byte_end": 1362,
+            "line_start": 30,
+            "line_end": 44
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"tableRows\",\"function\",null,1364,null]",
+          "name": "tableRows",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1364,
+            "byte_end": 1550,
+            "line_start": 46,
+            "line_end": 49
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"readEvidencePort\",\"function\",null,1552,null]",
+          "name": "readEvidencePort",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1552,
+            "byte_end": 2408,
+            "line_start": 51,
+            "line_end": 84
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"fmtInt\",\"function\",null,2410,null]",
+          "name": "fmtInt",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 2410,
+            "byte_end": 2560,
+            "line_start": 86,
+            "line_end": 89
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"fmtNumber\",\"function\",null,2562,null]",
+          "name": "fmtNumber",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 2562,
+            "byte_end": 2702,
+            "line_start": 91,
+            "line_end": 94
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"shortId\",\"function\",null,2704,null]",
+          "name": "shortId",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 2704,
+            "byte_end": 2870,
+            "line_start": 96,
+            "line_end": 100
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"labelFor\",\"function\",null,2872,null]",
+          "name": "labelFor",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 2872,
+            "byte_end": 3016,
+            "line_start": 102,
+            "line_end": 104
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"nodeFill\",\"function\",null,3018,null]",
+          "name": "nodeFill",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 3018,
+            "byte_end": 3443,
+            "line_start": 106,
+            "line_end": 113
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"statusClass\",\"function\",null,3445,null]",
+          "name": "statusClass",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 3445,
+            "byte_end": 3630,
+            "line_start": 115,
+            "line_end": 119
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"portLine\",\"function\",null,3632,null]",
+          "name": "portLine",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 3632,
+            "byte_end": 3782,
+            "line_start": 121,
+            "line_end": 123
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"chip\",\"function\",null,10266,null]",
+          "name": "chip",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 10266,
+            "byte_end": 10427,
+            "line_start": 236,
+            "line_end": 238
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"kpi\",\"function\",null,10429,null]",
+          "name": "kpi",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 2,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "faedd366e4aaecfe58c0a41c62c0fd1bcc96fd9a8781d6588a0e6520052b2899",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 10429,
+            "byte_end": 10601,
+            "line_start": 240,
+            "line_end": 242
+          }
+        }
+      ]
+    },
+    {
+      "snapshot_id": "git:07db59f08dbced2c8bedd17290c78f57b428a2bc",
+      "path": "app_gallery/code-graph-workbench/app.ipynb",
+      "source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+      "status": "complete",
+      "cells": 7,
+      "symbols": 24,
+      "functions": [
+        {
+          "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"toolErrorText\",\"function\",null,315,null]",
+          "name": "toolErrorText",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+            "cell_ordinal": 1,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "e061dbdceb728fad02039aa446e6ddc0d6075b6ac133eb8ee06564efdf5636f8",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 315,
+            "byte_end": 602,
+            "line_start": 11,
+            "line_end": 16
+          }
+        },
+        {
+          "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"safeEvidenceCall\",\"function\",null,606,null]",
+          "name": "safeEvidenceCall",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+            "cell_ordinal": 1,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "e061dbdceb728fad02039aa446e6ddc0d6075b6ac133eb8ee06564efdf5636f8",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 606,
+            "byte_end": 1101,
+            "line_start": 18,
+            "line_end": 31
+          }
+        },
+        {
+          "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"escapeWorkbenchValue\",\"function\",null,1720,null]",
+          "name": "escapeWorkbenchValue",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "29e62381-a8ec-4911-8745-76ba56a1b4ea",
+            "cell_ordinal": 1,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "e061dbdceb728fad02039aa446e6ddc0d6075b6ac133eb8ee06564efdf5636f8",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1720,
+            "byte_end": 1918,
+            "line_start": 47,
+            "line_end": 53
+          }
+        },
+        {
+          "cell_id": "8ee3649a-5627-4f06-9453-0184f9f62d7c",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:8ee3649a-5627-4f06-9453-0184f9f62d7c#symbol:[\"python\",\"_find_up\",\"function\",null,345,null]",
+          "name": "_find_up",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "8ee3649a-5627-4f06-9453-0184f9f62d7c",
+            "cell_ordinal": 5,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "94d542973985f5eba3f0bebce4d40b3c7d326042d9bb947fb05f1398789d192c",
+            "cell_language": "Python",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 345,
+            "byte_end": 614,
+            "line_start": 8,
+            "line_end": 17
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"esc\",\"function\",null,647,null]",
+          "name": "esc",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 647,
+            "byte_end": 853,
+            "line_start": 30,
+            "line_end": 38
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"jsonScript\",\"function\",null,855,null]",
+          "name": "jsonScript",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 855,
+            "byte_end": 1024,
+            "line_start": 40,
+            "line_end": 45
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"normalizeValue\",\"function\",null,1026,null]",
+          "name": "normalizeValue",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1026,
+            "byte_end": 1631,
+            "line_start": 47,
+            "line_end": 61
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"tableRows\",\"function\",null,1633,null]",
+          "name": "tableRows",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1633,
+            "byte_end": 1819,
+            "line_start": 63,
+            "line_end": 66
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"readEvidencePort\",\"function\",null,1821,null]",
+          "name": "readEvidencePort",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 1821,
+            "byte_end": 2773,
+            "line_start": 68,
+            "line_end": 102
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"evidencePort\",\"function\",null,2775,null]",
+          "name": "evidencePort",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 2775,
+            "byte_end": 3096,
+            "line_start": 104,
+            "line_end": 114
+          }
+        },
+        {
+          "cell_id": "wb-graph",
+          "id": "app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"fetchInitialState\",\"function\",null,3098,null]",
+          "name": "fetchInitialState",
+          "source_ref": {
+            "notebook_path": "app_gallery/code-graph-workbench/app.ipynb",
+            "notebook_source_sha256": "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+            "cell_id": "wb-graph",
+            "cell_ordinal": 6,
+            "cell_identity_quality": "explicit",
+            "cell_source_sha256": "c7627b232bb4f722538c67e4a4321da4c92112ce00252d70e29f8b037aff04df",
+            "cell_language": "Javascript",
+            "coordinate_space": "decoded_code_cell_utf8",
+            "byte_start": 3098,
+            "byte_end": 4276,
+            "line_start": 116,
+            "line_end": 150
+          }
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "status": "complete",
+    "symbol_changes": 50,
+    "cell_changes": 10,
+    "document_changes": 0,
+    "kinds": {
+      "added": 12,
+      "modified": 4,
+      "deleted": 34,
+      "renamed": 0
+    }
+  }
+}

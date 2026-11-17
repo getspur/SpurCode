@@ -1,0 +1,29 @@
+   Compiling spur-telemetry v1.24.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-telemetry)
+   Compiling spur-solver v1.24.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-solver)
+   Compiling tree-sitter-mermaid v0.0.1 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/tree-sitter-mermaid)
+   Compiling spur-graph v1.24.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-graph)
+   Compiling spur-graph-duckdb v0.1.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-graph-duckdb)
+   Compiling spur-acp v1.24.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-acp)
+   Compiling spur-mcp v1.24.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-mcp)
+warning: method `as_bool` is never used
+   --> /Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> /Users/kevintruong/project/SpurCode/.spur/worktrees/1206297f-98e3-4a3d-8a39-a63bac293d44/crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 57.43s
+     Running unittests src/lib.rs (/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-target/debug/deps/spur_graph_duckdb-7343404fd33cd6c9)
+error: test failed, to rerun pass `--lib`

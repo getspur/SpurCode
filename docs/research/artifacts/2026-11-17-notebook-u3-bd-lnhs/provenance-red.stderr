@@ -1,0 +1,21 @@
+test_existing_signatures_and_types_remain_usable (test_contract.MetadataTests.test_existing_signatures_and_types_remain_usable) ... ok
+test_languages_match_native_registry (test_contract.MetadataTests.test_languages_match_native_registry) ... ok
+test_repeated_fresh_connections_and_vector_rows_agree (test_contract.MetadataTests.test_repeated_fresh_connections_and_vector_rows_agree) ... ok
+test_typed_versioned_single_file_contract (test_contract.MetadataTests.test_typed_versioned_single_file_contract) ... ok
+test_adapter_native_query_grammar_and_locked_inputs_affect_identity (test_contract.SourceIdentityTests.test_adapter_native_query_grammar_and_locked_inputs_affect_identity) ... ok
+test_notebook_sources_and_preparation_policy_are_provenance_inputs (test_contract.SourceIdentityTests.test_notebook_sources_and_preparation_policy_are_provenance_inputs) ... FAIL
+test_receipt_matches_loaded_source_identity_and_independent_hash (test_contract.SourceIdentityTests.test_receipt_matches_loaded_source_identity_and_independent_hash) ... ok
+test_relocation_no_git_dirty_git_and_unrelated_edits (test_contract.SourceIdentityTests.test_relocation_no_git_dirty_git_and_unrelated_edits) ... ok
+
+======================================================================
+FAIL: test_notebook_sources_and_preparation_policy_are_provenance_inputs (test_contract.SourceIdentityTests.test_notebook_sources_and_preparation_policy_are_provenance_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_contract.py", line 198, in test_notebook_sources_and_preparation_policy_are_provenance_inputs
+    self.assertTrue(set(required) <= paths)
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 8 tests in 12.496s
+
+FAILED (failures=1)

@@ -1,0 +1,22 @@
+warning: method `as_bool` is never used
+   --> /Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `new` is never used
+    --> /Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph/src/store/lance_sections.rs:1674:8
+     |
+1673 | impl SymbolEmbedder {
+     | ------------------- associated function in this implementation
+1674 |     fn new(options: SectionEmbeddingOptions, embedding_model: EmbeddingModelSelection) -> Self {
+     |        ^^^
+
+warning: `spur-graph` (lib) generated 2 warnings
+   Compiling spur-graph-duckdb v0.1.0 (/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.30s
+     Running unittests src/lib.rs (/private/tmp/spur-notebook-u3-bd-lnhs-target/debug/deps/spur_graph_duckdb-49491e63165d1938)

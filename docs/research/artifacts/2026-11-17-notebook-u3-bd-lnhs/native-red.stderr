@@ -1,0 +1,117 @@
+test_duplicate_helper_noop_ambiguity_and_rename_refs (test_notebook.NotebookTests.test_duplicate_helper_noop_ambiguity_and_rename_refs) ... ERROR
+test_exact_schemas_and_registry_docs (test_notebook.NotebookTests.test_exact_schemas_and_registry_docs) ... ERROR
+test_null_absence_invalid_unsupported_and_legacy_guards (test_notebook.NotebookTests.test_null_absence_invalid_unsupported_and_legacy_guards) ... ERROR
+test_original_source_preparation_metadata_and_inventory (test_notebook.NotebookTests.test_original_source_preparation_metadata_and_inventory) ... ERROR
+test_real_frozen_sources_and_original_refs (test_notebook.NotebookTests.test_real_frozen_sources_and_original_refs) ... ERROR
+test_structural_dependency_and_metadata_events (test_notebook.NotebookTests.test_structural_dependency_and_metadata_events) ... ERROR
+test_varied_nested_batches_null_empty_large_selection_and_parquet (test_notebook.NotebookTests.test_varied_nested_batches_null_empty_large_selection_and_parquet) ... ERROR
+
+======================================================================
+ERROR: test_duplicate_helper_noop_ambiguity_and_rename_refs (test_notebook.NotebookTests.test_duplicate_helper_noop_ambiguity_and_rename_refs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 169, in test_duplicate_helper_noop_ambiguity_and_rename_refs
+    result = self.changes(source, source)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 64, in changes
+    return self.con.execute('SELECT spur_graph_notebook_changes(' + ','.join(['?::VARCHAR'] * 5) + ')',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_changes does not exist!
+Did you mean "spur_graph_symbol_changes"?
+
+LINE 1: SELECT spur_graph_notebook_changes(?::VARCHAR,?::VARCHAR,?::VARCHAR...
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================================================================
+ERROR: test_exact_schemas_and_registry_docs (test_notebook.NotebookTests.test_exact_schemas_and_registry_docs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 89, in test_exact_schemas_and_registry_docs
+    self.assertEqual(self.con.execute("DESCRIBE SELECT spur_graph_notebook_symbols('n.ipynb','{}')").fetchone()[1], DOCUMENT)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_symbols does not exist!
+Did you mean "spur_graph_symbols"?
+
+LINE 1: DESCRIBE SELECT spur_graph_notebook_symbols('n.ipynb','{}')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================================================================
+ERROR: test_null_absence_invalid_unsupported_and_legacy_guards (test_notebook.NotebookTests.test_null_absence_invalid_unsupported_and_legacy_guards)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 133, in test_null_absence_invalid_unsupported_and_legacy_guards
+    self.assertIsNone(self.symbols(source, None))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 60, in symbols
+    return self.con.execute('SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_symbols does not exist!
+Did you mean "spur_graph_symbols"?
+
+LINE 1: SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================================================================
+ERROR: test_original_source_preparation_metadata_and_inventory (test_notebook.NotebookTests.test_original_source_preparation_metadata_and_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 111, in test_original_source_preparation_metadata_and_inventory
+    doc = self.symbols(source)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 60, in symbols
+    return self.con.execute('SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_symbols does not exist!
+Did you mean "spur_graph_symbols"?
+
+LINE 1: SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================================================================
+ERROR: test_real_frozen_sources_and_original_refs (test_notebook.NotebookTests.test_real_frozen_sources_and_original_refs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 228, in test_real_frozen_sources_and_original_refs
+    doc = self.symbols(snapshot['source'], snapshot['notebook_path'])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 60, in symbols
+    return self.con.execute('SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_symbols does not exist!
+Did you mean "spur_graph_symbols"?
+
+LINE 1: SELECT spur_graph_notebook_symbols(?::VARCHAR,?::VARCHAR)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================================================================
+ERROR: test_structural_dependency_and_metadata_events (test_notebook.NotebookTests.test_structural_dependency_and_metadata_events)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 205, in test_structural_dependency_and_metadata_events
+    result = self.changes(left, right)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 64, in changes
+    return self.con.execute('SELECT spur_graph_notebook_changes(' + ','.join(['?::VARCHAR'] * 5) + ')',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_changes does not exist!
+Did you mean "spur_graph_symbol_changes"?
+
+LINE 1: SELECT spur_graph_notebook_changes(?::VARCHAR,?::VARCHAR,?::VARCHAR...
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================================================================
+ERROR: test_varied_nested_batches_null_empty_large_selection_and_parquet (test_notebook.NotebookTests.test_varied_nested_batches_null_empty_large_selection_and_parquet)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 266, in test_varied_nested_batches_null_empty_large_selection_and_parquet
+    self.con.execute("CREATE TEMP TABLE parsed AS SELECT i, spur_graph_notebook_symbols('n.ipynb',source) AS doc, "
+_duckdb.CatalogException: Catalog Error: Scalar Function with name spur_graph_notebook_symbols does not exist!
+Did you mean "spur_graph_symbols"?
+
+LINE 1: CREATE TEMP TABLE parsed AS SELECT i, spur_graph_notebook_symbols('n.ipynb',source) AS doc, spur_...
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.477s
+
+FAILED (errors=7)
