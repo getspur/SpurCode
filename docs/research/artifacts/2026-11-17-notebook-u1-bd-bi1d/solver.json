@@ -1,0 +1,160 @@
+{
+  "scope": "Finite effective-ID uniqueness witnesses only; not a parsing or universal notebook proof.",
+  "persist": false,
+  "pre": [
+    {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "record_key"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "records": {
+              "fields": {
+                "key": {
+                  "kind": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                }
+              },
+              "rows": {
+                "first": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": 1
+                    }
+                  }
+                },
+                "second": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "record_key": {
+              "relation": "records",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "unknowns": [],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 33,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": 1,\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": 2\n  },\n  \"duration_ms\": 33,\n  \"reason\": null,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "record_key"
+            ],
+            "parameters": {}
+          }
+        ],
+        "facts": {
+          "relations": {
+            "records": {
+              "fields": {
+                "key": {
+                  "kind": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                }
+              },
+              "rows": {
+                "first": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": 1
+                    }
+                  }
+                },
+                "second": {
+                  "active": true,
+                  "cells": {
+                    "key": {
+                      "present": true,
+                      "value": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "record_key": {
+              "relation": "records",
+              "fields": [
+                "key"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "unknowns": [],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.unique.violation\"\n    }\n  ],\n  \"total_duration_ms\": 10,\n  \"status\": \"unsat\",\n  \"duration_ms\": 5,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_record_key\"\n  ],\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  ],
+  "spec": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"registry_schema_version\": 1,\n  \"query\": {\n    \"selector\": \"rule_id\",\n    \"value\": \"data_integrity.unique\",\n    \"include\": \"valid_example\"\n  },\n  \"capability\": {\n    \"status\": \"implemented\"\n  },\n  \"next_tools\": [\n    \"solve_rule_spec\",\n    \"solve_rules\"\n  ],\n  \"rule\": {\n    \"id\": \"data_integrity.unique\",\n    \"family\": \"data_integrity\",\n    \"profile\": \"finite_relational_snapshot\",\n    \"rule_version\": 1,\n    \"primitive\": \"finite_unique_nulls_distinct\",\n    \"summary\": \"Require active rows with complete keys to differ on at least one key field, using SQL-like NULLS DISTINCT semantics.\",\n    \"availability\": \"implemented\",\n    \"execution_kind\": \"constraint\",\n    \"default_strength\": \"hard\",\n    \"authorities\": [\n      {\n        \"kind\": \"official_database_documentation\",\n        \"title\": \"PostgreSQL DDL Constraints - Unique Constraints\",\n        \"url\": \"https://www.postgresql.org/docs/current/ddl-constraints.html\"\n      }\n    ],\n    \"requires\": [\n      \"relations[definition.relation].rows\",\n      \"relations[definition.relation].fields\",\n      \"unique_constraints[subject].fields\"\n    ],\n    \"valid_example\": {\n      \"facts\": {\n        \"family\": \"data_integrity\",\n        \"mode\": \"verify\",\n        \"rules\": [\n          {\n            \"rule_id\": \"data_integrity.unique\",\n            \"subjects\": [\n              \"record_key\"\n            ],\n            \"parameters\": {}\n          }\n        ],\n        \"facts\": {\n          \"relations\": {\n            \"records\": {\n              \"fields\": {\n                \"key\": {\n                  \"kind\": \"integer\",\n                  \"minimum\": 0,\n                  \"maximum\": 1000\n                }\n              },\n              \"rows\": {\n                \"first\": {\n                  \"active\": true,\n                  \"cells\": {\n                    \"key\": {\n                      \"present\": true,\n                      \"value\": 1\n                    }\n                  }\n                },\n                \"second\": {\n                  \"active\": true,\n                  \"cells\": {\n                    \"key\": {\n                      \"present\": true,\n                      \"value\": 2\n                    }\n                  }\n                },\n                \"null_key\": {\n                  \"active\": true,\n                  \"cells\": {\n                    \"key\": {\n                      \"present\": false,\n                      \"value\": null\n                    }\n                  }\n                }\n              }\n            }\n          },\n          \"unique_constraints\": {\n            \"record_key\": {\n              \"relation\": \"records\",\n              \"fields\": [\n                \"key\"\n              ]\n            }\n          },\n          \"foreign_keys\": {},\n          \"cardinality_constraints\": {},\n          \"value_ranges\": {},\n          \"conditional_requirements\": {},\n          \"aggregate_balances\": {},\n          \"consistency_relations\": {},\n          \"temporal_constraints\": {}\n        },\n        \"unknowns\": []\n      },\n      \"expectation\": \"distinct complete keys pass and the absent key is ignored under NULLS DISTINCT\"\n    }\n  }\n}"
+      }
+    ]
+  }
+}

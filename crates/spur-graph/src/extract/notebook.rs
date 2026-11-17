@@ -8,6 +8,7 @@ use tree_sitter::{Parser, Point, Query, QueryCursor, Range, StreamingIterator as
 
 use crate::extract::languages::Language;
 use crate::extract::markdown::extract_markdown_contents;
+use crate::extract::notebook_model::{normalize_notebook, NotebookDiagnosticCode, NotebookStatus};
 use crate::extract::tree_sitter::{
     compile_queries, extract_file_contents_from_tree, relative_path, CompiledQueries, FactBuilder,
 };
@@ -65,63 +66,59 @@ pub(crate) fn extract_notebook_file(
     path: &Path,
     bytes: &[u8],
 ) -> anyhow::Result<()> {
-    let notebook: Value = serde_json::from_slice(bytes).context("parse .ipynb JSON")?;
+    let notebook = normalize_notebook(bytes);
+    if notebook.status == NotebookStatus::Invalid {
+        let diagnostics: Vec<_> = notebook
+            .diagnostics
+            .iter()
+            .chain(notebook.cells.iter().flat_map(|cell| &cell.diagnostics))
+            .map(|diagnostic| (diagnostic.cell_ordinal, diagnostic.code))
+            .collect();
+        if notebook
+            .diagnostics
+            .iter()
+            .any(|d| d.code == NotebookDiagnosticCode::InvalidJson)
+        {
+            anyhow::bail!("parse .ipynb JSON: {diagnostics:?}");
+        }
+        anyhow::bail!("invalid .ipynb notebook inventory: {diagnostics:?}");
+    }
     let source = str::from_utf8(bytes).context("read .ipynb as UTF-8")?;
     let relative_path = relative_path(builder.root(), path)?;
     let file_id = FileId(builder.next_file_id());
     let root_tree = parse_source(Language::JupyterNotebook, source)?;
     let file_node = builder.add_file_node(&relative_path, file_id, root_tree.root_node());
 
-    let Some(cells) = notebook.get("cells").and_then(Value::as_array) else {
-        return Ok(());
-    };
-
     let mut port_nodes = HashMap::new();
-    let mut anonymous_cell_ids = HashMap::new();
     let mut query_cache = HashMap::new();
-    for cell in cells {
-        let cell_source = cell_source_text(cell);
-        let cell_id = cell_id(cell, &cell_source, &mut anonymous_cell_ids);
-        let cell_identity_path = cell_identity_path(&relative_path, &cell_id);
+    for cell in &notebook.cells {
+        // Invalid inventory was rejected above. All ranges and graph labels use
+        // original decoded bytes; only the parser sees prepared analysis bytes.
+        let Some(prepared) = &cell.source else {
+            continue;
+        };
+        let cell_source = prepared.original.as_str();
+        let cell_identity_path = cell.identity_path(&relative_path);
         let cell_node = add_cell_node(
             builder,
             &relative_path,
             file_id,
             file_node,
-            &cell_id,
-            &cell_source,
+            &cell.id,
+            cell_source,
         );
         emit_declared_metadata_facts(
             builder,
             &relative_path,
             file_id,
             cell_node,
-            cell,
-            &cell_source,
+            &cell.metadata,
+            cell_source,
             &mut port_nodes,
         );
-        if cell_is_markdown(cell) {
-            extract_cell(
-                builder,
-                CellExtractInput {
-                    relative_path: &relative_path,
-                    identity_relative_path: &cell_identity_path,
-                    file_id,
-                    parent_node: cell_node,
-                    language: Language::Markdown,
-                    source: &cell_source,
-                    port_nodes: &mut port_nodes,
-                    query_cache: &mut query_cache,
-                },
-            )?;
-            continue;
-        }
-
-        if cell.get("cell_type").and_then(Value::as_str) != Some("code") {
-            continue;
-        }
-
-        match resolve_cell_language(cell, &notebook) {
+        // Legacy GraphFacts has no coverage field. Callers needing notebook
+        // coverage must also inspect normalize_notebook's typed diagnostics.
+        match cell.language {
             Some(language) => {
                 extract_cell(
                     builder,
@@ -131,44 +128,24 @@ pub(crate) fn extract_notebook_file(
                         file_id,
                         parent_node: cell_node,
                         language,
-                        source: &cell_source,
+                        source: cell_source,
+                        analysis_source: &prepared.analysis,
                         port_nodes: &mut port_nodes,
                         query_cache: &mut query_cache,
                     },
                 )?;
             }
-            None => {
+            None if cell.cell_type.as_deref() == Some("code") => {
                 tracing::warn!(
                     path = %path.display(),
                     "spur-graph: skipping notebook cell (unsupported language)"
                 );
             }
+            None => {}
         }
     }
 
     Ok(())
-}
-
-fn cell_id(cell: &Value, source: &str, anonymous_ids: &mut HashMap<String, u32>) -> String {
-    if let Some(id) = cell.get("id").and_then(Value::as_str) {
-        let trimmed = id.trim();
-        if !trimmed.is_empty() {
-            return trimmed.to_owned();
-        }
-    }
-    let digest = blake3::hash(source.as_bytes());
-    let base = format!("cell-{}", digest.to_hex());
-    let seen = anonymous_ids.entry(base.clone()).or_insert(0);
-    *seen += 1;
-    if *seen == 1 {
-        base
-    } else {
-        format!("{base}-{}", *seen)
-    }
-}
-
-fn cell_identity_path(relative_path: &str, cell_id: &str) -> String {
-    format!("{relative_path}#cell:{cell_id}")
 }
 
 /// Document to slice with a notebook symbol's cell-relative `line_range`.
@@ -184,17 +161,16 @@ pub(crate) fn decoded_source_document(
         return None;
     }
     let wanted = notebook_cell_id_for_symbol(symbol)?;
-    let notebook: Value = serde_json::from_str(file_source).ok()?;
-    let cells = notebook.get("cells")?.as_array()?;
-    let mut anonymous_ids = HashMap::new();
-    for cell in cells {
-        let source = cell_source_text(cell);
-        let id = cell_id(cell, &source, &mut anonymous_ids);
-        if id == wanted {
-            return Some(source);
-        }
+    let notebook = normalize_notebook(file_source.as_bytes());
+    if notebook.status == NotebookStatus::Invalid {
+        return None;
     }
-    None
+    notebook
+        .cells
+        .into_iter()
+        .find(|cell| cell.id == wanted)?
+        .source
+        .map(|source| source.original)
 }
 
 fn notebook_cell_id_for_symbol(symbol: &GraphSymbolArtifact) -> Option<&str> {
@@ -239,14 +215,11 @@ fn emit_declared_metadata_facts(
     relative_path: &str,
     file_id: FileId,
     cell_node: NodeId,
-    cell: &Value,
+    metadata: &Value,
     source: &str,
     port_nodes: &mut HashMap<String, NodeId>,
 ) {
-    let Some(spur) = cell
-        .get("metadata")
-        .and_then(|metadata| metadata.get("spur"))
-    else {
+    let Some(spur) = metadata.get("spur") else {
         return;
     };
 
@@ -365,14 +338,6 @@ fn end_point(source: &str) -> Point {
     Point { row, column }
 }
 
-fn cell_source_text(cell: &Value) -> String {
-    match cell.get("source") {
-        Some(Value::String(source)) => source.clone(),
-        Some(Value::Array(lines)) => lines.iter().filter_map(Value::as_str).collect(),
-        _ => String::new(),
-    }
-}
-
 struct CellExtractInput<'a> {
     relative_path: &'a str,
     identity_relative_path: &'a str,
@@ -380,6 +345,7 @@ struct CellExtractInput<'a> {
     parent_node: NodeId,
     language: Language,
     source: &'a str,
+    analysis_source: &'a str,
     port_nodes: &'a mut HashMap<String, NodeId>,
     query_cache: &'a mut HashMap<Language, CompiledQueries>,
 }
@@ -392,6 +358,7 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
         parent_node,
         language,
         source,
+        analysis_source,
         port_nodes,
         query_cache,
     } = input;
@@ -404,7 +371,7 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
             entry.insert(compile_queries(&config, language)?)
         }
     };
-    let tree = parse_source(language, source)?;
+    let tree = parse_source(language, analysis_source)?;
 
     if language == Language::Markdown {
         let mut inline_parser = markdown_inline_parser(&config)?;
@@ -1054,6 +1021,123 @@ mod tests {
             err.to_string().contains("parse .ipynb JSON"),
             "unexpected error: {err:#}"
         );
+    }
+
+    #[test]
+    fn leading_rust_dep_recovers_function_at_original_multibyte_crlf_span() {
+        let source = ":dep sha2 = \"0.10\" # café\r\nfn café() {}\r\n";
+        let bytes =
+            serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"evcxr"}},"cells":[
+                {"id":" rust ","cell_type":"code","source":source,"metadata":{}}
+            ]}))
+            .unwrap();
+        let facts = run_notebook_extraction(Path::new("nb.ipynb"), &bytes).unwrap();
+        let function = facts
+            .nodes
+            .iter()
+            .find(|n| n.kind == NodeKind::Function && n.label == "café")
+            .expect("leading :dep must not hide the function");
+        let span = facts
+            .spans
+            .iter()
+            .find(|s| Some(s.span_id) == function.source_span_id)
+            .unwrap();
+        assert_eq!(span.start_byte as usize, source.find("fn café").unwrap());
+        assert_eq!(
+            &source[span.start_byte as usize..span.end_byte as usize],
+            "fn café() {}"
+        );
+        assert_eq!(span.start_line, 2);
+        let masked = source.as_bytes()[..source.find("fn café").unwrap()]
+            .iter()
+            .map(|b| {
+                if matches!(*b, b'\r' | b'\n') {
+                    *b as char
+                } else {
+                    ' '
+                }
+            })
+            .collect::<String>()
+            + "fn café() {}\r\n";
+        let ordinary =
+            serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"rust"}},"cells":[
+                {"id":"rust","cell_type":"code","source":masked,"metadata":{}}
+            ]}))
+            .unwrap();
+        let before = run_notebook_extraction(Path::new("nb.ipynb"), &ordinary).unwrap();
+        let old = before
+            .nodes
+            .iter()
+            .find(|n| n.kind == NodeKind::Function && n.label == "café")
+            .unwrap();
+        assert_eq!(function.stable_key, old.stable_key);
+    }
+
+    #[test]
+    fn valid_graph_stable_keys_keep_legacy_cell_paths_and_source_decoding() {
+        let source = "def helper():\n    return 1\n";
+        let base = format!("cell-{}", blake3::hash(source.as_bytes()).to_hex());
+        let bytes = serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"python3"}},"cells":[
+            {"id":" explicit ","cell_type":"code","source":["def helper():\n","    return 1\n"]},
+            {"cell_type":"code","source":source},
+            {"cell_type":"code","source":source}
+        ]})).unwrap();
+        let facts = run_notebook_extraction(Path::new("nb.ipynb"), &bytes).unwrap();
+        for id in ["explicit".to_owned(), base.clone(), format!("{base}-2")] {
+            let identity = format!("nb.ipynb#cell:{id}");
+            let expected =
+                crate::identity::stable_symbol_id_for(&identity, "helper", NodeKind::Function, 0);
+            assert!(
+                facts
+                    .nodes
+                    .iter()
+                    .any(|n| n.label == "helper" && n.stable_key == expected),
+                "legacy stable key {id}: {:?}",
+                facts.nodes
+            );
+        }
+    }
+
+    #[test]
+    fn graph_rejects_invalid_inventory_instead_of_clean_empty_or_duplicate_keys() {
+        for nb in [
+            json!({}),
+            json!({"cells":[{"cell_type":"code","source":["fn f() {}",42]}]}),
+            json!({"cells":[{"id":"a","cell_type":"raw","source":""},{"id":" a ","cell_type":"raw","source":""}]}),
+        ] {
+            assert!(
+                run_notebook_extraction(Path::new("nb.ipynb"), &serde_json::to_vec(&nb).unwrap())
+                    .is_err(),
+                "{nb}"
+            );
+        }
+    }
+
+    #[test]
+    fn raw_byte_strings_and_nested_comments_recover_function_through_graph() {
+        for source in [
+            "let text = br##\"\n:load not_a_command.rs\n\"##;\nfn f() {}\n",
+            "/* outer /* inner */\n:load not_a_command.rs\n*/\nfn f() {}",
+        ] {
+            let bytes =
+                serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"evcxr"}},"cells":[
+                    {"id":"rust","cell_type":"code","source":source}
+                ]}))
+                .unwrap();
+            let facts = run_notebook_extraction(Path::new("nb.ipynb"), &bytes).unwrap();
+            assert!(has_symbol(&facts, "f"), "{source}");
+        }
+    }
+
+    #[test]
+    fn graph_rejects_effective_id_collisions_across_explicit_and_anonymous_cells() {
+        let id = format!("cell-{}", blake3::hash(b"fn f() {}\n").to_hex());
+        let bytes = serde_json::to_vec(&json!({"cells":[
+            {"cell_type":"code","source":"fn f() {}\n"},
+            {"id":id,"cell_type":"raw","source":"other"}
+        ]}))
+        .unwrap();
+        assert!(run_notebook_extraction(Path::new("nb.ipynb"), &bytes).is_err());
     }
 
     #[test]
