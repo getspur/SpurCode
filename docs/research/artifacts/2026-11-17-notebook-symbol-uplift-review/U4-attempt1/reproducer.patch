@@ -1,0 +1,47 @@
+diff --git a/crates/spur-graph-duckdb/tests/test_app_consumer.py b/crates/spur-graph-duckdb/tests/test_app_consumer.py
+index 0d0a97756..b2fc5633e 100644
+--- a/crates/spur-graph-duckdb/tests/test_app_consumer.py
++++ b/crates/spur-graph-duckdb/tests/test_app_consumer.py
+@@ -549,0 +550,42 @@ m.run_consumer(sys.argv[2],sys.argv[3],sys.argv[4],expected_extractor_id=sys.arg
++    def test_root_review_nullable_absent_ordinary_pairs_are_retained(self):
++        fixture = self.frozen_fixture([
++            ('base', {'deleted.rs': 'fn before() {}'}),
++            ('head', {'added.rs': 'fn after() {}'})], [
++                dict(pair_id='added', base_snapshot_id='base', head_snapshot_id='head',
++                     logical_path='added.rs', old_path=None, kind='A'),
++                dict(pair_id='deleted', base_snapshot_id='base', head_snapshot_id='head',
++                     logical_path=None, old_path='deleted.rs', kind='D')])
++        manifest = self.consume_notebooks(fixture)
++        self.assertEqual(manifest['review_coverage']['pair_rows'], 2)
++        rows = self.rows(manifest, 'review')
++        self.assertEqual(len(rows), 2, 'every accepted ordinary A/D pair must survive routing')
++        self.assertEqual({r['pair_id'] for r in rows}, {'added', 'deleted'})
++
++    def test_root_review_nullable_notebook_delete_is_retained(self):
++        from test_notebook import notebook
++        fixture = self.frozen_fixture([
++            ('base', {'n.ipynb': notebook()}), ('head', {})], [
++                dict(pair_id='deleted', base_snapshot_id='base', head_snapshot_id='head',
++                     logical_path=None, old_path='n.ipynb', kind='D')])
++        manifest = self.consume_notebooks(fixture)
++        self.assertEqual(manifest['review_coverage']['pair_rows'], 1)
++        self.assertEqual(len(self.rows(manifest, 'notebook_review')), 1)
++
++    def test_root_review_pair_refs_without_occurrences_are_readable(self):
++        from test_notebook import code, notebook
++        fixture = self.frozen_fixture([
++            ('base', {'n.ipynb': notebook([code(source='fn f() -> i32 { 1 }')])}),
++            ('head', {'n.ipynb': notebook([code(source='fn f() -> i32 { 2 }')])})], [
++                dict(pair_id='edited', base_snapshot_id='base', head_snapshot_id='head',
++                     logical_path='n.ipynb', old_path='n.ipynb', kind='M')])
++        fixture['lineage'] = []
++        manifest = self.consume_notebooks(fixture)
++        row = self.rows(manifest, 'notebook_review')[0]
++        ref = row['result']['after']['cells'][0]['symbols'][0]['source_ref']
++        try:
++            text = self.app.read_notebook_source(self.output, 'head', row['new_blob_oid'], ref)
++        except ValueError as error:
++            self.fail('a published review reference must resolve without an Explore occurrence: ' + str(error))
++        self.assertEqual(text, 'fn f() -> i32 { 2 }')
++
++

@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "task": "U4",
+  "attempt": 1,
+  "issue": "bd-qwpo",
+  "review_issue": "bd-1g1u",
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "delegation_id": "8220eee59ab540e9",
+  "branch": "spur/worker/v2/codex/dc95897af65a8511/06f06a07-413e-4d6f-9fdf-1e7645d097fc",
+  "base": "1d23aee62d80b1964d322fb5af742feddbccbacb",
+  "reviewed_head": "9dfb8229d58a2346dd2ae5e56f8a13c1be571938",
+  "test_commits": [
+    "b359a4123",
+    "0342d3f1b"
+  ],
+  "implementation": "8427e33e9",
+  "final_evidence": "a135b0bfb",
+  "native_package": {
+    "path": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/spur_graph.duckdb_extension",
+    "sha256": "ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b",
+    "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2"
+  },
+  "beads": {
+    "status": "in_progress/ready-for-review",
+    "completion_audit": "8220eee59ab540e9, 2026-11-17 08:57:42",
+    "unresolved_signals": "none"
+  },
+  "root_cwd": "/private/tmp/spur-notebook-u1-root-review",
+  "root_command_prefix": [
+    "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "crates/spur-graph-duckdb/tests",
+    "-p",
+    "test_app_consumer.py"
+  ],
+  "root_environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "SPUR_GRAPH_EXTENSION": "/private/tmp/spur-notebook-u3-bd-lnhs-attempt2-final/spur_graph.duckdb_extension"
+  },
+  "root_consumer": {
+    "args": [
+      "-v"
+    ],
+    "exit_code": 0,
+    "passed": 19,
+    "output": "test_diagnostics_and_coverage_do_not_claim_full_resolution (test_app_consumer.AppConsumerTests.test_diagnostics_and_coverage_do_not_claim_full_resolution) ... ok\ntest_early_exit_and_interruption_cannot_publish_even_with_candidate_written (test_app_consumer.AppConsumerTests.test_early_exit_and_interruption_cannot_publish_even_with_candidate_written) ... ok\ntest_explicit_timeout_reaps_child_and_next_healthy_run_succeeds (test_app_consumer.AppConsumerTests.test_explicit_timeout_reaps_child_and_next_healthy_run_succeeds) ... ok\ntest_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths (test_app_consumer.AppConsumerTests.test_full_key_explore_preserves_lineage_and_same_bytes_at_different_paths) ... ok\ntest_interrupting_parent_reaps_native_child_before_cleanup (test_app_consumer.AppConsumerTests.test_interrupting_parent_reaps_native_child_before_cleanup) ... ok\ntest_manifest_binds_snapshot_schema_source_runtime_and_artifact (test_app_consumer.AppConsumerTests.test_manifest_binds_snapshot_schema_source_runtime_and_artifact) ... ok\ntest_mislabeled_source_and_wrong_extractor_fail_before_publication (test_app_consumer.AppConsumerTests.test_mislabeled_source_and_wrong_extractor_fail_before_publication) ... ok\ntest_missing_full_lineage_key_and_conflicting_snapshot_are_rejected (test_app_consumer.AppConsumerTests.test_missing_full_lineage_key_and_conflicting_snapshot_are_rejected) ... ok\ntest_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback (test_app_consumer.AppConsumerTests.test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback) ... ok\ntest_notebook_inventory_refs_and_coverage_survive_native_child (test_app_consumer.AppConsumerTests.test_notebook_inventory_refs_and_coverage_survive_native_child) ... ok\ntest_notebook_real_frozen_inputs_through_consumer_and_original_anchors (test_app_consumer.AppConsumerTests.test_notebook_real_frozen_inputs_through_consumer_and_original_anchors) ... ok\ntest_notebook_review_preserves_structure_config_and_metadata (test_app_consumer.AppConsumerTests.test_notebook_review_preserves_structure_config_and_metadata) ... ok\ntest_notebook_source_context_and_historical_run_guards (test_app_consumer.AppConsumerTests.test_notebook_source_context_and_historical_run_guards) ... ok\ntest_reader_checks_the_coherent_snapshot_manifest (test_app_consumer.AppConsumerTests.test_reader_checks_the_coherent_snapshot_manifest) ... ok\ntest_reader_rejects_coherent_stored_result_with_unsupported_source_scheme (test_app_consumer.AppConsumerTests.test_reader_rejects_coherent_stored_result_with_unsupported_source_scheme) ... ok\ntest_reader_rejects_corrupt_exports_and_snapshot_relabeling (test_app_consumer.AppConsumerTests.test_reader_rejects_corrupt_exports_and_snapshot_relabeling) ... ok\ntest_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs (test_app_consumer.AppConsumerTests.test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs) ... ok\ntest_typed_exports_reopen_and_replay_without_added_duplicates (test_app_consumer.AppConsumerTests.test_typed_exports_reopen_and_replay_without_added_duplicates) ... ok\ntest_unsupported_fixture_scheme_preserves_completed_pointer_and_files (test_app_consumer.AppConsumerTests.test_unsupported_fixture_scheme_preserves_completed_pointer_and_files) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 33.261s\n\nOK\n"
+  },
+  "root_reproducers": {
+    "args": [
+      "-k",
+      "root_review_",
+      "-v"
+    ],
+    "exit_code": 1,
+    "failed": 3,
+    "output": "test_root_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_root_review_nullable_absent_ordinary_pairs_are_retained) ... FAIL\ntest_root_review_nullable_notebook_delete_is_retained (test_app_consumer.AppConsumerTests.test_root_review_nullable_notebook_delete_is_retained) ... FAIL\ntest_root_review_pair_refs_without_occurrences_are_readable (test_app_consumer.AppConsumerTests.test_root_review_pair_refs_without_occurrences_are_readable) ... FAIL\n\n======================================================================\nFAIL: test_root_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_root_review_nullable_absent_ordinary_pairs_are_retained)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/tests/test_app_consumer.py\", line 561, in test_root_review_nullable_absent_ordinary_pairs_are_retained\n    self.assertEqual(len(rows), 2, 'every accepted ordinary A/D pair must survive routing')\nAssertionError: 0 != 2 : every accepted ordinary A/D pair must survive routing\n\n======================================================================\nFAIL: test_root_review_nullable_notebook_delete_is_retained (test_app_consumer.AppConsumerTests.test_root_review_nullable_notebook_delete_is_retained)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/tests/test_app_consumer.py\", line 391, in consume_notebooks\n    return self.app.run_consumer(path, self.output, self.package,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 240, in run_consumer\n    raise ChildFailure(process.pid, process.returncode, stdout, stderr)\napp_consumer.ChildFailure: native child 57372 exited 1: Traceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 536, in <module>\n    main()\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 526, in main\n    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 444, in native_candidate\n    notebook_projections(c, snapshots, artifact['extractor_id'])\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 347, in notebook_projections\n    if result['contract_version'] != 1:\n       ~~~~~~^^^^^^^^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/tests/test_app_consumer.py\", line 570, in test_root_review_nullable_notebook_delete_is_retained\n    manifest = self.consume_notebooks(fixture)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/tests/test_app_consumer.py\", line 394, in consume_notebooks\n    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))\nAssertionError: notebook consumer must route original sources to notebook APIs: native child 57372 exited 1: Traceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 536, in <module>\n    main()\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 526, in main\n    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 444, in native_candidate\n    notebook_projections(c, snapshots, artifact['extractor_id'])\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 347, in notebook_projections\n    if result['contract_version'] != 1:\n       ~~~~~~^^^^^^^^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n\n\n======================================================================\nFAIL: test_root_review_pair_refs_without_occurrences_are_readable (test_app_consumer.AppConsumerTests.test_root_review_pair_refs_without_occurrences_are_readable)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/tests/test_app_consumer.py\", line 586, in test_root_review_pair_refs_without_occurrences_are_readable\n    text = self.app.read_notebook_source(self.output, 'head', row['new_blob_oid'], ref)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/examples/app_consumer.py\", line 193, in read_notebook_source\n    raise ValueError('source reference has no matching snapshot source')\nValueError: source reference has no matching snapshot source\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/tmp/spur-notebook-u1-root-review/crates/spur-graph-duckdb/tests/test_app_consumer.py\", line 588, in test_root_review_pair_refs_without_occurrences_are_readable\n    self.fail('a published review reference must resolve without an Explore occurrence: ' + str(error))\nAssertionError: a published review reference must resolve without an Explore occurrence: source reference has no matching snapshot source\n\n----------------------------------------------------------------------\nRan 3 tests in 1.401s\n\nFAILED (failures=3)\n",
+    "test_patch": "reproducer.patch",
+    "restore": {
+      "chunk_id": "41bbef",
+      "wall_time_seconds": 0.000006458,
+      "exit_code": 0,
+      "original_token_count": 46,
+      "output": "{\"scratch_test_sha256\": \"3cac3adacbcab28a9bfbac6d5c238f4dbe198bc2955e45bbe88a9df0fcf98b9e\", \"restored_test_sha256\": \"b361cd8501b32a206b533fc3944d44fcbac63cc2b77e17cc0d88e36a7d968eeb\"}\n"
+    },
+    "scratch_restored": true
+  },
+  "receipt_verification": {
+    "chunk_id": "84dece",
+    "wall_time_seconds": 0.283380667,
+    "exit_code": 0,
+    "original_token_count": 300,
+    "output": "{\n  \"phases\": {\n    \"native-red\": 1,\n    \"native-green-attempt1\": 1,\n    \"native-green-attempt2\": 1,\n    \"native-green-attempt3\": 0,\n    \"consumer-green\": 0,\n    \"native-readback\": 1,\n    \"native-readback-final\": 0\n  },\n  \"mode\": \"HOST\",\n  \"native_inputs_verified\": 325,\n  \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n  \"package_sha256\": \"ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b\",\n  \"sidecar_sha256\": \"7f6cd25b5db413e29ca23b5bfa36e78b2bacfb17b4c43ed7c7537f0b900cbb66\",\n  \"immutable_files_verified\": 37,\n  \"symbols\": [\n    46,\n    24\n  ],\n  \"functions\": [\n    17,\n    11\n  ],\n  \"independent_anchors_tested\": 28,\n  \"source_refs_resolved\": 70,\n  \"real_symbol_changes\": 50,\n  \"real_cell_changes\": 10,\n  \"consumer_tests_passed\": 19,\n  \"historical_v1_readback\": true,\n  \"ordinary_schemas_equal\": true,\n  \"preserved_remote_receipt_sha256\": \"0f74fe35a860681aa0525ada9d2647798e7d6f554e23ebd0fc55a5a1420dad4a\",\n  \"preserved_remote_exit\": 200,\n  \"historical_package_sha256\": \"28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122\",\n  \"production_paths\": [\n    \"crates/spur-graph-duckdb/examples/app_consumer.py\"\n  ]\n}\n"
+  },
+  "source_verification": {
+    "chunk_id": "68afaa",
+    "wall_time_seconds": 3.02346725,
+    "exit_code": 0,
+    "original_token_count": 135,
+    "output": "PASS: original failing-first ancestry b359a4123/0342d3f1b→8427e33e9; identical final test predicates; latest GREEN/consumer/readback sources match current and committed a135b0bfb; unified patch exact.\nb359a4123 test(spur-graph-duckdb): U4 require notebook consumer provenance and typed readback\n0342d3f1b test(spur-graph-duckdb): U4 retain failing-first receipts\n8427e33e9 feat(spur-graph-duckdb): U4 publish typed notebook consumer evidence\na135b0bfb docs(spur-graph-duckdb): U4 seal native notebook readback and compatibility receipts\n"
+  },
+  "review": {
+    "decision": "request_changes",
+    "severity": "Important/P2",
+    "findings": [
+      {
+        "location": "app_consumer.py:433-434 and347",
+        "problem": "Fixture accepts missing absent-side paths. SQL NULL predicates silently drop ordinary A/D review rows; notebook D with logical_path=None yields native NULL and then TypeError indexing result.",
+        "witness": "A added.rs/None and D None/deleted.rs publish pair_rows=2 but review has0 rows. D None/n.ipynb aborts the native child."
+      },
+      {
+        "location": "app_consumer.py:185-193",
+        "problem": "Source reader depends exclusively on occurrence-based notebook_explore. A valid review-only fixture with lineage=[] publishes exact native before/after refs but those refs cannot be opened.",
+        "witness": "Valid notebook M with base/head sources, no Explore occurrences, publishes notebook_review; read_notebook_source(head,new_blob_oid,after_ref) raises no matching snapshot source."
+      }
+    ],
+    "requirements": "Preserve every accepted pair and explicit NULL/absence semantics; no None dereference. Resolve published review refs using exact run/snapshot/blob/path/extractor context independently of Explore occurrence rows; retain all wrong-context/version/corruption guards. Commit failing regressions before fixes, preserve current interfaces/ordinary schemas/publication guarantees and previous work.",
+    "positive_evidence": "Root19 consumer/fault tests pass; workerRED5 assertion failures, GREEN5 notebook+19total, frozen46/24symbols17/11functions28anchors70refs and50symbolchanges/10cellevents. Verified325 native inputs,37 immutable files, actual historicalv1 readback and unchanged ordinary schemas; no native/core/publisher changes.",
+    "limits": "Python-only HOST validation reuses approved U3 candidate; no new Rust/remote success or final release claim."
+  }
+}
