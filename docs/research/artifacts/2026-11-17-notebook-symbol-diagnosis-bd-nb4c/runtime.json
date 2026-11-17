@@ -1,0 +1,104 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/docs/research/2026-11-17-spur-graph-real-repo-probe.ipynb",
+  "extension_sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+  "native_duckdb": "2.0.0",
+  "cells": [
+    {
+      "id": "7cc52077-01f8-4930-9fed-340386b367c5",
+      "key": "malformed_notebook",
+      "source": "-- The current symbol route skips notebooks before JSON validation.\nWITH input AS (SELECT 'not json'::VARCHAR AS source)\nSELECT spur_graph_symbols('broken.ipynb',source) AS symbols,\n       r.status AS graph_status, r.error_code AS graph_error\nFROM input, LATERAL (SELECT spur_graph_file_facts_result('broken.ipynb',source) AS r);"
+    },
+    {
+      "id": "5a7ab439-dea7-4ce5-9f6d-520bb55182cc",
+      "key": "flat_noop_collision",
+      "source": "-- Counterexample to blindly concatenating cell symbols into the existing file matcher.\n-- Both cells have a top-level helper; the unchanged notebook must have zero changes.\nWITH inputs AS (\n SELECT list_concat(\n   spur_graph_symbols('cell-a.py',$$def helper():\n    return 1\n$$),\n   spur_graph_symbols('cell-b.py',$$def helper():\n    return 2\n$$)) AS symbols\n), compared AS (\n SELECT symbols,spur_graph_symbol_changes('two-cells.ipynb','two-cells.ipynb','M',symbols,symbols) AS result\n FROM inputs\n)\nSELECT length(symbols) AS input_symbols, length(result.changes) AS unchanged_notebook_deltas,\n       list_transform(result.changes,lambda d: d.change_kind) AS change_kinds,\n       result.diagnostics\nFROM compared;"
+    }
+  ],
+  "malformed_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"cell_id\":\"7cc52077-01f8-4930-9fed-340386b367c5\",\"status\":\"succeeded\",\"exec_count\":28,\"output_count\":1,\"output_types\":[\"display_data\"],\"notebook_id\":\"nb-a9bae21e06322a2c1ee6239a\",\"outputs\":[\"┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬──────────────────┬─────────────────┐\\n│                                                                                            symbols                                                                                             │   graph_status   │   graph_error   │\\n│ struct(entity_name varchar, symbol_kind varchar, enclosing_scope varchar, byte_start ubigint, byte_end ubigint, line_start ubigint, line_end ubigint, anchor_hash varchar, tokens varchar[])[] │     varchar      │     varchar     │\\n├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────┼─────────────────┤\\n│ []                                                                                                                                                                                             │ extraction_error │ malformed_input │\\n└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴──────────────────┴─────────────────┘\\n\"],\"output_indices\":[0],\"cell_etag\":\"cell:sha256:2bbd15bbf28dbe81bbc4e8a7bf67de3e9e9baae0fc1c885e829b15ecc6983bad\",\"document_generation\":118,\"disk_token\":\"blake3:6b6a19ded63e4e0cc279aabcb9ecfdab8b2dfdfdd4a950bd0dc11594c5e992a0\",\"durable\":true,\"diagnostics\":null}"
+      }
+    ],
+    "structuredContent": {
+      "cell_id": "7cc52077-01f8-4930-9fed-340386b367c5",
+      "status": "succeeded",
+      "exec_count": 28,
+      "output_count": 1,
+      "output_types": [
+        "display_data"
+      ],
+      "notebook_id": "nb-a9bae21e06322a2c1ee6239a",
+      "outputs": [
+        "┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬──────────────────┬─────────────────┐\n│                                                                                            symbols                                                                                             │   graph_status   │   graph_error   │\n│ struct(entity_name varchar, symbol_kind varchar, enclosing_scope varchar, byte_start ubigint, byte_end ubigint, line_start ubigint, line_end ubigint, anchor_hash varchar, tokens varchar[])[] │     varchar      │     varchar     │\n├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────┼─────────────────┤\n│ []                                                                                                                                                                                             │ extraction_error │ malformed_input │\n└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴──────────────────┴─────────────────┘\n"
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:2bbd15bbf28dbe81bbc4e8a7bf67de3e9e9baae0fc1c885e829b15ecc6983bad",
+      "document_generation": 118,
+      "disk_token": "blake3:6b6a19ded63e4e0cc279aabcb9ecfdab8b2dfdfdd4a950bd0dc11594c5e992a0",
+      "durable": true,
+      "diagnostics": null
+    },
+    "isError": false
+  },
+  "collision_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"cell_id\":\"5a7ab439-dea7-4ce5-9f6d-520bb55182cc\",\"status\":\"succeeded\",\"exec_count\":30,\"output_count\":2,\"output_types\":[\"stderr\",\"display_data\"],\"notebook_id\":\"nb-a9bae21e06322a2c1ee6239a\",\"outputs\":[\"┌───────────────┬───────────────────────────┬───────────────────┬─────────────┐\\n│ input_symbols │ unchanged_notebook_deltas │   change_kinds    │ diagnostics │\\n│     int64     │           int64           │     varchar[]     │  varchar[]  │\\n├───────────────┼───────────────────────────┼───────────────────┼─────────────┤\\n│             2 │                         2 │ [modified, added] │ []          │\\n└───────────────┴───────────────────────────┴───────────────────┴─────────────┘\\n\"],\"output_indices\":[1],\"cell_etag\":\"cell:sha256:438223c38252f3a025f976905c4ed3be9bc23157ebaeb9a1572cbd01ae9fc91f\",\"document_generation\":127,\"disk_token\":\"blake3:65dc299cc5da85b90a77f18faa244c0a55d4a274d741b1081933dd039fefe459\",\"durable\":true,\"diagnostics\":null}"
+      }
+    ],
+    "structuredContent": {
+      "cell_id": "5a7ab439-dea7-4ce5-9f6d-520bb55182cc",
+      "status": "succeeded",
+      "exec_count": 30,
+      "output_count": 2,
+      "output_types": [
+        "stderr",
+        "display_data"
+      ],
+      "notebook_id": "nb-a9bae21e06322a2c1ee6239a",
+      "outputs": [
+        "┌───────────────┬───────────────────────────┬───────────────────┬─────────────┐\n│ input_symbols │ unchanged_notebook_deltas │   change_kinds    │ diagnostics │\n│     int64     │           int64           │     varchar[]     │  varchar[]  │\n├───────────────┼───────────────────────────┼───────────────────┼─────────────┤\n│             2 │                         2 │ [modified, added] │ []          │\n└───────────────┴───────────────────────────┴───────────────────┴─────────────┘\n"
+      ],
+      "output_indices": [
+        1
+      ],
+      "cell_etag": "cell:sha256:438223c38252f3a025f976905c4ed3be9bc23157ebaeb9a1572cbd01ae9fc91f",
+      "document_generation": 127,
+      "disk_token": "blake3:65dc299cc5da85b90a77f18faa244c0a55d4a274d741b1081933dd039fefe459",
+      "durable": true,
+      "diagnostics": null
+    },
+    "isError": false
+  },
+  "initial_collision_attempt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"cell_id\":\"5a7ab439-dea7-4ce5-9f6d-520bb55182cc\",\"status\":\"failed\",\"exec_count\":null,\"output_count\":0,\"output_types\":[],\"notebook_id\":\"nb-a9bae21e06322a2c1ee6239a\",\"outputs\":[],\"output_indices\":[],\"cell_etag\":\"cell:sha256:20db217f5c3419ebdb7f73d0e8b341b5c7b82804fcae2b514a012e72ea998902\",\"document_generation\":122,\"disk_token\":\"blake3:36a6e622ac3b96ac1a636e4a5f4c469810a133f14b94d2bfe1f4ec47f4bb7229\",\"durable\":true,\"diagnostics\":null}"
+      }
+    ],
+    "structuredContent": {
+      "cell_id": "5a7ab439-dea7-4ce5-9f6d-520bb55182cc",
+      "status": "failed",
+      "exec_count": null,
+      "output_count": 0,
+      "output_types": [],
+      "notebook_id": "nb-a9bae21e06322a2c1ee6239a",
+      "outputs": [],
+      "output_indices": [],
+      "cell_etag": "cell:sha256:20db217f5c3419ebdb7f73d0e8b341b5c7b82804fcae2b514a012e72ea998902",
+      "document_generation": 122,
+      "disk_token": "blake3:36a6e622ac3b96ac1a636e4a5f4c469810a133f14b94d2bfe1f4ec47f4bb7229",
+      "durable": true,
+      "diagnostics": null
+    },
+    "isError": false
+  },
+  "probe_correction": "Initial query used deprecated single-arrow lambda syntax rejected by native DuckDB2; corrected to lambda d: d.change_kind and reran successfully. Initial failure is not an extension extraction failure.",
+  "notebook_metadata_limitation": "After rerun, cell status/output are success but spur_output_provenance still names the earlier failed source119 attempt. Use exact synchronous successful run receipt and fresh standalone native replay, not that stale provenance field, for this witness."
+}
