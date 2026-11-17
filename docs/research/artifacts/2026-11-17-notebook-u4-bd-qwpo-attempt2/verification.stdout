@@ -1,0 +1,71 @@
+{
+  "phases": {
+    "review-red": 1,
+    "review-red-final": 1,
+    "review-green-attempt1": 1,
+    "review-green-attempt2": 0,
+    "review-green-final": 0,
+    "consumer-green": 0,
+    "native-readback": 0
+  },
+  "mode": "HOST",
+  "package_sha256": "ed42b39bd3fda2d79ffce5c482c3c869643340f689eded84e9894e709714e35b",
+  "sidecar_sha256": "7f6cd25b5db413e29ca23b5bfa36e78b2bacfb17b4c43ed7c7537f0b900cbb66",
+  "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+  "native_inputs_verified": 325,
+  "preserved_immutable_files": 37,
+  "fresh_immutable_files": 37,
+  "archived": [
+    {
+      "work": "/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-muejy15h/results",
+      "immutable_files": 37,
+      "symbol_refs": 70,
+      "historical_v1": true,
+      "historical_v2": true,
+      "ordinary_schemas_equal": true
+    },
+    {
+      "work": "/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-u4-native-readback-3_467ko_/results",
+      "immutable_files": 37,
+      "symbol_refs": 70,
+      "historical_v1": true,
+      "historical_v2": true,
+      "ordinary_schemas_equal": true
+    }
+  ],
+  "symbols": [
+    46,
+    24
+  ],
+  "functions": [
+    17,
+    11
+  ],
+  "independent_anchors": 28,
+  "resolved_symbol_refs": 70,
+  "source_identity_scheme": "sha256:utf8-v1",
+  "source_sha256": {
+    "crates/spur-graph-duckdb/examples/app_consumer.py": "8f3520e55826d1151f44c1daf3d22f9971dd0217dc41323933168770c9c7e6b1",
+    "crates/spur-graph-duckdb/tests/test_app_consumer.py": "de354d45eaba87be8b40f2f2b1e845e8246f369e71fa81cc8e8d79d91793d6d0"
+  },
+  "real_input_sha256": "bc0e5f23ba34c20149d5c8168f4a3a1fa8b3af3c8759adaef418f2343686b608",
+  "real_source_hashes": [
+    "9a2d85e5e6c0cf0646d42c11b3b7471e2b2040c5607bf83fa0b5d4af48f1a072",
+    "2157a13c6c040841f709b7fd89602062784f6ff87209d7648c1fb960083a018b"
+  ],
+  "ordinary_schemas_equal": true,
+  "preserved_remote_exit": 200,
+  "preserved_remote_receipt_sha256": "0f74fe35a860681aa0525ada9d2647798e7d6f554e23ebd0fc55a5a1420dad4a",
+  "historical_package_sha256": "28ddce83f7e1a6eb0164cc5c09300de9029739c45f6973f485fa7b005797f122",
+  "public_signatures": {
+    "run_consumer": "(fixture, output, package, *, expected_extractor_id, timeout=None, fault=None)",
+    "read_result": "(output, snapshot_id, *, run_id=None)",
+    "read_notebook_source": "(output, snapshot_id, blob_oid, source_ref, *, run_id=None)"
+  },
+  "limitations": [
+    "HOST validation, not remote compiler success",
+    "no Rust/native changes or rebuild",
+    "finite solver snapshots do not prove arbitrary runtime behavior",
+    "U5 remains gated"
+  ]
+}

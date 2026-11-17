@@ -1,0 +1,199 @@
+diff --git a/crates/spur-graph/src/extract/notebook_model.rs b/crates/spur-graph/src/extract/notebook_model.rs
+index a3f997aba..19ae20f58 100644
+--- a/crates/spur-graph/src/extract/notebook_model.rs
++++ b/crates/spur-graph/src/extract/notebook_model.rs
+@@ -87,6 +87,9 @@ pub struct NormalizedCell {
+ }
+ 
+ impl NormalizedCell {
++    /// Legacy graph identity path, retained for existing stable-key compatibility.
++    /// This delimiter-based format is not a collision-safe symbol-ID preimage;
++    /// new public symbol identities must encode notebook path and cell ID separately.
+     pub fn identity_path(&self, notebook_path: &str) -> String {
+         format!("{notebook_path}#cell:{}", self.id)
+     }
+@@ -358,11 +361,25 @@ fn prepare_cell(cell: &mut NormalizedCell) {
+         let mut analysis = source.original.as_bytes().to_vec();
+         let mut leading = true;
+         let mut lexer = RustLex::Code;
++        // Parse lazily only when a lexical command candidate needs Rust token
++        // context. Reuse the existing grammar rather than guessing whether a
++        // preceding identifier/pattern permits a type colon across trivia.
++        let mut rust_tree = std::cell::OnceCell::new();
+         let mut start = 0;
+         for line in source.original.split_inclusive('\n') {
+             let text = line.trim_end_matches(['\r', '\n']);
+             let trimmed = text.trim_start();
+-            if let Some(offset) = lexer.scan(line) {
++            if let Some(offset) = lexer.scan(line, |offset| {
++                let tree = rust_tree.get_or_init(|| {
++                    let mut parser = tree_sitter::Parser::new();
++                    parser
++                        .set_language(&Language::Rust.tree_sitter_language())
++                        .expect("bundled Rust grammar matches tree-sitter");
++                    parser.parse(&analysis, None)
++                });
++                tree.as_ref()
++                    .is_some_and(|tree| rust_syntax_colon(tree, start + offset))
++            }) {
+                 let command = &text[offset..];
+                 let range = [start + offset, start + text.len()];
+                 let dep = command
+@@ -384,6 +401,9 @@ fn prepare_cell(cell: &mut NormalizedCell) {
+                                 *byte = b' ';
+                             }
+                         }
++                        // Later token checks must see the current analysis
++                        // bytes, with preceding supported headers masked.
++                        rust_tree.take();
+                         source.directives.push(DependencyDirective {
+                             text: text.to_owned(),
+                             byte_range: range,
+@@ -465,8 +485,23 @@ enum RustLex {
+     Block(usize),
+ }
+ 
++fn rust_syntax_colon(tree: &tree_sitter::Tree, offset: usize) -> bool {
++    let Some(token) = tree
++        .root_node()
++        .descendant_for_byte_range(offset, offset + 1)
++    else {
++        return false;
++    };
++    // A colon owned by a well-formed Rust construct is syntax, including type
++    // annotations and macro token trees. Error recovery around real kernel
++    // commands must not certify them as Rust syntax. Check the local owner:
++    // unrelated command errors elsewhere in the cell need not taint a valid
++    // parameter or field declaration.
++    token.kind() == ":" && token.parent().is_some_and(|owner| !owner.has_error())
++}
++
+ impl RustLex {
+-    fn scan(&mut self, line: &str) -> Option<usize> {
++    fn scan(&mut self, line: &str, mut is_rust_colon: impl FnMut(usize) -> bool) -> Option<usize> {
+         let bytes = line.as_bytes();
+         let mut i = 0;
+         let mut only_trivia = matches!(self, Self::Code | Self::Block(_));
+@@ -520,14 +555,15 @@ impl RustLex {
+                     {
+                         let tail = &line[i..];
+                         // Commands as the first lexical token (comments may
+-                        // precede them), plus conservatively recognized inline
+-                        // dependency/load forms. Never mask inline forms.
++                        // precede them), plus inline dependency/load forms at
++                        // boundaries not owned by valid Rust syntax. Never mask
++                        // inline forms.
+                         let inline_command = [":dep", ":load"].iter().any(|name| {
+                             tail.strip_prefix(name).is_some_and(|rest| {
+                                 rest.is_empty() || rest.starts_with(char::is_whitespace)
+                             })
+                         });
+-                        if only_trivia || inline_command {
++                        if (only_trivia || inline_command) && !is_rust_colon(i) {
+                             return Some(i);
+                         }
+                     }
+@@ -962,6 +998,103 @@ mod tests {
+         }
+     }
+ 
++    #[test]
++    fn rust_dep_and_load_type_annotations_are_not_kernel_commands() {
++        let mut failures = Vec::new();
++        for body in [
++            "fn f(x:dep ) {}\n",
++            "fn f(x:load ) {}\n",
++            "fn f(x :dep ) {}\n",
++            "fn f(x :load ) {}\n",
++            "fn f(x: dep) {}\n",
++            "fn f(x: load) {}\n",
++            "struct S { value:dep }\n",
++            "struct S { value :load }\n",
++            "fn f() { let value:dep = 1; }\n",
++            "fn f() { let value :load = 1; }\n",
++            "const VALUE:dep = 1;\n",
++            "fn f() { let (x, y):load = (1, 2); }\n",
++            "fn f() { let S { value }:dep = s; }\n",
++        ] {
++            let alias = if body.contains("load") { "load" } else { "dep" };
++            let source = format!("type {alias} = i32;\n{body}");
++            let cell = rust(&source);
++            if cell.status != NotebookStatus::Complete || !cell.diagnostics.is_empty() {
++                failures.push(format!("{body:?}: {:?}", cell.diagnostics));
++            }
++            let prepared = cell.source.unwrap();
++            assert_eq!(prepared.original, source);
++            assert_eq!(prepared.analysis, source);
++            assert_eq!(prepared.original_sha256, prepared.analysis_sha256);
++            assert!(prepared.directives.is_empty());
++        }
++        assert!(failures.is_empty(), "{}", failures.join("\n"));
++    }
++
++    #[test]
++    fn rust_multiline_and_commented_type_annotations_are_not_kernel_commands() {
++        let mut failures = Vec::new();
++        for body in [
++            "fn f(x\n    :dep ) {}\n",
++            "fn f(x\n    :load ) {}\n",
++            "fn f(x /* before */ :dep /* after */ ) {}\n",
++            "fn f(x /* before */ :load /* after */ ) {}\n",
++            "fn f(x // before\n    :dep ) {}\n",
++            "fn f(x /* outer /* inner */\n    */ :load ) {}\n",
++            "struct S { value\n    :dep }\n",
++            "struct S { value /* before */ :load /* after */ }\n",
++            "fn f() { let value\n    :dep = 1; }\n",
++            "fn f() { let value // before\n    :load = 1; }\n",
++            "fn f() { let (x, y)\n    :dep = (1, 2); }\n",
++            "fn f() { let S { value } /* before */\n    :load = s; }\n",
++        ] {
++            let source = format!("type dep = i32;\ntype load = i32;\n{body}");
++            let cell = rust(&source);
++            if cell.status != NotebookStatus::Complete || !cell.diagnostics.is_empty() {
++                failures.push(format!("{body:?}: {:?}", cell.diagnostics));
++            }
++            let prepared = cell.source.unwrap();
++            assert_eq!(prepared.original, source);
++            assert_eq!(prepared.analysis, source);
++            assert_eq!(prepared.original_sha256, prepared.analysis_sha256);
++            assert!(prepared.directives.is_empty());
++        }
++        assert!(failures.is_empty(), "{}", failures.join("\n"));
++    }
++
++    #[test]
++    fn rust_real_commands_after_type_annotations_remain_partial() {
++        for command in [":dep serde = \"1\"", ":load /definitely/not/read.rs"] {
++            for body in [
++                "fn f(x:dep ) {}",
++                "fn f(x\n    :dep ) {}",
++                "fn f() { let value:dep = 1; }",
++            ] {
++                for separator in ["\n", " ", " /* boundary */ "] {
++                    let source = format!("type dep = i32;\n{body}{separator}{command}\n");
++                    let cell = rust(&source);
++                    assert_eq!(cell.status, NotebookStatus::Partial);
++                    assert_eq!(
++                        cell.diagnostics.len(),
++                        1,
++                        "{source}: {:?}",
++                        cell.diagnostics
++                    );
++                    let diagnostic = &cell.diagnostics[0];
++                    let range = diagnostic.byte_range.unwrap();
++                    assert_eq!(&source[range[0]..range[1]], command);
++                    let expected = if command.starts_with(":dep") {
++                        NotebookDiagnosticCode::NonLeadingRustDirective
++                    } else {
++                        NotebookDiagnosticCode::UnsupportedRustCommand
++                    };
++                    assert_eq!(diagnostic.code, expected);
++                    assert_eq!(cell.source.unwrap().analysis, source);
++                }
++            }
++        }
++    }
++
+     #[test]
+     fn rust_absolute_paths_are_code_and_inline_commands_are_partial() {
+         let absolute = "::std::mem::drop(value);\nfn f() {}\n";

@@ -1,0 +1,32 @@
+test_duplicate_helper_noop_ambiguity_and_rename_refs (test_notebook.NotebookTests.test_duplicate_helper_noop_ambiguity_and_rename_refs) ... ok
+test_exact_schemas_and_registry_docs (test_notebook.NotebookTests.test_exact_schemas_and_registry_docs) ... FAIL
+test_null_absence_invalid_unsupported_and_legacy_guards (test_notebook.NotebookTests.test_null_absence_invalid_unsupported_and_legacy_guards) ... ok
+test_original_source_preparation_metadata_and_inventory (test_notebook.NotebookTests.test_original_source_preparation_metadata_and_inventory) ... FAIL
+test_real_frozen_sources_and_original_refs (test_notebook.NotebookTests.test_real_frozen_sources_and_original_refs) ... ok
+test_structural_dependency_and_metadata_events (test_notebook.NotebookTests.test_structural_dependency_and_metadata_events) ... ok
+test_varied_nested_batches_null_empty_large_selection_and_parquet (test_notebook.NotebookTests.test_varied_nested_batches_null_empty_large_selection_and_parquet) ... ok
+
+======================================================================
+FAIL: test_exact_schemas_and_registry_docs (test_notebook.NotebookTests.test_exact_schemas_and_registry_docs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 89, in test_exact_schemas_and_registry_docs
+    self.assertEqual(self.con.execute("DESCRIBE SELECT spur_graph_notebook_symbols('n.ipynb','{}')").fetchone()[1], DOCUMENT)
+AssertionError: 'STRU[172 chars]HAR, "language" VARCHAR, metadata_json VARCHAR[1030 chars])[])' != 'STRU[172 chars]HAR, language VARCHAR, metadata_json VARCHAR, [1022 chars])[])'
+Diff is 3369 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_original_source_preparation_metadata_and_inventory (test_notebook.NotebookTests.test_original_source_preparation_metadata_and_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_notebook.py", line 113, in test_original_source_preparation_metadata_and_inventory
+    self.assertEqual(doc['status'], 'complete')
+AssertionError: 'partial' != 'complete'
+- partial
++ complete
+
+
+----------------------------------------------------------------------
+Ran 7 tests in 123.964s
+
+FAILED (failures=2)

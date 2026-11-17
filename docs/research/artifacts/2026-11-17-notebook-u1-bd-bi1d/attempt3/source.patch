@@ -1,0 +1,1522 @@
+diff --git a/crates/spur-graph/src/extract/mod.rs b/crates/spur-graph/src/extract/mod.rs
+index d4897a1a3..2259413d7 100644
+--- a/crates/spur-graph/src/extract/mod.rs
++++ b/crates/spur-graph/src/extract/mod.rs
+@@ -6,6 +6,7 @@ pub mod languages;
+ pub mod markdown;
+ pub mod mcp_tools;
+ pub(crate) mod notebook;
++pub mod notebook_model;
+ pub(crate) mod openapi;
+ mod rust_bindings;
+ pub(crate) mod rust_macros;
+diff --git a/crates/spur-graph/src/extract/notebook.rs b/crates/spur-graph/src/extract/notebook.rs
+index 5109a12a6..24b1b90e0 100644
+--- a/crates/spur-graph/src/extract/notebook.rs
++++ b/crates/spur-graph/src/extract/notebook.rs
+@@ -8,6 +8,7 @@ use tree_sitter::{Parser, Point, Query, QueryCursor, Range, StreamingIterator as
+ 
+ use crate::extract::languages::Language;
+ use crate::extract::markdown::extract_markdown_contents;
++use crate::extract::notebook_model::{normalize_notebook, NotebookDiagnosticCode, NotebookStatus};
+ use crate::extract::tree_sitter::{
+     compile_queries, extract_file_contents_from_tree, relative_path, CompiledQueries, FactBuilder,
+ };
+@@ -65,63 +66,59 @@ pub(crate) fn extract_notebook_file(
+     path: &Path,
+     bytes: &[u8],
+ ) -> anyhow::Result<()> {
+-    let notebook: Value = serde_json::from_slice(bytes).context("parse .ipynb JSON")?;
++    let notebook = normalize_notebook(bytes);
++    if notebook.status == NotebookStatus::Invalid {
++        let diagnostics: Vec<_> = notebook
++            .diagnostics
++            .iter()
++            .chain(notebook.cells.iter().flat_map(|cell| &cell.diagnostics))
++            .map(|diagnostic| (diagnostic.cell_ordinal, diagnostic.code))
++            .collect();
++        if notebook
++            .diagnostics
++            .iter()
++            .any(|d| d.code == NotebookDiagnosticCode::InvalidJson)
++        {
++            anyhow::bail!("parse .ipynb JSON: {diagnostics:?}");
++        }
++        anyhow::bail!("invalid .ipynb notebook inventory: {diagnostics:?}");
++    }
+     let source = str::from_utf8(bytes).context("read .ipynb as UTF-8")?;
+     let relative_path = relative_path(builder.root(), path)?;
+     let file_id = FileId(builder.next_file_id());
+     let root_tree = parse_source(Language::JupyterNotebook, source)?;
+     let file_node = builder.add_file_node(&relative_path, file_id, root_tree.root_node());
+ 
+-    let Some(cells) = notebook.get("cells").and_then(Value::as_array) else {
+-        return Ok(());
+-    };
+-
+     let mut port_nodes = HashMap::new();
+-    let mut anonymous_cell_ids = HashMap::new();
+     let mut query_cache = HashMap::new();
+-    for cell in cells {
+-        let cell_source = cell_source_text(cell);
+-        let cell_id = cell_id(cell, &cell_source, &mut anonymous_cell_ids);
+-        let cell_identity_path = cell_identity_path(&relative_path, &cell_id);
++    for cell in &notebook.cells {
++        // Invalid inventory was rejected above. All ranges and graph labels use
++        // original decoded bytes; only the parser sees prepared analysis bytes.
++        let Some(prepared) = &cell.source else {
++            continue;
++        };
++        let cell_source = prepared.original.as_str();
++        let cell_identity_path = cell.identity_path(&relative_path);
+         let cell_node = add_cell_node(
+             builder,
+             &relative_path,
+             file_id,
+             file_node,
+-            &cell_id,
+-            &cell_source,
++            &cell.id,
++            cell_source,
+         );
+         emit_declared_metadata_facts(
+             builder,
+             &relative_path,
+             file_id,
+             cell_node,
+-            cell,
+-            &cell_source,
++            &cell.metadata,
++            cell_source,
+             &mut port_nodes,
+         );
+-        if cell_is_markdown(cell) {
+-            extract_cell(
+-                builder,
+-                CellExtractInput {
+-                    relative_path: &relative_path,
+-                    identity_relative_path: &cell_identity_path,
+-                    file_id,
+-                    parent_node: cell_node,
+-                    language: Language::Markdown,
+-                    source: &cell_source,
+-                    port_nodes: &mut port_nodes,
+-                    query_cache: &mut query_cache,
+-                },
+-            )?;
+-            continue;
+-        }
+-
+-        if cell.get("cell_type").and_then(Value::as_str) != Some("code") {
+-            continue;
+-        }
+-
+-        match resolve_cell_language(cell, &notebook) {
++        // Legacy GraphFacts has no coverage field. Callers needing notebook
++        // coverage must also inspect normalize_notebook's typed diagnostics.
++        match cell.language {
+             Some(language) => {
+                 extract_cell(
+                     builder,
+@@ -131,46 +128,26 @@ pub(crate) fn extract_notebook_file(
+                         file_id,
+                         parent_node: cell_node,
+                         language,
+-                        source: &cell_source,
++                        source: cell_source,
++                        analysis_source: &prepared.analysis,
+                         port_nodes: &mut port_nodes,
+                         query_cache: &mut query_cache,
+                     },
+                 )?;
+             }
+-            None => {
++            None if cell.cell_type.as_deref() == Some("code") => {
+                 tracing::warn!(
+                     path = %path.display(),
+                     "spur-graph: skipping notebook cell (unsupported language)"
+                 );
+             }
++            None => {}
+         }
+     }
+ 
+     Ok(())
+ }
+ 
+-fn cell_id(cell: &Value, source: &str, anonymous_ids: &mut HashMap<String, u32>) -> String {
+-    if let Some(id) = cell.get("id").and_then(Value::as_str) {
+-        let trimmed = id.trim();
+-        if !trimmed.is_empty() {
+-            return trimmed.to_owned();
+-        }
+-    }
+-    let digest = blake3::hash(source.as_bytes());
+-    let base = format!("cell-{}", digest.to_hex());
+-    let seen = anonymous_ids.entry(base.clone()).or_insert(0);
+-    *seen += 1;
+-    if *seen == 1 {
+-        base
+-    } else {
+-        format!("{base}-{}", *seen)
+-    }
+-}
+-
+-fn cell_identity_path(relative_path: &str, cell_id: &str) -> String {
+-    format!("{relative_path}#cell:{cell_id}")
+-}
+-
+ /// Document to slice with a notebook symbol's cell-relative `line_range`.
+ ///
+ /// Extract stores ranges against decoded cell source, not the `.ipynb` JSON
+@@ -184,17 +161,16 @@ pub(crate) fn decoded_source_document(
+         return None;
+     }
+     let wanted = notebook_cell_id_for_symbol(symbol)?;
+-    let notebook: Value = serde_json::from_str(file_source).ok()?;
+-    let cells = notebook.get("cells")?.as_array()?;
+-    let mut anonymous_ids = HashMap::new();
+-    for cell in cells {
+-        let source = cell_source_text(cell);
+-        let id = cell_id(cell, &source, &mut anonymous_ids);
+-        if id == wanted {
+-            return Some(source);
+-        }
++    let notebook = normalize_notebook(file_source.as_bytes());
++    if notebook.status == NotebookStatus::Invalid {
++        return None;
+     }
+-    None
++    notebook
++        .cells
++        .into_iter()
++        .find(|cell| cell.id == wanted)?
++        .source
++        .map(|source| source.original)
+ }
+ 
+ fn notebook_cell_id_for_symbol(symbol: &GraphSymbolArtifact) -> Option<&str> {
+@@ -239,14 +215,11 @@ fn emit_declared_metadata_facts(
+     relative_path: &str,
+     file_id: FileId,
+     cell_node: NodeId,
+-    cell: &Value,
++    metadata: &Value,
+     source: &str,
+     port_nodes: &mut HashMap<String, NodeId>,
+ ) {
+-    let Some(spur) = cell
+-        .get("metadata")
+-        .and_then(|metadata| metadata.get("spur"))
+-    else {
++    let Some(spur) = metadata.get("spur") else {
+         return;
+     };
+ 
+@@ -365,14 +338,6 @@ fn end_point(source: &str) -> Point {
+     Point { row, column }
+ }
+ 
+-fn cell_source_text(cell: &Value) -> String {
+-    match cell.get("source") {
+-        Some(Value::String(source)) => source.clone(),
+-        Some(Value::Array(lines)) => lines.iter().filter_map(Value::as_str).collect(),
+-        _ => String::new(),
+-    }
+-}
+-
+ struct CellExtractInput<'a> {
+     relative_path: &'a str,
+     identity_relative_path: &'a str,
+@@ -380,6 +345,7 @@ struct CellExtractInput<'a> {
+     parent_node: NodeId,
+     language: Language,
+     source: &'a str,
++    analysis_source: &'a str,
+     port_nodes: &'a mut HashMap<String, NodeId>,
+     query_cache: &'a mut HashMap<Language, CompiledQueries>,
+ }
+@@ -392,6 +358,7 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
+         parent_node,
+         language,
+         source,
++        analysis_source,
+         port_nodes,
+         query_cache,
+     } = input;
+@@ -404,7 +371,7 @@ fn extract_cell(builder: &mut FactBuilder<'_>, input: CellExtractInput<'_>) -> a
+             entry.insert(compile_queries(&config, language)?)
+         }
+     };
+-    let tree = parse_source(language, source)?;
++    let tree = parse_source(language, analysis_source)?;
+ 
+     if language == Language::Markdown {
+         let mut inline_parser = markdown_inline_parser(&config)?;
+@@ -1056,6 +1023,123 @@ mod tests {
+         );
+     }
+ 
++    #[test]
++    fn leading_rust_dep_recovers_function_at_original_multibyte_crlf_span() {
++        let source = ":dep sha2 = \"0.10\" # café\r\nfn café() {}\r\n";
++        let bytes =
++            serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"evcxr"}},"cells":[
++                {"id":" rust ","cell_type":"code","source":source,"metadata":{}}
++            ]}))
++            .unwrap();
++        let facts = run_notebook_extraction(Path::new("nb.ipynb"), &bytes).unwrap();
++        let function = facts
++            .nodes
++            .iter()
++            .find(|n| n.kind == NodeKind::Function && n.label == "café")
++            .expect("leading :dep must not hide the function");
++        let span = facts
++            .spans
++            .iter()
++            .find(|s| Some(s.span_id) == function.source_span_id)
++            .unwrap();
++        assert_eq!(span.start_byte as usize, source.find("fn café").unwrap());
++        assert_eq!(
++            &source[span.start_byte as usize..span.end_byte as usize],
++            "fn café() {}"
++        );
++        assert_eq!(span.start_line, 2);
++        let masked = source.as_bytes()[..source.find("fn café").unwrap()]
++            .iter()
++            .map(|b| {
++                if matches!(*b, b'\r' | b'\n') {
++                    *b as char
++                } else {
++                    ' '
++                }
++            })
++            .collect::<String>()
++            + "fn café() {}\r\n";
++        let ordinary =
++            serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"rust"}},"cells":[
++                {"id":"rust","cell_type":"code","source":masked,"metadata":{}}
++            ]}))
++            .unwrap();
++        let before = run_notebook_extraction(Path::new("nb.ipynb"), &ordinary).unwrap();
++        let old = before
++            .nodes
++            .iter()
++            .find(|n| n.kind == NodeKind::Function && n.label == "café")
++            .unwrap();
++        assert_eq!(function.stable_key, old.stable_key);
++    }
++
++    #[test]
++    fn valid_graph_stable_keys_keep_legacy_cell_paths_and_source_decoding() {
++        let source = "def helper():\n    return 1\n";
++        let base = format!("cell-{}", blake3::hash(source.as_bytes()).to_hex());
++        let bytes = serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"python3"}},"cells":[
++            {"id":" explicit ","cell_type":"code","source":["def helper():\n","    return 1\n"]},
++            {"cell_type":"code","source":source},
++            {"cell_type":"code","source":source}
++        ]})).unwrap();
++        let facts = run_notebook_extraction(Path::new("nb.ipynb"), &bytes).unwrap();
++        for id in ["explicit".to_owned(), base.clone(), format!("{base}-2")] {
++            let identity = format!("nb.ipynb#cell:{id}");
++            let expected =
++                crate::identity::stable_symbol_id_for(&identity, "helper", NodeKind::Function, 0);
++            assert!(
++                facts
++                    .nodes
++                    .iter()
++                    .any(|n| n.label == "helper" && n.stable_key == expected),
++                "legacy stable key {id}: {:?}",
++                facts.nodes
++            );
++        }
++    }
++
++    #[test]
++    fn graph_rejects_invalid_inventory_instead_of_clean_empty_or_duplicate_keys() {
++        for nb in [
++            json!({}),
++            json!({"cells":[{"cell_type":"code","source":["fn f() {}",42]}]}),
++            json!({"cells":[{"id":"a","cell_type":"raw","source":""},{"id":" a ","cell_type":"raw","source":""}]}),
++        ] {
++            assert!(
++                run_notebook_extraction(Path::new("nb.ipynb"), &serde_json::to_vec(&nb).unwrap())
++                    .is_err(),
++                "{nb}"
++            );
++        }
++    }
++
++    #[test]
++    fn raw_byte_strings_and_nested_comments_recover_function_through_graph() {
++        for source in [
++            "let text = br##\"\n:load not_a_command.rs\n\"##;\nfn f() {}\n",
++            "/* outer /* inner */\n:load not_a_command.rs\n*/\nfn f() {}",
++        ] {
++            let bytes =
++                serde_json::to_vec(&json!({"metadata":{"kernelspec":{"name":"evcxr"}},"cells":[
++                    {"id":"rust","cell_type":"code","source":source}
++                ]}))
++                .unwrap();
++            let facts = run_notebook_extraction(Path::new("nb.ipynb"), &bytes).unwrap();
++            assert!(has_symbol(&facts, "f"), "{source}");
++        }
++    }
++
++    #[test]
++    fn graph_rejects_effective_id_collisions_across_explicit_and_anonymous_cells() {
++        let id = format!("cell-{}", blake3::hash(b"fn f() {}\n").to_hex());
++        let bytes = serde_json::to_vec(&json!({"cells":[
++            {"cell_type":"code","source":"fn f() {}\n"},
++            {"id":id,"cell_type":"raw","source":"other"}
++        ]}))
++        .unwrap();
++        assert!(run_notebook_extraction(Path::new("nb.ipynb"), &bytes).is_err());
++    }
++
+     #[test]
+     fn direct_notebook_facts_match_batch_extraction() {
+         let nb = json!({
+diff --git a/crates/spur-graph/src/extract/notebook_model.rs b/crates/spur-graph/src/extract/notebook_model.rs
+new file mode 100644
+index 000000000..19ae20f58
+--- /dev/null
++++ b/crates/spur-graph/src/extract/notebook_model.rs
+@@ -0,0 +1,1137 @@
++//! Shared notebook normalization. Original decoded source owns all coordinates.
++
++use std::collections::HashMap;
++
++use serde_json::Value;
++use sha2::{Digest, Sha256};
++
++use super::languages::Language;
++
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum NotebookStatus {
++    Complete,
++    Partial,
++    Invalid,
++}
++
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum CellIdentityQuality {
++    Explicit,
++    SourceDerived,
++    Ambiguous,
++}
++
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum NotebookDiagnosticCode {
++    InvalidJson,
++    InvalidNotebook,
++    InvalidCells,
++    InvalidCell,
++    InvalidCellType,
++    InvalidCellId,
++    InvalidSource,
++    InvalidMetadata,
++    DuplicateEffectiveId,
++    SourceDerivedIdentity,
++    RepeatedAnonymousSource,
++    UnsupportedLanguage,
++    UnsupportedRustCommand,
++    UnsupportedRustDependency,
++    NonLeadingRustDirective,
++    UnsupportedPythonMagic,
++}
++
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct NotebookDiagnostic {
++    pub code: NotebookDiagnosticCode,
++    pub cell_ordinal: Option<usize>,
++    /// Half-open UTF-8 byte range in the decoded cell, when applicable.
++    pub byte_range: Option<[usize; 2]>,
++    pub message: String,
++}
++
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum SourceCoordinateMap {
++    Identity,
++}
++
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct DependencyDirective {
++    pub text: String,
++    pub byte_range: [usize; 2],
++}
++
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct PreparedSource {
++    pub original: String,
++    pub original_sha256: String,
++    pub analysis: String,
++    pub analysis_sha256: String,
++    pub policy: &'static str,
++    pub coordinate_map: SourceCoordinateMap,
++    pub directives: Vec<DependencyDirective>,
++}
++
++#[derive(Debug, Clone, PartialEq)]
++pub struct NormalizedCell {
++    pub id: String,
++    pub identity_quality: CellIdentityQuality,
++    pub ordinal: usize,
++    pub cell_type: Option<String>,
++    pub language: Option<Language>,
++    pub metadata: Value,
++    /// None for invalid source shapes; never a silently filtered fragment.
++    pub source: Option<PreparedSource>,
++    pub status: NotebookStatus,
++    pub diagnostics: Vec<NotebookDiagnostic>,
++}
++
++impl NormalizedCell {
++    /// Legacy graph identity path, retained for existing stable-key compatibility.
++    /// This delimiter-based format is not a collision-safe symbol-ID preimage;
++    /// new public symbol identities must encode notebook path and cell ID separately.
++    pub fn identity_path(&self, notebook_path: &str) -> String {
++        format!("{notebook_path}#cell:{}", self.id)
++    }
++}
++
++#[derive(Debug, Clone, PartialEq)]
++pub struct NormalizedNotebook {
++    /// SHA256 of the exact input bytes, including the notebook JSON wrapper.
++    pub source_sha256: String,
++    pub metadata: Value,
++    pub cells: Vec<NormalizedCell>,
++    pub status: NotebookStatus,
++    pub diagnostics: Vec<NotebookDiagnostic>,
++}
++
++/// Bounded notebook-only preparation; never executes commands or reads targets.
++pub const RUST_PREPARATION_POLICY: &str = "evcxr-leading-dep-mask-v1";
++
++/// Decode every cell without losing invalid/unsupported inventory. A complete
++/// extraction status does not establish runtime compatibility or stable identity
++/// across edits to anonymous cells; inspect identity quality and diagnostics too.
++pub fn normalize_notebook(bytes: &[u8]) -> NormalizedNotebook {
++    let mut notebook = NormalizedNotebook {
++        source_sha256: sha256(bytes),
++        metadata: Value::Null,
++        cells: Vec::new(),
++        status: NotebookStatus::Complete,
++        diagnostics: Vec::new(),
++    };
++    let root: Value = match serde_json::from_slice(bytes) {
++        Ok(root) => root,
++        Err(error) => {
++            notebook.diagnostics.push(diagnostic(
++                NotebookDiagnosticCode::InvalidJson,
++                None,
++                None,
++                error.to_string(),
++            ));
++            notebook.status = NotebookStatus::Invalid;
++            return notebook;
++        }
++    };
++    if !root.is_object() {
++        notebook.diagnostics.push(diagnostic(
++            NotebookDiagnosticCode::InvalidNotebook,
++            None,
++            None,
++            "notebook must be an object",
++        ));
++        notebook.status = NotebookStatus::Invalid;
++        return notebook;
++    }
++    notebook.metadata = root.get("metadata").cloned().unwrap_or(Value::Null);
++    if root.get("metadata").is_some_and(|meta| !meta.is_object()) {
++        notebook.diagnostics.push(diagnostic(
++            NotebookDiagnosticCode::InvalidMetadata,
++            None,
++            None,
++            "root metadata must be an object",
++        ));
++        notebook.status = NotebookStatus::Invalid;
++    }
++    let Some(cells) = root.get("cells").and_then(Value::as_array) else {
++        notebook.diagnostics.push(diagnostic(
++            NotebookDiagnosticCode::InvalidCells,
++            None,
++            None,
++            "cells must be an array",
++        ));
++        notebook.status = NotebookStatus::Invalid;
++        return notebook;
++    };
++    let mut anonymous: HashMap<String, Vec<usize>> = HashMap::new();
++    let mut effective_ids: HashMap<String, Vec<usize>> = HashMap::new();
++    for (ordinal, value) in cells.iter().enumerate() {
++        let mut cell = NormalizedCell {
++            id: String::new(),
++            identity_quality: CellIdentityQuality::Explicit,
++            ordinal,
++            cell_type: value
++                .get("cell_type")
++                .and_then(Value::as_str)
++                .map(str::to_owned),
++            language: None,
++            metadata: value.get("metadata").cloned().unwrap_or(Value::Null),
++            source: None,
++            status: NotebookStatus::Complete,
++            diagnostics: Vec::new(),
++        };
++        if !value.is_object() {
++            cell.add_diagnostic(
++                NotebookDiagnosticCode::InvalidCell,
++                None,
++                "cell must be an object",
++                NotebookStatus::Invalid,
++            );
++        }
++        match cell.cell_type.as_deref() {
++            Some("code") => {
++                cell.language = super::notebook::resolve_cell_language(value, &root);
++                if cell.language.is_none() {
++                    cell.add_diagnostic(
++                        NotebookDiagnosticCode::UnsupportedLanguage,
++                        None,
++                        "no supported notebook language",
++                        NotebookStatus::Partial,
++                    );
++                }
++            }
++            _ if super::notebook::cell_is_markdown(value) => {
++                cell.language = Some(Language::Markdown)
++            }
++            Some("raw") => {}
++            _ => cell.add_diagnostic(
++                NotebookDiagnosticCode::InvalidCellType,
++                None,
++                "cell_type must be code, markdown or raw",
++                NotebookStatus::Invalid,
++            ),
++        }
++        if value.get("metadata").is_some_and(|meta| !meta.is_object()) {
++            cell.add_diagnostic(
++                NotebookDiagnosticCode::InvalidMetadata,
++                None,
++                "cell metadata must be an object",
++                NotebookStatus::Invalid,
++            );
++        }
++        let original = match value.get("source") {
++            Some(Value::String(text)) => Some(text.clone()),
++            Some(Value::Array(parts)) => {
++                parts.iter().map(Value::as_str).collect::<Option<String>>()
++            }
++            _ => None,
++        };
++        if let Some(original) = original {
++            cell.source = Some(PreparedSource {
++                original_sha256: sha256(original.as_bytes()),
++                analysis_sha256: sha256(original.as_bytes()),
++                analysis: original.clone(),
++                original,
++                policy: "identity-v1",
++                coordinate_map: SourceCoordinateMap::Identity,
++                directives: Vec::new(),
++            });
++        } else {
++            cell.add_diagnostic(
++                NotebookDiagnosticCode::InvalidSource,
++                None,
++                "source must be a string or an array of strings",
++                NotebookStatus::Invalid,
++            );
++        }
++        if let Some(id) = value
++            .get("id")
++            .and_then(Value::as_str)
++            .map(str::trim)
++            .filter(|id| !id.is_empty())
++        {
++            cell.id = id.to_owned();
++        } else {
++            if value.get("id").is_some() {
++                cell.add_diagnostic(
++                    NotebookDiagnosticCode::InvalidCellId,
++                    None,
++                    "explicit cell id must be a nonblank string",
++                    NotebookStatus::Invalid,
++                );
++            }
++            // Preserve the existing BLAKE3 decoded-source/occurrence convention.
++            let source = cell
++                .source
++                .as_ref()
++                .map(|p| p.original.as_str())
++                .unwrap_or("");
++            let base = format!("cell-{}", blake3::hash(source.as_bytes()).to_hex());
++            let occurrences = anonymous.entry(base.clone()).or_default();
++            occurrences.push(ordinal);
++            cell.id = if occurrences.len() == 1 {
++                base
++            } else {
++                format!("{base}-{}", occurrences.len())
++            };
++            cell.identity_quality = CellIdentityQuality::SourceDerived;
++            cell.add_diagnostic(NotebookDiagnosticCode::SourceDerivedIdentity, None, "anonymous identity changes with decoded source; repeated sources depend on occurrence order", NotebookStatus::Complete);
++        }
++        effective_ids
++            .entry(cell.id.clone())
++            .or_default()
++            .push(ordinal);
++        prepare_cell(&mut cell);
++        notebook.cells.push(cell);
++    }
++    for ordinals in anonymous.values().filter(|items| items.len() > 1) {
++        for &ordinal in ordinals {
++            notebook.cells[ordinal].add_diagnostic(
++                NotebookDiagnosticCode::RepeatedAnonymousSource,
++                None,
++                "repeated anonymous source has occurrence-sensitive identity",
++                NotebookStatus::Partial,
++            );
++        }
++    }
++    // One namespace across explicit IDs, anonymous hashes and occurrence suffixes.
++    for ordinals in effective_ids.values().filter(|items| items.len() > 1) {
++        for &ordinal in ordinals {
++            let cell = &mut notebook.cells[ordinal];
++            cell.identity_quality = CellIdentityQuality::Ambiguous;
++            cell.add_diagnostic(
++                NotebookDiagnosticCode::DuplicateEffectiveId,
++                None,
++                "effective cell id is not unique",
++                NotebookStatus::Invalid,
++            );
++        }
++    }
++    for cell in &notebook.cells {
++        notebook.status = merge_status(notebook.status, cell.status);
++    }
++    notebook
++}
++
++impl NormalizedCell {
++    fn add_diagnostic(
++        &mut self,
++        code: NotebookDiagnosticCode,
++        range: Option<[usize; 2]>,
++        message: &str,
++        status: NotebookStatus,
++    ) {
++        self.diagnostics
++            .push(diagnostic(code, Some(self.ordinal), range, message));
++        self.status = merge_status(self.status, status);
++    }
++}
++
++fn diagnostic(
++    code: NotebookDiagnosticCode,
++    cell_ordinal: Option<usize>,
++    byte_range: Option<[usize; 2]>,
++    message: impl Into<String>,
++) -> NotebookDiagnostic {
++    NotebookDiagnostic {
++        code,
++        cell_ordinal,
++        byte_range,
++        message: message.into(),
++    }
++}
++
++fn merge_status(left: NotebookStatus, right: NotebookStatus) -> NotebookStatus {
++    match (left, right) {
++        (NotebookStatus::Invalid, _) | (_, NotebookStatus::Invalid) => NotebookStatus::Invalid,
++        (NotebookStatus::Partial, _) | (_, NotebookStatus::Partial) => NotebookStatus::Partial,
++        _ => NotebookStatus::Complete,
++    }
++}
++
++fn sha256(bytes: &[u8]) -> String {
++    format!("{:x}", Sha256::digest(bytes))
++}
++
++fn prepare_cell(cell: &mut NormalizedCell) {
++    let Some(mut source) = cell.source.take() else {
++        return;
++    };
++    if cell.language == Some(Language::Rust) {
++        source.policy = RUST_PREPARATION_POLICY;
++        let mut analysis = source.original.as_bytes().to_vec();
++        let mut leading = true;
++        let mut lexer = RustLex::Code;
++        // Parse lazily only when a lexical command candidate needs Rust token
++        // context. Reuse the existing grammar rather than guessing whether a
++        // preceding identifier/pattern permits a type colon across trivia.
++        let mut rust_tree = std::cell::OnceCell::new();
++        let mut start = 0;
++        for line in source.original.split_inclusive('\n') {
++            let text = line.trim_end_matches(['\r', '\n']);
++            let trimmed = text.trim_start();
++            if let Some(offset) = lexer.scan(line, |offset| {
++                let tree = rust_tree.get_or_init(|| {
++                    let mut parser = tree_sitter::Parser::new();
++                    parser
++                        .set_language(&Language::Rust.tree_sitter_language())
++                        .expect("bundled Rust grammar matches tree-sitter");
++                    parser.parse(&analysis, None)
++                });
++                tree.as_ref()
++                    .is_some_and(|tree| rust_syntax_colon(tree, start + offset))
++            }) {
++                let command = &text[offset..];
++                let range = [start + offset, start + text.len()];
++                let dep = command
++                    .strip_prefix(":dep")
++                    .filter(|rest| rest.is_empty() || rest.starts_with(char::is_whitespace));
++                if let Some(assignment) = dep {
++                    if !leading || !text[..offset].trim().is_empty() {
++                        cell.add_diagnostic(
++                            NotebookDiagnosticCode::NonLeadingRustDirective,
++                            Some(range),
++                            "dependency directives are supported only before code/comments",
++                            NotebookStatus::Partial,
++                        );
++                        leading = false;
++                    } else if single_line_dependency(assignment) {
++                        let range = [start, start + text.len()];
++                        for byte in &mut analysis[range[0]..range[1]] {
++                            if !matches!(*byte, b'\r' | b'\n') {
++                                *byte = b' ';
++                            }
++                        }
++                        // Later token checks must see the current analysis
++                        // bytes, with preceding supported headers masked.
++                        rust_tree.take();
++                        source.directives.push(DependencyDirective {
++                            text: text.to_owned(),
++                            byte_range: range,
++                        });
++                    } else {
++                        cell.add_diagnostic(NotebookDiagnosticCode::UnsupportedRustDependency, Some(range), "only a single-line dependency assignment is supported; multiline/trailing forms remain unchanged", NotebookStatus::Partial);
++                        leading = false;
++                    }
++                } else {
++                    cell.add_diagnostic(
++                        NotebookDiagnosticCode::UnsupportedRustCommand,
++                        Some(range),
++                        "unsupported Rust kernel command; no command is executed or target read",
++                        NotebookStatus::Partial,
++                    );
++                    leading = false;
++                }
++            } else {
++                if !trimmed.is_empty() {
++                    leading = false;
++                }
++            }
++            start += line.len();
++        }
++        source.analysis = String::from_utf8(analysis).expect("ASCII space masking preserves UTF-8");
++        source.analysis_sha256 = sha256(source.analysis.as_bytes());
++    } else if cell.language == Some(Language::Python) {
++        let mut start = 0;
++        for line in source.original.split_inclusive('\n') {
++            let text = line.trim_end_matches(['\r', '\n']);
++            let trimmed = text.trim_start();
++            if !trimmed.is_empty() {
++                if trimmed.starts_with(['%', '!']) {
++                    cell.add_diagnostic(NotebookDiagnosticCode::UnsupportedPythonMagic, Some([start, start + text.len()]), "IPython magic/shell prefix is unsupported; saved Python metadata does not establish plain-Python coverage", NotebookStatus::Partial);
++                }
++                break;
++            }
++            start += line.len();
++        }
++    }
++    cell.source = Some(source);
++}
++
++fn single_line_dependency(assignment: &str) -> bool {
++    // TOML rejects unterminated strings/tables, continuations and trailing code.
++    // This is syntax validation only: no dependency resolution or filesystem I/O.
++    let Ok(table) = toml::from_str::<toml::Table>(assignment) else {
++        return false;
++    };
++    if table.len() != 1 {
++        return false;
++    }
++    let Some((name, value)) = table.iter().next() else {
++        return false;
++    };
++    if name.is_empty()
++        || !name
++            .bytes()
++            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
++    {
++        return false;
++    }
++    value.is_str()
++        || value.as_table().is_some_and(|options| {
++            ["version", "git", "path"]
++                .iter()
++                .any(|key| options.get(*key).is_some_and(toml::Value::is_str))
++        })
++}
++
++/// A lexical boundary for command lines, not an Evcxr parser. Ordinary/byte/C
++/// strings share quote rules; raw and raw-byte strings share hash delimiters.
++/// Comments nest. Apostrophes enter a char token only with a definite closing
++/// quote, so lifetimes/labels never swallow a following command line.
++enum RustLex {
++    Code,
++    Quoted,
++    Raw(usize),
++    Block(usize),
++}
++
++fn rust_syntax_colon(tree: &tree_sitter::Tree, offset: usize) -> bool {
++    let Some(token) = tree
++        .root_node()
++        .descendant_for_byte_range(offset, offset + 1)
++    else {
++        return false;
++    };
++    // A colon owned by a well-formed Rust construct is syntax, including type
++    // annotations and macro token trees. Error recovery around real kernel
++    // commands must not certify them as Rust syntax. Check the local owner:
++    // unrelated command errors elsewhere in the cell need not taint a valid
++    // parameter or field declaration.
++    token.kind() == ":" && token.parent().is_some_and(|owner| !owner.has_error())
++}
++
++impl RustLex {
++    fn scan(&mut self, line: &str, mut is_rust_colon: impl FnMut(usize) -> bool) -> Option<usize> {
++        let bytes = line.as_bytes();
++        let mut i = 0;
++        let mut only_trivia = matches!(self, Self::Code | Self::Block(_));
++        while i < bytes.len() {
++            match self {
++                Self::Quoted => match bytes[i] {
++                    b'\\' => {
++                        i = (i + 2).min(bytes.len());
++                        continue;
++                    }
++                    b'"' => *self = Self::Code,
++                    _ => {}
++                },
++                Self::Raw(hashes) => {
++                    if bytes[i] == b'"'
++                        && bytes
++                            .get(i + 1..i + 1 + *hashes)
++                            .is_some_and(|tail| tail.iter().all(|b| *b == b'#'))
++                    {
++                        i += *hashes;
++                        *self = Self::Code;
++                    }
++                }
++                Self::Block(depth) => {
++                    if bytes[i..].starts_with(b"/*") {
++                        *depth += 1;
++                        i += 2;
++                        continue;
++                    }
++                    if bytes[i..].starts_with(b"*/") {
++                        *depth -= 1;
++                        if *depth == 0 {
++                            *self = Self::Code;
++                        }
++                        i += 2;
++                        continue;
++                    }
++                }
++                Self::Code => {
++                    if bytes[i..].starts_with(b"//") {
++                        break;
++                    }
++                    if bytes[i..].starts_with(b"/*") {
++                        *self = Self::Block(1);
++                        i += 2;
++                        continue;
++                    }
++                    if bytes[i] == b':'
++                        && bytes.get(i + 1) != Some(&b':')
++                        && (i == 0 || bytes[i - 1] != b':')
++                    {
++                        let tail = &line[i..];
++                        // Commands as the first lexical token (comments may
++                        // precede them), plus inline dependency/load forms at
++                        // boundaries not owned by valid Rust syntax. Never mask
++                        // inline forms.
++                        let inline_command = [":dep", ":load"].iter().any(|name| {
++                            tail.strip_prefix(name).is_some_and(|rest| {
++                                rest.is_empty() || rest.starts_with(char::is_whitespace)
++                            })
++                        });
++                        if (only_trivia || inline_command) && !is_rust_colon(i) {
++                            return Some(i);
++                        }
++                    }
++                    if !bytes[i].is_ascii_whitespace() {
++                        only_trivia = false;
++                    }
++                    if bytes[i] == b'r' {
++                        let mut end = i + 1;
++                        while bytes.get(end) == Some(&b'#') {
++                            end += 1;
++                        }
++                        if bytes.get(end) == Some(&b'"') {
++                            *self = Self::Raw(end - i - 1);
++                            i = end + 1;
++                            continue;
++                        }
++                    }
++                    if bytes[i] == b'"' {
++                        *self = Self::Quoted;
++                    }
++                    if bytes[i] == b'\'' {
++                        if let Some(end) = char_literal_end(line, i) {
++                            i = end;
++                            continue;
++                        }
++                    }
++                }
++            }
++            i += 1;
++        }
++        None
++    }
++}
++
++fn char_literal_end(line: &str, start: usize) -> Option<usize> {
++    let bytes = line.as_bytes();
++    let first = line.get(start + 1..)?.chars().next()?;
++    if first != '\\' {
++        let end = start + 1 + first.len_utf8();
++        return (bytes.get(end) == Some(&b'\'')).then_some(end + 1);
++    }
++    let mut end = start + 1;
++    while end < bytes.len() {
++        match bytes[end] {
++            b'\r' | b'\n' => return None,
++            b'\\' => end += 2,
++            b'\'' => return Some(end + 1),
++            _ => end += 1,
++        }
++    }
++    None
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use serde_json::json;
++    use sha2::{Digest, Sha256};
++
++    fn normalize(value: Value) -> NormalizedNotebook {
++        normalize_notebook(&serde_json::to_vec(&value).unwrap())
++    }
++
++    fn rust(source: &str) -> NormalizedCell {
++        let result = normalize(json!({"metadata":{"kernelspec":{"name":"evcxr"}},"cells":[
++            {"id":"rust","cell_type":"code","metadata":{},"source":source}
++        ]}));
++        assert_eq!(result.cells.len(), 1, "retain the cell inventory");
++        result.cells.into_iter().next().unwrap()
++    }
++
++    fn has(cell: &NormalizedCell, code: NotebookDiagnosticCode) -> bool {
++        cell.diagnostics
++            .iter()
++            .any(|d| d.code == code && d.cell_ordinal == Some(cell.ordinal))
++    }
++
++    #[test]
++    fn preserves_ids_source_encodings_metadata_and_language_precedence() {
++        let root = json!({"kernelspec":{"name":"python3"},"language_info":{"name":"rust"},"profile":"saved-only"});
++        let source = "fn café() {}\r\n";
++        let meta = json!({"spur":{"code_type":"evcxr","kernel_profile":"saved"}});
++        let input = json!({"metadata":root,"cells":[
++            {"cell_type":"code","id":"  explicit  ","source":source,"metadata":meta},
++            {"cell_type":"code","id":"list","source":["fn café() {}","\r\n"],"metadata":meta},
++            {"cell_type":"code","id":"js","source":"","metadata":{"spur":{"code_type":"javascript"}}},
++            {"cell_type":"code","id":"unknown","source":"x","metadata":{"spur":{"code_type":"julia"}}},
++            {"cell_type":"code","id":"fallback","source":"import os\n","metadata":{"kernelspec":{"name":"unknown"}}}
++        ]});
++        let bytes = serde_json::to_vec(&input).unwrap();
++        let nb = normalize_notebook(&bytes);
++        assert_eq!(nb.cells.len(), 5);
++        assert_eq!(nb.source_sha256, format!("{:x}", Sha256::digest(&bytes)));
++        assert_eq!(nb.metadata, root);
++        assert_eq!(nb.cells[0].metadata, meta);
++        assert_eq!(nb.cells[0].id, "explicit");
++        assert_eq!(nb.cells[0].identity_quality, CellIdentityQuality::Explicit);
++        assert_eq!(
++            nb.cells[0].identity_path("a.ipynb"),
++            "a.ipynb#cell:explicit"
++        );
++        assert_eq!(nb.cells[0].source, nb.cells[1].source);
++        assert_eq!(nb.cells[0].language, Some(Language::Rust));
++        assert_eq!(nb.cells[2].language, Some(Language::Javascript));
++        assert_eq!(nb.cells[2].status, NotebookStatus::Complete);
++        assert_eq!(nb.cells[3].language, None);
++        assert!(has(
++            &nb.cells[3],
++            NotebookDiagnosticCode::UnsupportedLanguage
++        ));
++        assert_eq!(nb.cells[4].language, Some(Language::Python));
++        assert_eq!(nb.cells[4].status, NotebookStatus::Complete);
++    }
++
++    #[test]
++    fn reuses_the_entire_existing_notebook_token_registry() {
++        for (token, expected) in [
++            ("PYTHON", Some(Language::Python)),
++            ("python3", Some(Language::Python)),
++            ("javascript", Some(Language::Javascript)),
++            ("rust", Some(Language::Rust)),
++            ("evcxr", Some(Language::Rust)),
++            ("go", Some(Language::Go)),
++            ("gonb", Some(Language::Go)),
++            ("sql", Some(Language::Sql)),
++            ("ns_mermaid", Some(Language::Mermaid)),
++            ("mermaid", Some(Language::Mermaid)),
++            ("js", None),
++            ("rs", None),
++            (" python", None),
++        ] {
++            let nb = normalize(
++                json!({"metadata":{"kernelspec":{"name":"python3"}},"cells":[
++                    {"id":"a","cell_type":"code","source":"","metadata":{"spur":{"code_type":token}}}
++                ]}),
++            );
++            assert_eq!(nb.cells.len(), 1);
++            assert_eq!(nb.cells[0].language, expected, "{token}");
++        }
++        let nb = normalize(
++            json!({"metadata":{"language_info":{"name":"rust"}},"cells":[
++                {"id":"a","cell_type":"code","source":"","metadata":{}},
++                {"id":"b","cell_type":"code","source":"","metadata":{"kernelspec":{"name":"javascript"}}}
++            ]}),
++        );
++        assert_eq!(nb.cells[0].language, Some(Language::Rust));
++        assert_eq!(nb.cells[1].language, Some(Language::Javascript));
++    }
++
++    #[test]
++    fn inventory_distinguishes_empty_unknown_invalid_and_non_code() {
++        let nb = normalize(json!({"metadata":{},"cells":[
++            {"id":"empty","cell_type":"code","source":"","metadata":{"spur":{"code_type":"rust"}}},
++            {"id":"raw","cell_type":"raw","source":"text","metadata":{"opaque":[1,2]}},
++            {"id":"md","cell_type":"markdown","source":["# title"]},
++            {"id":"bad","cell_type":"code","source":["fn valid() {}",17]},
++            {"id":"missing","cell_type":"code"},
++            {"id":"null","cell_type":"code","source":null},
++            {"id":"type","cell_type":17,"source":"x"},
++            42
++        ]}));
++        assert_eq!(nb.cells.len(), 8);
++        assert_eq!(nb.cells[0].status, NotebookStatus::Complete);
++        assert_eq!(nb.cells[0].source.as_ref().unwrap().original, "");
++        assert_eq!(nb.cells[1].cell_type.as_deref(), Some("raw"));
++        assert_eq!(nb.cells[1].status, NotebookStatus::Complete);
++        assert_eq!(nb.cells[2].language, Some(Language::Markdown));
++        for cell in &nb.cells[3..6] {
++            assert!(cell.source.is_none());
++            assert!(has(cell, NotebookDiagnosticCode::InvalidSource));
++            assert_eq!(cell.status, NotebookStatus::Invalid);
++        }
++        assert!(has(&nb.cells[6], NotebookDiagnosticCode::InvalidCellType));
++        assert!(has(&nb.cells[7], NotebookDiagnosticCode::InvalidCell));
++        assert_eq!(nb.status, NotebookStatus::Invalid);
++    }
++
++    #[test]
++    fn invalid_document_shapes_are_typed_instead_of_clean_empty() {
++        for (bytes, code) in [
++            (b"{".as_slice(), NotebookDiagnosticCode::InvalidJson),
++            (b"null".as_slice(), NotebookDiagnosticCode::InvalidNotebook),
++            (b"[]".as_slice(), NotebookDiagnosticCode::InvalidNotebook),
++            (b"{}".as_slice(), NotebookDiagnosticCode::InvalidCells),
++            (
++                b"{\"cells\":null}".as_slice(),
++                NotebookDiagnosticCode::InvalidCells,
++            ),
++            (
++                b"{\"cells\":{}}".as_slice(),
++                NotebookDiagnosticCode::InvalidCells,
++            ),
++            (b"\xff".as_slice(), NotebookDiagnosticCode::InvalidJson),
++        ] {
++            let nb = normalize_notebook(bytes);
++            assert_eq!(nb.status, NotebookStatus::Invalid, "{bytes:?}");
++            assert!(nb
++                .diagnostics
++                .iter()
++                .any(|d| d.code == code && d.cell_ordinal.is_none()));
++        }
++        let empty = normalize(json!({"cells":[]}));
++        assert_eq!(empty.status, NotebookStatus::Complete);
++        assert!(empty.cells.is_empty());
++        let invalid_meta = normalize(json!({"metadata":[],"cells":[
++            {"id":"x","cell_type":"raw","source":"x","metadata":17}
++        ]}));
++        assert_eq!(invalid_meta.metadata, json!([]));
++        assert!(invalid_meta
++            .diagnostics
++            .iter()
++            .any(|d| d.code == NotebookDiagnosticCode::InvalidMetadata));
++        assert!(has(
++            &invalid_meta.cells[0],
++            NotebookDiagnosticCode::InvalidMetadata
++        ));
++    }
++
++    #[test]
++    fn anonymous_ids_keep_blake3_occurrences_and_report_identity_limits() {
++        let base = format!("cell-{}", blake3::hash(b"same").to_hex());
++        let nb = normalize(json!({"cells":[
++            {"cell_type":"raw","source":"same"},
++            {"cell_type":"raw","source":["sa","me"]},
++            {"cell_type":"raw","source":"different"}
++        ]}));
++        assert_eq!(nb.cells.len(), 3);
++        assert_eq!(nb.cells[0].id, base);
++        assert_eq!(nb.cells[1].id, format!("{base}-2"));
++        for cell in &nb.cells {
++            assert_eq!(cell.identity_quality, CellIdentityQuality::SourceDerived);
++            assert!(has(cell, NotebookDiagnosticCode::SourceDerivedIdentity));
++        }
++        for cell in &nb.cells[..2] {
++            assert!(has(cell, NotebookDiagnosticCode::RepeatedAnonymousSource));
++        }
++        let reordered = normalize(
++            json!({"cells":[{"cell_type":"raw","source":"different"},{"cell_type":"raw","source":"same"}]}),
++        );
++        assert_eq!(nb.cells[2].id, reordered.cells[0].id);
++        assert_eq!(nb.cells[0].id, reordered.cells[1].id);
++    }
++
++    #[test]
++    fn duplicate_effective_ids_include_trimmed_and_explicit_anonymous_collisions() {
++        let base = format!("cell-{}", blake3::hash(b"same").to_hex());
++        let nb = normalize(json!({"cells":[
++            {"id":" a ","cell_type":"raw","source":"first"},
++            {"id":"a","cell_type":"raw","source":"second"},
++            {"cell_type":"raw","source":"same"},
++            {"id":base,"cell_type":"raw","source":"other"},
++            {"id":17,"cell_type":"raw","source":"number"},
++            {"id":"  ","cell_type":"raw","source":"blank"}
++        ]}));
++        assert_eq!(nb.cells.len(), 6);
++        for cell in &nb.cells[..4] {
++            assert_eq!(cell.identity_quality, CellIdentityQuality::Ambiguous);
++            assert!(has(cell, NotebookDiagnosticCode::DuplicateEffectiveId));
++        }
++        for cell in &nb.cells[4..] {
++            assert!(has(cell, NotebookDiagnosticCode::InvalidCellId));
++        }
++    }
++
++    #[test]
++    fn rust_dep_mask_preserves_multibyte_crlf_ranges_and_hashes() {
++        let source = "  :dep sha2 = \"0.10\" # café\r\n:dep serde = { version = \"1\", features = [\"derive\"] }\r\nfn café() {}\r\n";
++        let cell = rust(source);
++        assert_eq!(cell.status, NotebookStatus::Complete);
++        let p = cell.source.unwrap();
++        assert_eq!(p.original, source);
++        assert_eq!(
++            p.original_sha256,
++            format!("{:x}", Sha256::digest(source.as_bytes()))
++        );
++        assert_eq!(
++            p.analysis_sha256,
++            format!("{:x}", Sha256::digest(p.analysis.as_bytes()))
++        );
++        assert_ne!(p.original_sha256, p.analysis_sha256);
++        assert_eq!(p.policy, "evcxr-leading-dep-mask-v1");
++        assert_eq!(p.coordinate_map, SourceCoordinateMap::Identity);
++        assert_eq!(p.analysis.len(), source.len());
++        for (original, analysis) in source.bytes().zip(p.analysis.bytes()) {
++            if matches!(original, b'\r' | b'\n') {
++                assert_eq!(original, analysis);
++            }
++        }
++        assert_eq!(p.directives.len(), 2);
++        for d in p.directives {
++            assert_eq!(&source[d.byte_range[0]..d.byte_range[1]], d.text);
++            assert!(p.analysis.as_bytes()[d.byte_range[0]..d.byte_range[1]]
++                .iter()
++                .all(|b| *b == b' '));
++        }
++        let start = source.find("fn café").unwrap();
++        assert_eq!(&p.analysis[start..], &source[start..]);
++    }
++
++    #[test]
++    fn rust_strings_raw_strings_chars_and_nested_comments_are_untouched() {
++        for source in [
++            "let s = \"line\n:dep fake = \\\"1\\\"\n:load secret\";\nfn f() {}",
++            "let s = r###\"line\n:dep fake = \"1\"\n:load secret\"###;\nfn f() {}",
++            "let s = br#\"line\n:dep fake = \"1\"\"#;\nfn f() {}",
++            "// :dep fake = \"1\"\n/* nested /* :load secret */\n:dep fake = \"1\"\n*/\nfn f() {}",
++            "let c = '\"'; let slash = '\\'';\nfn f<'a>(s: &'a str) {}",
++        ] {
++            let cell = rust(source);
++            assert_eq!(
++                cell.status,
++                NotebookStatus::Complete,
++                "{source}: {:?}",
++                cell.diagnostics
++            );
++            let p = cell.source.unwrap();
++            assert_eq!(p.analysis, source);
++            assert_eq!(p.original_sha256, p.analysis_sha256);
++            assert!(p.directives.is_empty());
++        }
++    }
++
++    #[test]
++    fn unsupported_commands_multiline_and_trailing_forms_are_diagnosed_without_execution() {
++        for (source, code) in [
++            (
++                ":load /definitely/not/read.rs\nfn f() {}",
++                NotebookDiagnosticCode::UnsupportedRustCommand,
++            ),
++            (":help\n", NotebookDiagnosticCode::UnsupportedRustCommand),
++            (
++                ":dep serde = {\nversion = \"1\"\n}\nfn f() {}",
++                NotebookDiagnosticCode::UnsupportedRustDependency,
++            ),
++            (
++                ":dep serde = \"1\"; fn f() {}",
++                NotebookDiagnosticCode::UnsupportedRustDependency,
++            ),
++            (
++                ":dep serde = \"1\" \\\nfn f() {}",
++                NotebookDiagnosticCode::UnsupportedRustDependency,
++            ),
++            (
++                "fn f() {}\n:dep serde = \"1\"",
++                NotebookDiagnosticCode::NonLeadingRustDirective,
++            ),
++            (
++                "// comment\n:dep serde = \"1\"",
++                NotebookDiagnosticCode::NonLeadingRustDirective,
++            ),
++            (
++                "/* comment */\n:dep serde = \"1\"",
++                NotebookDiagnosticCode::NonLeadingRustDirective,
++            ),
++        ] {
++            let cell = rust(source);
++            assert_eq!(cell.status, NotebookStatus::Partial, "{source}");
++            assert!(has(&cell, code), "{source}: {:?}", cell.diagnostics);
++            assert_eq!(cell.source.unwrap().analysis, source);
++        }
++    }
++
++    #[test]
++    fn lifetime_apostrophes_do_not_hide_a_real_load_command() {
++        let source = "fn identity<'a>(x: &'a str) -> &'a str { x }\n:load other.rs\n";
++        let cell = rust(source);
++        assert_eq!(cell.status, NotebookStatus::Partial);
++        let diagnostic = cell
++            .diagnostics
++            .iter()
++            .find(|d| d.code == NotebookDiagnosticCode::UnsupportedRustCommand)
++            .expect("real :load after lifetimes must be diagnosed without reading its target");
++        let range = diagnostic.byte_range.unwrap();
++        assert_eq!(&source[range[0]..range[1]], ":load other.rs");
++        assert_eq!(cell.source.unwrap().analysis, source);
++    }
++
++    #[test]
++    fn raw_byte_strings_and_nested_block_comments_are_not_commands() {
++        for source in [
++            "let text = br##\"\n:load not_a_command.rs\n\"##;\nfn f() {}\n",
++            "/* outer /* inner */\n:load not_a_command.rs\n*/\nfn f() {}",
++        ] {
++            let cell = rust(source);
++            assert_eq!(
++                cell.status,
++                NotebookStatus::Complete,
++                "{:?}",
++                cell.diagnostics
++            );
++            assert!(cell.diagnostics.is_empty());
++            let prepared = cell.source.unwrap();
++            assert_eq!(prepared.original, source);
++            assert_eq!(prepared.analysis, source);
++            assert!(prepared.directives.is_empty());
++        }
++    }
++
++    #[test]
++    fn python_first_nonblank_magic_is_partial_but_literal_text_is_plain_python() {
++        for (source, unsupported) in [
++            ("\n  %%bash\necho hello\n", true),
++            ("%time value\n", true),
++            ("!ls\n", true),
++            ("text = '%%bash !ls %time'\ndef f():\n    pass\n", false),
++            (
++                "text = \"\"\"\n%%bash\n!ls\n\"\"\"\ndef f():\n    pass\n",
++                false,
++            ),
++        ] {
++            let metadata = json!({"spur":{"code_type":"python"},"profile":"saved"});
++            let nb = normalize(json!({"cells":[
++                {"id":"py","cell_type":"code","source":source,"metadata":metadata}
++            ]}));
++            assert_eq!(nb.cells.len(), 1);
++            let cell = &nb.cells[0];
++            assert_eq!(cell.metadata, metadata);
++            assert_eq!(cell.language, Some(Language::Python));
++            assert_eq!(cell.source.as_ref().unwrap().original, source);
++            assert_eq!(cell.source.as_ref().unwrap().analysis, source);
++            assert_eq!(
++                has(cell, NotebookDiagnosticCode::UnsupportedPythonMagic),
++                unsupported
++            );
++            let expected = if unsupported {
++                NotebookStatus::Partial
++            } else {
++                NotebookStatus::Complete
++            };
++            assert_eq!(cell.status, expected, "{source}");
++            assert_eq!(nb.status, expected, "{source}");
++        }
++    }
++
++    #[test]
++    fn rust_dep_and_load_type_annotations_are_not_kernel_commands() {
++        let mut failures = Vec::new();
++        for body in [
++            "fn f(x:dep ) {}\n",
++            "fn f(x:load ) {}\n",
++            "fn f(x :dep ) {}\n",
++            "fn f(x :load ) {}\n",
++            "fn f(x: dep) {}\n",
++            "fn f(x: load) {}\n",
++            "struct S { value:dep }\n",
++            "struct S { value :load }\n",
++            "fn f() { let value:dep = 1; }\n",
++            "fn f() { let value :load = 1; }\n",
++            "const VALUE:dep = 1;\n",
++            "fn f() { let (x, y):load = (1, 2); }\n",
++            "fn f() { let S { value }:dep = s; }\n",
++        ] {
++            let alias = if body.contains("load") { "load" } else { "dep" };
++            let source = format!("type {alias} = i32;\n{body}");
++            let cell = rust(&source);
++            if cell.status != NotebookStatus::Complete || !cell.diagnostics.is_empty() {
++                failures.push(format!("{body:?}: {:?}", cell.diagnostics));
++            }
++            let prepared = cell.source.unwrap();
++            assert_eq!(prepared.original, source);
++            assert_eq!(prepared.analysis, source);
++            assert_eq!(prepared.original_sha256, prepared.analysis_sha256);
++            assert!(prepared.directives.is_empty());
++        }
++        assert!(failures.is_empty(), "{}", failures.join("\n"));
++    }
++
++    #[test]
++    fn rust_multiline_and_commented_type_annotations_are_not_kernel_commands() {
++        let mut failures = Vec::new();
++        for body in [
++            "fn f(x\n    :dep ) {}\n",
++            "fn f(x\n    :load ) {}\n",
++            "fn f(x /* before */ :dep /* after */ ) {}\n",
++            "fn f(x /* before */ :load /* after */ ) {}\n",
++            "fn f(x // before\n    :dep ) {}\n",
++            "fn f(x /* outer /* inner */\n    */ :load ) {}\n",
++            "struct S { value\n    :dep }\n",
++            "struct S { value /* before */ :load /* after */ }\n",
++            "fn f() { let value\n    :dep = 1; }\n",
++            "fn f() { let value // before\n    :load = 1; }\n",
++            "fn f() { let (x, y)\n    :dep = (1, 2); }\n",
++            "fn f() { let S { value } /* before */\n    :load = s; }\n",
++        ] {
++            let source = format!("type dep = i32;\ntype load = i32;\n{body}");
++            let cell = rust(&source);
++            if cell.status != NotebookStatus::Complete || !cell.diagnostics.is_empty() {
++                failures.push(format!("{body:?}: {:?}", cell.diagnostics));
++            }
++            let prepared = cell.source.unwrap();
++            assert_eq!(prepared.original, source);
++            assert_eq!(prepared.analysis, source);
++            assert_eq!(prepared.original_sha256, prepared.analysis_sha256);
++            assert!(prepared.directives.is_empty());
++        }
++        assert!(failures.is_empty(), "{}", failures.join("\n"));
++    }
++
++    #[test]
++    fn rust_real_commands_after_type_annotations_remain_partial() {
++        for command in [":dep serde = \"1\"", ":load /definitely/not/read.rs"] {
++            for body in [
++                "fn f(x:dep ) {}",
++                "fn f(x\n    :dep ) {}",
++                "fn f() { let value:dep = 1; }",
++            ] {
++                for separator in ["\n", " ", " /* boundary */ "] {
++                    let source = format!("type dep = i32;\n{body}{separator}{command}\n");
++                    let cell = rust(&source);
++                    assert_eq!(cell.status, NotebookStatus::Partial);
++                    assert_eq!(
++                        cell.diagnostics.len(),
++                        1,
++                        "{source}: {:?}",
++                        cell.diagnostics
++                    );
++                    let diagnostic = &cell.diagnostics[0];
++                    let range = diagnostic.byte_range.unwrap();
++                    assert_eq!(&source[range[0]..range[1]], command);
++                    let expected = if command.starts_with(":dep") {
++                        NotebookDiagnosticCode::NonLeadingRustDirective
++                    } else {
++                        NotebookDiagnosticCode::UnsupportedRustCommand
++                    };
++                    assert_eq!(diagnostic.code, expected);
++                    assert_eq!(cell.source.unwrap().analysis, source);
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn rust_absolute_paths_are_code_and_inline_commands_are_partial() {
++        let absolute = "::std::mem::drop(value);\nfn f() {}\n";
++        let cell = rust(absolute);
++        assert_eq!(
++            cell.status,
++            NotebookStatus::Complete,
++            "{:?}",
++            cell.diagnostics
++        );
++        assert_eq!(cell.source.unwrap().analysis, absolute);
++        for (source, code) in [
++            (
++                "/* comment */ :dep serde = \"1\"\nfn f() {}",
++                NotebookDiagnosticCode::NonLeadingRustDirective,
++            ),
++            (
++                "/* comment */ :load other.rs\n",
++                NotebookDiagnosticCode::UnsupportedRustCommand,
++            ),
++            (
++                "fn f() {} :dep serde = \"1\"\n",
++                NotebookDiagnosticCode::NonLeadingRustDirective,
++            ),
++            (
++                "fn f() {} :load other.rs\n",
++                NotebookDiagnosticCode::UnsupportedRustCommand,
++            ),
++            (
++                ":dep\nfn f() {}",
++                NotebookDiagnosticCode::UnsupportedRustDependency,
++            ),
++        ] {
++            let cell = rust(source);
++            assert_eq!(cell.status, NotebookStatus::Partial, "{source}");
++            assert!(has(&cell, code), "{:?}", cell.diagnostics);
++            assert_eq!(cell.source.unwrap().analysis, source);
++        }
++    }
++}

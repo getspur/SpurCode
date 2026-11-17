@@ -1,0 +1,81 @@
+diff --git a/crates/spur-graph-duckdb/src/file_facts.rs b/crates/spur-graph-duckdb/src/file_facts.rs
+index 1611c3542..7726d1407 100644
+--- a/crates/spur-graph-duckdb/src/file_facts.rs
++++ b/crates/spur-graph-duckdb/src/file_facts.rs
+@@ -588,6 +588,16 @@ fn diagnostic_error(error: ExtractError) -> Result<FileFactsResult> {
+             | "logical path must name a file"
+             | "logical path must not have a drive prefix" => "invalid_path",
+             "parse .ipynb JSON" | "read .ipynb as UTF-8" => "malformed_input",
++            // Shared normalization appends its diagnostic inventory to these
++            // known input errors. Require the list delimiters as well as the
++            // exact context so unrelated setup/internal errors still propagate.
++            message
++                if (message.starts_with("parse .ipynb JSON: [")
++                    || message.starts_with("invalid .ipynb notebook inventory: ["))
++                    && message.ends_with(']') =>
++            {
++                "malformed_input"
++            }
+             _ => {
+                 return Err(Error::internal(format!(
+                     "spur_graph_file_facts_result: {error}"
+@@ -827,6 +837,46 @@ mod diagnostic_tests {
+         }
+     }
+ 
++    #[test]
++    fn malformed_notebook_json_keeps_core_diagnostic() {
++        assert_notebook_input_diagnostics(&["", "not JSON", "{"], "parse .ipynb JSON: [");
++    }
++
++    #[test]
++    fn invalid_notebook_inventory_keeps_core_diagnostic() {
++        assert_notebook_input_diagnostics(
++            &[
++                "{}",
++                r#"{"cells":null}"#,
++                r#"{"cells":[{"cell_type":"code","source":[1]}]}"#,
++                r#"{"cells":[{"source":"fn helper() {}"}]}"#,
++                r#"{"cells":[{"id":"same","cell_type":"code","source":""},{"id":"same","cell_type":"code","source":""}]}"#,
++            ],
++            "invalid .ipynb notebook inventory: [",
++        );
++    }
++
++    fn assert_notebook_input_diagnostics(sources: &[&str], prefix: &str) {
++        let mut parser = BytesExtractor::for_language(Language::JupyterNotebook).unwrap();
++        for source in sources {
++            let error = parser
++                .extract_file_facts(Path::new("bad.ipynb"), source.as_bytes())
++                .err()
++                .expect("invalid notebook must fail core extraction");
++            assert!(
++                matches!(&error, ExtractError::Extraction(message) if message.starts_with(prefix)),
++                "{error}"
++            );
++            let message = error.to_string();
++            let result = diagnostic_error(error)
++                .expect("known core notebook input error must retain row diagnostics");
++            assert_eq!(result.status, "extraction_error");
++            assert_eq!(result.error_code.as_deref(), Some("malformed_input"));
++            assert_eq!(result.error_message.as_deref(), Some(message.as_str()));
++            assert!(result.facts.is_none());
++        }
++    }
++
+     #[test]
+     fn native_row_errors_keep_diagnostics_and_internal_errors_propagate() {
+         let bytes = vec![0xff];
+@@ -854,6 +904,12 @@ mod diagnostic_tests {
+             ExtractError::Setup("query compiler failed".into()),
+             ExtractError::Extraction("set rust parser language".into()),
+             ExtractError::Extraction("unexpected kernel failure".into()),
++            ExtractError::Extraction("parse .ipynb JSON parser setup failed".into()),
++            ExtractError::Extraction("parse .ipynb JSON: parser setup failed".into()),
++            ExtractError::Extraction("parse .ipynb JSON: [parser setup failed".into()),
++            ExtractError::Extraction("invalid .ipynb notebook infrastructure".into()),
++            ExtractError::Extraction("invalid .ipynb notebook inventory: setup failed".into()),
++            ExtractError::Extraction("invalid .ipynb notebook inventory: [setup failed".into()),
+         ] {
+             let message = error.to_string();
+             let error = diagnostic_error(error)

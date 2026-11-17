@@ -1,0 +1,427 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "label": "flat_helpers",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "symbols": {
+              "fields": {
+                "notebook": {
+                  "kind": "enum",
+                  "values": [
+                    "n.ipynb"
+                  ]
+                },
+                "cell": {
+                  "kind": "enum",
+                  "values": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "name": {
+                  "kind": "enum",
+                  "values": [
+                    "helper"
+                  ]
+                },
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "function"
+                  ]
+                },
+                "scope": {
+                  "kind": "enum",
+                  "values": [
+                    "top"
+                  ]
+                }
+              },
+              "rows": {
+                "r0": {
+                  "active": true,
+                  "cells": {
+                    "notebook": {
+                      "present": true,
+                      "value": "n.ipynb"
+                    },
+                    "cell": {
+                      "present": true,
+                      "value": "a"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "top"
+                    }
+                  }
+                },
+                "r1": {
+                  "active": true,
+                  "cells": {
+                    "notebook": {
+                      "present": true,
+                      "value": "n.ipynb"
+                    },
+                    "cell": {
+                      "present": true,
+                      "value": "b"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "top"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "key": {
+              "relation": "symbols",
+              "fields": [
+                "name",
+                "kind",
+                "scope"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "key"
+            ]
+          }
+        ],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.unique.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_key\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "label": "cell_helpers",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "symbols": {
+              "fields": {
+                "notebook": {
+                  "kind": "enum",
+                  "values": [
+                    "n.ipynb"
+                  ]
+                },
+                "cell": {
+                  "kind": "enum",
+                  "values": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "name": {
+                  "kind": "enum",
+                  "values": [
+                    "helper"
+                  ]
+                },
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "function"
+                  ]
+                },
+                "scope": {
+                  "kind": "enum",
+                  "values": [
+                    "top"
+                  ]
+                }
+              },
+              "rows": {
+                "r0": {
+                  "active": true,
+                  "cells": {
+                    "notebook": {
+                      "present": true,
+                      "value": "n.ipynb"
+                    },
+                    "cell": {
+                      "present": true,
+                      "value": "a"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "top"
+                    }
+                  }
+                },
+                "r1": {
+                  "active": true,
+                  "cells": {
+                    "notebook": {
+                      "present": true,
+                      "value": "n.ipynb"
+                    },
+                    "cell": {
+                      "present": true,
+                      "value": "b"
+                    },
+                    "name": {
+                      "present": true,
+                      "value": "helper"
+                    },
+                    "kind": {
+                      "present": true,
+                      "value": "function"
+                    },
+                    "scope": {
+                      "present": true,
+                      "value": "top"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "key": {
+              "relation": "symbols",
+              "fields": [
+                "notebook",
+                "cell",
+                "name",
+                "kind",
+                "scope"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "key"
+            ]
+          }
+        ],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"a\",\n    \"di_r0_row0_f1_present\": 1,\n    \"di_r0_row0_f1_value\": \"function\",\n    \"di_r0_row0_f2_present\": 1,\n    \"di_r0_row0_f2_value\": \"helper\",\n    \"di_r0_row0_f3_present\": 1,\n    \"di_r0_row0_f3_value\": \"n.ipynb\",\n    \"di_r0_row0_f4_present\": 1,\n    \"di_r0_row0_f4_value\": \"top\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"b\",\n    \"di_r0_row1_f1_present\": 1,\n    \"di_r0_row1_f1_value\": \"function\",\n    \"di_r0_row1_f2_present\": 1,\n    \"di_r0_row1_f2_value\": \"helper\",\n    \"di_r0_row1_f3_present\": 1,\n    \"di_r0_row1_f3_value\": \"n.ipynb\",\n    \"di_r0_row1_f4_present\": 1,\n    \"di_r0_row1_f4_value\": \"top\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "label": "raw_id_witness",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "ids": {
+              "fields": {
+                "id": {
+                  "kind": "enum",
+                  "values": [
+                    "a.ipynb#cell:b.ipynb#cell:c"
+                  ]
+                }
+              },
+              "rows": {
+                "r0": {
+                  "active": true,
+                  "cells": {
+                    "id": {
+                      "present": true,
+                      "value": "a.ipynb#cell:b.ipynb#cell:c"
+                    }
+                  }
+                },
+                "r1": {
+                  "active": true,
+                  "cells": {
+                    "id": {
+                      "present": true,
+                      "value": "a.ipynb#cell:b.ipynb#cell:c"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "key": {
+              "relation": "ids",
+              "fields": [
+                "id"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "key"
+            ]
+          }
+        ],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.unique.violation\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_unique__subject_key\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "label": "structured_id_witness",
+      "request": {
+        "family": "data_integrity",
+        "mode": "verify",
+        "facts": {
+          "relations": {
+            "ids": {
+              "fields": {
+                "id": {
+                  "kind": "enum",
+                  "values": [
+                    "[\"a.ipynb\",\"b.ipynb#cell:c\"]",
+                    "[\"a.ipynb#cell:b.ipynb\",\"c\"]"
+                  ]
+                }
+              },
+              "rows": {
+                "r0": {
+                  "active": true,
+                  "cells": {
+                    "id": {
+                      "present": true,
+                      "value": "[\"a.ipynb\",\"b.ipynb#cell:c\"]"
+                    }
+                  }
+                },
+                "r1": {
+                  "active": true,
+                  "cells": {
+                    "id": {
+                      "present": true,
+                      "value": "[\"a.ipynb#cell:b.ipynb\",\"c\"]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unique_constraints": {
+            "key": {
+              "relation": "ids",
+              "fields": [
+                "id"
+              ]
+            }
+          },
+          "foreign_keys": {},
+          "cardinality_constraints": {},
+          "value_ranges": {},
+          "conditional_requirements": {},
+          "aggregate_balances": {},
+          "consistency_relations": {},
+          "temporal_constraints": {}
+        },
+        "rules": [
+          {
+            "rule_id": "data_integrity.unique",
+            "subjects": [
+              "key"
+            ]
+          }
+        ],
+        "persist": false
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"pass\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.unique\",\n      \"binding_index\": 0,\n      \"status\": \"sat\",\n      \"outcome\": \"pass\"\n    }\n  ],\n  \"total_duration_ms\": 0,\n  \"status\": \"sat\",\n  \"model\": {\n    \"di_r0_row0_active\": 1,\n    \"di_r0_row0_f0_present\": 1,\n    \"di_r0_row0_f0_value\": \"[\\\"a.ipynb\\\",\\\"b.ipynb#cell:c\\\"]\",\n    \"di_r0_row1_active\": 1,\n    \"di_r0_row1_f0_present\": 1,\n    \"di_r0_row1_f0_value\": \"[\\\"a.ipynb#cell:b.ipynb\\\",\\\"c\\\"]\"\n  },\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+          }
+        ]
+      }
+    }
+  }
+]

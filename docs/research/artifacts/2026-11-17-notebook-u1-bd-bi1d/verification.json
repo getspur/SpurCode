@@ -1,0 +1,117 @@
+{
+  "base": "52e14c9cde58f0650bacb72daa04b705fd3c17da",
+  "implementation_commit": "bd53e6f9313efd5ccf644e0583a4613bcf922fd1",
+  "unified_diff": "source.patch",
+  "unified_diff_sha256": "1a100de17a5f34284481f29a579d0da4d1503675ec39cd898523bc2a410de625",
+  "pairs": [
+    {
+      "red": "host-red-canonical-tmp",
+      "green": "host-green-final",
+      "same_command": true,
+      "same_environment": true,
+      "same_predicates": true,
+      "exits": [
+        101,
+        0
+      ]
+    },
+    {
+      "red": "host-lexical-red",
+      "green": "host-lexical-green",
+      "same_command": true,
+      "same_environment": true,
+      "same_predicates": true,
+      "exits": [
+        101,
+        0
+      ]
+    }
+  ],
+  "retained_attempt1_sha256": {
+    "red.json": "9c232537a154ea0a21b36f986d7c77362700c10ab096aebdef82cea59dd181b0",
+    "red.log": "fe320320a17ebdf0b8a94cf7a59686ab865ea234bfe8593e4e3907003fedab37",
+    "red-network.json": "2f36448cdc6a49c971e8142e1720403962ac732305bc349d6f9df81b70fea459",
+    "red-network.log": "25911e050c287ffeaf09ad940435a0a87bdc3184e16c1d039fd9ba3a7e1cb372",
+    "solver.json": "0c8f685fa8fa6b7a8ab96ba931d32196a49aef545291c6dc3efcc797f32f8121"
+  },
+  "tested_source_sha256": {
+    "Cargo.lock": "c8828e810291326802aaa9cefb0cebcb001949bf97f818222e95ba2147bc3b30",
+    "Cargo.toml": "e7b8bac5cce8c689b917068859334dd290c2eafa14cd6a2c2cd28d52d8dc7ed0",
+    "crates/spur-graph/Cargo.toml": "52cf2b3cc73ce839a1d40b299705429a2797dcfe9e5a33b790fb0abd3b3f4bc5",
+    "crates/spur-graph/src/extract/mod.rs": "30cc624c5a13af4fbbf700b6c4974070d7ba317ccfa595d379786e915415eca3",
+    "crates/spur-graph/src/extract/notebook.rs": "5d8713c8476743d009f1a0faaab1b05abd91b83d884a98fb30dcb4292b4f0b25",
+    "crates/spur-graph/src/extract/notebook_model.rs": "467a0ad620f8aeb7fe11de25fcdc9d30105685ecdb11c0954c91c7dfa0a74cd2"
+  },
+  "logs": {
+    "host-extract-green.json": {
+      "exit_code": 0,
+      "log_sha256": "1862f6ee706795ef5b370a86ffc12856de34abb914a464feefa2c878aa0ad015"
+    },
+    "host-green-final.json": {
+      "exit_code": 0,
+      "log_sha256": "455afd37f939f528cd70fcd1c46bb149b21d7647c99246d9c563b620a162b8a9"
+    },
+    "host-green.json": {
+      "exit_code": 0,
+      "log_sha256": "8e14115f214b95c913bd01aaa60b9b97bbd4f62e059ed1f68a5b06f7fc1c0c0e"
+    },
+    "host-lexical-green.json": {
+      "exit_code": 0,
+      "log_sha256": "ff8e9750e88d075e8f0b32e8cc23f05dda25e65d2f5421a8f6cb85f87c9acf2a"
+    },
+    "host-lexical-red.json": {
+      "exit_code": 101,
+      "log_sha256": "ac1777cf4c2d28df9dc5ccbc8fc7f3831f03d98aab1118894d09b2451e0e1d0c"
+    },
+    "host-red-canonical-tmp.json": {
+      "exit_code": 101,
+      "log_sha256": "c31ddb48250f2e68385caaba3358c8d44508308121767eb7ea08b224cdba6b54"
+    },
+    "host-red.json": {
+      "exit_code": 101,
+      "log_sha256": "83e689d2d04485e74d08ded6a5ff2fb2afcf25de266641baccb6da2a725e1791"
+    }
+  },
+  "changed_paths": [
+    "crates/spur-graph/src/extract/mod.rs",
+    "crates/spur-graph/src/extract/notebook.rs",
+    "crates/spur-graph/src/extract/notebook_model.rs",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/README.md",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/capture_host.py",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-extract-green.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-extract-green.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-green-final.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-green-final.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-green.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-green.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-lexical-green.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-lexical-green.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-lexical-red.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-lexical-red.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-red-canonical-tmp.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-red-canonical-tmp.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-red.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/host-red.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/red-network.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/red-network.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/red.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/red.log",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/solver-host-post.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/solver-host-pre.json",
+    "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/solver.json"
+  ],
+  "format_check": {
+    "command": "SPUR_REMOTE=0 scripts/spur-cargo fmt -p spur-graph -- --check",
+    "exit_code": 0
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  "limitations": [
+    "Host execution only; remote compilation unavailable",
+    "Finite solver witnesses only; no full parser/runtime proof",
+    "Legacy GraphFacts cannot express coverage; inspect normalized diagnostics",
+    "U2, SQL, packaging and native release replay outside U1"
+  ]
+}

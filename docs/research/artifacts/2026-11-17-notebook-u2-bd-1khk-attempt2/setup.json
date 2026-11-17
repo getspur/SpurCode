@@ -1,0 +1,68 @@
+{
+  "issue": "bd-1khk",
+  "task": "U2",
+  "attempt": 2,
+  "base": "033b9edad",
+  "preserved_tdd_commits": [
+    "6eb1c4cf6",
+    "033b9edad"
+  ],
+  "tree_recovery": "Overlay index and working tree verified byte-identical to 033b9edad before git reset --soft 033b9edad; no working-tree file modified by reset.",
+  "host_authorization": "User authorizes deliberate SPUR_REMOTE=0 through scripts/spur-cargo for focused tests after remote infrastructure failure before compilation; never a fallback for a remote compiler/assertion failure.",
+  "setup_failures": [
+    {
+      "operation": "git write-tree (before reset)",
+      "exit_code": 1,
+      "reason": "index.lock sandbox EPERM; succeeded via approved metadata-only escalation"
+    },
+    {
+      "operation": "write solver-pre.json",
+      "reason": "ENOSPC; complete retained requests/results replayed after scoped clean"
+    },
+    {
+      "operation": "capture.py remote remote-red (first invocation)",
+      "exit_code": 1,
+      "reason": "ENOSPC opening log; no remote/build/test command launched, no RED claim"
+    }
+  ],
+  "disk_free_observations": [
+    "3.3GiB initially",
+    "116MiB before ENOSPC",
+    "149MiB after solver clean",
+    "247MiB after graph clean"
+  ],
+  "cache_clean_common_environment": {
+    "SPUR_REMOTE": "0",
+    "SPUR_NO_LOCAL_FALLBACK": "1",
+    "CARGO_TARGET_DIR": "/private/tmp/spur-notebook-u1-bd-bi1d-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "SPUR_SCCACHE_S3": "0",
+    "TMPDIR": "/private/tmp/spur-notebook-u1-bd-bi1d-tmp",
+    "RUSTC_WRAPPER": ""
+  },
+  "cache_cleans": [
+    {
+      "command": [
+        "scripts/spur-cargo",
+        "clean",
+        "-p",
+        "spur-solver"
+      ],
+      "exit_code": 0,
+      "output": "Removed 21 files, 36.2MiB total"
+    },
+    {
+      "command": [
+        "scripts/spur-cargo",
+        "clean",
+        "-p",
+        "spur-graph"
+      ],
+      "exit_code": 0,
+      "output": "Removed 22 files, 109.5MiB total"
+    }
+  ],
+  "cache_scope": "Only generated host build artifacts in the inherited task-owned /private/tmp target. No source/evidence/native artifact removal; no builder reboot.",
+  "code_retrieval": "knowledge_context_pack_2 attempted; code_read_symbol reports graph artifact not found in isolated worktree, so read current raw bytes."
+}

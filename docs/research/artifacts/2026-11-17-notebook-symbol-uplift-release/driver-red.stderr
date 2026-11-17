@@ -1,0 +1,14 @@
+test_release_runs_focused_core_notebook_tests_before_adapter_tests (test_release_driver.SourceStabilityTests.test_release_runs_focused_core_notebook_tests_before_adapter_tests) ... FAIL
+
+======================================================================
+FAIL: test_release_runs_focused_core_notebook_tests_before_adapter_tests (test_release_driver.SourceStabilityTests.test_release_runs_focused_core_notebook_tests_before_adapter_tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb/tests/test_release_driver.py", line 171, in test_release_runs_focused_core_notebook_tests_before_adapter_tests
+    self.assertIn("core-notebook-tests", names,
+AssertionError: 'core-notebook-tests' not found in ['source-head', 'source-status', 'rustc-version', 'cargo-version', 'rust-tests', 'native-build', 'source-probe', 'package', 'verify-package', 'unittests', 'source-probe-final'] : release must exercise shared normalization and notebook comparison core
+
+----------------------------------------------------------------------
+Ran 1 test in 0.663s
+
+FAILED (failures=1)

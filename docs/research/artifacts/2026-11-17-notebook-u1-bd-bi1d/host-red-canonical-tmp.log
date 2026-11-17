@@ -1,0 +1,174 @@
+warning: function `file_oid_match_after_first_stat` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:839:19
+    |
+839 |     pub(super) fn file_oid_match_after_first_stat(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+
+warning: `spur-graph` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized] target(s) in 0.64s
+     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)
+
+running 35 tests
+test extract::notebook::tests::detects_markdown_cells ... ok
+test extract::notebook::tests::explicit_unmapped_code_type_does_not_fall_through_to_kernel ... ok
+test extract::notebook::tests::code_type_takes_precedence ... ok
+test extract::notebook::tests::mcp_tokens_map_even_when_notebook_kernel_is_python ... ok
+test extract::notebook::tests::falls_back_to_notebook_kernelspec_then_language_info ... ok
+test extract::notebook::tests::mermaid_vertex_read_document_is_decoded_cell_source_not_json ... ok
+test extract::notebook::tests::malformed_json_returns_error ... ok
+test extract::notebook::tests::graph_rejects_invalid_inventory_instead_of_clean_empty_or_duplicate_keys ... FAILED
+test extract::notebook::tests::ns_mermaid_code_type_does_not_inherit_python_kernel ... ok
+test extract::notebook::tests::graph_rejects_effective_id_collisions_across_explicit_and_anonymous_cells ... FAILED
+test extract::notebook::tests::notebook_metadata_emits_declared_dag_and_frontend_semantic_facts ... ok
+test extract::notebook::tests::each_cell_gets_a_cell_container_node ... ok
+test extract::notebook::tests::unknown_and_unsupported_languages_resolve_to_none ... ok
+test extract::notebook::tests::skips_unknown_language_cells ... ok
+test extract::notebook_model::tests::anonymous_ids_keep_blake3_occurrences_and_report_identity_limits ... FAILED
+test extract::notebook_model::tests::duplicate_effective_ids_include_trimmed_and_explicit_anonymous_collisions ... FAILED
+test extract::notebook_model::tests::invalid_document_shapes_are_typed_instead_of_clean_empty ... FAILED
+test extract::notebook_model::tests::inventory_distinguishes_empty_unknown_invalid_and_non_code ... FAILED
+test extract::notebook_model::tests::lifetime_apostrophes_do_not_hide_a_real_load_command ... FAILED
+test extract::notebook_model::tests::preserves_ids_source_encodings_metadata_and_language_precedence ... FAILED
+test extract::notebook_model::tests::python_first_nonblank_magic_is_partial_but_literal_text_is_plain_python ... FAILED
+test extract::notebook_model::tests::raw_byte_strings_and_nested_block_comments_are_not_commands ... FAILED
+test extract::notebook_model::tests::reuses_the_entire_existing_notebook_token_registry ... FAILED
+test extract::notebook_model::tests::rust_dep_mask_preserves_multibyte_crlf_ranges_and_hashes ... FAILED
+test extract::notebook_model::tests::rust_strings_raw_strings_chars_and_nested_comments_are_untouched ... FAILED
+test extract::notebook_model::tests::unsupported_commands_multiline_and_trailing_forms_are_diagnosed_without_execution ... FAILED
+test extract::notebook::tests::ns_mermaid_cell_extracts_flowchart_vertices_under_python_kernel ... ok
+test extract::notebook::tests::valid_graph_stable_keys_keep_legacy_cell_paths_and_source_decoding ... ok
+test extract::notebook::tests::extracts_python_def_and_markdown_heading_as_transitively_contained_children ... ok
+test extract::notebook::tests::missing_cell_id_is_content_stable_across_reorder ... ok
+test extract::notebook::tests::direct_notebook_facts_match_batch_extraction ... ok
+test extract::notebook::tests::raw_byte_strings_and_nested_comments_recover_function_through_graph ... ok
+test extract::notebook::tests::leading_rust_dep_recovers_function_at_original_multibyte_crlf_span ... ok
+test extract::notebook::tests::same_cell_local_symbol_offsets_get_distinct_stable_keys ... ok
+test extract::notebook::tests::notebook_source_emits_actual_put_get_dynamic_put_and_table_reference_facts ... ok
+
+failures:
+
+---- extract::notebook::tests::graph_rejects_invalid_inventory_instead_of_clean_empty_or_duplicate_keys stdout ----
+
+thread 'extract::notebook::tests::graph_rejects_invalid_inventory_instead_of_clean_empty_or_duplicate_keys' (244379274) panicked at crates/spur-graph/src/extract/notebook.rs:1141:13:
+{}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- extract::notebook::tests::graph_rejects_effective_id_collisions_across_explicit_and_anonymous_cells stdout ----
+
+thread 'extract::notebook::tests::graph_rejects_effective_id_collisions_across_explicit_and_anonymous_cells' (244379273) panicked at crates/spur-graph/src/extract/notebook.rs:1173:9:
+assertion failed: run_notebook_extraction(Path::new("nb.ipynb"), &bytes).is_err()
+
+---- extract::notebook_model::tests::anonymous_ids_keep_blake3_occurrences_and_report_identity_limits stdout ----
+
+thread 'extract::notebook_model::tests::anonymous_ids_keep_blake3_occurrences_and_report_identity_limits' (244379289) panicked at crates/spur-graph/src/extract/notebook_model.rs:286:9:
+assertion `left == right` failed
+  left: 0
+ right: 3
+
+---- extract::notebook_model::tests::duplicate_effective_ids_include_trimmed_and_explicit_anonymous_collisions stdout ----
+
+thread 'extract::notebook_model::tests::duplicate_effective_ids_include_trimmed_and_explicit_anonymous_collisions' (244379290) panicked at crates/spur-graph/src/extract/notebook_model.rs:314:9:
+assertion `left == right` failed
+  left: 0
+ right: 6
+
+---- extract::notebook_model::tests::invalid_document_shapes_are_typed_instead_of_clean_empty stdout ----
+
+thread 'extract::notebook_model::tests::invalid_document_shapes_are_typed_instead_of_clean_empty' (244379291) panicked at crates/spur-graph/src/extract/notebook_model.rs:255:13:
+assertion `left == right` failed: [123]
+  left: Complete
+ right: Invalid
+
+---- extract::notebook_model::tests::inventory_distinguishes_empty_unknown_invalid_and_non_code stdout ----
+
+thread 'extract::notebook_model::tests::inventory_distinguishes_empty_unknown_invalid_and_non_code' (244379292) panicked at crates/spur-graph/src/extract/notebook_model.rs:221:9:
+assertion `left == right` failed
+  left: 0
+ right: 8
+
+---- extract::notebook_model::tests::lifetime_apostrophes_do_not_hide_a_real_load_command stdout ----
+
+thread 'extract::notebook_model::tests::lifetime_apostrophes_do_not_hide_a_real_load_command' (244379294) panicked at crates/spur-graph/src/extract/notebook_model.rs:127:9:
+assertion `left == right` failed: retain the cell inventory
+  left: 0
+ right: 1
+
+---- extract::notebook_model::tests::preserves_ids_source_encodings_metadata_and_language_precedence stdout ----
+
+thread 'extract::notebook_model::tests::preserves_ids_source_encodings_metadata_and_language_precedence' (244379295) panicked at crates/spur-graph/src/extract/notebook_model.rs:151:9:
+assertion `left == right` failed
+  left: 0
+ right: 5
+
+---- extract::notebook_model::tests::python_first_nonblank_magic_is_partial_but_literal_text_is_plain_python stdout ----
+
+thread 'extract::notebook_model::tests::python_first_nonblank_magic_is_partial_but_literal_text_is_plain_python' (244379296) panicked at crates/spur-graph/src/extract/notebook_model.rs:474:13:
+assertion `left == right` failed
+  left: 0
+ right: 1
+
+---- extract::notebook_model::tests::raw_byte_strings_and_nested_block_comments_are_not_commands stdout ----
+
+thread 'extract::notebook_model::tests::raw_byte_strings_and_nested_block_comments_are_not_commands' (244379297) panicked at crates/spur-graph/src/extract/notebook_model.rs:127:9:
+assertion `left == right` failed: retain the cell inventory
+  left: 0
+ right: 1
+
+---- extract::notebook_model::tests::reuses_the_entire_existing_notebook_token_registry stdout ----
+
+thread 'extract::notebook_model::tests::reuses_the_entire_existing_notebook_token_registry' (244379298) panicked at crates/spur-graph/src/extract/notebook_model.rs:196:13:
+assertion `left == right` failed
+  left: 0
+ right: 1
+
+---- extract::notebook_model::tests::rust_dep_mask_preserves_multibyte_crlf_ranges_and_hashes stdout ----
+
+thread 'extract::notebook_model::tests::rust_dep_mask_preserves_multibyte_crlf_ranges_and_hashes' (244379299) panicked at crates/spur-graph/src/extract/notebook_model.rs:127:9:
+assertion `left == right` failed: retain the cell inventory
+  left: 0
+ right: 1
+
+---- extract::notebook_model::tests::rust_strings_raw_strings_chars_and_nested_comments_are_untouched stdout ----
+
+thread 'extract::notebook_model::tests::rust_strings_raw_strings_chars_and_nested_comments_are_untouched' (244379300) panicked at crates/spur-graph/src/extract/notebook_model.rs:127:9:
+assertion `left == right` failed: retain the cell inventory
+  left: 0
+ right: 1
+
+---- extract::notebook_model::tests::unsupported_commands_multiline_and_trailing_forms_are_diagnosed_without_execution stdout ----
+
+thread 'extract::notebook_model::tests::unsupported_commands_multiline_and_trailing_forms_are_diagnosed_without_execution' (244379301) panicked at crates/spur-graph/src/extract/notebook_model.rs:127:9:
+assertion `left == right` failed: retain the cell inventory
+  left: 0
+ right: 1
+
+
+failures:
+    extract::notebook::tests::graph_rejects_effective_id_collisions_across_explicit_and_anonymous_cells
+    extract::notebook::tests::graph_rejects_invalid_inventory_instead_of_clean_empty_or_duplicate_keys
+    extract::notebook_model::tests::anonymous_ids_keep_blake3_occurrences_and_report_identity_limits
+    extract::notebook_model::tests::duplicate_effective_ids_include_trimmed_and_explicit_anonymous_collisions
+    extract::notebook_model::tests::invalid_document_shapes_are_typed_instead_of_clean_empty
+    extract::notebook_model::tests::inventory_distinguishes_empty_unknown_invalid_and_non_code
+    extract::notebook_model::tests::lifetime_apostrophes_do_not_hide_a_real_load_command
+    extract::notebook_model::tests::preserves_ids_source_encodings_metadata_and_language_precedence
+    extract::notebook_model::tests::python_first_nonblank_magic_is_partial_but_literal_text_is_plain_python
+    extract::notebook_model::tests::raw_byte_strings_and_nested_block_comments_are_not_commands
+    extract::notebook_model::tests::reuses_the_entire_existing_notebook_token_registry
+    extract::notebook_model::tests::rust_dep_mask_preserves_multibyte_crlf_ranges_and_hashes
+    extract::notebook_model::tests::rust_strings_raw_strings_chars_and_nested_comments_are_untouched
+    extract::notebook_model::tests::unsupported_commands_multiline_and_trailing_forms_are_diagnosed_without_execution
+
+test result: FAILED. 21 passed; 14 failed; 0 ignored; 0 measured; 580 filtered out; finished in 0.38s
+
+error: test failed, to rerun pass `-p spur-graph --lib`

@@ -1,0 +1,11 @@
+diff --git a/crates/spur-graph-duckdb/docs/release-contract.md b/crates/spur-graph-duckdb/docs/release-contract.md
+index c42eadeb7..370060012 100644
+--- a/crates/spur-graph-duckdb/docs/release-contract.md
++++ b/crates/spur-graph-duckdb/docs/release-contract.md
+@@ -383,2 +383,4 @@ The consumer validates frozen source hashes before attaching caller-asserted
+-snapshot/repository labels. The reader verifies one immutable manifest, native
+-and consumer contracts, table schemas/counts/checksums and exact source context.
++snapshot/repository labels. `read_result` checks the declared consumer/native
++contract metadata and source identity scheme, exact manifest/run/snapshot
++context, and exported file paths, byte sizes and checksums. Native publication
++records table schemas and row counts; `read_result` does not revalidate them.

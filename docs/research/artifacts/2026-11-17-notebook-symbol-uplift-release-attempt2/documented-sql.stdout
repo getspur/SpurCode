@@ -1,0 +1,277 @@
+{
+  "sql_sha256": "d833dcd707491ed6aca0305cba5176e6b6d755e205a41593ca92c7f751f0c697",
+  "package_sha256": "c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48",
+  "results": [
+    {
+      "sql": "SELECT spur_graph_info();\n\n-- 2. Symbols: LIST<Symbol>.\n",
+      "rows": [
+        [
+          {
+            "extension_version": "0.1.0",
+            "facts_schema_version": 1,
+            "duckdb_api_version": "2.0.0",
+            "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+            "supported_languages": [
+              "C",
+              "Cpp",
+              "Css",
+              "Go",
+              "Hcl",
+              "Html",
+              "Javascript",
+              "Json",
+              "JupyterNotebook",
+              "Lua",
+              "Markdown",
+              "Mermaid",
+              "Python",
+              "Rust",
+              "Shell",
+              "Sql",
+              "Terraform",
+              "Toml",
+              "Tsx",
+              "TypeScript",
+              "Yaml"
+            ],
+            "resolution_scope": "single_file"
+          }
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT spur_graph_symbols('src/a.rs', 'fn a() {}');\n\n-- 3. Full single-file facts: Facts STRUCT with five typed lists.\n",
+      "rows": [
+        [
+          [
+            {
+              "entity_name": "a",
+              "symbol_kind": "function",
+              "enclosing_scope": null,
+              "byte_start": 0,
+              "byte_end": 9,
+              "line_start": 1,
+              "line_end": 1,
+              "anchor_hash": "17552432434957146762",
+              "tokens": []
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT spur_graph_file_facts('src/a.rs', 'fn a() {}');\n\n-- 4. Diagnostic parent: Result STRUCT, including recoverable bad input.\n",
+      "rows": [
+        [
+          {
+            "nodes": [
+              {
+                "node_id": 1,
+                "stable_key": "f3781f7394b0c790",
+                "label": "src/a.rs",
+                "kind": "file",
+                "file_id": 1,
+                "source_span_id": 1,
+                "first_seen_run_id": 1
+              },
+              {
+                "node_id": 2,
+                "stable_key": "e419ca3e4e47c16d",
+                "label": "a",
+                "kind": "function",
+                "file_id": 1,
+                "source_span_id": 2,
+                "first_seen_run_id": 1
+              }
+            ],
+            "edges": [
+              {
+                "edge_id": 1,
+                "source_node_id": 1,
+                "target_node_id": 2,
+                "relation": "contains",
+                "target_label": null,
+                "import_path": null,
+                "receiver_text": null,
+                "scope_text": null,
+                "confidence": "syntax_exact",
+                "confidence_score": 1.0,
+                "edge_kind": null,
+                "bind_method": null,
+                "evidence_id": 1,
+                "directed": true,
+                "change_kind": null
+              }
+            ],
+            "spans": [
+              {
+                "span_id": 1,
+                "file_id": 1,
+                "start_byte": 0,
+                "end_byte": 9,
+                "start_line": 1,
+                "end_line": 1
+              },
+              {
+                "span_id": 2,
+                "file_id": 1,
+                "start_byte": 0,
+                "end_byte": 9,
+                "start_line": 1,
+                "end_line": 1
+              }
+            ],
+            "macro_invocations": [],
+            "macro_scopes": []
+          }
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT spur_graph_file_facts_result('bad.unknown', 'text');\n\n-- 5. Shared native pair matcher: changes plus ambiguity diagnostics.\n",
+      "rows": [
+        [
+          {
+            "status": "extraction_error",
+            "error_code": "unsupported_language",
+            "error_message": "unsupported language for path: bad.unknown",
+            "facts": null
+          }
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT spur_graph_symbol_changes('src/a.rs', 'src/a.rs', 'M',\n    spur_graph_symbols('src/a.rs', 'fn a() { let x = 1; }'),\n    spur_graph_symbols('src/a.rs', 'fn a() { let x = 2; }'));\n\n-- 6/7. Pass original JSON, including cell IDs and metadata.\n",
+      "rows": [
+        [
+          {
+            "changes": [
+              {
+                "symbol": {
+                  "entity_name": "a",
+                  "symbol_kind": "function",
+                  "enclosing_scope": null,
+                  "byte_start": 0,
+                  "byte_end": 21,
+                  "line_start": 1,
+                  "line_end": 1,
+                  "anchor_hash": "6704203257603058018",
+                  "tokens": [
+                    "2",
+                    "x"
+                  ]
+                },
+                "stable_symbol_id": "e419ca3e4e47c16d",
+                "file_path": "src/a.rs",
+                "change_kind": "modified",
+                "previous_stable_symbol_id": null
+              }
+            ],
+            "diagnostics": []
+          }
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT spur_graph_notebook_symbols('n.ipynb',\n  '{\"metadata\":{},\"cells\":[{\"id\":\"p\",\"cell_type\":\"code\",\"metadata\":{\"spur\":{\"code_type\":\"python\"}},\"source\":\"def f():\\n    return 1\\n\"}]}');\n",
+      "rows": [
+        [
+          {
+            "contract_version": 1,
+            "path": "n.ipynb",
+            "source_sha256": "6eea0f263d1b5fbb0f3bc0c9e85a5842b01e78760dd91171d7744bdf048b2d99",
+            "metadata_json": "{}",
+            "cells": [
+              {
+                "id": "p",
+                "identity_quality": "explicit",
+                "ordinal": 0,
+                "cell_type": "code",
+                "language": "Python",
+                "metadata_json": "{\"spur\":{\"code_type\":\"python\"}}",
+                "source": {
+                  "original": "def f():\n    return 1\n",
+                  "original_sha256": "5b76d0962c09ab4ee309fac65fad3568c97abdec983b405146ae3e86a235e352",
+                  "analysis": "def f():\n    return 1\n",
+                  "analysis_sha256": "5b76d0962c09ab4ee309fac65fad3568c97abdec983b405146ae3e86a235e352",
+                  "policy": "identity-v1",
+                  "coordinate_map": "identity",
+                  "directives": []
+                },
+                "status": "complete",
+                "diagnostics": [],
+                "symbols": [
+                  {
+                    "id": "n.ipynb#cell:p#symbol:[\"python\",\"f\",\"function\",null,0,null]",
+                    "symbol": {
+                      "entity_name": "f",
+                      "symbol_kind": "function",
+                      "enclosing_scope": null,
+                      "byte_start": 0,
+                      "byte_end": 21,
+                      "line_start": 1,
+                      "line_end": 2,
+                      "anchor_hash": "12258888838967554171",
+                      "tokens": [
+                        "1"
+                      ]
+                    },
+                    "source_ref": {
+                      "notebook_path": "n.ipynb",
+                      "notebook_source_sha256": "6eea0f263d1b5fbb0f3bc0c9e85a5842b01e78760dd91171d7744bdf048b2d99",
+                      "cell_id": "p",
+                      "cell_ordinal": 0,
+                      "cell_identity_quality": "explicit",
+                      "cell_source_sha256": "5b76d0962c09ab4ee309fac65fad3568c97abdec983b405146ae3e86a235e352",
+                      "cell_language": "Python",
+                      "coordinate_space": "decoded_code_cell_utf8",
+                      "byte_start": 0,
+                      "byte_end": 21,
+                      "line_start": 1,
+                      "line_end": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "status": "complete",
+            "diagnostics": []
+          }
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT spur_graph_notebook_changes('n.ipynb', NULL, 'A', NULL,\n  '{\"metadata\":{},\"cells\":[]}');\n",
+      "rows": [
+        [
+          {
+            "contract_version": 1,
+            "status": "complete",
+            "diagnostics": [],
+            "before": null,
+            "after": {
+              "contract_version": 1,
+              "path": "n.ipynb",
+              "source_sha256": "3b6e9e4f4ceddd31b7caf633d8c352fdc0f8928e496a57e00d2a9125af456e4c",
+              "metadata_json": "{}",
+              "cells": [],
+              "status": "complete",
+              "diagnostics": []
+            },
+            "symbol_changes": [],
+            "cell_changes": [],
+            "document_changes": [
+              {
+                "kind": "added",
+                "before_path": null,
+                "after_path": "n.ipynb",
+                "before_metadata_json": null,
+                "after_metadata_json": "{}"
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  ]
+}

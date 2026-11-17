@@ -1,0 +1,38 @@
+{
+  "execution": "host (explicit infrastructure-recovery fallback, not remote)",
+  "command": [
+    "scripts/spur-cargo",
+    "test",
+    "-p",
+    "spur-graph",
+    "--no-default-features",
+    "--lib",
+    "extract::"
+  ],
+  "environment_overrides": {
+    "SPUR_REMOTE": "0",
+    "CARGO_TARGET_DIR": "/private/tmp/spur-notebook-u1-bd-bi1d-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "SPUR_SCCACHE_S3": "0",
+    "TMPDIR": "/private/tmp/spur-notebook-u1-bd-bi1d-tmp"
+  },
+  "cwd": "/Users/kevintruong/project/SpurCode/.spur/worktrees/3d816749-2990-43ec-8902-3f5b4515384c",
+  "source_commit": "b30f19f2e49d6ab7b14085e5088c7c613657d3e2",
+  "source_sha256": {
+    "Cargo.lock": "c8828e810291326802aaa9cefb0cebcb001949bf97f818222e95ba2147bc3b30",
+    "Cargo.toml": "e7b8bac5cce8c689b917068859334dd290c2eafa14cd6a2c2cd28d52d8dc7ed0",
+    "crates/spur-graph/Cargo.toml": "52cf2b3cc73ce839a1d40b299705429a2797dcfe9e5a33b790fb0abd3b3f4bc5",
+    "crates/spur-graph/src/extract/mod.rs": "30cc624c5a13af4fbbf700b6c4974070d7ba317ccfa595d379786e915415eca3",
+    "crates/spur-graph/src/extract/notebook.rs": "5d8713c8476743d009f1a0faaab1b05abd91b83d884a98fb30dcb4292b4f0b25",
+    "crates/spur-graph/src/extract/notebook_model.rs": "467a0ad620f8aeb7fe11de25fcdc9d30105685ecdb11c0954c91c7dfa0a74cd2"
+  },
+  "test_predicate_sha256": {
+    "crates/spur-graph/src/extract/notebook.rs": "49addb3fdd3f01e2f4d59f7933698f0aef8783755d361cece0a9455394223bde",
+    "crates/spur-graph/src/extract/notebook_model.rs": "0d4d9b33750beb61dfc39d3a1baa1d903808111766e99491ddf553cc300a560d"
+  },
+  "started_utc": "2026-11-17T05:47:29.897089+00:00",
+  "exit_code": 0,
+  "finished_utc": "2026-11-17T05:48:03.075038+00:00",
+  "log_sha256": "1862f6ee706795ef5b370a86ffc12856de34abb914a464feefa2c878aa0ad015"
+}

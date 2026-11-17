@@ -188,6 +188,26 @@ class SourceIdentityTests(unittest.TestCase):
         added.write_text("// newly added native source")
         self.assertNotEqual(self.probe(fixture)["extractor_id"], receipt["extractor_id"])
 
+    def test_notebook_sources_and_preparation_policy_are_provenance_inputs(self):
+        receipt = self.probe(ROOT)
+        paths = {entry['path'] for entry in receipt['inputs']}
+        required = ['crates/spur-graph-duckdb/src/notebook.rs',
+                    'crates/spur-graph/src/extract/notebook_model.rs',
+                    'crates/spur-graph/src/extract/notebook_symbols.rs',
+                    'crates/spur-graph/src/extract/notebook.rs']
+        self.assertTrue(set(required) <= paths)
+        fixture = self.source_copy('notebook-inputs', receipt)
+        for path in required:
+            with self.subTest(path=path):
+                target = fixture / path
+                original = target.read_text()
+                changed = (original.replace('evcxr-leading-dep-mask-v1', 'changed-policy')
+                           if path.endswith('notebook_model.rs') else original + '\n// changed notebook source\n')
+                self.assertNotEqual(original, changed)
+                target.write_text(changed)
+                self.assertNotEqual(self.probe(fixture)['extractor_id'], receipt['extractor_id'])
+                target.write_text(original)
+
 
 if __name__ == "__main__":
     unittest.main()

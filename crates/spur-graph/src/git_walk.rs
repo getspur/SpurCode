@@ -2395,6 +2395,27 @@ pub fn symbol_changes_from_extracted(
     let Some(language) = Language::from_path(&file_change.path.to_path_buf()) else {
         return (Vec::new(), Vec::new());
     };
+    symbol_changes_from_extracted_with_language(
+        sha,
+        file_change,
+        language,
+        left_symbols,
+        right_symbols,
+    )
+}
+
+/// Notebook callers supply the resolved cell language and validate uniqueness
+/// before entering this matcher. No path-extension inference or source rewriting.
+pub(crate) fn symbol_changes_from_extracted_with_language(
+    sha: &str,
+    file_change: &FileChange,
+    language: Language,
+    left_symbols: &[ExtractedSymbol],
+    right_symbols: &[ExtractedSymbol],
+) -> (Vec<SymbolChange>, Vec<String>) {
+    if matches!(file_change.kind, FileChangeKind::Gitlink { .. }) {
+        return (Vec::new(), Vec::new());
+    }
     let deleted_path = match &file_change.kind {
         FileChangeKind::Renamed { from } => from,
         _ => &file_change.path,
@@ -3290,7 +3311,11 @@ fn parse_failed_diagnostic(
     )
 }
 
-fn snapshot_from(commit: &str, path: &GitPath, symbol: &ExtractedSymbol) -> SymbolSnapshotArtifact {
+pub(crate) fn snapshot_from(
+    commit: &str,
+    path: &GitPath,
+    symbol: &ExtractedSymbol,
+) -> SymbolSnapshotArtifact {
     let relative_path = path.to_string_lossy();
     let fqn = match symbol.enclosing_scope.as_deref() {
         Some(scope) => format!("{scope}::{}", symbol.entity_name),

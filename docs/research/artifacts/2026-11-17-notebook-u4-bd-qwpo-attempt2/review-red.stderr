@@ -1,0 +1,117 @@
+test_review_nullable_absent_notebook_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_notebook_pairs_are_retained) ... FAIL
+test_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_ordinary_pairs_are_retained) ... FAIL
+test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) ... 
+  test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) (lineage=()) ... FAIL
+  test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) (lineage=('base',)) ... FAIL
+  test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) (lineage=('head',)) ... FAIL
+test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs (test_app_consumer.AppConsumerTests.test_review_retains_pair_identity_native_ambiguity_and_unavailable_inputs) ... ok
+
+======================================================================
+FAIL: test_review_nullable_absent_notebook_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_notebook_pairs_are_retained)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 240, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 69236 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 536, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 526, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 444, in native_candidate
+    notebook_projections(c, snapshots, artifact['extractor_id'])
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 347, in notebook_projections
+    if result['contract_version'] != 1:
+       ~~~~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 553, in test_review_nullable_absent_notebook_pairs_are_retained
+    m = self.consume_notebooks(fixture)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 69236 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 536, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 526, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 444, in native_candidate
+    notebook_projections(c, snapshots, artifact['extractor_id'])
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 347, in notebook_projections
+    if result['contract_version'] != 1:
+       ~~~~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+
+======================================================================
+FAIL: test_review_nullable_absent_ordinary_pairs_are_retained (test_app_consumer.AppConsumerTests.test_review_nullable_absent_ordinary_pairs_are_retained)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 534, in test_review_nullable_absent_ordinary_pairs_are_retained
+    self.assertEqual(len(rows), 2, 'every accepted ordinary A/D pair must survive routing')
+AssertionError: 0 != 2 : every accepted ordinary A/D pair must survive routing
+
+======================================================================
+FAIL: test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) (lineage=())
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 602, in test_review_refs_resolve_without_complete_explore_lineage
+    text = self.app.read_notebook_source(self.output, sid, blob, ref)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 193, in read_notebook_source
+    raise ValueError('source reference has no matching snapshot source')
+ValueError: source reference has no matching snapshot source
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 604, in test_review_refs_resolve_without_complete_explore_lineage
+    self.fail('published review refs must resolve without Explore occurrences: ' + str(error))
+AssertionError: published review refs must resolve without Explore occurrences: source reference has no matching snapshot source
+
+======================================================================
+FAIL: test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) (lineage=('base',))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 602, in test_review_refs_resolve_without_complete_explore_lineage
+    text = self.app.read_notebook_source(self.output, sid, blob, ref)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 193, in read_notebook_source
+    raise ValueError('source reference has no matching snapshot source')
+ValueError: source reference has no matching snapshot source
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 604, in test_review_refs_resolve_without_complete_explore_lineage
+    self.fail('published review refs must resolve without Explore occurrences: ' + str(error))
+AssertionError: published review refs must resolve without Explore occurrences: source reference has no matching snapshot source
+
+======================================================================
+FAIL: test_review_refs_resolve_without_complete_explore_lineage (test_app_consumer.AppConsumerTests.test_review_refs_resolve_without_complete_explore_lineage) (lineage=('head',))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 602, in test_review_refs_resolve_without_complete_explore_lineage
+    text = self.app.read_notebook_source(self.output, sid, blob, ref)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/examples/app_consumer.py", line 193, in read_notebook_source
+    raise ValueError('source reference has no matching snapshot source')
+ValueError: source reference has no matching snapshot source
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6074e791-ee02-4524-82f9-1e3b19f7e20c/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 604, in test_review_refs_resolve_without_complete_explore_lineage
+    self.fail('published review refs must resolve without Explore occurrences: ' + str(error))
+AssertionError: published review refs must resolve without Explore occurrences: source reference has no matching snapshot source
+
+----------------------------------------------------------------------
+Ran 4 tests in 3.834s
+
+FAILED (failures=5)

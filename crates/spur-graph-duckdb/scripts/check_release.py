@@ -230,6 +230,11 @@ def check_release(args, output, receipt):
     rust_args = [str(WRAPPER), "--workdir", str(CRATE)]
     rust_test_env = {"SPUR_REMOTE": "0"} if args.rust_tests_mode == "host" else {"SPUR_REMOTE": "1"}
     receipt["rust_tests_mode"] = args.rust_tests_mode
+    core_test_args = rust_test_arguments(output, args.rust_tests_mode)
+    core_test_args[core_test_args.index("--target-dir") + 1] += "-core"
+    phase("core-notebook-tests", [str(WRAPPER), "--workdir", str(ROOT), *core_test_args,
+                                  "-p", "spur-graph", "--no-default-features",
+                                  "extract::notebook"], dict(rust_test_env, SPUR_SYNC_FULL="1"))
     phase("rust-tests", [*rust_args, *rust_test_arguments(output, args.rust_tests_mode)], rust_test_env)
     phase("native-build", [*rust_args, "build", "--locked", "--release", "--lib", "--examples",
                            "--target", rustc["host"], "--target-dir", str(native_target),

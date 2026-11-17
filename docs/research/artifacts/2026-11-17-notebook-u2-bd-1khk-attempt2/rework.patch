@@ -1,0 +1,248 @@
+diff --git a/crates/spur-graph/src/extract/notebook_symbols.rs b/crates/spur-graph/src/extract/notebook_symbols.rs
+index 16c8425ea..786fd73f4 100644
+--- a/crates/spur-graph/src/extract/notebook_symbols.rs
++++ b/crates/spur-graph/src/extract/notebook_symbols.rs
+@@ -409,6 +409,17 @@ pub fn compare_notebook_sources(
+                     result.status = merge_status(result.status, NotebookStatus::Partial);
+                     result.diagnostics.push(diagnostic(SymbolDiagnosticCode::AmbiguousCellIdentity,
+                         right.first().or(left.first()).copied(), "ambiguous/occurrence-sensitive cell identity: no symbol pairing; before/after inventory retained"));
++                    // Equal ordered normalized inventories establish no cell
++                    // change, even when outputs or JSON representation differ.
++                    // Keep identity uncertainty; do not pair symbols or infer
++                    // identity through edits to this group.
++                    if left
++                        .iter()
++                        .map(|i| &before.cells[*i].cell)
++                        .eq(right.iter().map(|i| &after.cells[*i].cell))
++                    {
++                        continue;
++                    }
+                     for i in left {
+                         cells.push(cell_event(
+                             NotebookCellChangeKind::Deleted,
+diff --git a/crates/spur-graph/src/extract/notebook_symbols_tests.rs b/crates/spur-graph/src/extract/notebook_symbols_tests.rs
+index d259b3838..c3d58085e 100644
+--- a/crates/spur-graph/src/extract/notebook_symbols_tests.rs
++++ b/crates/spur-graph/src/extract/notebook_symbols_tests.rs
+@@ -396,6 +396,221 @@ fn anonymous_edit_is_conservative_and_unknown_language_stays_visible() {
+     assert_eq!(d.symbol_changes.len(), 2);
+ }
+ 
++fn ambiguous_cells(explicit: bool) -> Vec<Value> {
++    let mut cell = code("duplicate", "python", "def f():\n    return 1\n");
++    if !explicit {
++        cell.as_object_mut().unwrap().remove("id");
++    }
++    vec![cell.clone(), cell]
++}
++
++fn assert_ambiguous_inventory(d: &NotebookComparison, expected_symbols: usize) {
++    assert_eq!(d.status, NotebookStatus::Partial);
++    assert!(d
++        .diagnostics
++        .iter()
++        .any(|e| e.code == SymbolDiagnosticCode::AmbiguousCellIdentity));
++    for (side, doc) in [
++        (NotebookSide::Before, d.before.as_ref().unwrap()),
++        (NotebookSide::After, d.after.as_ref().unwrap()),
++    ] {
++        assert_eq!(doc.status, NotebookStatus::Partial);
++        assert_eq!(count(doc), expected_symbols);
++        assert!(d.diagnostics.iter().any(|e| e.side == Some(side)
++            && matches!(
++                e.code,
++                SymbolDiagnosticCode::Normalization(
++                    NotebookDiagnosticCode::RepeatedAnonymousSource
++                        | NotebookDiagnosticCode::DuplicateEffectiveId
++                )
++            )));
++        let mut ids = HashSet::new();
++        for symbol in doc.cells.iter().flat_map(|c| &c.symbols) {
++            assert!(ids.insert(&symbol.id));
++            assert!(!resolve(doc, &symbol.source_ref).is_empty());
++        }
++    }
++}
++
++fn ambiguous_noop(explicit: bool) {
++    let input = notebook(ambiguous_cells(explicit));
++    let d = compare(&input, &input);
++    assert_ambiguous_inventory(&d, 2);
++    assert!(d.symbol_changes.is_empty());
++    assert!(d.document_changes.is_empty());
++    assert_eq!(
++        d.cell_changes.len(),
++        0,
++        "unchanged ambiguous inventory must not manufacture cell D/A"
++    );
++}
++
++#[test]
++fn ambiguous_group_repeated_anonymous_noop() {
++    ambiguous_noop(false);
++}
++
++#[test]
++fn ambiguous_group_duplicate_explicit_noop() {
++    ambiguous_noop(true);
++}
++
++fn ambiguous_output_only(explicit: bool) {
++    let before = notebook(ambiguous_cells(explicit));
++    let mut after: Value = serde_json::from_slice(&before).unwrap();
++    after["cells"][0]["outputs"] = json!([{"output_type":"stream","text":"changed"}]);
++    after["cells"][1]["execution_count"] = json!(17);
++    // Source string/list and JSON formatting preserve the decoded inventory.
++    after["cells"][1]["source"] = json!(["def f():\n", "    return 1\n"]);
++    let after = serde_json::to_vec_pretty(&after).unwrap();
++    let d = compare(&before, &after);
++    assert_ambiguous_inventory(&d, 2);
++    assert_ne!(
++        d.before.as_ref().unwrap().source_sha256,
++        d.after.as_ref().unwrap().source_sha256
++    );
++    assert!(d.symbol_changes.is_empty());
++    assert!(d.document_changes.is_empty());
++    assert_eq!(
++        d.cell_changes.len(),
++        0,
++        "output-only edits must not manufacture ambiguous-cell D/A"
++    );
++}
++
++#[test]
++fn ambiguous_group_repeated_anonymous_output_only() {
++    ambiguous_output_only(false);
++}
++
++#[test]
++fn ambiguous_group_duplicate_explicit_output_only() {
++    ambiguous_output_only(true);
++}
++
++fn ambiguous_alongside_stable_edit(explicit: bool) {
++    let mut cells = ambiguous_cells(explicit);
++    cells.push(code(
++        "stable",
++        "rust",
++        ":dep serde = \"1\"\nfn g() -> u32 { 1 }\n",
++    ));
++    let before = notebook(cells);
++    let mut after: Value = serde_json::from_slice(&before).unwrap();
++    after["cells"][2]["source"] = json!(":dep serde = \"1.0\"\nfn g() -> u32 { 2 }\n");
++    after["cells"][2]["metadata"]["profile"] = json!("saved");
++    after["metadata"] = json!({"profile":"saved"});
++    let after = serde_json::to_vec(&after).unwrap();
++    let d = compare(&before, &after);
++    assert_ambiguous_inventory(&d, 3);
++    assert_eq!(d.symbol_changes.len(), 1);
++    let change = &d.symbol_changes[0];
++    assert_eq!(change.kind, NotebookSymbolChangeKind::Modified);
++    for (doc, symbol, expected) in [
++        (
++            d.before.as_ref().unwrap(),
++            change.before.as_ref().unwrap(),
++            "fn g() -> u32 { 1 }",
++        ),
++        (
++            d.after.as_ref().unwrap(),
++            change.after.as_ref().unwrap(),
++            "fn g() -> u32 { 2 }",
++        ),
++    ] {
++        assert_eq!(symbol.source_ref.cell_id, "stable");
++        assert_eq!(resolve(doc, &symbol.source_ref), expected);
++    }
++    assert_eq!(
++        d.cell_changes.len(),
++        3,
++        "only genuine stable-cell events survive"
++    );
++    for kind in [
++        NotebookCellChangeKind::SourceChanged,
++        NotebookCellChangeKind::MetadataChanged,
++        NotebookCellChangeKind::DependencyDirectivesChanged,
++    ] {
++        assert!(cell_event(&d, kind));
++    }
++    for change in &d.cell_changes {
++        assert_eq!(change.before.as_ref().unwrap().cell_id, "stable");
++        assert_eq!(change.after.as_ref().unwrap().cell_id, "stable");
++    }
++    assert_eq!(d.document_changes.len(), 1);
++    assert_eq!(
++        d.document_changes[0].kind,
++        NotebookDocumentChangeKind::MetadataChanged
++    );
++}
++
++#[test]
++fn ambiguous_group_repeated_anonymous_preserves_independent_edit() {
++    ambiguous_alongside_stable_edit(false);
++}
++
++#[test]
++fn ambiguous_group_duplicate_explicit_preserves_independent_edit() {
++    ambiguous_alongside_stable_edit(true);
++}
++
++#[test]
++fn ambiguous_group_actual_edits_keep_conservative_cell_events() {
++    for explicit in [false, true] {
++        let mut cells = ambiguous_cells(explicit);
++        // Distinguishable duplicate explicit sources also permit a real reorder witness.
++        if explicit {
++            cells[1]["source"] = json!("def g():\n    return 2\n");
++        }
++        let before = notebook(cells);
++        for edit in [
++            "source", "metadata", "language", "type", "remove", "add", "move",
++        ] {
++            let mut after: Value = serde_json::from_slice(&before).unwrap();
++            match edit {
++                "source" => after["cells"][0]["source"] = json!("def f():\n    return 3\n"),
++                "metadata" => after["cells"][0]["metadata"]["profile"] = json!("saved"),
++                "language" => {
++                    after["cells"][0]["metadata"]["spur"]["code_type"] = json!("javascript")
++                }
++                "type" => after["cells"][0]["cell_type"] = json!("raw"),
++                "remove" => {
++                    after["cells"].as_array_mut().unwrap().pop();
++                }
++                "add" => {
++                    let cell = after["cells"][0].clone();
++                    after["cells"].as_array_mut().unwrap().push(cell);
++                }
++                "move" => after["cells"]
++                    .as_array_mut()
++                    .unwrap()
++                    .insert(0, code("prefix", "rust", "")),
++                _ => unreachable!(),
++            }
++            let d = compare(&before, &serde_json::to_vec(&after).unwrap());
++            assert_eq!(d.status, NotebookStatus::Partial, "{explicit}/{edit}");
++            assert!(
++                cell_event(&d, NotebookCellChangeKind::Deleted),
++                "{explicit}/{edit}"
++            );
++            assert!(
++                cell_event(&d, NotebookCellChangeKind::Added),
++                "{explicit}/{edit}"
++            );
++        }
++        if explicit {
++            let mut after: Value = serde_json::from_slice(&before).unwrap();
++            after["cells"].as_array_mut().unwrap().swap(0, 1);
++            let d = compare(&before, &serde_json::to_vec(&after).unwrap());
++            assert_eq!(
++                d.cell_changes.len(),
++                4,
++                "ambiguous reorder remains conservative"
++            );
++        }
++    }
++}
++
+ #[test]
+ fn add_delete_and_notebook_rename_keep_exact_paths_and_absent_sides() {
+     let a = one("fn target() {}\n");

@@ -1,0 +1,72 @@
+warning: function `file_oid_match_after_first_stat` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:839:19
+    |
+839 |     pub(super) fn file_oid_match_after_first_stat(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `as_bool` is never used
+   --> crates/spur-graph/src/mcp/mod.rs:908:12
+    |
+907 |     impl FileOidMatch {
+    |     ----------------- method in this implementation
+908 |         fn as_bool(&self) -> Option<bool> {
+    |            ^^^^^^^
+
+warning: `spur-graph` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized] target(s) in 0.22s
+     Running unittests src/lib.rs (/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/deps/spur_graph-3954235ff8e353b9)
+
+running 48 tests
+test git_walk::tests::cache_telemetry_counts_failures_without_retaining_payload ... ok
+test git_walk::tests::cache_telemetry_is_disabled_by_default_and_retains_no_ghost_keys ... ok
+test git_walk::tests::cache_telemetry_tracks_payload_bytes_and_eviction ... ok
+test git_walk::tests::cache_telemetry_distinguishes_cold_hit_and_post_eviction_reparse ... ok
+test git_walk::tests::cache_telemetry_records_same_key_lock_wait_and_initialization_time ... ok
+test git_walk::tests::fail_closed_on_missing_target_ref ... ok
+test git_walk::tests::fail_closed_on_shallow_clone ... ok
+test git_walk::tests::cat_file_batch_reads_multiple_blobs_and_reports_missing ... ok
+test git_walk::tests::file_diff_initial_commit_marks_all_added ... ok
+test git_walk::tests::ordinal_reducer_buffers_out_of_order_results_until_gap_closes ... ok
+test git_walk::tests::binary_blob_downgrades_to_file_level_and_logs ... ok
+test git_walk::tests::parse_cache_budget_accepts_zero_and_u64_values_and_rejects_invalid_input ... ok
+test git_walk::tests::ordinal_reducer_matches_normalized_serial_application ... ok
+test git_walk::tests::parse_raw_diff_handles_copy_status_like_rename ... ok
+test git_walk::tests::retained_tier_evicts_oversized_entries_but_keeps_unreduced_entries ... ok
+test git_walk::tests::retained_tier_failed_initialization_releases_every_accounted_byte ... ok
+test git_walk::tests::retained_tier_initializer_can_reenter_cache_state_without_deadlock ... ok
+test git_walk::tests::retained_tier_reuses_an_eligible_entry_without_reinitializing ... ok
+test git_walk::tests::retained_tier_same_key_initialization_remains_single_flight ... ok
+test git_walk::tests::retained_tier_ties_are_independent_of_hashmap_and_insertion_order ... ok
+test git_walk::tests::retained_tier_tracks_exact_bytes_with_telemetry_off_and_on ... ok
+test git_walk::tests::retained_tier_zero_budget_evicts_successful_empty_entries ... ok
+test git_walk::tests::shared_parse_cache_does_not_retain_parse_failures ... ok
+test git_walk::tests::shared_parse_cache_evicts_only_fully_reduced_ordinals ... ok
+test git_walk::tests::shared_parse_cache_keeps_unreduced_concurrent_access ... ok
+test git_walk::tests::shared_parse_cache_separates_languages_for_same_blob_oid ... ok
+test git_walk::tests::sliding_window_bounds_every_occupancy_class_when_ordinal_zero_stalls ... ok
+test git_walk::tests::file_diff_rename_detected ... ok
+test git_walk::tests::gitlink_emits_file_change_no_recurse ... ok
+test git_walk::tests::gix_open_ignores_replace_refs ... ok
+test git_walk::tests::force_push_invalidates_and_rewalks_diverged_range ... ok
+test git_walk::tests::missing_blob_fails_closed_with_named_oid ... ok
+test git_walk::tests::snapshot_refs_returns_head_tip_when_detached ... ok
+test git_walk::tests::tier2_jaccard_matches_preserves_matches_and_ambiguity_diagnostics ... ok
+test git_walk::tests::snapshot_refs_returns_main_tip ... ok
+test git_walk::tests::non_utf8_path_does_not_panic ... ok
+test git_walk::tests::merge_collision_emits_added_and_keeps_deleted ... ok
+test git_walk::tests::worker_pool_forces_out_of_order_completion_but_reduces_deterministically ... ok
+test git_walk::tests::parse_cache_dedups_repeated_blob_oids ... ok
+test git_walk::tests::symbol_diff_classifies_added_modified_deleted ... ok
+test git_walk::tests::symbol_diff_marks_byte_start_shift_as_modified ... ok
+test git_walk::tests::tier1_file_rename_inheritance_matches_same_name_kind ... ok
+test git_walk::tests::tier3_ambiguous_falls_back_to_added_deleted ... ok
+test git_walk::tests::tier2_jaccard_matches_renamed_body_similar ... ok
+test git_walk::tests::worker_pool_joins_workers_before_reducer_panic_escapes ... ok
+test git_walk::tests::worker_failure_cancels_queued_work_and_joins_every_worker ... ok
+test git_walk::tests::full_walk_parse_cache_peak_is_bounded_by_admitted_active_work ... ok
+test git_walk::tests::temporal_jobs_1_2_4_8_match_reference_for_every_walk_strategy ... ok
+
+test result: ok. 48 passed; 0 failed; 0 ignored; 0 measured; 586 filtered out; finished in 2.74s
+

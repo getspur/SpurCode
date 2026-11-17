@@ -1,0 +1,27 @@
+
+running 4 tests
+test file_facts::diagnostic_tests::empty_facts_retains_native_payload_and_empty_source_takes_precedence ... ok
+test file_facts::diagnostic_tests::native_row_errors_keep_diagnostics_and_internal_errors_propagate ... ok
+test file_facts::diagnostic_tests::invalid_notebook_inventory_keeps_core_diagnostic ... FAILED
+test file_facts::diagnostic_tests::malformed_notebook_json_keeps_core_diagnostic ... FAILED
+
+failures:
+
+---- file_facts::diagnostic_tests::invalid_notebook_inventory_keeps_core_diagnostic stdout ----
+
+thread 'file_facts::diagnostic_tests::invalid_notebook_inventory_keeps_core_diagnostic' (245316748) panicked at src/file_facts.rs:862:18:
+known core notebook input error must retain row diagnostics: Error { code: RuntimeInternal, message: "spur_graph_file_facts_result: extraction failed: invalid .ipynb notebook inventory: [(None, InvalidCells)]" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- file_facts::diagnostic_tests::malformed_notebook_json_keeps_core_diagnostic stdout ----
+
+thread 'file_facts::diagnostic_tests::malformed_notebook_json_keeps_core_diagnostic' (245316749) panicked at src/file_facts.rs:862:18:
+known core notebook input error must retain row diagnostics: Error { code: RuntimeInternal, message: "spur_graph_file_facts_result: extraction failed: parse .ipynb JSON: [(None, InvalidJson)]" }
+
+
+failures:
+    file_facts::diagnostic_tests::invalid_notebook_inventory_keeps_core_diagnostic
+    file_facts::diagnostic_tests::malformed_notebook_json_keeps_core_diagnostic
+
+test result: FAILED. 2 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

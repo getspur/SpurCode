@@ -62,7 +62,8 @@ class AppConsumerTests(unittest.TestCase):
     def test_manifest_binds_snapshot_schema_source_runtime_and_artifact(self):
         m = self.run_consumer()
         self.assertEqual(m['status'], 'complete')
-        self.assertEqual(m['contract_version'], 1)
+        self.assertEqual(m['contract_version'], 2)
+        self.assertEqual(m['notebook_contract_version'], 1)
         self.assertEqual(m['artifact'], self.artifact)
         self.assertEqual(m['artifact']['binary']['sha256'],
                          hashlib.sha256(self.package.read_bytes()).hexdigest())
@@ -93,7 +94,8 @@ class AppConsumerTests(unittest.TestCase):
         self.assertEqual(first['replay']['missing_keys'], 0)
         self.assertTrue(first['replay']['tables_unchanged'])
         tables = {'file_facts_' + n for n in ('cache', 'nodes', 'edges', 'spans',
-                  'macro_invocations', 'macro_scopes', 'occurrences')} | {'sources', 'explore', 'review'}
+                  'macro_invocations', 'macro_scopes', 'occurrences')} | {
+                      'sources', 'explore', 'review', 'notebook_explore', 'notebook_review'}
         self.assertEqual(set(first['tables']), tables)
         with duckdb.connect() as c:
             for table, item in first['tables'].items():
@@ -343,6 +345,330 @@ m.run_consumer(sys.argv[2],sys.argv[3],sys.argv[4],expected_extractor_id=sys.arg
                 except ProcessLookupError:
                     pass
         self.assertEqual(self.run_consumer()['status'], 'complete')
+
+    def notebook_fixture(self):
+        from test_notebook import code, notebook
+        left = [code(source=':dep serde = "1" # café\r\nfn helper() -> i32 { 1 }\r\n'),
+                code('p', 'python', ['def alpha():\n', '    return 1\n']),
+                code('j', 'javascript', 'function beta() { return 2; }'),
+                code('i', 'python', 'import os\n'), code('e', 'rust', ''),
+                dict(id='m', cell_type='markdown', metadata={}, source='# hi')]
+        right = copy.deepcopy(left)
+        right[0]['source'] = right[0]['source'].replace('"1"', '"2"')
+        right[1]['metadata']['tag'] = 'changed'
+        right = [right[1], right[0], *right[2:], code('added')]
+        uncertain = [code('unknown', 'not-a-language'), dict(code('anon'), id=None),
+                     code('command', source=':load external.rs\nfn hidden() {}')]
+        uncertain[1].pop('id')
+        return self.frozen_fixture([
+            ('base', {'mixed.ipynb': notebook(left, {'profile': 'before'}),
+                      'partial.ipynb': notebook(uncertain), 'null.ipynb': None}),
+            ('head', {'mixed.ipynb': notebook(right, {'profile': 'after'}),
+                      'partial.ipynb': notebook(uncertain), 'null.ipynb': None})],
+            [dict(pair_id='edit', base_snapshot_id='base', head_snapshot_id='head',
+                  logical_path='mixed.ipynb', old_path='mixed.ipynb', kind='M'),
+             dict(pair_id='partial-noop', base_snapshot_id='base', head_snapshot_id='head',
+                  logical_path='partial.ipynb', old_path='partial.ipynb', kind='M')])
+
+    def frozen_fixture(self, versions, pairs):
+        fixture = dict(format_version=1, source_identity_scheme='sha256:utf8-v1',
+                       snapshots=[], lineage=[], pairs=pairs)
+        for sid, files in versions:
+            sources = []
+            for path, source in files.items():
+                blob = 'null-source' if source is None else 'sha256:' + hashlib.sha256(source.encode()).hexdigest()
+                sources.append(dict(logical_path=path, source=source, blob_oid=blob))
+                fixture['lineage'].append(dict(snapshot_id=sid, occurrence_id=sid + path,
+                                              logical_path=path, blob_oid=blob))
+            fixture['snapshots'].append(dict(snapshot_id=sid, repository='frozen-notebook',
+                commit_oid='caller-' + sid, parent_oid=None if sid == 'base' else 'caller-base', sources=sources))
+        return fixture
+
+    def consume_notebooks(self, fixture):
+        path = Path(self.tmp.name) / 'notebooks.json'
+        path.write_text(json.dumps(fixture, ensure_ascii=False))
+        try:
+            return self.app.run_consumer(path, self.output, self.package,
+                expected_extractor_id=self.artifact['extractor_id'], timeout=60)
+        except self.app.ChildFailure as error:
+            self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+
+    def assert_notebook_tables(self, m):
+        from test_notebook import DOCUMENT, COMPARISON
+        self.assertEqual(m['contract_version'], 2)
+        self.assertEqual(m['notebook_contract_version'], 1)
+        self.assertEqual(dict(m['tables']['notebook_explore']['schema'])['document'], DOCUMENT)
+        self.assertEqual(dict(m['tables']['notebook_review']['schema'])['result'], COMPARISON)
+        for table in ('notebook_explore', 'notebook_review'):
+            item = m['tables'][table]
+            path = self.output / item['path']
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), item['sha256'])
+            with duckdb.connect() as c:
+                schema = c.execute('DESCRIBE SELECT * FROM read_parquet(?)', [str(path)]).fetchall()
+                self.assertEqual([[v[0], v[1]] for v in schema], item['schema'])
+
+    def test_notebook_inventory_refs_and_coverage_survive_native_child(self):
+        m = self.consume_notebooks(self.notebook_fixture())
+        self.assert_notebook_tables(m)
+        rows = {r['logical_path']: r for r in self.rows(m, 'notebook_explore', 'WHERE snapshot_id=?', ['base'])}
+        row = rows['mixed.ipynb']
+        self.assertEqual(row['repository'], 'frozen-notebook')
+        self.assertEqual(row['commit_oid'], 'caller-base')
+        self.assertEqual(row['extractor_sha'], m['extractor_id'])
+        self.assertEqual('sha256:' + row['document']['source_sha256'], row['blob_oid'])
+        cells = {c['id']: c for c in row['document']['cells']}
+        self.assertEqual(set(cells), {'r', 'p', 'j', 'i', 'e', 'm'})
+        self.assertEqual(cells['e']['source']['original'], '')
+        self.assertEqual(cells['i']['symbols'], [])
+        self.assertEqual(cells['r']['source']['policy'], 'evcxr-leading-dep-mask-v1')
+        self.assertNotEqual(cells['r']['source']['original_sha256'], cells['r']['source']['analysis_sha256'])
+        self.assertEqual(rows['partial.ipynb']['status'], 'partial')
+        partial = rows['partial.ipynb']['document']
+        self.assertEqual(len(partial['cells']), 3)
+        self.assertTrue(partial['diagnostics'] or any(c['diagnostics'] for c in partial['cells']))
+        self.assertTrue(any(c['identity_quality'] == 'source_derived' for c in partial['cells']))
+        self.assertEqual(rows['null.ipynb']['status'], 'null_input')
+        self.assertIsNone(rows['null.ipynb']['document'])
+        self.assertFalse(m['snapshots']['base']['coverage']['extraction_complete'])
+        self.assertEqual(m['snapshots']['base']['coverage']['notebook_status_counts'],
+                         {'complete': 1, 'partial': 1, 'null_input': 1})
+        ref = cells['r']['symbols'][0]['source_ref']
+        self.assertEqual(ref['line_start'], 2)
+        text = self.app.read_notebook_source(self.output, 'base', row['blob_oid'], ref)
+        self.assertIn('fn helper()', text)
+
+    def test_notebook_review_preserves_structure_config_and_metadata(self):
+        m = self.consume_notebooks(self.notebook_fixture())
+        self.assert_notebook_tables(m)
+        reviews = {r['pair_id']: r for r in self.rows(m, 'notebook_review')}
+        r = reviews['edit']
+        self.assertEqual((r['base_snapshot_id'], r['head_snapshot_id']), ('base', 'head'))
+        self.assertEqual((r['base_commit_oid'], r['head_commit_oid']), ('caller-base', 'caller-head'))
+        self.assertEqual('sha256:' + r['result']['before']['source_sha256'], r['old_blob_oid'])
+        self.assertEqual('sha256:' + r['result']['after']['source_sha256'], r['new_blob_oid'])
+        kinds = {c['kind'] for c in r['result']['cell_changes']}
+        self.assertTrue({'added', 'moved', 'dependency_directives_changed', 'metadata_changed'} <= kinds, kinds)
+        self.assertTrue(r['result']['document_changes'])
+        self.assertEqual(reviews['partial-noop']['status'], 'partial')
+        self.assertEqual(reviews['partial-noop']['result']['symbol_changes'], [])
+        self.assertEqual(reviews['partial-noop']['result']['cell_changes'], [])
+        for change in r['result']['symbol_changes']:
+            for side, sid, blob in [('before', 'base', r['old_blob_oid']), ('after', 'head', r['new_blob_oid'])]:
+                if change[side]:
+                    self.assertTrue(self.app.read_notebook_source(self.output, sid, blob, change[side]['source_ref']))
+        self.assertEqual(m['review_coverage']['notebook_pair_rows'], 2)
+        self.assertEqual(self.rows(m, 'review'), [])
+
+    def test_notebook_source_context_and_historical_run_guards(self):
+        self.assertTrue(callable(getattr(self.app, 'read_notebook_source', None)), 'guarded source reader required')
+        first = self.consume_notebooks(self.notebook_fixture())
+        row = next(r for r in self.rows(first, 'notebook_explore') if r['snapshot_id'] == 'base' and r['logical_path'] == 'mixed.ipynb')
+        ref = row['document']['cells'][0]['symbols'][0]['source_ref']
+        for key, value in [('notebook_source_sha256', 'wrong'), ('cell_source_sha256', 'wrong'),
+                           ('cell_id', 'wrong'), ('cell_language', 'Python'), ('coordinate_space', 'raw_json'),
+                           ('cell_ordinal', 999), ('byte_start', -1), ('line_start', 999)]:
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.app.read_notebook_source(self.output, 'base', row['blob_oid'], dict(ref, **{key: value}))
+        with self.assertRaises(ValueError):
+            self.app.read_notebook_source(self.output, 'head', row['blob_oid'], ref)
+        second_fixture = self.notebook_fixture()
+        second_fixture['snapshots'] = second_fixture['snapshots'][1:]
+        second_fixture['lineage'] = [r for r in second_fixture['lineage'] if r['snapshot_id'] == 'head']
+        second_fixture['pairs'] = []
+        self.consume_notebooks(second_fixture)
+        with self.assertRaises(ValueError):
+            self.app.read_notebook_source(self.output, 'base', row['blob_oid'], ref)
+        self.assertIn('fn helper()', self.app.read_notebook_source(self.output, 'base', row['blob_oid'], ref, run_id=first['run_id']))
+        self.assertEqual(self.app.read_result(self.output, 'base', run_id=first['run_id'])['manifest'], first)
+
+    def test_notebook_real_frozen_inputs_through_consumer_and_original_anchors(self):
+        root = CRATE.parents[1] / 'docs/research/artifacts'
+        inputs = json.loads((root / '2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json').read_text())
+        anchors = json.loads((root / '2026-11-17-notebook-symbol-diagnosis-bd-nb4c/frozen-cell-model-input.json').read_text())['anchors']
+        versions = []
+        pairs = []
+        for snapshot in inputs['snapshots']:
+            self.assertEqual(hashlib.sha256(snapshot['source'].encode()).hexdigest(), snapshot['source_sha256'])
+            sid, path = snapshot['snapshot_id'], snapshot['notebook_path']
+            versions.append((sid, {path: snapshot['source']}))
+            pairs.append(dict(pair_id=sid + '-noop', base_snapshot_id=sid, head_snapshot_id=sid,
+                              logical_path=path, old_path=path, kind='M'))
+        pairs.append(dict(pair_id='real-change', base_snapshot_id=versions[0][0], head_snapshot_id=versions[1][0],
+            logical_path=inputs['snapshots'][1]['notebook_path'], old_path=inputs['snapshots'][0]['notebook_path'], kind='M'))
+        m = self.consume_notebooks(self.frozen_fixture(versions, pairs))
+        self.assert_notebook_tables(m)
+        checked = 0
+        for i, row in enumerate(sorted(self.rows(m, 'notebook_explore'), key=lambda r: [v[0] for v in versions].index(r['snapshot_id']))):
+            symbols = [s for c in row['document']['cells'] for s in c['symbols']]
+            self.assertEqual(len(symbols), [46, 24][i])
+            self.assertEqual(sum(s['symbol']['symbol_kind'] == 'function' for s in symbols), [17, 11][i])
+            for symbol in symbols:
+                self.assertTrue(self.app.read_notebook_source(self.output, row['snapshot_id'], row['blob_oid'], symbol['source_ref']))
+            for anchor in anchors:
+                if anchor['snapshot_id'] == row['snapshot_id']:
+                    matching = [s for s in symbols if s['symbol']['entity_name'] == anchor['entity_name'] and s['source_ref']['cell_id'] == anchor['cell_id']]
+                    self.assertEqual(len(matching), 1)
+                    for key in ('byte_start', 'byte_end', 'line_start', 'line_end'):
+                        self.assertEqual(matching[0]['source_ref'][key], anchor[key])
+                    checked += 1
+        self.assertEqual(checked, 28)
+        for review in self.rows(m, 'notebook_review'):
+            if review['pair_id'].endswith('-noop'):
+                self.assertEqual(review['result']['symbol_changes'], [])
+                self.assertEqual(review['result']['cell_changes'], [])
+            else:
+                self.assertTrue(review['result']['symbol_changes'])
+                self.assertTrue(review['result']['cell_changes'])
+
+    def test_review_nullable_absent_ordinary_pairs_are_retained(self):
+        fixture = self.frozen_fixture([
+            ('base', {'deleted.rs': 'fn before() {}'}),
+            ('head', {'added.rs': 'fn after() {}'})], [
+                dict(pair_id='added', base_snapshot_id='base', head_snapshot_id='head',
+                     logical_path='added.rs', old_path=None, kind='A'),
+                dict(pair_id='deleted', base_snapshot_id='base', head_snapshot_id='head',
+                     logical_path=None, old_path='deleted.rs', kind='D')])
+        m = self.consume_notebooks(fixture)
+        self.assertEqual(m['review_coverage']['pair_rows'], 2)
+        rows = self.rows(m, 'review')
+        self.assertEqual(len(rows), 2, 'every accepted ordinary A/D pair must survive routing')
+        self.assertEqual(self.rows(m, 'notebook_review'), [])
+        for row in rows:
+            pair = next(p for p in fixture['pairs'] if p['pair_id'] == row['pair_id'])
+            self.assertEqual({k: row[k] for k in pair}, pair)
+            self.assertEqual(row['status'], 'ok')
+            self.assertIsNotNone(row['result'], 'ok must carry the native comparison')
+            self.assertEqual([c['change_kind'] for c in row['result']['changes']],
+                             ['added' if pair['kind'] == 'A' else 'deleted'])
+
+    def test_review_nullable_absent_notebook_pairs_are_retained(self):
+        from test_notebook import notebook
+        fixture = self.frozen_fixture([
+            ('base', {'deleted.IPYNB': notebook()}),
+            ('head', {'added.ipynb': notebook()})], [
+                dict(pair_id='added', base_snapshot_id='base', head_snapshot_id='head',
+                     logical_path='added.ipynb', old_path=None, kind='A'),
+                dict(pair_id='deleted', base_snapshot_id='base', head_snapshot_id='head',
+                     logical_path=None, old_path='deleted.IPYNB', kind='D')])
+        fixture['lineage'] = []
+        m = self.consume_notebooks(fixture)
+        self.assert_notebook_tables(m)
+        self.assertEqual(m['review_coverage']['pair_rows'], 2)
+        self.assertEqual(m['review_coverage']['notebook_pair_rows'], 2)
+        self.assertEqual(m['review_coverage']['notebook_status_counts'], {'complete': 2})
+        rows = self.rows(m, 'notebook_review')
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(self.rows(m, 'review'), [])
+        for row in rows:
+            pair = next(p for p in fixture['pairs'] if p['pair_id'] == row['pair_id'])
+            self.assertEqual({k: row[k] for k in pair}, pair)
+            self.assertEqual(row['status'], 'complete')
+            present, absent, sid, blob = ('after', 'before', 'head', row['new_blob_oid']) if pair['kind'] == 'A' else (
+                'before', 'after', 'base', row['old_blob_oid'])
+            self.assertIsNone(row['result'][absent])
+            self.assertIsNone(row['old_blob_oid'] if pair['kind'] == 'A' else row['new_blob_oid'])
+            document = row['result'][present]
+            self.assertEqual(document['path'], pair['logical_path'] or pair['old_path'])
+            self.assertEqual([c['kind'] for c in row['result']['cell_changes']],
+                             ['added' if pair['kind'] == 'A' else 'deleted'])
+            ref = document['cells'][0]['symbols'][0]['source_ref']
+            self.assertTrue(self.app.read_notebook_source(self.output, sid, blob, ref))
+
+    def test_review_refs_resolve_without_complete_explore_lineage(self):
+        from test_notebook import code, notebook
+        old_source = 'fn f() -> i32 { 1 }'
+        new_source = 'fn f() -> i32 { 2 }'
+        fixture = self.frozen_fixture([
+            ('base', {'old.ipynb': notebook([code(source=old_source)]),
+                      'copy.ipynb': notebook([code(source=new_source)])}),
+            ('head', {'new.ipynb': notebook([code(source=new_source)]),
+                      'copy.ipynb': notebook([code(source=old_source)])})], [
+                dict(pair_id='renamed', base_snapshot_id='base', head_snapshot_id='head',
+                     logical_path='new.ipynb', old_path='old.ipynb', kind='R')])
+        for kind, included in (('M', ()), ('R', ()), ('R', ('base',)), ('R', ('head',))):
+            with self.subTest(kind=kind, lineage=included):
+                current = copy.deepcopy(fixture)
+                current['lineage'] = [r for r in fixture['lineage'] if r['snapshot_id'] in included]
+                if kind == 'M':
+                    current['pairs'][0].update(kind='M', old_path='new.ipynb')
+                    current['snapshots'][0]['sources'][0]['logical_path'] = 'new.ipynb'
+                # Duplicate occurrences must remain occurrences, not source ambiguity.
+                current['lineage'] *= 2
+                m = self.consume_notebooks(current)
+                self.assertEqual(len(self.rows(m, 'notebook_explore')), len(current['lineage']))
+                row = self.rows(m, 'notebook_review')[0]
+                refs = []
+                for side, sid, blob, expected in [('before', 'base', row['old_blob_oid'], old_source),
+                                                 ('after', 'head', row['new_blob_oid'], new_source)]:
+                    ref = row['result'][side]['cells'][0]['symbols'][0]['source_ref']
+                    refs.append((sid, blob, ref, expected))
+                    try:
+                        text = self.app.read_notebook_source(self.output, sid, blob, ref)
+                    except ValueError as error:
+                        self.fail('published review refs must resolve without Explore occurrences: ' + str(error))
+                    self.assertEqual(text, expected)
+                    other_sid = 'head' if sid == 'base' else 'base'
+                    for key, value in [('notebook_path', 'copy.ipynb'), ('notebook_source_sha256', 'wrong'),
+                            ('cell_source_sha256', 'wrong'), ('cell_id', 'wrong'), ('cell_identity_quality', 'wrong'),
+                            ('cell_language', 'Python'), ('coordinate_space', 'raw_json'), ('cell_ordinal', 999),
+                            ('byte_start', -1), ('byte_end', 9999), ('line_start', 999), ('line_end', 999)]:
+                        with self.subTest(side=side, key=key), self.assertRaises(ValueError):
+                            self.app.read_notebook_source(self.output, sid, blob, dict(ref, **{key: value}))
+                    with self.assertRaises(ValueError):
+                        self.app.read_notebook_source(self.output, other_sid, blob, ref)
+                    with self.assertRaises(ValueError):
+                        self.app.read_notebook_source(self.output, sid, 'sha256:wrong', ref)
+                for (sid, blob, ref, _), (_, other_blob, other_ref, _) in (refs, refs[::-1]):
+                    with self.assertRaises(ValueError):
+                        self.app.read_notebook_source(self.output, sid, blob, other_ref)
+                    with self.assertRaises(ValueError):
+                        self.app.read_notebook_source(self.output, sid, other_blob, ref)
+                # A later current run cannot stand in for the requested review's sources.
+                self.run_consumer()
+                for sid, blob, ref, expected in refs:
+                    with self.assertRaises(ValueError):
+                        self.app.read_notebook_source(self.output, sid, blob, ref)
+                    self.assertEqual(self.app.read_notebook_source(self.output, sid, blob, ref,
+                                     run_id=m['run_id']), expected)
+                target = self.output / m['tables']['notebook_review']['path']
+                original = target.read_bytes()
+                target.write_bytes(original + b'corrupt')
+                with self.assertRaisesRegex(ValueError, 'size|checksum'):
+                    self.app.read_notebook_source(self.output, *refs[0][:3], run_id=m['run_id'])
+                target.write_bytes(original)
+                changed = copy.deepcopy(m)
+                changed['notebook_contract_version'] = 999
+                stored = self.output / 'runs' / m['run_id'] / 'manifest.json'
+                stored.write_text(json.dumps(changed))
+                with self.assertRaisesRegex(ValueError, 'contract'):
+                    self.app.read_notebook_source(self.output, *refs[0][:3], run_id=m['run_id'])
+                stored.write_text(json.dumps(m))
+
+    def test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback(self):
+        self.assertTrue(callable(getattr(self.app, 'read_notebook_source', None)), 'guarded source reader required')
+        m = self.run_consumer()
+        def store(value):
+            (self.output / 'current.json').write_text(json.dumps(value))
+            (self.output / 'runs' / m['run_id'] / 'manifest.json').write_text(json.dumps(value))
+        for field in ('contract_version', 'notebook_contract_version'):
+            changed = dict(m, **{field: 999})
+            store(changed)
+            with self.assertRaisesRegex(ValueError, 'contract|unsupported'):
+                self.app.read_result(self.output, 'base')
+        changed = copy.deepcopy(m)
+        del changed['tables']['notebook_explore']
+        store(changed)
+        with self.assertRaisesRegex(ValueError, 'contract|table'):
+            self.app.read_result(self.output, 'base')
+        legacy = copy.deepcopy(m)
+        legacy['contract_version'] = 1
+        legacy.pop('notebook_contract_version')
+        legacy['tables'].pop('notebook_explore')
+        legacy['tables'].pop('notebook_review')
+        store(legacy)
+        self.assertEqual(self.app.read_result(self.output, 'base')['manifest'], legacy)
+        with self.assertRaisesRegex(ValueError, 'contract|notebook'):
+            self.app.read_notebook_source(self.output, 'base', 'x', {})
 
 
 if __name__ == '__main__':

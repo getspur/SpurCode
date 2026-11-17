@@ -1,0 +1,14 @@
+test_release_runs_focused_core_notebook_tests_before_adapter_tests (test_release_driver.SourceStabilityTests.test_release_runs_focused_core_notebook_tests_before_adapter_tests) ... FAIL
+
+======================================================================
+FAIL: test_release_runs_focused_core_notebook_tests_before_adapter_tests (test_release_driver.SourceStabilityTests.test_release_runs_focused_core_notebook_tests_before_adapter_tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/b4656805-0edb-40cd-a87d-71c696abd018/crates/spur-graph-duckdb/tests/test_release_driver.py", line 183, in test_release_runs_focused_core_notebook_tests_before_adapter_tests
+    self.assertEqual(env.get("SPUR_SYNC_FULL"), "1",
+AssertionError: None != '1' : core include_str fixtures under docs must reach the remote compiler
+
+----------------------------------------------------------------------
+Ran 1 test in 0.901s
+
+FAILED (failures=1)

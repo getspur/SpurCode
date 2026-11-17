@@ -1,0 +1,25 @@
+{
+  "command": "SPUR_NO_LOCAL_FALLBACK=1 scripts/spur-cargo test -p spur-graph --no-default-features --lib extract::notebook",
+  "argv": [
+    "scripts/spur-cargo",
+    "test",
+    "-p",
+    "spur-graph",
+    "--no-default-features",
+    "--lib",
+    "extract::notebook"
+  ],
+  "environment": {
+    "SPUR_NO_LOCAL_FALLBACK": "1"
+  },
+  "head": "52e14c9cde58f0650bacb72daa04b705fd3c17da",
+  "source_sha256": {
+    "crates/spur-graph/src/extract/mod.rs": "30cc624c5a13af4fbbf700b6c4974070d7ba317ccfa595d379786e915415eca3",
+    "crates/spur-graph/src/extract/notebook.rs": "a00241a700b296ebb26d766c98082a19e7f57157872c081a7c72f864b6494c5e",
+    "crates/spur-graph/src/extract/notebook_model.rs": "2b6359f3d34c6e1ce6ad0d5f8ef2dbc23f5dab4de9a58aec664476ff97035095"
+  },
+  "started_utc": "2026-11-17T05:20:11.654022+00:00",
+  "note": "Network-enabled retry after sandbox remote infrastructure exit 200; no local test execution.",
+  "exit": 200,
+  "ended_utc": "2026-11-17T05:20:36.444981+00:00"
+}

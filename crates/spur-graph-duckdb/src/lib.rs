@@ -10,6 +10,7 @@
 
 mod file_facts;
 mod metadata;
+mod notebook;
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -174,6 +175,8 @@ impl ScalarCallbacks for MatchSymbols {
                 rows.push(None);
                 continue;
             };
+            reject_legacy_notebook(path, "spur_graph_notebook_changes")?;
+            reject_legacy_notebook(old_path, "spur_graph_notebook_changes")?;
             let kind = match kind {
                 "A" => FileChangeKind::Added,
                 "M" => FileChangeKind::Modified,
@@ -318,6 +321,7 @@ impl ScalarCallbacks for ParseSymbols {
                 rows.push(None);
                 continue;
             };
+            reject_legacy_notebook(path, "spur_graph_notebook_symbols")?;
             let path = Path::new(path);
             let language = Language::from_path(path).ok_or_else(|| {
                 Error::invalid_input(format!("unsupported language for path: {}", path.display()))
@@ -379,6 +383,7 @@ impl ScalarCallbacks for ParseSymbols {
 pub fn entrypoint(extension: &Extension) -> Result<()> {
     metadata::register(extension)?;
     file_facts::register(extension)?;
+    notebook::register(extension)?;
     ScalarFunctionBuilder::new(
         "spur_graph_symbols",
         SignatureBuilder::new()
@@ -387,7 +392,7 @@ pub fn entrypoint(extension: &Extension) -> Result<()> {
             .return_type(List::<SymbolFact>::logical_type(extension)?)
             .documentation(
                 FunctionDocumentationBuilder::new()
-                    .description("Extract SPUR symbol facts from source text using the language of its logical path")
+                    .description("Extract SPUR symbol facts from ordinary source text using its logical path; notebooks require spur_graph_notebook_symbols for cell coverage and original-source refs")
                     .add_example("Parse Rust source", "SELECT unnest(spur_graph_symbols('input.rs', 'pub fn alpha() {}'), recursive := true)")
                     .add_category("spur_graph"),
             ),
@@ -407,10 +412,19 @@ pub fn entrypoint(extension: &Extension) -> Result<()> {
             .return_type(SymbolDiff::logical_type(extension)?)
             .documentation(
                 FunctionDocumentationBuilder::new()
-                    .description("Match ordered extracted symbol facts for one file-change pair; project commit and parent lineage separately")
+                    .description("Match ordered extracted ordinary-file symbols; notebooks require spur_graph_notebook_changes for cell-aware comparison and coverage; project commit and parent lineage separately")
                     .add_category("spur_graph"),
             ),
         MatchSymbols,
     )
     .register(extension)
+}
+
+fn reject_legacy_notebook(path: &str, api: &str) -> Result<()> {
+    if Language::from_path(Path::new(path)) == Some(Language::JupyterNotebook) {
+        return Err(Error::invalid_input(format!(
+            "notebook paths require {api}; pass original notebook source text to retain cell identities, coverage diagnostics and source references"
+        )));
+    }
+    Ok(())
 }

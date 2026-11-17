@@ -52,11 +52,11 @@ numeric and textual fact IDs by the full input key. `stable_symbol_id`,
 `stable_key`, `source_oid`, anchors and macro candidate labels retain native
 meaning; none substitutes for a complete repository/snapshot identity.
 
-## Five public functions and examples
+## Seven public functions and examples
 
 Load a verified local package in a **fresh** connection configured with
 `allow_unsigned_extensions = true` (CLI: `duckdb -unsigned`). Use the environment
-based load example in the [README](../README.md#all-five-functions). Do not
+based load example in the [README](../README.md#all-seven-functions). Do not
 hot-load a different binary over an already loaded extension.
 
 ```sql
@@ -76,6 +76,12 @@ SELECT spur_graph_file_facts_result('bad.unknown', 'text');
 SELECT spur_graph_symbol_changes('src/a.rs', 'src/a.rs', 'M',
     spur_graph_symbols('src/a.rs', 'fn a() { let x = 1; }'),
     spur_graph_symbols('src/a.rs', 'fn a() { let x = 2; }'));
+
+-- 6/7. Pass original JSON, including cell IDs and metadata.
+SELECT spur_graph_notebook_symbols('n.ipynb',
+  '{"metadata":{},"cells":[{"id":"p","cell_type":"code","metadata":{"spur":{"code_type":"python"}},"source":"def f():\n    return 1\n"}]}');
+SELECT spur_graph_notebook_changes('n.ipynb', NULL, 'A', NULL,
+  '{"metadata":{},"cells":[]}');
 ```
 
 `spur_graph_symbols(path VARCHAR, source VARCHAR)` returns `Symbol[]`.
@@ -188,6 +194,211 @@ external constructor have different evidence. Preserve `scope_text`,
 `receiver_text`, `import_path`, `bind_method`, `confidence`, macro resolution
 kind and NULL targets. Local-target percentages are not precision. Explicit
 path/local macro candidates are not proof of compiler binding or expansion.
+
+## Notebook symbols and changes v1
+
+```text
+spur_graph_notebook_symbols(path VARCHAR, source VARCHAR) -> Document
+spur_graph_notebook_changes(path VARCHAR, old_path VARCHAR, kind VARCHAR,
+                            left_source VARCHAR, right_source VARCHAR) -> Comparison
+
+Diagnostic = STRUCT(code VARCHAR, side VARCHAR, cell_ordinal UBIGINT,
+                    byte_start UBIGINT, byte_end UBIGINT, message VARCHAR)
+SourceRef = STRUCT(
+  notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR,
+  cell_ordinal UBIGINT, cell_identity_quality VARCHAR, cell_source_sha256 VARCHAR,
+  cell_language VARCHAR, coordinate_space VARCHAR, byte_start UBIGINT,
+  byte_end UBIGINT, line_start UBIGINT, line_end UBIGINT)
+NotebookSymbol = STRUCT(id VARCHAR, symbol Symbol, source_ref SourceRef)
+Directive = STRUCT("text" VARCHAR, byte_start UBIGINT, byte_end UBIGINT)
+PreparedSource = STRUCT(
+  original VARCHAR, original_sha256 VARCHAR, analysis VARCHAR,
+  analysis_sha256 VARCHAR, "policy" VARCHAR, coordinate_map VARCHAR,
+  directives Directive[])
+Cell = STRUCT(
+  id VARCHAR, identity_quality VARCHAR, ordinal UBIGINT, cell_type VARCHAR,
+  "language" VARCHAR, metadata_json VARCHAR, "source" PreparedSource,
+  status VARCHAR, diagnostics Diagnostic[], symbols NotebookSymbol[])
+Document = STRUCT(
+  contract_version UINTEGER, path VARCHAR, source_sha256 VARCHAR,
+  metadata_json VARCHAR, cells Cell[], status VARCHAR, diagnostics Diagnostic[])
+CellRef = STRUCT(
+  notebook_path VARCHAR, notebook_source_sha256 VARCHAR, cell_id VARCHAR,
+  cell_ordinal UBIGINT, cell_source_sha256 VARCHAR, "language" VARCHAR, cell_type VARCHAR)
+SymbolChange = STRUCT(kind VARCHAR, "before" NotebookSymbol, "after" NotebookSymbol)
+CellChange = STRUCT(kind VARCHAR, "before" CellRef, "after" CellRef)
+DocumentChange = STRUCT(kind VARCHAR, before_path VARCHAR, after_path VARCHAR,
+                       before_metadata_json VARCHAR, after_metadata_json VARCHAR)
+Comparison = STRUCT(
+  contract_version UINTEGER, status VARCHAR, diagnostics Diagnostic[],
+  "before" Document, "after" Document, symbol_changes SymbolChange[],
+  cell_changes CellChange[], document_changes DocumentChange[])
+```
+
+Recursively substitute these ordered aliases to obtain the exact native SQL
+types; the aliases are not installed SQL types. `Symbol` is the ordinary v1 type declared above.
+`[]` means a typed LIST, not a JSON string. Optional values become SQL NULL;
+opaque metadata alone uses `metadata_json` (`null` text differs from SQL NULL).
+Both parents carry `contract_version=1`. The unchanged `Info` STRUCT has no
+notebook fields: discover these APIs' signatures, descriptions and examples
+through `duckdb_functions()`. [test_notebook.py](../tests/test_notebook.py)
+compares the complete expanded native `DESCRIBE` types, including field order,
+unsigned widths and nested lists. Standalone release evidence retains the same
+expanded types and typed Parquet schemas.
+
+| Notebook input | Result |
+|---|---|
+| Symbols: NULL path or source | SQL NULL |
+| Changes: NULL path or kind | SQL NULL |
+| `A` | Absent left source, required right source |
+| `D` | Required left source, absent right source |
+| `M` | Both sources required |
+| `R` or `R100` | Both sources and distinct valid `old_path` required |
+| Non-rename `old_path` | NULL defaults to `path`; a supplied value must equal `path` |
+| Missing required or unexpected present side, blank/NUL path | Typed `invalid`, with explicit diagnostics |
+| Other change kind | Explicit `unsupported_change_kind`, normally `partial`; invalid supplied documents can make the aggregate `invalid` |
+| Malformed JSON; missing/invalid cells, source or type; invalid present metadata/explicit ID | Typed `invalid` with available cell inventory retained |
+| Unsupported language/kernel command or ambiguous identity | Inventory and diagnostics retained; partial coverage |
+| Internal/setup/vector/extractor error | SQL error; never a successful empty coverage result |
+
+A/D absence is SQL NULL, not an empty string or malformed empty notebook.
+Unlike full-facts paths, the core notebook path contract only requires nonblank
+UTF-8 without NUL; the caller owns repository/path policy. Empty/import-only
+code cells, Markdown and raw cells remain in `cells`. Language names in output
+are native variants (`Rust`, `Python`, `Javascript`, etc.). Shared metadata
+precedence drives both graph and symbol routes: a cell's string
+`metadata.spur.code_type` is authoritative (including unknown tokens); otherwise
+the first recognized cell kernelspec, root kernelspec, or root language_info name
+wins. Tokens are case-insensitive: python/python3, rust/evcxr, go/gonb,
+javascript, sql, and mermaid/ns_mermaid. Unknown languages are coverage
+diagnostics. Saved kernel/profile
+metadata is retained without certifying runtime compatibility.
+
+The public Rust entry points are:
+
+```rust
+spur_graph::extract::notebook_model::normalize_notebook(bytes: &[u8])
+    -> NormalizedNotebook;
+spur_graph::extract::notebook_symbols::extract_notebook_symbols(path: &str, bytes: &[u8])
+    -> anyhow::Result<NotebookSymbolDocument>;
+spur_graph::extract::notebook_symbols::compare_notebook_sources(
+    path: &str, old_path: Option<&str>, change_kind: &str,
+    left_source: Option<&[u8]>, right_source: Option<&[u8]>)
+    -> anyhow::Result<NotebookComparison>;
+```
+
+`source_sha256` hashes the exact notebook JSON UTF-8 input. Cell `original` is
+the decoded source string or concatenated string-list, never a concatenation of
+different cells. Cell hashes cover those original UTF-8 bytes. `SourceRef`
+addresses `decoded_code_cell_utf8`: zero-based half-open bytes, one-based lines,
+with each endpoint line computed as one plus the number of preceding LF bytes.
+The end line can name the following line when a range includes a trailing LF.
+These coordinates address neither JSON wrapper offsets nor Unicode character,
+UTF-16 editor or rendered notebook positions. Ordinals are zero-based. Before
+and after refs keep their own notebook hash/path and cell hash, including
+renames. Check hashes and full context before selecting bytes.
+
+Notebook-only Rust preparation uses `evcxr-leading-dep-mask-v1` and the identity
+coordinate map. It accepts leading single-line `:dep name = <TOML dependency>`
+headers, including string versions or inline options containing version/git/path.
+It replaces non-CR/LF header bytes with ASCII spaces, preserving UTF-8 byte
+length and every CRLF boundary. It records original/analysis hashes, directive
+text and ranges. Ordinary source uses `identity-v1`; ordinary `.rs` parsing is
+unchanged. No directives execute and no `:load` target is read. Multiline,
+trailing and non-leading forms, unknown commands, and headers after code or
+comments retain explicit partial diagnostics. The lexical boundary protects
+ordinary/raw strings, comments, lifetimes and Rust type-colon continuations;
+this is bounded preprocessing, not full Evcxr parsing or dependency resolution.
+Leading Python magic/shell prefixes also retain partial diagnostics.
+
+Explicit cell IDs are trimmed. Missing IDs use the existing BLAKE3 decoded-source
+hash with occurrence suffixes. `identity_quality` is `explicit`, `source_derived`
+or `ambiguous`. Anonymous source edits conservatively remove/add cells;
+repeated anonymous sources depend on occurrence order. Effective ID collisions
+and same-cell duplicate symbol matching keys produce partial diagnostics.
+Anonymous limitations may coexist with `complete`; retain diagnostics and
+identity quality as well as status. Public symbol IDs encode notebook and cell
+context without fabricated `.rs`/`.py` paths. Legacy graph identity paths retain
+`<notebook>#cell:<id>` for compatibility and are not a collision-safe public
+symbol preimage. Public symbol IDs also include source positions: moving an
+unchanged symbol or changing notebook paths can change its ID. They are snapshot
+evidence, not persistent semantic identity; use returned before/after pairs for
+review continuity.
+
+Matching is cell-local and language-specific; it never flattens cells into a
+shared name map. Symbol change kinds are `added`, `modified`, `deleted`,
+`renamed`. Rename inference uses conservative native token heuristics; ambiguity
+is explicit partial coverage. Language changes remove/add symbols. Cell changes
+are `added`, `deleted`, `moved`, `type_changed`, `language_changed`,
+`source_changed`, `metadata_changed`, `dependency_directives_changed`.
+Document events retain root metadata/path changes. Output-only changes do not
+create symbol edits; byte-identical symbol slices moved by surrounding edits
+do not become modified symbols. Dependency-only changes retain configuration
+events even with no symbol delta. None establishes execution equivalence,
+cross-cell dependency binding or compiler-complete coverage. The legacy graph
+status alone cannot establish notebook coverage.
+
+### Consumer migration and immutable source reads
+
+Route `.ipynb` sources and pairs with either notebook path to these APIs before
+calling ordinary symbol/change APIs. Those ordinary APIs now reject notebook
+paths with actionable migration instructions; their existing nested schemas
+and ordinary-file results remain v1. The graph-only `file_facts.sql` cache recipe
+is unchanged and does not supply this cell symbol/review contract.
+
+Consumer manifests are `contract_version=2`, `notebook_contract_version=1`;
+fixtures remain format v1 with `source_identity_scheme=sha256:utf8-v1`.
+Existing ordinary tables retain their schemas. Two additive typed tables are:
+
+```text
+notebook_explore(
+  snapshot_id VARCHAR, occurrence_id VARCHAR, repository VARCHAR,
+  commit_oid VARCHAR, parent_oid VARCHAR, blob_oid VARCHAR,
+  logical_path VARCHAR, extractor_sha VARCHAR, status VARCHAR, document Document)
+notebook_review(
+  pair_id VARCHAR, base_snapshot_id VARCHAR, head_snapshot_id VARCHAR,
+  logical_path VARCHAR, old_path VARCHAR, kind VARCHAR,
+  old_blob_oid VARCHAR, new_blob_oid VARCHAR,
+  base_repository VARCHAR, base_commit_oid VARCHAR, base_parent_oid VARCHAR,
+  head_repository VARCHAR, head_commit_oid VARCHAR, head_parent_oid VARCHAR,
+  extractor_sha VARCHAR, status VARCHAR, result Comparison)
+```
+
+These contain native notebook v1 STRUCT/LISTs; NULL documents/results get
+`null_input` status. Each accepted pair remains in one route, including A/D NULL
+absent paths. Explore still represents source occurrences; Review is independently
+bound to source context even with no Explore occurrence. Snapshots add
+`notebook_status_counts`; `extraction_complete` requires graph success and
+complete notebook coverage. Review adds `notebook_pair_rows`,
+`notebook_status_counts`, `notebook_pairs_with_diagnostics`. Do not infer
+completeness from a zero delta count.
+
+```python
+run_consumer(fixture, output, package, *, expected_extractor_id, timeout=None, fault=None)
+read_result(output, snapshot_id, *, run_id=None)
+read_notebook_source(output, snapshot_id, blob_oid, source_ref, *, run_id=None)
+```
+
+The consumer validates frozen source hashes before attaching caller-asserted
+snapshot/repository labels. `read_result` checks the declared consumer/native
+contract metadata and source identity scheme, exact manifest/run/snapshot
+context, and exported file paths, byte sizes and checksums. Native publication
+records table schemas and row counts; `read_result` does not revalidate them.
+`read_notebook_source` requires consumer v2 and exact run/snapshot/blob/path/
+extractor context, then checks cell identity/hash/language/frame/ranges; it can
+resolve the appropriate Review side without an Explore occurrence. It never
+substitutes another snapshot. Historical consumer v1 remains readable through
+`read_result`, without manufacturing notebook facts or source refs. Use a fresh
+v2 run for notebook extraction; incompatible typed caches require an explicit
+migration or a fresh database, not schema relabeling. Each new source extractor
+identity invalidates old cache keys.
+
+Native child work, typed Parquet export and candidate validation precede the
+atomic `current.json` swap. A child exit, interruption or forged source identity
+preserves the old pointer and immutable files and reaps the child. The standalone
+acceptance retains actual child argv, raw exits/streams, manifests, source hashes,
+schemas/counts, no-ops and fault evidence. Root still owns independent notebook
+runtime review and merge; no frontend edit or deployment is included.
 
 ## Package and trust route
 
@@ -329,7 +540,46 @@ runtime. Browser/WASM, Windows, wider native runtime versions, public/signed
 distribution, production admission/backpressure and app UI remain outside the
 observed support claim.
 
-## Observed release acceptance: 2026-11-17, R7
+## Observed notebook release acceptance: 2026-11-17, U5
+
+The new candidate is retained at
+`/private/tmp/spur-notebook-u5-bd-c1v3-final/spur_graph.duckdb_extension`, with
+its adjacent sidecar and exclusively created release directory. The source
+HEAD was `5545f6d1e`; README/contract edits were recorded as dirty and are
+outside the extractor inventory. Native implementation bytes are unchanged
+from approved U1–U4. This is a new release build, not the historical R7 binary.
+
+| Bound identity | Observed value |
+|---|---|
+| Extractor source ID | `source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2` |
+| Package SHA-256 | `c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48` |
+| Sidecar SHA-256 | `187b64ec5da7b4fe5a3120df233b63983e62fb6c811c4ff77339a572f92b069d` |
+| Raw library SHA-256 | `da4d546647b92af08ce5e2c4ff0b7687e7383f1979a53fcb2a9e5e89aa1170c6` |
+| Runtime | Python 3.12.10; DuckDB `2.0.0` / native `v2.0.0`; `osx_arm64`; Rust/Cargo 1.94.1 |
+| Core/adapter Rust tests | **REMOTE**, 61 + 4 passed; no ignored tests; local fallback disabled |
+| Native Python suite | **HOST**, 223 passed in 379.261 seconds; zero skips, expected failures or unexpected successes |
+
+The exact invocation, with the pinned Python, was
+`crates/spur-graph-duckdb/scripts/check_release.py --out
+/private/tmp/spur-notebook-u5-bd-c1v3-final --host-native --expect-platform osx_arm64`.
+The default remote Rust mode was retained. Native building was a separate
+intentional host target through `scripts/spur-cargo`. Every final driver phase
+exited zero; source inventories and all native artifacts were verified again
+after the complete suite. Both published seven-function examples also executed
+successfully against this package.
+
+[U5 receipts](../../../docs/research/artifacts/2026-11-17-notebook-symbol-uplift-release/README.md)
+retain raw argv/exits/stdout/stderr, exact source inventories, package metadata,
+negative controls and the standalone real-notebook replay. The default cloud
+sync omitted two tracked test fixtures under `docs/`, causing a real remote
+compiler exit 101. A failing-first driver regression now requires the existing
+`SPUR_SYNC_FULL=1` option for the focused core phase; the repair was tested
+remotely. Earlier restricted-network exit 200 and a source-upload guard exit 1
+are retained separately. No failed remote compilation/assertion was retried
+locally. No AWS resource or frontend change was made. Root's independent
+package/notebook review and merge remain separate gates; no issue is closed here.
+
+## Historical release acceptance: 2026-11-17, R7
 
 This is a fresh integrated candidate, not a relabeled historical binary.
 The release driver ran on clean source

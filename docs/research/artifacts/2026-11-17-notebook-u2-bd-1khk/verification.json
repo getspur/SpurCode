@@ -1,0 +1,67 @@
+{
+  "base": "26ce5a162ba844f5b13433c069265fb56f7f55ba",
+  "test_commit": "6eb1c4cf6",
+  "source_sha256": {
+    "crates/spur-graph/src/extract/mod.rs": "b4a09fc18e2b8a3fef889041cf5d5b612afbbc63c0b41fcb38cf251eb374f52c",
+    "crates/spur-graph/src/extract/notebook_symbols.rs": "e9fbae6b82a46e8bbfa11f03d377b714ef7039759956ac3b7baacf51933fc83e",
+    "crates/spur-graph/src/extract/notebook_symbols_tests.rs": "668db1a6f8e39204477b3ce753ef11753a2f22d8c55d5d56813047fa90ee6f2e",
+    "crates/spur-graph/src/git_walk.rs": "2d6f4636124b508c9ad870a75a0785e6c77e5d3b2c485a73c2cb87a35189a7b9"
+  },
+  "patch_sha256": "b355ca21d73ed509d0765c17eaf1e575d84a89ed76af15ae46968ef2a4e9c12f",
+  "public_interface_sha256": "43da293ea0f7f026e07077f6ef78b461bcc4c0020e0bebece2bc0ffff43b5ce4",
+  "receipt_exits": {
+    "remote-red": 200,
+    "host-red": 101,
+    "host-green-initial": 0,
+    "host-extract-green": 0,
+    "host-matcher-green": 0,
+    "host-real-evidence": 0,
+    "host-canonical-mutation-red": 101,
+    "host-canonical-green": 0
+  },
+  "unchanged_test_predicates": true,
+  "unchanged_U1_and_ordinary_extraction": true,
+  "checks": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--reverse",
+        "/Users/kevintruong/project/SpurCode/.spur/worktrees/29905efe-e3ee-4a71-9e03-fd765d6b07fa/docs/research/artifacts/2026-11-17-notebook-u2-bd-1khk/source.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "scripts/spur-cargo",
+        "fmt",
+        "-p",
+        "spur-graph",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "26ce5a162ba844f5b13433c069265fb56f7f55ba",
+        "--",
+        "crates/spur-graph/src/extract/mod.rs",
+        "crates/spur-graph/src/extract/notebook_symbols.rs",
+        "crates/spur-graph/src/extract/notebook_symbols_tests.rs",
+        "crates/spur-graph/src/git_walk.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

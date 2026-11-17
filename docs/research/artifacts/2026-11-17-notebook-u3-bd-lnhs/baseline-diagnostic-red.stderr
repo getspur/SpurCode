@@ -1,0 +1,131 @@
+test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) ... 
+  test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) (source='') ... ERROR
+  test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) (source='not JSON') ... ERROR
+  test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) (source='{"cells":[') ... ERROR
+test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) ... ERROR
+
+======================================================================
+ERROR: test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) (source='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 96, in test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics
+    r = self.result("bad.ipynb", source)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 31, in result
+    return self.connection.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.InternalException: INTERNAL Error: spur_graph_file_facts_result: extraction failed: parse .ipynb JSON: [(None, InvalidJson)]
+
+Stack Trace:
+
+0        _ZN6duckdb9Exception6ToJSONENS_13ExceptionTypeERKNSt3__112basic_stringIcNS2_11char_traitsIcEENS2_9allocatorIcEEEE + 48
+1        _ZN6duckdb9ExceptionC1ENS_13ExceptionTypeERKNSt3__112basic_stringIcNS2_11char_traitsIcEENS2_9allocatorIcEEEE + 36
+2        duckdb_v2_bignum_encode + 10408
+3        duckdb_v2_bignum_encode + 69524
+4        _ZN6duckdb18ExpressionExecutor7ExecuteERKNS_23BoundFunctionExpressionEPNS_15ExpressionStateEPKNS_15SelectionVectorEyRNS_6VectorE + 704
+5        _ZN6duckdb18ExpressionExecutor7ExecuteERKNS_10ExpressionEPNS_15ExpressionStateEPKNS_15SelectionVectorEyRNS_6VectorE + 320
+6        _ZN6duckdb18ExpressionExecutor7ExecuteEPNS_9DataChunkERS1_ + 104
+7        _ZNK6duckdb18PhysicalProjection7ExecuteERNS_16ExecutionContextERNS_9DataChunkES4_RNS_19GlobalOperatorStateERNS_13OperatorStateE + 24
+8        _ZN6duckdb16PipelineExecutor7ExecuteERNS_9DataChunkES2_y + 508
+9        _ZN6duckdb16PipelineExecutor19ExecutePushInternalERNS_9DataChunkERNS_15ExecutionBudgetEy + 124
+10       _ZN6duckdb16PipelineExecutor7ExecuteEy + 568
+11       _ZN6duckdb12PipelineTask11ExecuteTaskENS_17TaskExecutionModeE + 232
+12       _ZN6duckdb12ExecutorTask7ExecuteENS_17TaskExecutionModeE + 240
+13       _ZN6duckdb8Executor11ExecuteTaskEv + 144
+14       _ZN6duckdb13ClientContext19ExecuteTaskInternalERNS_17ClientContextLockERNS_15BaseQueryResultE + 92
+15       _ZN6duckdb11QueryResult11ExecuteTaskEv + 120
+16       _ZN6duckdb6engine6Result13SettleClaimedERKNSt3__18functionIFvvEEE + 216
+17       _ZN6duckdb6engine6Result6SettleERKNSt3__18functionIFvvEEE + 44
+18       _ZN6duckdb18DuckDBPyConnection7ExecuteERKN8nanobind6objectES2_ + 484
+19       _ZN6duckdb18DuckDBPyConnection21IsAcceptedNumpyObjectERKN8nanobind6objectE + 10024
+20       duckdb_extension_icu_describe + 33412
+21       _PyEval_EvalFrameDefault + 44924
+22       method_vectorcall.llvm.4473590823601443374 + 184
+23       _PyEval_EvalFrameDefault + 51892
+24       _PyObject_FastCallDictTstate + 96
+25       _PyObject_Call_Prepend + 136
+26       slot_tp_call + 144
+27       _PyObject_MakeTpCall + 128
+28       _PyEval_EvalFrameDefault + 45276
+29       method_vectorcall.llvm.4473590823601443374 + 184
+30       _PyEval_EvalFrameDefault + 51892
+31       _PyObject_FastCallDictTstate + 96
+32       _PyObject_Call_Prepend + 136
+33       slot_tp_call + 144
+34       _PyObject_MakeTpCall + 128
+35       _PyEval_EvalFrameDefault + 45276
+36       method_vectorcall.llvm.4473590823601443374 + 184
+37       _PyEval_EvalFrameDefault + 51892
+38       _PyObject_FastCallDictTstate + 96
+39       _PyObject_Call_Prepend + 136
+40       slot_tp_call + 144
+41       _PyObject_MakeTpCall + 128
+42       _PyEval_EvalFrameDefault + 45276
+43       method_vectorcall.llvm.4473590823601443374 + 184
+44       _PyEval_EvalFrameDefault + 51892
+45       _PyObject_FastCallDictTstate + 96
+46       _PyObject_Call_Prepend + 136
+47       slot_tp_call + 144
+48       _PyObject_MakeTpCall + 128
+49       _PyEval_EvalFrameDefault + 45276
+50       _PyObject_FastCallDictTstate + 208
+51       slot_tp_init + 212
+52       type_call + 148
+53       _PyObject_MakeTpCall + 128
+54       _PyEval_EvalFrameDefault + 45276
+55       PyEval_EvalCode + 184
+56       builtin_exec + 448
+57       cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.16038943513207840175 + 92
+58       _PyEval_EvalFrameDefault + 44924
+59       pymain_run_module + 228
+60       Py_RunMain + 204
+61       pymain_main + 304
+62       Py_BytesMain + 40
+63       start + 6992
+
+This error signals an assertion failure within DuckDB. This usually occurs due to unexpected conditions or errors in the program's logic.
+For more information, see https://duckdb.org/docs/current/dev/internal_errors
+
+======================================================================
+ERROR: test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) (source='not JSON')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 96, in test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics
+    r = self.result("bad.ipynb", source)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 31, in result
+    return self.connection.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.FatalException: FATAL Error: Failed: database has been invalidated because of a previous fatal error. The database must be restarted prior to being used again.
+Original error: "spur_graph_file_facts_result: extraction failed: parse .ipynb JSON: [(None, InvalidJson)]"
+
+======================================================================
+ERROR: test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics) (source='{"cells":[')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 96, in test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics
+    r = self.result("bad.ipynb", source)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 31, in result
+    return self.connection.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.FatalException: FATAL Error: Failed: database has been invalidated because of a previous fatal error. The database must be restarted prior to being used again.
+Original error: "spur_graph_file_facts_result: extraction failed: parse .ipynb JSON: [(None, InvalidJson)]"
+
+======================================================================
+ERROR: test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics (test_diagnostics.DiagnosticsTests.test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 103, in test_invalid_paths_and_malformed_notebooks_preserve_native_diagnostics
+    self.assert_result(self.result("./virtual/雪/./lib.rs", RUST), "ok", expected)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/6c4feecd-fc53-4d7e-b458-cfe54c16122f/crates/spur-graph-duckdb/tests/test_diagnostics.py", line 31, in result
+    return self.connection.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.FatalException: FATAL Error: Failed: database has been invalidated because of a previous fatal error. The database must be restarted prior to being used again.
+Original error: "spur_graph_file_facts_result: extraction failed: parse .ipynb JSON: [(None, InvalidJson)]"
+
+----------------------------------------------------------------------
+Ran 1 test in 0.538s
+
+FAILED (errors=4)

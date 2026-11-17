@@ -1,0 +1,198 @@
+test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback (test_app_consumer.AppConsumerTests.test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback) ... ERROR
+test_notebook_inventory_refs_and_coverage_survive_native_child (test_app_consumer.AppConsumerTests.test_notebook_inventory_refs_and_coverage_survive_native_child) ... FAIL
+test_notebook_real_frozen_inputs_through_consumer_and_original_anchors (test_app_consumer.AppConsumerTests.test_notebook_real_frozen_inputs_through_consumer_and_original_anchors) ... FAIL
+test_notebook_review_preserves_structure_config_and_metadata (test_app_consumer.AppConsumerTests.test_notebook_review_preserves_structure_config_and_metadata) ... FAIL
+test_notebook_source_context_and_historical_run_guards (test_app_consumer.AppConsumerTests.test_notebook_source_context_and_historical_run_guards) ... FAIL
+
+======================================================================
+ERROR: test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback (test_app_consumer.AppConsumerTests.test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 525, in test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback
+    m = self.run_consumer()
+        ^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 45, in run_consumer
+    return self.app.run_consumer(FIXTURE, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 240, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 21507 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+======================================================================
+FAIL: test_notebook_inventory_refs_and_coverage_survive_native_child (test_app_consumer.AppConsumerTests.test_notebook_inventory_refs_and_coverage_survive_native_child)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 240, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 21508 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 411, in test_notebook_inventory_refs_and_coverage_survive_native_child
+    m = self.consume_notebooks(self.notebook_fixture())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 21508 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+======================================================================
+FAIL: test_notebook_real_frozen_inputs_through_consumer_and_original_anchors (test_app_consumer.AppConsumerTests.test_notebook_real_frozen_inputs_through_consumer_and_original_anchors)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 240, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 21551 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 498, in test_notebook_real_frozen_inputs_through_consumer_and_original_anchors
+    m = self.consume_notebooks(self.frozen_fixture(versions, pairs))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 21551 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+======================================================================
+FAIL: test_notebook_review_preserves_structure_config_and_metadata (test_app_consumer.AppConsumerTests.test_notebook_review_preserves_structure_config_and_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 240, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 21660 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 441, in test_notebook_review_preserves_structure_config_and_metadata
+    m = self.consume_notebooks(self.notebook_fixture())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 21660 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+======================================================================
+FAIL: test_notebook_source_context_and_historical_run_guards (test_app_consumer.AppConsumerTests.test_notebook_source_context_and_historical_run_guards)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 240, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 21672 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 464, in test_notebook_source_context_and_historical_run_guards
+    first = self.consume_notebooks(self.notebook_fixture())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 21672 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 555, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 545, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 463, in native_candidate
+    notebook_projections(c, snapshots)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 375, in notebook_projections
+    c.execute('CREATE TABLE notebook_review AS SELECT r.* EXCLUDE(result), '
+_duckdb.CatalogException: Catalog Error: Table with name "notebook_review" already exists!
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 10.633s
+
+FAILED (failures=4, errors=1)

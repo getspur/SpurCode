@@ -1,0 +1,275 @@
+// Exact U2 public schema; upstream model/language/native fields included below.
+// Snapshot/repository labels are consumer assertions, absent from these types.
+
+pub fn extract_notebook_symbols(path: &str, bytes: &[u8]) -> anyhow::Result<NotebookSymbolDocument>;
+pub fn compare_notebook_sources(path: &str, old_path: Option<&str>, change_kind: &str, left_source: Option<&[u8]>, right_source: Option<&[u8]>) -> anyhow::Result<NotebookComparison>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotebookSide {
+    Before,
+    After,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SymbolDiagnosticCode {
+    Normalization(NotebookDiagnosticCode),
+    InvalidPath,
+    MissingSide,
+    UnexpectedSide,
+    UnsupportedChangeKind,
+    UnsupportedCellLanguage,
+    AmbiguousSymbolIdentity,
+    AmbiguousCellIdentity,
+    AmbiguousRename,
+    SnapshotIdentityCollision,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SymbolDiagnostic {
+    pub code: SymbolDiagnosticCode,
+    pub side: Option<NotebookSide>,
+    pub cell_ordinal: Option<usize>,
+    pub byte_range: Option<[usize; 2]>,
+    pub message: String,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CoordinateSpace {
+    DecodedCodeCellUtf8,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SourceRef {
+    pub notebook_path: String,
+    pub notebook_source_sha256: String,
+    pub cell_id: String,
+    pub cell_ordinal: usize,
+    pub cell_identity_quality: CellIdentityQuality,
+    pub cell_source_sha256: String,
+    pub cell_language: Language,
+    pub coordinate_space: CoordinateSpace,
+    pub byte_range: [usize; 2],
+    pub line_range: [usize; 2],
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NotebookSymbol {
+    pub id: String,
+    pub symbol: ExtractedSymbol,
+    pub source_ref: SourceRef,
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct NotebookCellSymbols {
+    pub cell: NormalizedCell,
+    pub symbols: Vec<NotebookSymbol>,
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct NotebookSymbolDocument {
+    pub contract_version: u32,
+    pub path: String,
+    pub source_sha256: String,
+    pub metadata: Value,
+    pub cells: Vec<NotebookCellSymbols>,
+    pub status: NotebookStatus,
+    pub diagnostics: Vec<SymbolDiagnostic>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotebookSymbolChangeKind {
+    Added,
+    Modified,
+    Deleted,
+    Renamed,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NotebookSymbolChange {
+    pub kind: NotebookSymbolChangeKind,
+    pub before: Option<NotebookSymbol>,
+    pub after: Option<NotebookSymbol>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotebookCellChangeKind {
+    Added,
+    Deleted,
+    Moved,
+    TypeChanged,
+    LanguageChanged,
+    SourceChanged,
+    MetadataChanged,
+    DependencyDirectivesChanged,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CellRef {
+    pub notebook_path: String,
+    pub notebook_source_sha256: String,
+    pub cell_id: String,
+    pub cell_ordinal: usize,
+    pub cell_source_sha256: Option<String>,
+    pub language: Option<Language>,
+    pub cell_type: Option<String>,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NotebookCellChange {
+    pub kind: NotebookCellChangeKind,
+    pub before: Option<CellRef>,
+    pub after: Option<CellRef>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotebookDocumentChangeKind {
+    Added,
+    Deleted,
+    Renamed,
+    MetadataChanged,
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct NotebookDocumentChange {
+    pub kind: NotebookDocumentChangeKind,
+    pub before_path: Option<String>,
+    pub after_path: Option<String>,
+    pub before_metadata: Option<Value>,
+    pub after_metadata: Option<Value>,
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct NotebookComparison {
+    pub contract_version: u32,
+    pub status: NotebookStatus,
+    pub diagnostics: Vec<SymbolDiagnostic>,
+    pub before: Option<NotebookSymbolDocument>,
+    pub after: Option<NotebookSymbolDocument>,
+    pub symbol_changes: Vec<NotebookSymbolChange>,
+    pub cell_changes: Vec<NotebookCellChange>,
+    pub document_changes: Vec<NotebookDocumentChange>,
+}
+
+
+// Shared U1 model (notebook_model)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotebookStatus {
+    Complete,
+    Partial,
+    Invalid,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CellIdentityQuality {
+    Explicit,
+    SourceDerived,
+    Ambiguous,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotebookDiagnosticCode {
+    InvalidJson,
+    InvalidNotebook,
+    InvalidCells,
+    InvalidCell,
+    InvalidCellType,
+    InvalidCellId,
+    InvalidSource,
+    InvalidMetadata,
+    DuplicateEffectiveId,
+    SourceDerivedIdentity,
+    RepeatedAnonymousSource,
+    UnsupportedLanguage,
+    UnsupportedRustCommand,
+    UnsupportedRustDependency,
+    NonLeadingRustDirective,
+    UnsupportedPythonMagic,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NotebookDiagnostic {
+    pub code: NotebookDiagnosticCode,
+    pub cell_ordinal: Option<usize>,
+    /// Half-open UTF-8 byte range in the decoded cell, when applicable.
+    pub byte_range: Option<[usize; 2]>,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SourceCoordinateMap {
+    Identity,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DependencyDirective {
+    pub text: String,
+    pub byte_range: [usize; 2],
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PreparedSource {
+    pub original: String,
+    pub original_sha256: String,
+    pub analysis: String,
+    pub analysis_sha256: String,
+    pub policy: &'static str,
+    pub coordinate_map: SourceCoordinateMap,
+    pub directives: Vec<DependencyDirective>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct NormalizedCell {
+    pub id: String,
+    pub identity_quality: CellIdentityQuality,
+    pub ordinal: usize,
+    pub cell_type: Option<String>,
+    pub language: Option<Language>,
+    pub metadata: Value,
+    /// None for invalid source shapes; never a silently filtered fragment.
+    pub source: Option<PreparedSource>,
+    pub status: NotebookStatus,
+    pub diagnostics: Vec<NotebookDiagnostic>,
+}
+
+impl NormalizedCell {
+    /// Legacy graph identity path, retained for existing stable-key compatibility.
+    /// This delimiter-based format is not a collision-safe symbol-ID preimage;
+    /// new public symbol identities must encode notebook path and cell ID separately.
+    pub fn identity_path(&self, notebook_path: &str) -> String {
+        format!("{notebook_path}#cell:{}", self.id)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct NormalizedNotebook {
+    /// SHA256 of the exact input bytes, including the notebook JSON wrapper.
+    pub source_sha256: String,
+    pub metadata: Value,
+    pub cells: Vec<NormalizedCell>,
+    pub status: NotebookStatus,
+    pub diagnostics: Vec<NotebookDiagnostic>,
+}
+
+
+// Language enum (languages)
+pub enum Language {
+    Rust,
+    Python,
+    TypeScript,
+    Tsx,
+    Javascript,
+    Markdown,
+    JupyterNotebook,
+    C,
+    Cpp,
+    Go,
+    Hcl,
+    Terraform,
+    Lua,
+    Shell,
+    Sql,
+    Json,
+    Toml,
+    Yaml,
+    Mermaid,
+    Html,
+    Css,
+}
+
+
+// Native symbol (tree_sitter)
+pub struct ExtractedSymbol {
+    pub entity_name: String,
+    pub symbol_kind: String,
+    pub enclosing_scope: Option<String>,
+    pub byte_range: [usize; 2],
+    pub line_range: [usize; 2],
+    pub anchor_hash: String,
+    pub tokens: Vec<String>,
+}
+

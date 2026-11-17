@@ -1,0 +1,137 @@
+test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback (test_app_consumer.AppConsumerTests.test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback) ... FAIL
+test_notebook_inventory_refs_and_coverage_survive_native_child (test_app_consumer.AppConsumerTests.test_notebook_inventory_refs_and_coverage_survive_native_child) ... FAIL
+test_notebook_real_frozen_inputs_through_consumer_and_original_anchors (test_app_consumer.AppConsumerTests.test_notebook_real_frozen_inputs_through_consumer_and_original_anchors) ... FAIL
+test_notebook_review_preserves_structure_config_and_metadata (test_app_consumer.AppConsumerTests.test_notebook_review_preserves_structure_config_and_metadata) ... FAIL
+test_notebook_source_context_and_historical_run_guards (test_app_consumer.AppConsumerTests.test_notebook_source_context_and_historical_run_guards) ... FAIL
+
+======================================================================
+FAIL: test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback (test_app_consumer.AppConsumerTests.test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 524, in test_notebook_contract_rejects_unknown_versions_and_preserves_v1_readback
+    self.assertTrue(callable(getattr(self.app, 'read_notebook_source', None)), 'guarded source reader required')
+AssertionError: False is not true : guarded source reader required
+
+======================================================================
+FAIL: test_notebook_inventory_refs_and_coverage_survive_native_child (test_app_consumer.AppConsumerTests.test_notebook_inventory_refs_and_coverage_survive_native_child)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 156, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 15590 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 295, in native_candidate
+    c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
+_duckdb.InvalidInputException: Invalid Input Error: notebook paths require spur_graph_notebook_symbols; pass original notebook source text to retain cell identities, coverage diagnostics and source references
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 411, in test_notebook_inventory_refs_and_coverage_survive_native_child
+    m = self.consume_notebooks(self.notebook_fixture())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 15590 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 295, in native_candidate
+    c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
+_duckdb.InvalidInputException: Invalid Input Error: notebook paths require spur_graph_notebook_symbols; pass original notebook source text to retain cell identities, coverage diagnostics and source references
+
+
+======================================================================
+FAIL: test_notebook_real_frozen_inputs_through_consumer_and_original_anchors (test_app_consumer.AppConsumerTests.test_notebook_real_frozen_inputs_through_consumer_and_original_anchors)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 156, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 15591 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 295, in native_candidate
+    c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
+_duckdb.InvalidInputException: Invalid Input Error: notebook paths require spur_graph_notebook_symbols; pass original notebook source text to retain cell identities, coverage diagnostics and source references
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 498, in test_notebook_real_frozen_inputs_through_consumer_and_original_anchors
+    m = self.consume_notebooks(self.frozen_fixture(versions, pairs))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 15591 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 295, in native_candidate
+    c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
+_duckdb.InvalidInputException: Invalid Input Error: notebook paths require spur_graph_notebook_symbols; pass original notebook source text to retain cell identities, coverage diagnostics and source references
+
+
+======================================================================
+FAIL: test_notebook_review_preserves_structure_config_and_metadata (test_app_consumer.AppConsumerTests.test_notebook_review_preserves_structure_config_and_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 391, in consume_notebooks
+    return self.app.run_consumer(path, self.output, self.package,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 156, in run_consumer
+    raise ChildFailure(process.pid, process.returncode, stdout, stderr)
+app_consumer.ChildFailure: native child 15592 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 295, in native_candidate
+    c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
+_duckdb.InvalidInputException: Invalid Input Error: notebook paths require spur_graph_notebook_symbols; pass original notebook source text to retain cell identities, coverage diagnostics and source references
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 441, in test_notebook_review_preserves_structure_config_and_metadata
+    m = self.consume_notebooks(self.notebook_fixture())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 394, in consume_notebooks
+    self.fail('notebook consumer must route original sources to notebook APIs: ' + str(error))
+AssertionError: notebook consumer must route original sources to notebook APIs: native child 15592 exited 1: Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 390, in <module>
+    main()
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 380, in main
+    native_candidate(json.loads(args.child.read_bytes()), args.child.parent)
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/examples/app_consumer.py", line 295, in native_candidate
+    c.execute('CREATE TEMP TABLE symbols AS SELECT snapshot_id, blob_oid, logical_path, extractor_sha, '
+_duckdb.InvalidInputException: Invalid Input Error: notebook paths require spur_graph_notebook_symbols; pass original notebook source text to retain cell identities, coverage diagnostics and source references
+
+
+======================================================================
+FAIL: test_notebook_source_context_and_historical_run_guards (test_app_consumer.AppConsumerTests.test_notebook_source_context_and_historical_run_guards)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/kevintruong/project/SpurCode/.spur/worktrees/06f06a07-413e-4d6f-9fdf-1e7645d097fc/crates/spur-graph-duckdb/tests/test_app_consumer.py", line 463, in test_notebook_source_context_and_historical_run_guards
+    self.assertTrue(callable(getattr(self.app, 'read_notebook_source', None)), 'guarded source reader required')
+AssertionError: False is not true : guarded source reader required
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.710s
+
+FAILED (failures=5)
