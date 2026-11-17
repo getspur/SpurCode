@@ -1,0 +1,355 @@
+{
+  "plan_id": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "task": "U5",
+  "attempt": 2,
+  "decision": "approve",
+  "original_commit": "599f1e0a2",
+  "normalized_commit": "e023ada61",
+  "production_bytes_equal": true,
+  "contract_sha256": "c0429c9dfc20e9057698a660d8b963303c14bb8e9baf5316d11405331d9c4c61",
+  "package_sha256": "c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48",
+  "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+  "root_verifier": {
+    "command": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python docs/research/artifacts/2026-11-17-notebook-symbol-uplift-release-attempt2/verify_receipts.py",
+    "cwd": "/private/tmp/spur-notebook-u1-root-review",
+    "original_ancestor_checkout": "599f1e0a2",
+    "exit": 0,
+    "source_inputs": 325,
+    "prior_attempt_files": 157,
+    "historical_files": 281,
+    "note": "The verifier asserts original TDD ancestry. The Plan Engine normalized squash cannot satisfy that ancestry; original commit verified, and normalized production/evidence bytes compared identical."
+  },
+  "native_notebook": {
+    "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+    "version": 47,
+    "runtime": "2.0.0",
+    "selection": "Visible runtime selector, guarded by exact selected validation tab; existing visual MCP, no source or raw notebook edits.",
+    "symbol_counts": [
+      46,
+      24
+    ],
+    "function_counts": [
+      17,
+      11
+    ],
+    "function_anchors": 28,
+    "cell_refs": 70,
+    "symbol_changes": 50,
+    "cell_events": 10,
+    "noop_changes": 0,
+    "rust_dep_original_line": 2,
+    "unsupported_status": "partial",
+    "cells": [
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "1e819b67-c3a2-48d2-a0b7-0d419a3de064",
+        "kind": "markdown",
+        "version": 2,
+        "cell_etag": "cell:sha256:35bcad4df96ecb2bf526b59c237735e4fcd1671cff2a60059be74ddb6eb4f6a7",
+        "source": "# Spur Graph — notebook symbol release acceptance\n\nLoad the verified native candidate, inspect cell-aware symbols and compare original notebook sources. Each result retains coverage diagnostics and original decoded-cell byte/line coordinates. The release supports DuckDB 2.0 on macOS ARM64; Rust preparation masks leading single-line `:dep` directives without executing them.\n\nThe following cells record the actual runtime before loading the extension. Historical package and prior notebooks are preserved.",
+        "exec_count": null,
+        "status": "idle",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 2,
+            "last_edited_by": "brain"
+          }
+        },
+        "output_indices": []
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "f0b43e1f-8e5a-4bd4-83db-459c0a62d31e",
+        "kind": "code",
+        "version": 3,
+        "cell_etag": "cell:sha256:548f53c014bfef776f7cd464569b22f9c5273f4cc08538a5d1581814ea68d6dc",
+        "source": "SELECT version() AS actual_duckdb_runtime, current_setting('allow_unsigned_extensions') AS unsigned_extensions;",
+        "exec_count": 2,
+        "status": "success",
+        "outputs": [
+          "┌───────────────────────┬─────────────────────┐\n│ actual_duckdb_runtime │ unsigned_extensions │\n│        varchar        │       boolean       │\n├───────────────────────┼─────────────────────┤\n│ v2.0.0                │ true                │\n└───────────────────────┴─────────────────────┘\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 3,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "c5cfd435-a7c9-44a2-9628-95e4a9ec510a",
+            "source_version": 3,
+            "execution_identity": "7acec8d21df37da4227d4cc38fe5c05504e6a2592876f6a7f89ab1a1f26bbf84",
+            "output_hash": "a3359362ea37a3dab1310a17098d16fd7f1a1cfb8ea98ac7a9e16c274e9fcb29",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "e8d50d9e-7253-4fc0-a6cc-deb0f701ea40",
+        "kind": "code",
+        "version": 15,
+        "cell_etag": "cell:sha256:ba51548f4a8d5057f2e424f7558e4cfad54ce2358a029df45abf8f7f0495b515",
+        "source": "-- Verified candidate: c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48\nSELECT CASE WHEN sha256(content) = 'c5f36a0f99213b570c1fe862561f3bb8882f40936c0afe6565f46ceca1878d48' THEN 'verified' ELSE error('Extension hash mismatch') END AS candidate_integrity\nFROM read_blob('/Users/kevintruong/project/SpurCode/.spur/artifacts/notebook-symbol-uplift-native/spur_graph.duckdb_extension');\nLOAD '/Users/kevintruong/project/SpurCode/.spur/artifacts/notebook-symbol-uplift-native/spur_graph.duckdb_extension';\nSELECT version() AS runtime, spur_graph_info() AS extension;\n",
+        "exec_count": 3,
+        "status": "success",
+        "outputs": [
+          "┌─────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n│ runtime │                                                                                                                                                                                                  extension                                                                                                                                                                                                   │\n│ varchar │                                                                                                                 struct(extension_version varchar, facts_schema_version uinteger, duckdb_api_version varchar, extractor_id varchar, supported_languages varchar[], resolution_scope varchar)                                                                                                                  │\n├─────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤\n│ v2.0.0  │ {'extension_version': 0.1.0, 'facts_schema_version': 1, 'duckdb_api_version': 2.0.0, 'extractor_id': 'source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2', 'supported_languages': [C, Cpp, Css, Go, Hcl, Html, Javascript, Json, JupyterNotebook, Lua, Markdown, Mermaid, Python, Rust, Shell, Sql, Terraform, Toml, Tsx, TypeScript, Yaml], 'resolution_scope': single_file} │\n└─────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 15,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "62cda63d-2920-4aff-8bb7-73c5289d2e9a",
+            "source_version": 15,
+            "execution_identity": "569fc29e688d32b989f8cfd30f04b151dc930c70568185e44fdc0c4d2ac455d7",
+            "output_hash": "5670b398a191e5803add53b97ed3bdbf2279fdc684e960ac3e95edab4c0e9433",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "775a108c-a6c0-45ca-8524-4b29c659539d",
+        "kind": "code",
+        "version": 23,
+        "cell_etag": "cell:sha256:33625ad50776894221d7a42ca5e7bf6adc27d6d5ce9c5e80a7e332b7bd797822",
+        "source": "-- Frozen source bytes from two real spur-notebook commits.\nCREATE OR REPLACE TEMP TABLE notebook_inputs AS\nSELECT s.snapshot_id, s.notebook_path, s.source_sha256, s.source,\n       spur_graph_notebook_symbols(s.notebook_path, s.source) AS document\nFROM read_json('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-notebook-rust-poc-bd-26sp/real-inputs.json') f,\n     UNNEST(f.snapshots) t(s);\nCREATE OR REPLACE TEMP VIEW notebook_symbols AS\nSELECT snapshot_id, document.status AS coverage, c.id AS cell_id,\n       c.\"language\" AS cell_language, c.\"source\".original AS original_source,\n       n.id AS occurrence_id, n.symbol, n.source_ref\nFROM notebook_inputs, UNNEST(document.cells) cells(c), UNNEST(c.symbols) symbols(n);\nSELECT snapshot_id, coverage, count(*) AS symbols,\n       count(*) FILTER (WHERE lower(symbol.symbol_kind) = 'function') AS functions,\n       bool_and(octet_length(encode(original_source)) >= source_ref.byte_end\n                AND source_ref.coordinate_space = 'decoded_code_cell_utf8') AS refs_in_original_cell\nFROM notebook_symbols GROUP BY ALL ORDER BY snapshot_id;\n",
+        "exec_count": 5,
+        "status": "success",
+        "outputs": [
+          "┌──────────────────────────────────────────────┬──────────┬─────────┬───────────┬───────────────────────┐\n│                 snapshot_id                  │ coverage │ symbols │ functions │ refs_in_original_cell │\n│                   varchar                    │ varchar  │  int64  │   int64   │        boolean        │\n├──────────────────────────────────────────────┼──────────┼─────────┼───────────┼───────────────────────┤\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ complete │      24 │        11 │ true                  │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ complete │      46 │        17 │ true                  │\n└──────────────────────────────────────────────┴──────────┴─────────┴───────────┴───────────────────────┘\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 23,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "926524d7-7d40-43b7-8398-686929a93606",
+            "source_version": 23,
+            "execution_identity": "1e80c8c05c137525365f59ccd54f3e7ae13401db6b3eef4bff59ac762dabdb10",
+            "output_hash": "dc47b8e3e16389b34ff08c337db2299a8f774ae272ee8decd737148fe83a8068",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "460f4a96-982a-4f74-bfdc-380b281d4a66",
+        "kind": "code",
+        "version": 31,
+        "cell_etag": "cell:sha256:5bb92e4a36598c4b263fbb31446bdc3b28b164696fb073f9c469971172be930c",
+        "source": "-- Review compares original notebooks; symbols remain scoped to their cells.\nCREATE OR REPLACE TEMP TABLE notebook_review AS\nSELECT spur_graph_notebook_changes(r.notebook_path, l.notebook_path, 'M', l.source, r.source) AS comparison\nFROM notebook_inputs l, notebook_inputs r\nWHERE l.snapshot_id = 'git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41'\n  AND r.snapshot_id = 'git:07db59f08dbced2c8bedd17290c78f57b428a2bc';\nSELECT comparison.status AS coverage,\n       len(comparison.symbol_changes) AS symbol_changes,\n       len(comparison.cell_changes) AS cell_events,\n       list_count(list_filter(comparison.symbol_changes, lambda c: c.kind = 'added')) AS added,\n       list_count(list_filter(comparison.symbol_changes, lambda c: c.kind = 'modified')) AS modified,\n       list_count(list_filter(comparison.symbol_changes, lambda c: c.kind = 'deleted')) AS deleted\nFROM notebook_review;\n",
+        "exec_count": 7,
+        "status": "success",
+        "outputs": [
+          "┌──────────┬────────────────┬─────────────┬───────┬──────────┬─────────┐\n│ coverage │ symbol_changes │ cell_events │ added │ modified │ deleted │\n│ varchar  │     int64      │    int64    │ int64 │  int64   │  int64  │\n├──────────┼────────────────┼─────────────┼───────┼──────────┼─────────┤\n│ complete │             50 │          10 │    12 │        4 │      34 │\n└──────────┴────────────────┴─────────────┴───────┴──────────┴─────────┘\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 31,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "8962a066-84a2-423b-a1e4-090809ee5ea5",
+            "source_version": 31,
+            "execution_identity": "1e041f82dc9cdc4287a5bbb94a3b118d4340603ae4d46be351cc782d14aae128",
+            "output_hash": "5f665c2a6f6b3ad4cea4cf8acd70e139f044609eb14c390021b76f9b4a9f2a62",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "b42951a9-a1ac-475d-84d3-820817b151da",
+        "kind": "code",
+        "version": 35,
+        "cell_etag": "cell:sha256:5a4e3a695dba76325eb6ebcd0ac5a7a4ff11c1cc7079ad736376d7ffd387287a",
+        "source": "-- Independent function anchors plus no-op correctness and source identity.\nWITH anchors AS (\n  SELECT a.* FROM read_json('/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-notebook-symbol-diagnosis-bd-nb4c/frozen-cell-model-input.json') f, UNNEST(f.anchors) t(a)\n), checked AS (\n  SELECT a.snapshot_id FROM anchors a JOIN notebook_symbols s\n  ON a.snapshot_id = s.snapshot_id AND a.cell_id = s.cell_id\n  AND a.entity_name = s.symbol.entity_name\n  AND a.byte_start = s.source_ref.byte_start AND a.byte_end = s.source_ref.byte_end\n  AND a.line_start = s.source_ref.line_start AND a.line_end = s.source_ref.line_end\n  AND a.coordinate_space = s.source_ref.coordinate_space\n), noops AS (\n  SELECT spur_graph_notebook_changes(notebook_path, notebook_path, 'M', source, source) AS result FROM notebook_inputs\n)\nSELECT (SELECT count(*) FROM checked) AS matched_function_anchors,\n       (SELECT count(*) FROM notebook_symbols) AS original_cell_refs,\n       (SELECT bool_and(sha256(original_source) = source_ref.cell_source_sha256) FROM notebook_symbols) AS cell_hashes_match,\n       (SELECT sum(len(result.symbol_changes)) FROM noops) AS noop_symbol_changes,\n       (SELECT sum(len(result.cell_changes)) FROM noops) AS noop_cell_changes;\n",
+        "exec_count": 8,
+        "status": "success",
+        "outputs": [
+          "┌──────────────────────────┬────────────────────┬───────────────────┬─────────────────────┬───────────────────┐\n│ matched_function_anchors │ original_cell_refs │ cell_hashes_match │ noop_symbol_changes │ noop_cell_changes │\n│          int64           │       int64        │      boolean      │    decimal(38,0)    │   decimal(38,0)   │\n├──────────────────────────┼────────────────────┼───────────────────┼─────────────────────┼───────────────────┤\n│                       28 │                 70 │ true              │                   0 │                 0 │\n└──────────────────────────┴────────────────────┴───────────────────┴─────────────────────┴───────────────────┘\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 35,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "9ff7aa06-d880-42f3-afa4-9d5c5df1d694",
+            "source_version": 35,
+            "execution_identity": "9458bd93562b07d5e585569941efbbc067ad7feca4a3084d6e986787d2418425",
+            "output_hash": "2e078efecba05df67aa0272a67e1d3e89d09af94ee08d54fb851fc1adff10570",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "013fe720-199d-45d7-9f44-982495f04ab9",
+        "kind": "code",
+        "version": 36,
+        "cell_etag": "cell:sha256:d77274089bb99792f03809c40978a6ecba32a0e08ed9df85d8c55fc604650ed4",
+        "source": "-- The extension analyzes source; it does not execute Rust or kernel commands.\nWITH cases AS (\nSELECT spur_graph_notebook_symbols('rust.ipynb', '{\"metadata\":{},\"cells\":[{\"id\":\"rust-dep\",\"cell_type\":\"code\",\"metadata\":{\"spur\":{\"code_type\":\"rust\"}},\"source\":\":dep serde = \\\"1\\\" # café\\nfn helper() -> i32 { 1 }\\n\"}]}') AS supported,\n       spur_graph_notebook_symbols('unsupported.ipynb', '{\"metadata\":{},\"cells\":[{\"id\":\"unsupported\",\"cell_type\":\"code\",\"metadata\":{\"spur\":{\"code_type\":\"rust\"}},\"source\":\":load secret.rs\\n\"}]}') AS unsupported\n)\nSELECT supported.status AS rust_coverage,\n       supported.cells[1].\"source\".\"policy\" AS preparation,\n       supported.cells[1].symbols[1].symbol.entity_name AS extracted_function,\n       supported.cells[1].symbols[1].source_ref.line_start AS original_line,\n       unsupported.status AS unsupported_coverage,\n       len(unsupported.diagnostics) AS unsupported_diagnostics\nFROM cases;\n",
+        "exec_count": 9,
+        "status": "success",
+        "outputs": [
+          "┌───────────────┬───────────────────────────┬────────────────────┬───────────────┬──────────────────────┬─────────────────────────┐\n│ rust_coverage │        preparation        │ extracted_function │ original_line │ unsupported_coverage │ unsupported_diagnostics │\n│    varchar    │          varchar          │      varchar       │    uint64     │       varchar        │          int64          │\n├───────────────┼───────────────────────────┼────────────────────┼───────────────┼──────────────────────┼─────────────────────────┤\n│ complete      │ evcxr-leading-dep-mask-v1 │ helper             │             2 │ partial              │                       1 │\n└───────────────┴───────────────────────────┴────────────────────┴───────────────┴──────────────────────┴─────────────────────────┘\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 36,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "831ad0c3-1e0b-426a-ad86-86165d291aae",
+            "source_version": 36,
+            "execution_identity": "512c3848e7181f085908a936b3a1de7fbd70d197e71c35eb242f87e0cb769a39",
+            "output_hash": "6282a76f3f9012b7ad4e7254b20276d0db0263ae0ad6d62d6b4c6f43baf19963",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "1aacfe0b-481c-449b-a37c-450978a418b3",
+        "kind": "code",
+        "version": 43,
+        "cell_etag": "cell:sha256:461b3a0d1e3caa6cdd4c9350f47a7178ef427017de7bdc4422666f6a415d193e",
+        "source": "-- Explore a symbol and use its exact cell/line context in the app.\nSELECT snapshot_id, cell_id, cell_language, symbol.entity_name AS function,\n       source_ref.line_start, source_ref.line_end, occurrence_id\nFROM notebook_symbols WHERE symbol.symbol_kind = 'function'\nORDER BY snapshot_id, cell_id, source_ref.byte_start;\n",
+        "exec_count": 10,
+        "status": "success",
+        "outputs": [
+          "┌──────────────────────────────────────────────┬──────────────────────────────────────┬───────────────┬──────────────────────┬────────────┬──────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n│                 snapshot_id                  │               cell_id                │ cell_language │       function       │ line_start │ line_end │                                                                        occurrence_id                                                                        │\n│                   varchar                    │               varchar                │    varchar    │       varchar        │   uint64   │  uint64  │                                                                           varchar                                                                           │\n├──────────────────────────────────────────────┼──────────────────────────────────────┼───────────────┼──────────────────────┼────────────┼──────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ 29e62381-a8ec-4911-8745-76ba56a1b4ea │ Javascript    │ toolErrorText        │         11 │       16 │ app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"toolErrorText\",\"function\",null,315,null]         │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ 29e62381-a8ec-4911-8745-76ba56a1b4ea │ Javascript    │ safeEvidenceCall     │         18 │       31 │ app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"safeEvidenceCall\",\"function\",null,606,null]      │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ 29e62381-a8ec-4911-8745-76ba56a1b4ea │ Javascript    │ escapeWorkbenchValue │         47 │       53 │ app_gallery/code-graph-workbench/app.ipynb#cell:29e62381-a8ec-4911-8745-76ba56a1b4ea#symbol:[\"javascript\",\"escapeWorkbenchValue\",\"function\",null,1720,null] │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ 8ee3649a-5627-4f06-9453-0184f9f62d7c │ Python        │ _find_up             │          8 │       17 │ app_gallery/code-graph-workbench/app.ipynb#cell:8ee3649a-5627-4f06-9453-0184f9f62d7c#symbol:[\"python\",\"_find_up\",\"function\",null,345,null]                  │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ wb-graph                             │ Javascript    │ esc                  │         30 │       38 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"esc\",\"function\",null,647,null]                                               │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ wb-graph                             │ Javascript    │ jsonScript           │         40 │       45 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"jsonScript\",\"function\",null,855,null]                                        │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ wb-graph                             │ Javascript    │ normalizeValue       │         47 │       61 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"normalizeValue\",\"function\",null,1026,null]                                   │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ wb-graph                             │ Javascript    │ tableRows            │         63 │       66 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"tableRows\",\"function\",null,1633,null]                                        │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ wb-graph                             │ Javascript    │ readEvidencePort     │         68 │      102 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"readEvidencePort\",\"function\",null,1821,null]                                 │\n│ git:07db59f08dbced2c8bedd17290c78f57b428a2bc │ wb-graph                             │ Javascript    │ evidencePort         │        104 │      114 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"evidencePort\",\"function\",null,2775,null]                                     │\n│                      ·                       │    ·                                 │     ·         │      ·               │          · │        · │                                                            ·                                                                                                │\n│                      ·                       │    ·                                 │     ·         │      ·               │          · │        · │                                                            ·                                                                                                │\n│                      ·                       │    ·                                 │     ·         │      ·               │          · │        · │                                                            ·                                                                                                │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ readEvidencePort     │         51 │       84 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"readEvidencePort\",\"function\",null,1552,null]                                 │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ fmtInt               │         86 │       89 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"fmtInt\",\"function\",null,2410,null]                                           │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ fmtNumber            │         91 │       94 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"fmtNumber\",\"function\",null,2562,null]                                        │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ shortId              │         96 │      100 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"shortId\",\"function\",null,2704,null]                                          │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ labelFor             │        102 │      104 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"labelFor\",\"function\",null,2872,null]                                         │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ nodeFill             │        106 │      113 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"nodeFill\",\"function\",null,3018,null]                                         │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ statusClass          │        115 │      119 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"statusClass\",\"function\",null,3445,null]                                      │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ portLine             │        121 │      123 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"portLine\",\"function\",null,3632,null]                                         │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ chip                 │        236 │      238 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"chip\",\"function\",null,10266,null]                                            │\n│ git:cd24d5c4779d11a5b2dd1bbe55c93da12856ae41 │ wb-graph                             │ Javascript    │ kpi                  │        240 │      242 │ app_gallery/code-graph-workbench/app.ipynb#cell:wb-graph#symbol:[\"javascript\",\"kpi\",\"function\",null,10429,null]                                             │\n└──────────────────────────────────────────────┴──────────────────────────────────────┴───────────────┴──────────────────────┴────────────┴──────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘\n  28 rows (20 shown)                                                                                                                                                                                                                                                                                     7 columns\n"
+        ],
+        "metadata": {
+          "spur": {
+            "version": 43,
+            "last_edited_by": "brain",
+            "code_type": "sql"
+          },
+          "spur_output_provenance": {
+            "session_id": "cfb8a0d3-063c-413b-806f-f58563a6faf2",
+            "run_id": "efaec6c5-7149-4ba2-9b70-8036fac3187a",
+            "source_version": 43,
+            "execution_identity": "17b6ab4b9128fed52b12a2b3a276c9cc8844215375b2148e30e02c14bb14cca9",
+            "output_hash": "0edf85c9813044003acc3e119d523a4a774f1dc0edeb1ded4dff775b481f55c5",
+            "status": "succeeded",
+            "dependencies": [],
+            "published_ports": [],
+            "ports_at_start": [],
+            "lineage_complete": true
+          }
+        },
+        "output_indices": [
+          0
+        ]
+      },
+      {
+        "notebook_id": "nb-5b89b7fdb423e8e28de3464d",
+        "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-spur-graph-notebook-symbol-uplift-acceptance.ipynb",
+        "revision": 47,
+        "id": "7e4110aa-d0aa-4e0f-b7f5-ae880fd5664a",
+        "kind": "markdown",
+        "version": 47,
+        "cell_etag": "cell:sha256:29cbcf28ab632c8e62282d7c30789fdbdf9d88fcf7684301c89904cf629e2375",
+        "source": "## What this enables in Spur Graph\n\n**Explore:** list functions by notebook, cell and language, then open the exact original cell range. The two real snapshots now return 46/24 symbols and 17/11 functions; all 28 independent function anchors match, and all 70 cell hashes match.\n\n**Review:** compare notebook sources with `spur_graph_notebook_changes`, keeping symbol changes separate from cell/configuration events. This pair produces 50 symbol changes and 10 cell events. Five false offset-only modifications from the earlier PoC are removed. Comparing either snapshot to itself produces zero symbol and cell changes.\n\n**Rust cells:** a leading `:dep` directive is masked for analysis while original UTF-8 coordinates remain intact. The example extracts `helper` on original line 2. Unsupported commands return explicit partial coverage.\n\nThese are the extension and consumer foundations for the app. The complete notebook Explore/Review UI remains separate work. Extraction does not execute cells or model cross-cell runtime state. The consumer records exported schemas/counts; its reader checks file integrity without revalidating those advertised schemas/counts.\n\nRun these SQL cells from top to bottom with this notebook’s **DuckDB 2.0.0** runtime. The unsigned local candidate is pinned by SHA256 in the load cell; the earlier artifact is preserved.\n",
+        "exec_count": null,
+        "status": "idle",
+        "outputs": [],
+        "metadata": {
+          "spur": {
+            "version": 47,
+            "last_edited_by": "brain"
+          }
+        },
+        "output_indices": []
+      }
+    ]
+  },
+  "review_fix": "Reader documentation now accurately distinguishes metadata/file integrity checks from schema/count recording at publication.",
+  "limits": [
+    "The complete Explore/Review app UI is separate work.",
+    "Local unsigned macOS ARM64 artifact; no signing/publishing/deployment.",
+    "No cross-cell execution semantics.",
+    "Reader does not revalidate advertised schemas and row counts."
+  ],
+  "playground_authoring_corrections": [
+    "SQL BLOB byte length uses octet_length.",
+    "DuckDB 2 lambda syntax uses lambda c: c.kind; legacy arrow rejected. Both cells corrected and passed. The notebook MCP returned failed with no error outputs for those authoring errors; separate frontend diagnostic gap."
+  ]
+}
