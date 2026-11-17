@@ -1,0 +1,566 @@
+[
+  {
+    "name": "bare_unique",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 42,
+        "end_byte": 48,
+        "start_row": 0,
+        "text": "leaf()",
+        "callee_kind": "identifier",
+        "callee_text": "leaf"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "leaf",
+        "receiver": null,
+        "scope": null,
+        "bind_method": "singleton",
+        "caller": {
+          "node_id": 3,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return leaf();}"
+        },
+        "target": {
+          "node_id": 2,
+          "name": "leaf",
+          "kind": "function",
+          "definition": "int leaf(){return 1;}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "qualified_namespaces",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 96,
+        "end_byte": 105,
+        "start_row": 0,
+        "text": "a::leaf()",
+        "callee_kind": "qualified_identifier",
+        "callee_text": "a::leaf"
+      },
+      {
+        "kind": "call_expression",
+        "start_byte": 106,
+        "end_byte": 115,
+        "start_row": 0,
+        "text": "b::leaf()",
+        "callee_kind": "qualified_identifier",
+        "callee_text": "b::leaf"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "leaf",
+        "receiver": null,
+        "scope": "a",
+        "bind_method": "fqn",
+        "caller": {
+          "node_id": 6,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return a::leaf()+b::leaf();}"
+        },
+        "target": {
+          "node_id": 3,
+          "name": "a::leaf",
+          "kind": "function",
+          "definition": "int leaf(){return 1;}"
+        }
+      },
+      {
+        "relation": "calls",
+        "label": "leaf",
+        "receiver": null,
+        "scope": "b",
+        "bind_method": "fqn",
+        "caller": {
+          "node_id": 6,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return a::leaf()+b::leaf();}"
+        },
+        "target": {
+          "node_id": 5,
+          "name": "b::leaf",
+          "kind": "function",
+          "definition": "int leaf(){return 2;}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "overload_set",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 80,
+        "end_byte": 87,
+        "start_row": 0,
+        "text": "pick(1)",
+        "callee_kind": "identifier",
+        "callee_text": "pick"
+      },
+      {
+        "kind": "call_expression",
+        "start_byte": 120,
+        "end_byte": 129,
+        "start_row": 0,
+        "text": "pick(1.0)",
+        "callee_kind": "identifier",
+        "callee_text": "pick"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "pick",
+        "receiver": null,
+        "scope": null,
+        "bind_method": "same_file_duplicate",
+        "caller": {
+          "node_id": 4,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return pick(1);}"
+        },
+        "target": {
+          "node_id": 2,
+          "name": "pick",
+          "kind": "function",
+          "definition": "int pick(int x){return x;}"
+        }
+      },
+      {
+        "relation": "calls",
+        "label": "pick",
+        "receiver": null,
+        "scope": null,
+        "bind_method": "same_file_duplicate",
+        "caller": {
+          "node_id": 5,
+          "name": "caller_double",
+          "kind": "function",
+          "definition": "double caller_double(){return pick(1.0);}"
+        },
+        "target": {
+          "node_id": 2,
+          "name": "pick",
+          "kind": "function",
+          "definition": "int pick(int x){return x;}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "typed_receivers",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 99,
+        "end_byte": 106,
+        "start_row": 0,
+        "text": "a.run()",
+        "callee_kind": "field_expression",
+        "callee_text": "a.run"
+      },
+      {
+        "kind": "call_expression",
+        "start_byte": 107,
+        "end_byte": 114,
+        "start_row": 0,
+        "text": "b.run()",
+        "callee_kind": "field_expression",
+        "callee_text": "b.run"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "run",
+        "receiver": "a",
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 6,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(A &a,B &b){return a.run()+b.run();}"
+        },
+        "target": null
+      },
+      {
+        "relation": "calls",
+        "label": "run",
+        "receiver": "b",
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 6,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(A &a,B &b){return a.run()+b.run();}"
+        },
+        "target": null
+      }
+    ]
+  },
+  {
+    "name": "qualified_miss",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 97,
+        "end_byte": 112,
+        "start_row": 0,
+        "text": "foreign::leaf()",
+        "callee_kind": "qualified_identifier",
+        "callee_text": "foreign::leaf"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "leaf",
+        "receiver": null,
+        "scope": "foreign",
+        "bind_method": "bare_qualified_singleton",
+        "caller": {
+          "node_id": 5,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return foreign::leaf();}"
+        },
+        "target": {
+          "node_id": 3,
+          "name": "actual::leaf",
+          "kind": "function",
+          "definition": "int leaf(){return 1;}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "header_receiver",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 88,
+        "end_byte": 95,
+        "start_row": 1,
+        "text": "b.run()",
+        "callee_kind": "field_expression",
+        "callee_text": "b.run"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "run",
+        "receiver": "b",
+        "scope": null,
+        "bind_method": "method_crate_singleton",
+        "caller": {
+          "node_id": 4,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(external::B &b){return b.run();}"
+        },
+        "target": {
+          "node_id": 3,
+          "name": "A::run",
+          "kind": "method",
+          "definition": "int run(){return 1;}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "header_free_function",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 39,
+        "end_byte": 45,
+        "start_row": 1,
+        "text": "util()",
+        "callee_kind": "identifier",
+        "callee_text": "util"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "util",
+        "receiver": null,
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 2,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return util();}"
+        },
+        "target": null
+      }
+    ]
+  },
+  {
+    "name": "template_identity",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 65,
+        "end_byte": 81,
+        "start_row": 0,
+        "text": "identity<int>(1)",
+        "callee_kind": "template_function",
+        "callee_text": "identity<int>"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "identity",
+        "receiver": null,
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 4,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(){return identity<int>(1);}"
+        },
+        "target": null
+      }
+    ]
+  },
+  {
+    "name": "qualified_member_templates",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 141,
+        "end_byte": 160,
+        "start_row": 0,
+        "text": "n::identity<int>(1)",
+        "callee_kind": "qualified_identifier",
+        "callee_text": "n::identity<int>"
+      },
+      {
+        "kind": "call_expression",
+        "start_byte": 161,
+        "end_byte": 176,
+        "start_row": 0,
+        "text": "a.apply<int>(2)",
+        "callee_kind": "field_expression",
+        "callee_text": "a.apply<int>"
+      }
+    ],
+    "native_calls": []
+  },
+  {
+    "name": "custom_callback",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 43,
+        "end_byte": 46,
+        "start_row": 0,
+        "text": "f()",
+        "callee_kind": "identifier",
+        "callee_text": "f"
+      },
+      {
+        "kind": "call_expression",
+        "start_byte": 63,
+        "end_byte": 79,
+        "start_row": 0,
+        "text": "invoke(callback)",
+        "callee_kind": "identifier",
+        "callee_text": "invoke"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "f",
+        "receiver": null,
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 3,
+          "name": "invoke",
+          "kind": "function",
+          "definition": "void invoke(void (*f)()){f();}"
+        },
+        "target": null
+      },
+      {
+        "relation": "calls",
+        "label": "invoke",
+        "receiver": null,
+        "scope": null,
+        "bind_method": "singleton",
+        "caller": {
+          "node_id": 4,
+          "name": "caller",
+          "kind": "function",
+          "definition": "void caller(){invoke(callback);}"
+        },
+        "target": {
+          "node_id": 3,
+          "name": "invoke",
+          "kind": "function",
+          "definition": "void invoke(void (*f)()){f();}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "function_pointer_shadow",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 59,
+        "end_byte": 67,
+        "start_row": 0,
+        "text": "target()",
+        "callee_kind": "identifier",
+        "callee_text": "target"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "target",
+        "receiver": null,
+        "scope": null,
+        "bind_method": "singleton",
+        "caller": {
+          "node_id": 3,
+          "name": "caller",
+          "kind": "function",
+          "definition": "int caller(int (*target)()){return target();}"
+        },
+        "target": {
+          "node_id": 2,
+          "name": "target",
+          "kind": "function",
+          "definition": "int target(){return 1;}"
+        }
+      }
+    ]
+  },
+  {
+    "name": "macro_expansion",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 51,
+        "end_byte": 64,
+        "start_row": 1,
+        "text": "RUN(callback)",
+        "callee_kind": "identifier",
+        "callee_text": "RUN"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "RUN",
+        "receiver": null,
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 4,
+          "name": "caller",
+          "kind": "function",
+          "definition": "void caller(){RUN(callback);}"
+        },
+        "target": null
+      }
+    ]
+  },
+  {
+    "name": "constructor",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 38,
+        "end_byte": 41,
+        "start_row": 0,
+        "text": "A()",
+        "callee_kind": "identifier",
+        "callee_text": "A"
+      }
+    ],
+    "native_calls": [
+      {
+        "relation": "calls",
+        "label": "A",
+        "receiver": null,
+        "scope": null,
+        "bind_method": null,
+        "caller": {
+          "node_id": 4,
+          "name": "caller",
+          "kind": "function",
+          "definition": "A caller(){return A();}"
+        },
+        "target": null
+      }
+    ]
+  },
+  {
+    "name": "recursion",
+    "native_status": "ok",
+    "rust_extension_parity": true,
+    "syntax_calls": [
+      {
+        "kind": "call_expression",
+        "start_byte": 26,
+        "end_byte": 34,
+        "start_row": 0,
+        "text": "rec(n-1)",
+        "callee_kind": "identifier",
+        "callee_text": "rec"
+      }
+    ],
+    "native_calls": []
+  }
+]

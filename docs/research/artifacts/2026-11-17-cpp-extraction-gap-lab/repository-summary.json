@@ -1,0 +1,206 @@
+{
+  "state": "completed",
+  "scope": "All tracked C++/header forms in both immutable repository snapshots, including third_party, tests, tools and extensions",
+  "whole_repository_manifest": [
+    {
+      "snapshot": "head",
+      "tracked_entries": 18342,
+      "cpp_inventory_files": 4924,
+      "cpp_inventory_bytes": 74690353
+    },
+    {
+      "snapshot": "base",
+      "tracked_entries": 18341,
+      "cpp_inventory_files": 4924,
+      "cpp_inventory_bytes": 74685621
+    }
+  ],
+  "statuses": [
+    {
+      "snapshot": "base",
+      "status": "ok",
+      "error_code": null,
+      "consumer_error": null,
+      "files": 4923
+    },
+    {
+      "snapshot": "base",
+      "status": "empty_source",
+      "error_code": null,
+      "consumer_error": null,
+      "files": 1
+    },
+    {
+      "snapshot": "head",
+      "status": "ok",
+      "error_code": null,
+      "consumer_error": null,
+      "files": 4923
+    },
+    {
+      "snapshot": "head",
+      "status": "empty_source",
+      "error_code": null,
+      "consumer_error": null,
+      "files": 1
+    }
+  ],
+  "edge_coverage": [
+    {
+      "snapshot": "head",
+      "relation": "extends",
+      "facts": 2442,
+      "bound": 298,
+      "unresolved": 2144
+    },
+    {
+      "snapshot": "base",
+      "relation": "contains",
+      "facts": 151567,
+      "bound": 151567,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "head",
+      "relation": "constructs",
+      "facts": 172,
+      "bound": 172,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "base",
+      "relation": "imports",
+      "facts": 4283,
+      "bound": 63,
+      "unresolved": 4220
+    },
+    {
+      "snapshot": "head",
+      "relation": "references",
+      "facts": 3,
+      "bound": 3,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "base",
+      "relation": "calls",
+      "facts": 230702,
+      "bound": 20546,
+      "unresolved": 210156
+    },
+    {
+      "snapshot": "base",
+      "relation": "defines",
+      "facts": 129927,
+      "bound": 129927,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "head",
+      "relation": "imports",
+      "facts": 4283,
+      "bound": 63,
+      "unresolved": 4220
+    },
+    {
+      "snapshot": "base",
+      "relation": "references",
+      "facts": 3,
+      "bound": 3,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "head",
+      "relation": "contains",
+      "facts": 151570,
+      "bound": 151570,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "head",
+      "relation": "defines",
+      "facts": 129930,
+      "bound": 129930,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "head",
+      "relation": "calls",
+      "facts": 230744,
+      "bound": 20551,
+      "unresolved": 210193
+    },
+    {
+      "snapshot": "base",
+      "relation": "constructs",
+      "facts": 172,
+      "bound": 172,
+      "unresolved": 0
+    },
+    {
+      "snapshot": "base",
+      "relation": "extends",
+      "facts": 2442,
+      "bound": 298,
+      "unresolved": 2144
+    }
+  ],
+  "changed_file_calls": [
+    {
+      "snapshot": "base",
+      "call_facts": 324,
+      "bound": 12,
+      "unresolved": 312
+    },
+    {
+      "snapshot": "head",
+      "call_facts": 366,
+      "bound": 17,
+      "unresolved": 349
+    }
+  ],
+  "missing_composite_key_endpoints": 0,
+  "confirmed_cross_file_calls": 0,
+  "cross_file_note": "The native result has single-file scope; same-name inventories are not linked edges",
+  "name_only_candidates": {
+    "zero": 41,
+    "one": 56,
+    "many": 252
+  },
+  "elapsed_seconds_this_run": 2.028481166000347,
+  "identities": {
+    "base": "629e395a854d72dcb1f414e1a0451c68ac0e9f1f",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "package_sha256": "41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f",
+    "info": {
+      "extension_version": "0.1.0",
+      "facts_schema_version": 1,
+      "duckdb_api_version": "2.0.0",
+      "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+      "supported_languages": [
+        "C",
+        "Cpp",
+        "Css",
+        "Go",
+        "Hcl",
+        "Html",
+        "Javascript",
+        "Json",
+        "JupyterNotebook",
+        "Lua",
+        "Markdown",
+        "Mermaid",
+        "Python",
+        "Rust",
+        "Shell",
+        "Sql",
+        "Terraform",
+        "Toml",
+        "Tsx",
+        "TypeScript",
+        "Yaml"
+      ],
+      "resolution_scope": "single_file"
+    }
+  }
+}

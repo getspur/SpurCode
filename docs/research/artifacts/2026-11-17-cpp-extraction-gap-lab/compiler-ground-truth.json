@@ -1,0 +1,698 @@
+[
+  {
+    "name": "bare_unique",
+    "purpose": "Positive local bare function",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/bare_unique",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/bare_unique/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "206c1d94f1304df40e5c1574ea8be0a261b4a5aacde3591e951f7011cbc0bc85"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "leaf",
+          "kind": "FunctionDecl",
+          "type": "int ()",
+          "mangled_name": "__Z4leafv"
+        },
+        "range": {
+          "begin": {
+            "offset": 42,
+            "col": 43,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 47,
+            "col": 48,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "qualified_namespaces",
+    "purpose": "Positive qualified disambiguation",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/qualified_namespaces",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/qualified_namespaces/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "95c1ee0cd05f4b5d5486452c968aaa1d5a72179739faed41063f2c5ae60d499d"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "a::leaf",
+          "kind": "FunctionDecl",
+          "type": "int ()",
+          "mangled_name": "__ZN1a4leafEv"
+        },
+        "range": {
+          "begin": {
+            "offset": 96,
+            "col": 97,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 104,
+            "col": 105,
+            "tokLen": 1
+          }
+        }
+      },
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "b::leaf",
+          "kind": "FunctionDecl",
+          "type": "int ()",
+          "mangled_name": "__ZN1b4leafEv"
+        },
+        "range": {
+          "begin": {
+            "offset": 106,
+            "col": 107,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 114,
+            "col": 115,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "overload_set",
+    "purpose": "Overload selection needs argument/signature evidence",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/overload_set",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/overload_set/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "0e05a2e04c16472e075526bb3a29c9ec53eb84044f59e75712f3ef355dbf82d3"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "pick",
+          "kind": "FunctionDecl",
+          "type": "int (int)",
+          "mangled_name": "__Z4picki"
+        },
+        "range": {
+          "begin": {
+            "offset": 80,
+            "col": 81,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 86,
+            "col": 87,
+            "tokLen": 1
+          }
+        }
+      },
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "pick",
+          "kind": "FunctionDecl",
+          "type": "double (double)",
+          "mangled_name": "__Z4pickd"
+        },
+        "range": {
+          "begin": {
+            "offset": 120,
+            "col": 121,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 128,
+            "col": 129,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "typed_receivers",
+    "purpose": "C++ parameter types should select the correct method",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/typed_receivers",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/typed_receivers/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "fe98c96594138f898472c4d38cea402070f3c1df09dc1900f4a9f7547ff37c4e"
+    },
+    "clang_calls": [
+      {
+        "kind": "CXXMemberCallExpr",
+        "target": {
+          "name": "A::run",
+          "kind": "CXXMethodDecl",
+          "type": "int ()",
+          "mangled_name": "__ZN1A3runEv"
+        },
+        "range": {
+          "begin": {
+            "offset": 99,
+            "col": 100,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 105,
+            "col": 106,
+            "tokLen": 1
+          }
+        }
+      },
+      {
+        "kind": "CXXMemberCallExpr",
+        "target": {
+          "name": "B::run",
+          "kind": "CXXMethodDecl",
+          "type": "int ()",
+          "mangled_name": "__ZN1B3runEv"
+        },
+        "range": {
+          "begin": {
+            "offset": 107,
+            "col": 108,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 113,
+            "col": 114,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "qualified_miss",
+    "purpose": "Explicit qualifier must not fall back to unrelated singleton",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/qualified_miss",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/qualified_miss/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "7a2c49cc1448a4dfee6a9c8b93c810544d1a1436ebf1988a8d26025a7f6233e8"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "foreign::leaf",
+          "kind": "FunctionDecl",
+          "type": "int ()",
+          "mangled_name": "__ZN7foreign4leafEv"
+        },
+        "range": {
+          "begin": {
+            "offset": 97,
+            "col": 98,
+            "tokLen": 7
+          },
+          "end": {
+            "offset": 111,
+            "col": 112,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "header_receiver",
+    "purpose": "Single-file singleton must not contradict a receiver declared in a header",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/header_receiver",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/header_receiver/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "api.hpp": "28a616a56bc4dedc28f6acc8bb7b6c4e303a775faf005719513104590bafd505",
+      "probe.cpp": "398b7067542d7493965927976c23b693eee01c100a24c49379247ed5c5b0ec13"
+    },
+    "clang_calls": [
+      {
+        "kind": "CXXMemberCallExpr",
+        "target": {
+          "name": "external::B::run",
+          "kind": "CXXMethodDecl",
+          "type": "int ()",
+          "mangled_name": "__ZN8external1B3runEv"
+        },
+        "range": {
+          "begin": {
+            "offset": 88,
+            "col": 70,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 94,
+            "col": 76,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "header_free_function",
+    "purpose": "Compare single-file and selected-repository extraction",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/header_free_function",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/header_free_function/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "api.hpp": "ebb81dd6f8afed13775bbecfa5b7a8efcef2f12a1328d8b66b1cc9d9efbd483c",
+      "probe.cpp": "81482de3986368d2e2dfcb90793a1db37b52cf426fe7569d2c2fcf4532623638"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "util",
+          "kind": "FunctionDecl",
+          "type": "int ()",
+          "mangled_name": "__Z4utilv"
+        },
+        "range": {
+          "begin": {
+            "offset": 39,
+            "col": 21,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 44,
+            "col": 26,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "template_identity",
+    "purpose": "Template/function duplicate identity affects resolution",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/template_identity",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/template_identity/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "d4e34ee088be6f9597610f6a9b2901b90ed50fe516fdd834ee0a9b387cbe63de"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "identity",
+          "kind": "FunctionDecl",
+          "type": "int (int)",
+          "mangled_name": "__Z8identityIiET_S0_"
+        },
+        "range": {
+          "begin": {
+            "offset": 65,
+            "col": 66,
+            "tokLen": 8
+          },
+          "end": {
+            "offset": 80,
+            "col": 81,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "qualified_member_templates",
+    "purpose": "Qualified and member template call syntax coverage",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/qualified_member_templates",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/qualified_member_templates/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "89752cc5d9bd8e35a719eec9a19e487f73dd85cfaa6aef143e1f11bfd20f0324"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "n::identity",
+          "kind": "FunctionDecl",
+          "type": "int (int)",
+          "mangled_name": "__ZN1n8identityIiEET_S1_"
+        },
+        "range": {
+          "begin": {
+            "offset": 141,
+            "col": 142,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 159,
+            "col": 160,
+            "tokLen": 1
+          }
+        }
+      },
+      {
+        "kind": "CXXMemberCallExpr",
+        "target": {
+          "name": "A::apply",
+          "kind": "CXXMethodDecl",
+          "type": "int (int)",
+          "mangled_name": "__ZN1A5applyIiEET_S1_"
+        },
+        "range": {
+          "begin": {
+            "offset": 161,
+            "col": 162,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 175,
+            "col": 176,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "custom_callback",
+    "purpose": "Callback values and indirect call targets remain distinct",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/custom_callback",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/custom_callback/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "e3a105bfb40541a800ba1a1d71e94dea3af84297e2898f7fed1f1fcae5d8122f"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "invoke::f",
+          "kind": "ParmVarDecl",
+          "type": "void (*)()",
+          "mangled_name": null
+        },
+        "range": {
+          "begin": {
+            "offset": 43,
+            "col": 44,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 45,
+            "col": 46,
+            "tokLen": 1
+          }
+        }
+      },
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "invoke",
+          "kind": "FunctionDecl",
+          "type": "void (void (*)())",
+          "mangled_name": "__Z6invokePFvvE"
+        },
+        "range": {
+          "begin": {
+            "offset": 63,
+            "col": 64,
+            "tokLen": 6
+          },
+          "end": {
+            "offset": 78,
+            "col": 79,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "function_pointer_shadow",
+    "purpose": "A function-pointer parameter shadows a same-name global function",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/function_pointer_shadow",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/function_pointer_shadow/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "edf44cb29f2c68b898eed2c3a3fa1283aca97760ef46b3fd20aedc6394fa0e22"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "caller::target",
+          "kind": "ParmVarDecl",
+          "type": "int (*)()",
+          "mangled_name": null
+        },
+        "range": {
+          "begin": {
+            "offset": 59,
+            "col": 60,
+            "tokLen": 6
+          },
+          "end": {
+            "offset": 66,
+            "col": 67,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "macro_expansion",
+    "purpose": "Macro call evidence differs from expanded callee",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/macro_expansion",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/macro_expansion/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "b1a17b4639bd25b869ac977c36cf1dcbd5d936a8687f1a1191490dc1cfbcb523"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "callback",
+          "kind": "FunctionDecl",
+          "type": "void ()",
+          "mangled_name": "__Z8callbackv"
+        },
+        "range": {
+          "begin": {
+            "spellingLoc": {
+              "offset": 55,
+              "col": 37,
+              "tokLen": 8
+            },
+            "expansionLoc": {
+              "offset": 51,
+              "col": 33,
+              "tokLen": 3,
+              "isMacroArgExpansion": true
+            }
+          },
+          "end": {
+            "spellingLoc": {
+              "offset": 17,
+              "line": 1,
+              "col": 18,
+              "tokLen": 1
+            },
+            "expansionLoc": {
+              "offset": 51,
+              "line": 2,
+              "col": 33,
+              "tokLen": 3
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "constructor",
+    "purpose": "Construction has a separate relation and denominator",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/constructor",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/constructor/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "c1474a535369954166e912e2f5a34780b954f7d1e3e2e046eedf109a35cfa14a"
+    },
+    "clang_calls": [
+      {
+        "kind": "CXXTemporaryObjectExpr",
+        "target": {
+          "name": "A",
+          "kind": "construction"
+        },
+        "range": {
+          "begin": {
+            "offset": 38,
+            "col": 39,
+            "tokLen": 1
+          },
+          "end": {
+            "offset": 40,
+            "col": 41,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "recursion",
+    "purpose": "Self-call preservation",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+    "command": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-Xclang",
+      "-ast-dump=json",
+      "-I/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/recursion",
+      "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/fixtures/recursion/probe.cpp"
+    ],
+    "exit_code": 0,
+    "files": {
+      "probe.cpp": "ef321d5b574f5d1beb11d5d091fd263e03f8dd77d693e543c431be362e99d760"
+    },
+    "clang_calls": [
+      {
+        "kind": "CallExpr",
+        "target": {
+          "name": "rec",
+          "kind": "FunctionDecl",
+          "type": "int (int)",
+          "mangled_name": "__Z3reci"
+        },
+        "range": {
+          "begin": {
+            "offset": 26,
+            "col": 27,
+            "tokLen": 3
+          },
+          "end": {
+            "offset": 33,
+            "col": 34,
+            "tokLen": 1
+          }
+        }
+      }
+    ]
+  }
+]

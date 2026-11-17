@@ -1,0 +1,258 @@
+{
+  "scope": "Finite policy over compiler-validated fixture observations; not proof of C++ semantics or a production implementation",
+  "request": {
+    "family": "data_integrity",
+    "mode": "verify",
+    "persist": false,
+    "rules": [
+      {
+        "rule_id": "data_integrity.mutually_consistent",
+        "subjects": [
+          "cpp_resolution_soundness"
+        ],
+        "parameters": {}
+      }
+    ],
+    "facts": {
+      "relations": {
+        "calls": {
+          "fields": {
+            "evidence": {
+              "kind": "enum",
+              "values": [
+                "lexical_safe",
+                "qualified_visible",
+                "ambiguous",
+                "qualifier_conflict",
+                "receiver_conflict",
+                "shadow_conflict",
+                "overload_conflict",
+                "name_only"
+              ]
+            },
+            "candidates": {
+              "kind": "enum",
+              "values": [
+                "one",
+                "many"
+              ]
+            },
+            "decision": {
+              "kind": "enum",
+              "values": [
+                "bound",
+                "candidate_only",
+                "unresolved"
+              ]
+            }
+          },
+          "rows": {
+            "bare_unique": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "lexical_safe"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "one"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "bound"
+                }
+              }
+            },
+            "qualified_namespaces": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "qualified_visible"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "one"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "bound"
+                }
+              }
+            },
+            "typed_receivers": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "ambiguous"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "many"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "unresolved"
+                }
+              }
+            },
+            "qualified_miss": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "qualifier_conflict"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "one"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "bound"
+                }
+              }
+            },
+            "header_receiver": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "receiver_conflict"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "one"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "bound"
+                }
+              }
+            },
+            "function_pointer_shadow": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "shadow_conflict"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "one"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "bound"
+                }
+              }
+            },
+            "overload_double": {
+              "active": true,
+              "cells": {
+                "evidence": {
+                  "present": true,
+                  "value": "overload_conflict"
+                },
+                "candidates": {
+                  "present": true,
+                  "value": "many"
+                },
+                "decision": {
+                  "present": true,
+                  "value": "bound"
+                }
+              }
+            }
+          }
+        }
+      },
+      "unique_constraints": {},
+      "foreign_keys": {},
+      "cardinality_constraints": {},
+      "value_ranges": {},
+      "conditional_requirements": {},
+      "aggregate_balances": {},
+      "temporal_constraints": {},
+      "consistency_relations": {
+        "cpp_resolution_soundness": {
+          "relation": "calls",
+          "fields": [
+            "evidence",
+            "candidates",
+            "decision"
+          ],
+          "allowed": [
+            [
+              "lexical_safe",
+              "one",
+              "bound"
+            ],
+            [
+              "qualified_visible",
+              "one",
+              "bound"
+            ],
+            [
+              "ambiguous",
+              "many",
+              "unresolved"
+            ],
+            [
+              "qualifier_conflict",
+              "one",
+              "unresolved"
+            ],
+            [
+              "receiver_conflict",
+              "one",
+              "unresolved"
+            ],
+            [
+              "shadow_conflict",
+              "one",
+              "unresolved"
+            ],
+            [
+              "overload_conflict",
+              "many",
+              "unresolved"
+            ],
+            [
+              "name_only",
+              "one",
+              "candidate_only"
+            ],
+            [
+              "name_only",
+              "one",
+              "unresolved"
+            ]
+          ]
+        }
+      }
+    },
+    "unknowns": [],
+    "timeout_ms": 30000,
+    "include_smt": true
+  },
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"family\": \"data_integrity\",\n  \"mode\": \"verify\",\n  \"outcome\": \"fail\",\n  \"rule_results\": [\n    {\n      \"rule_id\": \"data_integrity.mutually_consistent\",\n      \"binding_index\": 0,\n      \"status\": \"unsat\",\n      \"outcome\": \"fail\",\n      \"diagnostic\": \"data_integrity.mutually_consistent.violation\"\n    }\n  ],\n  \"total_duration_ms\": 12,\n  \"status\": \"unsat\",\n  \"duration_ms\": 0,\n  \"reason\": null,\n  \"unsat_core\": [\n    \"data_integrity_rule_0_data_integrity_mutually_consistent__subject_cpp_resolution_soundness\"\n  ],\n  \"cached\": true,\n  \"solver_version\": \"Z3 version 4.16.0 - 64 bit\"\n}"
+      }
+    ]
+  },
+  "prior_quota_error": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `spur-mcp/solve_rules`\n\nCaused by:\n    Mcp error: -32603: solver artifact quota exceeded (ArtifactCount): limit 512, attempted 513"
+      }
+    ],
+    "isError": true
+  }
+}

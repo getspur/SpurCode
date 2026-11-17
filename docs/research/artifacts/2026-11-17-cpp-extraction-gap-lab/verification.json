@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "scope": "Research baseline, full C++ inventory, actual extractor/extension parity and finite policy; production behavior unchanged",
+  "duckdb": "2.0.0",
+  "cpp_files_per_snapshot": 4924,
+  "unique_full_fact_inputs": 4926,
+  "fixture_parity": 14,
+  "known_wrong_binding_cases_confirmed": {
+    "qualifier": true,
+    "receiver": true,
+    "shadow": true,
+    "overload": true
+  },
+  "native_changed": {
+    "call_facts": 366,
+    "bound": 17,
+    "unresolved": 349
+  },
+  "shared_core_changed": {
+    "scope": "existing shared Rust builder over pinned head C++ sources",
+    "files": 4924,
+    "nodes": 156494,
+    "call_facts": 229688,
+    "bound": 43289,
+    "cross_file_bound": 27314,
+    "changed_call_facts": 353,
+    "changed_construct_facts": 13,
+    "changed_bound": 69,
+    "changed_cross_file_bound": 53,
+    "elapsed_seconds": 54.670626791
+  },
+  "solver": {
+    "observed": "unsat",
+    "proposed": "sat"
+  },
+  "limitations": [
+    "Syntax bindings are not compiler-validated at whole-repository scale",
+    "Other languages and generated/system sources are outside C++ scope",
+    "No production uplift or full extension release regression run is claimed"
+  ]
+}

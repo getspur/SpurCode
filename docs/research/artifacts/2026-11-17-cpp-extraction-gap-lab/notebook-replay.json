@@ -1,0 +1,523 @@
+{
+  "scope": "Document-order replay in existing DuckDB 2.0 and saved native Rust profiles; repository cache warm, no kernel restart claimed",
+  "code_cells": 20,
+  "status": "passed",
+  "semantic_output_checks": [
+    "no native error output",
+    "no Rust panic/assertion failure output"
+  ],
+  "receipts": [
+    {
+      "cell_id": "9cdd8b71-10a4-4ff5-8f9f-ed03d4543b42",
+      "status": "succeeded",
+      "exec_count": 27,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Baseline calls: 366 resolved: 17 unresolved: 349\nUnresolved evidence shapes: Counter({'receiver': 233, 'bare': 87, 'scope': 29})\nCommon unresolved labels: [('size', 28), ('GetExpressionClass', 11), ('MinValue', 11), ('GetColumnBindings', 11), ('empty', 10), ('emplace_back', 7), ('move', 7), ('GetName', 7), ('Verify', 7), ('Binding', 7), ('MaxValue', 7), ('push_back', 6), ('GetReturnType', 6), ('SetSingleValueIdentity', 5), ('GetFirstFunction', 5), ('insert', 5), ('DistinctCount', 5), ('get_index', 4), ('GetArguments', 4), ('SetName', 4)]\nReceiver/scope samples: [('GetOrderBys', 'input.aggregate', None, 'RewriteOrderedFirst'), ('unique_ptr_cast', None, None, 'RewriteOrderedFirst'), ('Copy', 'input.aggregate', None, 'RewriteOrderedFirst'), ('GetOrderBys', 'aggregate', None, 'RewriteOrderedFirst'), ('emplace_back', 'sort_children', None, 'RewriteOrderedFirst'), ('move', None, 'std', 'RewriteOrderedFirst'), ('make_uniq', None, None, 'RewriteOrderedFirst'), ('Value', None, None, 'RewriteOrderedFirst'), ('GetOrderModifier', 'order', None, 'RewriteOrderedFirst'), ('GetOrderBysMutable', 'aggregate', None, 'RewriteOrderedFirst'), ('reset', 'aggregate->GetOrderBysMutable()', None, 'RewriteOrderedFirst'), ('BindScalarFunction', 'binder', None, 'RewriteOrderedFirst')]\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:ff45abc761e1f09fe86f18e8de3b348a9c916e592ffb0be6639c032c6bb861a4",
+      "document_generation": 165,
+      "disk_token": "blake3:f1771f2c955c711218337aef52789823971d6e21875cd4891724812d2c5f610c",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "794d0d7d-1ad7-41f1-82d5-e320aa5ae551",
+      "status": "succeeded",
+      "exec_count": 7,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "actual_spur_graph_cpp_loaded: [\"add\"]\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:a8b12dab26e952fa43b22c3fb6768df2888add163ffe7b7304cbd5877deb75ee",
+      "document_generation": 168,
+      "disk_token": "blake3:2b2957fa736170bebb264a22771256f5c882ee98a92ae0fcd852677e505e39f7",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "b30b6dc3-851c-4dbb-b7cc-8d7b493672d6",
+      "status": "succeeded",
+      "exec_count": 28,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Disjoint evidence categories: {'receiver_without_call_chain': 211, 'bare_name': 87, 'explicit_std_scope': 8, 'receiver_call_chain': 22, 'explicit_non_std_scope': 21}\nreceiver_without_call_chain : [('GetOrderBys', 'input.aggregate', None), ('Copy', 'input.aggregate', None), ('GetOrderBys', 'aggregate', None), ('emplace_back', 'sort_children', None), ('GetOrderModifier', 'order', None)]\nbare_name : [('unique_ptr_cast', None, None), ('make_uniq', None, None), ('Value', None, None), ('QualifiedName', None, None), ('NextPowerOfTwo', None, None)]\nexplicit_std_scope : [('move', None, 'std'), ('move', None, 'std'), ('move', None, 'std'), ('find', None, 'std'), ('move', None, 'std')]\nreceiver_call_chain : [('reset', 'aggregate->GetOrderBysMutable()', None), ('SetSingleValueIdentity', 'result->FunctionMutable()', None), ('HasSingleValueIdentity', 'aggregate->Function()', None), ('GetParameter', 'function.GetSignature()', None), ('SetType', 'function.GetSignature().GetParameter(0)', None)]\nexplicit_non_std_scope : [('DefaultSchema', None, 'Identifier'), ('GetSystemCatalog', None, 'Catalog'), ('AddStringOrBlob', None, 'StringVector'), ('CreateSortKey', None, 'CreateSortKeyHelpers'), ('DecodeSortKey', None, 'CreateSortKeyHelpers')]\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:d1ebd1cbe87bb97d6937a1bcfb797b0c30da9c2181ac10eba56afe967b70fe69",
+      "document_generation": 171,
+      "disk_token": "blake3:bcefaf6543c61137656de7a7998d0624ec2366a607eec7e0140e066c389e432f",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "228267c0-86b8-47c9-ae6e-92c25f493a37",
+      "status": "succeeded",
+      "exec_count": 29,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Compiler: Apple clang version 17.0.0 (clang-1700.6.4.2)\nSyntax-valid fixtures: 14\nbare_unique [('CallExpr', {'name': 'leaf', 'kind': 'FunctionDecl', 'type': 'int ()', 'mangled_name': '__Z4leafv'})]\nqualified_namespaces [('CallExpr', {'name': 'a::leaf', 'kind': 'FunctionDecl', 'type': 'int ()', 'mangled_name': '__ZN1a4leafEv'}), ('CallExpr', {'name': 'b::leaf', 'kind': 'FunctionDecl', 'type': 'int ()', 'mangled_name': '__ZN1b4leafEv'})]\noverload_set [('CallExpr', {'name': 'pick', 'kind': 'FunctionDecl', 'type': 'int (int)', 'mangled_name': '__Z4picki'}), ('CallExpr', {'name': 'pick', 'kind': 'FunctionDecl', 'type': 'double (double)', 'mangled_name': '__Z4pickd'})]\ntyped_receivers [('CXXMemberCallExpr', {'name': 'A::run', 'kind': 'CXXMethodDecl', 'type': 'int ()', 'mangled_name': '__ZN1A3runEv'}), ('CXXMemberCallExpr', {'name': 'B::run', 'kind': 'CXXMethodDecl', 'type': 'int ()', 'mangled_name': '__ZN1B3runEv'})]\nqualified_miss [('CallExpr', {'name': 'foreign::leaf', 'kind': 'FunctionDecl', 'type': 'int ()', 'mangled_name': '__ZN7foreign4leafEv'})]\nheader_receiver [('CXXMemberCallExpr', {'name': 'external::B::run', 'kind': 'CXXMethodDecl', 'type': 'int ()', 'mangled_name': '__ZN8external1B3runEv'})]\nheader_free_function [('CallExpr', {'name': 'util', 'kind': 'FunctionDecl', 'type': 'int ()', 'mangled_name': '__Z4utilv'})]\ntemplate_identity [('CallExpr', {'name': 'identity', 'kind': 'FunctionDecl', 'type': 'int (int)', 'mangled_name': '__Z8identityIiET_S0_'})]\nqualified_member_templates [('CallExpr', {'name': 'n::identity', 'kind': 'FunctionDecl', 'type': 'int (int)', 'mangled_name': '__ZN1n8identityIiEET_S1_'}), ('CXXMemberCallExpr', {'name': 'A::apply', 'kind': 'CXXMethodDecl', 'type': 'int (int)', 'mangled_name': '__ZN1A5applyIiEET_S1_'})]\ncustom_callback [('CallExpr', {'name': 'invoke::f', 'kind': 'ParmVarDecl', 'type': 'void (*)()', 'mangled_name': None}), ('CallExpr', {'name': 'invoke', 'kind': 'FunctionDecl', 'type': 'void (void (*)())', 'mangled_name': '__Z6invokePFvvE'})]\nfunction_pointer_shadow [('CallExpr', {'name': 'caller::target', 'kind': 'ParmVarDecl', 'type': 'int (*)()', 'mangled_name': None})]\nmacro_expansion [('CallExpr', {'name': 'callback', 'kind': 'FunctionDecl', 'type': 'void ()', 'mangled_name': '__Z8callbackv'})]\nconstructor [('CXXTemporaryObjectExpr', {'name': 'A', 'kind': 'construction'})]\nrecursion [('CallExpr', {'name': 'rec', 'kind': 'FunctionDecl', 'type': 'int (int)', 'mangled_name': '__Z3reci'})]\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:68354d4ab2744d2e107e6637a34932acc613dbe1b9244bd7be4eed72a08b2bf5",
+      "document_generation": 174,
+      "disk_token": "blake3:39f985bd896e02cdf39c9dae8b02181d3611239cad5e7a469ebbfc9c1de575b8",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "db9ed774-00da-46d4-a96c-c5399787c744",
+      "status": "succeeded",
+      "exec_count": 6,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "factory_rust_ready\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:4ebd0d237708921c658842951bde0de3eb0e376937b2aa9b1a911ac6521f740f",
+      "document_generation": 177,
+      "disk_token": "blake3:de0d4ba7f8cc640ae78435ddf799e6391b9632e5d8b81179c0ec1fdd22ad676f",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "4e7ac546-1b2c-4b93-9997-66d524b72893",
+      "status": "succeeded",
+      "exec_count": 30,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "DuckDB: 2.0.0 Python: /Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python\nExtension: {\"extension_version\": \"0.1.0\", \"facts_schema_version\": 1, \"duckdb_api_version\": \"2.0.0\", \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\", \"supported_languages\": [\"C\", \"Cpp\", \"Css\", \"Go\", \"Hcl\", \"Html\", \"Javascript\", \"Json\", \"JupyterNotebook\", \"Lua\", \"Markdown\", \"Mermaid\", \"Python\", \"Rust\", \"Shell\", \"Sql\", \"Terraform\", \"Toml\", \"Tsx\", \"TypeScript\", \"Yaml\"], \"resolution_scope\": \"single_file\"}\nNative result keys: ['status', 'error_code', 'error_message', 'facts']\nExample result: {\"status\": \"ok\", \"error_code\": null, \"error_message\": null, \"facts\": {\"nodes\": [{\"node_id\": 1, \"stable_key\": \"3f2bbb39def82256\", \"label\": \"probe.cpp\", \"kind\": \"file\", \"file_id\": 1, \"source_span_id\": 1, \"first_seen_run_id\": 1}, {\"node_id\": 2, \"stable_key\": \"fc199ddf9e464d60\", \"label\": \"leaf\", \"kind\": \"function\", \"file_id\": 1, \"source_span_id\": 2, \"first_seen_run_id\": 1}, {\"node_id\": 3, \"stable_key\": \"924c14532a549ce2\", \"label\": \"caller\", \"kind\": \"function\", \"file_id\": 1, \"source_span_id\": 3, \"first_seen_run_id\": 1}], \"edges\": [{\"edge_id\": 1, \"source_node_id\": 1, \"target_node_id\": 2, \"relation\": \"contains\", \"target_label\": null, \"import_path\": null, \"receiver_text\": null, \"scope_text\": null, \"confidence\": \"syntax_exact\", \"confidence_score\": 1.0, \"edge_kind\": null, \"bind_method\": null, \"evidence_id\": 1, \"directed\": true, \"change_kind\": null}, {\"edge_id\": 2, \"source_node_id\": 1, \"target_node_id\": 3, \"relation\": \"contains\", \"target_label\": null, \"import_path\": null, \"receiver_text\": null, \"scope_text\": null, \"confidence\": \"syntax_exact\", \"confidence_score\": 1.0, \"edge_kind\": null, \"bind_method\": null, \"evidence_id\": 2, \"directed\": true, \"change_kind\": null}, {\"edge_id\": 3, \"source_node_id\": 3, \"target_node_id\": 2, \"relation\": \"calls\", \"target_label\": \"leaf\", \"import_path\": null, \"receiver_text\": null, \"scope_text\": null, \"confidence\": \"syntax_exact\", \"confidence_score\": 1.0, \"edge_kind\": null, \"bind_method\": \"singleton\", \"evidence_id\": 3, \"directed\": true, \"change_kind\": null}], \"spans\": [{\"span_id\": 1, \"file_id\": 1, \"start_byte\": 0, \"end_byte\": 50, \"start_line\": 1, \"end_line\": 1}, {\"span_id\": 2, \"file_id\": 1, \"start_byte\": 0, \"end_byte\": 21, \"start_line\": 1, \"end_line\": 1}, {\"span_id\": 3, \"file_id\": 1, \"start_byte\": 22, \"end_byte\": 50, \"start_line\": 1, \"end_line\": 1}], \"macro_invocations\": [], \"macro_scopes\": []}}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:43a8a3e2e02ee5b8d393be28009129436ccd2ff2e3bbd9bb88f5dac94306c011",
+      "document_generation": 180,
+      "disk_token": "blake3:51b9ab7a0c7dbe0ff8224a98779a03b3cdcdb78a43226403c9ddd08c77426548",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "d9f5e957-b74c-4a42-93d9-150748674f25",
+      "status": "succeeded",
+      "exec_count": 31,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"command\": [\n    \"/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python\",\n    \"/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/repo_extension_probe.py\",\n    \"--repo\",\n    \"/Users/kevintruong/project/duckdb\",\n    \"--base\",\n    \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n    \"--head\",\n    \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n    \"--package\",\n    \"/Users/kevintruong/project/SpurCode/.spur/artifacts/review-extensions-poc/extensions/v2.0.0/osx_arm64/spur_graph.duckdb_extension\",\n    \"--out\",\n    \"/Users/kevintruong/project/SpurCode/.spur/artifacts/cpp-gap-repository-index\"\n  ],\n  \"pid\": 34949,\n  \"script_sha256\": \"4a879db30ad7ed39ec89f39c0f28c11f683872cc161348266d1a1574a9d33871\",\n  \"package_sha256\": \"41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f\"\n}\nProgress: /Users/kevintruong/project/SpurCode/.spur/artifacts/cpp-gap-repository-index/progress.json\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:2bad61e4c5e126b2da5738ff5f81e9c1e104efca97760999506db68d9afdfa68",
+      "document_generation": 183,
+      "disk_token": "blake3:38d6519096bdeafd01117fedde5bfb2c310f4e9116de9bccad542cae07a453c6",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "b7be6bd0-fbf2-4510-bacf-7edf2f2f7fbf",
+      "status": "succeeded",
+      "exec_count": 7,
+      "output_count": 3,
+      "output_types": [
+        "stdout",
+        "stdout",
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "remote Rust probe exit: exit status: 0\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "cpp_gap_probe_v1: 14 fixtures and 2 pinned real files -> crates/spur-graph/examples/cpp_gap_probe_result.json\n"
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "actual Rust core results: 881519 bytes\n"
+        }
+      ],
+      "output_indices": [
+        0,
+        1,
+        2
+      ],
+      "cell_etag": "cell:sha256:9c958ac1f0b6b7ed386c87760da4e1c86bd9175024966cd339f75eeccca03ab4",
+      "document_generation": 188,
+      "disk_token": "blake3:a68cd6cdb6dc1606f3b890c3148f2a69c1b8c9396a6507421bc1fc0b5ae10e36",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "c6a30d58-6002-4a96-bd8b-93a8b7919c31",
+      "status": "succeeded",
+      "exec_count": 32,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"native_select\": {\n    \"samples\": 14,\n    \"median_seconds\": 0.42805816650070483,\n    \"total_seconds\": 5.971522166997602\n  },\n  \"autocommit_insert\": {\n    \"samples\": 14,\n    \"median_seconds\": 0.5754012500001409,\n    \"total_seconds\": 7.768061126997054\n  },\n  \"transaction_insert\": {\n    \"samples\": 14,\n    \"median_seconds\": 0.633946291999564,\n    \"total_seconds\": 9.715213709998352\n  }\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:8f541bea68872a2808e3949424a5771032f87f143fe7b0eb9c31a1532bc6cd6a",
+      "document_generation": 191,
+      "disk_token": "blake3:6984b7f0b9bed0c1e5e08ea6d714e3eded06d0535281094617055dc154c4ffa5",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "bdf85676-e25c-485f-a28a-be80ae18fa6d",
+      "status": "succeeded",
+      "exec_count": 33,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"samples\": 14,\n  \"total_seconds\": 0.6292378749985801,\n  \"seconds_per_row\": 0.044945562499898575\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:26aab6fbd3da3f9dc88df30beaaad20948131704eb97ee6d2cab591ebf1431cc",
+      "document_generation": 194,
+      "disk_token": "blake3:edfdbe8bf225a1f09833bdfa6122baccbca12cdbd7c1a14359dda07b2a258ade",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "41dac948-539b-4529-bf67-631cba19021a",
+      "status": "succeeded",
+      "exec_count": 34,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "The original per-file SQL pilot was intentionally stopped after 735 cached inputs.\n{\n  \"state\": \"indexing\",\n  \"completed_this_run\": 735,\n  \"pending_at_start\": 4926,\n  \"last_file\": \"src/include/duckdb/planner/column_binding_map.hpp\",\n  \"elapsed_seconds\": 277.91172091599947\n}\n\nThe completed scan uses SQL row batches by source directory, with the same native function.\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:e63df6c26f938f4d13d36b4efcbeb1146355e56add00aaef3a97b70ff863d989",
+      "document_generation": 197,
+      "disk_token": "blake3:dea97de8bb75d3127593c577fc74d78272d858180427b346ff897c9c4c02fd58",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "6620c9a3-a9bd-4f03-a3e7-d7f4d3f7098b",
+      "status": "succeeded",
+      "exec_count": 35,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Actual Rust / native extension parity: 14 fixtures\nbare_unique AST: 1 [('leaf', 'leaf', 'singleton')]\nqualified_namespaces AST: 2 [('leaf', 'a::leaf', 'fqn'), ('leaf', 'b::leaf', 'fqn')]\noverload_set AST: 2 [('pick', 'pick', 'same_file_duplicate'), ('pick', 'pick', 'same_file_duplicate')]\ntyped_receivers AST: 2 [('run', None, None), ('run', None, None)]\nqualified_miss AST: 1 [('leaf', 'actual::leaf', 'bare_qualified_singleton')]\nheader_receiver AST: 1 [('run', 'A::run', 'method_crate_singleton')]\nheader_free_function AST: 1 [('util', None, None)]\ntemplate_identity AST: 1 [('identity', None, None)]\nqualified_member_templates AST: 2 []\ncustom_callback AST: 2 [('f', None, None), ('invoke', 'invoke', 'singleton')]\nfunction_pointer_shadow AST: 1 [('target', 'target', 'singleton')]\nmacro_expansion AST: 1 [('RUN', None, None)]\nconstructor AST: 1 [('A', None, None)]\nrecursion AST: 1 []\nOverload witnesses: [{'relation': 'calls', 'label': 'pick', 'receiver': None, 'scope': None, 'bind_method': 'same_file_duplicate', 'caller': {'node_id': 4, 'name': 'caller', 'kind': 'function', 'definition': 'int caller(){return pick(1);}'}, 'target': {'node_id': 2, 'name': 'pick', 'kind': 'function', 'definition': 'int pick(int x){return x;}'}}, {'relation': 'calls', 'label': 'pick', 'receiver': None, 'scope': None, 'bind_method': 'same_file_duplicate', 'caller': {'node_id': 5, 'name': 'caller_double', 'kind': 'function', 'definition': 'double caller_double(){return pick(1.0);}'}, 'target': {'node_id': 2, 'name': 'pick', 'kind': 'function', 'definition': 'int pick(int x){return x;}'}}]\nReal syntax versus fact counts: [\n  {\n    \"path\": \"src/function/aggregate/distributive/first_last_any.cpp\",\n    \"source_sha256\": \"b8132604aa125a294008e7443936f6b034e71c536e8863dd79c88f9b56dd802e\",\n    \"syntax_call_expressions\": 182,\n    \"emitted_call_facts\": 139,\n    \"bound\": 1,\n    \"callee_shapes\": {\n      \"field_expression\": 99,\n      \"template_function\": 42,\n      \"qualified_identifier\": 27,\n      \"identifier\": 14\n    }\n  },\n  {\n    \"path\": \"src/optimizer/relation_statistics/relation_statistics_helper.cpp\",\n    \"source_sha256\": \"78eb6ff7ef921f05ea79c03a86f7158dbd043aeb8f617fc3ccdfde7e247c7fab\",\n    \"syntax_call_expressions\": 349,\n    \"emitted_call_facts\": 227,\n    \"bound\": 16,\n    \"callee_shapes\": {\n      \"template_function\": 23,\n      \"qualified_identifier\": 26,\n      \"field_expression\": 204,\n      \"identifier\": 87,\n      \"primitive_type\": 9\n    }\n  }\n]\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:629dbd12b50cef03e1a8e0ca0be7ca83c37812ec5a81179561bcbcf7ab7fc8b0",
+      "document_generation": 200,
+      "disk_token": "blake3:1b990f68552cedcdcf626fa0940d2e3c5a9d69b2877a85051ff621a5988d368f",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "99356c78-f3fa-4d9e-9802-71f83d2e52de",
+      "status": "succeeded",
+      "exec_count": 36,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Worker exit: 0\n{\n  \"state\": \"completed\",\n  \"completed_this_run\": 0\n}\n\n  \"zero\": 41,\n    \"one\": 56,\n    \"many\": 252\n  },\n  \"elapsed_seconds_this_run\": 2.028481166000347,\n  \"identities\": {\n    \"base\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n    \"head\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n    \"package_sha256\": \"41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f\",\n    \"info\": {\n      \"extension_version\": \"0.1.0\",\n      \"facts_schema_version\": 1,\n      \"duckdb_api_version\": \"2.0.0\",\n      \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n      \"supported_languages\": [\n        \"C\",\n        \"Cpp\",\n        \"Css\",\n        \"Go\",\n        \"Hcl\",\n        \"Html\",\n        \"Javascript\",\n        \"Json\",\n        \"JupyterNotebook\",\n        \"Lua\",\n        \"Markdown\",\n        \"Mermaid\",\n        \"Python\",\n        \"Rust\",\n        \"Shell\",\n        \"Sql\",\n        \"Terraform\",\n        \"Toml\",\n        \"Tsx\",\n        \"TypeScript\",\n        \"Yaml\"\n      ],\n      \"resolution_scope\": \"single_file\"\n    }\n  }\n}\n\n{\n  \"state\": \"completed\",\n  \"scope\": \"All tracked C++/header forms in both immutable repository snapshots, including third_party, tests, tools and extensions\",\n  \"whole_repository_manifest\": [\n    {\n      \"snapshot\": \"head\",\n      \"tracked_entries\": 18342,\n      \"cpp_inventory_files\": 4924,\n      \"cpp_inventory_bytes\": 74690353\n    },\n    {\n      \"snapshot\": \"base\",\n      \"tracked_entries\": 18341,\n      \"cpp_inventory_files\": 4924,\n      \"cpp_inventory_bytes\": 74685621\n    }\n  ],\n  \"statuses\": [\n    {\n      \"snapshot\": \"base\",\n      \"status\": \"ok\",\n      \"error_code\": null,\n      \"consumer_error\": null,\n      \"files\": 4923\n    },\n    {\n      \"snapshot\": \"base\",\n      \"status\": \"empty_source\",\n      \"error_code\": null,\n      \"consumer_error\": null,\n      \"files\": 1\n    },\n    {\n      \"snapshot\": \"head\",\n      \"status\": \"ok\",\n      \"error_code\": null,\n      \"consumer_error\": null,\n      \"files\": 4923\n    },\n    {\n      \"snapshot\": \"head\",\n      \"status\": \"empty_source\",\n      \"error_code\": null,\n      \"consumer_error\": null,\n      \"files\": 1\n    }\n  ],\n  \"edge_coverage\": [\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"extends\",\n      \"facts\": 2442,\n      \"bound\": 298,\n      \"unresolved\": 2144\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"contains\",\n      \"facts\": 151567,\n      \"bound\": 151567,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"constructs\",\n      \"facts\": 172,\n      \"bound\": 172,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"imports\",\n      \"facts\": 4283,\n      \"bound\": 63,\n      \"unresolved\": 4220\n    },\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"references\",\n      \"facts\": 3,\n      \"bound\": 3,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"calls\",\n      \"facts\": 230702,\n      \"bound\": 20546,\n      \"unresolved\": 210156\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"defines\",\n      \"facts\": 129927,\n      \"bound\": 129927,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"imports\",\n      \"facts\": 4283,\n      \"bound\": 63,\n      \"unresolved\": 4220\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"references\",\n      \"facts\": 3,\n      \"bound\": 3,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"contains\",\n      \"facts\": 151570,\n      \"bound\": 151570,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"defines\",\n      \"facts\": 129930,\n      \"bound\": 129930,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"head\",\n      \"relation\": \"calls\",\n      \"facts\": 230744,\n      \"bound\": 20551,\n      \"unresolved\": 210193\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"constructs\",\n      \"facts\": 172,\n      \"bound\": 172,\n      \"unresolved\": 0\n    },\n    {\n      \"snapshot\": \"base\",\n      \"relation\": \"extends\",\n      \"facts\": 2442,\n      \"bound\": 298,\n      \"unresolved\": 2144\n    }\n  ],\n  \"changed_file_calls\": [\n    {\n      \"snapshot\": \"base\",\n      \"call_facts\": 324,\n      \"bound\": 12,\n      \"unresolved\": 312\n    },\n    {\n      \"snapshot\": \"head\",\n      \"call_facts\": 366,\n      \"bound\": 17,\n      \"unresolved\": 349\n    }\n  ],\n  \"missing_composite_key_endpoints\": 0,\n  \"confirmed_cross_file_calls\": 0,\n  \"cross_file_note\": \"The native result has single-file scope; same-name inventories are not linked edges\",\n  \"name_only_candidates\": {\n    \"zero\": 41,\n    \"one\": 56,\n    \"many\": 252\n  },\n  \"elapsed_seconds_this_run\": 2.028481166000347,\n  \"identities\": {\n    \"base\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n    \"head\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n    \"package_sha256\": \"41f5e65ad778a4e90d513ef5dc2f5065d0f45629968a20a231ece962e9bf627f\",\n    \"info\": {\n      \"extension_version\": \"0.1.0\",\n      \"facts_schema_version\": 1,\n      \"duckdb_api_version\": \"2.0.0\",\n      \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n      \"supported_languages\": [\n        \"C\",\n        \"Cpp\",\n        \"Css\",\n        \"Go\",\n        \"Hcl\",\n        \"Html\",\n        \"Javascript\",\n        \"Json\",\n        \"JupyterNotebook\",\n        \"Lua\",\n        \"Markdown\",\n        \"Mermaid\",\n        \"Python\",\n        \"Rust\",\n        \"Shell\",\n        \"Sql\",\n        \"Terraform\",\n        \"Toml\",\n        \"Tsx\",\n        \"TypeScript\",\n        \"Yaml\"\n      ],\n      \"resolution_scope\": \"single_file\"\n    }\n  }\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:05f6181bdd4e131c1ede169813b6261629679575fe2bc66d8a22fc23a46fcfab",
+      "document_generation": 203,
+      "disk_token": "blake3:ba8db10331130fcb43a34c03bd2bebc34d3e28c65edfaf5e0b33a02504f51c50",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "b6a7d55e-c049-48b6-981f-a5da0904a31f",
+      "status": "succeeded",
+      "exec_count": 37,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Frozen head C++ inputs: 4924 all verified against SQL cache identities\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:24e38379d3ca92d7f8e422fad1b13fd8a3efd2ee4e0b39eb259704488e050acf",
+      "document_generation": 206,
+      "disk_token": "blake3:7d0215e37cc9aae33f01bf7c395b60689f253a78fb1adc5e96ab8d376d779ffc",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "06c335cc-42c6-4cae-80be-c9ed5d7120fe",
+      "status": "succeeded",
+      "exec_count": 8,
+      "output_count": 2,
+      "output_types": [
+        "stdout",
+        "execute_result"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\"scope\":\"existing shared Rust builder over pinned head C++ sources\",\"files\":4924,\"nodes\":156494,\"call_facts\":229688,\"bound\":43289,\"cross_file_bound\":27314,\"changed_call_facts\":353,\"changed_construct_facts\":13,\"changed_bound\":69,\"changed_cross_file_bound\":53,\"elapsed_seconds\":54.670626791}\n"
+        },
+        {
+          "output_type": "execute_result",
+          "execution_count": 8,
+          "data": {
+            "text/plain": "()"
+          },
+          "metadata": {}
+        }
+      ],
+      "output_indices": [
+        0,
+        1
+      ],
+      "cell_etag": "cell:sha256:59d31ad33086830724cf7222d2f6ee96062b71fe17daa3387890ffea884510d8",
+      "document_generation": 210,
+      "disk_token": "blake3:629b239915be1ef373eba80162ea9532e8b355c9717f664283be8f3f40cd824f",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "ef4555cf-1c0c-4d26-adce-86807eb83677",
+      "status": "succeeded",
+      "exec_count": 38,
+      "output_count": 1,
+      "output_types": [
+        "display_data"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        "┌────────────────┬───────────────────┬──────────────────┬─────────┬───────┬───────┐\n│ duckdb_version │ extension_version │ resolution_scope │ status  │ nodes │ edges │\n│    varchar     │      varchar      │     varchar      │ varchar │ int64 │ int64 │\n├────────────────┼───────────────────┼──────────────────┼─────────┼───────┼───────┤\n│ v2.0.0         │ 0.1.0             │ single_file      │ ok      │     3 │     3 │\n└────────────────┴───────────────────┴──────────────────┴─────────┴───────┴───────┘\n"
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:960fb7f7ee0985bf1dcec08bb291c555f4bf2e336ba030af6bb07b6afd42a7e1",
+      "document_generation": 213,
+      "disk_token": "blake3:df6983114038105699847cb2500921aadaff23ed876df65d8d4891a6ee46233e",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "92a7e3c1-ad48-457c-bba0-ce18ccdb6b85",
+      "status": "succeeded",
+      "exec_count": 39,
+      "output_count": 1,
+      "output_types": [
+        "display_data"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        "┌──────────┬────────────┬───────┬────────────┐\n│ snapshot │ call_facts │ bound │ unresolved │\n│ varchar  │   int64    │ int64 │   int64    │\n├──────────┼────────────┼───────┼────────────┤\n│ base     │     230702 │ 20546 │     210156 │\n│ head     │     230744 │ 20551 │     210193 │\n└──────────┴────────────┴───────┴────────────┘\n"
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:327ae8d94b05c517fbdc49cdc62d55fb169040f3b47c1ebf040ae31afc619c97",
+      "document_generation": 216,
+      "disk_token": "blake3:6e18c43988e0b159bd757c23af1183cfe9f29afc5b2685010a03bf2aa2b9aebb",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "9b3c217e-d05d-4c9e-bcb6-a9f6cf66b15e",
+      "status": "succeeded",
+      "exec_count": 40,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"cache_keys\": [\n    {\n      \"inputs\": 4926,\n      \"unique_keys\": 4926\n    }\n  ],\n  \"node_counts\": [\n    {\n      \"snapshot\": \"head\",\n      \"nodes\": 156494\n    },\n    {\n      \"snapshot\": \"base\",\n      \"nodes\": 156491\n    }\n  ],\n  \"empty_sources\": [\n    {\n      \"snapshot\": \"head\",\n      \"logical_path\": \"third_party/thrift/thrift/stdcxx.h\"\n    },\n    {\n      \"snapshot\": \"base\",\n      \"logical_path\": \"third_party/thrift/thrift/stdcxx.h\"\n    }\n  ],\n  \"candidate_shapes\": [\n    {\n      \"candidate_bucket\": \"many\",\n      \"evidence_shape\": \"bare\",\n      \"facts\": 56\n    },\n    {\n      \"candidate_bucket\": \"many\",\n      \"evidence_shape\": \"receiver\",\n      \"facts\": 178\n    },\n    {\n      \"candidate_bucket\": \"many\",\n      \"evidence_shape\": \"scope\",\n      \"facts\": 18\n    },\n    {\n      \"candidate_bucket\": \"one\",\n      \"evidence_shape\": \"bare\",\n      \"facts\": 11\n    },\n    {\n      \"candidate_bucket\": \"one\",\n      \"evidence_shape\": \"receiver\",\n      \"facts\": 36\n    },\n    {\n      \"candidate_bucket\": \"one\",\n      \"evidence_shape\": \"scope\",\n      \"facts\": 9\n    },\n    {\n      \"candidate_bucket\": \"zero\",\n      \"evidence_shape\": \"bare\",\n      \"facts\": 20\n    },\n    {\n      \"candidate_bucket\": \"zero\",\n      \"evidence_shape\": \"receiver\",\n      \"facts\": 19\n    },\n    {\n      \"candidate_bucket\": \"zero\",\n      \"evidence_shape\": \"scope\",\n      \"facts\": 2\n    }\n  ],\n  \"matching_names_are_not_bindings\": [\n    {\n      \"label\": \"GetExpressionClass\",\n      \"raw_candidate_nodes\": 1,\n      \"candidate_files\": 1\n    },\n    {\n      \"label\": \"MinValue\",\n      \"raw_candidate_nodes\": 2,\n      \"candidate_files\": 1\n    },\n    {\n      \"label\": \"SetSingleValueIdentity\",\n      \"raw_candidate_nodes\": 1,\n      \"candidate_files\": 1\n    },\n    {\n      \"label\": \"size\",\n      \"raw_candidate_nodes\": 63,\n      \"candidate_files\": 41\n    }\n  ]\n}\nExisting core shared-builder comparison: {\n  \"scope\": \"existing shared Rust builder over pinned head C++ sources\",\n  \"files\": 4924,\n  \"nodes\": 156494,\n  \"call_facts\": 229688,\n  \"bound\": 43289,\n  \"cross_file_bound\": 27314,\n  \"changed_call_facts\": 353,\n  \"changed_construct_facts\": 13,\n  \"changed_bound\": 69,\n  \"changed_cross_file_bound\": 53,\n  \"elapsed_seconds\": 54.670626791\n}\nDefault SQL connection databases: [('cpp_repository',), ('memory',), ('system',), ('temp',)]\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:f29ad39d0a66bba5cb8cfaa9fd550a9d863c0cf1a4dcdc40e12a6029d3ca6fcd",
+      "document_generation": 219,
+      "disk_token": "blake3:931039393f635a7c940063efe48d74328471a67f3815fc759cb61f1d79a4d069",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "a997c0f3-60d5-4fac-9808-f0e9546188d0",
+      "status": "succeeded",
+      "exec_count": 41,
+      "output_count": 1,
+      "output_types": [
+        "display_data"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        "┌─────────────────────────────────────────┬────────────┬─────────────────┬─────────────┬────────────────────────┐\n│               experiment                │ call_facts │ construct_facts │ bound_calls │ cross_file_bound_calls │\n│                 varchar                 │   int64    │      int64      │    int64    │         int64          │\n├─────────────────────────────────────────┼────────────┼─────────────────┼─────────────┼────────────────────────┤\n│ extension: all files, separate builders │        366 │               0 │          17 │                      0 │\n│ core: one shared repository builder     │        353 │              13 │          69 │                     53 │\n└─────────────────────────────────────────┴────────────┴─────────────────┴─────────────┴────────────────────────┘\n"
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:ce4365c93fe8d048a337f374fe180075807e2872059d5f0d1a9737c9aba8b432",
+      "document_generation": 222,
+      "disk_token": "blake3:234c75b8731bdce4aac19e1f738e2595e2773d918f13a55b24fffd8dffcc2808",
+      "durable": true,
+      "diagnostics": null
+    },
+    {
+      "cell_id": "0b78fd07-3de0-43da-916b-43546ebd9755",
+      "status": "succeeded",
+      "exec_count": 42,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"status\": \"passed\",\n  \"scope\": \"Research baseline, full C++ inventory, actual extractor/extension parity and finite policy; production behavior unchanged\",\n  \"duckdb\": \"2.0.0\",\n  \"cpp_files_per_snapshot\": 4924,\n  \"unique_full_fact_inputs\": 4926,\n  \"fixture_parity\": 14,\n  \"known_wrong_binding_cases_confirmed\": {\n    \"qualifier\": true,\n    \"receiver\": true,\n    \"shadow\": true,\n    \"overload\": true\n  },\n  \"native_changed\": {\n    \"call_facts\": 366,\n    \"bound\": 17,\n    \"unresolved\": 349\n  },\n  \"shared_core_changed\": {\n    \"scope\": \"existing shared Rust builder over pinned head C++ sources\",\n    \"files\": 4924,\n    \"nodes\": 156494,\n    \"call_facts\": 229688,\n    \"bound\": 43289,\n    \"cross_file_bound\": 27314,\n    \"changed_call_facts\": 353,\n    \"changed_construct_facts\": 13,\n    \"changed_bound\": 69,\n    \"changed_cross_file_bound\": 53,\n    \"elapsed_seconds\": 54.670626791\n  },\n  \"solver\": {\n    \"observed\": \"unsat\",\n    \"proposed\": \"sat\"\n  },\n  \"limitations\": [\n    \"Syntax bindings are not compiler-validated at whole-repository scale\",\n    \"Other languages and generated/system sources are outside C++ scope\",\n    \"No production uplift or full extension release regression run is claimed\"\n  ]\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:338314b9dfda6964dae1346ca6f4a6ceac655b649c7a1c4a24e084a5a848477d",
+      "document_generation": 225,
+      "disk_token": "blake3:a7c20843ab39c86fd816740a2f6c5ecb787c288b85925144bb20fcb29c3fc01f",
+      "durable": true,
+      "diagnostics": null
+    }
+  ]
+}

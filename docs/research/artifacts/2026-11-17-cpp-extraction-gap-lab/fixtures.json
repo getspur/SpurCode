@@ -1,0 +1,74 @@
+[
+  {
+    "name": "bare_unique",
+    "cpp": "int leaf(){return 1;} int caller(){return leaf();}",
+    "purpose": "Positive local bare function"
+  },
+  {
+    "name": "qualified_namespaces",
+    "cpp": "namespace a { int leaf(){return 1;} } namespace b { int leaf(){return 2;} } int caller(){return a::leaf()+b::leaf();}",
+    "purpose": "Positive qualified disambiguation"
+  },
+  {
+    "name": "overload_set",
+    "cpp": "int pick(int x){return x;} double pick(double x){return x;} int caller(){return pick(1);} double caller_double(){return pick(1.0);}",
+    "purpose": "Overload selection needs argument/signature evidence"
+  },
+  {
+    "name": "typed_receivers",
+    "cpp": "struct A { int run(){return 1;} }; struct B { int run(){return 2;} }; int caller(A &a,B &b){return a.run()+b.run();}",
+    "purpose": "C++ parameter types should select the correct method"
+  },
+  {
+    "name": "qualified_miss",
+    "cpp": "namespace actual { int leaf(){return 1;} } namespace foreign { int leaf(); } int caller(){return foreign::leaf();}",
+    "purpose": "Explicit qualifier must not fall back to unrelated singleton"
+  },
+  {
+    "name": "header_receiver",
+    "header": "namespace external { struct B { int run(); }; }",
+    "cpp": "#include \"api.hpp\"\nstruct A { int run(){return 1;} }; int caller(external::B &b){return b.run();}",
+    "purpose": "Single-file singleton must not contradict a receiver declared in a header"
+  },
+  {
+    "name": "header_free_function",
+    "header": "inline int util(){return 7;}",
+    "cpp": "#include \"api.hpp\"\nint caller(){return util();}",
+    "purpose": "Compare single-file and selected-repository extraction"
+  },
+  {
+    "name": "template_identity",
+    "cpp": "template<class T> T identity(T x){return x;} int caller(){return identity<int>(1);}",
+    "purpose": "Template/function duplicate identity affects resolution"
+  },
+  {
+    "name": "qualified_member_templates",
+    "cpp": "namespace n { template<class T> T identity(T x){return x;} } struct A { template<class T> T apply(T x){return x;} }; int caller(A &a){return n::identity<int>(1)+a.apply<int>(2);}",
+    "purpose": "Qualified and member template call syntax coverage"
+  },
+  {
+    "name": "custom_callback",
+    "cpp": "void callback(){} void invoke(void (*f)()){f();} void caller(){invoke(callback);}",
+    "purpose": "Callback values and indirect call targets remain distinct"
+  },
+  {
+    "name": "function_pointer_shadow",
+    "cpp": "int target(){return 1;} int caller(int (*target)()){return target();}",
+    "purpose": "A function-pointer parameter shadows a same-name global function"
+  },
+  {
+    "name": "macro_expansion",
+    "cpp": "#define RUN(f) f()\nvoid callback(){} void caller(){RUN(callback);}",
+    "purpose": "Macro call evidence differs from expanded callee"
+  },
+  {
+    "name": "constructor",
+    "cpp": "struct A { A(){} }; A caller(){return A();}",
+    "purpose": "Construction has a separate relation and denominator"
+  },
+  {
+    "name": "recursion",
+    "cpp": "int rec(int n){return n ? rec(n-1) : 0;}",
+    "purpose": "Self-call preservation"
+  }
+]
