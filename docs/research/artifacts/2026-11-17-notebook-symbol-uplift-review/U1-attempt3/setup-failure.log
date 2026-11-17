@@ -1,0 +1,44 @@
+   Compiling ring v0.17.14
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling tree-sitter v0.26.13
+   Compiling tree-sitter-bash v0.25.1
+   Compiling tree-sitter-hcl v1.1.0
+   Compiling tree-sitter-html v0.23.2
+   Compiling tree-sitter-json v0.24.8
+   Compiling tree-sitter-go v0.25.0
+   Compiling tree-sitter-yaml v0.7.2
+   Compiling tree-sitter-rust v0.24.2
+   Compiling tree-sitter-md v0.5.3
+   Compiling tree-sitter-mermaid v0.0.1 (/private/tmp/spur-notebook-u1-root-review/crates/tree-sitter-mermaid)
+   Compiling rustls-webpki v0.103.12
+   Compiling rustls v0.23.38
+   Compiling blake3 v1.8.5
+   Compiling tree-sitter-sequel v0.3.11
+   Compiling tree-sitter-python v0.25.0
+   Compiling tree-sitter-lua v0.5.0
+   Compiling tree-sitter-c v0.24.2
+   Compiling tree-sitter-typescript v0.23.2
+   Compiling zstd-safe v7.2.4
+   Compiling tree-sitter-css v0.25.0
+   Compiling tree-sitter-toml-ng v0.7.0
+   Compiling tokio-rustls v0.26.4
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.12.28
+   Compiling tree-sitter-cpp v0.23.4
+   Compiling spur-telemetry v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-telemetry)
+   Compiling spur-acp v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-acp)
+   Compiling spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)
+   Compiling spur-graph v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-graph)
+   Compiling zstd v0.13.3
+   Compiling parquet v58.1.0
+   Compiling spur-mcp v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-mcp)
+error: failed to run custom build command for `spur-solver v1.24.0 (/private/tmp/spur-notebook-u1-root-review/crates/spur-solver)`
+
+Caused by:
+  process didn't exit successfully: `/private/tmp/spur-notebook-u1-bd-bi1d-target/debug/build/spur-solver-ec8dab3fa17a59a1/build-script-build` (exit status: 101)
+  --- stderr
+
+  thread 'main' (244571403) panicked at crates/spur-solver/build.rs:13:9:
+  failed to build declarative solver rule manifest bundle: /Users/kevintruong/project/SpurCode/.spur/worktrees/b6329581-15bc-4afe-92fc-706f53f6beff/crates/spur-solver/src/rules/families/accessibility/rules (family `accessibility` rules): failed to discover approved rule sources: No such file or directory (os error 2)
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: build failed, waiting for other jobs to finish...

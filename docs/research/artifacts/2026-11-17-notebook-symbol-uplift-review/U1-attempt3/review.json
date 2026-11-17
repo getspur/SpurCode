@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "task": "U1",
+  "issue": "bd-bi1d",
+  "plan": "8d312244-5715-48b6-97df-1b4a6089039d",
+  "reviewed_branch": "spur/worker/v2/codex/dc95897af65a8511/b6329581-15bc-4afe-92fc-706f53f6beff",
+  "reviewed_commit": "26ce5a162ba844f5b13433c069265fb56f7f55ba",
+  "original_test_commit": "441bd06d368af44ebfea8a31e1422b5a69596178",
+  "original_fix_commit": "0bac160637015048dc11ba70c2a44dbec5127c5b",
+  "source_sha256": "76f85c09239204dbc2a575654e921353e663a665855daf63c1c6e7fe7db56186",
+  "worker_evidence": "docs/research/artifacts/2026-11-17-notebook-u1-bd-bi1d/attempt3/verification.json",
+  "receipt_check": {
+    "chunk_id": "cfdb1b",
+    "wall_time_seconds": 0.478400166,
+    "exit_code": 0,
+    "original_token_count": 94,
+    "output": "Verified exact RED/GREEN predicates, log counts/hashes, current and committed source hashes, both patch hashes and all 25 prior artifacts.\n441bd06d3 test(spur-graph): U1 cover Rust type annotations named dep and load\n079b08558 test(spur-graph): U1 retain host type-annotation assertion RED\n0bac16063 fix(spur-graph): U1 preserve Rust type colons during notebook preparation\n"
+  },
+  "root_test": {
+    "execution": "host; authorized SSM infrastructure-recovery fallback",
+    "cwd": "/private/tmp/spur-notebook-u1-root-review",
+    "command": [
+      "scripts/spur-cargo",
+      "test",
+      "-p",
+      "spur-graph",
+      "--no-default-features",
+      "--lib",
+      "extract::"
+    ],
+    "environment_overrides": {
+      "SPUR_REMOTE": "0",
+      "CARGO_TARGET_DIR": "/private/tmp/spur-notebook-u1-bd-bi1d-target",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "SPUR_SCCACHE_S3": "0",
+      "TMPDIR": "/private/tmp/spur-notebook-u1-bd-bi1d-tmp",
+      "RUSTC_WRAPPER": ""
+    },
+    "exit_code": 0,
+    "passed": 121,
+    "failed": 0,
+    "ignored": 0,
+    "log_scope": "Captured test execution output and terminal result; compilation output omitted."
+  },
+  "setup_failure": {
+    "exit_code": 101,
+    "stage": "custom build script, before tests",
+    "cause": "Cached spur-solver build script embedded removed worker checkout CARGO_MANIFEST_DIR",
+    "recovery": "Same wrapper and host target: clean -p spur-solver; retry with RUSTC_WRAPPER empty. No source changes. No compiled remote failure was rerun locally."
+  },
+  "review": {
+    "issue_status": "in_progress",
+    "completion_audit": "c10795a1c5774aba, 2026-11-17 06:22:35",
+    "signals": "none unresolved",
+    "source_scope": "3 extraction files; remaining files are task-owned evidence",
+    "finding_resolved": "Rust syntax colons for dep/load aliases preserved; real commands retain typed diagnostics",
+    "verdict": "approve U1",
+    "limitations": "Normalization/preparation only. U2-U5 and native DuckDB release acceptance remain pending."
+  }
+}
