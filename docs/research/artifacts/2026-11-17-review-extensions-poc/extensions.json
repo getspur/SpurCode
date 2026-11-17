@@ -1,0 +1,96 @@
+{
+  "runtime": "2.0.0",
+  "inventory": [
+    {
+      "extension_name": "duck_tails",
+      "extension_version": "v1.9.0",
+      "installed": true,
+      "loaded": true,
+      "install_mode": "REPOSITORY",
+      "installed_from": "community"
+    },
+    {
+      "extension_name": "duckpgq",
+      "extension_version": "9c11bc192a",
+      "installed": true,
+      "loaded": true,
+      "install_mode": "REPOSITORY",
+      "installed_from": "community"
+    },
+    {
+      "extension_name": "spur_graph",
+      "extension_version": "0.1.0",
+      "installed": true,
+      "loaded": true,
+      "install_mode": "CUSTOM_PATH",
+      "installed_from": "/Users/kevintruong/project/SpurCode/.spur/artifacts/explore-audit-bd-2bhj-native/spur_graph.duckdb_extension"
+    }
+  ],
+  "receipts": [
+    {
+      "statement": "INSTALL duck_tails FROM community",
+      "elapsed_seconds": 0.0,
+      "status": "ok"
+    },
+    {
+      "statement": "INSTALL '/Users/kevintruong/project/SpurCode/.spur/artifacts/explore-audit-bd-2bhj-native/spur_graph.duckdb_extension'",
+      "elapsed_seconds": 0.0,
+      "status": "ok"
+    },
+    {
+      "statement": "INSTALL duckpgq FROM community",
+      "elapsed_seconds": 0.0,
+      "status": "ok"
+    },
+    {
+      "statement": "LOAD duck_tails",
+      "elapsed_seconds": 0.002,
+      "status": "ok"
+    },
+    {
+      "statement": "LOAD spur_graph",
+      "elapsed_seconds": 0.003,
+      "status": "ok"
+    },
+    {
+      "statement": "LOAD duckpgq",
+      "elapsed_seconds": 0.003,
+      "status": "ok"
+    }
+  ],
+  "spur_graph_info": [
+    {
+      "metadata": {
+        "extension_version": "0.1.0",
+        "facts_schema_version": 1,
+        "duckdb_api_version": "2.0.0",
+        "extractor_id": "source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2",
+        "supported_languages": [
+          "C",
+          "Cpp",
+          "Css",
+          "Go",
+          "Hcl",
+          "Html",
+          "Javascript",
+          "Json",
+          "JupyterNotebook",
+          "Lua",
+          "Markdown",
+          "Mermaid",
+          "Python",
+          "Rust",
+          "Shell",
+          "Sql",
+          "Terraform",
+          "Toml",
+          "Tsx",
+          "TypeScript",
+          "Yaml"
+        ],
+        "resolution_scope": "single_file"
+      }
+    }
+  ],
+  "captured_at_utc": "2026-11-17T16:00:13.955416+00:00"
+}

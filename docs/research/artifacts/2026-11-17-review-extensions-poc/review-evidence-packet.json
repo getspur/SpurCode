@@ -1,0 +1,452 @@
+{
+  "schema_version": 1,
+  "source_snapshot_id": "cc714dc606372787dc8b",
+  "repository": "duckdb/duckdb",
+  "pr_number": 28731,
+  "comparison": {
+    "repo": "duckdb/duckdb",
+    "pr": 28731,
+    "target_base": "629e395a854d72dcb1f414e1a0451c68ac0e9f1f",
+    "merge_base": "629e395a854d72dcb1f414e1a0451c68ac0e9f1f",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "run_id": "cc714dc606372787dc8b",
+    "checkout_head": "acc2d6c44d2f7374f4f3ce933ff3357012ca23df"
+  },
+  "github": {
+    "inbox": {
+      "source": "attached @github-pat SQL functions",
+      "captured_at_utc": "2026-11-17T16:01:18.056277+00:00",
+      "pull_requests": [
+        {
+          "number": 28731,
+          "title": "Preserve aggregate domains for proven singleton groups",
+          "state": "open",
+          "user_login": "kevintruong",
+          "html_url": "https://github.com/duckdb/duckdb/pull/28731",
+          "updated_at": "2026-11-17T15:22:12Z"
+        }
+      ],
+      "issues": [
+        {
+          "number": 28615,
+          "title": "Performance regression after #28456: DISTINCT ON loses join-key statistics and changes join order",
+          "state": "open",
+          "user_login": "ted-wq-x",
+          "html_url": "https://github.com/duckdb/duckdb/issues/28615",
+          "updated_at": "2026-11-11T17:09:37Z"
+        }
+      ],
+      "scope": "two targeted searches, not a complete repository inbox"
+    },
+    "metadata_source": "GitHub connector get_pr_info",
+    "pr_context_captured_at_utc": "2026-11-17T15:46:49.892Z",
+    "requested_reviewers_state": "unknown"
+  },
+  "changes": {
+    "semantic_function_count": 5,
+    "raw_candidate_count": 6,
+    "items": [
+      {
+        "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+        "entity_name": "RewriteOrderedFirst",
+        "change": "modified",
+        "source_sha256": "b8132604aa125a294008e7443936f6b034e71c536e8863dd79c88f9b56dd802e",
+        "byte_start": 690,
+        "byte_end": 2601,
+        "line_start": 18,
+        "line_end": 59
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "entity_name": "HasBaseColumnSource",
+        "change": "added",
+        "source_sha256": "78eb6ff7ef921f05ea79c03a86f7158dbd043aeb8f617fc3ccdfde7e247c7fab",
+        "byte_start": 18922,
+        "byte_end": 19938,
+        "line_start": 476,
+        "line_end": 511
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "entity_name": "HasUniqueGroups",
+        "change": "added",
+        "source_sha256": "78eb6ff7ef921f05ea79c03a86f7158dbd043aeb8f617fc3ccdfde7e247c7fab",
+        "byte_start": 19940,
+        "byte_end": 21114,
+        "line_start": 513,
+        "line_end": 556
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "entity_name": "ExtractAggregationStatsInternal",
+        "change": "modified",
+        "source_sha256": "78eb6ff7ef921f05ea79c03a86f7158dbd043aeb8f617fc3ccdfde7e247c7fab",
+        "byte_start": 21116,
+        "byte_end": 27036,
+        "line_start": 558,
+        "line_end": 686
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "entity_name": "GetValuePreservingColumn",
+        "change": "added",
+        "source_sha256": "78eb6ff7ef921f05ea79c03a86f7158dbd043aeb8f617fc3ccdfde7e247c7fab",
+        "byte_start": 18004,
+        "byte_end": 18920,
+        "line_start": 455,
+        "line_end": 474
+      }
+    ]
+  },
+  "impact": {
+    "native_scope": "two changed C++ files; resolved call graph; caller to callee",
+    "normalized_vertices": 94,
+    "resolved_call_sites": 17,
+    "unresolved_call_sites": 349,
+    "max_hops": 2,
+    "caller_seed_rows": [
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:68cede076426f305",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 696,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:17bdd494003a7923",
+        "changed_name": "ExtractAggregationStatsInternal",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f7b28890f066d454",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 688,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:17bdd494003a7923",
+        "changed_name": "ExtractAggregationStatsInternal",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:17bdd494003a7923",
+        "caller_name": "ExtractAggregationStatsInternal",
+        "caller_line": 558,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f737f869a3b3ebb1",
+        "changed_name": "GetValuePreservingColumn",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:57a13bfd42232f81",
+        "caller_name": "HasUniqueGroups",
+        "caller_line": 513,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f737f869a3b3ebb1",
+        "changed_name": "GetValuePreservingColumn",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:5e9d2bc93a0cce43",
+        "caller_name": "HasBaseColumnSource",
+        "caller_line": 476,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f737f869a3b3ebb1",
+        "changed_name": "GetValuePreservingColumn",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:68cede076426f305",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 696,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f737f869a3b3ebb1",
+        "changed_name": "GetValuePreservingColumn",
+        "hops": 2
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f7b28890f066d454",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 688,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f737f869a3b3ebb1",
+        "changed_name": "GetValuePreservingColumn",
+        "hops": 2
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:17bdd494003a7923",
+        "caller_name": "ExtractAggregationStatsInternal",
+        "caller_line": 558,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:5e9d2bc93a0cce43",
+        "changed_name": "HasBaseColumnSource",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:68cede076426f305",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 696,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:5e9d2bc93a0cce43",
+        "changed_name": "HasBaseColumnSource",
+        "hops": 2
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f7b28890f066d454",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 688,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:5e9d2bc93a0cce43",
+        "changed_name": "HasBaseColumnSource",
+        "hops": 2
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:17bdd494003a7923",
+        "caller_name": "ExtractAggregationStatsInternal",
+        "caller_line": 558,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:57a13bfd42232f81",
+        "changed_name": "HasUniqueGroups",
+        "hops": 1
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:68cede076426f305",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 696,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:57a13bfd42232f81",
+        "changed_name": "HasUniqueGroups",
+        "hops": 2
+      },
+      {
+        "caller_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:f7b28890f066d454",
+        "caller_name": "RelationStatisticsHelper::ExtractAggregationStats",
+        "caller_line": 688,
+        "component": "Relational statistics",
+        "changed_id": "cc714dc606372787dc8b:src/optimizer/relation_statistics/relation_statistics_helper.cpp:57a13bfd42232f81",
+        "changed_name": "HasUniqueGroups",
+        "hops": 2
+      }
+    ],
+    "coverage": "partial_single_file",
+    "whole_repository_blast_radius_established": false
+  },
+  "curated_propagation": {
+    "origin": "source-inspected prior map; source hashes revalidated",
+    "automatically_native_resolved": false,
+    "items": [
+      {
+        "changed_behavior": "Changed ordered rewrite copies singleton identity to rebound aggregate",
+        "downstream_id": "manager",
+        "downstream_component": "Join optimization",
+        "downstream_behavior": "Join relation manager consumes extracted aggregate statistics",
+        "source_url": "https://github.com/duckdb/duckdb/blob/d29b26bb92ac940a0807be0f43cc385b31623839/src/optimizer/join_order/relation_manager.cpp#L623",
+        "hops": 2
+      },
+      {
+        "changed_behavior": "Changed ordered rewrite copies singleton identity to rebound aggregate",
+        "downstream_id": "estimator",
+        "downstream_component": "Join optimization",
+        "downstream_behavior": "Estimator updates total domains consumed by cardinality estimates",
+        "source_url": "https://github.com/duckdb/duckdb/blob/d29b26bb92ac940a0807be0f43cc385b31623839/src/optimizer/join_order/cardinality_estimator.cpp#L987",
+        "hops": 4
+      },
+      {
+        "changed_behavior": "Changed ordered rewrite copies singleton identity to rebound aggregate",
+        "downstream_id": "cost",
+        "downstream_component": "Join optimization",
+        "downstream_behavior": "Plan enumeration computes cardinality estimate and cost",
+        "source_url": "https://github.com/duckdb/duckdb/blob/d29b26bb92ac940a0807be0f43cc385b31623839/src/optimizer/join_order/plan_enumerator.cpp#L200",
+        "hops": 5
+      }
+    ]
+  },
+  "architecture": {
+    "mapping_source": "explicit POC path rules and source-inspected labels",
+    "approved_policy": null,
+    "alignment_state": "not_evaluated",
+    "components": [
+      {
+        "component": "Aggregate binding/rewrite",
+        "normalized_vertices": 59,
+        "directly_changed_symbols": 1,
+        "caller_vertices_in_limited_graph": 0,
+        "mapping_source": "POC path mapping",
+        "alignment_state": "not_evaluated_no_architecture_policy"
+      },
+      {
+        "component": "Relational statistics",
+        "normalized_vertices": 35,
+        "directly_changed_symbols": 4,
+        "caller_vertices_in_limited_graph": 5,
+        "mapping_source": "POC path mapping",
+        "alignment_state": "not_evaluated_no_architecture_policy"
+      }
+    ]
+  },
+  "people": {
+    "history_base": "629e395a854d72dcb1f414e1a0451c68ac0e9f1f",
+    "history_since": "2026-05-21",
+    "max_commits_per_file": 40,
+    "blame_regions": {
+      "first_last_any.cpp": [
+        19,
+        60
+      ],
+      "relation_statistics_helper.cpp": [
+        450,
+        565
+      ]
+    },
+    "candidates": [
+      {
+        "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+        "author_name": "Denis Hirn",
+        "base_region_lines": 38,
+        "github_login": "kryonix",
+        "evidence_url": "https://github.com/duckdb/duckdb/commit/3a5d0c26c254ee4521b504e03a0f1315b821fcdc",
+        "history_commits": 7,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      },
+      {
+        "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+        "author_name": "Mytherin",
+        "base_region_lines": 2,
+        "github_login": null,
+        "evidence_url": null,
+        "history_commits": 13,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      },
+      {
+        "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+        "author_name": "Pedro Holanda",
+        "base_region_lines": 1,
+        "github_login": null,
+        "evidence_url": null,
+        "history_commits": 1,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      },
+      {
+        "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+        "author_name": "Maxxen",
+        "base_region_lines": 1,
+        "github_login": null,
+        "evidence_url": null,
+        "history_commits": 1,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "author_name": "Laurens Kuiper",
+        "base_region_lines": 108,
+        "github_login": "lnkuiper",
+        "evidence_url": "https://github.com/duckdb/duckdb/commit/255d752c99831484aa675d496d3934767c5ac0cb",
+        "history_commits": 22,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "author_name": "xproblematique",
+        "base_region_lines": 5,
+        "github_login": null,
+        "evidence_url": null,
+        "history_commits": 1,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      },
+      {
+        "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "author_name": "Robinho-MR",
+        "base_region_lines": 3,
+        "github_login": null,
+        "evidence_url": null,
+        "history_commits": 3,
+        "role": "historical_expertise_candidate",
+        "formal_owner_verified": false
+      }
+    ],
+    "formal_ownership_verified": false,
+    "current_assignment_state": "unknown"
+  },
+  "source_coverage": {
+    "analyzed_files": [
+      "src/function/aggregate/distributive/first_last_any.cpp",
+      "src/optimizer/relation_statistics/relation_statistics_helper.cpp"
+    ],
+    "other_changed_files_not_symbol_analyzed": [
+      "test/configs/stats_dependent_tests.json",
+      "test/configs/verify_aggregate_state_export.json",
+      "test/sql/optimizer/statistics/distinct_on_stats_propagation.test"
+    ]
+  },
+  "joined_review_rows": [
+    {
+      "pr_number": 28731,
+      "changed_symbol": "ExtractAggregationStatsInternal",
+      "component": "Relational statistics",
+      "callers_found_in_limited_graph": 2,
+      "historical_expertise_candidate": "lnkuiper",
+      "base_region_lines": 108,
+      "impact_coverage": "partial_single_file",
+      "architecture_alignment": "not_evaluated_no_policy"
+    },
+    {
+      "pr_number": 28731,
+      "changed_symbol": "GetValuePreservingColumn",
+      "component": "Relational statistics",
+      "callers_found_in_limited_graph": 5,
+      "historical_expertise_candidate": "lnkuiper",
+      "base_region_lines": 108,
+      "impact_coverage": "partial_single_file",
+      "architecture_alignment": "not_evaluated_no_policy"
+    },
+    {
+      "pr_number": 28731,
+      "changed_symbol": "HasBaseColumnSource",
+      "component": "Relational statistics",
+      "callers_found_in_limited_graph": 3,
+      "historical_expertise_candidate": "lnkuiper",
+      "base_region_lines": 108,
+      "impact_coverage": "partial_single_file",
+      "architecture_alignment": "not_evaluated_no_policy"
+    },
+    {
+      "pr_number": 28731,
+      "changed_symbol": "HasUniqueGroups",
+      "component": "Relational statistics",
+      "callers_found_in_limited_graph": 3,
+      "historical_expertise_candidate": "lnkuiper",
+      "base_region_lines": 108,
+      "impact_coverage": "partial_single_file",
+      "architecture_alignment": "not_evaluated_no_policy"
+    },
+    {
+      "pr_number": 28731,
+      "changed_symbol": "RewriteOrderedFirst",
+      "component": "Aggregate binding/rewrite",
+      "callers_found_in_limited_graph": 0,
+      "historical_expertise_candidate": "kryonix",
+      "base_region_lines": 38,
+      "impact_coverage": "partial_single_file",
+      "architecture_alignment": "not_evaluated_no_policy"
+    }
+  ],
+  "ai_review": {
+    "status": "not_run",
+    "findings": []
+  },
+  "validation": {
+    "native_pgq_matches_recursive_sql": true,
+    "runtime_benchmarks_run": false,
+    "pr_regression_suite_run": false
+  },
+  "known_gaps": [
+    "repository linking and callback/metadata edges",
+    "ordinary symbol matching and experimental normalization",
+    "GitHub detailed-resource collection",
+    "approved architecture policy",
+    "current ownership/assignment evidence",
+    "AI provider execution"
+  ],
+  "packet_id": "6be0513b109854a1ab64bcaf9b0467320c6ee4c2cae29a89b3f28756848eb3dd"
+}

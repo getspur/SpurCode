@@ -1,0 +1,114 @@
+[
+  {
+    "from_node": "planner",
+    "to_node": "binding",
+    "relation": "lowers_and_binds",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "binding",
+    "to_node": "callback",
+    "relation": "registers_callback",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "dispatcher",
+    "to_node": "callback",
+    "relation": "dispatches_callback",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "callback",
+    "to_node": "ordered",
+    "relation": "invokes_registered_rewrite",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "ordered",
+    "to_node": "stats",
+    "relation": "preserves_identity_metadata_consumed_by",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "keys",
+    "to_node": "proof",
+    "relation": "supplies_unique_key_evidence",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "proof",
+    "to_node": "stats",
+    "relation": "guards_singleton_cardinality_and_domain",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "lineage",
+    "to_node": "guard",
+    "relation": "guards_base_column_domain_forwarding",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "guard",
+    "to_node": "stats",
+    "relation": "qualifies_domain_transfer",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "stats",
+    "to_node": "extractor",
+    "relation": "statistics_returned_to_caller",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "stats",
+    "to_node": "manager",
+    "relation": "statistics_returned_to_caller",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "manager",
+    "to_node": "leaf",
+    "relation": "supplies_leaf_relation_statistics",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "leaf",
+    "to_node": "estimator",
+    "relation": "initializes_domains",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  },
+  {
+    "from_node": "estimator",
+    "to_node": "cost",
+    "relation": "feeds_estimates_into_costing",
+    "evidence_class": "source_path",
+    "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+    "runtime_verified": false
+  }
+]

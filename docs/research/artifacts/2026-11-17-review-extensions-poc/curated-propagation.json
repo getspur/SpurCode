@@ -1,0 +1,26 @@
+[
+  {
+    "changed_behavior": "Changed ordered rewrite copies singleton identity to rebound aggregate",
+    "downstream_id": "manager",
+    "downstream_component": "Join optimization",
+    "downstream_behavior": "Join relation manager consumes extracted aggregate statistics",
+    "source_url": "https://github.com/duckdb/duckdb/blob/d29b26bb92ac940a0807be0f43cc385b31623839/src/optimizer/join_order/relation_manager.cpp#L623",
+    "hops": 2
+  },
+  {
+    "changed_behavior": "Changed ordered rewrite copies singleton identity to rebound aggregate",
+    "downstream_id": "estimator",
+    "downstream_component": "Join optimization",
+    "downstream_behavior": "Estimator updates total domains consumed by cardinality estimates",
+    "source_url": "https://github.com/duckdb/duckdb/blob/d29b26bb92ac940a0807be0f43cc385b31623839/src/optimizer/join_order/cardinality_estimator.cpp#L987",
+    "hops": 4
+  },
+  {
+    "changed_behavior": "Changed ordered rewrite copies singleton identity to rebound aggregate",
+    "downstream_id": "cost",
+    "downstream_component": "Join optimization",
+    "downstream_behavior": "Plan enumeration computes cardinality estimate and cost",
+    "source_url": "https://github.com/duckdb/duckdb/blob/d29b26bb92ac940a0807be0f43cc385b31623839/src/optimizer/join_order/plan_enumerator.cpp#L200",
+    "hops": 5
+  }
+]

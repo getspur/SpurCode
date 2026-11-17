@@ -1,0 +1,31 @@
+{
+  "query": "-- A narrow real inbox slice. Search limits are not a claim of a complete repository inbox.\nCREATE OR REPLACE TABLE github_poc_pr_inbox AS\nSELECT number,title,state,user_login,html_url,updated_at\nFROM github_search_issues(\"q\" = 'repo:duckdb/duckdb is:pr 28731',\"sort\"='updated',\"order\"='desc');\nCREATE OR REPLACE TABLE github_poc_issue_inbox AS\nSELECT number,title,state,user_login,html_url,updated_at\nFROM github_search_issues(\"q\" = 'repo:duckdb/duckdb is:issue 28615',\"sort\"='updated',\"order\"='desc');\nSELECT 'pull_request' AS item_type,* FROM github_poc_pr_inbox\nUNION ALL\nSELECT 'issue' AS item_type,* FROM github_poc_issue_inbox\nORDER BY item_type,number;",
+  "first_attempt": {
+    "route": "notebook_run_cell SQL",
+    "status": "failed",
+    "exec_count": null,
+    "outputs": [],
+    "diagnostics": null
+  },
+  "retry": {
+    "cell_id": "6d34cc21-304b-44cf-8011-cb3c435bb531",
+    "status": "succeeded",
+    "exec_count": 10,
+    "output_count": 1,
+    "output_types": [
+      "display_data"
+    ],
+    "notebook_id": "nb-12c274a87968ec591618e629",
+    "outputs": [
+      "┌──────────────┬────────┬───────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬─────────────┬───────────────────────────────────────────────┬──────────────────────┐\n│  item_type   │ number │                                               title                                               │  state  │ user_login  │                   html_url                    │      updated_at      │\n│   varchar    │ int64  │                                              varchar                                              │ varchar │   varchar   │                    varchar                    │       varchar        │\n├──────────────┼────────┼───────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼─────────────┼───────────────────────────────────────────────┼──────────────────────┤\n│ issue        │  28615 │ Performance regression after #28456: DISTINCT ON loses join-key statistics and changes join order │ open    │ ted-wq-x    │ https://github.com/duckdb/duckdb/issues/28615 │ 2026-11-11T17:09:37Z │\n│ pull_request │  28731 │ Preserve aggregate domains for proven singleton groups                                            │ open    │ kevintruong │ https://github.com/duckdb/duckdb/pull/28731   │ 2026-11-17T15:22:12Z │\n└──────────────┴────────┴───────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴─────────────┴───────────────────────────────────────────────┴──────────────────────┘\n"
+    ],
+    "output_indices": [
+      0
+    ],
+    "cell_etag": "cell:sha256:fd00544b44bf689c12ea90eff2c96cea3669257e94ed98a1da30e7c48b11098e",
+    "document_generation": 40,
+    "disk_token": "blake3:99dd6552970d23292c5f4a85578884d1cff2bf8f19bc5a914a6b37f6e9c450ae",
+    "durable": true,
+    "diagnostics": null
+  }
+}
