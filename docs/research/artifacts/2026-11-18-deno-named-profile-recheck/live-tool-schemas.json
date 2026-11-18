@@ -1,0 +1,125 @@
+[
+  {
+    "name": "notebook_kernel_config_spec",
+    "description": "Discover portable native kernel settings, defaults, path bases and apply semantics. No open notebook or installed kernel is required.",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "kernel_name"
+      ],
+      "properties": {
+        "kernel_name": {
+          "type": "string",
+          "enum": [
+            "xcpp",
+            "xcpp17",
+            "xcpp20",
+            "xcpp23",
+            "evcxr"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "notebook_configure_kernel",
+    "description": "Validate or save a notebook-local C++/Rust profile. Discover config fields with notebook_kernel_config_spec. Omit profile and make_default together to update the current default, or select/create default when unset. Explicit profile preserves its stable identity and changes the default only with make_default=true; make_default requires profile. dry_run allocates no identity and changes nothing. next_start saves only; restart saves first and restarts only the selected profile. Writes require document generation and a UUID for exact retries.",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "notebook_path",
+        "kernel_name",
+        "config"
+      ],
+      "properties": {
+        "notebook_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kernel_name": {
+          "type": "string",
+          "enum": [
+            "xcpp",
+            "xcpp17",
+            "xcpp20",
+            "xcpp23",
+            "evcxr"
+          ]
+        },
+        "config": {
+          "type": "object",
+          "description": "Exact kernel-specific config schema returned by notebook_kernel_config_spec"
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "make_default": {
+          "type": "boolean",
+          "description": "Requires profile; only true changes the default pointer"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Notebook document generation, required for writes"
+        },
+        "mutation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "dry_run": {
+          "type": "boolean",
+          "default": false
+        },
+        "apply": {
+          "type": "string",
+          "enum": [
+            "next_start",
+            "restart"
+          ],
+          "default": "next_start"
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "notebook_kernel_profiles",
+    "description": "Inspect notebook-local native definitions, stable profile IDs and derived opaque slots before launch, default/factory targets, readiness, process generations and diagnostics. Read-only: no migration, allocation, provisioning or process changes. One invalid definition is reported alongside all other definitions.",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "notebook_path"
+      ],
+      "properties": {
+        "notebook_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "cpp",
+            "rust"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": true
+    }
+  }
+]

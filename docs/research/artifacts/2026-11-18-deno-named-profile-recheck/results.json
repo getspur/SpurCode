@@ -1,0 +1,35 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb",
+  "mcp_endpoint": "/Users/kevintruong/.spur/notebooks/sessions/ws-bd41396f171e45c6943b32bc.sock",
+  "source": {
+    "path": "/Users/kevintruong/project/spur-notebook/src/mcp/tools/notebook_kernel_config_spec.rs",
+    "sha256": "3eb576557c5cd1bfa9a993f98f29d3a6ef1e34839d7d68cb3c7a9cb06ea1112d",
+    "schema_declares_deno": true
+  },
+  "running_interface": {
+    "kernel_names": [
+      "xcpp",
+      "xcpp17",
+      "xcpp20",
+      "xcpp23",
+      "evcxr"
+    ],
+    "profile_schema_version": 2,
+    "profile_families": [
+      "cpp",
+      "rust"
+    ],
+    "deno_spec_response": {
+      "code": -32602,
+      "message": "unsupported logical kernel \"deno\"; use xcpp/xcpp17/xcpp20/xcpp23/evcxr"
+    }
+  },
+  "installed_app": {
+    "path": "/Users/kevintruong/Applications/SpurLab.app",
+    "binary_sha256": "54ac7971df36943a988cf2eff6bd71a6730daf6fec01660e514788ed07f42e2b",
+    "binary_modified": "2026-11-18T09:09:17",
+    "expected_deno_host_resource_directory_exists": false
+  },
+  "named_profile_execution": "not run: connected backend rejects Deno configuration discovery",
+  "conclusion": "Current source declares named Deno configuration. Earlier standalone probes did not test it. The connected runtime exposes an older interface. An updated compatible runtime is needed for the named-profile import probe."
+}
