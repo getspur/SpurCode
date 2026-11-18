@@ -1,5 +1,7 @@
 # Named Deno configuration recheck
 
+**Historical runtime observation:** the subsequent [new-build verification](../2026-11-18-ts-named-new-build/README.md) confirms that named TS/Deno discovery, saving and cell selection are now exposed. It records a separate MCP startup blocker. The older interface responses below are retained as evidence of the earlier build.
+
 The user's correction is valid: the current source checkout declares named Deno configurations, including a `project_root`, stable profile identity, defaults and per-cell selectors. The earlier diagnostic notebook tested the standalone Deno kernel, not this named runtime path.
 
 [Updated diagnostic notebook](/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb) · [Captured correction](experimental-notebook.ipynb) · [Results](results.json) · [Live schemas](live-tool-schemas.json) · [Read-only MCP responses](mcp-receipts.json)

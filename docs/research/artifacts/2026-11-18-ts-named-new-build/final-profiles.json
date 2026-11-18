@@ -1,0 +1,126 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb",
+  "version": 7,
+  "document_generation": 7,
+  "schema_version": 3,
+  "diagnostics": [],
+  "deno": {
+    "default_profile": null,
+    "profiles": {
+      "ts-config-probe": {
+        "kernel_name": "deno",
+        "config": {
+          "project_root": "../../../../private/tmp/spur-ts-named-probe-3f23vd3j"
+        },
+        "profile_id": "64e074b9-8f19-4782-b7ad-ef895c3e131f",
+        "profile": "ts-config-probe",
+        "runtime_slot_id": "native-profile:v1:90:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb4:deno4:deno36:64e074b9-8f19-4782-b7ad-ef895c3e131f",
+        "process": null,
+        "readiness": {
+          "ready": false,
+          "applied": false,
+          "diagnostics": [
+            {
+              "code": "dependency_cache_unverified",
+              "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+              "blocking": false
+            },
+            {
+              "code": "explicit_restart_required",
+              "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+              "blocking": false
+            },
+            {
+              "code": "deno_resolution_scope",
+              "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+              "blocking": false
+            },
+            {
+              "code": "runtime_unavailable",
+              "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+              "blocking": true
+            }
+          ]
+        },
+        "diagnostics": [],
+        "live_processes": [],
+        "ports_api": {
+          "version": 2,
+          "asynchronous": true,
+          "requires_qualified_bridge": true
+        },
+        "runtime": {
+          "status": "saved",
+          "applied": false,
+          "last_failure": null
+        },
+        "dependency_mode": "none"
+      }
+    },
+    "factory": {
+      "profile_id": "factory",
+      "kernel_name": "deno",
+      "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb#deno",
+      "process": null,
+      "diagnostics": [],
+      "ports_api": {
+        "version": 1,
+        "synchronous": true
+      }
+    },
+    "effective_target": {
+      "profile_id": "factory",
+      "kernel_name": "deno",
+      "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb#deno",
+      "process": null,
+      "diagnostics": [],
+      "ports_api": {
+        "version": 1,
+        "synchronous": true
+      }
+    },
+    "diagnostics": [],
+    "apply": {
+      "default": "next_start",
+      "supported": [
+        "next_start",
+        "restart"
+      ],
+      "dry_run": "no mutation or identity allocation",
+      "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+    },
+    "dependency_policy": {
+      "install": false,
+      "project_writes": false,
+      "prepared_dependencies_required": true,
+      "supported_node_modules_modes": [
+        "manual",
+        "none"
+      ],
+      "unsupported_modes": [
+        "auto",
+        "vendor",
+        "workspace"
+      ],
+      "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+    },
+    "ports_api": {
+      "standalone": {
+        "version": 1,
+        "synchronous": true
+      },
+      "project": {
+        "version": 2,
+        "asynchronous": true,
+        "requires_qualified_bridge": true,
+        "readiness": "ready only for the current initialized registration with valid launch inputs"
+      }
+    },
+    "profile_identity": {
+      "schema_version": 3,
+      "profile_id": "stable server-assigned UUID",
+      "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+      "default_profile": "existing profile name or null for standalone factory"
+    }
+  }
+}

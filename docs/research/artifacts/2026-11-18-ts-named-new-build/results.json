@@ -1,0 +1,546 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb",
+  "profile_name": "ts-config-probe",
+  "fixture": {
+    "project_root": "../../../../private/tmp/spur-ts-named-probe-3f23vd3j",
+    "canonical_root": "/private/tmp/spur-ts-named-probe-3f23vd3j",
+    "hashes": {
+      "data.json": "252b87db5660df76c77357c9e34e0a01682a62379566d90101d96ebd4a8f6eb4",
+      "deno.json": "9134fc5350621654e63dbc7e3a1b7c67afc913156ee778c9b3c6b2a540443ec1",
+      "entry.ts": "22f8a67bc9a26f6214ec1ebef5e8528c17218fc0a7cd0253b2a11460d4f6dd7f",
+      "entry.tsx": "d0fe60a3ec89b9946a1791a8c582ffd9d4385138fccad1919a24aec79d8aa8be",
+      "jsx-runtime.ts": "994df5f0717b1269b34979c6a2d5bde710a275658314a008fea75f60543246e4",
+      "module.ts": "cb98da65f0471b6fbc330bf437ffd8e38e5601a68edfd61e807a5042465805c7"
+    }
+  },
+  "live_schema": {
+    "kernel_name": "deno",
+    "language": "deno",
+    "schema_version": 1,
+    "config_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project_root": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+        }
+      },
+      "required": [
+        "project_root"
+      ]
+    },
+    "path_bases": {
+      "project_root": "notebook directory",
+      "other_project_paths": "project_root; relative parent segments supported"
+    },
+    "apply": {
+      "default": "next_start",
+      "supported": [
+        "next_start",
+        "restart"
+      ],
+      "dry_run": "no mutation or identity allocation",
+      "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+    },
+    "input_tracking": {
+      "default": "content",
+      "build_system": {
+        "cpp": "Build the selected configured CMake target on start/restart; no configure step",
+        "rust": "Reissue dependencies in Evcxr's Cargo consumer on execution",
+        "inspection": "No build; current source/data freshness is not checked"
+      }
+    },
+    "capabilities": {
+      "install": false,
+      "project_build": false,
+      "executable_override": false,
+      "toolchain_override": false,
+      "global_mutation": false,
+      "compiler_abi_verification": false
+    },
+    "example": {
+      "project_root": ".."
+    },
+    "profile_identity": {
+      "schema_version": 3,
+      "profile_id": "stable server-assigned UUID",
+      "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+      "default_profile": "existing profile name or null for standalone factory"
+    },
+    "dependency_policy": {
+      "install": false,
+      "project_writes": false,
+      "prepared_dependencies_required": true,
+      "supported_node_modules_modes": [
+        "manual",
+        "none"
+      ],
+      "unsupported_modes": [
+        "auto",
+        "vendor",
+        "workspace"
+      ],
+      "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+    },
+    "ports_api": {
+      "standalone": {
+        "version": 1,
+        "synchronous": true
+      },
+      "project": {
+        "version": 2,
+        "asynchronous": true,
+        "requires_qualified_bridge": true,
+        "readiness": "ready only for the current initialized registration with valid launch inputs"
+      }
+    }
+  },
+  "initial_profiles": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb",
+    "version": 1,
+    "document_generation": 1,
+    "schema_version": 2,
+    "diagnostics": [],
+    "deno": {
+      "default_profile": null,
+      "profiles": {},
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation or identity allocation",
+        "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+      },
+      "dependency_policy": {
+        "install": false,
+        "project_writes": false,
+        "prepared_dependencies_required": true,
+        "supported_node_modules_modes": [
+          "manual",
+          "none"
+        ],
+        "unsupported_modes": [
+          "auto",
+          "vendor",
+          "workspace"
+        ],
+        "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 2,
+          "asynchronous": true,
+          "requires_qualified_bridge": true,
+          "readiness": "ready only for the current initialized registration with valid launch inputs"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 3,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for standalone factory"
+      }
+    }
+  },
+  "project_preview": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb",
+    "kernel_name": "deno",
+    "language": "deno",
+    "config": {
+      "project_root": "../SpurCode/docs/research/artifacts/2026-11-18-deno-project-configuration/fixture"
+    },
+    "readiness": {
+      "ready": false,
+      "diagnostics": [
+        {
+          "code": "unsupported_dependency_mode",
+          "message": "Ancestor descriptor /Users/kevintruong/package.json may change Deno discovery; use a standalone project root or qualify its workspace with Deno",
+          "blocking": true
+        },
+        {
+          "code": "dependency_cache_unverified",
+          "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+          "blocking": false
+        },
+        {
+          "code": "explicit_restart_required",
+          "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+          "blocking": false
+        },
+        {
+          "code": "deno_resolution_scope",
+          "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+          "blocking": false
+        },
+        {
+          "code": "runtime_unavailable",
+          "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+          "blocking": true
+        }
+      ]
+    },
+    "profile": "ts-config-probe",
+    "profile_id": null,
+    "runtime_slot_id": null,
+    "default_profile": null,
+    "applied": false,
+    "restart_required": false,
+    "saved_runtime": null,
+    "saved": false,
+    "phase": "validated",
+    "apply": "next_start"
+  },
+  "isolated_preview": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb",
+    "kernel_name": "deno",
+    "language": "deno",
+    "config": {
+      "project_root": "../../../../private/tmp/spur-ts-named-probe-3f23vd3j"
+    },
+    "readiness": {
+      "ready": false,
+      "diagnostics": [
+        {
+          "code": "dependency_cache_unverified",
+          "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+          "blocking": false
+        },
+        {
+          "code": "explicit_restart_required",
+          "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+          "blocking": false
+        },
+        {
+          "code": "deno_resolution_scope",
+          "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+          "blocking": false
+        },
+        {
+          "code": "runtime_unavailable",
+          "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+          "blocking": true
+        }
+      ]
+    },
+    "profile": "ts-config-probe",
+    "profile_id": null,
+    "runtime_slot_id": null,
+    "default_profile": null,
+    "applied": false,
+    "restart_required": false,
+    "saved_runtime": null,
+    "saved": false,
+    "phase": "validated",
+    "apply": "next_start"
+  },
+  "saved_profile": {
+    "saved": true,
+    "applied": false,
+    "phase": "saved",
+    "version": 2,
+    "profile": "ts-config-probe",
+    "profile_id": "64e074b9-8f19-4782-b7ad-ef895c3e131f",
+    "default_profile": null,
+    "runtime_slot_id": "native-profile:v1:90:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb4:deno4:deno36:64e074b9-8f19-4782-b7ad-ef895c3e131f",
+    "kernel_contexts": {
+      "schema_version": 3,
+      "deno": {
+        "default_profile": null,
+        "profiles": {
+          "ts-config-probe": {
+            "kernel_name": "deno",
+            "config": {
+              "project_root": "../../../../private/tmp/spur-ts-named-probe-3f23vd3j"
+            },
+            "profile_id": "64e074b9-8f19-4782-b7ad-ef895c3e131f"
+          }
+        }
+      }
+    },
+    "apply": "next_start",
+    "restart_required": false,
+    "notebook_id": "nb-f9745a688872331eaeb9b52b",
+    "mutation_id": "0ec186c9-6089-48c8-862e-3210b09637d9",
+    "document_generation": 2,
+    "disk_token": "blake3:9995d75c3e1ba0ec777ec7e1a506a512fb1df1916559354821d267246d594068",
+    "durable": true,
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb",
+    "kernel_name": "deno",
+    "language": "deno",
+    "config": {
+      "project_root": "../../../../private/tmp/spur-ts-named-probe-3f23vd3j"
+    },
+    "readiness": {
+      "ready": false,
+      "diagnostics": [
+        {
+          "code": "dependency_cache_unverified",
+          "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+          "blocking": false
+        },
+        {
+          "code": "explicit_restart_required",
+          "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+          "blocking": false
+        },
+        {
+          "code": "deno_resolution_scope",
+          "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+          "blocking": false
+        },
+        {
+          "code": "runtime_unavailable",
+          "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+          "blocking": true
+        }
+      ]
+    },
+    "saved_runtime": {
+      "status": "saved",
+      "applied": false,
+      "last_failure": null
+    }
+  },
+  "selected_cell": {
+    "notebook_id": "nb-f9745a688872331eaeb9b52b",
+    "path": "/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb",
+    "revision": 4,
+    "id": "8b0f359a-c7ee-4784-96d9-5776a5f7c0f8",
+    "kind": "code",
+    "version": 4,
+    "cell_etag": "cell:sha256:5af30069ea61073fdc71cc9e85ce44c4ac9a533cd71980c65fb8fd172c12e30f",
+    "metadata": {
+      "spur": {
+        "version": 4,
+        "last_edited_by": "brain",
+        "code_type": "javascript",
+        "kernel_profile": "ts-config-probe"
+      }
+    },
+    "exec_count": null,
+    "status": "idle",
+    "outputs": [],
+    "output_indices": []
+  },
+  "first_run": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `notebook/notebook_run_cell`\n\nCaused by:\n    Mcp error: -32603: notebook_run_cell failed({\"error\":\"kernel ensure failed: ErrorData { code: ErrorCode(-32602), message: \\\"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\\\", data: None }\"})"
+      }
+    ],
+    "isError": true
+  },
+  "save_and_restart": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `notebook/notebook_configure_kernel`\n\nCaused by:\n    Transport closed"
+      }
+    ],
+    "isError": true
+  },
+  "recovered_profiles": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb",
+    "version": 1,
+    "document_generation": 1,
+    "schema_version": 3,
+    "diagnostics": [],
+    "deno": {
+      "default_profile": null,
+      "profiles": {
+        "ts-config-probe": {
+          "kernel_name": "deno",
+          "config": {
+            "project_root": "../../../../private/tmp/spur-ts-named-probe-3f23vd3j"
+          },
+          "profile_id": "64e074b9-8f19-4782-b7ad-ef895c3e131f",
+          "profile": "ts-config-probe",
+          "runtime_slot_id": "native-profile:v1:90:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb4:deno4:deno36:64e074b9-8f19-4782-b7ad-ef895c3e131f",
+          "process": null,
+          "readiness": {
+            "ready": false,
+            "applied": false,
+            "diagnostics": [
+              {
+                "code": "dependency_cache_unverified",
+                "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+                "blocking": false
+              },
+              {
+                "code": "explicit_restart_required",
+                "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+                "blocking": false
+              },
+              {
+                "code": "deno_resolution_scope",
+                "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+                "blocking": false
+              },
+              {
+                "code": "runtime_unavailable",
+                "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+                "blocking": true
+              }
+            ]
+          },
+          "diagnostics": [],
+          "live_processes": [],
+          "ports_api": {
+            "version": 2,
+            "asynchronous": true,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "saved",
+            "applied": false,
+            "last_failure": null
+          },
+          "dependency_mode": "none"
+        }
+      },
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-ts-named-configuration-new-build.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation or identity allocation",
+        "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+      },
+      "dependency_policy": {
+        "install": false,
+        "project_writes": false,
+        "prepared_dependencies_required": true,
+        "supported_node_modules_modes": [
+          "manual",
+          "none"
+        ],
+        "unsupported_modes": [
+          "auto",
+          "vendor",
+          "workspace"
+        ],
+        "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 2,
+          "asynchronous": true,
+          "requires_qualified_bridge": true,
+          "readiness": "ready only for the current initialized registration with valid launch inputs"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 3,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for standalone factory"
+      }
+    }
+  },
+  "direct_app_run": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "error": {
+      "code": -32603,
+      "message": "notebook_run_cell failed",
+      "data": {
+        "error": "kernel ensure failed: ErrorData { code: ErrorCode(-32602), message: \"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\", data: None }"
+      }
+    }
+  },
+  "standalone_control": {
+    "cell_id": "ee65603a-9462-49f0-bf71-de0bbe92b6a1",
+    "status": "succeeded",
+    "exec_count": 2,
+    "output_count": 1,
+    "output_types": [
+      "stdout"
+    ],
+    "notebook_id": "nb-f9745a688872331eaeb9b52b",
+    "outputs": [
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "{\n  \"probe\": \"standalone direct-file control\",\n  \"value\": \"local-alias-ok\",\n  \"pass\": true,\n  \"cwd\": \"/Users/kevintruong/project/spur-notebook\",\n  \"runtime\": {\n    \"deno\": \"2.8.1\",\n    \"v8\": \"14.9.207.2-rusty\",\n    \"typescript\": \"6.0.3\"\n  },\n  \"executable\": \"/Users/kevintruong/Applications/SpurLab.app/Contents/MacOS/deno\"\n}\n"
+      }
+    ],
+    "output_indices": [
+      0
+    ],
+    "cell_etag": "cell:sha256:c2f246598f0c67f800bdc126220b19d4125f86c8baf4c20536c46430816acada",
+    "document_generation": 6,
+    "disk_token": "blake3:36fc9dddd5dd4dc75f46757ad8b1c314204ee0c9c8f66527048f882bb094d9c6",
+    "durable": true,
+    "diagnostics": null
+  },
+  "outcome": {
+    "live_deno_schema": "confirmed",
+    "profile_saved": "confirmed",
+    "explicit_ts_cell_selector": "confirmed",
+    "notebook_default_changed": false,
+    "named_source_execution": "blocked before execution by unknown native slot error",
+    "restart_completion": "unknown: transport closed; recovered registry shows saved/unapplied",
+    "standalone_direct_import": "passed",
+    "human_run_button": "not tested"
+  }
+}

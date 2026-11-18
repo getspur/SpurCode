@@ -1,5 +1,7 @@
 # Deno project configuration notebook
 
+For the newer named TS/Deno runtime path, see the [new-build verification](../2026-11-18-ts-named-new-build/README.md). The observations below primarily test the earlier standalone kernel.
+
 [Live notebook](/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb) · [Captured notebook](experimental-notebook.ipynb) · [Diagnostic results](results.json) · [Local fixture](fixture/deno.json)
 
 The new notebook checks Spur Notebook's Deno runtime and project configuration. All seven code cells executed successfully. Ten observations were confirmed, including expected negative alias-import cases. No existing project configuration or dependency manifests were changed.
