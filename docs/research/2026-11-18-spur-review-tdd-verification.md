@@ -84,8 +84,22 @@ guarded metadata API. Cell mutations used cell versions; profile/SQL selection
 used document generation. Rejected version checks did not write. Private cache,
 profile and notebook-store namespaces were used with real HOME retained.
 
-No `.spurapp`, deployment, GitHub write, installed-app replacement or main merge
-was performed. The private candidate remains available for this playground.
+No `.spurapp`, deployment, GitHub write or installed-app replacement was performed.
+The private candidate remains available for this playground.
+
+## Local main integration
+
+At the user's request, notebook local `main` now includes the verified integration
+through merge commit `60a8d5a1f934c4a9f0be4c07d64d87a8aa37ffe3`. Main's seven
+additional commits changed documentation only, with no overlapping files. The
+merge is conflict-free and its exact tree matches the preflight merge tree;
+production source is identical to the verified integration branch. The three
+existing tracked local edits retain their byte hashes, all 237 untracked paths
+remain, and the index has no pending changes. No push was performed.
+
+The [merge receipt](artifacts/2026-11-18-review-local-main-merge.json) records both
+parents, the resulting tree and preservation checks. Tests were not repeated for
+this integration because no production source changed from the verified branch.
 
 ## Reproduction evidence
 
