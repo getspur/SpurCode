@@ -20,9 +20,15 @@ flowchart LR
   P0["bd-20hj: Rust/Python proof — approved"] --> D1["bd-1xdy: Deno routing TDD"]
   P0 --> P1["bd-2sjn: qualified Python IPC TDD"]
   P0 --> M1["bd-1cso: MCP metadata/schema TDD"]
+  P0 --> C0["bd-117o: immutable collector core TDD"]
+  P0 --> PR1["bd-u5ng: independent Python ownership review"]
+  D1 --> D2["bd-23p5: Deno read failure recovery TDD"]
   D1 --> C1["bd-ukku: collector + named app integration"]
   P1 --> C1
   M1 --> C1
+  C0 --> C1
+  D2 --> C1
+  PR1 --> C1
 ```
 
 ## D1 — named Deno routing (`bd-1xdy`)
@@ -49,9 +55,19 @@ Create an unchanged saved connection with synthetic credentials in an injectable
 
 Publish a cell-object schema matching the actual save handler. Test a mixed nonempty notebook through the real handler/schema contract and retain the empty overwrite guard. Keep this test/fix history meaningful and distinct from generated schema snapshots.
 
-## C1 — collector and app integration (`bd-ukku`)
+## C0 — immutable collector core (`bd-117o`)
 
-**Depends on:** reviewed D1, P1, M1. **Worktree:** integration branch `codex/bd-3oku-integration`, created at the common source base. Remains unstarted until dependencies are reviewed.
+**Depends on:** P0, approved. **Scope:** new `app_gallery/spur-review` Python collector/type modules and focused tests. Accept explicit host PR receipts and prepared optional history engines. No runtime transport, notebook operations, credentials or network Git operations.
+
+Use a real temporary Git repository to prove the tracked inventory and changed-file map. Commit RED before implementing stable content-based run identities, provider identity checks, exact base/head/context matching, evidence reference integrity and explicit partial-provider states. The notebook's real DuckDB repository proof establishes the contract; fixtures make its edge cases repeatable. Full C++ linking remains outside this task.
+
+## D2 — Deno read failure recovery (`bd-23p5`)
+
+**Depends on:** approved P0/D1. **Scope:** the Deno project ports v2 helper and focused actual-runtime tests. Code review found that a lost GET reply offers publication admission recovery without a request ID. Reproduce this first, then return an explicit read-unavailable failure without granting publication authority. Existing admit/commit lost-reply recovery and Arrow reads remain covered. No runtime installation or notebook operation by the worker.
+
+## C1 — named app integration (`bd-ukku`)
+
+**Depends on:** reviewed D1, D2, P1, PR1, M1, C0. **Worktree:** integration branch `codex/bd-3oku-integration`, created at the common source base. Remains unstarted until dependencies are reviewed.
 
 Reuse the captured review view and current source/provider machinery. Define and test the immutable request/run packet from repository identity, PR number, pinned base/head, provider artifact identities and coverage. Add failing tests for changed-head/partial-provider/stale-response handling and exact source-ref joins before implementation. Do not turn candidate links or historical expertise into proven calls or current assignments.
 
@@ -59,6 +75,10 @@ Wire one real source → named Python → versioned Arrow port → named Deno fr
 
 ## Integration and review gate
 
+Independent review `bd-u5ng` inspects current P1 source with frozen hashes, then rechecks final changes and actual verification outcomes. Important findings require failing-first corrections before approval. A canceled pending enqueue must not leave an exact never-submitted run marked Running or fail a newer run.
+
 Root reviews beads state/audits and actual diffs, then cherry-picks approved test/fix histories into the isolated integration worktree. Resolve only real overlapping runtime seams; do not discard a worker's tests. Run combined relevant regressions once after new integration changes. Build a candidate host through the remote cross-build wrapper if necessary and test it in an isolated process without replacing the installed app.
 
 The parent epic stays active until required implementation and verification are complete. Infrastructure failures retain their exact results and do not become GREEN through local reruns. User edits in both main checkouts remain untouched.
+
+The remote builder initially lacked Arrow/Jupyter. P1 may prepare only a task-owned remote test environment with the notebook-tested versions (`pyarrow 26.0.0`, `ipykernel 7.4.0`, `jupyter_client 8.10.0`), owned cache/temp and exact receipts. Product dependencies and shared/system interpreters remain unchanged. This explicitly replaces the original no-install worker constraint for test prerequisites only.
