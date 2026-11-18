@@ -1,0 +1,496 @@
+{
+  "schema_version": 1,
+  "notebook": "/Users/kevintruong/project/spur-notebook/2026-11-18-named-runtime-tdd-proof.ipynb",
+  "epic": "bd-3oku",
+  "pre_implementation": true,
+  "source": {
+    "head": "b5885ef86b939680b7803c236ee81005beac8aa9",
+    "files": {
+      "src/dag/engine.rs": "3cf79ef72af674c326ec95897c21a53987046423b4246cf305e00830fa379d43",
+      "src/mcp/tools/native_profile_lifecycle.rs": "a713df60c13498bad45b1f00cc9ca23eac44bad3100456ea82576837cd1af902",
+      "jute-notebook/src-tauri/src/kernel_config/target.rs": "bd5a62dba8d4ae08b5b86e90019a6d11868c06c2f6c04206687b10f2aab2674e",
+      "jute-notebook/src-tauri/src/kernel_config/runtime.rs": "35f210beefd47e901cb2d92d5b6b6aadea8686ec814b9e96bcf2343233e3148e",
+      "jute-notebook/src-tauri/src/kernel_config/runtime_provenance.rs": "46b7176dab1191b9dd42caf17f92a6125ed7096a2481a2f8140d8732c9617643",
+      "src/dag/deno_publication_bridge.rs": "75ad16df11c8072589f218fa760c6a94e6f02a3313e9fea031433e33392f1e11"
+    }
+  },
+  "rust_routing": {
+    "cell_id": "f8ea339c-35cc-4c52-9838-cfb9147b247a",
+    "status": "succeeded",
+    "exec_count": 3,
+    "output_count": 8,
+    "output_types": [
+      "stdout",
+      "stdout",
+      "stdout",
+      "stdout",
+      "stdout",
+      "stdout",
+      "stdout",
+      "stdout"
+    ],
+    "notebook_id": "nb-7eba8110ba22ec2a91755797",
+    "outputs": [
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "deno | native-profile:v1:valid-owned-profile | current=false candidate=true\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "deno | notebook:example.ipynb#deno | current=false candidate=false\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "python3 | native-profile:v1:valid-owned-profile | current=true candidate=true\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "python3 | notebook:example.ipynb#python3 | current=false candidate=false\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "evcxr | notebook:example.ipynb#evcxr | current=true candidate=true\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "xcpp20 | notebook:example.ipynb#xcpp20 | current=true candidate=true\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "unknown | native-profile:v1:untrusted | current=false candidate=false\n"
+      },
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "ROUTING_MODEL_PASS: named Deno changes; factory Deno stays legacy. Ownership is validated later by authoritative dispatch.\n"
+      }
+    ],
+    "output_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "cell_etag": "cell:sha256:2ef308709a68f3958553705dcf25605da813ea110bed96ba0f06e0fcad038732",
+    "document_generation": 13,
+    "disk_token": "blake3:541b3e0af8237456cad2cfa1c7a8d277411ead425612e5cd03e512f011849849",
+    "durable": true,
+    "diagnostics": null
+  },
+  "rust_publication_model": {
+    "cell_id": "da865630-e545-4735-9a12-d7c7898c8574",
+    "status": "succeeded",
+    "exec_count": 4,
+    "output_count": 1,
+    "output_types": [
+      "stdout"
+    ],
+    "notebook_id": "nb-7eba8110ba22ec2a91755797",
+    "outputs": [
+      {
+        "output_type": "stream",
+        "name": "stdout",
+        "text": "PUBLICATION_MODEL_PASS: both qualified languages admitted; 7 identity mutations, absent carrier, stale Running, cancellation and missing qualification rejected. No production host IPC is exercised.\n"
+      }
+    ],
+    "output_indices": [
+      0
+    ],
+    "cell_etag": "cell:sha256:f42a7098c70056654b82426e7021f0ffee1bbad5a2f1750964d96a5c2d858772",
+    "document_generation": 26,
+    "disk_token": "blake3:3bcba3b64ff4ab9463be8cffc1ce535a967b6c16928920d7c65df19d33c4c6cc",
+    "durable": true,
+    "diagnostics": null
+  },
+  "python_carrier": {
+    "phase_A": {
+      "notebook": "proof-notebook",
+      "profile": "proof-python",
+      "process_generation": 1,
+      "source_version": 1,
+      "request_id": "f12219f2-ff9b-41b3-9965-413c30b80d5e"
+    },
+    "phase_B": {
+      "notebook": "proof-notebook",
+      "profile": "proof-python",
+      "process_generation": 1,
+      "source_version": 2,
+      "request_id": "fecd0948-eb85-42b8-bd2f-f16c04c7efbb"
+    },
+    "async_origin_preserved": true,
+    "unbound_thread_has_no_origin": true,
+    "thread_latest_parent_is_B": true,
+    "current_B_admitted": true,
+    "late_async_A_rejected_while_B_running": true,
+    "unbound_thread_rejected": true
+  },
+  "solver": {
+    "candidate_request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "timeout_ms": 5000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "subjects": [
+            "admission_matches_origin"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "samples": {
+            "fields": {
+              "carrier_origin": {
+                "kind": "enum",
+                "values": [
+                  "A",
+                  "B",
+                  "unbound"
+                ]
+              },
+              "current_running": {
+                "kind": "enum",
+                "values": [
+                  "A",
+                  "B"
+                ]
+              },
+              "admitted": {
+                "kind": "enum",
+                "values": [
+                  "yes",
+                  "no"
+                ]
+              }
+            },
+            "rows": {
+              "current": {
+                "active": true,
+                "cells": {
+                  "carrier_origin": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "current_running": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "admitted": {
+                    "present": true,
+                    "value": "yes"
+                  }
+                }
+              },
+              "late_async": {
+                "active": true,
+                "cells": {
+                  "carrier_origin": {
+                    "present": true,
+                    "value": "A"
+                  },
+                  "current_running": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "admitted": {
+                    "present": true,
+                    "value": "no"
+                  }
+                }
+              },
+              "thread": {
+                "active": true,
+                "cells": {
+                  "carrier_origin": {
+                    "present": true,
+                    "value": "unbound"
+                  },
+                  "current_running": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "admitted": {
+                    "present": true,
+                    "value": "no"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {},
+        "foreign_keys": {},
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {
+          "admission_matches_origin": {
+            "relation": "samples",
+            "fields": [
+              "carrier_origin",
+              "current_running",
+              "admitted"
+            ],
+            "allowed": [
+              [
+                "A",
+                "A",
+                "yes"
+              ],
+              [
+                "B",
+                "B",
+                "yes"
+              ],
+              [
+                "A",
+                "B",
+                "no"
+              ],
+              [
+                "B",
+                "A",
+                "no"
+              ],
+              [
+                "unbound",
+                "A",
+                "no"
+              ],
+              [
+                "unbound",
+                "B",
+                "no"
+              ]
+            ]
+          }
+        },
+        "temporal_constraints": {}
+      }
+    },
+    "candidate": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "outcome": "pass",
+      "rule_results": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "total_duration_ms": 26,
+      "status": "sat",
+      "model": {
+        "di_r0_row0_active": 1,
+        "di_r0_row0_f0_present": 1,
+        "di_r0_row0_f0_value": "yes",
+        "di_r0_row0_f1_present": 1,
+        "di_r0_row0_f1_value": "B",
+        "di_r0_row0_f2_present": 1,
+        "di_r0_row0_f2_value": "B",
+        "di_r0_row1_active": 1,
+        "di_r0_row1_f0_present": 1,
+        "di_r0_row1_f0_value": "no",
+        "di_r0_row1_f1_present": 1,
+        "di_r0_row1_f1_value": "A",
+        "di_r0_row1_f2_present": 1,
+        "di_r0_row1_f2_value": "B",
+        "di_r0_row2_active": 1,
+        "di_r0_row2_f0_present": 1,
+        "di_r0_row2_f0_value": "no",
+        "di_r0_row2_f1_present": 1,
+        "di_r0_row2_f1_value": "unbound",
+        "di_r0_row2_f2_present": 1,
+        "di_r0_row2_f2_value": "B"
+      },
+      "duration_ms": 26,
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "fallback_request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "timeout_ms": 5000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "subjects": [
+            "admission_matches_origin"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "samples": {
+            "fields": {
+              "carrier_origin": {
+                "kind": "enum",
+                "values": [
+                  "A",
+                  "B",
+                  "unbound"
+                ]
+              },
+              "current_running": {
+                "kind": "enum",
+                "values": [
+                  "A",
+                  "B"
+                ]
+              },
+              "admitted": {
+                "kind": "enum",
+                "values": [
+                  "yes",
+                  "no"
+                ]
+              }
+            },
+            "rows": {
+              "current": {
+                "active": true,
+                "cells": {
+                  "carrier_origin": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "current_running": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "admitted": {
+                    "present": true,
+                    "value": "yes"
+                  }
+                }
+              },
+              "late_async": {
+                "active": true,
+                "cells": {
+                  "carrier_origin": {
+                    "present": true,
+                    "value": "A"
+                  },
+                  "current_running": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "admitted": {
+                    "present": true,
+                    "value": "no"
+                  }
+                }
+              },
+              "thread": {
+                "active": true,
+                "cells": {
+                  "carrier_origin": {
+                    "present": true,
+                    "value": "unbound"
+                  },
+                  "current_running": {
+                    "present": true,
+                    "value": "B"
+                  },
+                  "admitted": {
+                    "present": true,
+                    "value": "yes"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {},
+        "foreign_keys": {},
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {
+          "admission_matches_origin": {
+            "relation": "samples",
+            "fields": [
+              "carrier_origin",
+              "current_running",
+              "admitted"
+            ],
+            "allowed": [
+              [
+                "A",
+                "A",
+                "yes"
+              ],
+              [
+                "B",
+                "B",
+                "yes"
+              ],
+              [
+                "A",
+                "B",
+                "no"
+              ],
+              [
+                "B",
+                "A",
+                "no"
+              ],
+              [
+                "unbound",
+                "A",
+                "no"
+              ],
+              [
+                "unbound",
+                "B",
+                "no"
+              ]
+            ]
+          }
+        },
+        "temporal_constraints": {}
+      }
+    },
+    "fallback": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "outcome": "fail",
+      "rule_results": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "binding_index": 0,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "data_integrity.mutually_consistent.violation"
+        }
+      ],
+      "total_duration_ms": 9,
+      "status": "unsat",
+      "duration_ms": 5,
+      "reason": null,
+      "unsat_core": [
+        "data_integrity_rule_0_data_integrity_mutually_consistent__subject_admission_matches_origin"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    }
+  },
+  "scope": "Notebook proof of candidate policies and real Python context behavior, not production API acceptance"
+}
