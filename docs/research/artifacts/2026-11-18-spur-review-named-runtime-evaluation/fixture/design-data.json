@@ -1,0 +1,1450 @@
+{
+  "head": "d29b26bb92ac940a0807be0f43cc385b31623839",
+  "base": "629e395a854d72dcb1f414e1a0451c68ac0e9f1f",
+  "files": [
+    {
+      "id": "stats",
+      "name": "relation_statistics_helper.cpp",
+      "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "status": "Modified",
+      "symbols": [
+        "ExtractAggregationStatsInternal",
+        "HasUniqueGroups",
+        "HasBaseColumnSource",
+        "GetValuePreservingColumn"
+      ],
+      "diff": "diff --git a/src/optimizer/relation_statistics/relation_statistics_helper.cpp b/src/optimizer/relation_statistics/relation_statistics_helper.cpp\nindex 99c3862b89c..6eac019d1e3 100644\n--- a/src/optimizer/relation_statistics/relation_statistics_helper.cpp\n+++ b/src/optimizer/relation_statistics/relation_statistics_helper.cpp\n@@ -2,6 +2,8 @@\n #include \"duckdb/optimizer/relation_statistics/relation_statistics_extractor.hpp\"\n \n #include \"duckdb/common/types/value_map.hpp\"\n+#include \"duckdb/optimizer/apply_functional_dependencies.hpp\"\n+#include \"duckdb/planner/expression/bound_cast_expression.hpp\"\n #include \"duckdb/planner/expression/bound_comparison_expression.hpp\"\n #include \"duckdb/planner/expression/bound_constant_expression.hpp\"\n #include \"duckdb/planner/expression/list.hpp\"\n@@ -450,6 +452,109 @@ idx_t RelationStatisticsHelper::EstimateGroupCardinality(LogicalOperator &input,\n \treturn estimate;\n }\n \n+static optional<ColumnBinding> GetValuePreservingColumn(const Expression &expression) {\n+\tif (expression.GetExpressionClass() == ExpressionClass::BOUND_COLUMN_REF) {\n+\t\treturn expression.Cast<BoundColumnRefExpression>().Binding();\n+\t}\n+\tif (!BoundCastExpression::IsCast(expression)) {\n+\t\treturn {};\n+\t}\n+\tauto &cast = expression.Cast<BoundFunctionExpression>();\n+\tif (!BoundCastExpression::IsDefaultCast(cast) || BoundCastExpression::IsTryCast(cast)) {\n+\t\treturn {};\n+\t}\n+\tauto source_type = BoundCastExpression::SourceType(cast);\n+\tauto &target_type = BoundCastExpression::TargetType(cast);\n+\t// Successful strict integral casts do not merge distinct input values.\n+\tif (source_type != target_type && !(source_type.IsIntegral() && target_type.IsIntegral()) &&\n+\t    !BoundCastExpression::CastIsInvertibleForEquality(source_type, target_type)) {\n+\t\treturn {};\n+\t}\n+\treturn GetValuePreservingColumn(BoundCastExpression::Child(cast));\n+}\n+\n+static bool HasBaseColumnSource(LogicalOperator &op, ColumnBinding binding) {\n+\tswitch (op.type) {\n+\tcase LogicalOperatorType::LOGICAL_GET: {\n+\t\tif (!op.children.empty()) {\n+\t\t\treturn false;\n+\t\t}\n+\t\tfor (auto &column : op.GetColumnBindings()) {\n+\t\t\tif (column == binding) {\n+\t\t\t\treturn true;\n+\t\t\t}\n+\t\t}\n+\t\treturn false;\n+\t}\n+\tcase LogicalOperatorType::LOGICAL_PROJECTION: {\n+\t\tif (op.children.size() != 1) {\n+\t\t\treturn false;\n+\t\t}\n+\t\tauto bindings = op.GetColumnBindings();\n+\t\tfor (idx_t i = 0; i < bindings.size(); i++) {\n+\t\t\tif (bindings[i] != binding) {\n+\t\t\t\tcontinue;\n+\t\t\t}\n+\t\t\tauto child_binding = GetValuePreservingColumn(*op.expressions[i]);\n+\t\t\treturn child_binding && HasBaseColumnSource(*op.children[0], *child_binding);\n+\t\t}\n+\t\treturn false;\n+\t}\n+\tcase LogicalOperatorType::LOGICAL_FILTER:\n+\tcase LogicalOperatorType::LOGICAL_ORDER_BY:\n+\tcase LogicalOperatorType::LOGICAL_LIMIT:\n+\tcase LogicalOperatorType::LOGICAL_TOP_N:\n+\t\treturn op.children.size() == 1 && HasBaseColumnSource(*op.children[0], binding);\n+\tdefault:\n+\t\treturn false;\n+\t}\n+}\n+\n+static bool HasUniqueGroups(LogicalOperator &op, const column_binding_set_t &groups) {\n+\tif (groups.empty()) {\n+\t\treturn false;\n+\t}\n+\tswitch (op.type) {\n+\tcase LogicalOperatorType::LOGICAL_PROJECTION: {\n+\t\tif (op.children.size() != 1) {\n+\t\t\treturn false;\n+\t\t}\n+\t\tcolumn_binding_set_t child_groups;\n+\t\tauto bindings = op.GetColumnBindings();\n+\t\tfor (idx_t i = 0; i < bindings.size(); i++) {\n+\t\t\tif (groups.count(bindings[i]) == 0) {\n+\t\t\t\tcontinue;\n+\t\t\t}\n+\t\t\tauto binding = GetValuePreservingColumn(*op.expressions[i]);\n+\t\t\tif (binding) {\n+\t\t\t\tchild_groups.insert(*binding);\n+\t\t\t}\n+\t\t}\n+\t\treturn HasUniqueGroups(*op.children[0], child_groups);\n+\t}\n+\tcase LogicalOperatorType::LOGICAL_FILTER:\n+\tcase LogicalOperatorType::LOGICAL_ORDER_BY:\n+\tcase LogicalOperatorType::LOGICAL_LIMIT:\n+\tcase LogicalOperatorType::LOGICAL_TOP_N:\n+\t\treturn op.children.size() == 1 && HasUniqueGroups(*op.children[0], groups);\n+\tdefault:\n+\t\tbreak;\n+\t}\n+\tfor (auto &key : ApplyFunctionalDependencies::GetUniqueColumnCombinations(op)) {\n+\t\tbool covered = !key.empty();\n+\t\tfor (auto &binding : key) {\n+\t\t\tif (groups.count(binding) == 0) {\n+\t\t\t\tcovered = false;\n+\t\t\t\tbreak;\n+\t\t\t}\n+\t\t}\n+\t\tif (covered) {\n+\t\t\treturn true;\n+\t\t}\n+\t}\n+\treturn false;\n+}\n+\n static optional<RelationStats> ExtractAggregationStatsInternal(LogicalAggregate &aggregate,\n                                                                const RelationStats &child_stats,\n                                                                RelationStatsExtractor &extractor,\n@@ -510,6 +615,20 @@ static optional<RelationStats> ExtractAggregationStatsInternal(LogicalAggregate\n \t\t        ? 1\n \t\t        : RelationStatisticsHelper::EstimateDistinctCardinality(cardinality_counts, child_stats.cardinality);\n \t}\n+\tbool has_unique_groups = false;\n+\tif (preserves_group_evidence && !aggregate.groups.empty() && aggregate.children.size() == 1) {\n+\t\tcolumn_binding_set_t groups;\n+\t\tfor (auto &group : aggregate.groups) {\n+\t\t\tauto binding = GetValuePreservingColumn(*group);\n+\t\t\tif (binding) {\n+\t\t\t\tgroups.insert(*binding);\n+\t\t\t}\n+\t\t}\n+\t\thas_unique_groups = HasUniqueGroups(*aggregate.children[0], groups);\n+\t\tif (has_unique_groups) {\n+\t\t\tresult.cardinality = child_stats.cardinality;\n+\t\t}\n+\t}\n \tfor (idx_t group_idx = 0; group_idx < aggregate.groups.size(); group_idx++) {\n \t\tauto &group = *aggregate.groups[group_idx];\n \t\tDistinctCount distinct_count(result.cardinality, DistinctCountSource::CARDINALITY);\n@@ -536,9 +655,24 @@ static optional<RelationStats> ExtractAggregationStatsInternal(LogicalAggregate\n \t\tresult.columns.emplace_back(bindings[result.columns.size()], distinct_count, current_domain, Identifier(),\n \t\t                            semi_anti_join_domain_evidence);\n \t}\n-\tfor (idx_t aggregate_idx = 0; aggregate_idx < aggregate.expressions.size(); aggregate_idx++) {\n-\t\tresult.columns.emplace_back(bindings[result.columns.size()],\n-\t\t                            DistinctCount(result.cardinality, DistinctCountSource::CARDINALITY), Identifier());\n+\tfor (auto &expression : aggregate.expressions) {\n+\t\tDistinctCount total_domain(result.cardinality, DistinctCountSource::CARDINALITY);\n+\t\tDistinctCount current_domain = total_domain;\n+\t\tif (has_unique_groups && expression->GetExpressionClass() == ExpressionClass::BOUND_AGGREGATE) {\n+\t\t\tauto &bound_aggregate = expression->Cast<BoundAggregateExpression>();\n+\t\t\tauto &agg_children = bound_aggregate.GetChildren();\n+\t\t\tif (bound_aggregate.Function().HasSingleValueIdentity() && !bound_aggregate.GetFilter() &&\n+\t\t\t    !agg_children.empty() && expression->GetReturnType() == agg_children[0]->GetReturnType() &&\n+\t\t\t    agg_children[0]->GetExpressionClass() == ExpressionClass::BOUND_COLUMN_REF) {\n+\t\t\t\tauto binding = agg_children[0]->Cast<BoundColumnRefExpression>().Binding();\n+\t\t\t\tauto child_column = child_columns.Find(binding);\n+\t\t\t\tif (child_column && HasBaseColumnSource(*aggregate.children[0], binding)) {\n+\t\t\t\t\ttotal_domain = child_column->total_domain;\n+\t\t\t\t\tcurrent_domain = child_column->current_domain;\n+\t\t\t\t}\n+\t\t\t}\n+\t\t}\n+\t\tresult.columns.emplace_back(bindings[result.columns.size()], total_domain, current_domain, Identifier());\n \t}\n \tfor (idx_t grouping_idx = 0; grouping_idx < aggregate.grouping_functions.size(); grouping_idx++) {\n \t\tauto grouping_count = MinValue<idx_t>(result.cardinality, MaxValue<idx_t>(aggregate.grouping_sets.size(), 1));\n"
+    },
+    {
+      "id": "rewrite",
+      "name": "first_last_any.cpp",
+      "path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "status": "Modified",
+      "symbols": [
+        "RewriteOrderedFirst"
+      ],
+      "diff": "diff --git a/src/function/aggregate/distributive/first_last_any.cpp b/src/function/aggregate/distributive/first_last_any.cpp\nindex f36a4e84705..0ba568cb72b 100644\n--- a/src/function/aggregate/distributive/first_last_any.cpp\n+++ b/src/function/aggregate/distributive/first_last_any.cpp\n@@ -53,6 +53,8 @@ unique_ptr<Expression> RewriteOrderedFirst(AggregateRewriteInput &input) {\n \tconst auto &function = entry.functions.GetFunctionByArguments(input.context, child_types);\n \tauto result = binder.BindAggregateFunction(function, std::move(children), std::move(aggregate->GetFilterMutable()),\n \t                                           aggregate->GetAggregateType());\n+\t// The encoded sort key is non-NULL, so a singleton still returns its input value.\n+\tresult->FunctionMutable().SetSingleValueIdentity(aggregate->Function().HasSingleValueIdentity());\n \treturn unique_ptr_cast<BoundAggregateExpression, Expression>(std::move(result));\n }\n \n"
+    },
+    {
+      "id": "shared",
+      "name": "stats_dependent_tests.json",
+      "path": "test/configs/stats_dependent_tests.json",
+      "status": "Modified",
+      "symbols": [],
+      "diff": "diff --git a/test/configs/stats_dependent_tests.json b/test/configs/stats_dependent_tests.json\nindex 0db774e9b95..7457b6bce55 100644\n--- a/test/configs/stats_dependent_tests.json\n+++ b/test/configs/stats_dependent_tests.json\n@@ -37,6 +37,7 @@\n         \"test/sql/storage/list_length_stats_checkpoint.test\",\n         \"test/sql/storage/list_length_stats_nested_optimistic.test\",\n         \"test/sql/optimizer/statistics/list_length_stats_propagation.test\",\n+        \"test/sql/optimizer/statistics/distinct_on_stats_propagation.test\",\n         \"test/sql/storage/list_length_stats_old_version.test\",\n         \"test/sql/types/nested/array/array_statistics.test\",\n         \"test/sql/vacuum/test_analyze.test\",\n"
+    },
+    {
+      "id": "export",
+      "name": "verify_aggregate_state_export.json",
+      "path": "test/configs/verify_aggregate_state_export.json",
+      "status": "Modified",
+      "symbols": [],
+      "diff": "diff --git a/test/configs/verify_aggregate_state_export.json b/test/configs/verify_aggregate_state_export.json\nindex 7c7c58f3252..e59f36a3806 100644\n--- a/test/configs/verify_aggregate_state_export.json\n+++ b/test/configs/verify_aggregate_state_export.json\n@@ -47,6 +47,7 @@\n         \"test/sql/copy/parquet/parquet_stats.test\",\n         \"test/sql/copy/parquet/read_single_parquet_file.test\",\n         \"test/sql/optimizer/aggregate_stats_propagation.test\",\n+        \"test/sql/optimizer/statistics/distinct_on_stats_propagation.test\",\n         \"test/sql/optimizer/scalar_aggregate_merge_files_plan.test\",\n         \"test/sql/optimizer/scalar_aggregate_merge_plan.test\",\n         \"test/sql/optimizer/scalar_aggregate_merge_tpcds_plan.test\",\n"
+    },
+    {
+      "id": "test",
+      "name": "distinct_on_stats_propagation.test",
+      "path": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+      "status": "Added",
+      "symbols": [],
+      "diff": "diff --git a/test/sql/optimizer/statistics/distinct_on_stats_propagation.test b/test/sql/optimizer/statistics/distinct_on_stats_propagation.test\nnew file mode 100644\nindex 00000000000..97430e2de99\n--- /dev/null\n+++ b/test/sql/optimizer/statistics/distinct_on_stats_propagation.test\n@@ -0,0 +1,462 @@\n+# name: test/sql/optimizer/statistics/distinct_on_stats_propagation.test\n+# description: Aggregate domains require exact grouping keys and single-value identity\n+# group: [statistics]\n+\n+# Exact plan estimates depend on sampled distinct counts.\n+require vector_size 2048\n+\n+# HLL can estimate one group per input row even when grouping removes a row.\n+statement ok\n+CREATE TABLE false_singletons AS\n+SELECT CASE WHEN i = 32 THEN 0 ELSE i END * 2018::BIGINT AS g,\n+       CASE WHEN i = 32 THEN 9 ELSE i % 2 END::INT AS x FROM range(33) t(i);\n+\n+statement ok\n+CREATE TABLE false_singletons_right AS SELECT * FROM false_singletons;\n+\n+statement ok\n+ANALYZE;\n+\n+statement ok\n+SET explain_output = 'optimized_only';\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x ORDER BY x) AS k FROM false_singletons GROUP BY g) l\n+JOIN (SELECT first(x ORDER BY x) AS k FROM false_singletons_right GROUP BY g) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~33 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT first(x ORDER BY x) AS k FROM false_singletons GROUP BY g) l\n+JOIN (SELECT first(x ORDER BY x) AS k FROM false_singletons_right GROUP BY g) r ON l.k = r.k;\n+----\n+512\n+\n+# Positive fixture with a declared key. Unconstrained inputs are checked separately.\n+statement ok\n+CREATE TABLE nodes(id INTEGER PRIMARY KEY, k INTEGER);\n+\n+statement ok\n+INSERT INTO nodes SELECT i::INT, i::INT FROM range(100000) t(i);\n+\n+statement ok\n+CREATE TABLE edges AS SELECT i::INT AS eid, (i % 10000)::INT AS k FROM range(100000) t(i);\n+\n+statement ok\n+ANALYZE;\n+\n+statement ok\n+SET explain_output = 'optimized_only';\n+\n+# DISTINCT ON lowers to Aggregate(GROUP BY id, first(k)): the first() output carries k's\n+# domain (100000 distinct) instead of an aggregate-cardinality guess, so the join\n+# denominator is max(100000, 10000) and the estimate matches the DISTINCT k control\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT DISTINCT ON (id) k FROM nodes) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+# a handwritten first() gets the same domain forwarding\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT first(k) AS k FROM nodes GROUP BY id) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+# DISTINCT ON with an ORDER BY inside the subquery keeps the forwarded domain\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT DISTINCT ON (id) k FROM nodes ORDER BY id, k) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+# the DISTINCT k control was already exact and stays exact\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT DISTINCT k FROM nodes) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+# the statistics change does not change results\n+query I\n+SELECT count(*) FROM (SELECT DISTINCT ON (id) k FROM nodes) s JOIN edges e ON s.k = e.k;\n+----\n+100000\n+\n+query I\n+SELECT count(*) FROM (SELECT DISTINCT ON (id) k FROM nodes ORDER BY id, k) s JOIN edges e ON s.k = e.k;\n+----\n+100000\n+\n+# List-producing overloads create combinations outside their first child's domain.\n+statement ok\n+CREATE TABLE bit_pairs_left AS\n+SELECT g::INT AS g, p::INT AS p, ((g >> p) & 1)::INT AS x\n+FROM range(4) g_values(g), range(2) p_values(p);\n+\n+statement ok\n+CREATE TABLE bit_pairs_right AS SELECT * FROM bit_pairs_left;\n+\n+statement ok\n+ANALYZE;\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_min(x, p, 2) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT arg_min(x, p, 2) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~4 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_max(x, p, 2) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT arg_max(x, p, 2) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~4 rows.*\n+\n+# The return type also differs when the input is already a list.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_min([x], p, 2) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT arg_min([x], p, 2) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~4 rows.*\n+\n+# Reducing groups retain the aggregate cardinality fallback.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x ORDER BY p) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT first(x ORDER BY p) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~4 rows.*\n+\n+# List-producing overloads remain excluded even with certified singleton groups.\n+statement ok\n+CREATE TABLE unique_list_values(id INTEGER PRIMARY KEY, x INTEGER, p INTEGER);\n+\n+statement ok\n+INSERT INTO unique_list_values SELECT i::INT, (i % 2)::INT, NULL FROM range(8) t(i);\n+\n+statement ok\n+CREATE TABLE unique_list_values_right(id INTEGER PRIMARY KEY, x INTEGER, p INTEGER);\n+\n+statement ok\n+INSERT INTO unique_list_values_right SELECT * FROM unique_list_values;\n+\n+statement ok\n+ANALYZE;\n+\n+# The scalar control forwards the domain for the same unique groups.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT first(x) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~32 rows.*\n+\n+# An aggregate filter can remove values even when every group has one row.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x) FILTER (WHERE id % 2 = 0) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT first(x) FILTER (WHERE id % 2 = 0) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT first(x) FILTER (WHERE id % 2 = 0) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT first(x) FILTER (WHERE id % 2 = 0) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+16\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_min(x, id, 2) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_min(x, id, 2) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_max(x, id, 2) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_max(x, id, 2) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT arg_min(x, id, 2) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_min(x, id, 2) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+32\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT arg_max(x, id, 2) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_max(x, id, 2) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+32\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT arg_min(x, p, 2) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT arg_min(x, p, 2) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+4\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT arg_max(x, p, 2) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT arg_max(x, p, 2) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+4\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT first(x ORDER BY p) AS k FROM bit_pairs_left GROUP BY g) l\n+JOIN (SELECT first(x ORDER BY p) AS k FROM bit_pairs_right GROUP BY g) r ON l.k = r.k;\n+----\n+8\n+\n+# Aliases retain the bound single-value identity property.\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT arbitrary(k) AS k FROM nodes GROUP BY id) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT last(k) AS k FROM nodes GROUP BY id) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*) FROM (SELECT any_value(k) AS k FROM nodes GROUP BY id) s JOIN edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~100,000 rows.*\n+\n+# A unique grouping key does not stop arg_min from rejecting a NULL selector.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_min(x, p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_min(x, p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT min_by(x, p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT min_by(x, p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT max_by(x, p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT max_by(x, p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT arg_min(x, p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_min(x, p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+0\n+\n+# An identical CTAS input has no certified key and retains the fallback.\n+statement ok\n+CREATE TABLE unconstrained_values AS SELECT * FROM unique_list_values;\n+\n+statement ok\n+CREATE TABLE unconstrained_values_right AS SELECT * FROM unique_list_values;\n+\n+statement ok\n+ANALYZE;\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x) AS k FROM unconstrained_values GROUP BY id) l\n+JOIN (SELECT first(x) AS k FROM unconstrained_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT first(x) AS k FROM unconstrained_values GROUP BY id) l\n+JOIN (SELECT first(x) AS k FROM unconstrained_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+32\n+\n+# Non-null immediate UNIQUE keys provide the same proof as a primary key.\n+statement ok\n+CREATE TABLE nonnull_unique(id INTEGER UNIQUE NOT NULL, x INTEGER);\n+\n+statement ok\n+INSERT INTO nonnull_unique SELECT id, x FROM unique_list_values;\n+\n+statement ok\n+CREATE TABLE nullable_unique(id INTEGER UNIQUE, x INTEGER);\n+\n+statement ok\n+INSERT INTO nullable_unique SELECT CASE WHEN id = 7 THEN NULL ELSE id END, x FROM unique_list_values;\n+\n+statement ok\n+CREATE TABLE composite_unique(a INTEGER NOT NULL, b INTEGER NOT NULL, x INTEGER, UNIQUE(a, b));\n+\n+statement ok\n+INSERT INTO composite_unique SELECT id % 2, id // 2, x FROM unique_list_values;\n+\n+statement ok\n+ANALYZE;\n+\n+query II\n+EXPLAIN (FORMAT JSON) SELECT count(*)\n+FROM (SELECT first(x) AS k FROM nonnull_unique GROUP BY id) l\n+JOIN (SELECT first(x) AS k FROM nonnull_unique GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*\"Join Type\": \"INNER\",\\s*\"Conditions\": \"\\(k = k\\)\",\\s*\"Estimated Cardinality\": \"32\".*\n+\n+# Nullable keys do not certify singleton groups.\n+query II\n+EXPLAIN (FORMAT JSON) SELECT count(*)\n+FROM (SELECT first(x) AS k FROM nullable_unique GROUP BY id) l\n+JOIN (SELECT first(x) AS k FROM nullable_unique GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*\"Join Type\": \"INNER\",\\s*\"Conditions\": \"\\(k = k\\)\",\\s*\"Estimated Cardinality\": \"7\".*\n+\n+# A composite key must be completely covered by the grouping expressions.\n+query II\n+EXPLAIN (FORMAT JSON) SELECT count(*)\n+FROM (SELECT first(x) AS k FROM composite_unique GROUP BY a, b) l\n+JOIN (SELECT first(x) AS k FROM composite_unique GROUP BY a, b) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*\"Join Type\": \"INNER\",\\s*\"Conditions\": \"\\(k = k\\)\",\\s*\"Estimated Cardinality\": \"32\".*\n+\n+query II\n+EXPLAIN (FORMAT JSON) SELECT count(*)\n+FROM (SELECT first(x) AS k FROM composite_unique GROUP BY a) l\n+JOIN (SELECT first(x) AS k FROM composite_unique GROUP BY a) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*\"Join Type\": \"INNER\",\\s*\"Conditions\": \"\\(k = k\\)\",\\s*\"Estimated Cardinality\": \"2\".*\n+\n+# Casting a key to BOOLEAN can merge distinct key values.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x) AS k FROM unique_list_values GROUP BY CAST(id AS BOOLEAN)) l\n+JOIN (SELECT first(x) AS k FROM unique_list_values_right GROUP BY CAST(id AS BOOLEAN)) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~4 rows.*\n+\n+# TRY_CAST can turn distinct key values into NULL and cannot certify uniqueness.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x) AS k FROM unique_list_values GROUP BY TRY_CAST(id AS TINYINT)) l\n+JOIN (SELECT first(x) AS k FROM unique_list_values_right GROUP BY TRY_CAST(id AS TINYINT)) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~4 rows.*\n+\n+# Joins can multiply a key's rows and must invalidate the singleton proof.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(v.x) AS k FROM unique_list_values v CROSS JOIN range(2) t(i) GROUP BY v.id) l\n+JOIN (SELECT first(v.x) AS k FROM unique_list_values_right v CROSS JOIN range(2) t(i) GROUP BY v.id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT first(v.x) AS k FROM unique_list_values v CROSS JOIN range(2) t(i) GROUP BY v.id) l\n+JOIN (SELECT first(v.x) AS k FROM unique_list_values_right v CROSS JOIN range(2) t(i) GROUP BY v.id) r ON l.k = r.k;\n+----\n+32\n+\n+# The ordered rewrite must retain identity on the bound expression only.\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT first(x ORDER BY p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT last(x ORDER BY p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~32 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT any_value(x ORDER BY p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT any_value(x ORDER BY p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~32 rows.*\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT arg_min_null(x, p) AS k FROM unique_list_values GROUP BY id) l\n+JOIN (SELECT arg_max_null(x, p) AS k FROM unique_list_values_right GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~8 rows.*\n+\n+# Every group selects the common value from an otherwise larger input domain.\n+statement ok\n+CREATE TABLE biased_nodes AS\n+SELECT g::INT AS g, p::INT AS p, CASE WHEN p = 0 THEN 0 ELSE 2 * g + 1 END::INT AS k\n+FROM range(4) g_values(g), range(2) p_values(p);\n+\n+statement ok\n+CREATE TABLE biased_edges AS SELECT ((i % 3) * 3)::INT AS k FROM range(12) t(i);\n+\n+statement ok\n+ANALYZE;\n+\n+query II\n+EXPLAIN SELECT count(*)\n+FROM (SELECT DISTINCT ON (g) k FROM biased_nodes ORDER BY g, p) s\n+JOIN biased_edges e ON s.k = e.k;\n+----\n+logical_opt\t<REGEX>:(?s).*Comparison Join[^~]*~16 rows.*\n+\n+query I\n+SELECT count(*)\n+FROM (SELECT DISTINCT ON (g) k FROM biased_nodes ORDER BY g, p) s\n+JOIN biased_edges e ON s.k = e.k;\n+----\n+16\n+\n+# Computed CTE keys remain ineligible even when each group contains one row.\n+statement ok\n+CREATE TABLE ids_left AS SELECT i::INT AS id FROM range(8) t(i);\n+\n+statement ok\n+CREATE TABLE ids_right AS SELECT i::INT AS id FROM range(4) t(i);\n+\n+statement ok\n+ANALYZE;\n+\n+query II\n+EXPLAIN (FORMAT JSON)\n+WITH lhs AS MATERIALIZED (SELECT id, id % 2 AS k FROM ids_left),\n+     rhs AS MATERIALIZED (SELECT id % 2 AS k FROM ids_right)\n+SELECT count(*) FROM (SELECT first(k) AS k FROM lhs GROUP BY id) s JOIN rhs r ON s.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*\"Join Type\": \"INNER\",\\s*\"Conditions\": \"\\(k = k\\)\",\\s*\"Estimated Cardinality\": \"8\".*\n+\n+query I\n+WITH lhs AS MATERIALIZED (SELECT id, id % 2 AS k FROM ids_left),\n+     rhs AS MATERIALIZED (SELECT id % 2 AS k FROM ids_right)\n+SELECT count(*) FROM (SELECT first(k) AS k FROM lhs GROUP BY id) s JOIN rhs r ON s.k = r.k;\n+----\n+16\n+\n+# Temporary tables support deferred constraints with v1 storage.\n+# Keep this last so earlier cases can still exercise forced restarts.\n+statement ok\n+CREATE TEMP TABLE deferred_unique(id INTEGER PRIMARY KEY DEFERRED, x INTEGER);\n+\n+statement ok\n+INSERT INTO deferred_unique SELECT id, x FROM unique_list_values;\n+\n+statement ok\n+ANALYZE deferred_unique;\n+\n+# Deferred keys do not certify singleton groups.\n+query II\n+EXPLAIN (FORMAT JSON) SELECT count(*)\n+FROM (SELECT first(x) AS k FROM deferred_unique GROUP BY id) l\n+JOIN (SELECT first(x) AS k FROM deferred_unique GROUP BY id) r ON l.k = r.k;\n+----\n+logical_opt\t<REGEX>:(?s).*\"Join Type\": \"INNER\",\\s*\"Conditions\": \"\\(k = k\\)\",\\s*\"Estimated Cardinality\": \"8\".*\n"
+    }
+  ],
+  "contexts": {
+    "incoming": {
+      "title": "Who reaches this change?",
+      "subtitle": "Unchanged clients, an unchanged wrapper and the modified implementation.",
+      "caveat": "External API references are candidates. The wrapper-to-internal leg is syntax-bound.",
+      "nodes": [
+        {
+          "id": "client",
+          "title": "Relation manager",
+          "sub": "relation_manager.cpp",
+          "state": "Unchanged",
+          "x": 20,
+          "y": 38,
+          "evidence": "context:255"
+        },
+        {
+          "id": "extractor",
+          "title": "Statistics extractor",
+          "sub": "relation_statistics_extractor.cpp",
+          "state": "Unchanged",
+          "x": 20,
+          "y": 171,
+          "evidence": "context:257"
+        },
+        {
+          "id": "wrapper",
+          "title": "ExtractAggregationStats",
+          "sub": "Two overloads inside modified file",
+          "state": "Unchanged body",
+          "x": 278,
+          "y": 102,
+          "evidence": "native:wrapper"
+        },
+        {
+          "id": "internal",
+          "title": "ExtractAggregationStatsInternal",
+          "sub": "relation_statistics_helper.cpp",
+          "state": "Modified",
+          "x": 536,
+          "y": 102,
+          "evidence": "native:helpers"
+        }
+      ],
+      "edges": [
+        {
+          "a": "client",
+          "b": "wrapper",
+          "label": "API reference",
+          "evidence": "context:255",
+          "kind": "candidate"
+        },
+        {
+          "a": "extractor",
+          "b": "wrapper",
+          "label": "API reference",
+          "evidence": "context:257",
+          "kind": "candidate"
+        },
+        {
+          "a": "wrapper",
+          "b": "internal",
+          "label": "Calls",
+          "evidence": "native:wrapper",
+          "kind": "syntax"
+        }
+      ],
+      "rows": [
+        {
+          "title": "Join-order client \u2192 public wrapper \u2192 changed internal",
+          "body": "The first leg references an overloaded API. The second has a retained syntax binding.",
+          "evidence": "context:255",
+          "kind": "candidate"
+        },
+        {
+          "title": "Unchanged wrapper inside a modified file",
+          "body": "Identical body bytes; moved from base lines 554 / 562 to head 688 / 696.",
+          "evidence": "native:wrapper",
+          "kind": "syntax"
+        },
+        {
+          "title": "Changed internal \u2192 new uniqueness proof",
+          "body": "Follow the new helper without treating syntax matching as compiler resolution.",
+          "evidence": "native:helpers",
+          "kind": "syntax"
+        }
+      ]
+    },
+    "dependencies": {
+      "title": "What does this change depend on?",
+      "subtitle": "A bounded view of retained syntax bindings from the selected statistics change.",
+      "caveat": "These are syntax matches. C++ receiver, qualifier and overload resolution still have known gaps.",
+      "nodes": [
+        {
+          "id": "internal",
+          "title": "ExtractAggregationStatsInternal",
+          "sub": "Modified statistics implementation",
+          "state": "Modified",
+          "x": 20,
+          "y": 104,
+          "evidence": "native:helpers"
+        },
+        {
+          "id": "unique",
+          "title": "HasUniqueGroups",
+          "sub": "New singleton-group proof",
+          "state": "Added",
+          "x": 278,
+          "y": 38,
+          "evidence": "native:helpers"
+        },
+        {
+          "id": "source",
+          "title": "HasBaseColumnSource",
+          "sub": "New base-column proof",
+          "state": "Added",
+          "x": 278,
+          "y": 171,
+          "evidence": "native:HasBaseColumnSource"
+        },
+        {
+          "id": "value",
+          "title": "GetValuePreservingColumn",
+          "sub": "New expression proof",
+          "state": "Added",
+          "x": 536,
+          "y": 104,
+          "evidence": "native:GetValuePreservingColumn"
+        }
+      ],
+      "edges": [
+        {
+          "a": "internal",
+          "b": "unique",
+          "label": "Calls",
+          "evidence": "native:helpers",
+          "kind": "syntax"
+        },
+        {
+          "a": "internal",
+          "b": "source",
+          "label": "Calls",
+          "evidence": "native:HasBaseColumnSource",
+          "kind": "syntax"
+        },
+        {
+          "a": "internal",
+          "b": "value",
+          "label": "Calls",
+          "evidence": "native:GetValuePreservingColumn",
+          "kind": "syntax"
+        }
+      ],
+      "rows": [
+        {
+          "title": "Internal implementation \u2192 HasUniqueGroups",
+          "body": "Retained native syntax path. Open its source and binding receipt.",
+          "evidence": "native:helpers",
+          "kind": "syntax"
+        },
+        {
+          "title": "Statistics reader \u2192 aggregate identity contract",
+          "body": "The statistics guard reads the unchanged metadata API.",
+          "evidence": "context:276",
+          "kind": "contract"
+        },
+        {
+          "title": "Repository dependency binding receipt",
+          "body": "Cross-file shared Rust graph candidate; function anchor is not an exact call site.",
+          "evidence": "context:319",
+          "kind": "syntax"
+        }
+      ]
+    },
+    "contract": {
+      "title": "Which shared contracts deserve review?",
+      "subtitle": "The changed producer and statistics reader share metadata with unchanged code.",
+      "caveat": "Shared contract participation does not establish runtime impact on the recursive-CTE consumer.",
+      "nodes": [
+        {
+          "id": "rewrite",
+          "title": "RewriteOrderedFirst",
+          "sub": "first_last_any.cpp",
+          "state": "Modified",
+          "x": 20,
+          "y": 38,
+          "evidence": "context:268"
+        },
+        {
+          "id": "stats",
+          "title": "Statistics helper",
+          "sub": "relation_statistics_helper.cpp",
+          "state": "Modified",
+          "x": 20,
+          "y": 171,
+          "evidence": "context:276"
+        },
+        {
+          "id": "identity",
+          "title": "single_value_identity",
+          "sub": "aggregate_function.hpp",
+          "state": "Unchanged",
+          "x": 278,
+          "y": 102,
+          "evidence": "context:268"
+        },
+        {
+          "id": "cte",
+          "title": "Recursive CTE consumer",
+          "sub": "physical_recursive_cte_keyed.cpp",
+          "state": "Unchanged",
+          "x": 536,
+          "y": 102,
+          "evidence": "context:267"
+        }
+      ],
+      "edges": [
+        {
+          "a": "rewrite",
+          "b": "identity",
+          "label": "Writes",
+          "evidence": "context:268",
+          "kind": "contract"
+        },
+        {
+          "a": "stats",
+          "b": "identity",
+          "label": "Reads",
+          "evidence": "context:276",
+          "kind": "contract"
+        },
+        {
+          "a": "cte",
+          "b": "identity",
+          "label": "Reads",
+          "evidence": "context:267",
+          "kind": "contract"
+        }
+      ],
+      "rows": [
+        {
+          "title": "Changed rewrite \u2192 shared identity contract",
+          "body": "The rewrite propagates HasSingleValueIdentity into the replacement aggregate.",
+          "evidence": "context:268",
+          "kind": "contract"
+        },
+        {
+          "title": "Unchanged recursive-CTE consumer \u2192 same contract",
+          "body": "A concrete review neighbor. Runtime propagation from this PR is not established.",
+          "evidence": "context:267",
+          "kind": "contract"
+        },
+        {
+          "title": "Unchanged dispatcher \u2192 possible rewrite callback",
+          "body": "Inspect one dispatcher and all four registration witnesses.",
+          "evidence": "context:266",
+          "kind": "candidate"
+        }
+      ]
+    },
+    "config": {
+      "title": "Where does test selection change?",
+      "subtitle": "Two unchanged configurations inherit a changed shared skip list.",
+      "caveat": "Declared exclusions only. This experiment did not execute the DuckDB test suite.",
+      "nodes": [
+        {
+          "id": "disable",
+          "title": "disable_optimizer.json",
+          "sub": "Inherits shared list",
+          "state": "Unchanged",
+          "x": 20,
+          "y": 38,
+          "evidence": "context:237"
+        },
+        {
+          "id": "serializer",
+          "title": "verify_serializer.json",
+          "sub": "Inherits shared list",
+          "state": "Unchanged",
+          "x": 20,
+          "y": 171,
+          "evidence": "context:249"
+        },
+        {
+          "id": "shared",
+          "title": "stats_dependent_tests.json",
+          "sub": "Shared skip list",
+          "state": "Modified",
+          "x": 278,
+          "y": 102,
+          "evidence": "context:243"
+        },
+        {
+          "id": "test",
+          "title": "distinct_on_stats_propagation.test",
+          "sub": "New statistics regression",
+          "state": "Added",
+          "x": 536,
+          "y": 102,
+          "evidence": "context:243"
+        }
+      ],
+      "edges": [
+        {
+          "a": "disable",
+          "b": "shared",
+          "label": "Inherits",
+          "evidence": "context:237",
+          "kind": "config"
+        },
+        {
+          "a": "serializer",
+          "b": "shared",
+          "label": "Inherits",
+          "evidence": "context:249",
+          "kind": "config"
+        },
+        {
+          "a": "shared",
+          "b": "test",
+          "label": "Excludes",
+          "evidence": "context:243",
+          "kind": "config"
+        }
+      ],
+      "rows": [
+        {
+          "title": "disable_optimizer \u2192 shared skip list \u2192 new test",
+          "body": "Unchanged configuration inherits the newly declared exclusion.",
+          "evidence": "context:237",
+          "kind": "config"
+        },
+        {
+          "title": "verify_serializer \u2192 shared skip list \u2192 new test",
+          "body": "A second unchanged configuration inherits the exclusion.",
+          "evidence": "context:249",
+          "kind": "config"
+        },
+        {
+          "title": "verify_aggregate_state_export \u2192 new test",
+          "body": "The modified execution configuration directly excludes the test.",
+          "evidence": "context:246",
+          "kind": "config"
+        }
+      ]
+    }
+  },
+  "evidence": {
+    "context:255": {
+      "source_path": "src/optimizer/join_order/relation_manager.cpp",
+      "target_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "relation": "references_aggregate_stats_api",
+      "evidence_class": "source_reference_candidate",
+      "source_changed": false,
+      "target_changed": true,
+      "witness_path": "src/optimizer/join_order/relation_manager.cpp",
+      "witness_line": 623,
+      "witness_text": "auto operator_stats = RelationStatisticsHelper::ExtractAggregationStats(aggr, child_stats, extractor, true);",
+      "witness_blob_oid": "722f7dbbc7feb7af0ad422d9cc27d496f1dc42ec",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "target_api": "RelationStatisticsHelper::ExtractAggregationStats",
+      "caveat": "Source reference; overload/declaration-to-definition binding is not compiler-proven",
+      "id": "context:255",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 621,
+          "text": "\t\tauto &aggr = op->Cast<LogicalAggregate>();"
+        },
+        {
+          "n": 622,
+          "text": "\t\tRelationStatsExtractor extractor(context, optimizer.GetSourceStats());"
+        },
+        {
+          "n": 623,
+          "text": "\t\tauto operator_stats = RelationStatisticsHelper::ExtractAggregationStats(aggr, child_stats, extractor, true);"
+        },
+        {
+          "n": 624,
+          "text": "\t\tif (!operator_stats) {"
+        },
+        {
+          "n": 625,
+          "text": "\t\t\tstats_complete = false;"
+        },
+        {
+          "n": 626,
+          "text": "\t\t\treturn false;"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 255
+    },
+    "context:257": {
+      "source_path": "src/optimizer/relation_statistics/relation_statistics_extractor.cpp",
+      "target_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "relation": "references_aggregate_stats_api",
+      "evidence_class": "source_reference_candidate",
+      "source_changed": false,
+      "target_changed": true,
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_extractor.cpp",
+      "witness_line": 124,
+      "witness_text": "return RelationStatisticsHelper::ExtractAggregationStats(op.Cast<LogicalAggregate>(), child_stats[0], *this);",
+      "witness_blob_oid": "f8f7a1eda024525a3456505fae6e7b9a82487ac7",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "target_api": "RelationStatisticsHelper::ExtractAggregationStats",
+      "caveat": "Source reference; overload/declaration-to-definition binding is not compiler-proven",
+      "id": "context:257",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 122,
+          "text": "\t}"
+        },
+        {
+          "n": 123,
+          "text": "\tif (op.type == LogicalOperatorType::LOGICAL_AGGREGATE_AND_GROUP_BY && child_stats.size() == 1) {"
+        },
+        {
+          "n": 124,
+          "text": "\t\treturn RelationStatisticsHelper::ExtractAggregationStats(op.Cast<LogicalAggregate>(), child_stats[0], *this);"
+        },
+        {
+          "n": 125,
+          "text": "\t}"
+        },
+        {
+          "n": 126,
+          "text": "\treturn RelationStatisticsHelper::ExtractOperatorStats(op, context, child_stats);"
+        },
+        {
+          "n": 127,
+          "text": "}"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 257
+    },
+    "native:wrapper": {
+      "id": "native:wrapper",
+      "relation": "Wrapper calls changed internal helper",
+      "evidence_class": "native_bound_syntax",
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "witness_line": 693,
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "witness_text": "\t// Join reconstruction has already published the selected input cardinalities.\n\tRelationStatsExtractor extractor(context);\n\treturn ExtractAggregationStatsInternal(aggregate, child_stats, extractor, true);\n}\n\noptional<RelationStats> RelationStatisticsHelper::ExtractAggregationStats(LogicalAggregate &aggregate,",
+      "lines": [
+        {
+          "n": 691,
+          "text": "\t// Join reconstruction has already published the selected input cardinalities."
+        },
+        {
+          "n": 692,
+          "text": "\tRelationStatsExtractor extractor(context);"
+        },
+        {
+          "n": 693,
+          "text": "\treturn ExtractAggregationStatsInternal(aggregate, child_stats, extractor, true);"
+        },
+        {
+          "n": 694,
+          "text": "}"
+        },
+        {
+          "n": 695,
+          "text": ""
+        },
+        {
+          "n": 696,
+          "text": "optional<RelationStats> RelationStatisticsHelper::ExtractAggregationStats(LogicalAggregate &aggregate,"
+        }
+      ],
+      "caveat": "Syntax binding from the retained two-file graph. The wrapper body is unchanged; compiler resolution is not claimed.",
+      "artifact": "native-incoming-paths.json",
+      "artifact_index": 6,
+      "location": "Source context anchor; exact graph path is in the retained receipt"
+    },
+    "native:helpers": {
+      "id": "native:helpers",
+      "relation": "Internal helper calls uniqueness proof",
+      "evidence_class": "native_bound_syntax",
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "witness_line": 627,
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "witness_text": "\t\t\t}\n\t\t}\n\t\thas_unique_groups = HasUniqueGroups(*aggregate.children[0], groups);\n\t\tif (has_unique_groups) {\n\t\t\tresult.cardinality = child_stats.cardinality;\n\t\t}",
+      "lines": [
+        {
+          "n": 625,
+          "text": "\t\t\t}"
+        },
+        {
+          "n": 626,
+          "text": "\t\t}"
+        },
+        {
+          "n": 627,
+          "text": "\t\thas_unique_groups = HasUniqueGroups(*aggregate.children[0], groups);"
+        },
+        {
+          "n": 628,
+          "text": "\t\tif (has_unique_groups) {"
+        },
+        {
+          "n": 629,
+          "text": "\t\t\tresult.cardinality = child_stats.cardinality;"
+        },
+        {
+          "n": 630,
+          "text": "\t\t}"
+        }
+      ],
+      "caveat": "Syntax binding, not compiler proof. Open the frozen path record for graph-scoped identities.",
+      "artifact": "native-incoming-paths.json",
+      "artifact_index": 3,
+      "location": "Source context anchor; exact graph path is in the retained receipt"
+    },
+    "native:HasBaseColumnSource": {
+      "id": "native:HasBaseColumnSource",
+      "relation": "Internal implementation calls HasBaseColumnSource",
+      "evidence_class": "native_bound_syntax",
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "witness_line": 669,
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "witness_text": "\t\t\t\tauto binding = agg_children[0]->Cast<BoundColumnRefExpression>().Binding();\n\t\t\t\tauto child_column = child_columns.Find(binding);\n\t\t\t\tif (child_column && HasBaseColumnSource(*aggregate.children[0], binding)) {\n\t\t\t\t\ttotal_domain = child_column->total_domain;\n\t\t\t\t\tcurrent_domain = child_column->current_domain;\n\t\t\t\t}",
+      "lines": [
+        {
+          "n": 667,
+          "text": "\t\t\t\tauto binding = agg_children[0]->Cast<BoundColumnRefExpression>().Binding();"
+        },
+        {
+          "n": 668,
+          "text": "\t\t\t\tauto child_column = child_columns.Find(binding);"
+        },
+        {
+          "n": 669,
+          "text": "\t\t\t\tif (child_column && HasBaseColumnSource(*aggregate.children[0], binding)) {"
+        },
+        {
+          "n": 670,
+          "text": "\t\t\t\t\ttotal_domain = child_column->total_domain;"
+        },
+        {
+          "n": 671,
+          "text": "\t\t\t\t\tcurrent_domain = child_column->current_domain;"
+        },
+        {
+          "n": 672,
+          "text": "\t\t\t\t}"
+        }
+      ],
+      "caveat": "Retained syntax binding, not compiler resolution.",
+      "artifact": "native-incoming-paths.json",
+      "artifact_index": 0,
+      "location": "Source span with retained native path"
+    },
+    "native:GetValuePreservingColumn": {
+      "id": "native:GetValuePreservingColumn",
+      "relation": "Internal implementation calls GetValuePreservingColumn",
+      "evidence_class": "native_bound_syntax",
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "witness_line": 622,
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "witness_text": "\t\tcolumn_binding_set_t groups;\n\t\tfor (auto &group : aggregate.groups) {\n\t\t\tauto binding = GetValuePreservingColumn(*group);\n\t\t\tif (binding) {\n\t\t\t\tgroups.insert(*binding);\n\t\t\t}",
+      "lines": [
+        {
+          "n": 620,
+          "text": "\t\tcolumn_binding_set_t groups;"
+        },
+        {
+          "n": 621,
+          "text": "\t\tfor (auto &group : aggregate.groups) {"
+        },
+        {
+          "n": 622,
+          "text": "\t\t\tauto binding = GetValuePreservingColumn(*group);"
+        },
+        {
+          "n": 623,
+          "text": "\t\t\tif (binding) {"
+        },
+        {
+          "n": 624,
+          "text": "\t\t\t\tgroups.insert(*binding);"
+        },
+        {
+          "n": 625,
+          "text": "\t\t\t}"
+        }
+      ],
+      "caveat": "Retained syntax binding, not compiler resolution.",
+      "artifact": "native-incoming-paths.json",
+      "artifact_index": 10,
+      "location": "Source span with retained native path"
+    },
+    "context:268": {
+      "source_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "target_path": "src/include/duckdb/function/aggregate_function.hpp",
+      "relation": "writes_shared_identity_contract",
+      "evidence_class": "shared_contract_reference",
+      "source_changed": true,
+      "target_changed": false,
+      "witness_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "witness_line": 57,
+      "witness_text": "result->FunctionMutable().SetSingleValueIdentity(aggregate->Function().HasSingleValueIdentity());",
+      "witness_blob_oid": "0ba568cb72b05ba00c313dfd8e6d58d158e6b656",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "contract": "AggregateFunction.properties.single_value_identity",
+      "contract_definition": {
+        "path": "src/include/duckdb/function/aggregate_function.hpp",
+        "field_line": 353,
+        "reader_line": 401,
+        "writer_line": 402
+      },
+      "caveat": "Shared contract participation; not a proven runtime flow between these files",
+      "id": "context:268",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 55,
+          "text": "\t                                           aggregate->GetAggregateType());"
+        },
+        {
+          "n": 56,
+          "text": "\t// The encoded sort key is non-NULL, so a singleton still returns its input value."
+        },
+        {
+          "n": 57,
+          "text": "\tresult->FunctionMutable().SetSingleValueIdentity(aggregate->Function().HasSingleValueIdentity());"
+        },
+        {
+          "n": 58,
+          "text": "\treturn unique_ptr_cast<BoundAggregateExpression, Expression>(std::move(result));"
+        },
+        {
+          "n": 59,
+          "text": "}"
+        },
+        {
+          "n": 60,
+          "text": ""
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 268
+    },
+    "context:276": {
+      "source_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "target_path": "src/include/duckdb/function/aggregate_function.hpp",
+      "relation": "reads_shared_identity_contract",
+      "evidence_class": "shared_contract_reference",
+      "source_changed": true,
+      "target_changed": false,
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "witness_line": 664,
+      "witness_text": "if (bound_aggregate.Function().HasSingleValueIdentity() && !bound_aggregate.GetFilter() &&",
+      "witness_blob_oid": "6eac019d1e36990aae2d28be02ad8657892cb8d5",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "contract": "AggregateFunction.properties.single_value_identity",
+      "contract_definition": {
+        "path": "src/include/duckdb/function/aggregate_function.hpp",
+        "field_line": 353,
+        "reader_line": 401,
+        "writer_line": 402
+      },
+      "caveat": "Shared contract participation; not a proven runtime flow between these files",
+      "id": "context:276",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 662,
+          "text": "\t\t\tauto &bound_aggregate = expression->Cast<BoundAggregateExpression>();"
+        },
+        {
+          "n": 663,
+          "text": "\t\t\tauto &agg_children = bound_aggregate.GetChildren();"
+        },
+        {
+          "n": 664,
+          "text": "\t\t\tif (bound_aggregate.Function().HasSingleValueIdentity() && !bound_aggregate.GetFilter() &&"
+        },
+        {
+          "n": 665,
+          "text": "\t\t\t    !agg_children.empty() && expression->GetReturnType() == agg_children[0]->GetReturnType() &&"
+        },
+        {
+          "n": 666,
+          "text": "\t\t\t    agg_children[0]->GetExpressionClass() == ExpressionClass::BOUND_COLUMN_REF) {"
+        },
+        {
+          "n": 667,
+          "text": "\t\t\t\tauto binding = agg_children[0]->Cast<BoundColumnRefExpression>().Binding();"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 276
+    },
+    "context:267": {
+      "source_path": "src/execution/operator/set/physical_recursive_cte_keyed.cpp",
+      "target_path": "src/include/duckdb/function/aggregate_function.hpp",
+      "relation": "reads_shared_identity_contract",
+      "evidence_class": "shared_contract_reference",
+      "source_changed": false,
+      "target_changed": false,
+      "witness_path": "src/execution/operator/set/physical_recursive_cte_keyed.cpp",
+      "witness_line": 42,
+      "witness_text": "aggregate.Function().HasSingleValueIdentity() && !children.empty() &&",
+      "witness_blob_oid": "69a0f6255be6e0485ba15440a261a67ea3db85e1",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "contract": "AggregateFunction.properties.single_value_identity",
+      "contract_definition": {
+        "path": "src/include/duckdb/function/aggregate_function.hpp",
+        "field_line": 353,
+        "reader_line": 401,
+        "writer_line": 402
+      },
+      "caveat": "Shared contract participation; not a proven runtime flow between these files",
+      "id": "context:267",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 40,
+          "text": "\t\tauto &children = aggregate.GetChildren();"
+        },
+        {
+          "n": 41,
+          "text": "\t\tresult.can_reuse_new_group_candidates ="
+        },
+        {
+          "n": 42,
+          "text": "\t\t    aggregate.Function().HasSingleValueIdentity() && !children.empty() &&"
+        },
+        {
+          "n": 43,
+          "text": "\t\t    children[0]->GetExpressionClass() == ExpressionClass::BOUND_REF &&"
+        },
+        {
+          "n": 44,
+          "text": "\t\t    children[0]->Cast<BoundReferenceExpression>().Index() == op.payload_idx[payload_idx];"
+        },
+        {
+          "n": 45,
+          "text": "\t}"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 267
+    },
+    "context:266": {
+      "source_path": "src/optimizer/aggregate_rewrite.cpp",
+      "target_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "relation": "dispatches_possible_registered_rewrite",
+      "evidence_class": "callback_dispatch_candidate",
+      "source_changed": false,
+      "target_changed": true,
+      "witness_path": "src/optimizer/aggregate_rewrite.cpp",
+      "witness_line": 58,
+      "witness_text": "auto rewrite = input.aggregate.Function().GetDirectRewriteCallback()(input);",
+      "witness_blob_oid": "862ba08cef7ef508a700d24350465dda41a770f7",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "registration_witnesses": [
+        {
+          "path": "src/function/aggregate/distributive/first_last_any.cpp",
+          "line": 492,
+          "symbol": "RewriteOrderedFirst",
+          "text": "function.SetDirectRewriteCallback(RewriteOrderedFirst<LAST, SKIP_NULLS>);"
+        },
+        {
+          "path": "src/function/aggregate/distributive/first_last_any.cpp",
+          "line": 517,
+          "symbol": "RewriteOrderedFirst",
+          "text": "function.SetDirectRewriteCallback(RewriteOrderedFirst<LAST, SKIP_NULLS>);"
+        },
+        {
+          "path": "src/function/aggregate/distributive/first_last_any.cpp",
+          "line": 542,
+          "symbol": "RewriteOrderedFirst",
+          "text": "fun.SetDirectRewriteCallback(RewriteOrderedFirst<false, false>);"
+        },
+        {
+          "path": "src/function/aggregate/distributive/first_last_any.cpp",
+          "line": 551,
+          "symbol": "RewriteOrderedFirst",
+          "text": "fun.SetDirectRewriteCallback(RewriteOrderedFirst<true, false>);"
+        }
+      ],
+      "caveat": "Possible callback flow from registration and dispatcher; not a direct bound call or runtime trace",
+      "id": "context:266",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 56,
+          "text": "\t\treturn nullptr;"
+        },
+        {
+          "n": 57,
+          "text": "\t}"
+        },
+        {
+          "n": 58,
+          "text": "\tauto rewrite = input.aggregate.Function().GetDirectRewriteCallback()(input);"
+        },
+        {
+          "n": 59,
+          "text": "\tif (!rewrite) {"
+        },
+        {
+          "n": 60,
+          "text": "\t\treturn nullptr;"
+        },
+        {
+          "n": 61,
+          "text": "\t}"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 266
+    },
+    "context:243": {
+      "source_path": "test/configs/stats_dependent_tests.json",
+      "target_path": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+      "relation": "skips_test_in_mode",
+      "evidence_class": "config_value",
+      "source_changed": true,
+      "target_changed": true,
+      "witness_path": "test/configs/stats_dependent_tests.json",
+      "witness_line": 40,
+      "witness_text": "\"test/sql/optimizer/statistics/distinct_on_stats_propagation.test\",",
+      "witness_blob_oid": "7457b6bce5591a0984135f9d551b794441f64609",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "reason": "Statistics are not set without optimizers.",
+      "on_init": null,
+      "id": "context:243",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 38,
+          "text": "        \"test/sql/storage/list_length_stats_nested_optimistic.test\","
+        },
+        {
+          "n": 39,
+          "text": "        \"test/sql/optimizer/statistics/list_length_stats_propagation.test\","
+        },
+        {
+          "n": 40,
+          "text": "        \"test/sql/optimizer/statistics/distinct_on_stats_propagation.test\","
+        },
+        {
+          "n": 41,
+          "text": "        \"test/sql/storage/list_length_stats_old_version.test\","
+        },
+        {
+          "n": 42,
+          "text": "        \"test/sql/types/nested/array/array_statistics.test\","
+        },
+        {
+          "n": 43,
+          "text": "        \"test/sql/vacuum/test_analyze.test\","
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 243
+    },
+    "context:237": {
+      "source_path": "test/configs/disable_optimizer.json",
+      "target_path": "test/configs/stats_dependent_tests.json",
+      "relation": "inherits_skip_tests",
+      "evidence_class": "config_value",
+      "source_changed": false,
+      "target_changed": true,
+      "witness_path": "test/configs/disable_optimizer.json",
+      "witness_line": 5,
+      "witness_text": "\"inherit_skip_tests\": \"test/configs/stats_dependent_tests.json\",",
+      "witness_blob_oid": "9e2330e8854ff5de38dcdc0a491b5c17885ee6ca",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "id": "context:237",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 3,
+          "text": "  \"on_init\": \"SET debug_disable_optimizer=true;\","
+        },
+        {
+          "n": 4,
+          "text": "  \"skip_compiled\": \"true\","
+        },
+        {
+          "n": 5,
+          "text": "  \"inherit_skip_tests\": \"test/configs/stats_dependent_tests.json\","
+        },
+        {
+          "n": 6,
+          "text": "  \"skip_tests\": ["
+        },
+        {
+          "n": 7,
+          "text": "    {"
+        },
+        {
+          "n": 8,
+          "text": "      \"reason\": \"Checks the plan of an executed query through the profiler output.\","
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 237
+    },
+    "context:249": {
+      "source_path": "test/configs/verify_serializer.json",
+      "target_path": "test/configs/stats_dependent_tests.json",
+      "relation": "inherits_skip_tests",
+      "evidence_class": "config_value",
+      "source_changed": false,
+      "target_changed": true,
+      "witness_path": "test/configs/verify_serializer.json",
+      "witness_line": 5,
+      "witness_text": "\"inherit_skip_tests\": \"test/configs/stats_dependent_tests.json\",",
+      "witness_blob_oid": "e410713085d6a974b1c326d9adda9ba15e7a1104",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "id": "context:249",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 3,
+          "text": "  \"on_init\": \"SET debug_verify_serializer=true\","
+        },
+        {
+          "n": 4,
+          "text": "  \"skip_compiled\": \"true\","
+        },
+        {
+          "n": 5,
+          "text": "  \"inherit_skip_tests\": \"test/configs/stats_dependent_tests.json\","
+        },
+        {
+          "n": 6,
+          "text": "  \"skip_tests\": ["
+        },
+        {
+          "n": 7,
+          "text": "    {"
+        },
+        {
+          "n": 8,
+          "text": "      \"reason\": \"Measures CTE restrictions using planner dependencies deliberately discarded by serialization\","
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 249
+    },
+    "context:246": {
+      "source_path": "test/configs/verify_aggregate_state_export.json",
+      "target_path": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+      "relation": "skips_test_in_mode",
+      "evidence_class": "config_value",
+      "source_changed": true,
+      "target_changed": true,
+      "witness_path": "test/configs/verify_aggregate_state_export.json",
+      "witness_line": 50,
+      "witness_text": "\"test/sql/optimizer/statistics/distinct_on_stats_propagation.test\",",
+      "witness_blob_oid": "e59f36a380661403a63cf36bc89c0712b8e00cb3",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "reason": "Explain/profiling output is different due to verification",
+      "on_init": "SET debug_verify_aggregate_state_export=true;",
+      "id": "context:246",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 48,
+          "text": "        \"test/sql/copy/parquet/read_single_parquet_file.test\","
+        },
+        {
+          "n": 49,
+          "text": "        \"test/sql/optimizer/aggregate_stats_propagation.test\","
+        },
+        {
+          "n": 50,
+          "text": "        \"test/sql/optimizer/statistics/distinct_on_stats_propagation.test\","
+        },
+        {
+          "n": 51,
+          "text": "        \"test/sql/optimizer/scalar_aggregate_merge_files_plan.test\","
+        },
+        {
+          "n": 52,
+          "text": "        \"test/sql/optimizer/scalar_aggregate_merge_plan.test\","
+        },
+        {
+          "n": 53,
+          "text": "        \"test/sql/optimizer/scalar_aggregate_merge_tpcds_plan.test\","
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 246
+    },
+    "context:319": {
+      "source_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "target_path": "src/include/duckdb/parser/base_expression.hpp",
+      "relation": "calls_dependency_in_shared_syntax_graph",
+      "evidence_class": "native_bound_syntax",
+      "source_changed": true,
+      "target_changed": false,
+      "witness_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "witness_line": 558,
+      "witness_text": "src/optimizer/relation_statistics/relation_statistics_helper.cpp :: ExtractAggregationStatsInternal -> src/include/duckdb/parser/base_expression.hpp :: GetExpressionClass [bind=Some(\"method_crate_singleton\"), cross_file=true]",
+      "witness_blob_oid": "6eac019d1e36990aae2d28be02ad8657892cb8d5",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "source_symbol": "ExtractAggregationStatsInternal",
+      "target_symbol": "GetExpressionClass",
+      "changed_symbol_seed": true,
+      "bind_method": "Some(\"method_crate_singleton\")",
+      "evidence_artifact": "docs/research/artifacts/2026-11-17-cpp-extraction-gap-lab/rust-full-repository-seed-witnesses.txt",
+      "evidence_artifact_line": 52,
+      "witness_location": "Core receipt is the binding witness; repository line is function start when unique, not the call site",
+      "id": "context:319",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 556,
+          "text": "}"
+        },
+        {
+          "n": 557,
+          "text": ""
+        },
+        {
+          "n": 558,
+          "text": "static optional<RelationStats> ExtractAggregationStatsInternal(LogicalAggregate &aggregate,"
+        },
+        {
+          "n": 559,
+          "text": "                                                               const RelationStats &child_stats,"
+        },
+        {
+          "n": 560,
+          "text": "                                                               RelationStatsExtractor &extractor,"
+        },
+        {
+          "n": 561,
+          "text": "                                                               bool use_operator_cardinality) {"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 319
+    },
+    "context:114": {
+      "source_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "target_path": "src/function/aggregate/distributive/CMakeLists.txt",
+      "relation": "listed_in_build_target",
+      "evidence_class": "build_declaration",
+      "source_changed": true,
+      "target_changed": false,
+      "witness_path": "src/function/aggregate/distributive/CMakeLists.txt",
+      "witness_line": 1,
+      "witness_text": "add_library_unity(duckdb_aggr_distr OBJECT count.cpp decimal_avg.cpp\n                  first_last_any.cpp minmax.cpp)",
+      "witness_blob_oid": "d7e51e1411270b494afa438d1328aa169ae66ae6",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "component": "duckdb_aggr_distr",
+      "id": "context:114",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 1,
+          "text": "add_library_unity(duckdb_aggr_distr OBJECT count.cpp decimal_avg.cpp"
+        },
+        {
+          "n": 2,
+          "text": "                  first_last_any.cpp minmax.cpp)"
+        },
+        {
+          "n": 3,
+          "text": "set(ALL_OBJECT_FILES"
+        },
+        {
+          "n": 4,
+          "text": "    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:duckdb_aggr_distr>"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 114
+    },
+    "context:157": {
+      "source_path": "src/optimizer/relation_statistics/relation_statistics_extractor.cpp",
+      "target_path": "src/optimizer/relation_statistics/CMakeLists.txt",
+      "relation": "listed_in_build_target",
+      "evidence_class": "build_declaration",
+      "source_changed": false,
+      "target_changed": false,
+      "witness_path": "src/optimizer/relation_statistics/CMakeLists.txt",
+      "witness_line": 1,
+      "witness_text": "add_library_unity(\n  duckdb_optimizer_relation_statistics\n  OBJECT\n  relation_statistics.cpp\n  relation_statistics_extractor.cpp\n  relation_statistics_helper.cpp\n  relation_statistics_operator.cpp\n  relation_statistics_scan.cpp)",
+      "witness_blob_oid": "94d04dd6cf092a944afb6ee89389ef475422af69",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "component": "duckdb_optimizer_relation_statistics",
+      "id": "context:157",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 1,
+          "text": "add_library_unity("
+        },
+        {
+          "n": 2,
+          "text": "  duckdb_optimizer_relation_statistics"
+        },
+        {
+          "n": 3,
+          "text": "  OBJECT"
+        },
+        {
+          "n": 4,
+          "text": "  relation_statistics.cpp"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 157
+    },
+    "context:156": {
+      "source_path": "src/optimizer/join_order/relation_manager.cpp",
+      "target_path": "src/optimizer/join_order/CMakeLists.txt",
+      "relation": "listed_in_build_target",
+      "evidence_class": "build_declaration",
+      "source_changed": false,
+      "target_changed": false,
+      "witness_path": "src/optimizer/join_order/CMakeLists.txt",
+      "witness_line": 1,
+      "witness_text": "add_library_unity(\n  duckdb_optimizer_join_order\n  OBJECT\n  query_graph.cpp\n  filter_info.cpp\n  join_predicate.cpp\n  join_relation_set.cpp\n  join_node.cpp\n  join_order_operator.cpp\n  join_order_optimizer.cpp\n  join_order_source_stats.cpp\n  cardinality_estimator.cpp\n  cost_model.cpp\n  plan_enumerator.cpp\n  relation_manager.cpp\n  query_graph_manager.cpp)",
+      "witness_blob_oid": "94eb6ce5fe48fb20cc162b06b09e39ee44cffcf5",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "component": "duckdb_optimizer_join_order",
+      "id": "context:156",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 1,
+          "text": "add_library_unity("
+        },
+        {
+          "n": 2,
+          "text": "  duckdb_optimizer_join_order"
+        },
+        {
+          "n": 3,
+          "text": "  OBJECT"
+        },
+        {
+          "n": 4,
+          "text": "  query_graph.cpp"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 156
+    },
+    "context:147": {
+      "source_path": "src/optimizer/aggregate_rewrite.cpp",
+      "target_path": "src/optimizer/CMakeLists.txt",
+      "relation": "listed_in_build_target",
+      "evidence_class": "build_declaration",
+      "source_changed": false,
+      "target_changed": false,
+      "witness_path": "src/optimizer/CMakeLists.txt",
+      "witness_line": 10,
+      "witness_text": "add_library_unity(\n  duckdb_optimizer\n  OBJECT\n  aggregate_rewrite.cpp\n  aggregate_function_rewriter.cpp\n  aggregate_reuse.cpp\n  apply_functional_dependencies.cpp\n  materialized_aggregate_reuse.cpp\n  aggregate_rewrite_helper.cpp\n  build_probe_side_optimizer.cpp\n  column_binding_replacer.cpp\n  column_lifetime_analyzer.cpp\n  constant_or_null_simplification.cpp\n  empty_result_pullup.cpp\n  common_aggregate_optimizer.cpp\n  common_subplan_optimizer.cpp\n  compressed_materialization.cpp\n  cse_optimizer.cpp\n  cte_filter_pusher.cpp\n  cte_join_filter_collector.cpp\n  cte_join_filter_pusher.cpp\n  cte_runtime_filter_pushdown.cpp\n  cte_inlining.cpp\n  deliminator.cpp\n  duplicate_eliminated_domain_optimizer.cpp\n  multi_stage_aggregate_rewriter.cpp\n  expression_heuristics.cpp\n  expression_rewriter.cpp\n  filter_statistics.cpp\n  filter_combiner.cpp\n  filter_pullup.cpp\n  filter_pushdown.cpp\n  grouping_sets_optimizer.cpp\n  in_clause_rewriter.cpp\n  join_filter_pushdown_optimizer.cpp\n  runtime_filter_cast.cpp\n  late_materialization.cpp\n  late_materialization_helper.cpp\n  optimizer.cpp\n  outer_join_simplification.cpp\n  partial_aggregate_pushdown.cpp\n  partitioned_execution.cpp\n  join_elimination.cpp\n  join_build_properties.cpp\n  recursive_join_planning.cpp\n  regex_range_filter.cpp\n  remove_duplicate_groups.cpp\n  remove_redundant_order.cpp\n  remove_redundant_order_keys.cpp\n  remove_unused_columns.cpp\n  row_group_pruner.cpp\n  statistics_propagator.cpp\n  limit_pushdown.cpp\n  topn_optimizer.cpp\n  topn_window_elimination.cpp\n  unnest_rewriter.cpp\n  window_join_pushdown.cpp\n  window_self_join.cpp\n  row_number_rewriter.cpp\n  sampling_pushdown.cpp\n  scalar_aggregate_merger.cpp\n  type_pushdown.cpp\n  scalar_fn_pushdown.cpp\n  self_join_aggregate.cpp\n  projection_pullup.cpp\n  projection_placement.cpp\n  remote_pushdown_optimizer.cpp\n  disjunctive_join_rewriter.cpp)",
+      "witness_blob_oid": "f408695f8f87cac0b83cf931d5c2db9119b1d1f9",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "component": "duckdb_optimizer",
+      "id": "context:147",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 8,
+          "text": "add_subdirectory(statistics)"
+        },
+        {
+          "n": 9,
+          "text": ""
+        },
+        {
+          "n": 10,
+          "text": "add_library_unity("
+        },
+        {
+          "n": 11,
+          "text": "  duckdb_optimizer"
+        },
+        {
+          "n": 12,
+          "text": "  OBJECT"
+        },
+        {
+          "n": 13,
+          "text": "  aggregate_rewrite.cpp"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 147
+    },
+    "context:105": {
+      "source_path": "src/execution/operator/set/physical_recursive_cte_keyed.cpp",
+      "target_path": "src/execution/operator/set/CMakeLists.txt",
+      "relation": "listed_in_build_target",
+      "evidence_class": "build_declaration",
+      "source_changed": false,
+      "target_changed": false,
+      "witness_path": "src/execution/operator/set/CMakeLists.txt",
+      "witness_line": 1,
+      "witness_text": "add_library_unity(\n  duckdb_operator_set\n  OBJECT\n  physical_union.cpp\n  physical_recursive_cte.cpp\n  physical_recursive_cte_delta.cpp\n  physical_recursive_cte_keyed.cpp\n  physical_recursive_cte_runtime.cpp\n  physical_recursive_cte_state.cpp\n  physical_recursive_cte_union.cpp\n  physical_cte.cpp)",
+      "witness_blob_oid": "70700bfd2a47745adbb578f91d761c0e84708379",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "component": "duckdb_operator_set",
+      "id": "context:105",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 1,
+          "text": "add_library_unity("
+        },
+        {
+          "n": 2,
+          "text": "  duckdb_operator_set"
+        },
+        {
+          "n": 3,
+          "text": "  OBJECT"
+        },
+        {
+          "n": 4,
+          "text": "  physical_union.cpp"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 105
+    },
+    "context:221": {
+      "source_path": "test/optimizer/relation_statistics.cpp",
+      "target_path": "test/optimizer/CMakeLists.txt",
+      "relation": "listed_in_build_target",
+      "evidence_class": "build_declaration",
+      "source_changed": false,
+      "target_changed": false,
+      "witness_path": "test/optimizer/CMakeLists.txt",
+      "witness_line": 1,
+      "witness_text": "add_library_unity(\n  test_optimizer\n  OBJECT\n  aggregate_rewrite.cpp\n  aggregate_statistics.cpp\n  bound_function_identity.cpp\n  build_probe_side_optimizer.cpp\n  column_binding_rewrite.cpp\n  common_subplan.cpp\n  common_subplan_nonserializable.cpp\n  dynamic_filter_groups.cpp\n  expression_type_serialization.cpp\n  filter_pushdown_alias.cpp\n  function_invocation_serialization.cpp\n  join_filter_optimizer_hooks.cpp\n  join_order_conflict_detector.cpp\n  join_order_enumeration.cpp\n  logical_plan_verification.cpp\n  multi_file_metadata.cpp\n  multi_file_repeatability.cpp\n  relation_statistics.cpp\n  remove_unused_columns.cpp\n  runtime_filter_schedule.cpp\n  source_cardinality_bounds.cpp\n  unchecked_cast.cpp\n  union_alls.cpp)",
+      "witness_blob_oid": "58d6dae3ffd2a0a5a88fd8a1283f355976edded7",
+      "revision": "d29b26bb92ac940a0807be0f43cc385b31623839",
+      "component": "test_optimizer",
+      "id": "context:221",
+      "location": "Exact source witness",
+      "lines": [
+        {
+          "n": 1,
+          "text": "add_library_unity("
+        },
+        {
+          "n": 2,
+          "text": "  test_optimizer"
+        },
+        {
+          "n": 3,
+          "text": "  OBJECT"
+        },
+        {
+          "n": 4,
+          "text": "  aggregate_rewrite.cpp"
+        }
+      ],
+      "artifact": "relationships.json",
+      "artifact_index": 221
+    }
+  },
+  "components": [
+    {
+      "target": "duckdb_aggr_distr",
+      "caption": "Aggregate functions",
+      "members": [
+        "src/function/aggregate/distributive/first_last_any.cpp",
+        "src/function/aggregate/distributive/minmax.cpp"
+      ],
+      "evidence": "context:114"
+    },
+    {
+      "target": "duckdb_optimizer_relation_statistics",
+      "caption": "Relation statistics",
+      "members": [
+        "src/optimizer/relation_statistics/relation_statistics_extractor.cpp",
+        "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+        "src/optimizer/relation_statistics/relation_statistics_operator.cpp"
+      ],
+      "evidence": "context:157"
+    },
+    {
+      "target": "duckdb_optimizer_join_order",
+      "caption": "Join ordering",
+      "members": [
+        "src/optimizer/join_order/relation_manager.cpp"
+      ],
+      "evidence": "context:156"
+    },
+    {
+      "target": "duckdb_optimizer",
+      "caption": "Optimizer",
+      "members": [
+        "src/optimizer/aggregate_rewrite.cpp"
+      ],
+      "evidence": "context:147"
+    },
+    {
+      "target": "duckdb_operator_set",
+      "caption": "Set execution",
+      "members": [
+        "src/execution/operator/set/physical_recursive_cte_keyed.cpp"
+      ],
+      "evidence": "context:105"
+    },
+    {
+      "target": "test_optimizer",
+      "caption": "Optimizer tests",
+      "members": [
+        "test/optimizer/relation_statistics.cpp"
+      ],
+      "evidence": "context:221"
+    }
+  ],
+  "people": [
+    {
+      "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "author_name": "Denis Hirn",
+      "base_region_lines": 38,
+      "github_login": "kryonix",
+      "evidence_url": "https://github.com/duckdb/duckdb/commit/3a5d0c26c254ee4521b504e03a0f1315b821fcdc",
+      "history_commits": 7,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    },
+    {
+      "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "author_name": "Mytherin",
+      "base_region_lines": 2,
+      "github_login": null,
+      "evidence_url": null,
+      "history_commits": 13,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    },
+    {
+      "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "author_name": "Pedro Holanda",
+      "base_region_lines": 1,
+      "github_login": null,
+      "evidence_url": null,
+      "history_commits": 1,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    },
+    {
+      "file_path": "src/function/aggregate/distributive/first_last_any.cpp",
+      "author_name": "Maxxen",
+      "base_region_lines": 1,
+      "github_login": null,
+      "evidence_url": null,
+      "history_commits": 1,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    },
+    {
+      "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "author_name": "Laurens Kuiper",
+      "base_region_lines": 108,
+      "github_login": "lnkuiper",
+      "evidence_url": "https://github.com/duckdb/duckdb/commit/255d752c99831484aa675d496d3934767c5ac0cb",
+      "history_commits": 22,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    },
+    {
+      "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "author_name": "xproblematique",
+      "base_region_lines": 5,
+      "github_login": null,
+      "evidence_url": null,
+      "history_commits": 1,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    },
+    {
+      "file_path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+      "author_name": "Robinho-MR",
+      "base_region_lines": 3,
+      "github_login": null,
+      "evidence_url": null,
+      "history_commits": 3,
+      "role": "historical_expertise_candidate",
+      "formal_owner_verified": false
+    }
+  ],
+  "input_refs": [
+    "2026-11-18-pr-repository-context-map/relationships.json",
+    "2026-11-18-pr-repository-context-map/native-incoming-paths.json",
+    "2026-11-17-review-extensions-poc/stakeholder-candidates.json"
+  ]
+}

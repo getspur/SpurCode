@@ -1,0 +1,2340 @@
+{
+  "schema_version": 1,
+  "task": "bd-3k3i",
+  "date": "2026-11-18",
+  "notebook": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+  "fixture": {
+    "root": "/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+    "config": {
+      "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+    },
+    "python_config": {
+      "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+      "environment": {
+        "kind": "existing",
+        "interpreter": {
+          "kind": "project_relative",
+          "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+        }
+      }
+    },
+    "fixture_sha256": "b8e1a021c9460ffdbe0882c8a3363cdf99df9569d2f91590c2554707d965c0d2",
+    "canonical_root": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+  },
+  "contracts": {
+    "deno": {
+      "kernel_name": "deno",
+      "language": "deno",
+      "schema_version": 1,
+      "config_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_root": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+          }
+        },
+        "required": [
+          "project_root"
+        ]
+      },
+      "path_bases": {
+        "project_root": "notebook directory",
+        "other_project_paths": "project_root; relative parent segments supported"
+      },
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation or identity allocation",
+        "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+      },
+      "input_tracking": {
+        "default": "content",
+        "build_system": {
+          "cpp": "Build the selected configured CMake target on start/restart; no configure step",
+          "rust": "Reissue dependencies in Evcxr's Cargo consumer on execution",
+          "inspection": "No build; current source/data freshness is not checked"
+        }
+      },
+      "capabilities": {
+        "install": false,
+        "project_build": false,
+        "executable_override": false,
+        "toolchain_override": false,
+        "global_mutation": false,
+        "compiler_abi_verification": false
+      },
+      "example": {
+        "project_root": ".."
+      },
+      "profile_identity": {
+        "schema_version": 3,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for standalone factory"
+      },
+      "dependency_policy": {
+        "install": false,
+        "project_writes": false,
+        "prepared_dependencies_required": true,
+        "supported_node_modules_modes": [
+          "manual",
+          "none"
+        ],
+        "unsupported_modes": [
+          "auto",
+          "vendor",
+          "workspace"
+        ],
+        "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 2,
+          "asynchronous": true,
+          "requires_qualified_bridge": true,
+          "readiness": "ready only for the current initialized registration with valid launch inputs"
+        }
+      }
+    },
+    "python": {
+      "kernel_name": "python3",
+      "language": "python",
+      "schema_version": 1,
+      "config_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_root": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+          },
+          "python": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "request": {
+                "type": "string",
+                "pattern": "^3(\\.[0-9]+)*$",
+                "description": "CPython version for explicit managed preparation; absent uses project policy then managed default"
+              }
+            },
+            "required": []
+          },
+          "environment": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "requirements"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                    },
+                    "uniqueItems": true,
+                    "minItems": 1
+                  },
+                  "constraints": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                    },
+                    "uniqueItems": true,
+                    "default": []
+                  },
+                  "installer": {
+                    "enum": [
+                      "pip",
+                      "uv"
+                    ],
+                    "default": "pip"
+                  },
+                  "hash_policy": {
+                    "enum": [
+                      "none",
+                      "required"
+                    ],
+                    "default": "none"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "files"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "pyproject"
+                  },
+                  "manifest_path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                  },
+                  "extras": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true,
+                    "default": []
+                  },
+                  "install_mode": {
+                    "enum": [
+                      "wheel",
+                      "editable"
+                    ],
+                    "default": "wheel"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "manifest_path"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "uv_project"
+                  },
+                  "manifest_path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                  },
+                  "package": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "extras": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true,
+                    "default": []
+                  },
+                  "groups": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true,
+                    "default": []
+                  },
+                  "include_default_groups": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "required": [
+                  "kind",
+                  "manifest_path"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "existing"
+                  },
+                  "interpreter": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "const": "project_relative"
+                          },
+                          "path": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "path"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "const": "local_binding"
+                          },
+                          "name": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z0-9_-]+$"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "name"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "interpreter"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "project_root",
+          "environment"
+        ]
+      },
+      "path_bases": {
+        "project_root": "notebook directory",
+        "other_project_paths": "project_root; relative parent segments supported"
+      },
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation",
+        "readiness": "valid intent may be saved without local prerequisites; runtime checks kernel availability"
+      },
+      "input_tracking": {
+        "default": "content",
+        "build_system": {
+          "cpp": "Build the selected configured CMake target on start/restart; no configure step",
+          "rust": "Reissue dependencies in Evcxr's Cargo consumer on execution",
+          "inspection": "No build; current source/data freshness is not checked"
+        }
+      },
+      "capabilities": {
+        "install": false,
+        "project_build": false,
+        "executable_override": false,
+        "toolchain_override": false,
+        "global_mutation": false,
+        "compiler_abi_verification": false,
+        "environment_preparation": true,
+        "plain_python_execution": true,
+        "ports_arrow": false
+      },
+      "example": {
+        "project_root": "..",
+        "environment": {
+          "kind": "existing",
+          "interpreter": {
+            "kind": "project_relative",
+            "path": ".venv/bin/python"
+          }
+        }
+      },
+      "python_capabilities": {
+        "prepare": "explicit_only",
+        "preview_executes": false,
+        "save_installs": false,
+        "python_execution": "qualified_ipykernel_required",
+        "ports_arrow": false,
+        "factory_packages_injected": false,
+        "uv_lock_policy": "locked; no overlay or lock changes",
+        "environment_adapters": [
+          "requirements",
+          "pyproject",
+          "uv_project",
+          "existing"
+        ]
+      },
+      "profile_identity": {
+        "schema_version": 4,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for factory Python"
+      },
+      "dependency_policy": {
+        "preview_installs": false,
+        "save_installs": false,
+        "implicit_sync": false,
+        "prepare": "explicit plan followed by notebook_prepare_kernel_environment",
+        "project_writes": false,
+        "uv_lock": "locked; no frozen or kernel overlay",
+        "adapters": [
+          "requirements",
+          "pyproject",
+          "uv_project",
+          "existing"
+        ]
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 0,
+          "available": false,
+          "synchronous": false,
+          "requires_qualified_bridge": true,
+          "readiness": "ports_unavailable: named Python supports plain execution until host-fenced publication is qualified"
+        }
+      }
+    }
+  },
+  "profiles": {
+    "deno_saved": {
+      "saved": true,
+      "applied": false,
+      "phase": "saved",
+      "version": 2,
+      "profile": "review-ui",
+      "profile_id": "f3c45662-90da-4d91-a09a-74d4d41b1540",
+      "default_profile": null,
+      "runtime_slot_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb4:deno4:deno36:f3c45662-90da-4d91-a09a-74d4d41b1540",
+      "kernel_contexts": {
+        "schema_version": 3,
+        "deno": {
+          "default_profile": null,
+          "profiles": {
+            "review-ui": {
+              "kernel_name": "deno",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+              },
+              "profile_id": "f3c45662-90da-4d91-a09a-74d4d41b1540"
+            }
+          }
+        }
+      },
+      "apply": "next_start",
+      "restart_required": false,
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "mutation_id": "a269b8d9-c52c-43dc-8c84-692df450ce49",
+      "document_generation": 2,
+      "disk_token": "blake3:d5056a74076cbcc83ca51652e86a5c4a769dca06df91c53bb785db6bcf8958a5",
+      "durable": true,
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+      "kernel_name": "deno",
+      "language": "deno",
+      "config": {
+        "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "dependency_cache_unverified",
+            "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+            "blocking": false
+          },
+          {
+            "code": "explicit_restart_required",
+            "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+            "blocking": false
+          },
+          {
+            "code": "deno_resolution_scope",
+            "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+            "blocking": false
+          },
+          {
+            "code": "runtime_unavailable",
+            "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+            "blocking": true
+          }
+        ]
+      },
+      "saved_runtime": {
+        "status": "saved",
+        "applied": false,
+        "last_failure": null
+      }
+    },
+    "python_saved": {
+      "saved": true,
+      "applied": false,
+      "phase": "saved",
+      "version": 4,
+      "profile": "review-analysis",
+      "profile_id": "c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+      "default_profile": null,
+      "runtime_slot_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+      "kernel_contexts": {
+        "schema_version": 4,
+        "deno": {
+          "default_profile": null,
+          "profiles": {
+            "review-ui": {
+              "kernel_name": "deno",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+              },
+              "profile_id": "f3c45662-90da-4d91-a09a-74d4d41b1540"
+            }
+          }
+        },
+        "python": {
+          "default_profile": null,
+          "profiles": {
+            "review-analysis": {
+              "kernel_name": "python3",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+                "environment": {
+                  "kind": "existing",
+                  "interpreter": {
+                    "kind": "project_relative",
+                    "path": "../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+                  }
+                }
+              },
+              "profile_id": "c174a2f3-2e5f-4586-8a7a-5752ea4f85dd"
+            }
+          }
+        }
+      },
+      "apply": "next_start",
+      "restart_required": false,
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "mutation_id": "d954b334-6e94-4b1c-8f18-804864020c1e",
+      "document_generation": 4,
+      "disk_token": "blake3:0f24e63bdb26f802fc491d266bd66df344598d54add7e3ef7a66a98ba6f4d113",
+      "durable": true,
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+      "kernel_name": "python3",
+      "language": "python",
+      "config": {
+        "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+        "environment": {
+          "kind": "existing",
+          "interpreter": {
+            "kind": "project_relative",
+            "path": "../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+          }
+        }
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "environment_stale",
+            "message": "could not connect to the kernel: project_descriptor_missing: /private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp/../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python is missing or is not a file",
+            "blocking": true
+          }
+        ]
+      },
+      "saved_runtime": {
+        "status": "saved",
+        "applied": false,
+        "last_failure": null
+      }
+    },
+    "duckdb2_saved": {
+      "saved": true,
+      "applied": false,
+      "phase": "saved",
+      "version": 20,
+      "profile": "review-duckdb2",
+      "profile_id": "3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+      "default_profile": null,
+      "runtime_slot_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+      "kernel_contexts": {
+        "schema_version": 4,
+        "deno": {
+          "default_profile": null,
+          "profiles": {
+            "review-ui": {
+              "kernel_name": "deno",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+              },
+              "profile_id": "f3c45662-90da-4d91-a09a-74d4d41b1540"
+            }
+          }
+        },
+        "python": {
+          "default_profile": null,
+          "profiles": {
+            "review-analysis": {
+              "kernel_name": "python3",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+                "environment": {
+                  "kind": "existing",
+                  "interpreter": {
+                    "kind": "project_relative",
+                    "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+                  }
+                }
+              },
+              "profile_id": "c174a2f3-2e5f-4586-8a7a-5752ea4f85dd"
+            },
+            "review-duckdb2": {
+              "kernel_name": "python3",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+                "environment": {
+                  "kind": "existing",
+                  "interpreter": {
+                    "kind": "project_relative",
+                    "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+                  }
+                }
+              },
+              "profile_id": "3f9ccb34-fe3c-4e17-a90a-33a23f3f2663"
+            }
+          }
+        }
+      },
+      "apply": "next_start",
+      "restart_required": false,
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "mutation_id": "2d01c218-4029-4399-9ee4-dfcbeb9e3b29",
+      "document_generation": 20,
+      "disk_token": "blake3:f851c02dc16a16aaaede021a9eb22c3c53cc31c10caaa3ada9dc21fa1762952b",
+      "durable": true,
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+      "kernel_name": "python3",
+      "language": "python",
+      "config": {
+        "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+        "environment": {
+          "kind": "existing",
+          "interpreter": {
+            "kind": "project_relative",
+            "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+          }
+        }
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "environment_not_prepared",
+            "message": "could not connect to the kernel: environment_not_prepared: explicitly prepare this saved Python profile before starting",
+            "blocking": true
+          }
+        ]
+      },
+      "saved_runtime": {
+        "status": "saved",
+        "applied": false,
+        "last_failure": null
+      }
+    }
+  },
+  "preparation": {
+    "python": {
+      "planned": false,
+      "prepared": true,
+      "phase": "prepared",
+      "plan_id": "python-prepare-v1:84145daec323fadf526c470302b8e1279c5a2e28678d3e0713e5d819423a59a5",
+      "profile": "review-analysis",
+      "profile_id": "c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+      "receipt": {
+        "schema_version": 1,
+        "profile_id": "c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+        "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+        "project_root": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+        "plan_id": "python-prepare-v1:84145daec323fadf526c470302b8e1279c5a2e28678d3e0713e5d819423a59a5",
+        "input_fingerprint": "python-inputs-v1:25887aef548672e9ae0ddcfb636d7d34144af28b10dd432814c659c006c344a0",
+        "generation": "46b0738f-b131-47bc-a342-c22f0eb91ff2",
+        "interpreter": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp/../../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python",
+        "environment_fingerprint": "python-environment-v1:3a463cc3467100ed3386e74b553fd07bc56fff3c318907dd42591d87ccabf00d",
+        "qualification": {
+          "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+          "prefix": "/Users/kevintruong/.spur/jupyter/venv",
+          "base_prefix": "/opt/homebrew/opt/python@3.12/Frameworks/Python.framework/Versions/3.12",
+          "version": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+          "abi": "cpython-312",
+          "platform": "macosx-13.0-arm64",
+          "ipykernel": "7.4.0",
+          "inventory": [
+            [
+              "Jinja2",
+              "3.1.6"
+            ],
+            [
+              "MarkupSafe",
+              "3.0.4"
+            ],
+            [
+              "PyYAML",
+              "6.0.3"
+            ],
+            [
+              "Pygments",
+              "2.21.0"
+            ],
+            [
+              "altair",
+              "6.3.0"
+            ],
+            [
+              "appnope",
+              "1.0.0"
+            ],
+            [
+              "asttokens",
+              "3.0.2"
+            ],
+            [
+              "attrs",
+              "26.1.0"
+            ],
+            [
+              "bleach",
+              "6.4.0"
+            ],
+            [
+              "certifi",
+              "2026.10.19"
+            ],
+            [
+              "charset-normalizer",
+              "3.5.2"
+            ],
+            [
+              "cloudpickle",
+              "3.1.2"
+            ],
+            [
+              "comm",
+              "0.2.3"
+            ],
+            [
+              "contourpy",
+              "1.4.0"
+            ],
+            [
+              "cycler",
+              "0.12.1"
+            ],
+            [
+              "debugpy",
+              "1.8.22"
+            ],
+            [
+              "duckdb",
+              "1.5.5"
+            ],
+            [
+              "executing",
+              "2.3.0"
+            ],
+            [
+              "fastjsonschema",
+              "2.22.2"
+            ],
+            [
+              "fonttools",
+              "4.67.0"
+            ],
+            [
+              "ggsql",
+              "0.4.1"
+            ],
+            [
+              "idna",
+              "3.20"
+            ],
+            [
+              "ipykernel",
+              "7.4.0"
+            ],
+            [
+              "ipython",
+              "9.17.1"
+            ],
+            [
+              "ipython_pygments_lexers",
+              "1.1.1"
+            ],
+            [
+              "jedi",
+              "0.20.1"
+            ],
+            [
+              "joblib",
+              "1.6.0"
+            ],
+            [
+              "jsonschema",
+              "4.26.0"
+            ],
+            [
+              "jsonschema-specifications",
+              "2025.9.1"
+            ],
+            [
+              "jupyter_client",
+              "8.10.0"
+            ],
+            [
+              "jupyter_core",
+              "5.9.1"
+            ],
+            [
+              "jupytext",
+              "1.19.6"
+            ],
+            [
+              "kaggle",
+              "2.2.4"
+            ],
+            [
+              "kagglesdk",
+              "0.1.37"
+            ],
+            [
+              "kiwisolver",
+              "1.5.1"
+            ],
+            [
+              "markdown-it-py",
+              "4.2.0"
+            ],
+            [
+              "matplotlib",
+              "3.11.2"
+            ],
+            [
+              "matplotlib-inline",
+              "0.2.2"
+            ],
+            [
+              "mdit-py-plugins",
+              "0.6.1"
+            ],
+            [
+              "mdurl",
+              "0.1.2"
+            ],
+            [
+              "msgpack",
+              "1.2.4"
+            ],
+            [
+              "narwhals",
+              "2.27.1"
+            ],
+            [
+              "nbformat",
+              "5.11.1"
+            ],
+            [
+              "nest-asyncio2",
+              "1.7.4"
+            ],
+            [
+              "numpy",
+              "2.5.4"
+            ],
+            [
+              "packaging",
+              "26.3"
+            ],
+            [
+              "pandas",
+              "3.0.6"
+            ],
+            [
+              "parso",
+              "0.8.7"
+            ],
+            [
+              "pexpect",
+              "4.9.0"
+            ],
+            [
+              "pillow",
+              "13.0.0"
+            ],
+            [
+              "pip",
+              "26.2.1"
+            ],
+            [
+              "platformdirs",
+              "4.13.5"
+            ],
+            [
+              "prompt_toolkit",
+              "3.0.53"
+            ],
+            [
+              "protobuf",
+              "7.36.2"
+            ],
+            [
+              "psutil",
+              "7.2.2"
+            ],
+            [
+              "ptyprocess",
+              "0.7.0"
+            ],
+            [
+              "pure_eval",
+              "0.2.4"
+            ],
+            [
+              "pyarrow",
+              "26.0.0"
+            ],
+            [
+              "pyparsing",
+              "3.3.3"
+            ],
+            [
+              "python-dateutil",
+              "2.9.0.post0"
+            ],
+            [
+              "python-dotenv",
+              "1.2.4"
+            ],
+            [
+              "python-slugify",
+              "9.1.3"
+            ],
+            [
+              "pyzmq",
+              "27.2.0"
+            ],
+            [
+              "referencing",
+              "0.37.0"
+            ],
+            [
+              "requests",
+              "2.34.2"
+            ],
+            [
+              "rpds-py",
+              "2026.9.1"
+            ],
+            [
+              "scikit-learn",
+              "1.9.1"
+            ],
+            [
+              "scipy",
+              "1.18.1"
+            ],
+            [
+              "six",
+              "1.17.0"
+            ],
+            [
+              "stack-data",
+              "0.6.3"
+            ],
+            [
+              "text-unidecode",
+              "1.3"
+            ],
+            [
+              "threadpoolctl",
+              "3.7.0"
+            ],
+            [
+              "tornado",
+              "6.5.10"
+            ],
+            [
+              "tqdm",
+              "4.70.1"
+            ],
+            [
+              "traitlets",
+              "5.16.1"
+            ],
+            [
+              "typing_extensions",
+              "4.16.0"
+            ],
+            [
+              "urllib3",
+              "2.8.0"
+            ],
+            [
+              "wcwidth",
+              "0.9.2"
+            ],
+            [
+              "webencodings",
+              "0.6.1"
+            ]
+          ],
+          "inventory_paths": [
+            "/Users/kevintruong/.spur/jupyter/venv/lib/python3.12/site-packages"
+          ],
+          "capabilities": {
+            "duckdb": true,
+            "ggsql": true
+          }
+        },
+        "manager": null,
+        "inventory_paths": [
+          "/Users/kevintruong/.spur/jupyter/venv/lib/python3.12/site-packages"
+        ],
+        "owned": false,
+        "capabilities": {
+          "python_execution": true,
+          "ports_arrow": false,
+          "ports_diagnostic": "ports_unavailable: named Python publication bridge is not qualified"
+        }
+      },
+      "version": 6,
+      "restart_required": true,
+      "diagnostics": []
+    },
+    "duckdb2": {
+      "planned": false,
+      "prepared": true,
+      "phase": "prepared",
+      "plan_id": "python-prepare-v1:ceabb392b1717409f14f8d17beff239c6d7c43b6459e77bc58027935d0d2cf50",
+      "profile": "review-duckdb2",
+      "profile_id": "3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+      "receipt": {
+        "schema_version": 1,
+        "profile_id": "3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+        "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+        "project_root": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+        "plan_id": "python-prepare-v1:ceabb392b1717409f14f8d17beff239c6d7c43b6459e77bc58027935d0d2cf50",
+        "input_fingerprint": "python-inputs-v1:d5ad507fd8bdc53e62f377988901df0fb169b26fe809846e468716b200dbb79e",
+        "generation": "31f26c18-9e1b-4f8e-9bb7-b58352237712",
+        "interpreter": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp/../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "environment_fingerprint": "python-environment-v1:0dc31e533a39c3d15a09792340e1281aeb8b7c8df7cee07e6a69070f9f912231",
+        "qualification": {
+          "executable": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+          "prefix": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0",
+          "base_prefix": "/opt/homebrew/opt/python@3.12/Frameworks/Python.framework/Versions/3.12",
+          "version": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+          "abi": "cpython-312",
+          "platform": "macosx-13.0-arm64",
+          "ipykernel": "7.4.0",
+          "inventory": [
+            [
+              "Jinja2",
+              "3.1.6"
+            ],
+            [
+              "MarkupSafe",
+              "3.0.4"
+            ],
+            [
+              "Pygments",
+              "2.21.0"
+            ],
+            [
+              "altair",
+              "6.3.0"
+            ],
+            [
+              "appnope",
+              "1.0.0"
+            ],
+            [
+              "asttokens",
+              "3.0.2"
+            ],
+            [
+              "attrs",
+              "26.1.0"
+            ],
+            [
+              "comm",
+              "0.2.3"
+            ],
+            [
+              "debugpy",
+              "1.8.22"
+            ],
+            [
+              "duckdb",
+              "2.0.0"
+            ],
+            [
+              "executing",
+              "2.3.0"
+            ],
+            [
+              "ggsql",
+              "0.4.1"
+            ],
+            [
+              "ipykernel",
+              "7.4.0"
+            ],
+            [
+              "ipython",
+              "9.18.1"
+            ],
+            [
+              "ipython_pygments_lexers",
+              "1.1.1"
+            ],
+            [
+              "jedi",
+              "0.20.1"
+            ],
+            [
+              "jsonschema",
+              "4.26.0"
+            ],
+            [
+              "jsonschema-specifications",
+              "2025.9.1"
+            ],
+            [
+              "jupyter_client",
+              "8.10.0"
+            ],
+            [
+              "jupyter_core",
+              "5.9.1"
+            ],
+            [
+              "matplotlib-inline",
+              "0.2.2"
+            ],
+            [
+              "narwhals",
+              "2.28.0"
+            ],
+            [
+              "nest-asyncio2",
+              "1.7.4"
+            ],
+            [
+              "numpy",
+              "2.5.4"
+            ],
+            [
+              "packaging",
+              "26.3"
+            ],
+            [
+              "pandas",
+              "3.1.0"
+            ],
+            [
+              "parso",
+              "0.8.7"
+            ],
+            [
+              "pexpect",
+              "4.9.0"
+            ],
+            [
+              "pip",
+              "26.3"
+            ],
+            [
+              "platformdirs",
+              "4.14.3"
+            ],
+            [
+              "prompt_toolkit",
+              "3.0.53"
+            ],
+            [
+              "psutil",
+              "7.2.2"
+            ],
+            [
+              "ptyprocess",
+              "0.7.0"
+            ],
+            [
+              "pure_eval",
+              "0.2.4"
+            ],
+            [
+              "pyarrow",
+              "26.0.0"
+            ],
+            [
+              "python-dateutil",
+              "4.0.0"
+            ],
+            [
+              "pyzmq",
+              "27.2.0"
+            ],
+            [
+              "referencing",
+              "0.37.0"
+            ],
+            [
+              "rpds-py",
+              "2026.9.1"
+            ],
+            [
+              "stack-data",
+              "0.6.3"
+            ],
+            [
+              "tornado",
+              "6.6"
+            ],
+            [
+              "traitlets",
+              "5.16.1"
+            ],
+            [
+              "typing_extensions",
+              "4.16.0"
+            ],
+            [
+              "tzdata",
+              "2026.6"
+            ],
+            [
+              "wcwidth",
+              "0.9.4"
+            ]
+          ],
+          "inventory_paths": [
+            "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages"
+          ],
+          "capabilities": {
+            "duckdb": true,
+            "ggsql": true
+          }
+        },
+        "manager": null,
+        "inventory_paths": [
+          "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages"
+        ],
+        "owned": false,
+        "capabilities": {
+          "python_execution": true,
+          "ports_arrow": false,
+          "ports_diagnostic": "ports_unavailable: named Python publication bridge is not qualified"
+        }
+      },
+      "version": 20,
+      "restart_required": true,
+      "diagnostics": []
+    }
+  },
+  "observations": {
+    "deno_failure": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `notebook/notebook_run_cell`\n\nCaused by:\n    Mcp error: -32603: notebook_run_cell failed({\"error\":\"kernel ensure failed: ErrorData { code: ErrorCode(-32602), message: \\\"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\\\", data: None }\"})"
+        }
+      ],
+      "isError": true
+    },
+    "analysis_155": {
+      "cell_id": "d11fd22d-407c-4960-8497-409dbbd10e29",
+      "status": "succeeded",
+      "exec_count": 2,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"profile\": \"review-analysis\",\n  \"pid\": 24991,\n  \"cwd\": \"/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp\",\n  \"executable\": \"/Users/kevintruong/.spur/jupyter/venv/bin/python\",\n  \"duckdb_runtime\": \"1.5.5\",\n  \"head\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n  \"base\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n  \"fixture_sha256\": \"b8e1a021c9460ffdbe0882c8a3363cdf99df9569d2f91590c2554707d965c0d2\",\n  \"changed_files_sql\": 5,\n  \"review_questions\": 4,\n  \"source_evidence\": 21,\n  \"components\": 6,\n  \"historical_people_candidates\": 7,\n  \"resolved_context_row_refs\": 12,\n  \"all_context_row_refs_exist\": true,\n  \"unchanged_context_retained\": true,\n  \"formal_ownership_verified\": false,\n  \"installed_review_extensions\": [\n    [\n      \"duck_tails\",\n      true,\n      false\n    ]\n  ],\n  \"spur_in_globals\": false\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:2e75a1e5dc82b443077c40cffd449c38c41e9cfe1daff90ed3e0c63c34d88937",
+      "document_generation": 10,
+      "disk_token": "blake3:c620dcfdc31b13b3ecf3cf26c19623ed726ed0a08c54ed8fc0bed3fc069a26d4",
+      "durable": true,
+      "diagnostics": null
+    },
+    "named_python_bridge": {
+      "cell_id": "0496b01e-20cf-4fc2-8c12-fab01bbf1820",
+      "status": "succeeded",
+      "exec_count": 3,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"profile\": \"review-analysis\",\n  \"spur_in_globals\": false,\n  \"published\": false,\n  \"exception_type\": \"NameError\",\n  \"message\": \"name 'spur' is not defined\"\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:53cf1301f32b0fa33554d6f94df18b1c288687cd77747cb7b8cdec2a7e7ed519",
+      "document_generation": 14,
+      "disk_token": "blake3:3cf741c4ed9469442d5c32360e383d2d6c9944ecbbdf247c8a47bf1e510a970f",
+      "durable": true,
+      "diagnostics": null
+    },
+    "analysis_2_initial_failure": {
+      "cell_id": "4d69f0ae-4d07-4ef3-9e14-d1e734b58f5b",
+      "status": "failed",
+      "exec_count": null,
+      "output_count": 0,
+      "output_types": [],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "AttributeError",
+          "evalue": "Relations no longer have fetchone(): a relation keeps no result between calls, so every call runs it again. Use rel.limit(1).fetchall() instead.",
+          "traceback": [
+            "\u001b[31m---------------------------------------------------------------------------\u001b[39m",
+            "\u001b[31mAttributeError\u001b[39m                            Traceback (most recent call last)",
+            "\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[2]\u001b[39m\u001b[32m, line 11\u001b[39m\n\u001b[32m      7\u001b[39m \u001b[38;5;28;01massert\u001b[39;00m hashlib.sha256(FIXTURE_PATH.read_bytes()).hexdigest() == \u001b[33m\"b8e1a021c9460ffdbe0882c8a3363cdf99df9569d2f91590c2554707d965c0d2\"\u001b[39m\n\u001b[32m      8\u001b[39m \u001b[38;5;28;01massert\u001b[39;00m len(review_data[\u001b[33m\"files\"\u001b[39m]) == \u001b[32m5\u001b[39m\n\u001b[32m      9\u001b[39m review_db = duckdb.connect()\n\u001b[32m     10\u001b[39m review_db.execute(\u001b[33m\"CREATE TABLE changed_files AS SELECT unnest(files) AS file FROM read_json_auto(?)\"\u001b[39m, [str(FIXTURE_PATH)])\n\u001b[32m---> \u001b[39m\u001b[32m11\u001b[39m review_counts = review_db.sql(\u001b[33m\"SELECT count(*) FROM changed_files\"\u001b[39m).fetchone()[\u001b[32m0\u001b[39m]\n\u001b[32m     12\u001b[39m \u001b[38;5;28;01massert\u001b[39;00m review_counts == \u001b[32m5\u001b[39m\n\u001b[32m     13\u001b[39m review_refs = [r[\u001b[33m\"evidence\"\u001b[39m] \u001b[38;5;28;01mfor\u001b[39;00m c \u001b[38;5;28;01min\u001b[39;00m review_data[\u001b[33m\"contexts\"\u001b[39m].values() \u001b[38;5;28;01mfor\u001b[39;00m r \u001b[38;5;28;01min\u001b[39;00m c[\u001b[33m\"rows\"\u001b[39m]]\n\u001b[32m     14\u001b[39m \u001b[38;5;28;01massert\u001b[39;00m all(ref \u001b[38;5;28;01min\u001b[39;00m review_data[\u001b[33m\"evidence\"\u001b[39m] \u001b[38;5;28;01mfor\u001b[39;00m ref \u001b[38;5;28;01min\u001b[39;00m review_refs)\n",
+            "\u001b[36mFile \u001b[39m\u001b[32m~/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/duckdb/_relation.py:3010\u001b[39m, in \u001b[36m_closed_as_relation.<locals>.guarded\u001b[39m\u001b[34m(*args, **kwargs)\u001b[39m\n\u001b[32m   3007\u001b[39m \u001b[38;5;129m@functools\u001b[39m.wraps(function)\n\u001b[32m   3008\u001b[39m \u001b[38;5;28;01mdef\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34mguarded\u001b[39m(*args: Any, **kwargs: Any) -> Any:  \u001b[38;5;66;03m# noqa: ANN401\u001b[39;00m\n\u001b[32m   3009\u001b[39m     \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[32m-> \u001b[39m\u001b[32m3010\u001b[39m         \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[30;43mfunction\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m*\u001b[39;49m\u001b[30;43margs\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43m*\u001b[39;49m\u001b[30;43m*\u001b[39;49m\u001b[30;43mkwargs\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m   3011\u001b[39m     \u001b[38;5;28;01mexcept\u001b[39;00m _duckdb.ConnectionException \u001b[38;5;28;01mas\u001b[39;00m error:\n\u001b[32m   3012\u001b[39m         \u001b[38;5;28;01mif\u001b[39;00m \u001b[33m\"\u001b[39m\u001b[33malready closed\u001b[39m\u001b[33m\"\u001b[39m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;129;01min\u001b[39;00m \u001b[38;5;28mstr\u001b[39m(error):\n",
+            "\u001b[36mFile \u001b[39m\u001b[32m~/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/duckdb/_relation.py:1781\u001b[39m, in \u001b[36mDuckDBPyRelation.__getattr__\u001b[39m\u001b[34m(self, name)\u001b[39m\n\u001b[32m   1779\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m name.startswith(\u001b[33m\"\u001b[39m\u001b[33m__\u001b[39m\u001b[33m\"\u001b[39m) \u001b[38;5;129;01mor\u001b[39;00m name \u001b[38;5;129;01min\u001b[39;00m DuckDBPyRelation.\u001b[34m__slots__\u001b[39m:\n\u001b[32m   1780\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mAttributeError\u001b[39;00m(name)\n\u001b[32m-> \u001b[39m\u001b[32m1781\u001b[39m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_column\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mname\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n",
+            "\u001b[36mFile \u001b[39m\u001b[32m~/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages/duckdb/_relation.py:1808\u001b[39m, in \u001b[36mDuckDBPyRelation._column\u001b[39m\u001b[34m(self, name)\u001b[39m\n\u001b[32m   1803\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m replacement \u001b[38;5;129;01mis\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28;01mNone\u001b[39;00m:\n\u001b[32m   1804\u001b[39m     msg = (\n\u001b[32m   1805\u001b[39m         \u001b[33mf\u001b[39m\u001b[33m\"\u001b[39m\u001b[33mRelations no longer have \u001b[39m\u001b[38;5;132;01m{\u001b[39;00mname\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m(): a relation keeps no result between calls, so every call \u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1806\u001b[39m         \u001b[33mf\u001b[39m\u001b[33m\"\u001b[39m\u001b[33mruns it again. Use \u001b[39m\u001b[38;5;132;01m{\u001b[39;00mreplacement\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m instead.\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1807\u001b[39m     )\n\u001b[32m-> \u001b[39m\u001b[32m1808\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mAttributeError\u001b[39;00m(msg)\n\u001b[32m   1809\u001b[39m msg = \u001b[33mf\u001b[39m\u001b[33m\"\u001b[39m\u001b[33mThis relation does not contain a column by the name of \u001b[39m\u001b[33m'\u001b[39m\u001b[38;5;132;01m{\u001b[39;00mname\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m'\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1810\u001b[39m \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mAttributeError\u001b[39;00m(msg)\n",
+            "\u001b[31mAttributeError\u001b[39m: Relations no longer have fetchone(): a relation keeps no result between calls, so every call runs it again. Use rel.limit(1).fetchall() instead."
+          ]
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:94341c08dd951693a45526ba39af15f31f11a7d85781383a3a712cd018299f48",
+      "document_generation": 24,
+      "disk_token": "blake3:fdcab596ed3363e82b94ab10ed252c6986445362848c447c9ab6c55ee5bb6d37",
+      "durable": true,
+      "diagnostics": null
+    },
+    "analysis_2_corrected": {
+      "cell_id": "4d69f0ae-4d07-4ef3-9e14-d1e734b58f5b",
+      "status": "succeeded",
+      "exec_count": 3,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"profile\": \"review-duckdb2\",\n  \"pid\": 26814,\n  \"cwd\": \"/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp\",\n  \"executable\": \"/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python\",\n  \"duckdb_runtime\": \"2.0.0\",\n  \"head\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n  \"base\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n  \"fixture_sha256\": \"b8e1a021c9460ffdbe0882c8a3363cdf99df9569d2f91590c2554707d965c0d2\",\n  \"changed_files_sql\": 5,\n  \"review_questions\": 4,\n  \"source_evidence\": 21,\n  \"components\": 6,\n  \"historical_people_candidates\": 7,\n  \"resolved_context_row_refs\": 12,\n  \"all_context_row_refs_exist\": true,\n  \"unchanged_context_retained\": true,\n  \"formal_ownership_verified\": false,\n  \"installed_review_extensions\": [],\n  \"spur_in_globals\": false\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:865f97aa2be12c42c26739cb4070607320697a3713f1b153229e27b900451c9c",
+      "document_generation": 28,
+      "disk_token": "blake3:96a7f0a7a3ca499f991ffa3314774b7ca81c5ba6efb3fcfc1d31e92edb72ad67",
+      "durable": true,
+      "diagnostics": null
+    },
+    "native_load": {
+      "cell_id": "5c7aad57-41c2-426d-ac63-2cdc01ed282e",
+      "status": "succeeded",
+      "exec_count": 4,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"profile\": \"review-duckdb2\",\n  \"duckdb_runtime\": \"2.0.0\",\n  \"pid\": 26814,\n  \"loaded\": [\n    [\n      \"duck_tails\",\n      true,\n      \"v1.9.0\"\n    ],\n    [\n      \"duckpgq\",\n      true,\n      \"9c11bc192a\"\n    ],\n    [\n      \"spur_graph\",\n      true,\n      \"0.1.0\"\n    ]\n  ],\n  \"spur_graph_info\": {\n    \"extension_version\": \"0.1.0\",\n    \"facts_schema_version\": 1,\n    \"duckdb_api_version\": \"2.0.0\",\n    \"extractor_id\": \"source-sha256-v1:6ff57778ccc62a9cbd78f39549836fd9a7c91f55c3f94830443b239e8a17f2c2\",\n    \"supported_languages\": [\n      \"C\",\n      \"Cpp\",\n      \"Css\",\n      \"Go\",\n      \"Hcl\",\n      \"Html\",\n      \"Javascript\",\n      \"Json\",\n      \"JupyterNotebook\",\n      \"Lua\",\n      \"Markdown\",\n      \"Mermaid\",\n      \"Python\",\n      \"Rust\",\n      \"Shell\",\n      \"Sql\",\n      \"Terraform\",\n      \"Toml\",\n      \"Tsx\",\n      \"TypeScript\",\n      \"Yaml\"\n    ],\n    \"resolution_scope\": \"single_file\"\n  },\n  \"cpp_probe_symbol_count\": 2,\n  \"all_artifact_hashes_match\": true,\n  \"scope\": \"Local smoke on captured binaries. Not a rebuild, full PR recollection, or complete cross-file linkage.\"\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:34ceb41f7c898a8d497d71c520bc540e596da7948dd465d507c81999455b28d6",
+      "document_generation": 32,
+      "disk_token": "blake3:b4d2fef14de29129928c804254ede2c221a6cf180c2cf27efff27bc41607b215",
+      "durable": true,
+      "diagnostics": null
+    },
+    "duckpgq_query_failure": {
+      "cell_id": "fb7aa2d3-e778-4768-b45f-c06d7911bb03",
+      "status": "failed",
+      "exec_count": null,
+      "output_count": 0,
+      "output_types": [],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "ParserException",
+          "evalue": "Parser Error: syntax error at or near \"PROPERTY\"\n\nLINE 1: CREATE OR REPLACE PROPERTY GRAPH review_context\n                          ^^^^^^^^",
+          "traceback": [
+            "\u001b[31m---------------------------------------------------------------------------\u001b[39m",
+            "\u001b[31mParserException\u001b[39m                           Traceback (most recent call last)",
+            "\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[5]\u001b[39m\u001b[32m, line 12\u001b[39m\n\u001b[32m      8\u001b[39m native_review_db.executemany(\u001b[33m'INSERT INTO review_nodes VALUES (?,?,?,?)'\u001b[39m, node_rows)\n\u001b[32m      9\u001b[39m native_review_db.execute(\u001b[33m'CREATE OR REPLACE TABLE review_edges(src VARCHAR,dst VARCHAR,kind VARCHAR,evidence VARCHAR)'\u001b[39m)\n\u001b[32m     10\u001b[39m native_review_db.executemany(\u001b[33m'INSERT INTO review_edges VALUES (?,?,?,?)'\u001b[39m, edge_rows)\n\u001b[32m     11\u001b[39m native_review_db.execute(\u001b[33m\"CREATE OR REPLACE TABLE syntax_edges AS SELECT * FROM review_edges WHERE kind='syntax'\"\u001b[39m)\n\u001b[32m---> \u001b[39m\u001b[32m12\u001b[39m native_review_db.execute(\"\"\"CREATE OR REPLACE PROPERTY GRAPH review_context\n\u001b[32m     13\u001b[39m  VERTEX TABLES (review_nodes LABEL symbol)\n\u001b[32m     14\u001b[39m  EDGE TABLES (review_edges SOURCE KEY(src) REFERENCES review_nodes(id)\n\u001b[32m     15\u001b[39m  DESTINATION KEY(dst) REFERENCES review_nodes(id) LABEL relates)\"\"\")\n",
+            "\u001b[31mParserException\u001b[39m: Parser Error: syntax error at or near \"PROPERTY\"\n\nLINE 1: CREATE OR REPLACE PROPERTY GRAPH review_context\n                          ^^^^^^^^"
+          ]
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:f285038004f80b9e822e0a942687c2d92dec1ae586d4d185ae473fb5bd403da5",
+      "document_generation": 36,
+      "disk_token": "blake3:59306a49012d470682d341d56b6c05a2a7d9858a172995352e6c3dcc4f72abeb",
+      "durable": true,
+      "diagnostics": null
+    },
+    "duckpgq_parser_probe": {
+      "cell_id": "51592bc7-7094-4297-952d-f29698e2ce65",
+      "status": "succeeded",
+      "exec_count": 6,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"inventory\": [\n    [\n      \"duckpgq\",\n      true\n    ]\n  ],\n  \"attempts\": [\n    {\n      \"statement\": \"CREATE PROPERTY GRAPH review_diag VERTEX TABLES (review_nodes LABEL symbol)\",\n      \"status\": \"failed\",\n      \"type\": \"ParserException\",\n      \"message\": \"Parser Error: syntax error at or near \\\"PROPERTY\\\"\\n\\nLINE 1: CREATE PROPERTY GRAPH review_diag VERTEX TABLES (review_nodes LABEL...\\n               ^^^^^^^^\"\n    },\n    {\n      \"statement\": \"CREATE OR REPLACE PROPERTY GRAPH review_diag VERTEX TABLES (review_nodes LABEL symbol)\",\n      \"status\": \"failed\",\n      \"type\": \"ParserException\",\n      \"message\": \"Parser Error: syntax error at or near \\\"PROPERTY\\\"\\n\\nLINE 1: CREATE OR REPLACE PROPERTY GRAPH review_diag VERTEX TABLES (review_nodes LABEL...\\n                          ^^^^^^^^\"\n    }\n  ],\n  \"functions\": [\n    [\n      \"duckpgq_match\",\n      []\n    ]\n  ]\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:5a87f8b72d4970a5f046829b2917224fb5ad04364e6ca43d3ad1a0709da21157",
+      "document_generation": 40,
+      "disk_token": "blake3:90cb917c394dec27c0add048f7470b16d18d097593e01866558720f51880f010",
+      "durable": true,
+      "diagnostics": null
+    },
+    "recursive_sql_control": {
+      "cell_id": "709d90dc-0a72-49a2-b299-913d9c1c5476",
+      "status": "succeeded",
+      "exec_count": 7,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"execution\": \"recursive SQL control, NOT successful DuckPGQ traversal\",\n  \"scope\": \"Captured neighborhood replay; not repository semantic completeness\",\n  \"full_context_paths\": [\n    [\n      \"incoming:wrapper\",\n      \"ExtractAggregationStats\",\n      \"Unchanged body\",\n      1,\n      [\n        \"native:wrapper\"\n      ]\n    ],\n    [\n      \"incoming:client\",\n      \"Relation manager\",\n      \"Unchanged\",\n      2,\n      [\n        \"context:255\",\n        \"native:wrapper\"\n      ]\n    ],\n    [\n      \"incoming:extractor\",\n      \"Statistics extractor\",\n      \"Unchanged\",\n      2,\n      [\n        \"context:257\",\n        \"native:wrapper\"\n      ]\n    ]\n  ],\n  \"syntax_only_paths\": [\n    [\n      \"incoming:wrapper\",\n      \"ExtractAggregationStats\",\n      \"Unchanged body\",\n      1,\n      [\n        \"native:wrapper\"\n      ]\n    ]\n  ],\n  \"candidate_paths_hidden\": 2,\n  \"architecture\": {\n    \"components\": 6,\n    \"alignment\": \"not_evaluated_no_policy\"\n  },\n  \"people\": {\n    \"historical_candidates\": 7,\n    \"github_logins_verified_in_capture\": 2,\n    \"current_assignments\": \"not_refreshed\",\n    \"formal_ownership\": \"not_verified\"\n  },\n  \"ai_review\": \"not_run\",\n  \"run_head\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n  \"source_evidence\": 21\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:a6042c9f8c5dcf9f7a7664ba6584c2141afb8bca0d5134902345747445616fdf",
+      "document_generation": 44,
+      "disk_token": "blake3:69a204d550c66623ccdd984816bd781ce3e17f6c197f51a72405f38e5adbde9d",
+      "durable": true,
+      "diagnostics": null
+    },
+    "standalone_html_control": {
+      "cell_id": "ae6ed920-5551-4dd7-a6f7-2872fdb6e4f1",
+      "status": "succeeded",
+      "exec_count": 2,
+      "output_count": 2,
+      "output_types": [
+        "stdout",
+        "display_data"
+      ],
+      "notebook_id": "nb-54c10940c15aac3350764e3e",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\"track\":\"standalone captured HTML control\",\"deno\":{\"deno\":\"2.8.1\",\"v8\":\"14.9.207.2-rusty\",\"typescript\":\"6.0.3\"},\"pid\":26392,\"bytes\":116180,\"sha256\":\"c791f0c88557de83b7946c01de2bdd3be210c7f2d7066c7aae2e8313ab16d473\",\"live_data\":false,\"native_app\":false}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:9d25ba21598c486cf48d368874f5642a9c50edf5ff4177ce0c0a2383c880d6ba",
+      "document_generation": 19,
+      "disk_token": "blake3:8c55876a2cf3352ff1574703682c447908844fdfa29f2e0dd8d2cd613e5b0684",
+      "durable": true,
+      "diagnostics": null,
+      "output_budget": {
+        "max_output_tokens": 4096,
+        "max_output_bytes": 32768,
+        "omitted": {
+          "count": 1,
+          "original_output_count": 2,
+          "first_output_index": 1,
+          "last_output_index": 1,
+          "retrieve": "Call notebook_read_cell with the same target/id and cell_etag, output_index=first_output_index, output_offset=0, include_source=false. Follow output_chunk.next_offset."
+        }
+      }
+    }
+  },
+  "design_doctor": {
+    "ok": false,
+    "level_reached": null,
+    "findings": [
+      {
+        "check": "manifest",
+        "level": "fail",
+        "ladder_level": 0,
+        "message": "spur-app.json not found at /Users/kevintruong/project/spur-notebook/spur-app.json",
+        "location": "/Users/kevintruong/project/spur-notebook/spur-app.json"
+      }
+    ]
+  },
+  "solver": {
+    "qualification_facts": {
+      "engine": {
+        "named_python_execution": true,
+        "duckdb2_runtime": true,
+        "spur_graph_load": true,
+        "duck_tails_load": true,
+        "duckpgq_load": true,
+        "cpp_symbol_probe": true,
+        "captured_evidence_refs": true
+      },
+      "runtime": {
+        "named_deno_execution": false,
+        "named_python_arrow_publication": false,
+        "named_deno_port_consumption": false,
+        "python_duckpgq_query": false,
+        "native_app_manifest_and_doctor": false,
+        "live_review_collectors_qualified": false
+      }
+    },
+    "engine_request": {
+      "family": "configuration",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "components": {
+          "local_engine_smoke_acceptance": {
+            "selected": true,
+            "attributes": {}
+          },
+          "named_python_execution": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duckdb2_runtime": {
+            "selected": true,
+            "attributes": {}
+          },
+          "spur_graph_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duck_tails_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duckpgq_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "cpp_symbol_probe": {
+            "selected": true,
+            "attributes": {}
+          },
+          "captured_evidence_refs": {
+            "selected": true,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "rules": [
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "named_python_execution"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "duckdb2_runtime"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "spur_graph_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "duck_tails_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "duckpgq_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "cpp_symbol_probe"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "local_engine_smoke_acceptance",
+            "captured_evidence_refs"
+          ]
+        }
+      ],
+      "timeout_ms": 5000
+    },
+    "engine_result": {
+      "family": "configuration",
+      "mode": "verify",
+      "outcome": "pass",
+      "rule_results": [
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 1,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 2,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 3,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 4,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 5,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 6,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "total_duration_ms": 0,
+      "status": "sat",
+      "model": {},
+      "duration_ms": 0,
+      "reason": null,
+      "cached": true,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "app_request": {
+      "family": "configuration",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "components": {
+          "named_review_app_acceptance": {
+            "selected": true,
+            "attributes": {}
+          },
+          "named_python_execution": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duckdb2_runtime": {
+            "selected": true,
+            "attributes": {}
+          },
+          "spur_graph_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duck_tails_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duckpgq_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "cpp_symbol_probe": {
+            "selected": true,
+            "attributes": {}
+          },
+          "captured_evidence_refs": {
+            "selected": true,
+            "attributes": {}
+          },
+          "named_deno_execution": {
+            "selected": false,
+            "attributes": {}
+          },
+          "named_python_arrow_publication": {
+            "selected": false,
+            "attributes": {}
+          },
+          "named_deno_port_consumption": {
+            "selected": false,
+            "attributes": {}
+          },
+          "python_duckpgq_query": {
+            "selected": false,
+            "attributes": {}
+          },
+          "native_app_manifest_and_doctor": {
+            "selected": false,
+            "attributes": {}
+          },
+          "live_review_collectors_qualified": {
+            "selected": false,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "rules": [
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_python_execution"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "duckdb2_runtime"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "spur_graph_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "duck_tails_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "duckpgq_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "cpp_symbol_probe"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "captured_evidence_refs"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_deno_execution"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_python_arrow_publication"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_deno_port_consumption"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "python_duckpgq_query"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "native_app_manifest_and_doctor"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "live_review_collectors_qualified"
+          ]
+        }
+      ],
+      "timeout_ms": 5000
+    },
+    "app_result": {
+      "family": "configuration",
+      "mode": "verify",
+      "outcome": "fail",
+      "rule_results": [
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 1,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 2,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 3,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 4,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 5,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 6,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 7,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 8,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 9,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 10,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 11,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 12,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        }
+      ],
+      "total_duration_ms": 70,
+      "status": "unsat",
+      "duration_ms": 0,
+      "reason": null,
+      "unsat_core": [
+        "configuration_rule_7_configuration_requires_any"
+      ],
+      "cached": true,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "persistence": "Initial persist:true requests rejected at artifact count quota 512. Executed with persist:false; exact requests/results captured here. No persisted solve_id."
+  },
+  "limitations": [
+    "No production app implementation, pack or release.",
+    "No new GitHub collection, DuckTails history query or full repository indexing.",
+    "No new browser-interaction validation or human Run-button test.",
+    "Named Deno never executed; consuming ports and anywidget unqualified.",
+    "Python project source uses a corrected canonical relative interpreter path; first save had an incorrectly calculated path.",
+    "DuckDB 2.0 probe corrected relation.fetchone() to fetchall()[0][0]; original failure retained."
+  ],
+  "final_profiles": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb",
+    "version": 45,
+    "document_generation": 45,
+    "schema_version": 4,
+    "diagnostics": [],
+    "cpp": {
+      "default_profile": null,
+      "profiles": {},
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "xcpp",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#xcpp",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "xcpp",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#xcpp",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "diagnostics": []
+    },
+    "rust": {
+      "default_profile": null,
+      "profiles": {},
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "evcxr",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#evcxr",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "evcxr",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#evcxr",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "diagnostics": []
+    },
+    "deno": {
+      "default_profile": null,
+      "profiles": {
+        "review-ui": {
+          "kernel_name": "deno",
+          "config": {
+            "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+          },
+          "profile_id": "f3c45662-90da-4d91-a09a-74d4d41b1540",
+          "profile": "review-ui",
+          "runtime_slot_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb4:deno4:deno36:f3c45662-90da-4d91-a09a-74d4d41b1540",
+          "process": null,
+          "readiness": {
+            "ready": false,
+            "applied": false,
+            "diagnostics": [
+              {
+                "code": "dependency_cache_unverified",
+                "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+                "blocking": false
+              },
+              {
+                "code": "explicit_restart_required",
+                "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+                "blocking": false
+              },
+              {
+                "code": "deno_resolution_scope",
+                "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+                "blocking": false
+              },
+              {
+                "code": "runtime_unavailable",
+                "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+                "blocking": true
+              }
+            ]
+          },
+          "diagnostics": [],
+          "live_processes": [],
+          "ports_api": {
+            "version": 2,
+            "asynchronous": true,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "saved",
+            "applied": false,
+            "last_failure": null
+          },
+          "dependency_mode": "none"
+        }
+      },
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation or identity allocation",
+        "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+      },
+      "dependency_policy": {
+        "install": false,
+        "project_writes": false,
+        "prepared_dependencies_required": true,
+        "supported_node_modules_modes": [
+          "manual",
+          "none"
+        ],
+        "unsupported_modes": [
+          "auto",
+          "vendor",
+          "workspace"
+        ],
+        "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 2,
+          "asynchronous": true,
+          "requires_qualified_bridge": true,
+          "readiness": "ready only for the current initialized registration with valid launch inputs"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 3,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for standalone factory"
+      }
+    },
+    "python": {
+      "default_profile": null,
+      "profiles": {
+        "review-analysis": {
+          "kernel_name": "python3",
+          "config": {
+            "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+            "environment": {
+              "kind": "existing",
+              "interpreter": {
+                "kind": "project_relative",
+                "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+              }
+            }
+          },
+          "profile_id": "c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+          "profile": "review-analysis",
+          "runtime_slot_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+          "process": {
+            "kernel_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+            "spec_name": "python3",
+            "generation": 1,
+            "status": "idle",
+            "cpu_pct": 0,
+            "mem_mb": 57.015625
+          },
+          "readiness": {
+            "ready": true,
+            "applied": true,
+            "diagnostics": []
+          },
+          "diagnostics": [],
+          "live_processes": [
+            {
+              "kernel_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:c174a2f3-2e5f-4586-8a7a-5752ea4f85dd",
+              "spec_name": "python3",
+              "generation": 1,
+              "status": "idle",
+              "cpu_pct": 0,
+              "mem_mb": 57.015625
+            }
+          ],
+          "ports_api": {
+            "version": 0,
+            "available": false,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "running",
+            "applied": true,
+            "last_failure": null
+          }
+        },
+        "review-duckdb2": {
+          "kernel_name": "python3",
+          "config": {
+            "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+            "environment": {
+              "kind": "existing",
+              "interpreter": {
+                "kind": "project_relative",
+                "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+              }
+            }
+          },
+          "profile_id": "3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+          "profile": "review-duckdb2",
+          "runtime_slot_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+          "process": {
+            "kernel_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+            "spec_name": "python3",
+            "generation": 1,
+            "status": "idle",
+            "cpu_pct": 0,
+            "mem_mb": 89.171875
+          },
+          "readiness": {
+            "ready": true,
+            "applied": true,
+            "diagnostics": []
+          },
+          "diagnostics": [],
+          "live_processes": [
+            {
+              "kernel_id": "native-profile:v1:94:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb6:python7:python336:3f9ccb34-fe3c-4e17-a90a-33a23f3f2663",
+              "spec_name": "python3",
+              "generation": 1,
+              "status": "idle",
+              "cpu_pct": 0,
+              "mem_mb": 89.171875
+            }
+          ],
+          "ports_api": {
+            "version": 0,
+            "available": false,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "running",
+            "applied": true,
+            "last_failure": null
+          }
+        }
+      },
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "python3",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#python3",
+        "process": {
+          "kernel_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#python3",
+          "spec_name": "python3",
+          "generation": 1,
+          "status": "idle",
+          "cpu_pct": 0,
+          "mem_mb": 59.46875
+        },
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "python3",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#python3",
+        "process": {
+          "kernel_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-named-runtime-evaluation.ipynb#python3",
+          "spec_name": "python3",
+          "generation": 1,
+          "status": "idle",
+          "cpu_pct": 0,
+          "mem_mb": 59.46875
+        },
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation",
+        "readiness": "valid intent may be saved without local prerequisites; runtime checks kernel availability"
+      },
+      "dependency_policy": {
+        "preview_installs": false,
+        "save_installs": false,
+        "implicit_sync": false,
+        "prepare": "explicit plan followed by notebook_prepare_kernel_environment",
+        "project_writes": false,
+        "uv_lock": "locked; no frozen or kernel overlay",
+        "adapters": [
+          "requirements",
+          "pyproject",
+          "uv_project",
+          "existing"
+        ]
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 0,
+          "available": false,
+          "synchronous": false,
+          "requires_qualified_bridge": true,
+          "readiness": "ports_unavailable: named Python supports plain execution until host-fenced publication is qualified"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 4,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for factory Python"
+      }
+    }
+  },
+  "final_dag": {
+    "notebook_version": 45,
+    "nodes": [],
+    "edges": [],
+    "port_manifest": {}
+  },
+  "evaluation_doctor": {
+    "ok": false,
+    "level_reached": null,
+    "findings": [
+      {
+        "check": "manifest",
+        "level": "fail",
+        "ladder_level": 0,
+        "message": "spur-app.json not found at /Users/kevintruong/project/spur-notebook/spur-app.json",
+        "location": "/Users/kevintruong/project/spur-notebook/spur-app.json"
+      }
+    ]
+  }
+}
