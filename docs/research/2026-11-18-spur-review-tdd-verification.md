@@ -18,7 +18,7 @@ original-source semantics and immutable origin matching. Independent reviews fou
 and drove further failing-first fixes for canceled enqueue, original Arrow framing,
 physical source coordinates and consumer envelope integrity.
 
-Source and evidence are committed through `36c00622` on external notebook branch
+Source and evidence are committed through `e0b520fc` on external notebook branch
 `codex/bd-3oku-integration`. The runtime host was remotely built at `2aa7e567`; app
 modules were subsequently integrated at `fda3fd2f`. Exact source/build/binary hashes
 are retained with the receipts. Both user-edited main checkouts were preserved.
@@ -38,6 +38,9 @@ are retained with the receipts. Both user-edited main checkouts were preserved.
 - Actual Python evaluator/client: **14 passed**; collector: **27 passed**;
   actual bundled-Deno consumer: **17 passed**.
 - Actual native initial and replacement snapshots: **14 browser checks passed**.
+- Original named TypeScript regression: generation-1 project alias, JSON and
+  configured TSX imports passed through native MCP; the review default was retained.
+  The exact probe, local fixtures and protocol receipts are committed in `34dddded`.
 - Full doctor: **Level 2, green**. Current, replacement and clean cold cascades:
   **all three nodes succeeded**.
 - Native UI: normal capability prompt accepted, People tab exercised, selected
