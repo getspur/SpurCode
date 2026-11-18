@@ -5,7 +5,7 @@
 **Source spec:** `docs/superpowers/specs/2026-11-18-qualified-named-review-runtime.md`
 **Proof notebook:** `/Users/kevintruong/project/spur-notebook/2026-11-18-named-runtime-tdd-proof.ipynb`
 **Grounding epic:** `bd-2gmj` (closed); **pre-TDD proof:** `bd-20hj` (closed).
-**Implementation epic:** `bd-3oku`.
+**Implementation epic:** `bd-3oku`. Source tasks, independent reviews and native integration are complete for the explicit pinned-PR scope. Final evidence: external integration commit `e3aa36f8` and `docs/research/2026-11-18-spur-review-tdd-verification.md`.
 
 **Goal:** Make named Deno/Python execution and review data flow work through qualified host interfaces, preserving execution ownership and existing factory behavior.
 
@@ -29,6 +29,13 @@ flowchart LR
   C0 --> C1
   D2 --> C1
   PR1 --> C1
+  C0 --> C1A["bd-npyh: request-bound consumer TDD — approved"]
+  I0["bd-204j: private native recipe — approved"] --> C1B["bd-2xqf: integrated checks + native candidate"]
+  D1 --> C1B
+  P1 --> C1B
+  M1 --> C1B
+  C1A --> C1
+  C1B --> C1
 ```
 
 ## D1 — named Deno routing (`bd-1xdy`)
@@ -67,11 +74,31 @@ Use a real temporary Git repository to prove the tracked inventory and changed-f
 
 ## C1 — named app integration (`bd-ukku`)
 
-**Depends on:** reviewed D1, D2, P1, PR1, M1, C0. **Worktree:** integration branch `codex/bd-3oku-integration`, created at the common source base. Remains unstarted until dependencies are reviewed.
+**Depends on:** reviewed D1, D2, P1, PR1, M1, C0, C1A and C1B. **Worktree:** integration branch `codex/bd-3oku-integration`, created at the common source base. All dependencies are approved. Final named-runtime acceptance passed: full doctor Level 2, current/cold/replacement cascades, inspected lineage and native interactions.
 
 Reuse the captured review view and current source/provider machinery. Define and test the immutable request/run packet from repository identity, PR number, pinned base/head, provider artifact identities and coverage. Add failing tests for changed-head/partial-provider/stale-response handling and exact source-ref joins before implementation. Do not turn candidate links or historical expertise into proven calls or current assignments.
 
 Wire one real source → named Python → versioned Arrow port → named Deno frontend path. Exercise a replacement input, inspect port versions and source provenance, preserve selected review evidence and reject the older response. Activate DuckPGQ grammar on every app connection. Run static doctor after structural changes, full doctor, cascade and inspected outputs. No standalone fallback qualifies this named path, and no app pack is part of this plan.
+
+### C1A — source consumer and view (`bd-npyh`, approved)
+
+Separate failing-first commits cover exact repository/PR/base/head/request-ID matching, Arrow StructRows, authoritative changed-file inventory, partial providers, typed optional display data and safe rendering. Root independently passed all 17 Deno tests, a real PR packet experiment through Arrow IPC, and 12 isolated Chrome interaction/layout checks. These supporting checks preserve selection and reject stale packets; they do not qualify the native named bridge or MIME frame.
+
+### I0 and C1B — private native candidate (`bd-204j`, `bd-2xqf`)
+
+The read-only I0 recipe is approved. C1B owns integrated checks and the fresh macOS host cross-build using an explicitly tracked, private-identifier Cargo configuration and full remote sync. The stock resources were cloned to owned temporary storage; the installed application is unchanged. Fresh named proof-Python checks passed 14 evaluator/client and 27 collector tests after the documented helper EOF cleanup. A separate private profile has only new owned Library links, a verified welcome preference, and bounded read-only test inputs; HOME is unchanged.
+
+Native attempt 1 failed before compilation during a pinned Deno download with `SSL: UNEXPECTED_MESSAGE`. The identical remote retry passed the frontend and macOS release build. Fresh combined remote Rust regressions passed 40/40, zero failures or ignores. Both attempts remain evidence; no local Rust fallback or TLS weakening was used. C1B is approved: fetched host, private compiled identifier, installed-host preservation and unchanged Deno resources were verified.
+
+### Final C1 acceptance
+
+The actual producer used DuckDB 2.0, all three SHA-verified extensions, all 18,342 tracked entries, the five-file diff, fresh two-file DuckTails history and verified graph witnesses. It finalized one immutable packet before host publication. Named Deno read its 2.85 MB Arrow row and rendered native HTML. The replacement changed packet/request identity and port 3 → 4; current producer identities/hashes resolved through consumer lineage. Repeated native refresh validation reached port 7.
+
+A clean candidate restart with the correct managed Deno fixture yielded generation-1 Python/Deno profiles and a successful three-node cascade. Full doctor remained Level 2. The ordinary native script grant, People tab, People retention after a real cascade, Architecture tab and pinned CMake evidence link were exercised. Fourteen browser checks used actual native initial/replacement outputs, including stale rejection and valid selection retention.
+
+Bounded read-only diagnosis `bd-3gr1` separated an initial old-registration wait from consumer/render correctness. No unproven production timing fix was introduced. The corrected managed fixture and clean restart passed. Whole-save preservation of a prior selector was handled through the supported metadata API. Experimental DuckDB result draining and error propagation corrections are recorded with failed observations. The final notebook saves SQL runtime 2.0 via next_start without provisioning a factory process; analysis really executed 2.0 in the named interpreter.
+
+The scope remains an explicit pinned host PR request plus live pinned Git/history and a captured graph receipt. Automatic GitHub inbox/refresh service, full C++ semantic linking, architecture policy evaluation, current assignment and AI generation are not completion claims. No installed app replacement, package publication or main-checkout merge was performed.
 
 ## Integration and review gate
 
