@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "notebookPath": "/Users/kevintruong/project/spur-notebook/2026-11-18-deno-project-configuration.ipynb",
+  "projectRoot": "/Users/kevintruong/project/spur-notebook",
+  "runtime": {
+    "versions": {
+      "deno": "2.8.1",
+      "v8": "14.9.207.2-rusty",
+      "typescript": "6.0.3"
+    },
+    "executable": "/Users/kevintruong/Applications/SpurLab.app/Contents/MacOS/deno",
+    "cwd": "/Users/kevintruong/project/spur-notebook",
+    "build": {
+      "target": "aarch64-apple-darwin",
+      "arch": "aarch64",
+      "os": "darwin",
+      "vendor": "apple",
+      "standalone": false
+    },
+    "permissions": [
+      {
+        "name": "read",
+        "state": "granted"
+      },
+      {
+        "name": "write",
+        "state": "granted"
+      },
+      {
+        "name": "net",
+        "state": "granted"
+      },
+      {
+        "name": "run",
+        "state": "granted"
+      },
+      {
+        "name": "env",
+        "state": "granted"
+      },
+      {
+        "name": "sys",
+        "state": "granted"
+      },
+      {
+        "name": "ffi",
+        "state": "granted"
+      }
+    ]
+  },
+  "inventory": [
+    {
+      "path": "/Users/kevintruong/package.json",
+      "bytes": 62,
+      "json": "valid",
+      "keys": [
+        "dependencies"
+      ],
+      "package": {
+        "dependencyNames": [
+          "@getspur/spur-cli"
+        ],
+        "devDependencyCount": 0,
+        "scriptNames": []
+      }
+    }
+  ],
+  "fixtureDirectory": "/private/tmp/spur-deno-config-f532f4ef4eed273",
+  "fixtureHashes": [
+    {
+      "name": "deno.json",
+      "sha256": "9134fc5350621654e63dbc7e3a1b7c67afc913156ee778c9b3c6b2a540443ec1"
+    },
+    {
+      "name": "module.ts",
+      "sha256": "cb98da65f0471b6fbc330bf437ffd8e38e5601a68edfd61e807a5042465805c7"
+    },
+    {
+      "name": "data.json",
+      "sha256": "252b87db5660df76c77357c9e34e0a01682a62379566d90101d96ebd4a8f6eb4"
+    },
+    {
+      "name": "entry.ts",
+      "sha256": "22f8a67bc9a26f6214ec1ebef5e8528c17218fc0a7cd0253b2a11460d4f6dd7f"
+    },
+    {
+      "name": "jsx-runtime.ts",
+      "sha256": "994df5f0717b1269b34979c6a2d5bde710a275658314a008fea75f60543246e4"
+    },
+    {
+      "name": "entry.tsx",
+      "sha256": "d0fe60a3ec89b9946a1791a8c582ffd9d4385138fccad1919a24aec79d8aa8be"
+    }
+  ],
+  "cli": [
+    {
+      "label": "Explicit config: alias + JSON",
+      "args": [
+        "run",
+        "--cached-only",
+        "--no-lock",
+        "--no-prompt",
+        "--config",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/deno.json",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/entry.ts"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"alias\":\"local-alias-ok\",\"json\":\"json-import-ok\"}",
+      "stderr": ""
+    },
+    {
+      "label": "Automatic config: alias + JSON",
+      "args": [
+        "run",
+        "--cached-only",
+        "--no-lock",
+        "--no-prompt",
+        "entry.ts"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"alias\":\"local-alias-ok\",\"json\":\"json-import-ok\"}",
+      "stderr": ""
+    },
+    {
+      "label": "Explicit config: JSX runtime",
+      "args": [
+        "run",
+        "--cached-only",
+        "--no-lock",
+        "--no-prompt",
+        "--config",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/deno.json",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/entry.tsx"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"type\":\"article\",\"props\":{\"children\":\"local-alias-ok\"}}",
+      "stderr": ""
+    },
+    {
+      "label": "Explicit config: type check",
+      "args": [
+        "check",
+        "--cached-only",
+        "--no-lock",
+        "--config",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/deno.json",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/entry.tsx"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "error: unexpected argument '--cached-only' found\n\n  tip: a similar argument exists: '--doc-only'\n\nUsage: deno check --doc-only [file]..."
+    },
+    {
+      "label": "Control: configuration disabled",
+      "args": [
+        "run",
+        "--cached-only",
+        "--no-lock",
+        "--no-prompt",
+        "--no-config",
+        "/private/tmp/spur-deno-config-f532f4ef4eed273/entry.ts"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "error: Import \"@config-probe\" not a dependency\n    at file:///private/tmp/spur-deno-config-f532f4ef4eed273/entry.ts:1:33"
+    }
+  ],
+  "correctedTypecheck": {
+    "label": "Local-only configured type check",
+    "args": [
+      "check",
+      "--no-remote",
+      "--no-npm",
+      "--no-lock",
+      "--config",
+      "/private/tmp/spur-deno-config-f532f4ef4eed273/deno.json",
+      "/private/tmp/spur-deno-config-f532f4ef4eed273/entry.tsx"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "Check entry.tsx"
+  },
+  "notebookImports": [
+    {
+      "label": "Direct file URL, no alias",
+      "status": "loaded",
+      "result": "local-alias-ok"
+    },
+    {
+      "label": "Direct JSON file URL",
+      "status": "loaded",
+      "result": {
+        "message": "json-import-ok"
+      }
+    },
+    {
+      "label": "Configured fixture entrypoint from notebook",
+      "status": "not loaded",
+      "error": "TypeError",
+      "message": "Import \"@config-probe\" not a dependency\n    at \u001b[0m\u001b[36mfile:///private/tmp/spur-deno-config-f532f4ef4eed273/entry.ts\u001b[0m:\u001b[0m\u001b[33m1\u001b[0m:\u001b[0m\u001b[33m33\u001b[0m"
+    },
+    {
+      "label": "Import alias after chdir to configured fixture",
+      "status": "not loaded",
+      "error": "TypeError",
+      "message": "Import \"@config-probe\" not a dependency"
+    }
+  ],
+  "jupyterStartup": {
+    "exitCode": 0,
+    "hasConfigFlag": false,
+    "hasImportMapFlag": false,
+    "relevantLines": [
+      "Usage: deno jupyter [OPTIONS]",
+      "      --conn <conn>        Path to JSON file describing connection parameters, provided by Jupyter",
+      "      --install            Install a kernelspec",
+      "      --kernel             Start the kernel"
+    ]
+  },
+  "verification": {
+    "status": "observations confirmed",
+    "checks": [
+      {
+        "check": "CLI explicit alias + JSON",
+        "passed": true
+      },
+      {
+        "check": "CLI automatic config discovery",
+        "passed": true
+      },
+      {
+        "check": "CLI configured JSX runtime",
+        "passed": true
+      },
+      {
+        "check": "Corrected local-only type check",
+        "passed": true
+      },
+      {
+        "check": "No-config control rejects alias",
+        "passed": true
+      },
+      {
+        "check": "Notebook direct file module import works",
+        "passed": true
+      },
+      {
+        "check": "Notebook direct JSON import works",
+        "passed": true
+      },
+      {
+        "check": "Existing notebook does not discover fixture alias",
+        "passed": true
+      },
+      {
+        "check": "Changing cwd does not activate fixture alias",
+        "passed": true
+      },
+      {
+        "check": "Notebook working directory restored",
+        "passed": true
+      }
+    ]
+  },
+  "limits": [
+    "Fresh configured-kernel startup not tested",
+    "Existing project config unchanged",
+    "No dependency installation or network import probe",
+    "No host implementation inspected"
+  ]
+}
