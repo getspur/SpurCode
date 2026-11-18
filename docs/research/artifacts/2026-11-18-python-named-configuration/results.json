@@ -1,0 +1,1738 @@
+{
+  "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+  "live_schema": {
+    "kernel_name": "python3",
+    "language": "python",
+    "schema_version": 1,
+    "config_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project_root": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+        },
+        "python": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "request": {
+              "type": "string",
+              "pattern": "^3(\\.[0-9]+)*$",
+              "description": "CPython version for explicit managed preparation; absent uses project policy then managed default"
+            }
+          },
+          "required": []
+        },
+        "environment": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "requirements"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                  },
+                  "uniqueItems": true,
+                  "default": []
+                },
+                "installer": {
+                  "enum": [
+                    "pip",
+                    "uv"
+                  ],
+                  "default": "pip"
+                },
+                "hash_policy": {
+                  "enum": [
+                    "none",
+                    "required"
+                  ],
+                  "default": "none"
+                }
+              },
+              "required": [
+                "kind",
+                "files"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "pyproject"
+                },
+                "manifest_path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                },
+                "extras": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true,
+                  "default": []
+                },
+                "install_mode": {
+                  "enum": [
+                    "wheel",
+                    "editable"
+                  ],
+                  "default": "wheel"
+                }
+              },
+              "required": [
+                "kind",
+                "manifest_path"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "uv_project"
+                },
+                "manifest_path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                },
+                "package": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "extras": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true,
+                  "default": []
+                },
+                "groups": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true,
+                  "default": []
+                },
+                "include_default_groups": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "kind",
+                "manifest_path"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "existing"
+                },
+                "interpreter": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "kind": {
+                          "const": "project_relative"
+                        },
+                        "path": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Nonempty relative path, no control characters, drive or UNC prefix. Separators normalize to forward slashes; relative parent segments are supported"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "path"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "kind": {
+                          "const": "local_binding"
+                        },
+                        "name": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9_-]+$"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "name"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "kind",
+                "interpreter"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "project_root",
+        "environment"
+      ]
+    },
+    "path_bases": {
+      "project_root": "notebook directory",
+      "other_project_paths": "project_root; relative parent segments supported"
+    },
+    "apply": {
+      "default": "next_start",
+      "supported": [
+        "next_start",
+        "restart"
+      ],
+      "dry_run": "no mutation",
+      "readiness": "valid intent may be saved without local prerequisites; runtime checks kernel availability"
+    },
+    "input_tracking": {
+      "default": "content",
+      "build_system": {
+        "cpp": "Build the selected configured CMake target on start/restart; no configure step",
+        "rust": "Reissue dependencies in Evcxr's Cargo consumer on execution",
+        "inspection": "No build; current source/data freshness is not checked"
+      }
+    },
+    "capabilities": {
+      "install": false,
+      "project_build": false,
+      "executable_override": false,
+      "toolchain_override": false,
+      "global_mutation": false,
+      "compiler_abi_verification": false,
+      "environment_preparation": true,
+      "plain_python_execution": true,
+      "ports_arrow": false
+    },
+    "example": {
+      "project_root": "..",
+      "environment": {
+        "kind": "existing",
+        "interpreter": {
+          "kind": "project_relative",
+          "path": ".venv/bin/python"
+        }
+      }
+    },
+    "python_capabilities": {
+      "prepare": "explicit_only",
+      "preview_executes": false,
+      "save_installs": false,
+      "python_execution": "qualified_ipykernel_required",
+      "ports_arrow": false,
+      "factory_packages_injected": false,
+      "uv_lock_policy": "locked; no overlay or lock changes",
+      "environment_adapters": [
+        "requirements",
+        "pyproject",
+        "uv_project",
+        "existing"
+      ]
+    },
+    "profile_identity": {
+      "schema_version": 4,
+      "profile_id": "stable server-assigned UUID",
+      "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+      "default_profile": "existing profile name or null for factory Python"
+    },
+    "dependency_policy": {
+      "preview_installs": false,
+      "save_installs": false,
+      "implicit_sync": false,
+      "prepare": "explicit plan followed by notebook_prepare_kernel_environment",
+      "project_writes": false,
+      "uv_lock": "locked; no frozen or kernel overlay",
+      "adapters": [
+        "requirements",
+        "pyproject",
+        "uv_project",
+        "existing"
+      ]
+    },
+    "ports_api": {
+      "standalone": {
+        "version": 1,
+        "synchronous": true
+      },
+      "project": {
+        "version": 0,
+        "available": false,
+        "synchronous": false,
+        "requires_qualified_bridge": true,
+        "readiness": "ports_unavailable: named Python supports plain execution until host-fenced publication is qualified"
+      }
+    }
+  },
+  "factory_setup": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+    "factory": {
+      "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+      "version": "3.12.10",
+      "prefix": "/Users/kevintruong/.spur/jupyter/venv",
+      "cwd": "/Users/kevintruong/project/spur-notebook",
+      "pid": 91094,
+      "ipykernel": "7.4.0"
+    },
+    "projects": {
+      "a": {
+        "root": "/private/tmp/spur-python-named-_47wrdz6/a",
+        "config": {
+          "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+          "environment": {
+            "kind": "existing",
+            "interpreter": {
+              "kind": "project_relative",
+              "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+            }
+          }
+        },
+        "hashes": {
+          "module_from_project.py": "82f8ea6f8cf02bd219474924ebc6ffb2b72ecf924b021d6bd9edc02c206f48db",
+          "pyproject.toml": "931423f9ea0fad5553ba92b699b17471b34fc91bd8c90eec03140bbee719a54a",
+          "requirements.txt": "9c15bb2dfeb295cf5383aafa11a5333f0d7c6bc2dfda76785bf5f926abb5a51c"
+        }
+      },
+      "b": {
+        "root": "/private/tmp/spur-python-named-_47wrdz6/b",
+        "config": {
+          "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/b",
+          "environment": {
+            "kind": "existing",
+            "interpreter": {
+              "kind": "project_relative",
+              "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+            }
+          }
+        },
+        "hashes": {
+          "module_from_project.py": "db726d822d657fc74a099381477ac265cf8ffda1311b0371daded33d3f6dba2f",
+          "pyproject.toml": "f99a2df8ce7e798edd6f96d9328d669e71e83336e7eec058434ae4e7bdddbdf7",
+          "requirements.txt": "9c15bb2dfeb295cf5383aafa11a5333f0d7c6bc2dfda76785bf5f926abb5a51c"
+        }
+      }
+    }
+  },
+  "preview_existing": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+    "kernel_name": "python3",
+    "language": "python",
+    "config": {
+      "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+      "environment": {
+        "kind": "existing",
+        "interpreter": {
+          "kind": "project_relative",
+          "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+        }
+      }
+    },
+    "readiness": {
+      "ready": false,
+      "diagnostics": [
+        {
+          "code": "environment_qualification_required",
+          "message": "Save this profile, then explicitly prepare its environment or start its selected external interpreter",
+          "blocking": true
+        }
+      ]
+    },
+    "profile": "py-probe-a",
+    "profile_id": null,
+    "runtime_slot_id": null,
+    "default_profile": null,
+    "applied": false,
+    "restart_required": false,
+    "saved_runtime": null,
+    "saved": false,
+    "phase": "validated",
+    "apply": "next_start"
+  },
+  "save_a": {
+    "saved": true,
+    "applied": false,
+    "phase": "saved",
+    "version": 7,
+    "profile": "py-probe-a",
+    "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+    "default_profile": null,
+    "runtime_slot_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+    "kernel_contexts": {
+      "schema_version": 4,
+      "python": {
+        "default_profile": null,
+        "profiles": {
+          "py-probe-a": {
+            "kernel_name": "python3",
+            "config": {
+              "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+              "environment": {
+                "kind": "existing",
+                "interpreter": {
+                  "kind": "project_relative",
+                  "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+                }
+              }
+            },
+            "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb"
+          }
+        }
+      }
+    },
+    "apply": "next_start",
+    "restart_required": false,
+    "notebook_id": "nb-88cb26104d931a66eed47c90",
+    "mutation_id": "941c61ab-8909-4477-8fcb-9b3d154f847c",
+    "document_generation": 7,
+    "disk_token": "blake3:6e94ddbd633890c88d6d930de45aefecb0b2a49568eccca9d437e13f07f4d913",
+    "durable": true,
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+    "kernel_name": "python3",
+    "language": "python",
+    "config": {
+      "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+      "environment": {
+        "kind": "existing",
+        "interpreter": {
+          "kind": "project_relative",
+          "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+        }
+      }
+    },
+    "readiness": {
+      "ready": false,
+      "diagnostics": [
+        {
+          "code": "environment_not_prepared",
+          "message": "could not connect to the kernel: environment_not_prepared: explicitly prepare this saved Python profile before starting",
+          "blocking": true
+        }
+      ]
+    },
+    "saved_runtime": {
+      "status": "saved",
+      "applied": false,
+      "last_failure": null
+    }
+  },
+  "prepare_plan_a": {
+    "planned": true,
+    "prepared": false,
+    "phase": "planned",
+    "plan_id": "python-prepare-v1:b85c3592ceca9a64c1e346691aae30fddb1c558ae9022bbe1a0883e48c8df643",
+    "plan": {
+      "plan_id": "python-prepare-v1:b85c3592ceca9a64c1e346691aae30fddb1c558ae9022bbe1a0883e48c8df643",
+      "input_fingerprint": "python-inputs-v1:0830d5363e42c1b211370feb67884524e798310a386ae9f15ce0a00b04721275",
+      "adapter": "existing",
+      "write_scope": [
+        "/Users/kevintruong/.spur/jupyter/python-projects/88cb26104d931a66eed47c907a1fbf90529056e91621549419fba62ee033d16f/cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb/ready.json"
+      ],
+      "downloads": false,
+      "build_hooks": false,
+      "strict_lock": false
+    },
+    "profile": "py-probe-a",
+    "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+    "version": 7,
+    "diagnostics": []
+  },
+  "prepared_a": {
+    "planned": false,
+    "prepared": true,
+    "phase": "prepared",
+    "plan_id": "python-prepare-v1:b85c3592ceca9a64c1e346691aae30fddb1c558ae9022bbe1a0883e48c8df643",
+    "profile": "py-probe-a",
+    "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+    "receipt": {
+      "schema_version": 1,
+      "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+      "project_root": "/private/tmp/spur-python-named-_47wrdz6/a",
+      "plan_id": "python-prepare-v1:b85c3592ceca9a64c1e346691aae30fddb1c558ae9022bbe1a0883e48c8df643",
+      "input_fingerprint": "python-inputs-v1:0830d5363e42c1b211370feb67884524e798310a386ae9f15ce0a00b04721275",
+      "generation": "9dabd8bc-f249-4ca6-b972-b268ea9582c5",
+      "interpreter": "/private/tmp/spur-python-named-_47wrdz6/a/../../../../Users/kevintruong/.spur/jupyter/venv/bin/python",
+      "environment_fingerprint": "python-environment-v1:bd50e7ab07c6cfe88591abc25b16eab769ec24294a384eefd2a096fac912f606",
+      "qualification": {
+        "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+        "prefix": "/Users/kevintruong/.spur/jupyter/venv",
+        "base_prefix": "/opt/homebrew/opt/python@3.12/Frameworks/Python.framework/Versions/3.12",
+        "version": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+        "abi": "cpython-312",
+        "platform": "macosx-13.0-arm64",
+        "ipykernel": "7.4.0",
+        "inventory": [
+          [
+            "Jinja2",
+            "3.1.6"
+          ],
+          [
+            "MarkupSafe",
+            "3.0.4"
+          ],
+          [
+            "PyYAML",
+            "6.0.3"
+          ],
+          [
+            "Pygments",
+            "2.21.0"
+          ],
+          [
+            "altair",
+            "6.3.0"
+          ],
+          [
+            "appnope",
+            "1.0.0"
+          ],
+          [
+            "asttokens",
+            "3.0.2"
+          ],
+          [
+            "attrs",
+            "26.1.0"
+          ],
+          [
+            "bleach",
+            "6.4.0"
+          ],
+          [
+            "certifi",
+            "2026.10.19"
+          ],
+          [
+            "charset-normalizer",
+            "3.5.2"
+          ],
+          [
+            "cloudpickle",
+            "3.1.2"
+          ],
+          [
+            "comm",
+            "0.2.3"
+          ],
+          [
+            "contourpy",
+            "1.4.0"
+          ],
+          [
+            "cycler",
+            "0.12.1"
+          ],
+          [
+            "debugpy",
+            "1.8.22"
+          ],
+          [
+            "duckdb",
+            "1.5.5"
+          ],
+          [
+            "executing",
+            "2.3.0"
+          ],
+          [
+            "fastjsonschema",
+            "2.22.2"
+          ],
+          [
+            "fonttools",
+            "4.67.0"
+          ],
+          [
+            "ggsql",
+            "0.4.1"
+          ],
+          [
+            "idna",
+            "3.20"
+          ],
+          [
+            "ipykernel",
+            "7.4.0"
+          ],
+          [
+            "ipython",
+            "9.17.1"
+          ],
+          [
+            "ipython_pygments_lexers",
+            "1.1.1"
+          ],
+          [
+            "jedi",
+            "0.20.1"
+          ],
+          [
+            "joblib",
+            "1.6.0"
+          ],
+          [
+            "jsonschema",
+            "4.26.0"
+          ],
+          [
+            "jsonschema-specifications",
+            "2025.9.1"
+          ],
+          [
+            "jupyter_client",
+            "8.10.0"
+          ],
+          [
+            "jupyter_core",
+            "5.9.1"
+          ],
+          [
+            "jupytext",
+            "1.19.6"
+          ],
+          [
+            "kaggle",
+            "2.2.4"
+          ],
+          [
+            "kagglesdk",
+            "0.1.37"
+          ],
+          [
+            "kiwisolver",
+            "1.5.1"
+          ],
+          [
+            "markdown-it-py",
+            "4.2.0"
+          ],
+          [
+            "matplotlib",
+            "3.11.2"
+          ],
+          [
+            "matplotlib-inline",
+            "0.2.2"
+          ],
+          [
+            "mdit-py-plugins",
+            "0.6.1"
+          ],
+          [
+            "mdurl",
+            "0.1.2"
+          ],
+          [
+            "msgpack",
+            "1.2.4"
+          ],
+          [
+            "narwhals",
+            "2.27.1"
+          ],
+          [
+            "nbformat",
+            "5.11.1"
+          ],
+          [
+            "nest-asyncio2",
+            "1.7.4"
+          ],
+          [
+            "numpy",
+            "2.5.4"
+          ],
+          [
+            "packaging",
+            "26.3"
+          ],
+          [
+            "pandas",
+            "3.0.6"
+          ],
+          [
+            "parso",
+            "0.8.7"
+          ],
+          [
+            "pexpect",
+            "4.9.0"
+          ],
+          [
+            "pillow",
+            "13.0.0"
+          ],
+          [
+            "pip",
+            "26.2.1"
+          ],
+          [
+            "platformdirs",
+            "4.13.5"
+          ],
+          [
+            "prompt_toolkit",
+            "3.0.53"
+          ],
+          [
+            "protobuf",
+            "7.36.2"
+          ],
+          [
+            "psutil",
+            "7.2.2"
+          ],
+          [
+            "ptyprocess",
+            "0.7.0"
+          ],
+          [
+            "pure_eval",
+            "0.2.4"
+          ],
+          [
+            "pyarrow",
+            "26.0.0"
+          ],
+          [
+            "pyparsing",
+            "3.3.3"
+          ],
+          [
+            "python-dateutil",
+            "2.9.0.post0"
+          ],
+          [
+            "python-dotenv",
+            "1.2.4"
+          ],
+          [
+            "python-slugify",
+            "9.1.3"
+          ],
+          [
+            "pyzmq",
+            "27.2.0"
+          ],
+          [
+            "referencing",
+            "0.37.0"
+          ],
+          [
+            "requests",
+            "2.34.2"
+          ],
+          [
+            "rpds-py",
+            "2026.9.1"
+          ],
+          [
+            "scikit-learn",
+            "1.9.1"
+          ],
+          [
+            "scipy",
+            "1.18.1"
+          ],
+          [
+            "six",
+            "1.17.0"
+          ],
+          [
+            "stack-data",
+            "0.6.3"
+          ],
+          [
+            "text-unidecode",
+            "1.3"
+          ],
+          [
+            "threadpoolctl",
+            "3.7.0"
+          ],
+          [
+            "tornado",
+            "6.5.10"
+          ],
+          [
+            "tqdm",
+            "4.70.1"
+          ],
+          [
+            "traitlets",
+            "5.16.1"
+          ],
+          [
+            "typing_extensions",
+            "4.16.0"
+          ],
+          [
+            "urllib3",
+            "2.8.0"
+          ],
+          [
+            "wcwidth",
+            "0.9.2"
+          ],
+          [
+            "webencodings",
+            "0.6.1"
+          ]
+        ],
+        "inventory_paths": [
+          "/Users/kevintruong/.spur/jupyter/venv/lib/python3.12/site-packages"
+        ],
+        "capabilities": {
+          "duckdb": true,
+          "ggsql": true
+        }
+      },
+      "manager": null,
+      "inventory_paths": [
+        "/Users/kevintruong/.spur/jupyter/venv/lib/python3.12/site-packages"
+      ],
+      "owned": false,
+      "capabilities": {
+        "python_execution": true,
+        "ports_arrow": false,
+        "ports_diagnostic": "ports_unavailable: named Python publication bridge is not qualified"
+      }
+    },
+    "version": 7,
+    "restart_required": true,
+    "diagnostics": []
+  },
+  "save_b": {
+    "saved": true,
+    "applied": false,
+    "phase": "saved",
+    "version": 12,
+    "profile": "py-probe-b",
+    "profile_id": "3e88a994-b2b7-433b-9d4b-b28d20659478",
+    "default_profile": null,
+    "runtime_slot_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:3e88a994-b2b7-433b-9d4b-b28d20659478",
+    "kernel_contexts": {
+      "schema_version": 4,
+      "python": {
+        "default_profile": null,
+        "profiles": {
+          "py-probe-a": {
+            "kernel_name": "python3",
+            "config": {
+              "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+              "environment": {
+                "kind": "existing",
+                "interpreter": {
+                  "kind": "project_relative",
+                  "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+                }
+              }
+            },
+            "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb"
+          },
+          "py-probe-b": {
+            "kernel_name": "python3",
+            "config": {
+              "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/b",
+              "environment": {
+                "kind": "existing",
+                "interpreter": {
+                  "kind": "project_relative",
+                  "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+                }
+              }
+            },
+            "profile_id": "3e88a994-b2b7-433b-9d4b-b28d20659478"
+          }
+        }
+      }
+    },
+    "apply": "next_start",
+    "restart_required": false,
+    "notebook_id": "nb-88cb26104d931a66eed47c90",
+    "mutation_id": "dcdb4de0-6529-42cd-9af8-260431d0ae52",
+    "document_generation": 12,
+    "disk_token": "blake3:11a62113e9e58b9b765acb9d228e1e657aa7ed95aebece792f6e7b9b2d51d998",
+    "durable": true,
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+    "kernel_name": "python3",
+    "language": "python",
+    "config": {
+      "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/b",
+      "environment": {
+        "kind": "existing",
+        "interpreter": {
+          "kind": "project_relative",
+          "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+        }
+      }
+    },
+    "readiness": {
+      "ready": false,
+      "diagnostics": [
+        {
+          "code": "environment_not_prepared",
+          "message": "could not connect to the kernel: environment_not_prepared: explicitly prepare this saved Python profile before starting",
+          "blocking": true
+        }
+      ]
+    },
+    "saved_runtime": {
+      "status": "saved",
+      "applied": false,
+      "last_failure": null
+    }
+  },
+  "prepare_plan_b": {
+    "planned": true,
+    "prepared": false,
+    "phase": "planned",
+    "plan_id": "python-prepare-v1:acd3a8d50929bf116341d88a954bb4b5adc87d80a5ad5ed93d3d9b7e94fa175a",
+    "plan": {
+      "plan_id": "python-prepare-v1:acd3a8d50929bf116341d88a954bb4b5adc87d80a5ad5ed93d3d9b7e94fa175a",
+      "input_fingerprint": "python-inputs-v1:645434e5d6a988d71cd80e7be6a0b26c7206bb159940ac98cfbf342a49e14ef8",
+      "adapter": "existing",
+      "write_scope": [
+        "/Users/kevintruong/.spur/jupyter/python-projects/88cb26104d931a66eed47c907a1fbf90529056e91621549419fba62ee033d16f/3e88a994-b2b7-433b-9d4b-b28d20659478/ready.json"
+      ],
+      "downloads": false,
+      "build_hooks": false,
+      "strict_lock": false
+    },
+    "profile": "py-probe-b",
+    "profile_id": "3e88a994-b2b7-433b-9d4b-b28d20659478",
+    "version": 12,
+    "diagnostics": []
+  },
+  "prepared_b": {
+    "planned": false,
+    "prepared": true,
+    "phase": "prepared",
+    "plan_id": "python-prepare-v1:acd3a8d50929bf116341d88a954bb4b5adc87d80a5ad5ed93d3d9b7e94fa175a",
+    "profile": "py-probe-b",
+    "profile_id": "3e88a994-b2b7-433b-9d4b-b28d20659478",
+    "receipt": {
+      "schema_version": 1,
+      "profile_id": "3e88a994-b2b7-433b-9d4b-b28d20659478",
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+      "project_root": "/private/tmp/spur-python-named-_47wrdz6/b",
+      "plan_id": "python-prepare-v1:acd3a8d50929bf116341d88a954bb4b5adc87d80a5ad5ed93d3d9b7e94fa175a",
+      "input_fingerprint": "python-inputs-v1:645434e5d6a988d71cd80e7be6a0b26c7206bb159940ac98cfbf342a49e14ef8",
+      "generation": "01027aaa-6030-4075-ba96-a4cacd3620c0",
+      "interpreter": "/private/tmp/spur-python-named-_47wrdz6/b/../../../../Users/kevintruong/.spur/jupyter/venv/bin/python",
+      "environment_fingerprint": "python-environment-v1:4679182501b755bf676d5d421ec7b0b3a8fae4c6d6a85e58c19dbf66b281179a",
+      "qualification": {
+        "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+        "prefix": "/Users/kevintruong/.spur/jupyter/venv",
+        "base_prefix": "/opt/homebrew/opt/python@3.12/Frameworks/Python.framework/Versions/3.12",
+        "version": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+        "abi": "cpython-312",
+        "platform": "macosx-13.0-arm64",
+        "ipykernel": "7.4.0",
+        "inventory": [
+          [
+            "Jinja2",
+            "3.1.6"
+          ],
+          [
+            "MarkupSafe",
+            "3.0.4"
+          ],
+          [
+            "PyYAML",
+            "6.0.3"
+          ],
+          [
+            "Pygments",
+            "2.21.0"
+          ],
+          [
+            "altair",
+            "6.3.0"
+          ],
+          [
+            "appnope",
+            "1.0.0"
+          ],
+          [
+            "asttokens",
+            "3.0.2"
+          ],
+          [
+            "attrs",
+            "26.1.0"
+          ],
+          [
+            "bleach",
+            "6.4.0"
+          ],
+          [
+            "certifi",
+            "2026.10.19"
+          ],
+          [
+            "charset-normalizer",
+            "3.5.2"
+          ],
+          [
+            "cloudpickle",
+            "3.1.2"
+          ],
+          [
+            "comm",
+            "0.2.3"
+          ],
+          [
+            "contourpy",
+            "1.4.0"
+          ],
+          [
+            "cycler",
+            "0.12.1"
+          ],
+          [
+            "debugpy",
+            "1.8.22"
+          ],
+          [
+            "duckdb",
+            "1.5.5"
+          ],
+          [
+            "executing",
+            "2.3.0"
+          ],
+          [
+            "fastjsonschema",
+            "2.22.2"
+          ],
+          [
+            "fonttools",
+            "4.67.0"
+          ],
+          [
+            "ggsql",
+            "0.4.1"
+          ],
+          [
+            "idna",
+            "3.20"
+          ],
+          [
+            "ipykernel",
+            "7.4.0"
+          ],
+          [
+            "ipython",
+            "9.17.1"
+          ],
+          [
+            "ipython_pygments_lexers",
+            "1.1.1"
+          ],
+          [
+            "jedi",
+            "0.20.1"
+          ],
+          [
+            "joblib",
+            "1.6.0"
+          ],
+          [
+            "jsonschema",
+            "4.26.0"
+          ],
+          [
+            "jsonschema-specifications",
+            "2025.9.1"
+          ],
+          [
+            "jupyter_client",
+            "8.10.0"
+          ],
+          [
+            "jupyter_core",
+            "5.9.1"
+          ],
+          [
+            "jupytext",
+            "1.19.6"
+          ],
+          [
+            "kaggle",
+            "2.2.4"
+          ],
+          [
+            "kagglesdk",
+            "0.1.37"
+          ],
+          [
+            "kiwisolver",
+            "1.5.1"
+          ],
+          [
+            "markdown-it-py",
+            "4.2.0"
+          ],
+          [
+            "matplotlib",
+            "3.11.2"
+          ],
+          [
+            "matplotlib-inline",
+            "0.2.2"
+          ],
+          [
+            "mdit-py-plugins",
+            "0.6.1"
+          ],
+          [
+            "mdurl",
+            "0.1.2"
+          ],
+          [
+            "msgpack",
+            "1.2.4"
+          ],
+          [
+            "narwhals",
+            "2.27.1"
+          ],
+          [
+            "nbformat",
+            "5.11.1"
+          ],
+          [
+            "nest-asyncio2",
+            "1.7.4"
+          ],
+          [
+            "numpy",
+            "2.5.4"
+          ],
+          [
+            "packaging",
+            "26.3"
+          ],
+          [
+            "pandas",
+            "3.0.6"
+          ],
+          [
+            "parso",
+            "0.8.7"
+          ],
+          [
+            "pexpect",
+            "4.9.0"
+          ],
+          [
+            "pillow",
+            "13.0.0"
+          ],
+          [
+            "pip",
+            "26.2.1"
+          ],
+          [
+            "platformdirs",
+            "4.13.5"
+          ],
+          [
+            "prompt_toolkit",
+            "3.0.53"
+          ],
+          [
+            "protobuf",
+            "7.36.2"
+          ],
+          [
+            "psutil",
+            "7.2.2"
+          ],
+          [
+            "ptyprocess",
+            "0.7.0"
+          ],
+          [
+            "pure_eval",
+            "0.2.4"
+          ],
+          [
+            "pyarrow",
+            "26.0.0"
+          ],
+          [
+            "pyparsing",
+            "3.3.3"
+          ],
+          [
+            "python-dateutil",
+            "2.9.0.post0"
+          ],
+          [
+            "python-dotenv",
+            "1.2.4"
+          ],
+          [
+            "python-slugify",
+            "9.1.3"
+          ],
+          [
+            "pyzmq",
+            "27.2.0"
+          ],
+          [
+            "referencing",
+            "0.37.0"
+          ],
+          [
+            "requests",
+            "2.34.2"
+          ],
+          [
+            "rpds-py",
+            "2026.9.1"
+          ],
+          [
+            "scikit-learn",
+            "1.9.1"
+          ],
+          [
+            "scipy",
+            "1.18.1"
+          ],
+          [
+            "six",
+            "1.17.0"
+          ],
+          [
+            "stack-data",
+            "0.6.3"
+          ],
+          [
+            "text-unidecode",
+            "1.3"
+          ],
+          [
+            "threadpoolctl",
+            "3.7.0"
+          ],
+          [
+            "tornado",
+            "6.5.10"
+          ],
+          [
+            "tqdm",
+            "4.70.1"
+          ],
+          [
+            "traitlets",
+            "5.16.1"
+          ],
+          [
+            "typing_extensions",
+            "4.16.0"
+          ],
+          [
+            "urllib3",
+            "2.8.0"
+          ],
+          [
+            "wcwidth",
+            "0.9.2"
+          ],
+          [
+            "webencodings",
+            "0.6.1"
+          ]
+        ],
+        "inventory_paths": [
+          "/Users/kevintruong/.spur/jupyter/venv/lib/python3.12/site-packages"
+        ],
+        "capabilities": {
+          "duckdb": true,
+          "ggsql": true
+        }
+      },
+      "manager": null,
+      "inventory_paths": [
+        "/Users/kevintruong/.spur/jupyter/venv/lib/python3.12/site-packages"
+      ],
+      "owned": false,
+      "capabilities": {
+        "python_execution": true,
+        "ports_arrow": false,
+        "ports_diagnostic": "ports_unavailable: named Python publication bridge is not qualified"
+      }
+    },
+    "version": 12,
+    "restart_required": true,
+    "diagnostics": []
+  },
+  "observations": {
+    "a": {
+      "profile": "py-probe-a",
+      "pid": 93662,
+      "cwd": "/private/tmp/spur-python-named-_47wrdz6/a",
+      "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+      "version": "3.12.10",
+      "prefix": "/Users/kevintruong/.spur/jupyter/venv",
+      "project_marker": "a",
+      "ipykernel": "7.4.0",
+      "state": {
+        "owner": "a",
+        "value": 41
+      }
+    },
+    "b": {
+      "profile": "py-probe-b",
+      "pid": 94915,
+      "cwd": "/private/tmp/spur-python-named-_47wrdz6/b",
+      "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+      "version": "3.12.10",
+      "project_marker": "b",
+      "other_profile_state_absent": true,
+      "state": {
+        "owner": "b",
+        "value": 99
+      }
+    },
+    "inherited": {
+      "selection": "inherited notebook default",
+      "expected_profile": "py-probe-a",
+      "pid": 93662,
+      "cwd": "/private/tmp/spur-python-named-_47wrdz6/a",
+      "state": {
+        "owner": "a",
+        "value": 41
+      },
+      "project_marker": "a"
+    },
+    "override": {
+      "selection": "explicit B while notebook default is A",
+      "expected_profile": "py-probe-b",
+      "pid": 94915,
+      "cwd": "/private/tmp/spur-python-named-_47wrdz6/b",
+      "state": {
+        "owner": "b",
+        "value": 99
+      },
+      "project_marker": "b"
+    },
+    "factory_verification": {
+      "pid": 91094,
+      "executable": "/Users/kevintruong/.spur/jupyter/venv/bin/python",
+      "cwd": "/Users/kevintruong/project/spur-notebook",
+      "named_state_absent": true,
+      "project_preservation": {
+        "a": {
+          "original_sources_unchanged": true,
+          "after": {
+            "module_from_project.py": "82f8ea6f8cf02bd219474924ebc6ffb2b72ecf924b021d6bd9edc02c206f48db",
+            "pyproject.toml": "931423f9ea0fad5553ba92b699b17471b34fc91bd8c90eec03140bbee719a54a",
+            "requirements.txt": "9c15bb2dfeb295cf5383aafa11a5333f0d7c6bc2dfda76785bf5f926abb5a51c"
+          },
+          "generated_files": [
+            "__pycache__/module_from_project.cpython-312.pyc"
+          ]
+        },
+        "b": {
+          "original_sources_unchanged": true,
+          "after": {
+            "module_from_project.py": "db726d822d657fc74a099381477ac265cf8ffda1311b0371daded33d3f6dba2f",
+            "pyproject.toml": "f99a2df8ce7e798edd6f96d9328d669e71e83336e7eec058434ae4e7bdddbdf7",
+            "requirements.txt": "9c15bb2dfeb295cf5383aafa11a5333f0d7c6bc2dfda76785bf5f926abb5a51c"
+          },
+          "generated_files": []
+        }
+      }
+    }
+  },
+  "other_adapter_previews": {
+    "requirements": {
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+      "kernel_name": "python3",
+      "language": "python",
+      "config": {
+        "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+        "environment": {
+          "kind": "requirements",
+          "files": [
+            "requirements.txt"
+          ],
+          "constraints": [],
+          "installer": "pip",
+          "hash_policy": "none"
+        }
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "environment_not_prepared",
+            "message": "Prepare this saved profile's environment explicitly before starting; Preview and Save never install dependencies",
+            "blocking": true
+          },
+          {
+            "code": "environment_qualification_required",
+            "message": "Save this profile, then explicitly prepare its environment or start its selected external interpreter",
+            "blocking": true
+          }
+        ]
+      },
+      "profile": "py-preview-requirements",
+      "profile_id": null,
+      "runtime_slot_id": null,
+      "default_profile": null,
+      "applied": false,
+      "restart_required": false,
+      "saved_runtime": null,
+      "saved": false,
+      "phase": "validated",
+      "apply": "next_start"
+    },
+    "pyproject": {
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+      "kernel_name": "python3",
+      "language": "python",
+      "config": {
+        "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+        "environment": {
+          "kind": "pyproject",
+          "manifest_path": "pyproject.toml",
+          "extras": [],
+          "install_mode": "wheel"
+        }
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "environment_not_prepared",
+            "message": "Prepare this saved profile's environment explicitly before starting; Preview and Save never install dependencies",
+            "blocking": true
+          },
+          {
+            "code": "environment_qualification_required",
+            "message": "Save this profile, then explicitly prepare its environment or start its selected external interpreter",
+            "blocking": true
+          }
+        ]
+      },
+      "profile": "py-preview-pyproject",
+      "profile_id": null,
+      "runtime_slot_id": null,
+      "default_profile": null,
+      "applied": false,
+      "restart_required": false,
+      "saved_runtime": null,
+      "saved": false,
+      "phase": "validated",
+      "apply": "next_start"
+    },
+    "uv_project": {
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+      "kernel_name": "python3",
+      "language": "python",
+      "config": {
+        "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+        "environment": {
+          "kind": "uv_project",
+          "manifest_path": "pyproject.toml",
+          "extras": [],
+          "groups": [],
+          "include_default_groups": false
+        }
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "project_descriptor_missing",
+            "message": "/private/tmp/spur-python-named-_47wrdz6/a/uv.lock is missing or is not a file",
+            "blocking": true
+          },
+          {
+            "code": "environment_not_prepared",
+            "message": "Prepare this saved profile's environment explicitly before starting; Preview and Save never install dependencies",
+            "blocking": true
+          },
+          {
+            "code": "environment_qualification_required",
+            "message": "Save this profile, then explicitly prepare its environment or start its selected external interpreter",
+            "blocking": true
+          }
+        ]
+      },
+      "profile": "py-preview-uv-project",
+      "profile_id": null,
+      "runtime_slot_id": null,
+      "default_profile": null,
+      "applied": false,
+      "restart_required": false,
+      "saved_runtime": null,
+      "saved": false,
+      "phase": "validated",
+      "apply": "next_start"
+    }
+  },
+  "final_profiles": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb",
+    "version": 33,
+    "document_generation": 33,
+    "schema_version": 4,
+    "diagnostics": [],
+    "python": {
+      "default_profile": null,
+      "profiles": {
+        "py-probe-a": {
+          "kernel_name": "python3",
+          "config": {
+            "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/a",
+            "environment": {
+              "kind": "existing",
+              "interpreter": {
+                "kind": "project_relative",
+                "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+              }
+            }
+          },
+          "profile_id": "cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+          "profile": "py-probe-a",
+          "runtime_slot_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+          "process": {
+            "kernel_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+            "spec_name": "python3",
+            "generation": 1,
+            "status": "idle",
+            "cpu_pct": 0.008859999477863312,
+            "mem_mb": 54.3125
+          },
+          "readiness": {
+            "ready": true,
+            "applied": true,
+            "diagnostics": []
+          },
+          "diagnostics": [],
+          "live_processes": [
+            {
+              "kernel_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:cd9a8fbc-3d34-49e2-bb29-e7f90fb6d5bb",
+              "spec_name": "python3",
+              "generation": 1,
+              "status": "idle",
+              "cpu_pct": 0,
+              "mem_mb": 54.3125
+            }
+          ],
+          "ports_api": {
+            "version": 0,
+            "available": false,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "running",
+            "applied": true,
+            "last_failure": null
+          }
+        },
+        "py-probe-b": {
+          "kernel_name": "python3",
+          "config": {
+            "project_root": "../../../../private/tmp/spur-python-named-_47wrdz6/b",
+            "environment": {
+              "kind": "existing",
+              "interpreter": {
+                "kind": "project_relative",
+                "path": "../../../../Users/kevintruong/.spur/jupyter/venv/bin/python"
+              }
+            }
+          },
+          "profile_id": "3e88a994-b2b7-433b-9d4b-b28d20659478",
+          "profile": "py-probe-b",
+          "runtime_slot_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:3e88a994-b2b7-433b-9d4b-b28d20659478",
+          "process": {
+            "kernel_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:3e88a994-b2b7-433b-9d4b-b28d20659478",
+            "spec_name": "python3",
+            "generation": 1,
+            "status": "idle",
+            "cpu_pct": 0,
+            "mem_mb": 54.203125
+          },
+          "readiness": {
+            "ready": true,
+            "applied": true,
+            "diagnostics": []
+          },
+          "diagnostics": [],
+          "live_processes": [
+            {
+              "kernel_id": "native-profile:v1:96:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb6:python7:python336:3e88a994-b2b7-433b-9d4b-b28d20659478",
+              "spec_name": "python3",
+              "generation": 1,
+              "status": "idle",
+              "cpu_pct": 0,
+              "mem_mb": 54.203125
+            }
+          ],
+          "ports_api": {
+            "version": 0,
+            "available": false,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "running",
+            "applied": true,
+            "last_failure": null
+          }
+        }
+      },
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "python3",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb#python3",
+        "process": {
+          "kernel_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb#python3",
+          "spec_name": "python3",
+          "generation": 1,
+          "status": "idle",
+          "cpu_pct": 0,
+          "mem_mb": 160.40625
+        },
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "python3",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb#python3",
+        "process": {
+          "kernel_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-python-named-configuration-exploration.ipynb#python3",
+          "spec_name": "python3",
+          "generation": 1,
+          "status": "idle",
+          "cpu_pct": 0,
+          "mem_mb": 160.40625
+        },
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation",
+        "readiness": "valid intent may be saved without local prerequisites; runtime checks kernel availability"
+      },
+      "dependency_policy": {
+        "preview_installs": false,
+        "save_installs": false,
+        "implicit_sync": false,
+        "prepare": "explicit plan followed by notebook_prepare_kernel_environment",
+        "project_writes": false,
+        "uv_lock": "locked; no frozen or kernel overlay",
+        "adapters": [
+          "requirements",
+          "pyproject",
+          "uv_project",
+          "existing"
+        ]
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 0,
+          "available": false,
+          "synchronous": false,
+          "requires_qualified_bridge": true,
+          "readiness": "ports_unavailable: named Python supports plain execution until host-fenced publication is qualified"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 4,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for factory Python"
+      }
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": {
+      "live_python_schema": true,
+      "preview_did_not_save": true,
+      "saved_ids_distinct": true,
+      "preparation_no_downloads": true,
+      "profile_a_project": true,
+      "profile_b_project": true,
+      "separate_named_processes": true,
+      "factory_process_separate": true,
+      "state_isolation": true,
+      "inherited_default_reused_a": true,
+      "explicit_override_reused_b": true,
+      "default_restored": true,
+      "original_sources_preserved": true,
+      "preview_profiles_not_saved": true,
+      "named_ports_explicitly_unavailable": true,
+      "all_six_cells_succeeded": true
+    }
+  },
+  "limits": [
+    "Existing adapter execution tested; managed adapters previewed only.",
+    "Both named profiles reuse one existing interpreter environment.",
+    "Named Arrow ports disabled by the current contract.",
+    "Restart/recovery and human UI flow not tested.",
+    "Temporary roots and stateful inherited-default replay require the documented setup."
+  ]
+}
