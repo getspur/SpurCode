@@ -1,0 +1,56 @@
+[
+  {
+    "configuration": "test/configs/disable_optimizer.json",
+    "configuration_changed": false,
+    "test": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+    "effective_skip": true,
+    "chain": [
+      "test/configs/disable_optimizer.json",
+      "test/configs/stats_dependent_tests.json",
+      "test/sql/optimizer/statistics/distinct_on_stats_propagation.test"
+    ],
+    "on_init": "SET debug_disable_optimizer=true;",
+    "evidence_class": "parsed_config_inheritance",
+    "caveat": "Declared effective selection; no claim that the test suite was executed"
+  },
+  {
+    "configuration": "test/configs/stats_dependent_tests.json",
+    "configuration_changed": true,
+    "test": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+    "effective_skip": true,
+    "chain": [
+      "test/configs/stats_dependent_tests.json",
+      "test/sql/optimizer/statistics/distinct_on_stats_propagation.test"
+    ],
+    "on_init": null,
+    "evidence_class": "parsed_config_inheritance",
+    "caveat": "Declared effective selection; no claim that the test suite was executed"
+  },
+  {
+    "configuration": "test/configs/verify_aggregate_state_export.json",
+    "configuration_changed": true,
+    "test": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+    "effective_skip": true,
+    "chain": [
+      "test/configs/verify_aggregate_state_export.json",
+      "test/sql/optimizer/statistics/distinct_on_stats_propagation.test"
+    ],
+    "on_init": "SET debug_verify_aggregate_state_export=true;",
+    "evidence_class": "parsed_config_inheritance",
+    "caveat": "Declared effective selection; no claim that the test suite was executed"
+  },
+  {
+    "configuration": "test/configs/verify_serializer.json",
+    "configuration_changed": false,
+    "test": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+    "effective_skip": true,
+    "chain": [
+      "test/configs/verify_serializer.json",
+      "test/configs/stats_dependent_tests.json",
+      "test/sql/optimizer/statistics/distinct_on_stats_propagation.test"
+    ],
+    "on_init": "SET debug_verify_serializer=true",
+    "evidence_class": "parsed_config_inheritance",
+    "caveat": "Declared effective selection; no claim that the test suite was executed"
+  }
+]

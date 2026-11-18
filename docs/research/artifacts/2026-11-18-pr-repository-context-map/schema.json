@@ -1,0 +1,262 @@
+[
+  {
+    "table": "changed_symbols",
+    "column": "entity_name",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "symbol_kind",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "enclosing_scope",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "byte_start",
+    "type": "BIGINT"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "byte_end",
+    "type": "BIGINT"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "line_start",
+    "type": "BIGINT"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "line_end",
+    "type": "BIGINT"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "anchor_hash",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "tokens",
+    "type": "VARCHAR[]"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "file_path",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "side",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "source_sha256",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "body_sha256",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "changed_symbols",
+    "column": "change",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "source_path",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "target_path",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "relation",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "evidence_class",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "source_changed",
+    "type": "BOOLEAN"
+  },
+  {
+    "table": "relationships",
+    "column": "target_changed",
+    "type": "BOOLEAN"
+  },
+  {
+    "table": "relationships",
+    "column": "witness_path",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "witness_line",
+    "type": "BIGINT"
+  },
+  {
+    "table": "relationships",
+    "column": "witness_text",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "witness_blob_oid",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "revision",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "component",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "reason",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "on_init",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "target_api",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "caveat",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "registration_witnesses",
+    "type": "STRUCT(path VARCHAR, line BIGINT, symbol VARCHAR, \"text\" VARCHAR)[]"
+  },
+  {
+    "table": "relationships",
+    "column": "contract",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "contract_definition",
+    "type": "STRUCT(path VARCHAR, field_line BIGINT, reader_line BIGINT, writer_line BIGINT)"
+  },
+  {
+    "table": "relationships",
+    "column": "source_symbol",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "target_symbol",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "changed_symbol_seed",
+    "type": "BOOLEAN"
+  },
+  {
+    "table": "relationships",
+    "column": "bind_method",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "evidence_artifact",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "relationships",
+    "column": "evidence_artifact_line",
+    "type": "BIGINT"
+  },
+  {
+    "table": "relationships",
+    "column": "witness_location",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "snapshot",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "revision",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "logical_path",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "blob_oid",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "mode",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "git_kind",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "source_bytes",
+    "type": "BIGINT"
+  },
+  {
+    "table": "tracked_files",
+    "column": "cpp_scope",
+    "type": "BOOLEAN"
+  },
+  {
+    "table": "tracked_files",
+    "column": "source_sha256",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "changed",
+    "type": "BOOLEAN"
+  },
+  {
+    "table": "tracked_files",
+    "column": "change",
+    "type": "VARCHAR"
+  },
+  {
+    "table": "tracked_files",
+    "column": "unchanged_blob_verified",
+    "type": "BOOLEAN"
+  }
+]

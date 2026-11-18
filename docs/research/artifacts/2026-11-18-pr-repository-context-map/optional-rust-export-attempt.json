@@ -1,0 +1,35 @@
+{
+  "purpose": "Optional new full-graph export; not required for the retained pinned baseline or the file-context evidence map",
+  "outcome": "Two tool calls exceeded the 300 second limit; no export files were produced; retained native Rust evidence from the completed baseline is reused",
+  "cell": {
+    "notebook_id": "nb-8d32913103ff06ec3dcb7022",
+    "path": "/Users/kevintruong/project/spur-notebook/2026-11-17-cpp-extraction-gap-lab.ipynb",
+    "revision": 10,
+    "id": "6698b1e1-d539-4c90-b4e3-0f45be36689a",
+    "kind": "code",
+    "version": 3,
+    "cell_etag": "cell:sha256:a55fd5e1b8e381bc14c0629dce563bcdf78a4a66502c408479b221b1a36e76b4",
+    "source": ":dep serde_json = \"=1.0.149\"\nuse std::io::Write;\n{\n    let root=std::path::Path::new(\"/Users/kevintruong/project/SpurCode/.spur/artifacts/cpp-gap-repository-index\");\n    let out=root.join(\"change-context-graph\");\n    std::fs::create_dir_all(&out)?;\n    let paths: Vec<std::path::PathBuf>=std::fs::read_to_string(root.join(\"head-cpp-paths.txt\"))?.lines().map(std::path::PathBuf::from).collect();\n    let facts=spur_graph::extract::tree_sitter::build_facts_for_paths(&root.join(\"head-cpp-sources\"),&paths)?;\n    let mut nodes=std::io::BufWriter::new(std::fs::File::create(out.join(\"nodes.json\"))?);\n    serde_json::to_writer(&mut nodes,&facts.nodes)?; nodes.flush()?;\n    let mut edges=std::io::BufWriter::new(std::fs::File::create(out.join(\"edges.json\"))?);\n    serde_json::to_writer(&mut edges,&facts.edges)?; edges.flush()?;\n    let mut spans=std::io::BufWriter::new(std::fs::File::create(out.join(\"spans.json\"))?);\n    serde_json::to_writer(&mut spans,&facts.spans)?; spans.flush()?;\n    println!(\"Pinned repository graph exported: {} files, {} nodes, {} edges; source spans retained\",paths.len(),facts.nodes.len(),facts.edges.len());\n}",
+    "exec_count": null,
+    "status": "error",
+    "outputs": [
+      {
+        "output_type": "error",
+        "ename": "KernelDisconnect",
+        "evalue": "disconnected from the kernel",
+        "traceback": []
+      }
+    ],
+    "metadata": {
+      "spur": {
+        "version": 3,
+        "last_edited_by": "brain",
+        "code_type": "rust",
+        "kernel_profile": "cpp-core"
+      }
+    },
+    "output_indices": [
+      0
+    ]
+  }
+}

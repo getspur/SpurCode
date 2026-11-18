@@ -1,0 +1,112 @@
+[
+  {
+    "changed_file": "src/function/aggregate/distributive/first_last_any.cpp",
+    "declared_component": "duckdb_aggr_distr",
+    "direct_unchanged_context_files": 9,
+    "unchanged_context_files_within_two_relations": [
+      "src/common/constants.cpp",
+      "src/execution/operator/set/physical_recursive_cte_keyed.cpp",
+      "src/function/aggregate/CMakeLists.txt",
+      "src/function/aggregate/distributive/CMakeLists.txt",
+      "src/function/aggregate/distributive/minmax.cpp",
+      "src/include/duckdb/common/typedefs.hpp",
+      "src/include/duckdb/common/types/selection_vector.hpp",
+      "src/include/duckdb/function/aggregate_function.hpp",
+      "src/include/duckdb/function/aggregate_state.hpp",
+      "src/include/duckdb/function/function_binder.hpp",
+      "src/include/duckdb/planner/bound_result_modifier.hpp",
+      "src/optimizer/CMakeLists.txt",
+      "src/optimizer/aggregate_rewrite.cpp"
+    ],
+    "context_semantics": "Undirected typed context neighborhood; not a bound call path or runtime blast radius",
+    "relationship_types": [
+      "calls_dependency_in_shared_syntax_graph",
+      "dispatches_possible_registered_rewrite",
+      "listed_in_build_target",
+      "reads_shared_identity_contract",
+      "writes_shared_identity_contract"
+    ]
+  },
+  {
+    "changed_file": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "declared_component": "duckdb_optimizer_relation_statistics",
+    "direct_unchanged_context_files": 13,
+    "unchanged_context_files_within_two_relations": [
+      "src/execution/operator/set/physical_recursive_cte_keyed.cpp",
+      "src/function/aggregate/distributive/minmax.cpp",
+      "src/include/duckdb/function/aggregate_function.hpp",
+      "src/include/duckdb/optimizer/apply_functional_dependencies.hpp",
+      "src/include/duckdb/optimizer/relation_statistics/relation_statistics.hpp",
+      "src/include/duckdb/optimizer/relation_statistics/relation_statistics_extractor.hpp",
+      "src/include/duckdb/optimizer/relation_statistics/relation_statistics_helper.hpp",
+      "src/include/duckdb/parser/base_expression.hpp",
+      "src/include/duckdb/planner/bound_result_modifier.hpp",
+      "src/include/duckdb/planner/expression/bound_cast_expression.hpp",
+      "src/optimizer/CMakeLists.txt",
+      "src/optimizer/join_order/CMakeLists.txt",
+      "src/optimizer/join_order/relation_manager.cpp",
+      "src/optimizer/relation_statistics/CMakeLists.txt",
+      "src/optimizer/relation_statistics/relation_statistics_extractor.cpp",
+      "src/optimizer/relation_statistics/relation_statistics_operator.cpp",
+      "test/optimizer/CMakeLists.txt",
+      "test/optimizer/relation_statistics.cpp"
+    ],
+    "context_semantics": "Undirected typed context neighborhood; not a bound call path or runtime blast radius",
+    "relationship_types": [
+      "calls_dependency_in_shared_syntax_graph",
+      "listed_in_build_target",
+      "reads_shared_identity_contract",
+      "references_aggregate_stats_api",
+      "unqualified_api_name_candidate"
+    ]
+  },
+  {
+    "changed_file": "test/configs/stats_dependent_tests.json",
+    "declared_component": null,
+    "direct_unchanged_context_files": 3,
+    "unchanged_context_files_within_two_relations": [
+      "Makefile",
+      "test/configs/disable_optimizer.json",
+      "test/configs/verify_serializer.json",
+      "test/helpers/test_config.cpp"
+    ],
+    "context_semantics": "Undirected typed context neighborhood; not a bound call path or runtime blast radius",
+    "relationship_types": [
+      "inherits_skip_tests",
+      "interpreted_by_config_loader",
+      "skips_test_in_mode"
+    ]
+  },
+  {
+    "changed_file": "test/configs/verify_aggregate_state_export.json",
+    "declared_component": null,
+    "direct_unchanged_context_files": 2,
+    "unchanged_context_files_within_two_relations": [
+      "Makefile",
+      "test/configs/disable_optimizer.json",
+      "test/configs/verify_serializer.json",
+      "test/helpers/test_config.cpp"
+    ],
+    "context_semantics": "Undirected typed context neighborhood; not a bound call path or runtime blast radius",
+    "relationship_types": [
+      "interpreted_by_config_loader",
+      "lists_test_configuration",
+      "skips_test_in_mode"
+    ]
+  },
+  {
+    "changed_file": "test/sql/optimizer/statistics/distinct_on_stats_propagation.test",
+    "declared_component": null,
+    "direct_unchanged_context_files": 0,
+    "unchanged_context_files_within_two_relations": [
+      "Makefile",
+      "test/configs/disable_optimizer.json",
+      "test/configs/verify_serializer.json",
+      "test/helpers/test_config.cpp"
+    ],
+    "context_semantics": "Undirected typed context neighborhood; not a bound call path or runtime blast radius",
+    "relationship_types": [
+      "skips_test_in_mode"
+    ]
+  }
+]

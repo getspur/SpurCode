@@ -1,0 +1,344 @@
+[
+  {
+    "path": "src/execution/operator/set/physical_recursive_cte_keyed.cpp",
+    "line": 42,
+    "symbol": "HasSingleValueIdentity",
+    "text": "aggregate.Function().HasSingleValueIdentity() && !children.empty() &&"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 19,
+    "symbol": "RewriteOrderedFirst",
+    "text": "unique_ptr<Expression> RewriteOrderedFirst(AggregateRewriteInput &input) {"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 57,
+    "symbol": "SetSingleValueIdentity",
+    "text": "result->FunctionMutable().SetSingleValueIdentity(aggregate->Function().HasSingleValueIdentity());"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 57,
+    "symbol": "HasSingleValueIdentity",
+    "text": "result->FunctionMutable().SetSingleValueIdentity(aggregate->Function().HasSingleValueIdentity());"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 492,
+    "symbol": "SetDirectRewriteCallback",
+    "text": "function.SetDirectRewriteCallback(RewriteOrderedFirst<LAST, SKIP_NULLS>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 492,
+    "symbol": "RewriteOrderedFirst",
+    "text": "function.SetDirectRewriteCallback(RewriteOrderedFirst<LAST, SKIP_NULLS>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 493,
+    "symbol": "SetSingleValueIdentity",
+    "text": "function.SetSingleValueIdentity(true);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 517,
+    "symbol": "SetDirectRewriteCallback",
+    "text": "function.SetDirectRewriteCallback(RewriteOrderedFirst<LAST, SKIP_NULLS>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 517,
+    "symbol": "RewriteOrderedFirst",
+    "text": "function.SetDirectRewriteCallback(RewriteOrderedFirst<LAST, SKIP_NULLS>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 518,
+    "symbol": "SetSingleValueIdentity",
+    "text": "function.SetSingleValueIdentity(true);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 542,
+    "symbol": "SetDirectRewriteCallback",
+    "text": "fun.SetDirectRewriteCallback(RewriteOrderedFirst<false, false>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 542,
+    "symbol": "RewriteOrderedFirst",
+    "text": "fun.SetDirectRewriteCallback(RewriteOrderedFirst<false, false>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 543,
+    "symbol": "SetSingleValueIdentity",
+    "text": "fun.SetSingleValueIdentity(true);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 551,
+    "symbol": "SetDirectRewriteCallback",
+    "text": "fun.SetDirectRewriteCallback(RewriteOrderedFirst<true, false>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 551,
+    "symbol": "RewriteOrderedFirst",
+    "text": "fun.SetDirectRewriteCallback(RewriteOrderedFirst<true, false>);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/first_last_any.cpp",
+    "line": 552,
+    "symbol": "SetSingleValueIdentity",
+    "text": "fun.SetSingleValueIdentity(true);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/minmax.cpp",
+    "line": 380,
+    "symbol": "SetSingleValueIdentity",
+    "text": "function.SetSingleValueIdentity(true);"
+  },
+  {
+    "path": "src/function/aggregate/distributive/minmax.cpp",
+    "line": 404,
+    "symbol": "SetSingleValueIdentity",
+    "text": "minmax_func.SetSingleValueIdentity(true);"
+  },
+  {
+    "path": "src/include/duckdb/function/aggregate_function.hpp",
+    "line": 268,
+    "symbol": "GetDirectRewriteCallback",
+    "text": "aggregate_direct_rewrite_t GetDirectRewriteCallback() const { return direct_rewrite; }"
+  },
+  {
+    "path": "src/include/duckdb/function/aggregate_function.hpp",
+    "line": 269,
+    "symbol": "SetDirectRewriteCallback",
+    "text": "void SetDirectRewriteCallback(aggregate_direct_rewrite_t callback) { direct_rewrite = callback; }"
+  },
+  {
+    "path": "src/include/duckdb/function/aggregate_function.hpp",
+    "line": 401,
+    "symbol": "HasSingleValueIdentity",
+    "text": "auto HasSingleValueIdentity() const -> bool { return properties.single_value_identity; }"
+  },
+  {
+    "path": "src/include/duckdb/function/aggregate_function.hpp",
+    "line": 402,
+    "symbol": "SetSingleValueIdentity",
+    "text": "auto SetSingleValueIdentity(bool value) -> void { properties.single_value_identity = value; }"
+  },
+  {
+    "path": "src/include/duckdb/function/aggregate_function.hpp",
+    "line": 476,
+    "symbol": "GetDirectRewriteCallback",
+    "text": "auto GetDirectRewriteCallback() const -> aggregate_direct_rewrite_t { return callbacks.direct_rewrite; }"
+  },
+  {
+    "path": "src/include/duckdb/function/aggregate_function.hpp",
+    "line": 477,
+    "symbol": "SetDirectRewriteCallback",
+    "text": "auto SetDirectRewriteCallback(aggregate_direct_rewrite_t callback) -> void { callbacks.direct_rewrite = callback; }"
+  },
+  {
+    "path": "src/include/duckdb/optimizer/relation_statistics/relation_statistics_helper.hpp",
+    "line": 64,
+    "symbol": "ExtractAggregationStats",
+    "text": "static optional<RelationStats> ExtractAggregationStats(LogicalAggregate &aggregate,"
+  },
+  {
+    "path": "src/include/duckdb/optimizer/relation_statistics/relation_statistics_helper.hpp",
+    "line": 67,
+    "symbol": "ExtractAggregationStats",
+    "text": "static optional<RelationStats> ExtractAggregationStats(LogicalAggregate &aggregate,"
+  },
+  {
+    "path": "src/optimizer/aggregate_rewrite.cpp",
+    "line": 58,
+    "symbol": "GetDirectRewriteCallback",
+    "text": "auto rewrite = input.aggregate.Function().GetDirectRewriteCallback()(input);"
+  },
+  {
+    "path": "src/optimizer/join_order/relation_manager.cpp",
+    "line": 623,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto operator_stats = RelationStatisticsHelper::ExtractAggregationStats(aggr, child_stats, extractor, true);"
+  },
+  {
+    "path": "src/optimizer/join_order/relation_manager.cpp",
+    "line": 856,
+    "symbol": "ExtractAggregationStats",
+    "text": "RelationStatisticsHelper::ExtractAggregationStats(*dummy_aggr, lhs_stats, extractor, true);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_extractor.cpp",
+    "line": 124,
+    "symbol": "ExtractAggregationStats",
+    "text": "return RelationStatisticsHelper::ExtractAggregationStats(op.Cast<LogicalAggregate>(), child_stats[0], *this);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 455,
+    "symbol": "GetValuePreservingColumn",
+    "text": "static optional<ColumnBinding> GetValuePreservingColumn(const Expression &expression) {"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 473,
+    "symbol": "GetValuePreservingColumn",
+    "text": "return GetValuePreservingColumn(BoundCastExpression::Child(cast));"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 476,
+    "symbol": "HasBaseColumnSource",
+    "text": "static bool HasBaseColumnSource(LogicalOperator &op, ColumnBinding binding) {"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 498,
+    "symbol": "GetValuePreservingColumn",
+    "text": "auto child_binding = GetValuePreservingColumn(*op.expressions[i]);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 499,
+    "symbol": "HasBaseColumnSource",
+    "text": "return child_binding && HasBaseColumnSource(*op.children[0], *child_binding);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 507,
+    "symbol": "HasBaseColumnSource",
+    "text": "return op.children.size() == 1 && HasBaseColumnSource(*op.children[0], binding);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 513,
+    "symbol": "HasUniqueGroups",
+    "text": "static bool HasUniqueGroups(LogicalOperator &op, const column_binding_set_t &groups) {"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 528,
+    "symbol": "GetValuePreservingColumn",
+    "text": "auto binding = GetValuePreservingColumn(*op.expressions[i]);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 533,
+    "symbol": "HasUniqueGroups",
+    "text": "return HasUniqueGroups(*op.children[0], child_groups);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 539,
+    "symbol": "HasUniqueGroups",
+    "text": "return op.children.size() == 1 && HasUniqueGroups(*op.children[0], groups);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 558,
+    "symbol": "ExtractAggregationStatsInternal",
+    "text": "static optional<RelationStats> ExtractAggregationStatsInternal(LogicalAggregate &aggregate,"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 622,
+    "symbol": "GetValuePreservingColumn",
+    "text": "auto binding = GetValuePreservingColumn(*group);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 627,
+    "symbol": "HasUniqueGroups",
+    "text": "has_unique_groups = HasUniqueGroups(*aggregate.children[0], groups);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 664,
+    "symbol": "HasSingleValueIdentity",
+    "text": "if (bound_aggregate.Function().HasSingleValueIdentity() && !bound_aggregate.GetFilter() &&"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 669,
+    "symbol": "HasBaseColumnSource",
+    "text": "if (child_column && HasBaseColumnSource(*aggregate.children[0], binding)) {"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 688,
+    "symbol": "ExtractAggregationStats",
+    "text": "optional<RelationStats> RelationStatisticsHelper::ExtractAggregationStats(LogicalAggregate &aggregate,"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 693,
+    "symbol": "ExtractAggregationStatsInternal",
+    "text": "return ExtractAggregationStatsInternal(aggregate, child_stats, extractor, true);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 696,
+    "symbol": "ExtractAggregationStats",
+    "text": "optional<RelationStats> RelationStatisticsHelper::ExtractAggregationStats(LogicalAggregate &aggregate,"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_helper.cpp",
+    "line": 700,
+    "symbol": "ExtractAggregationStatsInternal",
+    "text": "return ExtractAggregationStatsInternal(aggregate, child_stats, extractor, use_operator_cardinality);"
+  },
+  {
+    "path": "src/optimizer/relation_statistics/relation_statistics_operator.cpp",
+    "line": 370,
+    "symbol": "ExtractAggregationStats",
+    "text": "return ExtractAggregationStats(op.Cast<LogicalAggregate>(), child_stats[0].get(), context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1030,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto ordinary = RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1034,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto rollup = RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1039,
+    "symbol": "ExtractAggregationStats",
+    "text": "RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1079,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto aggregated = RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1402,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto key_only = RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1408,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto implicit = RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  },
+  {
+    "path": "test/optimizer/relation_statistics.cpp",
+    "line": 1419,
+    "symbol": "ExtractAggregationStats",
+    "text": "auto explicit_set = RelationStatisticsHelper::ExtractAggregationStats(aggregate, child_stats, *connection.context);"
+  }
+]

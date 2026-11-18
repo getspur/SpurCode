@@ -1,0 +1,32 @@
+{
+  "description": "Run with SET debug_verify_serializer=true to test logical plan serialization",
+  "on_init": "SET debug_verify_serializer=true",
+  "skip_compiled": "true",
+  "inherit_skip_tests": "test/configs/stats_dependent_tests.json",
+  "skip_tests": [
+    {
+      "reason": "Measures CTE restrictions using planner dependencies deliberately discarded by serialization",
+      "paths": [
+        "test/optimizer/pushdown/cte_domain_join_filter.test"
+      ]
+    },
+    {
+      "reason": "Extension optimizer pass breaks logical plan serialization",
+      "paths": [
+        "test/extension/test_extensible_filter.test"
+      ]
+    },
+    {
+      "reason": "Deserialized plans lose the join filters that late materialization pushes into its scan, see https://github.com/duckdblabs/bot-issue-tracker/issues/715",
+      "paths": [
+        "test/sql/optimizer/test_rowid_vector_pruning.test"
+      ]
+    },
+    {
+      "reason": "Plan serialization discards cardinality estimates, so the probe consumer is kept materialized by cost and no cycle demotion occurs.",
+      "paths": [
+        "test/sql/cte/materialized/cte_buffered_consumer_cycle_demotion.test"
+      ]
+    }
+  ]
+}
