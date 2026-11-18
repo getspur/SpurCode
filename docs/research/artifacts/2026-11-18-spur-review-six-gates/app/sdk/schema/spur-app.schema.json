@@ -1,0 +1,446 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:spur:schema:spur-app:v1",
+  "$comment": "Stable public URL (post-U7, not yet live): https://sdk.spur.app/schema/spur-app.schema.json. Hand-authored against the serde definitions in src/spur_app.rs (SpurAppManifest, SpurAppCapabilities, SpurAppCapabilityPorts, SpurAppDependencies, SpurAppMcpServer, SpurAppRuntime, SpurAppWidgetAsset, SpurAppPorts). Generation from Rust types is planned for a follow-up task (U7). When the generated schema ships, this file will be replaced and the $comment updated.",
+  "title": "spur-app.json",
+  "description": "Manifest for a Spur notebook app bundle (.spurapp). Schema version spur.app/v1.",
+  "type": "object",
+  "required": [
+    "schema",
+    "name",
+    "entry_notebook",
+    "open_mode",
+    "runtime"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "spur.app/v1",
+      "description": "Schema identifier. Must be the literal string 'spur.app/v1'."
+    },
+    "contract_version": {
+      "type": "integer",
+      "default": 1,
+      "minimum": 1,
+      "description": "SDK/runtime contract version. Defaults to 1 when omitted; hosts reject unsupported versions with an upgrade-which-side diagnostic."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable app name. Used as the MCP server name.",
+      "minLength": 1
+    },
+    "entry_notebook": {
+      "type": "string",
+      "description": "Relative path (within the bundle) to the entry .ipynb notebook. Must be a safe relative path with no '..' components.",
+      "minLength": 1
+    },
+    "open_mode": {
+      "type": "string",
+      "description": "How the host opens this bundle. 'app' is the standard app mode.",
+      "enum": [
+        "app",
+        "notebook"
+      ]
+    },
+    "archetype": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SpurAppArchetype"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional app-shape declaration used by doctor to check notebook structure. Legacy manifests may omit it."
+    },
+    "runtime": {
+      "$ref": "#/$defs/SpurAppRuntime"
+    },
+    "widgets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SpurAppWidgetAsset"
+      },
+      "default": [],
+      "description": "Widget JS/CSS assets bundled with the app."
+    },
+    "ports": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SpurAppPorts"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Port snapshot options. null means no snapshots are bundled."
+    },
+    "dependencies": {
+      "$ref": "#/$defs/SpurAppDependencies",
+      "description": "Paths to language-specific dependency lock files within the bundle."
+    },
+    "mcp_server": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SpurAppMcpServer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "MCP server configuration. null means the app has no Python/Node server."
+    },
+    "capabilities": {
+      "$ref": "#/$defs/SpurAppCapabilities",
+      "description": "Capability declarations for host provisioning. Absent fields default to off. Unknown keys are rejected by the host."
+    },
+    "skill": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Relative path to the agent skill file for this app. Defaults to 'skill/SKILL.md' when absent (null)."
+    },
+    "sdk": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SpurAppSdk"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Vendored SDK declarations. When present, the doctor verifies the referenced directories exist inside the app root."
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "default": [],
+      "description": "Host data-connection names this app links to (e.g. [\"buffer\"]). At MCP launch the host injects matching gateway credential profiles into the plugin process env (same secret plane as SQL table functions). Absent → empty."
+    }
+  },
+  "$defs": {
+    "SpurAppArchetype": {
+      "type": "string",
+      "description": "Primary Spur app archetype. Doctor uses this to check that notebook cells match the declared app shape.",
+      "enum": [
+        "headless",
+        "vanilla-widget",
+        "react-widget",
+        "interactive-decoupled"
+      ]
+    },
+    "SpurAppRuntime": {
+      "type": "object",
+      "required": [
+        "jute_min"
+      ],
+      "additionalProperties": true,
+      "description": "Runtime requirements for the host.",
+      "properties": {
+        "jute_min": {
+          "type": "string",
+          "description": "Minimum host version required, as a semver string (e.g. '0.1.0')."
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Deprecated feature flags (honored but ignored for gating; use capabilities instead). Doctor will warn if present."
+        }
+      }
+    },
+    "SpurAppWidgetAsset": {
+      "type": "object",
+      "required": [
+        "module",
+        "hash"
+      ],
+      "additionalProperties": true,
+      "description": "A bundled widget JS (or CSS) asset.",
+      "properties": {
+        "module": {
+          "type": "string",
+          "description": "Archive-relative path to the JS module, e.g. 'widgets/sha256-<hash>.js'."
+        },
+        "css": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Archive-relative path to the companion CSS file, or null for JS-only assets."
+        },
+        "hash": {
+          "type": "string",
+          "description": "Content hash label, e.g. 'sha256-<hex>'."
+        }
+      }
+    },
+    "SpurAppPorts": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Port snapshot bundling options.",
+      "properties": {
+        "include_snapshots": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether port snapshots were included at pack time."
+        },
+        "manifest": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Archive-relative path to the bundled ports/manifest.json, or null if none was captured."
+        }
+      }
+    },
+    "SpurAppDependencies": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Paths to bundled dependency lock files (relative to the archive root, under env/).",
+      "properties": {
+        "python": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bundled Python lock file path (e.g. 'env/uv.lock' or 'env/requirements.txt')."
+        },
+        "deno": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bundled Deno lock file path (e.g. 'env/deno.lock')."
+        },
+        "rust": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bundled Rust lock file path (e.g. 'env/Cargo.lock')."
+        },
+        "go": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bundled Go lock file path (e.g. 'env/go.sum')."
+        }
+      }
+    },
+    "SpurAppMcpServer": {
+      "type": "object",
+      "required": [
+        "type",
+        "entry"
+      ],
+      "additionalProperties": true,
+      "description": "MCP server configuration for the app plugin.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Server runtime type.",
+          "enum": [
+            "python",
+            "node"
+          ]
+        },
+        "entry": {
+          "type": "string",
+          "description": "Archive-relative path to the server entry point (e.g. 'server/main.py' or 'server/main.mjs').",
+          "minLength": 1
+        },
+        "requirements": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Archive-relative path to the Python requirements file used to set up the venv."
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "Static env vars injected into the plugin process at spawn. Host-provisioned vars (SPUR_PORTS_ROOT, SPUR_ARTIFACTS_DIR) are merged after these (host wins on conflict)."
+        }
+      }
+    },
+    "SpurAppCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Capability declarations. All fields default to off/null. IMPORTANT: additionalProperties is false \u2014 the host rejects any unknown key with a structured error rather than silently ignoring it.",
+      "properties": {
+        "ports": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/SpurAppCapabilityPorts"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Port-store capability. When present the host injects SPUR_PORTS_ROOT at plugin spawn."
+        },
+        "canvas_capture": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, the host guarantees the canvas-capture recorder loop end-to-end (requires active_output_scripts)."
+        },
+        "active_output_scripts": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, the host shows a one-time per-app trust prompt; on grant, output iframes run with allow-scripts allow-same-origin."
+        },
+        "artifacts_dir": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, the host injects SPUR_ARTIFACTS_DIR at plugin spawn and creates the directory."
+        },
+        "external_workspace": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default), the app may operate on a user/project workspace. Set false only to opt out. Absent field or missing capabilities block deserializes as true on the host."
+        }
+      }
+    },
+    "SpurAppCapabilityPorts": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Read/write port name lists for the ports capability.",
+      "properties": {
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Port names the app will read from the port store."
+        },
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Port names the app will write to the port store."
+        }
+      }
+    },
+    "SpurAppSdk": {
+      "type": "object",
+      "properties": {
+        "typescript": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Directory (relative to the app root) containing the vendored TypeScript SDK modules, e.g. 'sdk' -> <app_root>/sdk/call_tool.ts. Required modules: call_tool.ts, wire.ts."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "examples": [
+    {
+      "schema": "spur.app/v1",
+      "name": "HTML Video",
+      "entry_notebook": "app.ipynb",
+      "open_mode": "app",
+      "archetype": "react-widget",
+      "runtime": {
+        "jute_min": "0.1.0",
+        "features": [
+          "frontend-cells",
+          "anywidget-afm",
+          "mcp-tools",
+          "ports-arrow"
+        ]
+      },
+      "dependencies": {
+        "python": "server/requirements.txt"
+      },
+      "mcp_server": {
+        "type": "python",
+        "entry": "server/main.py",
+        "requirements": "server/requirements.txt",
+        "env": {}
+      },
+      "widgets": [],
+      "ports": null,
+      "capabilities": {
+        "ports": {
+          "read": [
+            "spur-ad-capture"
+          ],
+          "write": []
+        },
+        "canvas_capture": true,
+        "active_output_scripts": true,
+        "artifacts_dir": true
+      },
+      "skill": "skill/SKILL.md"
+    }
+  ]
+}

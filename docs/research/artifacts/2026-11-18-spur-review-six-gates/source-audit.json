@@ -1,0 +1,81 @@
+{
+  "head": "c686dcf6ce81d1cc517cd11f0db0edc7062ef9b7",
+  "files": [
+    {
+      "path": "src/dag/engine.rs",
+      "sha256": "3cf79ef72af674c326ec95897c21a53987046423b4246cf305e00830fa379d43",
+      "excerpts": [
+        {
+          "start": 351,
+          "end": 366,
+          "text": "    fn ensure_kernel<'a>(\n        &'a self,\n        request: KernelEnsureRequest,\n    ) -> Pin<Box<dyn Future<Output = Result<(), EngineError>> + Send + 'a>> {\n        Box::pin(async move {\n            // Native kernels launch lazily at guarded cell dispatch, where the\n            // canonical target is available to bind the immutable slot owner.\n            if matches!(\n                code_type_for_spec(&request.spec_name),\n                Some(CodeType::Cpp | CodeType::Rust)\n            ) || (request.spec_name == \"python3\"\n                && request.slot_id.starts_with(\"native-profile:\"))\n            {\n                return Ok(());\n            }\n            if let Some(state) = self.deps.state.as_ref() {"
+        }
+      ]
+    },
+    {
+      "path": "src/mcp/tools/native_profile_lifecycle.rs",
+      "sha256": "a713df60c13498bad45b1f00cc9ca23eac44bad3100456ea82576837cd1af902",
+      "excerpts": [
+        {
+          "start": 18,
+          "end": 31,
+          "text": "fn native(spec: &str) -> bool {\n    matches!(spec, \"xcpp\" | \"xcpp17\" | \"xcpp20\" | \"xcpp23\" | \"evcxr\")\n}\n\npub(super) async fn resolve(\n    deps: &ServerDeps,\n    slot_id: Option<&str>,\n    spec: Option<&str>,\n) -> Result<Option<ResolvedNativeTarget>, McpError> {\n    let state = deps.state.as_ref().ok_or_else(super::daemon_unavailable)?;\n    let path = match &deps.daemon {\n        Some(daemon) => daemon.current_path().await,\n        None => None,\n    };"
+        },
+        {
+          "start": 136,
+          "end": 145,
+          "text": "    for (language, code_type, factory_specs) in [\n        (\n            KernelLanguage::Cpp,\n            CodeType::Cpp,\n            &[\"xcpp\", \"xcpp17\", \"xcpp20\", \"xcpp23\"][..],\n        ),\n        (KernelLanguage::Rust, CodeType::Rust, &[\"evcxr\"][..]),\n        (KernelLanguage::Python, CodeType::Python, &[][..]),\n    ] {\n        if let Some(registry) = contexts.language_profiles(language) {"
+        },
+        {
+          "start": 180,
+          "end": 189,
+          "text": "                target.slot_id = slot_id.to_owned();\n            }\n            return Ok(Some(target));\n        }\n    }\n    Err(invalid(\n        \"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\",\n    ))\n}"
+        }
+      ]
+    },
+    {
+      "path": "jute-notebook/src-tauri/src/kernel_config/target.rs",
+      "sha256": "bd5a62dba8d4ae08b5b86e90019a6d11868c06c2f6c04206687b10f2aab2674e",
+      "excerpts": [
+        {
+          "start": 220,
+          "end": 236,
+          "text": "    Ok(target)\n}\n\nfn check_python_ports(\n    target: &Option<ResolvedNativeTarget>,\n    has_ports: bool,\n) -> Result<(), String> {\n    if has_ports\n        && target\n            .as_ref()\n            .is_some_and(|target| target.session_key.language() == KernelLanguage::Python)\n    {\n        return Err(\"ports_unavailable: named Python profiles require a qualified host-fenced publication bridge; use plain Python cells or factory Python ports\".into());\n    }\n    Ok(())\n}"
+        }
+      ]
+    },
+    {
+      "path": "jute-notebook/src-tauri/src/kernel_config/runtime_provenance.rs",
+      "sha256": "46b7176dab1191b9dd42caf17f92a6125ed7096a2481a2f8140d8732c9617643",
+      "excerpts": [
+        {
+          "start": 180,
+          "end": 197,
+          "text": "pub(crate) fn with_native_publication<T>(\n    store: &NotebookStore,\n    stamp: &NativeRunContext,\n    path: Option<&Path>,\n    root: &crate::backend::notebook::NotebookRoot,\n    code: &crate::backend::notebook::CodeCell,\n    action: impl FnOnce() -> T,\n) -> Option<T> {\n    if stamp.language != \"deno\" {\n        return None;\n    }\n    let conn = stamp\n        .witness\n        .as_ref()\n        .filter(|w| w.1 == stamp.generation)?\n        .0\n        .upgrade()?;\n    let fence = &conn.notebook_context;"
+        }
+      ]
+    },
+    {
+      "path": "src/dag/deno_publication_bridge.rs",
+      "sha256": "75ad16df11c8072589f218fa760c6a94e6f02a3313e9fea031433e33392f1e11",
+      "excerpts": [
+        {
+          "start": 256,
+          "end": 269,
+          "text": "    fn register(\n        &self,\n        request_id: &str,\n        context: &NativeRunContext,\n        cell_id: &str,\n        source: &str,\n    ) -> Result<Value, jute::Error> {\n        let error = || {\n            jute::Error::KernelConnect(\n                \"Deno bridge origin is not current or registration does not match\".into(),\n            )\n        };\n        if self.shared.cancellation.is_cancelled()\n            || request_id.is_empty()"
+        }
+      ]
+    },
+    {
+      "path": "jute-notebook/src-tauri/src/assets/deno/ports_project_v2.js",
+      "sha256": "d8cbe2dbc555516a74a1d41ebd31d8350bc14c4e08716118516e954698612cc6",
+      "excerpts": [
+        {
+          "start": 219,
+          "end": 232,
+          "text": "  async function getIPC(port) {\n    const origin = capture();\n    const reply = await exchange({ action: \"get\", origin, port });\n    if (reply.status !== \"available\" || typeof reply.ipc !== \"string\") {\n      throw new Error(reply.message || \"canonical port unavailable\");\n    }\n    return decode(reply.ipc);\n  }\n\n  function publication(operation_id) {\n    const frozen = operations.get(operation_id);\n    if (!frozen) {\n      return Promise.resolve({ operation_id, status: \"unavailable\" });\n    }"
+        }
+      ]
+    }
+  ]
+}

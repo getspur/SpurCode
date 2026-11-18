@@ -1,0 +1,1615 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-18",
+  "issue": "bd-2gmj",
+  "notebook": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb",
+  "app_root": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-18-spur-review-six-gates/app",
+  "observations": {
+    "engine": {
+      "cell_id": "6c0b180b-0400-4bd8-a19d-944247009a9a",
+      "status": "succeeded",
+      "exec_count": 2,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"profile\": \"review-engine\",\n  \"executable\": \"/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python\",\n  \"pid\": 62136,\n  \"duckdb\": \"2.0.0\",\n  \"cwd\": \"/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp\",\n  \"loaded\": [\n    [\n      \"duck_tails\",\n      true\n    ],\n    [\n      \"duckpgq\",\n      true\n    ],\n    [\n      \"spur_graph\",\n      true\n    ]\n  ],\n  \"active_grammar_extensions\": []\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:517210779d35d5b0f2d43f9e4971a88897fd07ab8a25fcd0703a00f70c90c841",
+      "document_generation": 7,
+      "disk_token": "blake3:69e01e35b17f53e72fa059766a063cbec561ccad7972f48a5f70070df80f7078",
+      "durable": true,
+      "diagnostics": null
+    },
+    "pgq_grammar": {
+      "cell_id": "d4598c4a-2126-4e17-ad04-c3d67653c58b",
+      "status": "succeeded",
+      "exec_count": 3,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"before\": [],\n  \"red\": \"Parser Error: syntax error at or near \\\"PROPERTY\\\"\\n\\nLINE 1: CREATE OR REPLACE PROPERTY GRAPH red_graph\\n                          ^^^^^^^^\",\n  \"context_paths\": [\n    [\n      \"incoming:wrapper\",\n      \"Unchanged body\",\n      1\n    ],\n    [\n      \"incoming:client\",\n      \"Unchanged\",\n      2\n    ],\n    [\n      \"incoming:extractor\",\n      \"Unchanged\",\n      2\n    ]\n  ],\n  \"syntax_paths\": [\n    [\n      \"incoming:wrapper\",\n      \"Unchanged body\",\n      1\n    ]\n  ],\n  \"recursive_sql_parity\": true,\n  \"reverse\": \"Parser Error: syntax error at or near \\\"MATCH\\\"\\n\\nLINE 2:  MATCH p = ANY SHORTEST (a:symbol)-[e:relates]->{1,2}(b:symbol...\\n         ^^^^^\",\n  \"after\": [\n    \"duckpgq\"\n  ]\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:01af1df13cfeaaaece9308121fe7029e98083c82380250f047fa5bbd02d1046f",
+      "document_generation": 11,
+      "disk_token": "blake3:1f834e2733a9896acd8cba636fa5417ae192cdf4af409c9a97d92e601a18eb74",
+      "durable": true,
+      "diagnostics": null
+    },
+    "python_ports": {
+      "cell_id": "d1486139-4dd6-4dd0-86cb-c7743919d4a6",
+      "status": "succeeded",
+      "exec_count": 4,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"module\": null,\n  \"global_before_import\": false,\n  \"operations\": [\n    {\n      \"method\": \"put\",\n      \"type\": \"RuntimeError\",\n      \"message\": \"ports_unavailable: named Python ports require a qualified host publication bridge\"\n    },\n    {\n      \"method\": \"get\",\n      \"type\": \"RuntimeError\",\n      \"message\": \"ports_unavailable: named Python ports require a qualified host publication bridge\"\n    }\n  ]\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:ac8abcf5b4a5fdaeef03f8e583672403584d4c69ef738888046c36ad225a262a",
+      "document_generation": 15,
+      "disk_token": "blake3:4365ba7ea4911b8fa3170acad8ca5a516fb80e12c7d3460fc2b53ab69b3fc3ca",
+      "durable": true,
+      "diagnostics": null
+    },
+    "origin_a": {
+      "cell_id": "1d88bc72-5ca7-4c0b-b129-e056b3a9c303",
+      "status": "succeeded",
+      "exec_count": 5,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\"phase\": \"A\", \"origin\": \"6262e9b3-565b-4290-ac5d-6ded24e7b831\", \"workers\": \"waiting; run phase B next\"}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:7d90ca2769c6bbc01d0a4f0480da7fe7fb48d4d3bb529576e8651537974f30a5",
+      "document_generation": 19,
+      "disk_token": "blake3:c7de4f6aeace01b3d9578e8e3eba6d9110c4ef9dbe4f070cb0447c5767ef635e",
+      "durable": true,
+      "diagnostics": null
+    },
+    "origin_b": {
+      "cell_id": "1d432c1a-0a75-4fce-bbb5-42646c37d559",
+      "status": "succeeded",
+      "exec_count": 6,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"phase_a\": \"6262e9b3-565b-4290-ac5d-6ded24e7b831\",\n  \"phase_b\": \"1946b01c-0716-47dc-8d14-0ec72494a0e6\",\n  \"plain_thread\": \"1946b01c-0716-47dc-8d14-0ec72494a0e6\",\n  \"delayed_async\": \"6262e9b3-565b-4290-ac5d-6ded24e7b831\",\n  \"async_preserved_A\": true,\n  \"plain_thread_reports_B\": true,\n  \"interpretation\": \"An unbound thread must not acquire publication authority merely from the latest parent message.\"\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:2f54587055c867dd9ad7c5c3318bad473b30c2d42534af8fd37bd5710d099257",
+      "document_generation": 23,
+      "disk_token": "blake3:c951b01ee65e980d346778b37d6424ae1166280a66bcf5fc331f7dfe67f23708",
+      "durable": true,
+      "diagnostics": null
+    },
+    "repo": {
+      "cell_id": "f968a458-6900-489e-8b75-aa2c7df8a35e",
+      "status": "succeeded",
+      "exec_count": 7,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"repository\": \"/Users/kevintruong/project/duckdb\",\n  \"base\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n  \"head\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n  \"tracked_head_entries\": 18342,\n  \"changed_files\": [\n    \"M\\tsrc/function/aggregate/distributive/first_last_any.cpp\",\n    \"M\\tsrc/optimizer/relation_statistics/relation_statistics_helper.cpp\",\n    \"M\\ttest/configs/stats_dependent_tests.json\",\n    \"M\\ttest/configs/verify_aggregate_state_export.json\",\n    \"A\\ttest/sql/optimizer/statistics/distinct_on_stats_propagation.test\"\n  ],\n  \"history_functions\": [\n    [\n      \"git_blame\",\n      [\n        \"col0\",\n        \"repo_path\",\n        \"revision\",\n        \"min_line\",\n        \"max_line\",\n        \"ignore_whitespace\",\n        \"use_mailmap\",\n        \"first_parent\"\n      ],\n      [\n        \"VARCHAR\",\n        \"VARCHAR\",\n        \"VARCHAR\",\n        \"BIGINT\",\n        \"BIGINT\",\n        \"BOOLEAN\",\n        \"BOOLEAN\",\n        \"BOOLEAN\"\n      ]\n    ],\n    [\n      \"git_log\",\n      [\n        \"repo_path\"\n      ],\n      [\n        \"VARCHAR\"\n      ]\n    ],\n    [\n      \"git_log\",\n      [\n        \"col0\",\n        \"repo_path\"\n      ],\n      [\n        \"VARCHAR\",\n        \"VARCHAR\"\n      ]\n    ],\n    [\n      \"git_log\",\n      [\n        \"col0\",\n        \"col1\",\n        \"repo_path\"\n      ],\n      [\n        \"VARCHAR\",\n        \"VARCHAR\",\n        \"VARCHAR\"\n      ]\n    ]\n  ]\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:1271548504d6f34aa4301bf459f990873453d6e2ba2d94b726a6cac36374808e",
+      "document_generation": 38,
+      "disk_token": "blake3:07b31fe5dab8e6be0291a399654289822cb47c7c0e10f321d1622e08d89dbdeb",
+      "durable": true,
+      "diagnostics": null
+    },
+    "collectors": {
+      "cell_id": "3463af1e-624a-4cb6-a24a-c253ef6f63b7",
+      "status": "succeeded",
+      "exec_count": 8,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"pr_receipt\": {\n    \"source\": \"GitHub connector get_pr_info\",\n    \"number\": 28731,\n    \"head_sha\": \"d29b26bb92ac940a0807be0f43cc385b31623839\",\n    \"base_sha\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n    \"updated_at\": \"2026-11-17T15:22:12Z\",\n    \"state\": \"open\",\n    \"requested_reviewers\": null,\n    \"requested_team_reviewers\": null\n  },\n  \"tracked_head_entries\": 18342,\n  \"changed_files\": 5,\n  \"history\": [\n    {\n      \"file_path\": \"src/optimizer/relation_statistics/relation_statistics_helper.cpp\",\n      \"base_revision\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n      \"authors\": [\n        [\n          \"Laurens Kuiper\",\n          22,\n          \"2026-11-13 10:09:06\"\n        ],\n        [\n          \"Robinho-MR\",\n          3,\n          \"2026-11-05 20:22:47\"\n        ],\n        [\n          \"Max Gabrielsson\",\n          1,\n          \"2026-08-24 08:06:29\"\n        ],\n        [\n          \"Shubham Chaurasia\",\n          1,\n          \"2026-11-02 08:23:00\"\n        ],\n        [\n          \"xproblematique\",\n          1,\n          \"2026-11-13 12:38:09\"\n        ]\n      ]\n    },\n    {\n      \"file_path\": \"src/function/aggregate/distributive/first_last_any.cpp\",\n      \"base_revision\": \"629e395a854d72dcb1f414e1a0451c68ac0e9f1f\",\n      \"authors\": [\n        [\n          \"Mytherin\",\n          17,\n          \"2026-06-10 16:42:24\"\n        ],\n        [\n          \"peter\",\n          13,\n          \"2026-05-12 22:33:00\"\n        ],\n        [\n          \"Max Gabrielsson\",\n          12,\n          \"2026-05-01 12:17:47\"\n        ],\n        [\n          \"Denis Hirn\",\n          7,\n          \"2026-09-03 08:05:55\"\n        ],\n        [\n          \"h4nsmuller\",\n          4,\n          \"2026-11-13 17:01:38\"\n        ],\n        [\n          \"Bj\\u00f6rn Bamberg\",\n          3,\n          \"2025-01-29 13:22:44\"\n        ],\n        [\n          \"Laurens Kuiper\",\n          3,\n          \"2026-11-04 12:49:03\"\n        ],\n        [\n          \"Mark\",\n          2,\n          \"2026-09-16 08:00:29\"\n        ],\n        [\n          \"Richard Wesley\",\n          2,\n          \"2026-01-19 18:50:02\"\n        ],\n        [\n          \"lghavami\",\n          2,\n          \"2026-09-11 13:08:08\"\n        ],\n        [\n          \"Brandon Barrante\",\n          1,\n          \"2026-09-07 00:21:49\"\n        ],\n        [\n          \"Carlo Piovesan\",\n          1,\n          \"2026-09-20 15:36:21\"\n        ],\n        [\n          \"Christiaan Herrewijn\",\n          1,\n          \"2024-10-24 10:50:22\"\n        ],\n        [\n          \"Daniel Gut\",\n          1,\n          \"2026-10-31 10:42:11\"\n        ],\n        [\n          \"Leonid Krugliak\",\n          1,\n          \"2026-02-17 08:42:06\"\n        ],\n        [\n          \"Maxxen\",\n          1,\n          \"2026-11-12 11:35:22\"\n        ],\n        [\n          \"Pedro Holanda\",\n          1,\n          \"2026-09-30 15:42:31\"\n        ],\n        [\n          \"Sebastiaan Gerritsen\",\n          1,\n          \"2026-09-11 12:48:46\"\n        ],\n        [\n          \"Tom Ebergen\",\n          1,\n          \"2024-11-07 10:34:44\"\n        ],\n        [\n          \"dentinyhao\",\n          1,\n          \"2026-08-25 05:34:04\"\n        ]\n      ]\n    }\n  ],\n  \"inbox_source\": \"Separate managed SQL cell using exact saved github-pat definition\",\n  \"automatic_named_pipeline\": false,\n  \"current_reviewers\": \"unknown: connector returned null, not a verified empty assignment list\"\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:6add9053c52deaa464f1425816763af70838e8a50a43a8a3d5489c618c58cf91",
+      "document_generation": 42,
+      "disk_token": "blake3:9b961afecdf06224f804a2742b0694bdf46d9852b74253b6a32d2d7c42a24213",
+      "durable": true,
+      "diagnostics": null
+    },
+    "github_inbox": {
+      "cell_id": "0f9d740c-1b79-4bc6-8f0c-45f3cba09c18",
+      "status": "succeeded",
+      "exec_count": 4,
+      "output_count": 1,
+      "output_types": [
+        "display_data"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        "┌───────────────────────────────┬────────┬────────────────────────────────────────────────────────┬─────────┬─────────────┬─────────────────────────────────────────────┬──────────────────────┐\n│         collected_at          │ number │                         title                          │  state  │ user_login  │                  html_url                   │      updated_at      │\n│   timestamp with time zone    │ int64  │                        varchar                         │ varchar │   varchar   │                   varchar                   │       varchar        │\n├───────────────────────────────┼────────┼────────────────────────────────────────────────────────┼─────────┼─────────────┼─────────────────────────────────────────────┼──────────────────────┤\n│ 2026-11-18 14:27:12.609839+07 │  28731 │ Preserve aggregate domains for proven singleton groups │ open    │ kevintruong │ https://github.com/duckdb/duckdb/pull/28731 │ 2026-11-17T15:22:12Z │\n└───────────────────────────────┴────────┴────────────────────────────────────────────────────────┴─────────┴─────────────┴─────────────────────────────────────────────┴──────────────────────┘\n"
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:bf58ac775e70f0c438620141e7e800bfc49bdceacc66078136d88d440efde809",
+      "document_generation": 34,
+      "disk_token": "blake3:431cc9183c45f2509e954cf3a8517456aa68d0635a99b0609f52c4eb47d57ec4",
+      "durable": true,
+      "diagnostics": null
+    },
+    "github_setup": {
+      "cell_id": "d4933b1b-cae6-4930-ab3c-c55eb3cfa8e4",
+      "status": "succeeded",
+      "exec_count": 3,
+      "output_count": 0,
+      "output_types": [],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [],
+      "output_indices": [],
+      "cell_etag": "cell:sha256:b34a0c2a25aa589964849052037f69ff8becfca7eb7410a9380cb9a9ada0d110",
+      "document_generation": 30,
+      "disk_token": "blake3:d290e638b7e68ee6c3801dc3d271932a113536460364655f7f04a693e1bd1d12",
+      "durable": true,
+      "diagnostics": null
+    },
+    "deno_launch": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `notebook/notebook_run_cell`\n\nCaused by:\n    Mcp error: -32603: notebook_run_cell failed({\"error\":\"kernel ensure failed: ErrorData { code: ErrorCode(-32602), message: \\\"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\\\", data: None }\"})"
+        }
+      ],
+      "isError": true
+    },
+    "python_producer_insert_rejection": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `notebook/notebook_insert_cell`\n\nCaused by:\n    Mcp error: -32065: invalid notebook store params: ports_unavailable: named Python profiles require a qualified host-fenced publication bridge; use plain Python cells or factory Python ports({\"code\":\"invalid_params\"})"
+        }
+      ],
+      "isError": true
+    },
+    "deno_consumer": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `notebook/notebook_run_cell`\n\nCaused by:\n    Mcp error: -32603: notebook_run_cell failed({\"error\":\"kernel ensure failed: ErrorData { code: ErrorCode(-32602), message: \\\"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\\\", data: None }\"})"
+        }
+      ],
+      "isError": true
+    },
+    "source_audit": {
+      "cell_id": "b35d02b2-de39-4159-b3d5-06dd06a0e2a0",
+      "status": "succeeded",
+      "exec_count": 9,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"head\": \"c686dcf6ce81d1cc517cd11f0db0edc7062ef9b7\",\n  \"files\": [\n    {\n      \"path\": \"src/dag/engine.rs\",\n      \"sha256\": \"3cf79ef72af674c326ec95897c21a53987046423b4246cf305e00830fa379d43\",\n      \"excerpts\": [\n        {\n          \"start\": 351,\n          \"end\": 366,\n          \"text\": \"    fn ensure_kernel<'a>(\\n        &'a self,\\n        request: KernelEnsureRequest,\\n    ) -> Pin<Box<dyn Future<Output = Result<(), EngineError>> + Send + 'a>> {\\n        Box::pin(async move {\\n            // Native kernels launch lazily at guarded cell dispatch, where the\\n            // canonical target is available to bind the immutable slot owner.\\n            if matches!(\\n                code_type_for_spec(&request.spec_name),\\n                Some(CodeType::Cpp | CodeType::Rust)\\n            ) || (request.spec_name == \\\"python3\\\"\\n                && request.slot_id.starts_with(\\\"native-profile:\\\"))\\n            {\\n                return Ok(());\\n            }\\n            if let Some(state) = self.deps.state.as_ref() {\"\n        }\n      ]\n    },\n    {\n      \"path\": \"src/mcp/tools/native_profile_lifecycle.rs\",\n      \"sha256\": \"a713df60c13498bad45b1f00cc9ca23eac44bad3100456ea82576837cd1af902\",\n      \"excerpts\": [\n        {\n          \"start\": 18,\n          \"end\": 31,\n          \"text\": \"fn native(spec: &str) -> bool {\\n    matches!(spec, \\\"xcpp\\\" | \\\"xcpp17\\\" | \\\"xcpp20\\\" | \\\"xcpp23\\\" | \\\"evcxr\\\")\\n}\\n\\npub(super) async fn resolve(\\n    deps: &ServerDeps,\\n    slot_id: Option<&str>,\\n    spec: Option<&str>,\\n) -> Result<Option<ResolvedNativeTarget>, McpError> {\\n    let state = deps.state.as_ref().ok_or_else(super::daemon_unavailable)?;\\n    let path = match &deps.daemon {\\n        Some(daemon) => daemon.current_path().await,\\n        None => None,\\n    };\"\n        },\n        {\n          \"start\": 136,\n          \"end\": 145,\n          \"text\": \"    for (language, code_type, factory_specs) in [\\n        (\\n            KernelLanguage::Cpp,\\n            CodeType::Cpp,\\n            &[\\\"xcpp\\\", \\\"xcpp17\\\", \\\"xcpp20\\\", \\\"xcpp23\\\"][..],\\n        ),\\n        (KernelLanguage::Rust, CodeType::Rust, &[\\\"evcxr\\\"][..]),\\n        (KernelLanguage::Python, CodeType::Python, &[][..]),\\n    ] {\\n        if let Some(registry) = contexts.language_profiles(language) {\"\n        },\n        {\n          \"start\": 180,\n          \"end\": 189,\n          \"text\": \"                target.slot_id = slot_id.to_owned();\\n            }\\n            return Ok(Some(target));\\n        }\\n    }\\n    Err(invalid(\\n        \\\"unknown, foreign or superseded native slot; inspect notebook_kernel_profiles\\\",\\n    ))\\n}\"\n        }\n      ]\n    },\n    {\n      \"path\": \"jute-notebook/src-tauri/src/kernel_config/target.rs\",\n      \"sha256\": \"bd5a62dba8d4ae08b5b86e90019a6d11868c06c2f6c04206687b10f2aab2674e\",\n      \"excerpts\": [\n        {\n          \"start\": 220,\n          \"end\": 236,\n          \"text\": \"    Ok(target)\\n}\\n\\nfn check_python_ports(\\n    target: &Option<ResolvedNativeTarget>,\\n    has_ports: bool,\\n) -> Result<(), String> {\\n    if has_ports\\n        && target\\n            .as_ref()\\n            .is_some_and(|target| target.session_key.language() == KernelLanguage::Python)\\n    {\\n        return Err(\\\"ports_unavailable: named Python profiles require a qualified host-fenced publication bridge; use plain Python cells or factory Python ports\\\".into());\\n    }\\n    Ok(())\\n}\"\n        }\n      ]\n    },\n    {\n      \"path\": \"jute-notebook/src-tauri/src/kernel_config/runtime_provenance.rs\",\n      \"sha256\": \"46b7176dab1191b9dd42caf17f92a6125ed7096a2481a2f8140d8732c9617643\",\n      \"excerpts\": [\n        {\n          \"start\": 180,\n          \"end\": 197,\n          \"text\": \"pub(crate) fn with_native_publication<T>(\\n    store: &NotebookStore,\\n    stamp: &NativeRunContext,\\n    path: Option<&Path>,\\n    root: &crate::backend::notebook::NotebookRoot,\\n    code: &crate::backend::notebook::CodeCell,\\n    action: impl FnOnce() -> T,\\n) -> Option<T> {\\n    if stamp.language != \\\"deno\\\" {\\n        return None;\\n    }\\n    let conn = stamp\\n        .witness\\n        .as_ref()\\n        .filter(|w| w.1 == stamp.generation)?\\n        .0\\n        .upgrade()?;\\n    let fence = &conn.notebook_context;\"\n        }\n      ]\n    },\n    {\n      \"path\": \"src/dag/deno_publication_bridge.rs\",\n      \"sha256\": \"75ad16df11c8072589f218fa760c6a94e6f02a3313e9fea031433e33392f1e11\",\n      \"excerpts\": [\n        {\n          \"start\": 256,\n          \"end\": 269,\n          \"text\": \"    fn register(\\n        &self,\\n        request_id: &str,\\n        context: &NativeRunContext,\\n        cell_id: &str,\\n        source: &str,\\n    ) -> Result<Value, jute::Error> {\\n        let error = || {\\n            jute::Error::KernelConnect(\\n                \\\"Deno bridge origin is not current or registration does not match\\\".into(),\\n            )\\n        };\\n        if self.shared.cancellation.is_cancelled()\\n            || request_id.is_empty()\"\n        }\n      ]\n    },\n    {\n      \"path\": \"jute-notebook/src-tauri/src/assets/deno/ports_project_v2.js\",\n      \"sha256\": \"d8cbe2dbc555516a74a1d41ebd31d8350bc14c4e08716118516e954698612cc6\",\n      \"excerpts\": [\n        {\n          \"start\": 219,\n          \"end\": 232,\n          \"text\": \"  async function getIPC(port) {\\n    const origin = capture();\\n    const reply = await exchange({ action: \\\"get\\\", origin, port });\\n    if (reply.status !== \\\"available\\\" || typeof reply.ipc !== \\\"string\\\") {\\n      throw new Error(reply.message || \\\"canonical port unavailable\\\");\\n    }\\n    return decode(reply.ipc);\\n  }\\n\\n  function publication(operation_id) {\\n    const frozen = operations.get(operation_id);\\n    if (!frozen) {\\n      return Promise.resolve({ operation_id, status: \\\"unavailable\\\" });\\n    }\"\n        }\n      ]\n    }\n  ]\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:cfbb6cef1cd2a2536788ba4dc76c25bac443dc3a6e0575b3d8adbea57392336d",
+      "document_generation": 50,
+      "disk_token": "blake3:6c2f7c79a0e49aa89f041fc92c7e3b0dfcee792e8fbc895f2d297eed430d141a",
+      "durable": true,
+      "diagnostics": null
+    },
+    "final_engine": {
+      "cell_id": "5a6b3c1f-a4d7-4f89-b31f-5e2039f8e219",
+      "status": "succeeded",
+      "exec_count": 10,
+      "output_count": 1,
+      "output_types": [
+        "stdout"
+      ],
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "{\n  \"cpp_symbols\": 2,\n  \"context_row_refs\": 12,\n  \"all_refs_exist\": true,\n  \"grammar\": [\n    \"duckpgq\"\n  ],\n  \"fixture_sha256\": \"b8e1a021c9460ffdbe0882c8a3363cdf99df9569d2f91590c2554707d965c0d2\"\n}\n"
+        }
+      ],
+      "output_indices": [
+        0
+      ],
+      "cell_etag": "cell:sha256:6a56f29776a92e1897298e774099d2a14a5171d3d7edd2f89617185a6529d3ec",
+      "document_generation": 56,
+      "disk_token": "blake3:d8b91dd72e8be779ee8c291af0779262f1b0a5e165e8a1408762de325c2c2207",
+      "durable": true,
+      "diagnostics": null
+    }
+  },
+  "profile_preparation": {
+    "plan": {
+      "planned": true,
+      "prepared": false,
+      "phase": "planned",
+      "plan_id": "python-prepare-v1:4744c527889269c75c819f60d63af735e11ea670ae55865044a401306f6fa14d",
+      "plan": {
+        "plan_id": "python-prepare-v1:4744c527889269c75c819f60d63af735e11ea670ae55865044a401306f6fa14d",
+        "input_fingerprint": "python-inputs-v1:d5ad507fd8bdc53e62f377988901df0fb169b26fe809846e468716b200dbb79e",
+        "adapter": "existing",
+        "write_scope": [
+          "/Users/kevintruong/.spur/jupyter/python-projects/539813a01c65dcdf0b05c0a6e8dad9d6021435163ca0e0235227f809f8820e99/e75f985e-2d44-4635-ba58-c8fbcffaae02/ready.json"
+        ],
+        "downloads": false,
+        "build_hooks": false,
+        "strict_lock": false
+      },
+      "profile": "review-engine",
+      "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02",
+      "version": 3,
+      "diagnostics": []
+    },
+    "receipt": {
+      "planned": false,
+      "prepared": true,
+      "phase": "prepared",
+      "plan_id": "python-prepare-v1:4744c527889269c75c819f60d63af735e11ea670ae55865044a401306f6fa14d",
+      "profile": "review-engine",
+      "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02",
+      "receipt": {
+        "schema_version": 1,
+        "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02",
+        "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb",
+        "project_root": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+        "plan_id": "python-prepare-v1:4744c527889269c75c819f60d63af735e11ea670ae55865044a401306f6fa14d",
+        "input_fingerprint": "python-inputs-v1:d5ad507fd8bdc53e62f377988901df0fb169b26fe809846e468716b200dbb79e",
+        "generation": "704bdba9-11d7-46d0-93bd-c362a8a21c78",
+        "interpreter": "/private/var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp/../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+        "environment_fingerprint": "python-environment-v1:90f9a7f6f7a127289f19dbbec89bb3fdae012fc5f96fdcaf4dec5c454da4e781",
+        "qualification": {
+          "executable": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python",
+          "prefix": "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0",
+          "base_prefix": "/opt/homebrew/opt/python@3.12/Frameworks/Python.framework/Versions/3.12",
+          "version": "3.12.10 (main, Apr  8 2025, 11:35:47) [Clang 15.0.0 (clang-1500.1.0.2.5)]",
+          "abi": "cpython-312",
+          "platform": "macosx-13.0-arm64",
+          "ipykernel": "7.4.0",
+          "inventory": [
+            [
+              "Jinja2",
+              "3.1.6"
+            ],
+            [
+              "MarkupSafe",
+              "3.0.4"
+            ],
+            [
+              "Pygments",
+              "2.21.0"
+            ],
+            [
+              "altair",
+              "6.3.0"
+            ],
+            [
+              "appnope",
+              "1.0.0"
+            ],
+            [
+              "asttokens",
+              "3.0.2"
+            ],
+            [
+              "attrs",
+              "26.1.0"
+            ],
+            [
+              "comm",
+              "0.2.3"
+            ],
+            [
+              "debugpy",
+              "1.8.22"
+            ],
+            [
+              "duckdb",
+              "2.0.0"
+            ],
+            [
+              "executing",
+              "2.3.0"
+            ],
+            [
+              "ggsql",
+              "0.4.1"
+            ],
+            [
+              "ipykernel",
+              "7.4.0"
+            ],
+            [
+              "ipython",
+              "9.18.1"
+            ],
+            [
+              "ipython_pygments_lexers",
+              "1.1.1"
+            ],
+            [
+              "jedi",
+              "0.20.1"
+            ],
+            [
+              "jsonschema",
+              "4.26.0"
+            ],
+            [
+              "jsonschema-specifications",
+              "2025.9.1"
+            ],
+            [
+              "jupyter_client",
+              "8.10.0"
+            ],
+            [
+              "jupyter_core",
+              "5.9.1"
+            ],
+            [
+              "matplotlib-inline",
+              "0.2.2"
+            ],
+            [
+              "narwhals",
+              "2.28.0"
+            ],
+            [
+              "nest-asyncio2",
+              "1.7.4"
+            ],
+            [
+              "numpy",
+              "2.5.4"
+            ],
+            [
+              "packaging",
+              "26.3"
+            ],
+            [
+              "pandas",
+              "3.1.0"
+            ],
+            [
+              "parso",
+              "0.8.7"
+            ],
+            [
+              "pexpect",
+              "4.9.0"
+            ],
+            [
+              "pip",
+              "26.3"
+            ],
+            [
+              "platformdirs",
+              "4.14.3"
+            ],
+            [
+              "prompt_toolkit",
+              "3.0.53"
+            ],
+            [
+              "psutil",
+              "7.2.2"
+            ],
+            [
+              "ptyprocess",
+              "0.7.0"
+            ],
+            [
+              "pure_eval",
+              "0.2.4"
+            ],
+            [
+              "pyarrow",
+              "26.0.0"
+            ],
+            [
+              "python-dateutil",
+              "4.0.0"
+            ],
+            [
+              "pyzmq",
+              "27.2.0"
+            ],
+            [
+              "referencing",
+              "0.37.0"
+            ],
+            [
+              "rpds-py",
+              "2026.9.1"
+            ],
+            [
+              "stack-data",
+              "0.6.3"
+            ],
+            [
+              "tornado",
+              "6.6"
+            ],
+            [
+              "traitlets",
+              "5.16.1"
+            ],
+            [
+              "typing_extensions",
+              "4.16.0"
+            ],
+            [
+              "tzdata",
+              "2026.6"
+            ],
+            [
+              "wcwidth",
+              "0.9.4"
+            ]
+          ],
+          "inventory_paths": [
+            "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages"
+          ],
+          "capabilities": {
+            "duckdb": true,
+            "ggsql": true
+          }
+        },
+        "manager": null,
+        "inventory_paths": [
+          "/Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/lib/python3.12/site-packages"
+        ],
+        "owned": false,
+        "capabilities": {
+          "python_execution": true,
+          "ports_arrow": false,
+          "ports_diagnostic": "ports_unavailable: named Python publication bridge is not qualified"
+        }
+      },
+      "version": 3,
+      "restart_required": true,
+      "diagnostics": []
+    }
+  },
+  "profiles_saved": {
+    "python": {
+      "saved": true,
+      "applied": false,
+      "phase": "saved",
+      "version": 3,
+      "profile": "review-engine",
+      "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02",
+      "default_profile": null,
+      "runtime_slot_id": "native-profile:v1:83:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb6:python7:python336:e75f985e-2d44-4635-ba58-c8fbcffaae02",
+      "kernel_contexts": {
+        "schema_version": 4,
+        "python": {
+          "default_profile": null,
+          "profiles": {
+            "review-engine": {
+              "kernel_name": "python3",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+                "environment": {
+                  "kind": "existing",
+                  "interpreter": {
+                    "kind": "project_relative",
+                    "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+                  }
+                }
+              },
+              "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02"
+            }
+          }
+        }
+      },
+      "apply": "next_start",
+      "restart_required": false,
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "mutation_id": "0ede8703-97c5-48b9-aa0e-5b824a1efc1b",
+      "document_generation": 3,
+      "disk_token": "blake3:b5e5bf5c818581cf6d6b323bd7f3d306178c3b945f8cd0d4e64885bed5da4e55",
+      "durable": true,
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb",
+      "kernel_name": "python3",
+      "language": "python",
+      "config": {
+        "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+        "environment": {
+          "kind": "existing",
+          "interpreter": {
+            "kind": "project_relative",
+            "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+          }
+        }
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "environment_not_prepared",
+            "message": "could not connect to the kernel: environment_not_prepared: explicitly prepare this saved Python profile before starting",
+            "blocking": true
+          }
+        ]
+      },
+      "saved_runtime": {
+        "status": "saved",
+        "applied": false,
+        "last_failure": null
+      }
+    },
+    "deno": {
+      "saved": true,
+      "applied": false,
+      "phase": "saved",
+      "version": 43,
+      "profile": "review-ui",
+      "profile_id": "ccee70d5-bea5-4f99-bac9-a54cae27a2bb",
+      "default_profile": null,
+      "runtime_slot_id": "native-profile:v1:83:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb4:deno4:deno36:ccee70d5-bea5-4f99-bac9-a54cae27a2bb",
+      "kernel_contexts": {
+        "schema_version": 4,
+        "deno": {
+          "default_profile": null,
+          "profiles": {
+            "review-ui": {
+              "kernel_name": "deno",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+              },
+              "profile_id": "ccee70d5-bea5-4f99-bac9-a54cae27a2bb"
+            }
+          }
+        },
+        "python": {
+          "default_profile": null,
+          "profiles": {
+            "review-engine": {
+              "kernel_name": "python3",
+              "config": {
+                "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+                "environment": {
+                  "kind": "existing",
+                  "interpreter": {
+                    "kind": "project_relative",
+                    "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+                  }
+                }
+              },
+              "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02"
+            }
+          }
+        }
+      },
+      "apply": "next_start",
+      "restart_required": false,
+      "notebook_id": "nb-539813a01c65dcdf0b05c0a6",
+      "mutation_id": "b22a4601-c6e7-4c92-86a6-7ef523d03645",
+      "document_generation": 43,
+      "disk_token": "blake3:aaae26c1d269e2b1aed22cd8394a400e73b95ce9e5a6d68c907f479426a15e1e",
+      "durable": true,
+      "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb",
+      "kernel_name": "deno",
+      "language": "deno",
+      "config": {
+        "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+      },
+      "readiness": {
+        "ready": false,
+        "diagnostics": [
+          {
+            "code": "dependency_cache_unverified",
+            "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+            "blocking": false
+          },
+          {
+            "code": "explicit_restart_required",
+            "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+            "blocking": false
+          },
+          {
+            "code": "deno_resolution_scope",
+            "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+            "blocking": false
+          },
+          {
+            "code": "runtime_unavailable",
+            "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+            "blocking": true
+          }
+        ]
+      },
+      "saved_runtime": {
+        "status": "saved",
+        "applied": false,
+        "last_failure": null
+      }
+    }
+  },
+  "app": {
+    "doctor": {
+      "ok": true,
+      "level_reached": 2,
+      "findings": [
+        {
+          "check": "contract_version",
+          "level": "pass",
+          "ladder_level": 0,
+          "message": "contract_version 1 is supported by this runtime"
+        },
+        {
+          "check": "manifest",
+          "level": "pass",
+          "ladder_level": 0,
+          "message": "Spur App manifest is valid, schema matches, entry_notebook exists"
+        },
+        {
+          "check": "capability:active_output_scripts",
+          "level": "pass",
+          "ladder_level": 0,
+          "message": "active_output_scripts is a known grantable capability"
+        },
+        {
+          "check": "agent_plugin",
+          "level": "warn",
+          "ladder_level": 0,
+          "message": "plugin.json is absent; this Spur App is not yet an Agent Plugin package",
+          "location": "/Users/kevintruong/project/SpurCode/docs/research/artifacts/2026-11-18-spur-review-six-gates/app/plugin.json"
+        },
+        {
+          "check": "archetype:vanilla-widget",
+          "level": "pass",
+          "ladder_level": 0,
+          "message": "vanilla-widget archetype has no anywidget requirement"
+        },
+        {
+          "check": "port_store",
+          "level": "warn",
+          "ladder_level": 2,
+          "message": "port store directory exists but manifest.json is absent (/Users/kevintruong/.spur/notebooks/nb-a6031031b11f5c42d9ffadbf/ports/manifest.json)"
+        },
+        {
+          "check": "plugin_spawn",
+          "level": "pass",
+          "ladder_level": 2,
+          "message": "no mcp_server declared, plugin spawn check skipped"
+        },
+        {
+          "check": "skill",
+          "level": "pass",
+          "ladder_level": 2,
+          "message": "skill file \"skill/SKILL.md\" found"
+        },
+        {
+          "check": "skill:tool:notebook_run_cell",
+          "level": "pass",
+          "ladder_level": 2,
+          "message": "HARD-GATE tool \"notebook_run_cell\" is present in the live tool surface"
+        }
+      ]
+    },
+    "cascade": {
+      "cell_id": "app-surface",
+      "runs": [
+        {
+          "cell_id": "app-surface",
+          "status": "succeeded"
+        }
+      ]
+    },
+    "dag": {
+      "notebook_version": 6,
+      "nodes": [],
+      "edges": [],
+      "port_manifest": {}
+    },
+    "display_track": "Standalone captured HTML, not named Deno or live data refresh",
+    "pack": "not_run",
+    "host_browser_interactions": "not_run"
+  },
+  "connection_restoration": {
+    "provider_restored": true,
+    "credential_ref_restored": true,
+    "manifest_semantically_unchanged": true,
+    "status": "ready"
+  },
+  "solver": {
+    "app_request": {
+      "family": "configuration",
+      "mode": "verify",
+      "persist": false,
+      "facts": {
+        "components": {
+          "named_review_app_acceptance": {
+            "selected": true,
+            "attributes": {}
+          },
+          "named_python_execution": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duckdb2_runtime": {
+            "selected": true,
+            "attributes": {}
+          },
+          "spur_graph_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duck_tails_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "duckpgq_load": {
+            "selected": true,
+            "attributes": {}
+          },
+          "cpp_symbol_probe": {
+            "selected": true,
+            "attributes": {}
+          },
+          "captured_evidence_refs": {
+            "selected": true,
+            "attributes": {}
+          },
+          "named_deno_execution": {
+            "selected": false,
+            "attributes": {}
+          },
+          "named_python_arrow_publication": {
+            "selected": false,
+            "attributes": {}
+          },
+          "named_deno_port_consumption": {
+            "selected": false,
+            "attributes": {}
+          },
+          "python_duckpgq_query": {
+            "selected": true,
+            "attributes": {}
+          },
+          "native_app_manifest_and_doctor": {
+            "selected": true,
+            "attributes": {}
+          },
+          "live_review_collectors_qualified": {
+            "selected": false,
+            "attributes": {}
+          }
+        },
+        "selection_groups": {},
+        "allowed_attribute_pairs": [],
+        "version_orderings": {}
+      },
+      "rules": [
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_python_execution"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "duckdb2_runtime"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "spur_graph_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "duck_tails_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "duckpgq_load"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "cpp_symbol_probe"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "captured_evidence_refs"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_deno_execution"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_python_arrow_publication"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "named_deno_port_consumption"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "python_duckpgq_query"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "native_app_manifest_and_doctor"
+          ]
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "subjects": [
+            "named_review_app_acceptance",
+            "live_review_collectors_qualified"
+          ]
+        }
+      ],
+      "timeout_ms": 5000
+    },
+    "app_result": {
+      "family": "configuration",
+      "mode": "verify",
+      "outcome": "fail",
+      "rule_results": [
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 1,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 2,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 3,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 4,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 5,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 6,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 7,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 8,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 9,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 10,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 11,
+          "status": "sat",
+          "outcome": "pass"
+        },
+        {
+          "rule_id": "configuration.requires_any",
+          "binding_index": 12,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "configuration.requires_any.violation"
+        }
+      ],
+      "total_duration_ms": 30,
+      "status": "unsat",
+      "duration_ms": 11,
+      "reason": null,
+      "unsat_core": [
+        "configuration_rule_7_configuration_requires_any"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "async_request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "timeout_ms": 5000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "subjects": [
+            "origin_matches_spawning_cell"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "origin_samples": {
+            "fields": {
+              "spawned_by": {
+                "kind": "enum",
+                "values": [
+                  "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+                  "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+                ]
+              },
+              "reported_parent": {
+                "kind": "enum",
+                "values": [
+                  "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+                  "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+                ]
+              }
+            },
+            "rows": {
+              "async": {
+                "active": true,
+                "cells": {
+                  "spawned_by": {
+                    "present": true,
+                    "value": "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+                  },
+                  "reported_parent": {
+                    "present": true,
+                    "value": "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {},
+        "foreign_keys": {},
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {
+          "origin_matches_spawning_cell": {
+            "relation": "origin_samples",
+            "fields": [
+              "spawned_by",
+              "reported_parent"
+            ],
+            "allowed": [
+              [
+                "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+                "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+              ],
+              [
+                "1946b01c-0716-47dc-8d14-0ec72494a0e6",
+                "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+              ]
+            ]
+          }
+        },
+        "temporal_constraints": {}
+      }
+    },
+    "async_result": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "outcome": "pass",
+      "rule_results": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "binding_index": 0,
+          "status": "sat",
+          "outcome": "pass"
+        }
+      ],
+      "total_duration_ms": 39,
+      "status": "sat",
+      "model": {
+        "di_r0_row0_active": 1,
+        "di_r0_row0_f0_present": 1,
+        "di_r0_row0_f0_value": "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+        "di_r0_row0_f1_present": 1,
+        "di_r0_row0_f1_value": "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+      },
+      "duration_ms": 39,
+      "reason": null,
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    },
+    "thread_request": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "persist": false,
+      "timeout_ms": 5000,
+      "rules": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "subjects": [
+            "origin_matches_spawning_cell"
+          ]
+        }
+      ],
+      "facts": {
+        "relations": {
+          "origin_samples": {
+            "fields": {
+              "spawned_by": {
+                "kind": "enum",
+                "values": [
+                  "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+                  "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+                ]
+              },
+              "reported_parent": {
+                "kind": "enum",
+                "values": [
+                  "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+                  "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+                ]
+              }
+            },
+            "rows": {
+              "async": {
+                "active": true,
+                "cells": {
+                  "spawned_by": {
+                    "present": true,
+                    "value": "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+                  },
+                  "reported_parent": {
+                    "present": true,
+                    "value": "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+                  }
+                }
+              },
+              "thread": {
+                "active": true,
+                "cells": {
+                  "spawned_by": {
+                    "present": true,
+                    "value": "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+                  },
+                  "reported_parent": {
+                    "present": true,
+                    "value": "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unique_constraints": {},
+        "foreign_keys": {},
+        "cardinality_constraints": {},
+        "value_ranges": {},
+        "conditional_requirements": {},
+        "aggregate_balances": {},
+        "consistency_relations": {
+          "origin_matches_spawning_cell": {
+            "relation": "origin_samples",
+            "fields": [
+              "spawned_by",
+              "reported_parent"
+            ],
+            "allowed": [
+              [
+                "6262e9b3-565b-4290-ac5d-6ded24e7b831",
+                "6262e9b3-565b-4290-ac5d-6ded24e7b831"
+              ],
+              [
+                "1946b01c-0716-47dc-8d14-0ec72494a0e6",
+                "1946b01c-0716-47dc-8d14-0ec72494a0e6"
+              ]
+            ]
+          }
+        },
+        "temporal_constraints": {}
+      }
+    },
+    "thread_result": {
+      "family": "data_integrity",
+      "mode": "verify",
+      "outcome": "fail",
+      "rule_results": [
+        {
+          "rule_id": "data_integrity.mutually_consistent",
+          "binding_index": 0,
+          "status": "unsat",
+          "outcome": "fail",
+          "diagnostic": "data_integrity.mutually_consistent.violation"
+        }
+      ],
+      "total_duration_ms": 18,
+      "status": "unsat",
+      "duration_ms": 10,
+      "reason": null,
+      "unsat_core": [
+        "data_integrity_rule_0_data_integrity_mutually_consistent__subject_origin_matches_spawning_cell"
+      ],
+      "solver_version": "Z3 version 4.16.0 - 64 bit"
+    }
+  },
+  "gates": [
+    {
+      "id": "R1",
+      "qualification": false,
+      "state": "source cause established; cold named Deno still rejected"
+    },
+    {
+      "id": "R2",
+      "qualification": false,
+      "state": "deliberately disabled; host-fenced Python publication needs implementation"
+    },
+    {
+      "id": "R3",
+      "qualification": false,
+      "state": "blocked by R1 and R2; async contract known; project anywidget helper absent"
+    },
+    {
+      "id": "R4",
+      "qualification": true,
+      "state": "per-connection grammar activation fixes DuckPGQ; reversible and parity-tested"
+    },
+    {
+      "id": "R5",
+      "qualification": true,
+      "state": "reference package manifest + full Level 2 doctor + rendered cascade; not live named app"
+    },
+    {
+      "id": "R6",
+      "qualification": false,
+      "state": "live inbox, pinned repo inventory and DuckTails proven; automatic coherent named pipeline unimplemented"
+    }
+  ],
+  "limits": [
+    "No production runtime source change, Rust build, extension rebuild or dependency installation.",
+    "Deno source diagnosis inspected current source, not a passing patched build.",
+    "No Python publication bypass or factory-to-named data bridge substitute.",
+    "Live GitHub null reviewer fields mean unknown, not verified empty assignment lists.",
+    "No complete C++ repository semantic linking or new architecture/AI qualification."
+  ],
+  "final_profiles": {
+    "notebook_path": "/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb",
+    "version": 61,
+    "document_generation": 61,
+    "schema_version": 4,
+    "diagnostics": [],
+    "cpp": {
+      "default_profile": null,
+      "profiles": {},
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "xcpp",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#xcpp",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "xcpp",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#xcpp",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "diagnostics": []
+    },
+    "rust": {
+      "default_profile": null,
+      "profiles": {},
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "evcxr",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#evcxr",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "evcxr",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#evcxr",
+        "process": null,
+        "diagnostics": [],
+        "live_processes": []
+      },
+      "diagnostics": []
+    },
+    "deno": {
+      "default_profile": null,
+      "profiles": {
+        "review-ui": {
+          "kernel_name": "deno",
+          "config": {
+            "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp"
+          },
+          "profile_id": "ccee70d5-bea5-4f99-bac9-a54cae27a2bb",
+          "profile": "review-ui",
+          "runtime_slot_id": "native-profile:v1:83:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb4:deno4:deno36:ccee70d5-bea5-4f99-bac9-a54cae27a2bb",
+          "process": null,
+          "readiness": {
+            "ready": false,
+            "applied": false,
+            "diagnostics": [
+              {
+                "code": "dependency_cache_unverified",
+                "message": "Deno-first mode uses already prepared dependencies; this preview does not inspect or populate Deno's cache or resolve a module graph",
+                "blocking": false
+              },
+              {
+                "code": "explicit_restart_required",
+                "message": "Fingerprint covers intent, canonical project identity, observed descriptors and host runtime inputs only; restart explicitly after source-only changes",
+                "blocking": false
+              },
+              {
+                "code": "deno_resolution_scope",
+                "message": "Deno owns package imports, aliases, import-map scopes and workspace semantics; descriptor inspection is not module-graph validation or project launch qualification",
+                "blocking": false
+              },
+              {
+                "code": "runtime_unavailable",
+                "message": "No actual Deno runtime observation supplied; probe the host runtime outside draft resolution without provisioning a project",
+                "blocking": true
+              }
+            ]
+          },
+          "diagnostics": [],
+          "live_processes": [],
+          "ports_api": {
+            "version": 2,
+            "asynchronous": true,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "saved",
+            "applied": false,
+            "last_failure": null
+          },
+          "dependency_mode": "none"
+        }
+      },
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "deno",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#deno",
+        "process": null,
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation or identity allocation",
+        "readiness": "valid intent may be saved without local prerequisites; launch requires a qualified host bridge and current prepared dependencies"
+      },
+      "dependency_policy": {
+        "install": false,
+        "project_writes": false,
+        "prepared_dependencies_required": true,
+        "supported_node_modules_modes": [
+          "manual",
+          "none"
+        ],
+        "unsupported_modes": [
+          "auto",
+          "vendor",
+          "workspace"
+        ],
+        "inspection": "read-only descriptor inspection; does not prove dependency-graph freshness"
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 2,
+          "asynchronous": true,
+          "requires_qualified_bridge": true,
+          "readiness": "ready only for the current initialized registration with valid launch inputs"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 3,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for standalone factory"
+      }
+    },
+    "python": {
+      "default_profile": null,
+      "profiles": {
+        "review-engine": {
+          "kernel_name": "python3",
+          "config": {
+            "project_root": "../../../../var/folders/mv/vtzfmys92yl9rwcsgf9n1x780000gn/T/spur-review-named-kibzfbbp",
+            "environment": {
+              "kind": "existing",
+              "interpreter": {
+                "kind": "project_relative",
+                "path": "../../../../../../../Users/kevintruong/.spur/jupyter/venv-duckdb-2.0/bin/python"
+              }
+            }
+          },
+          "profile_id": "e75f985e-2d44-4635-ba58-c8fbcffaae02",
+          "profile": "review-engine",
+          "runtime_slot_id": "native-profile:v1:83:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb6:python7:python336:e75f985e-2d44-4635-ba58-c8fbcffaae02",
+          "process": {
+            "kernel_id": "native-profile:v1:83:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb6:python7:python336:e75f985e-2d44-4635-ba58-c8fbcffaae02",
+            "spec_name": "python3",
+            "generation": 1,
+            "status": "idle",
+            "cpu_pct": 0,
+            "mem_mb": 60.1875
+          },
+          "readiness": {
+            "ready": true,
+            "applied": true,
+            "diagnostics": []
+          },
+          "diagnostics": [],
+          "live_processes": [
+            {
+              "kernel_id": "native-profile:v1:83:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb6:python7:python336:e75f985e-2d44-4635-ba58-c8fbcffaae02",
+              "spec_name": "python3",
+              "generation": 1,
+              "status": "idle",
+              "cpu_pct": 0,
+              "mem_mb": 60.1875
+            }
+          ],
+          "ports_api": {
+            "version": 0,
+            "available": false,
+            "requires_qualified_bridge": true
+          },
+          "runtime": {
+            "status": "running",
+            "applied": true,
+            "last_failure": null
+          }
+        }
+      },
+      "factory": {
+        "profile_id": "factory",
+        "kernel_name": "python3",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#python3",
+        "process": {
+          "kernel_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#python3",
+          "spec_name": "python3",
+          "generation": 1,
+          "status": "idle",
+          "cpu_pct": 0,
+          "mem_mb": 97.34375
+        },
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "effective_target": {
+        "profile_id": "factory",
+        "kernel_name": "python3",
+        "runtime_slot_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#python3",
+        "process": {
+          "kernel_id": "notebook:/Users/kevintruong/project/spur-notebook/2026-11-18-spur-review-six-gates-lab.ipynb#python3",
+          "spec_name": "python3",
+          "generation": 1,
+          "status": "idle",
+          "cpu_pct": 0,
+          "mem_mb": 97.34375
+        },
+        "diagnostics": [],
+        "ports_api": {
+          "version": 1,
+          "synchronous": true
+        }
+      },
+      "diagnostics": [],
+      "apply": {
+        "default": "next_start",
+        "supported": [
+          "next_start",
+          "restart"
+        ],
+        "dry_run": "no mutation",
+        "readiness": "valid intent may be saved without local prerequisites; runtime checks kernel availability"
+      },
+      "dependency_policy": {
+        "preview_installs": false,
+        "save_installs": false,
+        "implicit_sync": false,
+        "prepare": "explicit plan followed by notebook_prepare_kernel_environment",
+        "project_writes": false,
+        "uv_lock": "locked; no frozen or kernel overlay",
+        "adapters": [
+          "requirements",
+          "pyproject",
+          "uv_project",
+          "existing"
+        ]
+      },
+      "ports_api": {
+        "standalone": {
+          "version": 1,
+          "synchronous": true
+        },
+        "project": {
+          "version": 0,
+          "available": false,
+          "synchronous": false,
+          "requires_qualified_bridge": true,
+          "readiness": "ports_unavailable: named Python supports plain execution until host-fenced publication is qualified"
+        }
+      },
+      "profile_identity": {
+        "schema_version": 4,
+        "profile_id": "stable server-assigned UUID",
+        "runtime_slot_id": "derived from notebook, language, kernelspec and profile_id",
+        "default_profile": "existing profile name or null for factory Python"
+      }
+    }
+  },
+  "final_dag": {
+    "notebook_version": 61,
+    "nodes": [],
+    "edges": [],
+    "port_manifest": {}
+  }
+}
